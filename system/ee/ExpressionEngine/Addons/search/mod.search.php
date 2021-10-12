@@ -590,6 +590,44 @@ class Search
         }
 
         /** ----------------------------------------------
+        /**  Limit query to a specific channel
+        /** ----------------------------------------------*/
+        if (count($channel_array) > 0) {
+            $sql .= $id_query;
+        }
+
+        /** ----------------------------------------------
+        /**  Limit query to a specific category
+        /** ----------------------------------------------*/
+
+        // Check for different sets of category IDs, checking the parameters
+        // first, then the $_POST
+        if (isset($this->_meta['category']) and $this->_meta['category'] != '' and !is_array($this->_meta['category'])) {
+            $this->_meta['category'] = explode('|', $this->_meta['category']);
+        } elseif (
+            (!isset($this->_meta['category']) or $this->_meta['category'] == '') and
+            (isset($_POST['cat_id']) and is_array($_POST['cat_id']))
+        ) {
+            $this->_meta['category'] = $_POST['cat_id'];
+        }
+
+        if (isset($this->_meta['category']) and is_array($this->_meta['category'])) {
+            $temp = '';
+
+            foreach ($this->_meta['category'] as $val) {
+                if ($val != 'all' and $val != '') {
+                    $temp .= " exp_categories.cat_id = '" . ee()->db->escape_str($val) . "' OR";
+                }
+            }
+
+            if ($temp != '') {
+                $temp = substr($temp, 0, -2);
+
+                $sql .= ' AND (' . $temp . ') ';
+            }
+        }
+
+        /** ----------------------------------------------
         /**  Add keyword to the query
         /** ----------------------------------------------*/
         if (trim($this->keywords) != '' || ! empty($this->terms)) {
@@ -826,43 +864,7 @@ class Search
             }
         }
 
-        /** ----------------------------------------------
-        /**  Limit query to a specific channel
-        /** ----------------------------------------------*/
-        if (count($channel_array) > 0) {
-            $sql .= $id_query;
-        }
 
-        /** ----------------------------------------------
-        /**  Limit query to a specific category
-        /** ----------------------------------------------*/
-
-        // Check for different sets of category IDs, checking the parameters
-        // first, then the $_POST
-        if (isset($this->_meta['category']) and $this->_meta['category'] != '' and ! is_array($this->_meta['category'])) {
-            $this->_meta['category'] = explode('|', $this->_meta['category']);
-        } elseif (
-            (! isset($this->_meta['category']) or $this->_meta['category'] == '') and
-            (isset($_POST['cat_id']) and is_array($_POST['cat_id']))
-        ) {
-            $this->_meta['category'] = $_POST['cat_id'];
-        }
-
-        if (isset($this->_meta['category']) and is_array($this->_meta['category'])) {
-            $temp = '';
-
-            foreach ($this->_meta['category'] as $val) {
-                if ($val != 'all' and $val != '') {
-                    $temp .= " exp_categories.cat_id = '" . ee()->db->escape_str($val) . "' OR";
-                }
-            }
-
-            if ($temp != '') {
-                $temp = substr($temp, 0, -2);
-
-                $sql .= ' AND (' . $temp . ') ';
-            }
-        }
 
         // -------------------------------------------
         // 'channel_search_modify_search_query' hook.
