@@ -94,7 +94,7 @@ class Search
         /** ----------------------------------------
         /**  Flood control
         /** ----------------------------------------*/
-        if (ee()->session->userdata['search_flood_control'] > 0 and ! ee('Permission')->isSuperAdmin()) {
+        if (!empty(ee()->session->userdata['search_flood_control']) && !ee('Permission')->isSuperAdmin()) {
             $cutoff = time() - ee()->session->userdata['search_flood_control'];
 
             // Only checking current site searches
