@@ -540,6 +540,8 @@ class Search
 
         if (!empty($this->_meta['site_ids']) && empty($channels)) {
             $sql .= "exp_channels.site_id IN ('" . implode("','", $this->_meta['site_ids']) . "') ";
+        } else {
+            $sql .= "exp_channels.site_id IS NOT NULL ";
         }
 
         /** ----------------------------------------------
