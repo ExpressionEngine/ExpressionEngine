@@ -277,7 +277,13 @@ class Search
      */
     protected function _build_meta_array()
     {
-        $site_ids = (ee()->TMPL->fetch_param('site')) ? ee()->TMPL->site_ids : array(ee()->config->item('site_id'));
+        $site_ids = null;
+
+        if (ee()->TMPL->fetch_param('site') != 'not none') {
+            $site_ids = (ee()->TMPL->fetch_param('site'))
+                ? ee()->TMPL->site_ids
+                : array(ee()->config->item('site_id'));
+        }
 
         $meta = array(
             'status' => ee()->TMPL->fetch_param('status', ''),
