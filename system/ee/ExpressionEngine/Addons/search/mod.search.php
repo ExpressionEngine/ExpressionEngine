@@ -445,13 +445,13 @@ class Search
         if (count($channel_array) > 0) {
             foreach ($channel_array as $val) {
                 if ($val != 'null' and $val != '') {
-                    $id_query .= " exp_channel_titles.channel_id = '" . ee()->db->escape_str($val) . "' OR";
+                    $id_query .= ee()->db->escape_str($val) . ", ";
                 }
             }
 
             if ($id_query != '') {
                 $id_query = substr($id_query, 0, -2);
-                $id_query = ' AND (' . $id_query . ') ';
+                $id_query = ' AND  exp_channel_titles.channel_id IN (' . $id_query . ') ';
             }
         }
 
@@ -505,6 +505,7 @@ class Search
         /** ---------------------------------------
         /**  Build the main query
         /** ---------------------------------------*/
+
         $sql = "SELECT
 			DISTINCT(exp_channel_titles.entry_id), exp_channel_titles.channel_id
 			FROM exp_channel_titles ";
@@ -524,7 +525,6 @@ class Search
                 $sql .= "LEFT JOIN exp_comments ON exp_channel_titles.entry_id = exp_comments.entry_id ";
             }
         }
-
 
         // do we need to limit to categories?
         if (!empty($this->_meta['category'])) {
@@ -863,8 +863,6 @@ class Search
                 $sql .= ")";
             }
         }
-
-
 
         // -------------------------------------------
         // 'channel_search_modify_search_query' hook.
