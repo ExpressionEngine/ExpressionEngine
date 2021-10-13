@@ -444,11 +444,6 @@ class Roles extends AbstractRolesController
                 unset($settings[$key]);
             }
         }
-        if (!empty(ee('Request')->post('include_members_in'))) {
-            foreach (ee('Request')->post('include_members_in', []) as $key) {
-                $settings[$key] = 'y';
-            }
-        }
 
         if ($role->isNew()) {
             // Apply these to all sites
@@ -511,18 +506,11 @@ class Roles extends AbstractRolesController
         // template_access
         $template_ids = [];
         if (!empty(ee('Request')->post('assigned_templates'))) {
-            foreach (ee('Request')->post('assigned_templates') as $value) {
-                if (is_numeric($value)) {
-                    $template_ids[] = $value;
-                }
+            $posted_assigned_templates = ee('Request')->post('assigned_templates');
+            if (!is_array($posted_assigned_templates) && strpos($posted_assigned_templates, '[') === 0) {
+                $posted_assigned_templates = json_decode($posted_assigned_templates);
             }
-        }
-        if (!empty($template_ids)) {
-            $role->AssignedTemplates = ee('Model')->get('Template', $template_ids)->all();
-        }
-
-        if (!empty(ee('Request')->post('assigned_templates'))) {
-            foreach (ee('Request')->post('assigned_templates') as $value) {
+            foreach ($posted_assigned_templates as $value) {
                 if (is_numeric($value)) {
                     $template_ids[] = $value;
                 }
@@ -682,6 +670,28 @@ class Roles extends AbstractRolesController
                     ]
                 ]
             ]);
+        } else {
+            $section = array_merge($section, [
+                [
+                    'title' => 'include_members_in',
+                    'desc' => 'include_members_in_desc',
+                    'fields' => [
+                        'include_in_authorlist' => [
+                            'type' => 'checkbox',
+                            'choices' => ['y' => lang('include_in_authorlist')],
+                            'scalar' => true,
+                            'value' => $settings->include_in_authorlist
+                        ],
+                        'include_in_memberlist' => [
+                            'type' => 'checkbox',
+                            'margin_top' => false,
+                            'scalar' => true,
+                            'choices' => ['y' => lang('include_in_memberlist')],
+                            'value' => $settings->include_in_memberlist
+                        ]
+                    ]
+                ]
+            ]);
         }
 
         return ee('View')->make('_shared/form/section')
@@ -696,17 +706,6 @@ class Roles extends AbstractRolesController
         $settings = (isset($settings[$site_id])) ? $settings[$site_id] : ee('Model')->make('RoleSetting', ['site_id' => $site_id]);
 
         $permissions = $this->getPermissions($role);
-
-        $include_members_in_choices = [
-            'include_in_authorlist' => lang('include_in_authorlist'),
-            'include_in_memberlist' => lang('include_in_memberlist'),
-        ];
-        $include_members_in_value = [];
-        foreach (array_keys($include_members_in_choices) as $key) {
-            if ($settings->$key) {
-                $include_members_in_value[] = $key;
-            }
-        }
 
         $sections = [
             [
@@ -750,10 +749,18 @@ class Roles extends AbstractRolesController
                     'title' => 'include_members_in',
                     'desc' => 'include_members_in_desc',
                     'fields' => [
-                        'include_members_in' => [
+                        'include_in_authorlist' => [
                             'type' => 'checkbox',
-                            'choices' => $include_members_in_choices,
-                            'value' => $include_members_in_value
+                            'choices' => ['y' => lang('include_in_authorlist')],
+                            'scalar' => true,
+                            'value' => $settings->include_in_authorlist
+                        ],
+                        'include_in_memberlist' => [
+                            'type' => 'checkbox',
+                            'margin_top' => false,
+                            'scalar' => true,
+                            'choices' => ['y' => lang('include_in_memberlist')],
+                            'value' => $settings->include_in_memberlist
                         ]
                     ]
                 ]
@@ -1400,6 +1407,7 @@ class Roles extends AbstractRolesController
                         'type' => 'checkbox',
                         'nested' => true,
                         'auto_select_parents' => true,
+                        'jsonify' => true,
                         'choices' => $template_access['choices'],
                         'value' => $template_access['values'],
                     ]

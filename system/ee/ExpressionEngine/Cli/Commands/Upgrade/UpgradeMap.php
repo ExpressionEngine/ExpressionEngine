@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Cli\Commands\Upgrade;
 
@@ -7,7 +15,10 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
 class UpgradeMap
 {
     public static $versionsSupported = [
+        '6.1.2',
+        '6.1.1',
         '6.1.0',
+        '6.1.0_rc_1',
         '6.0.6',
         '6.0.5',
         '6.0.4',
@@ -157,6 +168,7 @@ class UpgradeMap
     ];
 
     public static $versionNaming = [
+        '6.1.0_rc_1' => '6.1.0_rc.1',
         '6.0.0_rc_1' => '6.0.0_rc.1',
         '6.0.0_b_4' => '6.0.0_b.4',
         '6.0.0_b_3' => '6.0.0_b.3',

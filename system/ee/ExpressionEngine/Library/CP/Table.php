@@ -523,7 +523,17 @@ class Table
      * @return Integer  Comparison result (-1, 0, 1) based on the two values passed in
      */
     public function compareData($a, $b)
-    {
+    {   
+        /*These 2 ifs are needed to catch columns that do not have a data at that spot.
+        For instance blank cookie lifetime setting data for pro.
+        This makes it so that Null values are considered to be smallest value.
+        To make Null values be considered biggest value have a return 1 and b return -1.*/
+        if($a === NULL){
+            return -1;
+        }
+        if($b === NULL){
+            return 1;
+        }
         // Sort numbers as numbers
         if (is_numeric($a) && is_numeric($b)) {
             $cmp = $a - $b;

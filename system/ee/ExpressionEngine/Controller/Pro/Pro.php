@@ -25,15 +25,19 @@ class Pro extends CP_Controller
     {
         parent::__construct();
 
-        if (!IS_PRO) {
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense()) {
             show_error(lang('unauthorized_access'), 403);
         }
     }
 
     public function __call($name, $arguments)
     {
-        $function = array_shift($arguments);
         $name = ucfirst($name);
+        if (!empty($arguments)) {
+            $function = array_shift($arguments);
+        } else {
+            $function = $name;
+        }
         $class = "\ExpressionEngine\Addons\Pro\Controller\\" . $name . "\\" . $name;
         $controller = new $class();
 

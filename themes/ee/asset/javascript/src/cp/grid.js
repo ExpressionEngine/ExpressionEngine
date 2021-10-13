@@ -857,6 +857,7 @@ Grid.Settings.prototype = {
 				// .prop('checked', true) doesn't work, must set the attribute
 				if ($(this).prop('checked')) {
 					new_input.attr('checked', 'checked');
+					new_input.attr('value', 'y');
 				}
 			}
 			// Handle radio buttons

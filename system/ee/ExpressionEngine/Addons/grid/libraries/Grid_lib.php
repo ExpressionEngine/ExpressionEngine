@@ -487,7 +487,7 @@ class Grid_lib
                     // Hack for File fields in Channel form to get uploading
                     // working properly. This is the same hack done in
                     // Channel_form_lib for regular File fields
-                    if (REQ !== 'CP' && $column['col_type'] === 'file') {
+                    if (REQ !== 'CP' && $column['col_type'] === 'file' && $method == 'validate') {
                         $img = ee()->file_field->validate($_FILES[$col_id]['name'], $col_id);
                         $row[$col_id] = isset($img['value']) ? $img['value'] : '';
                     }

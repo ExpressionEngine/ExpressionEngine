@@ -34,7 +34,8 @@ class MemberGroups extends ControlPanel {
         'edit.can_delete_self_toggle': '[data-toggle-for=can_delete_self]',
 
         'edit.mbr_delete_notify_emails': 'input[type!=hidden][name="mbr_delete_notify_emails"]',
-        'edit.include_members_in': 'input[type!=hidden][name="include_members_in[]"]',
+        'edit.include_in_authorlist': 'input[type!=hidden][name="include_in_authorlist"]',
+        'edit.include_in_memberlist': 'input[type!=hidden][name="include_in_memberlist"]',
 
         'edit.can_post_comments': 'input[name="can_post_comments"]', // :visible => false
         'edit.can_post_comments_toggle': '[data-toggle-for=can_post_comments]',

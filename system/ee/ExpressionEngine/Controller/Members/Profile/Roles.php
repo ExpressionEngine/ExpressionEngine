@@ -38,7 +38,7 @@ class Roles extends Profile
         $roles = ee('Model')->get('Role')->order('name', 'asc');
 
         if (! ee('Permission')->isSuperAdmin()) {
-            $roles = $roles->filter('is_locked', false);
+            $roles = $roles->filter('is_locked', 'n');
         }
 
         $roles = $roles->all()
@@ -50,13 +50,18 @@ class Roles extends Profile
 
         $additional_roles_section = [];
         if (ee('Permission')->isSuperAdmin()) {
+            $role_groups = ee('Model')->get('RoleGroup')
+                ->fields('group_id', 'name')
+                ->order('name')
+                ->all()
+                ->getDictionary('group_id', 'name');
             $additional_roles_section[] = [
                 'title' => 'role_groups',
                 'desc' => 'role_groups_desc',
                 'fields' => [
                     'role_groups' => [
                         'type' => 'checkbox',
-                        'choices' => ee('Model')->get('RoleGroup')->order('name', 'asc')->all()->getDictionary('group_id', 'name'),
+                        'choices' => $role_groups,
                         'value' => $this->member->RoleGroups->pluck('group_id'),
                         'no_results' => [
                             'text' => sprintf(lang('no_found'), lang('role_groups'))
@@ -117,6 +122,11 @@ class Roles extends Profile
                 'label' => 'lang:role',
                 'rules' => 'callback__valid_role'
             ],
+            [
+                'field' => 'roles',
+                'label' => 'lang:roles',
+                'rules' => 'callback__valid_roles'
+            ],
         ];
 
         if (! ee('Session')->isWithinAuthTimeout()) {
@@ -147,14 +157,17 @@ class Roles extends Profile
             ee()->form_validation->run_ajax();
             exit;
         } elseif (ee()->form_validation->run() !== false) {
-            $this->member->role_id = ee('Request')->post('role_id');
+            $this->member->role_id = (int) ee('Request')->post('role_id');
 
             if (ee('Permission')->isSuperAdmin()) {
                 $groups = ee('Request')->post('role_groups');
                 $this->member->RoleGroups = ($groups) ? ee('Model')->get('RoleGroup', $groups)->all() : null;
             }
 
-            $roles = ee('Request')->post('roles');
+            $roles = array_filter(ee('Request')->post('roles'));
+            if (empty($roles)) {
+                $roles = [(int) ee('Request')->post('role_id')];
+            }
             $this->member->Roles = ($roles) ? ee('Model')->get('Role', $roles)->all() : null;
 
             $this->member->save();
@@ -186,15 +199,29 @@ class Roles extends Profile
         $roles = ee('Model')->get('Role', $role);
 
         if (! ee('Permission')->isSuperAdmin()) {
-            $roles = $roles->filter('is_locked', false);
+            $roles = $roles->filter('is_locked', 'n');
         }
 
         $num_roles = $roles->count();
 
         if ($num_roles == 0) {
+            ee()->form_validation->set_message('_valid_role', lang('invalid_role_id'));
             return false;
         }
 
+        return true;
+    }
+
+    public function _valid_roles($roles)
+    {
+        $roles = array_filter($roles);
+        foreach ($roles as $role_id) {
+            $valid = $this->_valid_role($role_id);
+            if (!$valid) {
+                ee()->form_validation->set_message('_valid_roles', lang('invalid_role_id'));
+                return false;
+            }
+        }
         return true;
     }
 }

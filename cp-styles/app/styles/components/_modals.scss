@@ -34,7 +34,7 @@
 	background-color: color(bg-0);
 	margin-bottom: 40px;
 	padding: $sq-inset-m;
-	overflow: hidden;
+	// overflow: hidden;
 	position: relative;
 	border-radius: $corners;
 	@include shadow-modal;
@@ -42,6 +42,8 @@
 	.title-bar {
 		// padding-right: 20px;
 	}
+
+  .col { position: relative;}
 }
 
 .modal-file .modal {
@@ -55,9 +57,11 @@
 .m-close{
 	color: color(text-secondary);
 	position: absolute;
-	right: $sq-m;
+	right: 2px;
 	text-decoration: none;
-	top: $s-m;
+	top: -12px;
+  width: 16px;
+  height: 24px;
 
 		&:before{
 			@extend %fa-icon;
@@ -71,6 +75,10 @@
 		&:hover{
 			color: color(text-tertiary);
 		}
+}
+
+@include m-custom-down(750px) {
+  .m-close { right: -8px;}
 }
 
 .app-modal__dismiss {

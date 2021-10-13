@@ -34,6 +34,10 @@ class GlobalVariable extends FileSyncedModel
         'afterSave',
     );
 
+    protected static $_validation_rules = array(
+        'variable_name' => 'required|max_length[50]|validateVariableName',
+    );
+
     protected $variable_id;
     protected $site_id;
     protected $variable_name;
@@ -298,6 +302,36 @@ class GlobalVariable extends FileSyncedModel
     {
         parent::onAfterDelete();
         ee()->functions->clear_caching('all');
+    }
+
+    /**
+     *	 Check GlobalVariable Name
+    */
+    public function validateVariableName($key, $value, array $params = array())
+    {
+        if (! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $value)) {
+            return 'illegal_characters';
+        }
+
+        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
+            return 'reserved_name';
+        }
+
+        $variables = ee('Model')->get('GlobalVariable');
+        if ((int) $this->site_id === 0) {
+            $variables->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
+        } else {
+            $variables->filter('site_id', ee()->config->item('site_id'));
+        }
+        $count = $variables->filter('variable_name', $value)->count();
+
+        if ((strtolower($this->getBackup($key)) != strtolower($value)) and $count > 0) {
+            return 'variable_name_taken';
+        } elseif ($count > 1) {
+            return 'variable_name_taken';
+        }
+
+        return true;
     }
 }
 
