@@ -318,7 +318,7 @@ $lang = array(
 
     'enable_sql_caching' => 'Cache dynamic channel queries?',
 
-    'enable_sql_caching_desc' => 'When enabled, the speed of dynamic channel pages will be improved. do <b>not</b> use if you need the "future entries" or "expiring entries" features.',
+    'enable_sql_caching_desc' => 'When enabled, the speed of dynamic channel pages will be improved. Do <b>not</b> use if you need the "future entries" or "expiring entries" features.',
 
     'gd' => 'GD',
 
