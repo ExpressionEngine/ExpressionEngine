@@ -30,6 +30,10 @@ class Snippet extends FileSyncedModel
         )
     );
 
+    protected static $_validation_rules = array(
+        'snippet_name' => 'required|max_length[50]|validateSnippetName',
+    );
+
     protected static $_events = array(
         'afterSave',
         'afterDelete'
@@ -299,6 +303,36 @@ class Snippet extends FileSyncedModel
     {
         parent::onAfterDelete();
         ee()->functions->clear_caching('all');
+    }
+
+    /**
+     *	 Check Snippet Name
+    */
+    public function validateSnippetName($key, $value, array $params = array())
+    {
+        if (! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $value)) {
+            return 'illegal_characters';
+        }
+
+        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
+            return 'reserved_name';
+        }
+
+        $snippets = ee('Model')->get('Snippet');
+        if ((int) $this->site_id === 0) {
+            $snippets->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
+        } else {
+            $snippets->filter('site_id', ee()->config->item('site_id'));
+        }
+        $count = $snippets->filter('snippet_name', $value)->count();
+
+        if ((strtolower($this->getBackup($key)) != strtolower($value)) and $count > 0) {
+            return 'snippet_name_taken';
+        } elseif ($count > 1) {
+            return 'snippet_name_taken';
+        }
+
+        return true;
     }
 }
 

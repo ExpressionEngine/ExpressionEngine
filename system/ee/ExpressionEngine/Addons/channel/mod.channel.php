@@ -2398,6 +2398,11 @@ class Channel
             return;
         }
 
+        // just before we pass the data to hook, let Pro do its thing
+        if (IS_PRO) {
+            ee()->TMPL->tagdata = ee('pro:FrontEdit')->prepareTemplate(ee()->TMPL->tagdata);
+        }
+
         ee()->load->library('channel_entries_parser');
         $parser = ee()->channel_entries_parser->create(ee()->TMPL->tagdata/*, $prefix=''*/);
 
@@ -4372,7 +4377,7 @@ class Channel
         $query = ee()->db->query($sql);
 
         if ($query->num_rows() == 0) {
-            return;
+            return ee()->TMPL->no_results();
         }
 
         /** ---------------------------------------

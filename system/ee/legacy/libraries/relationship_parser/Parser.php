@@ -234,6 +234,31 @@ class EE_Relationship_data_parser
         );
 
         $result = $parser->parse($channel, $data, $config);
+        
+        // frontend edit link
+        if (IS_PRO) {
+            if (!empty($node->param('disable')) && strpos($node->param('disable'), 'frontedit') !== false) {
+                $result = str_replace(LD . $node->data['field_name'] . ':frontedit' . RD, '', $result);
+            } elseif ($node->data['shortcut'] == 'frontedit') {
+                foreach ($channel->cfields as $field_site_id => $cfields) {
+                    if (!in_array($field_site_id, [0, ee()->config->item('site_id')])) {
+                        continue;
+                    }
+                    if (isset($cfields[$node->data['field_name']])) {
+                        $field_name = $node->data['field_name'];
+                        $field_id = $cfields[$field_name];
+                        $entry_id = key($node->data['entry_ids']);
+                        $entryQuery = ee('db')->select('site_id, channel_id')->from('channel_titles')->where('entry_id', $entry_id)->get();
+                        $channel_id = $entryQuery->row('channel_id');
+                        $site_id = $entryQuery->row('site_id');
+                        $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id);
+                        $result = str_replace(LD . $field_name . ':frontedit' . RD, $frontEditLink, $result);
+                        break;
+                    }
+                }
+            }
+        }
+
 
         // Lastly, handle the backspace parameter
         $backspace = $node->param('backspace');

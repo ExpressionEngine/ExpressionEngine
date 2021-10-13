@@ -24,6 +24,10 @@ $lang = array(
 
     'module_can_not_be_found' => 'Unable to locate the files needed to install this module',
 
+    'module_can_not_be_found_low_search' => 'Unable to locate the files needed to install Low Search. You can download them on <a href=\'https://expressionengine.com/add-ons/low-search\' target=\'_blank\'>ExpressionEngine.com</a>',
+
+    'module_can_not_be_found_low_variables' => 'Unable to locate the files needed to install Low Variables. You can download them on <a href=\'https://expressionengine.com/add-ons/low-variables\' target=\'_blank\'>ExpressionEngine.com</a>',
+
     'module_description' => 'Description',
 
     'module_has_been_installed' => 'Module installed:',

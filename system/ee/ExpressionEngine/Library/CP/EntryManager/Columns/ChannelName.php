@@ -39,6 +39,6 @@ class ChannelName extends Column
 
     public function renderTableCell($data, $field_id, $entry)
     {
-        return ee('Format')->make('Text', $entry->Channel->channel_title)->convertToEntities();
+        return ee('Format')->make('Text', $entry->Channel->channel_title);
     }
 }

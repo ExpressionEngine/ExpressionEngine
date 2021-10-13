@@ -246,40 +246,37 @@ class Variables extends AbstractDesignController
             );
         }
 
-        ee()->load->library('form_validation');
-        ee()->form_validation->set_rules(array(
-            array(
-                'field' => 'variable_name',
-                'label' => 'lang:variable_name',
-                'rules' => 'required|max_length[50]|callback__variable_name_checks'
-            )
-        ));
-
-        if (AJAX_REQUEST) {
-            ee()->form_validation->run_ajax();
-            exit;
-        } elseif (ee()->form_validation->run() !== false) {
+        if (! empty($_POST)) {
             $variable = ee('Model')->make('GlobalVariable');
             $variable->site_id = ee()->input->post('site_id');
             $variable->variable_name = ee()->input->post('variable_name');
             $variable->variable_data = ee()->input->post('variable_data');
-            $variable->save();
+            
+            $result = $variable->validate();
 
-            ee()->session->set_flashdata('variable_id', $variable->variable_id);
+            if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result)) {
+                return $response;
+            }
 
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asSuccess()
-                ->withTitle(lang('create_template_variable_success'))
-                ->addToBody(sprintf(lang('create_template_variable_success_desc'), $variable->variable_name))
-                ->defer();
+            if ($result->isValid()) {
+                $variable->save();
 
-            ee()->functions->redirect(ee('CP/URL')->make('design/variables'));
-        } elseif (ee()->form_validation->errors_exist()) {
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asIssue()
-                ->withTitle(lang('create_template_variable_error'))
-                ->addToBody(lang('create_template_variable_error_desc'))
-                ->now();
+                ee()->session->set_flashdata('variable_id', $variable->variable_id);
+
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asSuccess()
+                    ->withTitle(lang('create_template_variable_success'))
+                    ->addToBody(sprintf(lang('create_template_variable_success_desc'), $variable->variable_name))
+                    ->defer();
+
+                ee()->functions->redirect(ee('CP/URL')->make('design/variables'));
+            } else {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('create_template_variable_error'))
+                    ->addToBody(lang('create_template_variable_error_desc'))
+                    ->now();
+            }
         }
 
         $this->loadCodeMirrorAssets('variable_data');
@@ -364,41 +361,38 @@ class Variables extends AbstractDesignController
             );
         }
 
-        ee()->load->library('form_validation');
-        ee()->form_validation->set_rules(array(
-            array(
-                'field' => 'variable_name',
-                'label' => 'lang:variable_name',
-                'rules' => 'required|max_length[50]|callback__variable_name_checks'
-            )
-        ));
-
-        if (AJAX_REQUEST) {
-            ee()->form_validation->run_ajax();
-            exit;
-        } elseif (ee()->form_validation->run() !== false) {
+        if (! empty($_POST)) {
             if ($this->msm) {
                 $variable->site_id = ee()->input->post('site_id');
             }
             $variable->variable_name = ee()->input->post('variable_name');
             $variable->variable_data = ee()->input->post('variable_data');
-            $variable->save();
 
-            ee()->session->set_flashdata('variable_id', $variable->variable_id);
+            $result = $variable->validate();
 
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asSuccess()
-                ->withTitle(lang('edit_template_variable_success'))
-                ->addToBody(sprintf(lang('edit_template_variable_success_desc'), $variable->variable_name))
-                ->defer();
+            if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result)) {
+                return $response;
+            }
 
-            ee()->functions->redirect(ee('CP/URL')->make('design/variables'));
-        } elseif (ee()->form_validation->errors_exist()) {
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asIssue()
-                ->withTitle(lang('edit_template_variable_error'))
-                ->addToBody(lang('edit_template_variable_error_desc'))
-                ->now();
+            if ($result->isValid()) {
+                $variable->save();
+
+                ee()->session->set_flashdata('variable_id', $variable->variable_id);
+
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asSuccess()
+                    ->withTitle(lang('edit_template_variable_success'))
+                    ->addToBody(sprintf(lang('edit_template_variable_success_desc'), $variable->variable_name))
+                    ->defer();
+
+                ee()->functions->redirect(ee('CP/URL')->make('design/variables'));
+            } else {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('edit_template_variable_error'))
+                    ->addToBody(lang('edit_template_variable_error_desc'))
+                    ->now();
+            }
         }
 
         $this->loadCodeMirrorAssets('variable_data');
@@ -489,58 +483,6 @@ class Variables extends AbstractDesignController
         force_download('ExpressionEngine-template-variables.zip', $data);
     }
 
-    /**
-      *	 Check GlobalVariable Name
-      */
-    public function _variable_name_checks($str)
-    {
-        if (! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str)) {
-            ee()->lang->loadfile('admin');
-            ee()->form_validation->set_message('_variable_name_checks', lang('illegal_characters'));
-
-            return false;
-        }
-
-        $reserved_vars = array(
-            'lang',
-            'charset',
-            'homepage',
-            'debug_mode',
-            'gzip_mode',
-            'version',
-            'elapsed_time',
-            'hits',
-            'total_queries',
-            'XID_HASH',
-            'csrf_token'
-        );
-
-        if (in_array($str, $reserved_vars)) {
-            ee()->form_validation->set_message('_variable_name_checks', lang('reserved_name'));
-
-            return false;
-        }
-
-        $variables = ee('Model')->get('GlobalVariable');
-        if ($this->msm) {
-            $variables->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
-        } else {
-            $variables->filter('site_id', ee()->config->item('site_id'));
-        }
-        $count = $variables->filter('variable_name', $str)->count();
-
-        if ((strtolower($this->input->post('old_name')) != strtolower($str)) and $count > 0) {
-            $this->form_validation->set_message('_variable_name_checks', lang('variable_name_taken'));
-
-            return false;
-        } elseif ($count > 1) {
-            $this->form_validation->set_message('_variable_name_checks', lang('variable_name_taken'));
-
-            return false;
-        }
-
-        return true;
-    }
 }
 
 // EOF

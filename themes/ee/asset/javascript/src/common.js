@@ -315,6 +315,14 @@ $(document).ready(function(){
 		$.get(EE.cp.collapseNavURL, {collapsed: (!isHidden ? 1 : 0)});
 	})
 
+	// Collapse navigation sidebar
+	// -------------------------------------------------------------------
+	$('.banner-dismiss').on('click', function (e) {
+		e.preventDefault();
+		$(this).parent().remove();
+		$.get(EE.cp.dismissBannerURL);
+	})
+
 	// Toggle Developer Menu
 	// -------------------------------------------------------------------
 
@@ -717,7 +725,7 @@ $(document).ready(function(){
 		});
 
 		// if we have modal ID in hash, open it
-		if (window.location.hash.length > 5) {
+		if (window.location.hash.length > 5 && window.location.hash.indexOf('=') === -1) {
 			if ($('.app-modal[rev=' + window.location.hash.substring(1) + ']').length > 0) {
 				$('.app-modal[rev=' + window.location.hash.substring(1) + ']').trigger('modal:open');
 			}
@@ -918,6 +926,12 @@ $(document).ready(function(){
 	// ===============================
 
 		$('.filters .filter-search input[type="text"], .filters .filter-search-form input[type="text"]').keypress(function(e) {
+			if (e.which == 10 || e.which == 13) {
+				$(this).closest('form').submit();
+			}
+		});
+
+		$(document).on('keypress', '.form-standard .search-input input[type="text"]', function(e){
 			if (e.which == 10 || e.which == 13) {
 				$(this).closest('form').submit();
 			}

@@ -3,7 +3,10 @@ name: Release
 on:
   push:
     tags:
-      - '6.1.0'
+      - '6.1.1'
+      - '6.1.2'
+      - '6.1.3'
+      - '6.2.0'
 
 jobs:
   build:
@@ -16,6 +19,13 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Checkout Pro
+        uses: actions/checkout@v2
+        with:
+          repository: EllisLab/ExpressionEngine-Pro
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          path: __pro
 
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
@@ -37,6 +47,7 @@ jobs:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
+          PRO_REPO_PATH: ${{ github.workspace }}/__pro
         run: gulp app --local --head --skip-lint --version=${{ steps.tagName.outputs.tag }}
 
       - name: Archive Build files

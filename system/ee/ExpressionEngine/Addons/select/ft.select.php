@@ -21,6 +21,8 @@ class Select_ft extends OptionFieldtype
 
     public $has_array_data = true;
 
+    public $size = 'small';
+
     public function validate($data)
     {
         $valid = false;
@@ -57,7 +59,8 @@ class Select_ft extends OptionFieldtype
             $extra .= ' disabled';
         }
 
-        if (REQ == 'CP' && $this->content_type() !== 'grid') {
+        // if (REQ == 'CP' && $this->content_type() !== 'grid') {
+        if (REQ == 'CP') {
             return ee('View')->make('ee:_shared/form/fields/dropdown')->render([
                 'field_name' => $this->field_name,
                 'choices' => $this->_get_field_options($data),
@@ -106,6 +109,23 @@ class Select_ft extends OptionFieldtype
             'select_options',
             'grid_select_options_desc'
         );
+    }
+
+    /**
+     * replace the {field} tag
+     *
+     * @param [type] $data
+     * @param array $params
+     * @param boolean $tagdata
+     * @return string
+     */
+    public function replace_tag($data, $params = array(), $tagdata = false)
+    {
+        if ($tagdata) {
+            return $this->_parse_multi([$data], $params, $tagdata);
+        } 
+        
+        return parent::replace_tag($data, $params, $tagdata);
     }
 
     /**
