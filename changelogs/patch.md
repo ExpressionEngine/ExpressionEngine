@@ -48,6 +48,7 @@ Bullet list below, e.g.
    - Added CLI commands for generating Prolets and Widgets
    - Fixed a CLI bug where it didnt ask for the migration location if not specified
    - Fix white screen on first access to a group template which exists on files, but not yet on database
+   - Remove unnecessary and duplicated queries from search module
 
 
    - Fix #1195 improves `template_post_parse` hook when fired after sub or layout (i.e. partial) template parse completes
