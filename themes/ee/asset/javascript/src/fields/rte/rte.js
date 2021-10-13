@@ -234,11 +234,14 @@ function getPages( queryText ) {
         // Make the search case-insensitive.
         const searchString = queryText.toLowerCase();
 
-        // Include an item in the search results if name or username includes the current user input.
-        return (
-            item.text.toLowerCase().includes( searchString ) ||
-            item.href.toLowerCase().includes( searchString )
-        );
+        if(item.text) { //check if item.text not empty or not equal null
+
+            // Include an item in the search results if name or username includes the current user input.
+            return (
+                item.text.toLowerCase().includes( searchString ) ||
+                item.href.toLowerCase().includes( searchString )
+            );
+        }
     }
 }
 

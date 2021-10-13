@@ -568,7 +568,7 @@ class Edit extends AbstractPublishController
         ee()->functions->redirect(ee('CP/URL')->make('publish/edit', ee()->cp->get_url_state()));
     }
 
-    private function removeEntries($entry_ids, $self_only = true)
+    private function removeEntries($entry_ids, $self_only = false)
     {
         $entries = ee('Model')->get('ChannelEntry', $entry_ids)
             ->filter('site_id', ee()->config->item('site_id'));
@@ -596,10 +596,11 @@ class Edit extends AbstractPublishController
                 return [];
             }
 
-            $entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
+            $entries->filter('channel_id', 'IN', $channel_ids);
         }
 
         $all_entries = $entries->all();
+        $entry_names = [];
         if (!empty($all_entries)) {
             $entry_names = $all_entries->pluck('title');
             $entry_ids = $all_entries->pluck('entry_id');
@@ -619,9 +620,9 @@ class Edit extends AbstractPublishController
                     $entry->Site->save();
                 }
             }
+            
+            $entries->delete();
         }
-
-        $entries->delete();
 
         return $entry_names;
     }

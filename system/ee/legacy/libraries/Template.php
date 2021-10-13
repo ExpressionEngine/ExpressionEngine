@@ -320,6 +320,21 @@ class EE_Template
             'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
         ];
 
+        //Pro conditionals
+        $added_globals['frontedit'] = false;
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee('pro:Access')->hasDockPermission()) {
+            if (
+                REQ == 'PAGE' && 
+                ee()->session->userdata('admin_sess') == 1 &&
+                (ee()->config->item('enable_frontedit') == 'y' || ee()->config->item('enable_frontedit') === false) &&
+                (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) &&
+                ee()->TMPL->enable_frontedit != 'n' &&
+                ee()->input->cookie('frontedit') != 'off'
+            ) {
+                $added_globals['frontedit'] = true;
+            }
+        }
+
         $added_globals = array_merge($added_globals, $this->getMemberVariables());
 
         ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
@@ -3904,7 +3919,7 @@ class EE_Template
     {
         if (is_array($dates) && ! empty($dates)) {
             $tags = implode('|', array_keys($dates));
-            if (preg_match_all("/" . LD . "(" . $tags . ")(.*?)" . RD . "/i", $tagdata, $matches)) {
+            if (preg_match_all("/" . LD . "(" . $tags . ")(.*?)" . RD . "/si", $tagdata, $matches)) {
                 foreach ($matches[2] as $key => $val) {
                     $timestamp = $dates[$matches[1][$key]];
                     $dt = $timestamp;
