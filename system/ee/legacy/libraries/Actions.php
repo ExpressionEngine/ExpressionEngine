@@ -59,47 +59,55 @@ class EE_Actions
         if (! $action_id = ee()->input->get_post('ACT')) {
             return false;
         }
-
-        // Fetch the class and method name (checks to make sure module is installed too)
-        // If the ID is numeric we need to do an SQL lookup
-        if (is_numeric($action_id)) {
+        
+        if (isset($specials[$action_id])) {
+			$class = $specials[$action_id]['0'];
+			$method = $specials[$action_id]['1'];
+			$csrf_exempt = false;
+		}else{
             ee()->db->select('class, method, csrf_exempt');
-            ee()->db->where('action_id', $action_id);
-            $query = ee()->db->get('actions');
+			
+			// If the ID is numeric we need to do an SQL lookup
+			if (is_numeric($action_id)) {
+				
+				ee()->db->where('action_id', $action_id);
+					
+			// If the ID is not numeric we'll invoke the class/method manually
+			} else {
+				
+				$action = explode('/', $action_id);
+				
+				ee()->db->where('class', $action[0]);
+				ee()->db->where('method', $action[1]);
+				
+			}
+			
+			$query = ee()->db->get('actions');
+			
+			if ($query->num_rows() == 0) {
+				if (ee()->config->item('debug') >= 1) {
+					ee()->output->fatal_error(ee()->lang->line('invalid_action'));
+				} else {
+					return false;
+				}
+			}
+			
+			$class = ucfirst($query->row('class'));
+			$method = strtolower($query->row('method'));
+			$csrf_exempt = (bool) $query->row('csrf_exempt');
+        }
+        
+        // Double check that the module is actually installed
+		$query = ee()->db->select('module_version')
+			->where('module_name', ucfirst($class))
+			->get('modules');
 
-            if ($query->num_rows() == 0) {
-                if (ee()->config->item('debug') >= 1) {
-                    ee()->output->fatal_error(ee()->lang->line('invalid_action'));
-                } else {
-                    return false;
-                }
-            }
-
-            $class = ucfirst($query->row('class'));
-            $method = strtolower($query->row('method'));
-            $csrf_exempt = (bool) $query->row('csrf_exempt');
-        } else {
-            // If the ID is not numeric we'll invoke the class/method manually
-            if (! isset($specials[$action_id])) {
-                return false;
-            }
-
-            $class = $specials[$action_id]['0'];
-            $method = $specials[$action_id]['1'];
-            $csrf_exempt = false;
-
-            // Double check that the module is actually installed
-            ee()->db->select('module_version');
-            ee()->db->where('module_name', ucfirst($class));
-            $query = ee()->db->get('modules');
-
-            if ($query->num_rows() == 0) {
-                if (ee()->config->item('debug') >= 1) {
-                    ee()->output->fatal_error(ee()->lang->line('invalid_action'));
-                } else {
-                    return false;
-                }
-            }
+		if ($query->num_rows() == 0) {
+			if (ee()->config->item('debug') >= 1) {
+				ee()->output->fatal_error(ee()->lang->line('invalid_action'));
+			} else {
+				return false;
+			}
         }
 
         // What type of module is being requested?
