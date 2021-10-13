@@ -565,22 +565,6 @@ class EE_Channel_data_parser
             $cond[$key] = (! array_key_exists('m_field_id_' . $value[0], $row)) ? '' : $row['m_field_id_' . $value[0]];
         }
 
-        //Pro conditionals
-        $cond['frontedit'] = false;
-        if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee('pro:Access')->hasDockPermission()) {
-            if (
-                REQ == 'PAGE' && 
-                ee()->session->userdata('admin_sess') == 1 &&
-                (ee()->config->item('enable_frontedit') == 'y' || ee()->config->item('enable_frontedit') === false) &&
-                (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) &&
-                ee()->TMPL->enable_frontedit != 'n' &&
-                ee()->input->cookie('frontedit') != 'off' &&
-                ee('pro:Access')->hasFrontEditPermission($row['channel_id'], $row['entry_id'])
-            ) {
-                $cond['frontedit'] = true;
-            }
-        }
-
         if (! $prefix) {
             return $cond;
         }
