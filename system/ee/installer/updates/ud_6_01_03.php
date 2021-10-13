@@ -40,6 +40,8 @@ class Updater
 
     private function addForgotUsernameTemplate()
     {
+        require_once SYSPATH . 'ee/language/' . (ee()->config->item('deft_lang') ?: 'english') . '/email_data.php';
+        
         if (ee()->db->where('template_name', 'forgot_username_instructions')->get('specialty_templates')->num_rows() > 0) {
             return;
         }
