@@ -272,7 +272,7 @@ class Template extends FileSyncedModel
      */
     public function validateTemplateName($key, $value, $params, $rule)
     {
-        $reserved_names = array('act', 'css');
+        $reserved_names = array('act', 'css', 'js');
 
         if (in_array($value, $reserved_names)) {
             return 'reserved_name';
