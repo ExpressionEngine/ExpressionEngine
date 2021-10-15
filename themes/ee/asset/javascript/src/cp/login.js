@@ -38,7 +38,7 @@ $(document).ready(function() {
 
 	var passwordInput = $('#password'),
 		passwordInputContainer = $('#password').closest('fieldset'),
-		eyeImg = '<img src="' + eyeOpen + '" id="eye" style="cursor:pointer;position:absolute;right:10px;top:42px;" />',
+		eyeImg = '<img src="' + eyeOpen + '" id="eye" />',
 		eyeIsOpen = false
 
 	$(passwordInputContainer).css({'position': 'relative'})
