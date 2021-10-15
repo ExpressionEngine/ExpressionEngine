@@ -56,7 +56,7 @@ class Updater
                 'data_title' => addslashes(trim(forgot_username_instructions_title())),
                 'template_data' => addslashes(forgot_username_instructions())
             ]
-            );
+        );
     }
 }
 
