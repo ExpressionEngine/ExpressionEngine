@@ -118,7 +118,7 @@ class EE_Schema
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			member_id int(10) default '0' NOT NULL,
 			in_forum char(1) NOT NULL default 'n',
-			name varchar(50) default '0' NOT NULL,
+			name varchar(" . USERNAME_MAX_LENGTH . ") default '0' NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			date int(10) unsigned default '0' NOT NULL,
 			anon char(1) NOT NULL,
