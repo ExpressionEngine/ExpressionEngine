@@ -105,7 +105,22 @@ class Request
         // this from the front end.
         $val = ee()->input->{$method}($name, true);
 
-        $this->return_data = $val;
-        return $val;
+        if (is_array($val)) {
+            if (!empty(ee()->TMPL->tagdata)) {
+                $tagdata = ee()->TMPL->tagdata;
+            } else {
+                $tagdata = "{item}\n";
+            }
+            $chunk = '';
+            $vars = [];
+            foreach ($val as $key => $item) {
+                $vars[]['item'] = $item;
+            }
+            $this->return_data = ee()->TMPL->parse_variables($tagdata, $vars);
+        } else {
+            $this->return_data = $val;
+        }
+
+        return $this->return_data;
     }
 }
