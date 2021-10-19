@@ -109,7 +109,9 @@ class Request
             if (!empty(ee()->TMPL->tagdata)) {
                 $tagdata = ee()->TMPL->tagdata;
             } else {
-                $tagdata = "{item}\n";
+                $separator = ee()->TMPL->fetch_param('separator', '|');
+                ee()->TMPL->tagparams['backspace'] = strlen($separator);
+                $tagdata = "{item}" . $separator;
             }
             $chunk = '';
             $vars = [];
