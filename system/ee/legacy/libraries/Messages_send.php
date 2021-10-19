@@ -797,7 +797,7 @@ class EE_Messages_send extends EE_Messages
             $copy_id = (ee()->input->get_post('replying') !== false) ? ee()->input->get_post('replying') : ee()->input->get_post('forwarding');
             $status = (ee()->input->get_post('replying') !== false) ? 'replied' : 'forwarded';
 
-            ee()->db->query("UPDATE exp_message_copies SET message_status = '{$status}' WHERE copy_id = '{" . ee()->db->escape_str($copy_id) . "}'");
+            ee()->db->query("UPDATE exp_message_copies SET message_status = '{$status}' WHERE copy_id = '" . ee()->db->escape_str($copy_id) . "'");
         }
 
         /** -------------------------------------
