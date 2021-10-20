@@ -573,6 +573,18 @@ $lang = array(
 
     'debug_tools_members' => 'Debug Members',
 
+    'debug_tools_addons' => 'Debug Add-ons',
+
+    'debug_tools_missing_addons' => 'Missing Add-on files',
+
+    'debug_tools_found_missing_addons' => 'We found %s missing add-ons.',
+
+    'debug_tools_show_missing_addons' => 'Show missing add-ons',
+
+    'debug_tools_missing_addon' => 'The %s add-on is registered in the database, but the following files are missing for it.',
+
+    'debug_tools_no_missing_addons_desc' => 'There are no add-ons missing the files.',
+
 );
 
 // EOF

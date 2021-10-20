@@ -48,6 +48,9 @@ class DebugTools extends Utilities
         $ftAdvisor = new Advisor\FieldtypeAdvisor();
         $vars['missing_fieldtype_count'] = $ftAdvisor->getMissingFieldtypeCount();
 
+        $ftAdvisor = new Advisor\AddonAdvisor();
+        $vars['missing_addons_count'] = $ftAdvisor->getMissingAddonsCount();
+
         ee()->view->cp_breadcrumbs = array(
             '' => lang('debug_tools')
         );
@@ -141,6 +144,25 @@ class DebugTools extends Utilities
         );
 
         return ee()->cp->render('utilities/debug-tools/missing_fieldtypes', $vars);
+    }
+
+    public function debugAddons()
+    {
+        ee()->lang->loadfile('addons');
+        
+        ee()->view->cp_page_title = lang('debug_tools_addons');
+
+        $addonAdvisor = new Advisor\AddonAdvisor();
+
+        $vars = [];
+        $vars['missing_addons'] = $addonAdvisor->getMissingAddons();
+
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('utilities/debug-tools')->compile() => lang('debug_tools'),
+            '' => lang('debug_tools_addons')
+        );
+
+        return ee()->cp->render('utilities/debug-tools/missing_addons', $vars);
     }
 }
 // END CLASS

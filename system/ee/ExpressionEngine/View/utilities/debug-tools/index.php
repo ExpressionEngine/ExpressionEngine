@@ -32,6 +32,16 @@
             $alerts[1]->asImportant();
         }
 
+        $alerts[2] = ee('CP/Alert')
+            ->makeInline()
+            ->withTitle(lang('debug_tools_addons'))
+            ->addToBody(sprintf(lang('debug_tools_found_missing_addons'), $missing_addons_count) . '<br><a href="' . ee('CP/URL')->make('utilities/debug-tools/debug-addons') . '">' . lang('debug_tools_show_missing_addons') . '</a>');
+        if ($missing_addons_count == 0) {
+            $alerts[2]->asSuccess();
+        } else {
+            $alerts[2]->asImportant();
+        }
+
         foreach ($alerts as $alert) {
             $alert->cannotClose();
             echo $alert->render();

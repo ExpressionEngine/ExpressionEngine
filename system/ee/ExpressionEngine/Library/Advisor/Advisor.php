@@ -31,6 +31,12 @@ class Advisor
             $messages[] = sprintf(lang('debug_tools_found_missing_fieldtypes'), $missing_fieldtype_count);
         }
 
+        $addonAdvisor = new \ExpressionEngine\Library\Advisor\AddonAdvisor();
+        $missing_addons_count = $addonAdvisor->getMissingAddonsCount();
+        if ($missing_addons_count > 0) {
+            $messages[] = sprintf(lang('debug_tools_found_missing_addons'), $missing_addons_count);
+        }
+
         return $messages;
     }
 }

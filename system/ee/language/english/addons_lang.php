@@ -170,6 +170,8 @@ $lang = array(
 
     'page_assignment' => 'Assigned Pages',
 
+    'plugin' => 'Plugin',
+
     'plugins' => 'Plugins',
 
     'plugins_not_available' => 'Plugin Feed Disabled in Beta Version.',
