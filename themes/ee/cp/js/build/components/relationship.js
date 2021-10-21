@@ -85,15 +85,14 @@ function (_React$Component) {
         containment: 'parent',
         handle: '.list-item__handle',
         items: '.list-item',
-        sort: EE.sortable_sort_helper,
+        sort: function sort(event, ui) {
+          try {
+            EE.sortable_sort_helper(event, ui);
+          } catch (error) {}
+        },
         start: function start(event, ui) {
           // Save the start index for later
           $(_assertThisInitialized(_this)).attr('data-start-index', ui.item.index());
-        },
-        helper: function(event, row)  // Fixed an issue where the helper was the same as the current item.
-        {
-          var $helper = row.clone();
-          return $helper;
         },
         stop: function stop(event, ui) {
           var newIndex = ui.item.index();

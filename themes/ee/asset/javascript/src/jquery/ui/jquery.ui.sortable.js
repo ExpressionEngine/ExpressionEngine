@@ -426,8 +426,7 @@ return $.widget("ui.sortable", $.ui.mouse, {
 		}
 
 		//Call callbacks
-		// hide to prevent the script from breaking when the order is changed
-		// this._trigger("sort", event, this._uiHash()); 
+		this._trigger("sort", event, this._uiHash()); 
 
 
 		this.lastPositionAbs = this.positionAbs;
