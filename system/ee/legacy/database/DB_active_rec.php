@@ -660,6 +660,10 @@ class CI_DB_active_record extends CI_DB_driver
             return;
         }
 
+        if (is_array($values) && empty($values)) {
+            $values = 0 - floor(rand(1, 100) * 10000);
+        }
+
         if (! is_array($values)) {
             $values = array($values);
         }
