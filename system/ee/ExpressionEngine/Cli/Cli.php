@@ -51,7 +51,7 @@ class Cli
      * list of commands available from EE
      * @var array
      */
-    public $internalCommands = [
+    private $internalCommands = [
         'list' => Commands\CommandListCommands::class,
         'update' => Commands\CommandUpdate::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,

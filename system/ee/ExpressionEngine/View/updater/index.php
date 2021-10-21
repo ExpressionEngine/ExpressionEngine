@@ -40,7 +40,10 @@
 				<div class="alert__title">
 					<p><?=sprintf(lang('we_stopped_on'), lang('preflight_step'))?></p>
 				</div>
-				<p><?=$warn_message?></p>
+
+                <div class="alert-notice">
+                    <p><?=$warn_message?></p>
+                </div>
 			</div>
 		</div>
 

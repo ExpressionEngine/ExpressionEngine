@@ -1016,7 +1016,7 @@ class Members extends CP_Controller
                     $role = ee('Model')->get('Role', $value)->first();
 
                     if ($role) {
-                        $members->filter('member_id', 'IN', $role->getAllMembers()->pluck('member_id'));
+                        $members->filter('member_id', 'IN', array_merge([0], (array) $role->getAllMembers()->pluck('member_id')));
                     }
                 } else {
                     $members->filter($key, $value);

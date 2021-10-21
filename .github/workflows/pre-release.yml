@@ -76,13 +76,13 @@ jobs:
         continue-on-error: true
         uses: oprypin/find-latest-tag@v1
         with:
-          repository: EllisLab/ExpressionEngine-Private
+          repository: ExpressionEngine/ExpressionEngine
           prefix: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.
 
       - name: Increase DP version
         if: ${{ steps.prev_tag.outcome == 'success' }}
         run: |
-          content=`echo "${{ steps.prev_tag.outputs.tag }}" | cut -d "." -s -f 5`
+          content=`echo "${{ steps.prev_tag.outputs.tag }}" | rev | cut -d "." -s -f 1 | rev`
           echo "dp_ver=$(( 1+$content ))" >> $GITHUB_ENV
 
       #- name: Create the tag
