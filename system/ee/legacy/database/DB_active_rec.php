@@ -660,9 +660,7 @@ class CI_DB_active_record extends CI_DB_driver
             return;
         }
 
-        if (is_array($values) && empty($values)) {
-            $values = 0 - floor(rand(1, 100) * 10000);
-        }
+        $emptyArray = is_array($values) && empty($values);
 
         if (! is_array($values)) {
             $values = array($values);
@@ -679,7 +677,11 @@ class CI_DB_active_record extends CI_DB_driver
 
         $this->ar_empty_group = false;
 
-        $where_in = $boolean_operator_prefix . $binary_prefix . $this->_protect_identifiers($key) . $not . " IN (" . implode(", ", $this->ar_wherein) . ") ";
+        if ($emptyArray) {
+            $where_in = $boolean_operator_prefix . $not . ' 1 = 2 ';
+        } else {
+            $where_in = $boolean_operator_prefix . $binary_prefix . $this->_protect_identifiers($key) . $not . " IN (" . implode(", ", $this->ar_wherein) . ") ";
+        }
 
         $this->ar_where[] = $where_in;
 
