@@ -122,7 +122,7 @@ class Roles extends AbstractRolesController
                 'id' => $role->getId(),
                 'label' => $role->name,
                 'faded' => '(' . $role->PrimaryMembers->count() . ')',
-                'faded-href' => ee('CP/URL')->make('members', ['role_id' => $role->getId()]),
+                'faded-href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                 'href' => $edit_url,
                 'selected' => ($role_id && $role->getId() == $role_id),
                 'toolbar_items' => null,
