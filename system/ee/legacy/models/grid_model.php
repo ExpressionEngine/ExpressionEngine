@@ -482,9 +482,9 @@ class Grid_model extends CI_Model
                     }
                     usort($override, function ($a, $b) use ($orderby, $sort) {
                         if ($sort == 'asc') {
-                            return $a[$orderby] > $b[$orderby];
+                            return ($a[$orderby] > $b[$orderby]) ? 1 : -1;
                         } else {
-                            return $a[$orderby] < $b[$orderby];
+                            return ($a[$orderby] < $b[$orderby]) ? 1 : -1;
                         }
                     });
                 }
