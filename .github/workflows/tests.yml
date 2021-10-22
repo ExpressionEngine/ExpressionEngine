@@ -32,6 +32,7 @@ jobs:
 
         steps:
             - name: Install locales
+              if: runner.os != 'Windows'
               run: |
                 sudo locale-gen en
                 sudo locale-gen de
