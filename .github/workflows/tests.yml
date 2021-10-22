@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - 6.dev
-      - feature/6.x/testing-tests
+      - feature/6.x/unit-tests
 
 jobs:
 
