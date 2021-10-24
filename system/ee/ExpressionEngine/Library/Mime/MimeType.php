@@ -197,6 +197,11 @@ class MimeType
             return true;
         }
 
+        // If the reported mime-type is an icon, we won't do the next validation step because imagecreatefromstring does not support .ico files
+        if ($mime === 'image/vnd.microsoft.icon' || $mime == 'image/x-icon') {
+            return true;
+        }
+
         // If the reported mime-type is an image we'll do an extra validation
         // step and try to create an image from the data.
         try {
