@@ -1012,9 +1012,28 @@ if (! function_exists('two_fa_message_template')) {
             max-width: 700px;
             min-width: 350px;
             position: absolute;
-            top: 50%;
             left: 50%;
-            transform: translate(-50%,-50%);
+            top: 0;
+            transform: translate(-50%);
+            height: 100vh;
+            overflow-y: auto;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            display: flex;
+        }
+        
+        .redirect-inner {
+          background-color: var(--ee-panel-bg);
+          border: 1px solid var(--ee-panel-border);
+          border-radius: 6px;
+          height: auto;
+          margin-top: auto;
+          margin-bottom: auto;
+        }
+
+        .redirect-inner .qr-code-wrap {
+            text-align: center;
         }
         
         .panel-heading {
