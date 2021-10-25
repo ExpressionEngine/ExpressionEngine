@@ -663,7 +663,7 @@ class Channel
                 $fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
             } // foreach($sites as $site_id)
             if (! empty($fields_sql)) {
-                $sql .= 'AND (' . $fields_sql . ')';
+                $sql .= ' AND (' . $fields_sql . ')';
             }
         }
 
@@ -2289,7 +2289,7 @@ class Channel
 
     private function previewDataPassesCondition($condition, $data)
     {
-        list($column, $comparison, $value) = explode(' ', trim($condition));
+        list($column, $comparison, $value) = explode(' ', trim($condition, '() '));
         list($table, $key) = explode('.', $column);
 
         $datum = $data[$key];
