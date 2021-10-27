@@ -579,7 +579,7 @@ class EE_Messages_send extends EE_Messages {
 		/** -------------------------------------*/
 		if (ee()->input->get_post('attach') !== FALSE && ee()->input->get_post('attach') != '')
 		{
-			$this->attachments = explode('|', $_POST['attach']);
+			$this->attachments = array_map('intval', explode('|', $_POST['attach']))
 		}
 
 		/* -------------------------------------
@@ -932,7 +932,7 @@ class EE_Messages_send extends EE_Messages {
 			$copy_id = (ee()->input->get_post('replying') !== FALSE) ? ee()->input->get_post('replying') : ee()->input->get_post('forwarding');
 			$status  = (ee()->input->get_post('replying') !== FALSE) ? 'replied' : 'forwarded';
 
-			ee()->db->query("UPDATE exp_message_copies SET message_status = '{$status}' WHERE copy_id = '{$copy_id}'");
+			ee()->db->query("UPDATE exp_message_copies SET message_status = '{$status}' WHERE copy_id = '" . ee()->db->escape_str($copy_id) . "'");
 		}
 
 		/** -------------------------------------
@@ -942,7 +942,7 @@ class EE_Messages_send extends EE_Messages {
 		if (count($this->attachments) > 0)
 		{
 			ee()->db->query("UPDATE exp_message_attachments SET message_id = '{$message_id}'
-						WHERE attachment_id IN ('".implode("','", $this->attachments)."')");
+						WHERE attachment_id IN ('" . ee()->db->escape_str(implode("','", $this->attachments)) . "')");
 		}
 
 		/** -------------------------------------
