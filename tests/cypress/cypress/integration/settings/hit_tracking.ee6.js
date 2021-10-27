@@ -34,7 +34,7 @@ context('Hit Tracking', () => {
     // Form Validation
     page.get('dynamic_tracking_disabling').clear().type('three')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.wait(400)
     //page.hasErrors()
@@ -61,7 +61,7 @@ context('Hit Tracking', () => {
     page.get('enable_entry_view_tracking_toggle').click()
     page.get('dynamic_tracking_disabling').clear().type('360')
     //page.submit()AJ
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
     page.get('wrap').should('not.contain', 'Attention: Settings not saved')

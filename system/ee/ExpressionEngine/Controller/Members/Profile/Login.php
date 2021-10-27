@@ -47,9 +47,16 @@ class Login extends Profile
                                 'site_index' => lang('site_index'),
                                 'other' => 'other'
                             ),
+                            'group_toggle' => [
+                                'other' => 'other'
+                            ],
                             'value' => 'site_index'
                         ),
-                        'other' => array('type' => 'text')
+                        'other' => array(
+                            'group' => 'other',
+                            'type' => 'text',
+                            'placeholder' => lang('url')
+                        )
                     )
                 )
             )
@@ -160,7 +167,6 @@ class Login extends Profile
         $type = $redirect == 'cp' ? ee()->config->item('cp_session_type') : ee()->config->item('website_session_type');
 
         if ($type != 's') {
-            ee()->input->set_cookie(ee()->session->c_expire, time() + $expire, $expire);
             ee()->input->set_cookie(ee()->session->c_anon, 1, $expire);
         }
 

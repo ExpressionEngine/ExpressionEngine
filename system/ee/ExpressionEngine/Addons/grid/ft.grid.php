@@ -20,6 +20,10 @@ class Grid_ft extends EE_Fieldtype
 
     public $has_array_data = true;
 
+    public $complex_data_structure = true;
+
+    public $size = 'large';
+
     public $settings_form_field_name = 'grid';
 
     private $errors;
@@ -641,11 +645,11 @@ class Grid_ft extends EE_Fieldtype
 
                 switch ($field) {
                     case 'col_label':
-                        $rules[$field_name] = 'required|validGridColLabel';
+                        $rules[$field_name] = 'required|maxLength[50]|validGridColLabel';
 
                         break;
                     case 'col_name':
-                        $rules[$field_name] = 'required|alphaDash|validGridColName';
+                        $rules[$field_name] = 'required|alphaDash|maxLength[32]|validGridColName';
 
                         break;
                     case 'col_width':

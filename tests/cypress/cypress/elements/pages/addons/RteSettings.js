@@ -11,13 +11,13 @@ class RteSettings extends ControlPanel {
 
             // Settings View
             "default_tool_set": 'input[type!=hidden][name="rte_default_toolset"]',
-            "save_settings_button": 'input[value="Save Settings"]',
+            "save_settings_button": '[value="Save Settings"]',
 
             "create_new_button": 'a:contains("Create New")',
             "tool_sets": '.table-responsive table tr',
             "tool_set_name_header": '.table-responsive table tr th:first-child',
             "manage_header": '.table-responsive table tr th:nth-child(2)',
-            "checkbox_header": '.table-responsive table tr th:nth-child(3)',
+            "checkbox_header": '.table-responsive table tr th:nth-child(4)',
 
             "tool_set_names": '.table-responsive table tr td:first-child a',
 

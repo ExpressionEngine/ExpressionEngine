@@ -74,7 +74,7 @@ context('Template Variables', () => {
         form.get('contents_editor').type('Lorem ipsum...')
 
         //form.get('save_button').first().click()
-        cy.get('input[value="Save Template Variable"]').first().click()
+        cy.get('[value="Save Template Variable"]').first().click()
 
         cy.hasNoErrors()
 
@@ -85,7 +85,7 @@ context('Template Variables', () => {
 
     it('can remove a variable', function() {
         page.get('variables').its('length').then((length) => {
-            page.get('variables').eq(0).find('td:nth-child(4) input').click()
+            page.get('variables').eq(0).find('td:last-child input').click()
 
             page.get('bulk_action').should('exist')
             page.get('action_submit_button').should('exist')
@@ -94,7 +94,7 @@ context('Template Variables', () => {
             page.get('action_submit_button').click()
 
            // page.get('modal_submit_button').click()
-           cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+           cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 
             cy.hasNoErrors()
 

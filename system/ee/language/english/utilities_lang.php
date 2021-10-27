@@ -503,7 +503,7 @@ $lang = array(
 
     'export_email_addresses_desc' => 'Export names and email addresses of your %s members.',
 
-    'export_warning_desc' => 'This action should only be done by authorized users. The resulting <abbr title="Comma Separated Values">CSV</abbr> file should be handled in harmony with your privacy policy.',
+    'export_warning_desc' => 'This action should only be done by authorized users. The resulting CSV file should be handled in harmony with your privacy policy.',
 
     'download_valid_email_addresses' => 'Download Valid Emails',
 

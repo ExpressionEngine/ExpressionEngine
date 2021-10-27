@@ -404,6 +404,15 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'site_short_name',
                         'command_title' => 'site_short_name'
                     ),
+                    // Short name
+                    'fieldset-site_license_key' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'site_license_key',
+                        'command_title' => 'site_license_key'
+                    ),
                     // System on off
                     'fieldset-is_system_on' => array(
                         'trail' => [
@@ -1686,7 +1695,7 @@ class JumpMenu extends AbstractJumpMenu
             return [];
         }
 
-        $items = ee()->cache->file->get('jumpmenu/' . ee()->session->getMember()->getId());
+        $items = ee()->cache->file->get('jumpmenu/' . md5(ee()->session->getMember()->getId()));
         if (!empty($items)) {
             return $items;
         }
@@ -1709,7 +1718,7 @@ class JumpMenu extends AbstractJumpMenu
      */
     public function primeCache()
     {
-        ee()->cache->file->delete('jumpmenu/' . ee()->session->getMember()->getId());
+        ee()->cache->file->delete('jumpmenu/' . md5(ee()->session->getMember()->getId()));
 
         //load language for all the jumps
         ee()->lang->load('jump_menu');
@@ -1736,7 +1745,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command_title' => lang('view') . ' <b>' . lang('view_consent_log') . '</b>',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'logs/cp',
+                'target' => 'logs/consent',
                 'permission' => 'can_manage_consents'
             ),
             'logsCp' => array(
@@ -1745,7 +1754,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command_title' => lang('view') . ' <b>' . lang('view_cp_log') . '</b>',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'logs/consent',
+                'target' => 'logs/cp',
                 'permission' => 'can_access_logs'
             ),
             'logsThrottle' => array(
@@ -2003,7 +2012,7 @@ class JumpMenu extends AbstractJumpMenu
         // Cache our items. We're bypassing the checks for the default
         // cache driver because we want this to be cached and working
         // even if the dev has set caching to disabled.
-        ee()->cache->file->save('jumpmenu/' . ee()->session->getMember()->getId(), $items, 3600);
+        ee()->cache->file->save('jumpmenu/' . md5(ee()->session->getMember()->getId()), $items, 3600);
 
         // Assign our combined item list back to our static variable.
         self::$items = $items;

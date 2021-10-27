@@ -17,7 +17,12 @@ $lang = array(
     'rte_config_settings' => 'Configuration Settings',
     'rte_config_name' => 'Configuration Name',
     'rte_toolbar' => 'Customize the Toolbar',
-    'rte_height' => 'Height',
+    'rte_min_height' => 'Minimal height',
+    'rte_min_height_desc' => 'Enter the number of pixels, or leave empty',
+    'rte_max_height' => 'Maximal height',
+    'rte_max_height_desc' => 'Enter the number of pixels, or leave empty',
+    'rte_limiter' => 'Limit characters',
+    'rte_limiter_desc' => 'Limit the number of characters a user can enter.',
     'rte_upload_dir' => 'Upload Directory',
     'rte_advanced_settings' => 'Advanced Settings',
     'rte_config_saved' => 'Configuration Saved!',
@@ -35,8 +40,8 @@ $lang = array(
 
     'rte_editor_config' => 'Editor Configuration',
     'rte_edit_configs' => 'Edit&nbsp;Configurations',
-    'rte_defer' => 'Defer CKEditor initialization?',
-    'rte_defer_desc' => 'If you select “Yes”, RTE won’t initialize CKEditor until the field is clicked on.',
+    'rte_defer' => 'Defer Editor initialization?',
+    'rte_defer_desc' => 'If you select “Yes”, RTE won’t initialize the field javascript until the field is clicked on.',
 
     // RTE
 
@@ -69,6 +74,8 @@ $lang = array(
     'tool_set' => 'Tool Set',
 
     'tool_set_name' => 'Name',
+
+    'tool_type' => 'Editor Type',
 
     /* Headings */
     'create_new_toolset' => 'Create a New Tool Set',
@@ -213,19 +220,33 @@ $lang = array(
 
     'italic_rte' => 'Italic',
 
+    'deleted_rte' => 'Deleted',
+
+    'lists_rte' => 'Lists',
+
+    'image_rte' => 'Image',
+
+    'file_rte' => 'File',
+
     'strikethrough_rte' => 'Strikethrough',
 
     'underline_rte' => 'Underline',
 
     'subscript_rte' => 'Subscript',
 
+    'sub_rte' => 'Subscript',
+
     'superscript_rte' => 'Superscript',
+
+    'sup_rte' => 'Superscript',
 
     'code_rte' => 'Code',
 
     'blockquote_rte' => 'Block quote',
 
     'heading_rte' => 'Heading',
+
+    'format_rte' => 'Format',
 
     'removeFormat_rte' => 'Remove formatting',
 
@@ -235,7 +256,11 @@ $lang = array(
 
     'numberedList_rte' => 'Numbered list',
 
+    'ol_rte' => 'Numbered list',
+
     'bulletedList_rte' => 'Bulleted list',
+
+    'ul_rte' => 'Bulleted list',
 
     'outdent_rte' => 'Decrease indent',
 
@@ -243,11 +268,23 @@ $lang = array(
 
     'link_rte' => 'Link',
 
+    'horizontalrule_rte' => 'Horizontal rule',
+
+    'line_rte' => 'Horizontal rule',
+
     'filemanager_rte' => 'Image',
 
     'insertTable_rte' => 'Table',
 
+    'table_rte' => 'Table',
+
     'mediaEmbed_rte' => 'Media',
+
+    'htmlEmbed_rte' => 'HTML',
+
+    'html_rte' => 'HTML',
+
+    'alignment_rte' => 'Align',
 
     'alignment:left_rte' => 'Align left',
 
@@ -261,13 +298,46 @@ $lang = array(
 
     'specialCharacters_rte' => 'Special characters',
 
+    'specialchars_rte' => 'Special characters',
+
     'readMore_rte' => '"Read More" separator',
+
+    'readmore_rte' => '"Read More" separator',
 
     'fontColor_rte' => 'Font color',
 
     'fontBackgroundColor_rte' => 'Font background',
 
     'open_in_new_tab' => 'Open in a new tab',
+
+    'source_rte' => 'View Source',
+
+    'video_rte' => 'Video',
+
+    'fullscreen_rte' => 'Fullscreen',
+
+    'properties_rte' => 'Properties',
+
+    'textdirection_rte' => 'Text Direction',
+
+    'codemirror_rte' => 'Codemirror',
+
+    'widget_rte' => 'Widget',
+
+    'inlinestyle_rte' => 'Style',
+
+    'rte_plugins' => 'Plugins',
+    'rte_toolbar_buttons' => 'Toolbar Buttons',
+
+    'rte_definedlinks_rte' => 'Pages links',
+
+    'filebrowser_rte' => 'File Browser',
+
+    'counter_rte' => 'Counter',
+
+    'pages_rte' => 'Pages',
+
+    'fontcolor_rte' => 'Text color',
 
     '' => ''
 );

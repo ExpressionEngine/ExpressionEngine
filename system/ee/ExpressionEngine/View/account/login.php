@@ -1,7 +1,11 @@
 <?php $this->extend('_templates/login'); ?>
 
 	<div class="login__logo">
-        <?php $this->embed('ee:_shared/ee-logo')?>
+		<?php if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee()->config->item('login_logo')) : ?>
+		<img src="<?=ee()->config->item('login_logo')?>" alt="Powered by ExpressionEngine&reg;">
+		<?php else: ?>
+		<?php $this->embed('ee:_shared/ee-logo')?>
+		<?php endif; ?>
 	</div>
 
 <div class="login__content">
@@ -9,7 +13,7 @@
 	<?=ee('CP/Alert')->getAllInlines()?>
 
 
-	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path, 'after' => ee()->input->get_post('after')))?>
+	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path, 'after' => $after))?>
 		<fieldset>
 			<div class="field-instruct">
 				<?=lang('username', 'username')?>

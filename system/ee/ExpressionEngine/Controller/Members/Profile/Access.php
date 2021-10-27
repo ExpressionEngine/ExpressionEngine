@@ -104,7 +104,7 @@ class Access extends Profile
         static $permissions = [];
 
         if (empty($permissions)) {
-            $primary_icon = ' <span class="icon--primary icon-right" title="' . lang('primary_role') . '"></span>';
+            $primary_icon = ' <sup class="icon--primary" title="' . lang('primary_role') . '"></sup>';
 
             $allowed = ee('Model')->get('Permission')
                 ->with('Role')
@@ -158,13 +158,15 @@ class Access extends Profile
 
                 foreach ($role->AssignedModules as $module) {
                     $addon = ee('Addon')->get(strtolower($module->module_name));
-                    $key = 'access_to_add_on_id_' . $module->getId() . ':' . $addon->getName();
+                    if ($addon) {
+                        $key = 'access_to_add_on_id_' . $module->getId() . ':' . $addon->getName(); 
 
-                    if (! array_key_exists($key, $permissions)) {
-                        $permissions[$key] = [];
+                        if (! array_key_exists($key, $permissions)) {
+                            $permissions[$key] = [];
+                        }
+
+                        $permissions[$key][] = $display;
                     }
-
-                    $permissions[$key][] = $display;
                 }
             }
         }
@@ -195,7 +197,7 @@ class Access extends Profile
             $display = ee('Format')->make('Text', 'Super Admin')->convertToEntities();
 
             if (1 == $this->member->role_id) {
-                $display .= ' <span class="icon--primary icon-right" title="' . lang('primary_role') . '"></span>';
+                $display .= ' <sup class="icon--primary" title="' . lang('primary_role') . '"></sup>';
             }
             $permissions[$permission][] = $display;
         }

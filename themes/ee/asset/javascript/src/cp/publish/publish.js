@@ -6,12 +6,27 @@
  * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
+var isNavigatingAway = false;
+function preventNavigateAway(e) {
+	if (!isNavigatingAway && sessionStorage.getItem("preventNavigateAway") == 'true') {
+		e.returnValue = EE.lang.confirm_exit;
+		return EE.lang.confirm_exit;
+	}
+}
 $(document).ready(function () {
+
+	if(typeof isNavigatingAway === 'undefined') {
+		var isNavigatingAway
+	}
+
+	isNavigatingAway = false;
 
 	var publishForm = $("[data-publish] > form");
 	var ajaxRequest;
 	var debounceTimeout;
+	try {
+		sessionStorage.removeItem("preventNavigateAway");
+	} catch (e) {}
 
 	function debounceAjax(func, wait) {
 	    var result;
@@ -48,11 +63,38 @@ $(document).ready(function () {
 		});
 	}
 
+	//prevent navigating away
+	$('body').on('click', 'a', function(e) {
+		if (
+			sessionStorage.getItem("preventNavigateAway") == 'true' &&
+			$(this).attr('href') != null && 
+			$(this).attr('href') != '' && 
+			$(this).attr('href').indexOf('#') != 0  && 
+			$(this).attr('href').indexOf('javascript:') != 0 &&
+			$(this).attr('target') != '_blank' && 
+			(!e.target.closest('[data-publish]') || (typeof(e.target.closest('[data-publish]').length)!=='undefined' && !e.target.closest('[data-publish]').length))
+		) {
+			isNavigatingAway = confirm(EE.lang.confirm_exit);
+			return isNavigatingAway;
+		}
+	});
+
+	//prevent navigating away using browser buttons
+	
+	window.addEventListener('beforeunload', preventNavigateAway);
+	publishForm.on('submit', function(){
+		window.removeEventListener('beforeunload', preventNavigateAway);
+	});
+	
+
 	// Autosaving
 	if (EE.publish.autosave && EE.publish.autosave.interval) {
 		var autosaving = false;
 
 		publishForm.on("entry:startAutosave", function() {
+			try {
+				sessionStorage.setItem("preventNavigateAway", true);
+			} catch (e) {}
 			publishForm.trigger("entry:autosave");
 
 			if (autosaving) {
@@ -67,7 +109,7 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						var publishHeading = $('[data-publish] .form-btns-top h1');
+						var publishHeading = $('.main-nav__title h1');
 						publishHeading.find('.app-badge').remove();
 
 						if (result.error) {
@@ -75,6 +117,12 @@ $(document).ready(function () {
 						}
 						else if (result.success) {
 							publishHeading.append(result.success);
+							sessionStorage.removeItem("preventNavigateAway");
+
+							// Check if we're in an iframe, and emit appropriate events
+							if(window.self !== window.top) {
+								document.dispatchEvent(new CustomEvent('ee-pro-object-has-autosaved'));
+							}
 						}
 						else {
 							console.log('Autosave Failed');
@@ -87,7 +135,7 @@ $(document).ready(function () {
 		});
 
 		// Start autosave when something changes
-		var writeable = $('textarea, input').not(':password,:checkbox,:radio,:submit,:button,:hidden'),
+		var writeable = $('textarea, input, div.redactor-styles, div.ck-content').not(':password,:checkbox,:radio,:submit,:button,:hidden'),
 			changeable = $('select, :checkbox, :radio, :file');
 
 		writeable.on('keypress change', function(){publishForm.trigger("entry:startAutosave")});
@@ -104,22 +152,25 @@ $(document).ready(function () {
 		    preview_url    = $(iframe).data('url');
 
 		// Show that the preview is refreshing
-		$('.live-preview__preview-loader').addClass('open')
+		$('.live-preview__preview-loader').addClass('loaded');
 
 		ajaxRequest = $.ajax({
 			type: "POST",
 			dataType: 'html',
 			url: preview_url,
+			crossDomain: true,
+			beforeSend: function(request) {
+				request.setRequestHeader("Access-Control-Allow-Origin", window.location.origin);
+			},
 			data: publishForm.serialize(),
 			complete: function(xhr) {
 				if (xhr.responseText !== undefined) {
 					iframe.contentDocument.open();
 					iframe.contentDocument.write(xhr.responseText);
 					iframe.contentDocument.close();
-
-					// Hide the refreshing indicator
-					$('.live-preview__preview-loader').removeClass('open')
 				}
+				// Hide the refreshing indicator
+				$('.live-preview__preview-loader').removeClass('loaded');
 				ajaxRequest = null;
 			},
 		});
@@ -166,7 +217,7 @@ $(document).ready(function () {
 		// Move the publish form into the live preview container
 		container.append($(publishForm));
 
-		$(container).on('interact', 'input, textarea', function(e) {
+		$(container).on('interact', 'input, textarea, div.redactor-styles, div.ck-content', function(e) {
 			$('body').trigger('entry:preview', [225]);
 		});
 

@@ -90,10 +90,12 @@ $lang = array(
 
     'duration_ft_units_desc' => 'Determines the length of time being described when a content author enters a whole number like “42”.',
 
+    'valid_duration' => 'This field must contain duration in %s (or %s)',
+
     /* File */
     'file_ft_allowed_dirs' => 'Allowed Directory',
 
-    'file_ft_allowed_dirs_desc' => 'Default directory to store files uploaded with this field.',
+    'file_ft_allowed_dirs_desc' => 'Directory used by this field for storing and retrieving files.',
 
     'file_ft_cannot_find_file' => '<b>File not found.</b> We could not locate %s on the server.',
 

@@ -339,7 +339,7 @@ class ThemeInstaller
             $this->model_data['upload_destination'][strtolower($upload_destination->name)] = $upload_destination;
 
             foreach (directory_map($path) as $filename) {
-                if (! is_array($filename) && is_file($path . '/' . $filename)) {
+                if (! is_array($filename) && is_file($path . '/' . $filename) && $filename != 'index.html') {
                     $filepath = $path . '/' . $filename;
                     $time = time();
                     $file = ee('Model')->make('File');
@@ -421,7 +421,7 @@ class ThemeInstaller
                 $entry->month = date('m');
                 $entry->day = date('d');
                 $entry->entry_date = ee()->localize->now;
-
+                $entry->edit_date = ee()->localize->now;
                 $post_mock = array();
 
                 foreach ($entry_data->custom_fields as $key => $val) {

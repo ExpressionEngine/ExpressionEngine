@@ -62,6 +62,8 @@ $lang = [
 
     'request' => 'Request',
 
+    'online_form' => 'Online Form',
+
 ];
 
 // EOF

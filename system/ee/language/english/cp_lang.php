@@ -253,6 +253,8 @@ $lang = array(
 
     'ip_address' => 'IP Address',
 
+    'user_agent' => 'User Agent',
+
     'member_changed_email' => 'Changed email for "%s" (%d) from "%s" to "%s"',
 
     'member_changed_member_group' => 'Changed member group to "%s" for "%s" (%d)',
@@ -321,6 +323,8 @@ $lang = array(
     'recent_entries' => 'Recent Entries',
 
     'recent_members' => 'Recent Members',
+
+    'recent_templates' => 'Recent Templates',
 
     'results' => 'results',
 
@@ -469,6 +473,8 @@ $lang = array(
 
     'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">expressionengine.com</a> and download a fresh copy.',
 
+    'provide_valid_license' => 'You need to provide valid license key in order to use this feature.',
+
     /* CP Errors */
     '404_does_not_exist' => '404: Item does not exist',
 
@@ -605,6 +611,8 @@ $lang = array(
 
     'xhtml' => 'XHTML',
 
+    'cookies_functionality_consent_required' => 'In order to use all features of Control Panel, please opt in <a href="%s">Functionality Cookies consent</a>.',
+
     /* Members Menu */
 
     'new_member' => 'New Member',
@@ -672,6 +680,22 @@ $lang = array(
 
     'version' => 'Version',
 
+    'enter_site_license' => 'Enter Site License',
+
+    'your_license_is' => 'Your license is:',
+
+    'license_trial' => 'Trial',
+    'license_expired' => 'Expired',
+    'license_invalid' => 'Unlicensed',
+    'license_invalid_domain' => 'Invalid Domain',
+    'license_invalid_license_key' => 'Invalid License Key',
+    'license_missing_license_key' => 'Missing License Key',
+    'license_na' => 'Unknown',
+
+    'purchase_pro_license' => 'Purchase Pro License',
+    'renew_pro_license' => 'Renew Pro License',
+    'update_site_domain' => 'Update Site Domain',
+
     /* confirm removal modal */
     'btn_confirm_and_remove' => 'Confirm, and Remove',
 
@@ -736,7 +760,7 @@ $lang = array(
 
     'reindex_not_needed_desc' => 'Your search index is up-to-date!',
 
-    'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL . '/cp/utilities/reindex.html">user guide</a> for more details.',
+    'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL . '/control-panel/utilities.html#search-reindex">user guide</a> for more details.',
 
     /* Permissions */
 

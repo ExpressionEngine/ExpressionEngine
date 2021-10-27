@@ -99,7 +99,7 @@ var DropdownController = function () {
   });
 
   function hideAllDropdowns(excludeDropdown) {
-    $('.has-open-dropdown').removeClass('has-open-dropdown')
+    $('.has-open-dropdown').removeClass('has-open-dropdown');
     $('.dropdown--open').not(excludeDropdown).removeClass('dropdown--open');
     $('.dropdown-open').removeClass('dropdown-open');
   }

@@ -382,13 +382,13 @@ context('Entry filtering', () => {
 			cy.get('input[title="select all"]').click()
 			cy.get('select').select('Delete')
 			cy.get('button[value="submit"]').click()
-			cy.get('input[value="Confirm and Delete"]').click()
+			cy.get('[value="Confirm and Delete"]').click()
 
 			cy.visit('admin.php?/cp/channels')
 			cy.get('.ctrl-all').click() //select all channels
 			cy.get('select').select('Delete')
 			cy.get('button[value="submit"]').click()
-			cy.get('input[value="Confirm and Delete"]').click()
+			cy.get('[value="Confirm and Delete"]').click()
 
 			cy.visit('admin.php?/cp/members')
 			cy.get('input[data-confirm="Member: <b>user2</b>"]').click()
@@ -396,14 +396,14 @@ context('Entry filtering', () => {
 			cy.get('button[value="submit"]').click()
 			cy.wait(800)
 			cy.get('input[name="verify_password"]').type('password')
-			cy.get('input[value="Confirm and Delete"]').click()
+			cy.get('[value="Confirm and Delete"]').click()
 
 			cy.visit('admin.php?/cp/fields')
 			cy.get('.ctrl-all').click()
 			cy.get('select').select('Delete')
 			cy.get('button[value="submit"]').click()
 			cy.wait(800)
-			cy.get('input[value="Confirm and Delete"]').eq(1).click()
+			cy.get('[value="Confirm and Delete"]').eq(1).click()
 
 		})
 

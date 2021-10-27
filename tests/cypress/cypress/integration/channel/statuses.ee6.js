@@ -43,7 +43,7 @@ context('Statuses', () => {
             page.get('modal').contains(statuses[2], {matchCase: false})
             
             //page.get('modal_submit_button').click()AJ
-            cy.get('input[value="Confirm, and Remove"]').click()
+            cy.get('[value="Confirm, and Remove"]').click()
             cy.wait("@ajax");
             cy.hasNoErrors()
 

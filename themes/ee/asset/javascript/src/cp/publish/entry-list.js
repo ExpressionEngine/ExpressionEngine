@@ -10,10 +10,13 @@
 $(document).ready(function () {
 
 	var searching = null;
+
+	var searchingTimeout = null
+
 	if (typeof(EE.viewManager)!=='undefined') {
 		var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
 	}
-	var form_selector = '.ee-main__content .container > .panel > .tbl-ctrls > form';
+	var form_selector = '.container > .panel > .tbl-ctrls > form';
 	var replaceData = function(data) {
 		$(form_selector).parents('.container').first().html(data.html);
 
@@ -85,18 +88,22 @@ $(document).ready(function () {
 	});
 
 	// Typing into the search form
-	$('body').on('keyup', 'input[name="filter_by_keyword"]', _.debounce(function() {
-
+	$('body').on('keyup', 'input[name="filter_by_keyword"]', function() {
 		var val = $(this).val();
-		//only submit when search is empty or min. 3 chars
-		if (val.length == 0 || val.length >= 3) {
-			var url = typeof($(form_selector).data('search-url'))!='undefined' ? $(form_selector).data('search-url') : $(form_selector).attr('action');
-			url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + val + '$2');
+		clearTimeout(searchingTimeout)
+		searchingTimeout = setTimeout(function() {
+			//only submit when search is empty or min. 3 chars
+			if (val.length == 0 || val.length >= 3) {
+				var url = typeof($(form_selector).data('search-url'))!='undefined' ? $(form_selector).data('search-url') : $(form_selector).attr('action');
+				url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + val + '$2');
 
-			searchEntries('POST', url)
-		}
+				searchEntries('POST', url)
 
-	}, 300));
+				searchingTimeout = null
+			}
+
+		}, 1000)
+	});
 
 	//changind the search scope
 	$('body').on('change', 'input[name="search_in"]', function() {

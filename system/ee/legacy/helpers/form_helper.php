@@ -236,8 +236,12 @@ function cp_form_submit($value, $work_text, $name = null, $invalid = false, $des
     if ($name) {
         $name = ' name="' . $name . '"';
     }
+    $shortcut = '';
+    if (stripos($value, lang('save')) !== false) {
+        $shortcut = ' data-shortcut="s"';
+    }
 
-    return '<input class="' . $class . '" type="submit"' . $name . ' value="' . $btn_text . '" data-submit-text="' . lang($value) . '" data-work-text="' . lang($work_text) . '"' . $disable . '>';
+    return '<button class="' . $class . '" type="submit"' . $name . $shortcut . ' value="' . $btn_text . '" data-submit-text="' . lang($value) . '" data-work-text="' . lang($work_text) . '"' . $disable . '>' . $btn_text . '</button>';
 }
 
 /**

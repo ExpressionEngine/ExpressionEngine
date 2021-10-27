@@ -125,7 +125,7 @@ class Auth
         $authed = $this->_retrieve_http_basic();
 
         if ($authed !== false) {
-            $member = ee('Model')->get('Member', $authed->member('member_id'))->first();
+            $member = ee('Model')->get('Member', $authed->member('member_id'))->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
 
             $authed = false;
 
@@ -619,7 +619,7 @@ class Auth_result
     public function has_permission($perm)
     {
         if (empty($this->permissions)) {
-            $member = ee('Model')->get('Member', $this->member('member_id'))->first();
+            $member = ee('Model')->get('Member', $this->member('member_id'))->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
 
             if ($member->role_id == 1) {
                 return true;

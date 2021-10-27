@@ -42,7 +42,7 @@ EE.cp.formValidation = {
 			that = this;
 
 		// These are the text input selectors we listen to for activity
-		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea';
+		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea, div.redactor-styles, div.ck-content';
 		this._buttonSelector = '.form-btns .button';
 
 		form.each(function(index, el) {
@@ -365,9 +365,9 @@ EE.cp.formValidation = {
 					thisButton = $(thisButton);
 					if (!thisButton.hasClass('dropdown-toggle')) {
 						if (thisButton.is('input')) {
-							thisButton.attr('value', thisButton.data('submit-text'));
+							thisButton.attr('value', decodeURIComponent(thisButton.data('submit-text')));
 						} else if (thisButton.is('button')) {
-							thisButton.text(thisButton.data('submit-text'));
+							thisButton.html(decodeURIComponent(thisButton.data('submit-text')));
 						}
 					}
 				});
