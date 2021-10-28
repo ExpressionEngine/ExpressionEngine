@@ -603,7 +603,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-webmaster_email' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'webmaster_email webmaster_email_desc outgoing_email',
                         'command_title' => 'webmaster_email'
@@ -612,7 +612,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-webmaster_name' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'webmaster_name webmaster_name_desc outgoing_email',
                         'command_title' => 'webmaster_name'
@@ -621,7 +621,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-email_charset' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'email_charset outgoing_email',
                         'command_title' => 'email_charset'
@@ -630,7 +630,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-mail_protocol' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'mail_protocol_desc mail_protocol outgoing_email smtp_options',
                         'command_title' => 'mail_protocol'
