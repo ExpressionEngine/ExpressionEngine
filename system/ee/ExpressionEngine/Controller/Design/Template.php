@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -238,7 +238,7 @@ class Template extends AbstractDesignController
                         ->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
                         ->defer();
 
-                    if (ee()->input->post('submit') == 'finish') {
+                    if (ee()->input->post('submit') == 'save_and_close') {
                         ee()->session->set_flashdata('template_id', $template->template_id);
                         ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
                     }
@@ -260,14 +260,15 @@ class Template extends AbstractDesignController
                 array(
                     'name' => 'submit',
                     'type' => 'submit',
-                    'value' => 'edit',
+                    'value' => 'save',
+                    'shortcut' => 's',
                     'text' => trim(sprintf(lang('btn_save'), '')),
                     'working' => 'btn_saving'
                 ),
                 array(
                     'name' => 'submit',
                     'type' => 'submit',
-                    'value' => 'finish',
+                    'value' => 'save_and_close',
                     'text' => 'btn_save_and_close',
                     'working' => 'btn_saving'
                 ),
@@ -293,10 +294,10 @@ class Template extends AbstractDesignController
             $view_url .= $group->group_name . (($template->template_name == 'index') ? '' : '/' . $template->template_name);
         }
 
-        $vars['action_button'] = [
+        $vars['buttons'][] = [
             'text' => 'view_rendered',
             'href' => $view_url,
-            'rel' => 'external'
+            'attrs' => 'rel="external"'
         ];
 
         $vars['view_url'] = $view_url;
@@ -621,7 +622,11 @@ class Template extends AbstractDesignController
     private function validateTemplateRoute(TemplateModel $template)
     {
         if (! ee()->input->post('route')) {
-            $template->TemplateRoute = null;
+            // before erasing the route,
+            // make sure is was not assigned after template was opened
+            if (ee()->input->post('orig_route') !== '' ) {
+                $template->TemplateRoute = null;
+            }
 
             return false;
         }
@@ -897,6 +902,20 @@ class Template extends AbstractDesignController
             )
         );
 
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $sections['pro_settings'][] = array(
+                'title' => 'enable_frontedit',
+                'desc' => 'enable_frontedit_tmpl_desc',
+                'fields' => array(
+                    'enable_frontedit' => array(
+                        'type' => 'yes_no',
+                        'value' => $template->enable_frontedit
+                    )
+                )
+            );
+        }
+
         $html = '';
 
         foreach ($sections as $name => $settings) {
@@ -989,6 +1008,10 @@ class Template extends AbstractDesignController
             'title' => 'template_route_override',
             'desc' => 'template_route_override_desc',
             'fields' => array(
+                'orig_route' => array(
+                    'type' => 'hidden',
+                    'value' => $route->route
+                ),
                 'route' => array(
                     'type' => 'text',
                     'value' => $route->route

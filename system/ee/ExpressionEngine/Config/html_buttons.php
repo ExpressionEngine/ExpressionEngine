@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -71,7 +71,7 @@ return array(
             'tag_name' => lang('html_btn_anchor'),
             'tag_open' => '<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>',
             'tag_close' => '</a>',
-            'accesskey' => 'a',
+            'accesskey' => 'k',
             'classname' => 'html-link'
         ),
         'picture' => array(

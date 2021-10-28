@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -183,9 +183,9 @@ EE.cp.datePicker = {
 
 					if ($(that.element).val()) {
 						var d = new Date($(that.element).data('timestamp') * 1000);
-						d.setYear(that.year);
-						d.setMonth(that.month);
-						d.setDate($(this).text());
+						var lastDayOfCurrentMonth = new Date(that.year, that.month + 1, 0).getDate()
+						var dateToSet = lastDayOfCurrentMonth <= $(this).text() ? lastDayOfCurrentMonth : $(this).text()
+						d = new Date(that.year, that.month, dateToSet)
 					} else {
 						var d = new Date(that.year, that.month, $(this).text());
 					}
@@ -458,6 +458,26 @@ $(document).ready(function () {
 	}
 
 	$(document).on('focus', 'input,select,button', function(e) {
+		EE.cp.datePicker.bind($('input[rel="date-picker"]').not('.grid-input-form input'));
+
+		// Date fields inside a Grid need to be bound when a new row is added
+		if (typeof Grid !== 'undefined')
+		{
+			Grid.bind('date', 'display', function(cell)
+			{
+				EE.cp.datePicker.bind($('input[rel="date-picker"]', cell));
+			});
+		}
+
+		// Date fields inside a Fluid Field need to be bound when a new field is added
+		if (typeof FluidField === "object")
+		{
+			FluidField.on('date', 'add', function(field)
+			{
+				EE.cp.datePicker.bind($('input[rel="date-picker"]', field));
+			});
+		}
+
 		if ( ! ($(e.target).attr('rel') == 'date-picker')
 			&&  ! $(e.target).closest('.date-picker-wrap').length) {
 			$('.date-picker-wrap').hide();

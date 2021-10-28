@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -41,7 +41,7 @@ class Homepage extends CP_Controller
             'dashboard' => $dashboard_layout->generateDashboardHtml()
         ];
 
-        if (IS_PRO) {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
             $vars['header']['toolbar_items'] = array(
                 'settings' => array(
                     'href' => ee('CP/URL')->make('pro/dashboard/layout/' . $member->member_id),
@@ -147,7 +147,7 @@ class Homepage extends CP_Controller
     {
         $viewmode = ee()->input->post('ee_cp_viewmode');
         if (in_array($viewmode, ['classic', 'jumpmenu'])) {
-            ee()->input->set_cookie('ee_cp_viewmode', $viewmode, 99999999);
+            ee()->input->set_cookie('ee_cp_viewmode', $viewmode, 31104000);
         }
         ee()->functions->redirect(ee('CP/URL')->make('homepage'));
     }
@@ -168,7 +168,7 @@ class Homepage extends CP_Controller
             $viewmode = 'classic';
         }
 
-        ee()->input->set_cookie('ee_cp_viewmode', $viewmode, 99999999);
+        ee()->input->set_cookie('ee_cp_viewmode', $viewmode, 31104000);
 
         ee()->functions->redirect(ee('CP/URL')->make('homepage'));
     }
@@ -180,7 +180,16 @@ class Homepage extends CP_Controller
      */
     public function toggleSidebarNav()
     {
-        ee()->input->set_cookie('collapsed_nav', (int) ee()->input->get('collapsed'), 99999999);
+        ee()->input->set_cookie('collapsed_nav', (int) ee()->input->get('collapsed'), 31104000);
+
+        ee()->output->send_ajax_response(['success']);
+    }
+
+    public function dismissBanner()
+    {
+        $member = ee()->session->getMember();
+        $member->dismissed_pro_banner = 'y';
+        $member->save();
 
         ee()->output->send_ajax_response(['success']);
     }

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -18,6 +18,8 @@ class RoleSetting extends Model
 {
     protected static $_primary_key = 'id';
     protected static $_table_name = 'role_settings';
+
+    protected static $_hook_id = 'role_setting';
 
     protected static $_typed_columns = [
         'role_id' => 'int',

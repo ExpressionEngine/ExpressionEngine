@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -199,6 +199,14 @@ class Addons extends CP_Controller
 
         // Sort the add-ons alphabetically
         ksort($addons);
+        // Ensure Pro is listed first
+        if (isset($addons['pro'])) {
+            $pro = $addons['pro'];
+            unset($addons['pro']);
+            $addons = array_reverse($addons, true);
+            $addons['pro'] = $pro;
+            $addons = array_reverse($addons, true);
+        }
 
         $vars['uninstalled'] = array_filter($addons, function ($addon) {
             return ! $addon['installed'];
@@ -265,6 +273,7 @@ class Addons extends CP_Controller
                 }
 
                 $addon['icon_url'] = $info->getIconUrl();
+                $addon['license_status'] = $info->checkCachedLicenseResponse();
 
                 $addons[$name] = $addon;
             }
@@ -296,7 +305,7 @@ class Addons extends CP_Controller
         );
 
         foreach ($addons as $addon) {
-            $addon_info = ee('Addon')->get($addon);
+            $addon_info = (IS_PRO) ? ee('pro:Addon')->get($addon) : ee('Addon')->get($addon);
             $party = ($addon_info->getAuthor() == 'ExpressionEngine') ? 'first' : 'third';
 
             $addon_info->updateConsentRequests();
@@ -408,9 +417,13 @@ class Addons extends CP_Controller
                 }
             }
 
-            $addon_info->updateDashboardWidgets();
+            if (IS_PRO) {
+                $addon_info->updateDashboardWidgets();
+                $addon_info->updateProlets();
+            }
         }
 
+        ee()->cache->file->delete('/addons-status');
         ee('CP/JumpMenu')->clearAllCaches();
 
         foreach (array('first', 'third') as $party) {
@@ -488,7 +501,7 @@ class Addons extends CP_Controller
 
         if ($can_install) {
             foreach ($addons as $addon) {
-                $info = ee('Addon')->get($addon);
+                $info = (IS_PRO) ? ee('pro:Addon')->get($addon) : ee('Addon')->get($addon);
                 ee()->load->add_package_path($info->getPath());
 
                 $party = ($info->getAuthor() == 'ExpressionEngine') ? 'first' : 'third';
@@ -550,7 +563,10 @@ class Addons extends CP_Controller
                     }
                 }
 
-                $info->updateDashboardWidgets();
+                if (IS_PRO) {
+                    $info->updateDashboardWidgets();
+                    $info->updateProlets();
+                }
 
                 ee()->load->remove_package_path($info->getPath());
             }
@@ -567,6 +583,7 @@ class Addons extends CP_Controller
             }
         }
 
+        ee()->cache->file->delete('/addons-status');
         ee('CP/JumpMenu')->clearAllCaches();
 
         $return = $this->base_url;
@@ -602,7 +619,7 @@ class Addons extends CP_Controller
         );
 
         foreach ($addons as $addon) {
-            $info = ee('Addon')->get($addon);
+            $info = (IS_PRO) ? ee('pro:Addon')->get($addon) : ee('Addon')->get($addon);
 
             $info->removeConsentRequests();
 
@@ -649,7 +666,10 @@ class Addons extends CP_Controller
                 }
             }
 
-            $info->updateDashboardWidgets(true);
+            if (IS_PRO && $addon != 'pro') {
+                $info->updateDashboardWidgets(true);
+                $info->updateProlets(true);
+            }
         }
 
         ee('CP/JumpMenu')->clearAllCaches();
@@ -695,13 +715,42 @@ class Addons extends CP_Controller
             $method = (ee()->input->get_post('method') !== false) ? ee()->input->get_post('method') : 'index';
         }
 
+        $info = ee('Addon')->get($addon);
+        $licenseResponse = $info->checkCachedLicenseResponse();
+        $licenseStatusBadge = '';
+        switch ($licenseResponse) {
+            case 'trial':
+                $licenseStatusBadge = '<a class="license-status-badge license-status-trial" href="https://expressionengine.com/store/licenses" target="_blank">' . lang('license_trial') . '</a>';
+                break;
+            case 'update_available':
+                $licenseStatusBadge = '<a class="license-status-badge license-status-update_available" href="https://expressionengine.com/store/licenses#update-available" target="_blank">' . lang('license_update_available') . '</a>';
+                break;
+            case 'invalid':
+                $licenseStatusBadge = '<a class="license-status-badge license-status-invalid" href="https://expressionengine.com/store/licenses" target="_blank">' . lang('license_invalid') . '</a>';
+                //Pro got it's own message
+                if ($addon !== 'pro') {
+                    ee('CP/Alert')->makeBanner('license-error')
+                        ->asIssue()
+                        ->canClose()
+                        ->withTitle(lang('unlicensed_addon'))
+                        ->addToBody(sprintf(lang('unlicensed_addon_message'), $info->getName()))
+                        ->now();
+                }
+                break;
+            case 'expired':
+                $licenseStatusBadge = '<a class="license-status-badge license-status-expired" href="https://expressionengine.com/store/licenses" target="_blank">' . lang('license_license_expired') . '</a>';
+                break;
+            default:
+                break;
+        }
+
         // Module
         $module = $this->getModule($addon);
         if (! empty($module) && $module['installed'] === true) {
             $data = $this->getModuleSettings($addon, $method, array_slice(func_get_args(), 2));
 
             $addon_header = (isset(ee()->cp->header)) ? ee()->cp->header : ee()->view->header;
-            $header = array('title' => $module['name']);
+            $header = array('title' => $module['name'] . ' ' . $licenseStatusBadge);
 
             if (isset($addon_header['toolbar_items'])) {
                 $header['toolbar_items'] = $addon_header['toolbar_items'];
@@ -757,7 +806,7 @@ class Addons extends CP_Controller
 
                     $vars['_module_cp_body'] = $this->getExtensionSettings($addon);
                     $breadcrumb[ee('CP/URL')->make('addons/settings/' . $addon)->compile()] = $extension['name'];
-                    ee()->view->cp_heading = $extension['name'] . ' ' . lang('configuration');
+                    ee()->view->cp_heading = $extension['name'] . ' ' . lang('configuration') . ' ' . $licenseStatusBadge;
                 }
             }
         }

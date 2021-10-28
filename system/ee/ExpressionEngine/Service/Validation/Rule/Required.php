@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,6 +21,15 @@ class Required extends ValidationRule
     {
         if (! is_array($value)) {
             $value = trim($value);
+        }
+
+        if (is_array($value)) {
+            $value = array_filter($value, function($val) { 
+                return $val !== '';
+            });
+            if (empty($value)) {
+                return $this->stop();
+            }
         }
 
         if ($value === '' or is_null($value)) {

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -139,6 +139,13 @@ class Members extends AbstractDesignController
                 $version_url = ee()->cp->masked_url(DOC_URL . 'installation/version_notes_4.2.2.html');
 
                 ee()->logger->developer('As of 4.2.2, member templates should be in folder: system/user/templates/_themes/member/.  <a href="' . $version_url . '">Please see 4.2.2 version notes.</a>', true);
+            }
+        } else {
+            if (ee('Permission')->isSuperAdmin()) {
+                ee('CP/Alert')->makeBanner('message-warning')
+                    ->asWarning()
+                    ->addToBody(lang('mbr_tmpl_should_be_in') . ' ' . PATH_THIRD_THEMES . 'member')
+                    ->now();
             }
         }
 

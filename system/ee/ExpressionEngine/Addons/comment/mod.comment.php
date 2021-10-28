@@ -10,7 +10,7 @@ use ExpressionEngine\Addons\Comment\Service\Variables\Comment as CommentVars;
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -508,13 +508,52 @@ class Comment
                 $comment
             );
         }
+        
+        // We could do this in one fell, performant swoop with:
+        //
+        // $tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
+        //
+        // But we have a legacy extension hook here that fires on EVERY row's tagdata...
+        // So we need to loop it for now, deprecate it, and change/remove it in v5
+        $return = '';
 
-        $tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
+        // Custom parse {switch=} until we can use parse_variables()
+        if (preg_match_all("/".LD."(switch\s*=.+?)".RD."/i", ee()->TMPL->tagdata, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
+                if (isset($sparam['switch'])) {
+                    $sopt = explode("|", $sparam['switch']);
+                    $switch[$match[1]] = $sopt;
+                }
+            }
+        }
+
+        $count = 0;
+        foreach ($vars as $variables) {
+            $tagdata = ee()->TMPL->tagdata;
+
+            // -------------------------------------------
+            // 'comment_entries_tagdata' hook.
+            //  - Modify and play with the tagdata before everyone else
+            //
+            if (ee()->extensions->active_hook('comment_entries_tagdata') === TRUE) {
+                $tagdata = ee()->extensions->call('comment_entries_tagdata', $tagdata, $variables);
+                if (ee()->extensions->end_script === TRUE) return $tagdata;
+            }
+            //
+            // -------------------------------------------
+
+            $count++;
+            foreach ($switch as $key => $val) {
+                $variables[$key] = $switch[$key][($count + count($val) -1) % count($val)];
+            }
+            $return .= ee()->TMPL->parse_variables_row($tagdata, $variables);
+        }
 
         if ($enabled['pagination']) {
-            return $pagination->render($tagdata);
+            return $pagination->render($return);
         } else {
-            return $tagdadta;
+            return $return;
         }
     }
 
@@ -806,11 +845,10 @@ class Comment
         $cond['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
         $cond['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
 
-        if (! ee('Captcha')->shouldRequireCaptcha()) {
-            $cond['captcha'] = false;
-        } else {
-            $cond['captcha'] = (ee()->config->item('captcha_require_members') == 'y' or
-                                (ee()->config->item('captcha_require_members') == 'n' and ee()->session->userdata('member_id') == 0)) ? true : false;
+        $cond['captcha'] = ee('Captcha')->shouldRequireCaptcha();
+
+        if ($cond['captcha'] && ee()->config->item('use_recaptcha') == 'y') {
+            $tagdata = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), $tagdata);
         }
 
         $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
@@ -1227,7 +1265,6 @@ class Comment
         if (! isset($_POST['PRV']) or $_POST['PRV'] == '') {
             exit('Preview template not specified in your comment form tag');
         }
-
         // Clean return value- segments only
         $clean_return = str_replace(ee()->functions->fetch_site_index(), '', $_POST['RET']);
 
@@ -1365,30 +1402,30 @@ class Comment
                 ee()->db->where('channel_titles.status', 'closed');
         */
         $sql = "SELECT exp_channel_titles.title,
-				exp_channel_titles.url_title,
-				exp_channel_titles.entry_id,
-				exp_channel_titles.channel_id,
-				exp_channel_titles.author_id,
-				exp_channel_titles.allow_comments,
-				exp_channel_titles.entry_date,
-				exp_channel_titles.comment_expiration_date,
-				exp_channels.channel_title,
-				exp_channels.comment_system_enabled,
-				exp_channels.comment_max_chars,
-				exp_channels.comment_timelock,
-				exp_channels.comment_require_membership,
-				exp_channels.comment_moderate,
-				exp_channels.comment_require_email,
-				exp_channels.comment_notify,
-				exp_channels.comment_notify_authors,
-				exp_channels.comment_notify_emails,
-				exp_channels.comment_expiration,
-				exp_channels.channel_url,
-				exp_channels.comment_url,
-				exp_channels.site_id
-			FROM	exp_channel_titles, exp_channels
-			WHERE	exp_channel_titles.channel_id = exp_channels.channel_id
-			AND	exp_channel_titles.entry_id = '" . ee()->db->escape_str($_POST['entry_id']) . "'";
+                exp_channel_titles.url_title,
+                exp_channel_titles.entry_id,
+                exp_channel_titles.channel_id,
+                exp_channel_titles.author_id,
+                exp_channel_titles.allow_comments,
+                exp_channel_titles.entry_date,
+                exp_channel_titles.comment_expiration_date,
+                exp_channels.channel_title,
+                exp_channels.comment_system_enabled,
+                exp_channels.comment_max_chars,
+                exp_channels.comment_timelock,
+                exp_channels.comment_require_membership,
+                exp_channels.comment_moderate,
+                exp_channels.comment_require_email,
+                exp_channels.comment_notify,
+                exp_channels.comment_notify_authors,
+                exp_channels.comment_notify_emails,
+                exp_channels.comment_expiration,
+                exp_channels.channel_url,
+                exp_channels.comment_url,
+                exp_channels.site_id
+            FROM	exp_channel_titles, exp_channels
+            WHERE	exp_channel_titles.channel_id = exp_channels.channel_id
+            AND	exp_channel_titles.entry_id = '" . ee()->db->escape_str($_POST['entry_id']) . "'";
 
         //  Added entry_status param, so it is possible to post to closed title
         //AND	exp_channel_titles.status != 'closed' ";
@@ -1587,8 +1624,10 @@ class Comment
         /** ----------------------------------------*/
         if (ee('Captcha')->shouldRequireCaptcha()) {
             if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
-                return ee()->output->show_user_error('submission', ee()->lang->line('captcha_required'));
+                $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
+                return ee()->output->show_user_error('submission', $captcha_error);
             } else {
+                $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_incorrect');
                 ee()->db->where('word', $_POST['captcha']);
                 ee()->db->where('ip_address', ee()->input->ip_address());
                 ee()->db->where('date > UNIX_TIMESTAMP()-7200', null, false);
@@ -1596,7 +1635,7 @@ class Comment
                 $result = ee()->db->count_all_results('captcha');
 
                 if ($result == 0) {
-                    return ee()->output->show_user_error('submission', ee()->lang->line('captcha_incorrect'));
+                    return ee()->output->show_user_error('submission', $captcha_error);
                 }
 
                 // @TODO: AR
@@ -1684,19 +1723,19 @@ class Comment
         /**  Set cookies
         /** ----------------------------------------*/
         if ($notify == 'y') {
-            ee()->input->set_cookie('notify_me', 'yes', 60 * 60 * 24 * 365);
+            ee()->input->set_cookie('notify_me', 'yes');
         } else {
-            ee()->input->set_cookie('notify_me', 'no', 60 * 60 * 24 * 365);
+            ee()->input->set_cookie('notify_me', 'no');
         }
 
         if (ee()->input->post('save_info')) {
-            ee()->input->set_cookie('save_info', 'yes', 60 * 60 * 24 * 365);
-            ee('Cookie')->setSignedCookie('my_name', $_POST['name'], 60 * 60 * 24 * 365);
-            ee('Cookie')->setSignedCookie('my_email', $_POST['email'], 60 * 60 * 24 * 365);
-            ee('Cookie')->setSignedCookie('my_url', $_POST['url'], 60 * 60 * 24 * 365);
-            ee('Cookie')->setSignedCookie('my_location', $_POST['location'], 60 * 60 * 24 * 365);
+            ee()->input->set_cookie('save_info', 'yes');
+            ee('Cookie')->setSignedCookie('my_name', $_POST['name'], 31104000);
+            ee('Cookie')->setSignedCookie('my_email', $_POST['email'], 31104000);
+            ee('Cookie')->setSignedCookie('my_url', $_POST['url'], 31104000);
+            ee('Cookie')->setSignedCookie('my_location', $_POST['location'], 31104000);
         } else {
-            ee()->input->set_cookie('save_info', 'no', 60 * 60 * 24 * 365);
+            ee()->input->set_cookie('save_info', 'no');
             ee()->input->delete_cookie('my_name');
             ee()->input->delete_cookie('my_email');
             ee()->input->delete_cookie('my_url');
@@ -1763,8 +1802,8 @@ class Comment
 
         // Bleh- really need a conditional for if they are subscribed
 
-        $sub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&ret=' . ee()->uri->uri_string();
-        $unsub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&type=unsubscribe' . '&ret=' . ee()->uri->uri_string();
+        $sub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&ret=' . ee()->uri->uri_string() .'&csrf_token=' . CSRF_TOKEN;
+        $unsub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&type=unsubscribe' . '&ret=' . ee()->uri->uri_string() . '&csrf_token=' . CSRF_TOKEN;
 
         $data[] = array('subscribe_link' => $sub_link, 'unsubscribe_link' => $unsub_link, 'subscribed' => $subscribed);
 
@@ -1848,6 +1887,9 @@ class Comment
      */
     public function comment_subscribe()
     {
+        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token')!==CSRF_TOKEN) {
+            show_error(lang('unauthorized_access'));
+        }
         ee()->lang->loadfile('comment');
 
         $id = ee()->input->get('entry_id');
@@ -1939,8 +1981,14 @@ class Comment
      */
     public function edit_comment($ajax_request = true)
     {
-        @header("Content-type: text/html; charset=UTF-8");
+        /*
+        This check is needed because otherwise, links could be created to CSRF and edit comments.
+        */
+        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token')!==CSRF_TOKEN) {
+            show_error(lang('unauthorized_access'));
+        }
 
+        @header("Content-type: text/html; charset=UTF-8");
         $unauthorized = ee()->lang->line('not_authorized');
 
         if (ee()->input->get_post('comment_id') === false or ((ee()->input->get_post('comment') === false or ee()->input->get_post('comment') == '') && ee()->input->get_post('status') != 'close')) {
@@ -2043,69 +2091,69 @@ class Comment
         $script = <<<CMT_EDIT_SCR
 $.fn.CommentEditor = function(options) {
 
-	var OPT;
+    var OPT;
 
-	OPT = $.extend({
-		url: "{$ajax_url}",
-		comment_body: '.comment_body',
-		showEditor: '.edit_link',
-		hideEditor: '.cancel_edit',
-		saveComment: '.submit_edit',
-		closeComment: '.mod_link'
-	}, options);
+    OPT = $.extend({
+        url: "{$ajax_url}",
+        comment_body: '.comment_body',
+        showEditor: '.edit_link',
+        hideEditor: '.cancel_edit',
+        saveComment: '.submit_edit',
+        closeComment: '.mod_link'
+    }, options);
 
-	var view_elements = [OPT.comment_body, OPT.showEditor, OPT.closeComment].join(','),
-		edit_elements = '.editCommentBox',
-		csrf_token = '{csrf_token}';
+    var view_elements = [OPT.comment_body, OPT.showEditor, OPT.closeComment].join(','),
+        edit_elements = '.editCommentBox',
+        csrf_token = '{csrf_token}';
 
-	return this.each(function() {
-		var id = this.id.replace('comment_', ''),
-		parent = $(this);
+    return this.each(function() {
+        var id = this.id.replace('comment_', ''),
+        parent = $(this);
 
-		parent.find(OPT.showEditor).click(function(e) { e.preventDefault(); showEditor(id); });
-		parent.find(OPT.hideEditor).click(function(e) { e.preventDefault(); hideEditor(id); });
-		parent.find(OPT.saveComment).click(function(e) { e.preventDefault(); saveComment(id); });
-		parent.find(OPT.closeComment).click(function(e) { e.preventDefault(); closeComment(id); });
-	});
+        parent.find(OPT.showEditor).click(function(e) { e.preventDefault(); showEditor(id); });
+        parent.find(OPT.hideEditor).click(function(e) { e.preventDefault(); hideEditor(id); });
+        parent.find(OPT.saveComment).click(function(e) { e.preventDefault(); saveComment(id); });
+        parent.find(OPT.closeComment).click(function(e) { e.preventDefault(); closeComment(id); });
+    });
 
-	function showEditor(id) {
-		$("#comment_"+id)
-			.find(view_elements).hide().end()
-			.find(edit_elements).show().end();
-	}
+    function showEditor(id) {
+        $("#comment_"+id)
+            .find(view_elements).hide().end()
+            .find(edit_elements).show().end();
+    }
 
-	function hideEditor(id) {
-		$("#comment_"+id)
-			.find(view_elements).show().end()
-			.find(edit_elements).hide();
-	}
+    function hideEditor(id) {
+        $("#comment_"+id)
+            .find(view_elements).show().end()
+            .find(edit_elements).hide();
+    }
 
-	function closeComment(id) {
-		var data = {status: "close", comment_id: id, csrf_token: csrf_token};
+    function closeComment(id) {
+        var data = {status: "close", comment_id: id, csrf_token: csrf_token};
 
-		$.post(OPT.url, data, function (res) {
-			if (res.error) {
-				return $.error('Could not moderate comment.');
-			}
+        $.post(OPT.url, data, function (res) {
+            if (res.error) {
+                return $.error('Could not moderate comment.');
+            }
 
-			$('#comment_' + id).hide();
-	   });
-	}
+            $('#comment_' + id).hide();
+       });
+    }
 
-	function saveComment(id) {
-		var content = $("#comment_"+id).find('.editCommentBox'+' textarea').val(),
-			data = {comment: content, comment_id: id, csrf_token: csrf_token};
+    function saveComment(id) {
+        var content = $("#comment_"+id).find('.editCommentBox'+' textarea').val(),
+            data = {comment: content, comment_id: id, csrf_token: csrf_token};
 
-		$.post(OPT.url, data, function (res) {
-			if (res.error) {
-				hideEditor(id);
-				return $.error('Could not save comment.');
-			}
+        $.post(OPT.url, data, function (res) {
+            if (res.error) {
+                hideEditor(id);
+                return $.error('Could not save comment.');
+            }
 
-			$("#comment_"+id).find('.comment_body').html(res.comment);
-			hideEditor(id);
-		});
-	}
+            $("#comment_"+id).find('.comment_body').html(res.comment);
+            hideEditor(id);
+        });
+    }
 };
 
 
@@ -2134,7 +2182,7 @@ CMT_EDIT_SCR;
      */
     public function ajax_edit_url()
     {
-        $url = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Comment', 'edit_comment');
+        $url = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Comment', 'edit_comment') . '&csrf_token=' . CSRF_TOKEN;
 
         return $url;
     }

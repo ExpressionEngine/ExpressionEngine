@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -172,7 +172,7 @@ class Channels extends AbstractChannelsController
     /**
      * Channel creation/edit form
      *
-     * @param	int	$channel_id	ID of Channel to edit
+     * @param   int $channel_id ID of Channel to edit
      */
     private function form($channel_id = null)
     {
@@ -185,10 +185,10 @@ class Channels extends AbstractChannelsController
             ]);
 
             ee()->javascript->output('
-				$("input[name=channel_title]").bind("keyup keydown", function() {
-					$(this).ee_url_title("input[name=channel_name]");
-				});
-			');
+                $("input[name=channel_title]").bind("keyup keydown", function() {
+                    $(this).ee_url_title("input[name=channel_name]");
+                });
+            ');
 
             $alert_key = 'created';
             ee()->view->cp_page_title = lang('create_new_channel');
@@ -301,7 +301,7 @@ class Channels extends AbstractChannelsController
         ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
         ee()->view->header = array(
-            'title' => is_null($channel_id) ? lang('channels') : $channel->channel_title,
+            'title' => is_null($channel_id) ? lang('channels') : htmlspecialchars($channel->channel_title),
             'toolbar_items' => array(
                 'settings' => array(
                     'href' => ee('CP/URL')->make('settings/content-design'),
@@ -879,8 +879,22 @@ class Channels extends AbstractChannelsController
                     )
                 ),
                 array(
+                    'title' => 'allow_preview',
+                    'desc' => 'allow_preview_desc',
+                    'fields' => array(
+                        'allow_preview' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'allow_preview'
+                            ),
+                            'value' => $channel->allow_preview
+                        )
+                    )
+                ),
+                array(
                     'title' => 'preview_url',
                     'desc' => 'preview_url_desc',
+                    'group' => 'allow_preview',
                     'fields' => array(
                         'preview_url' => array(
                             'type' => 'text',
@@ -888,6 +902,7 @@ class Channels extends AbstractChannelsController
                         )
                     )
                 )
+
             ),
             'channel_defaults' => array(
                 array(
@@ -1371,7 +1386,6 @@ class Channels extends AbstractChannelsController
         if (! ee('Request')->post('comment_expiration')) {
             $_POST['comment_expiration'] = 0;
         }
-
         $channel->set($_POST);
 
         $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', ee()->input->post('field_groups'))->all();
@@ -1446,11 +1460,11 @@ class Channels extends AbstractChannelsController
 
         // Create Channel
         if ($channel->isNew()) {
-            $channel->default_entry_title = '';
-            $channel->url_title_prefix = '';
-            $channel->channel_url = ee()->functions->fetch_site_index();
-            $channel->channel_lang = ee()->config->item('xml_lang');
-            $channel->site_id = ee()->config->item('site_id');
+            $channel->default_entry_title = $channel->default_entry_title ?: '';
+            $channel->url_title_prefix = $channel->url_title_prefix ?: '';
+            $channel->channel_url = $channel->channel_url ?: ee()->functions->fetch_site_index();
+            $channel->channel_lang = $channel->channel_lang ?: ee()->config->item('xml_lang');
+            $channel->site_id = $channel->site_id ?: ee()->config->item('site_id');
 
             $dupe_id = ee()->input->post('duplicate_channel_prefs');
             unset($_POST['duplicate_channel_prefs']);

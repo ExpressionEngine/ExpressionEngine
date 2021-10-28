@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -2404,7 +2404,7 @@ while (--j >= 0)
         // Fill in protocol for protocol-relative URLs so that this method
         // always returns a valid URL in the eyes of FILTER_VALIDATE_URL
         if (strpos($url, '//') === 0) {
-            $scheme = empty($_SERVER['HTTPS']) ? 'http' : 'https';
+            $scheme = !ee('Request')->isEncrypted() ? 'http' : 'https';
             $url = $scheme . ':' . $url;
         }
 

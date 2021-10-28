@@ -63,7 +63,9 @@ context('URL and Path Settings', () => {
 
   it('should only show member trigger if enabled', () => {
     cy.eeConfig({item: 'legacy_member_templates', value: 'y'}).then(() => {
+      cy.wait(1000)
       cy.eeConfig({item: 'profile_trigger'}).then((config) => {
+        cy.wait(1000)
         expect(config).to.be.not.empty
         page.load()
         cy.hasNoErrors()
@@ -74,6 +76,7 @@ context('URL and Path Settings', () => {
     })
 
     cy.eeConfig({item: 'legacy_member_templates', value: 'n'}).then(() => {
+      cy.wait(3000)
       page.load()
       cy.hasNoErrors()
       page.get('profile_trigger').should('not.exist')
@@ -89,7 +92,7 @@ context('URL and Path Settings', () => {
 
     page.get('site_url').clear()
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
     //page.hasErrors()
@@ -213,7 +216,7 @@ context('URL and Path Settings', () => {
     // after submission
     page.get('site_index').clear().type('hello.php')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences updated')
     page.get('site_index').invoke('val').then((val) => { expect(val).to.be.equal('hello.php')})

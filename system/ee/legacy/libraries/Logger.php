@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,6 +24,12 @@ class EE_Logger
     private function logger_db()
     {
         if (! isset($this->db)) {
+
+             // do we have the db loaded?
+            if (! isset(ee()->db)) {
+                ee()->load->database();
+            }
+
             $db = clone ee()->db;
             $db->_reset_select();
             $db->_reset_write();

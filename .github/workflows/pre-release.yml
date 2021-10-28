@@ -1,0 +1,114 @@
+name: Pre-Release
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - 6.x
+      - release/6.0.0
+
+jobs:
+  build:
+    if: github.event.pull_request.draft == false
+    name: TEST BUILD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+
+      - name: Checkout Pro
+        uses: actions/checkout@v2
+        with:
+          repository: EllisLab/ExpressionEngine-Pro
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          path: __pro
+
+      #- name: Move Pro into core
+      #  run: |
+      #    mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
+      #    mv __pro/themes/ee/pro themes/ee/pro
+      #    rm -rf __pro
+
+      - name: Setup asdf
+        uses: asdf-vm/actions/setup@v1
+
+      - name: Install asdf dependencies
+        working-directory: build-tools
+        run: |
+          asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+          bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
+          asdf install
+
+      - name: Install build tool dependencies
+        working-directory: build-tools
+        run: npm install
+
+      - name: Get version
+        id: build_json
+        working-directory: build-tools
+        run: |
+          content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
+          echo "::set-output name=BUILD_VERSION::$content"
+
+      - name: Run build process
+        working-directory: build-tools
+        env:
+          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          APP_REPO_PATH: ${{ github.workspace }}
+          PRO_REPO_PATH: ${{ github.workspace }}/__pro
+        run: |
+          gulp app --local --nogit --head --skip-lint --jira-collector --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+
+      - name: Archive Build files
+        uses: actions/upload-artifact@v2
+        with:
+          name: EE${{ steps.build_json.outputs.BUILD_VERSION }}
+          path: build-tools/builds
+      
+      - name: Set DP version
+        run: echo "dp_ver=1" >> $GITHUB_ENV
+
+      - name: Get previous DP tag
+        id: prev_tag
+        continue-on-error: true
+        uses: oprypin/find-latest-tag@v1
+        with:
+          repository: ExpressionEngine/ExpressionEngine
+          prefix: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.
+
+      - name: Increase DP version
+        if: ${{ steps.prev_tag.outcome == 'success' }}
+        run: |
+          content=`echo "${{ steps.prev_tag.outputs.tag }}" | rev | cut -d "." -s -f 1 | rev`
+          echo "dp_ver=$(( 1+$content ))" >> $GITHUB_ENV
+
+      #- name: Create the tag
+      #  uses: julb/action-manage-tag@v1
+      #  id: make_tag
+      #  with:
+      #    name: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+      #    state: present
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
+
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
+          name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} DP ${{ env.dp_ver }}
+          tag: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+          commit: ${{ github.event.pull_request.head.sha }}
+          allowUpdates: true
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          prerelease: true
+          #draft: true
+          body: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} developer preview ${{ env.dp_ver }}
+
+      - name: Directory Listing on Failure
+        if: failure()
+        run: |
+          ls -latr
+          ls -latr build-tools
+          ls -latr build-tools/builds

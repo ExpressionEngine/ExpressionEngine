@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -231,6 +231,17 @@ class EE_Cache_file extends CI_Driver
     public function is_supported()
     {
         return is_really_writable($this->_cache_path);
+    }
+
+    /**
+     * Checks whether cache file is writable
+     *
+     * @return	bool
+     */
+    public function is_writable($key, $scope = Cache::LOCAL_SCOPE)
+    {
+        $path = $this->_cache_path . $this->_namespaced_key($key, $scope);
+        return is_really_writable($path);
     }
 
     /**

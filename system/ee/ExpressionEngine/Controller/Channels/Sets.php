@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -64,6 +64,12 @@ class Sets extends AbstractChannelsController
                     ->now();
 
                 $vars['errors'] = $errors;
+            } elseif (strtolower(pathinfo($set_file['name'], PATHINFO_EXTENSION)) !== 'zip') {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('channel_set_filetype_error'))
+                    ->addToBody(lang('channel_set_filetype_error_desc'))
+                    ->now();
             } else {
                 $set = ee('ChannelSet')->importUpload($set_file);
                 $set_path = ee('Encrypt')->encode(

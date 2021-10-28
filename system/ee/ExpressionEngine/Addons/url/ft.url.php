@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -29,7 +29,7 @@ class Url_Ft extends EE_Fieldtype
     /**
      * Validate Field
      *
-     * 	Note, we can't use filter_var() here, as FILTER_VALIDATE_URL will not
+     *  Note, we can't use filter_var() here, as FILTER_VALIDATE_URL will not
      *  validate internationalized URLs that contain non-ASCII characters.
      *  Plus, FILTER_VALIDATE_URL uses parse_url() internally for some bits
      *  anyway, go figure.
@@ -69,7 +69,7 @@ class Url_Ft extends EE_Fieldtype
                 isset($parsed_url['scheme'], $parsed_url['path']) &&
                 $parsed_url['scheme'] == 'mailto' &&
                 in_array('mailto:', $this->get_setting('allowed_url_schemes'))
-                ) {
+            ) {
                 return true;
             }
 
@@ -225,13 +225,14 @@ class Url_Ft extends EE_Fieldtype
             return $protocols;
         }
 
-        $protocols += array(
+        $protocols += [
             '//' => '// (' . lang('url_ft_protocol_relative_url') . ')',
             'ftp://' => 'ftp://',
             'mailto:' => 'mailto:',
             'sftp://' => 'sftp://',
             'ssh://' => 'ssh://',
-        );
+            'tel://' => 'tel://',
+        ];
 
         return $protocols;
     }

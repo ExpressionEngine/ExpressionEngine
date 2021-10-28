@@ -25,7 +25,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var Dropdown =
@@ -104,9 +104,9 @@ function (_React$Component) {
       var tooMany = this.props.items.length > this.props.tooMany && !this.state.loading;
       var selected = this.state.selected;
       return React.createElement("div", {
-        className: "select" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')
+        className: "select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')
       }, React.createElement("div", {
-        className: "select__button",
+        className: "select__button js-dropdown-toggle",
         onClick: this.toggleOpen
       }, React.createElement("label", {
         className: 'select__button-label' + (this.state.selected ? ' act' : '')
@@ -123,7 +123,7 @@ function (_React$Component) {
         value: this.state.selected ? this.state.selected.value : '',
         "data-group-toggle": this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'
       }))), React.createElement("div", {
-        className: "select__dropdown"
+        className: "select__dropdown dropdown"
       }, this.props.initialCount > this.props.tooMany && React.createElement("div", {
         className: "select__dropdown-search"
       }, React.createElement(FieldTools, null, React.createElement(FilterBar, null, React.createElement(FilterSearch, {

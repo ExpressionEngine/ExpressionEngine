@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -141,6 +141,23 @@ class EE_Input
         // Clean up the value.
         $data['value'] = stripslashes($data['value']);
 
+        // check the cookie setting for expiration date
+        if (is_numeric($data['expire'])) {
+            $loadedCookieSettings = ee('CookieRegistry')->getCookieSettings($name);
+            if (!empty($loadedCookieSettings)) {
+                if ($loadedCookieSettings['cookie_lifetime'] === null) {
+                    $cookieSettings = ee('Model')->get('CookieSetting')->filter('cookie_name', $name)->first();
+                    $cookieSettings->cookie_lifetime = $data['expire'];
+                    $cookieSettings->save();
+                    ee('CookieRegistry')->registerCookieSettings($cookieSettings);
+                } else {
+                    if (IS_PRO && is_numeric($loadedCookieSettings['cookie_lifetime'])) {
+                        $data['expire'] = ($loadedCookieSettings['cookie_enforced_lifetime'] !== null) ? $loadedCookieSettings['cookie_enforced_lifetime'] : $loadedCookieSettings['cookie_lifetime'];
+                    }
+                }
+            }
+        }
+
         // Handle expiration dates.
         if (! is_numeric($data['expire'])) {
             ee()->load->library('logger');
@@ -199,9 +216,7 @@ class EE_Input
         $data['secure_cookie'] = bool_config_item('cookie_secure');
 
         if ($data['secure_cookie']) {
-            $req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : false;
-
-            if (!$req || $req === 'off') {
+            if (ee('Request') && !ee('Request')->isEncrypted()) {
                 return false;
             }
         }

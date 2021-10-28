@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,6 +25,8 @@ class Email_address_Ft extends EE_Fieldtype
      * @var bool $has_array_data Whether or not this Fieldtype is setup to parse as a tag pair
      */
     public $has_array_data = false;
+
+    public $size = 'small';
 
     /**
      * Validate Field

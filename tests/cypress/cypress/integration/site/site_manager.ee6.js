@@ -11,12 +11,15 @@ context('Site Manager', () => {
 
   before(function(){
     cy.task('db:seed')
+    cy.eeConfig({item: 'multiple_sites_enabled', value: 'y'})
+    cy.wait(5000)
+    cy.eeConfig({item: 'multiple_sites_enabled'}) .then((config) => {
+      expect(config.trim()).to.be.equal('y')
+    })
   })
 
   beforeEach(function() {
-    cy.eeConfig({item: 'multiple_sites_enabled', value: 'y'})
-    cy.auth();
-    page.load();
+    cy.authVisit('admin.php?/cp/msm');
     cy.hasNoErrors()
   })
 
@@ -70,7 +73,7 @@ context('Site Manager', () => {
 
       //page.get('modal_submit_button').should('be.visible')
       //page.get('modal_submit_button').click()
-      cy.get('input').contains('Confirm and Delete').first().click()
+      cy.get('button').contains('Confirm and Delete').first().click()
 
       cy.hasNoErrors()
 

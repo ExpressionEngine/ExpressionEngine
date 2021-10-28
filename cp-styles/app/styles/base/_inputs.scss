@@ -12,6 +12,7 @@ textarea {
 	min-width: 100%;
 	height: auto;
 	line-height: $line-height-normal;
+  resize: vertical;
 
   &.tall {
     height: 115px;

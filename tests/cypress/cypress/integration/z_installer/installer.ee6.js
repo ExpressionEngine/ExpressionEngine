@@ -11,7 +11,7 @@ const page = new Installer
 const install_form = new Form
 const install_success = new Success
 
-context('Installer', () => {
+context.skip('Installer', () => {
   before(function() {
 
   })
@@ -42,8 +42,8 @@ context('Installer', () => {
         cy.task('filesystem:delete', '../../system/user/cache/mailing_list.zip')
 
         page.load()
-        cy.screenshot({capture: 'runner'})
-        cy.screenshot({capture: 'fullPage'})
+        //cy.screenshot({capture: 'runner'})
+        //cy.screenshot({capture: 'fullPage'})
         cy.hasNoErrors()
       })
     })

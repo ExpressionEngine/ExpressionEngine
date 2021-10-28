@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -272,7 +272,7 @@ EOT;
                 ? $channel->Site->site_label . ' - ' . $channel->channel_title : $channel->channel_title;
         }
 
-        $moblog_authors = ee('Member')->getAuthors(null, false);
+        $moblog_authors = array_merge(array('0' => lang('none')), ee('Member')->getAuthors(null, false));
 
         $vars['sections'] = array(
             array(
@@ -691,7 +691,7 @@ var spaceString = new RegExp('!-!', "g");
 				var value = $('select[name="'+group+'"]').val();
 				// Add the new option fields
 				jQuery.each(values, function(a, b) {
-					var selected = (value == b[0]) ? ' selected' : '';console.log(value + ' ' + b[0]);
+					var selected = (value == b[0]) ? ' selected' : '';
 					html += '<option value="' + b[0] + '"'+selected+'>' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
 					//console.log(html);
 				});

@@ -61,7 +61,7 @@ context('CAPTCHA Settings', () => {
   it('should validate the form', () => {
     page.get('captcha_path').clear().type('sdfsdfsd')
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
 
@@ -128,7 +128,7 @@ context('CAPTCHA Settings', () => {
     page.get('captcha_url').clear().type('http://hello')
     page.get('captcha_path').clear().type(upload_path)
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Preferences updated')
     page.get('require_captcha').invoke('val').then((val) => {

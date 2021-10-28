@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -442,7 +442,7 @@ class Channel_model extends CI_Model
      */
     private function _numeric_comparison_search($terms, $col_name, $site_id)
     {
-        preg_match_all('/([<>]=?)(\d+)/', $terms, $matches, PREG_SET_ORDER);
+        preg_match_all('/([<>]=?)\s?(\d+)/', $terms, $matches, PREG_SET_ORDER);
 
         if (empty($matches)) {
             return $this->_field_search($terms, $col_name, $site_id);

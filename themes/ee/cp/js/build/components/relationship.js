@@ -33,7 +33,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var Relationship =
@@ -77,6 +77,58 @@ function (_React$Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "itemsChanged", function (items) {
+      _this.setState({
+        items: items
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "initialItemsChanged", function (items) {
+      _this.initialItems = items;
+
+      if (!_this.ajaxFilter && _this.state.filterValues.search) {
+        items = _this.filterItems(items, _this.state.filterValues.search);
+      }
+
+      _this.setState({
+        items: items
+      });
+
+      if (_this.props.itemsChanged) {
+        _this.props.itemsChanged(items);
+      }
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "filterChange", function (name, value) {
+      var filterState = _this.state.filterValues;
+      filterState[name] = value;
+
+      _this.setState({
+        filterValues: filterState
+      }); // DOM filter
+
+
+      if (!_this.ajaxFilter && name == 'search') {
+        _this.itemsChanged(_this.filterItems(_this.initialItems, value));
+
+        return;
+      } // Debounce AJAX filter
+
+
+      clearTimeout(_this.ajaxTimer);
+      if (_this.ajaxRequest) _this.ajaxRequest.abort();
+      var params = filterState;
+      params.selected = _this.getSelectedValues(_this.props.selected);
+
+      _this.setState({
+        loading: true
+      });
+
+      _this.ajaxTimer = setTimeout(function () {
+        _this.ajaxRequest = _this.forceAjaxRefresh(params);
+      }, 300);
+    });
+
     _defineProperty(_assertThisInitialized(_this), "bindSortable", function () {
       var thisRef = _assertThisInitialized(_this);
 
@@ -85,7 +137,11 @@ function (_React$Component) {
         containment: 'parent',
         handle: '.list-item__handle',
         items: '.list-item',
-        sort: EE.sortable_sort_helper,
+        sort: function sort(event, ui) {
+          try {
+            EE.sortable_sort_helper(event, ui);
+          } catch (error) {}
+        },
         start: function start(event, ui) {
           // Save the start index for later
           $(_assertThisInitialized(_this)).attr('data-start-index', ui.item.index());
@@ -102,16 +158,23 @@ function (_React$Component) {
           thisRef.setState({
             selected: selected
           });
+          $(document).trigger('entry:preview');
+          $("[data-publish] > form").trigger("entry:startAutosave");
         }
       });
     });
 
+    _this.initialItems = SelectList.formatItems(props.items);
     _this.state = {
       selected: props.selected,
       items: props.items,
       channelFilter: false,
-      filterTerm: false
+      filterTerm: false,
+      filterValues: {}
     };
+    _this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filter_url;
+    _this.ajaxTimer = null;
+    _this.ajaxRequest = null;
     return _this;
   }
 
@@ -184,30 +247,88 @@ function (_React$Component) {
           EE.cp.ModalForm.setTitle(title);
         }
       });
+    }
+  }, {
+    key: "filterItems",
+    value: function filterItems(items, searchTerm) {
+      var _this3 = this;
+
+      items = items.map(function (item) {
+        // Clone item so we don't modify reference types
+        item = Object.assign({}, item); // If any children contain the search term, we'll keep the parent
+
+        if (item.children) item.children = _this3.filterItems(item.children, searchTerm);
+        var itemFoundInChildren = item.children && item.children.length > 0;
+        var itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
+        return itemFound || itemFoundInChildren ? item : false;
+      });
+      return items.filter(function (item) {
+        return item;
+      });
+    }
+  }, {
+    key: "getSelectedValues",
+    value: function getSelectedValues(selected) {
+      var values = [];
+
+      if (selected instanceof Array) {
+        values = selected.map(function (item) {
+          return item.value;
+        });
+      } else if (selected.value) {
+        values = [selected.value];
+      }
+
+      return values.join('|');
+    }
+  }, {
+    key: "forceAjaxRefresh",
+    value: function forceAjaxRefresh(params) {
+      var _this4 = this;
+
+      if (!params) {
+        params = this.state.filterValues;
+        params.selected = this.getSelectedValues(this.props.selected);
+      }
+
+      return $.ajax({
+        url: this.props.filter_url,
+        data: $.param(params),
+        dataType: 'json',
+        success: function success(data) {
+          _this4.setState({
+            loading: false
+          });
+
+          _this4.initialItemsChanged(SelectList.formatItems(data));
+        },
+        error: function error() {} // Defined to prevent error on .abort above
+
+      });
     } // Event when a new entry was created by the channel modal
 
   }, {
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this5 = this;
 
       var props = this.props; // Determine what items show up in the add dropdown
 
       var dropdownItems = this.state.items.filter(function (el) {
         var allowedChannel = true; // Is the user filtering by channel?
 
-        if (_this3.state.channelFilter) {
-          allowedChannel = el.channel_id == _this3.state.channelFilter;
+        if (_this5.state.channelFilter) {
+          allowedChannel = el.channel_id == _this5.state.channelFilter;
         }
 
         var filterName = true; // Is the user filtering by name
 
-        if (_this3.state.filterTerm) {
-          filterName = el.label.toLowerCase().includes(_this3.state.filterTerm.toLowerCase());
+        if (_this5.state.filterTerm) {
+          filterName = el.label.toLowerCase().includes(_this5.state.filterTerm.toLowerCase());
         } // Only show items that are not already added
 
 
-        var notInSelected = !_this3.state.selected.some(function (e) {
+        var notInSelected = !_this5.state.selected.some(function (e) {
           return e.value === el.value;
         });
         return notInSelected && allowedChannel && filterName;
@@ -219,19 +340,20 @@ function (_React$Component) {
           value: channel.id
         };
       });
+      var handleSearchItem = this.handleSearch;
       return React.createElement("div", {
         ref: function ref(el) {
-          return _this3.field = el;
+          return _this5.field = el;
         }
       }, this.state.selected.length > 0 && React.createElement("ul", {
         className: "list-group list-group--connected mb-s",
         ref: function ref(el) {
-          return _this3.listGroup = el;
+          return _this5.listGroup = el;
         }
       }, this.state.selected.map(function (item) {
         return React.createElement("li", {
           className: "list-item"
-        }, _this3.state.selected.length > 1 && React.createElement("div", {
+        }, _this5.state.selected.length > 1 && React.createElement("div", {
           "class": "list-item__handle"
         }, React.createElement("i", {
           "class": "fas fa-bars"
@@ -239,9 +361,9 @@ function (_React$Component) {
           className: "list-item__content"
         }, React.createElement("div", {
           "class": "list-item__title"
-        }, item.label, " ", _this3.state.selected.length > 10 && React.createElement("small", {
+        }, item.label, " ", _this5.state.selected.length > 10 && React.createElement("small", {
           className: "meta-info ml-s float-right"
-        }, " ", item.instructions)), _this3.state.selected.length <= 10 && React.createElement("div", {
+        }, " ", item.instructions)), _this5.state.selected.length <= 10 && React.createElement("div", {
           "class": "list-item__secondary"
         }, item.instructions)), React.createElement("div", {
           "class": "list-item__content-right"
@@ -251,7 +373,7 @@ function (_React$Component) {
           type: "button",
           title: EE.relationship.lang.remove,
           onClick: function onClick() {
-            return _this3.deselect(item.value);
+            return _this5.deselect(item.value);
           },
           className: "button button--small button--default"
         }, React.createElement("i", {
@@ -289,7 +411,9 @@ function (_React$Component) {
       }, React.createElement("input", {
         type: "text",
         "class": "search-input__input input--small",
-        onChange: this.handleSearch,
+        onChange: function onChange(handleSearchItem) {
+          return _this5.filterChange('search', handleSearchItem.target.value);
+        },
         placeholder: EE.relationship.lang.search
       }))), props.channels.length > 1 && React.createElement("div", {
         className: "filter-bar__item"
@@ -298,7 +422,7 @@ function (_React$Component) {
         title: EE.relationship.lang.channel,
         items: channelFilterItems,
         onSelect: function onSelect(value) {
-          return _this3.channelFilterChange(value);
+          return _this5.filterChange('channel_id', value);
         },
         buttonClass: "filter-bar__button"
       })), this.props.can_add_items && React.createElement("div", {
@@ -307,7 +431,7 @@ function (_React$Component) {
         type: "button",
         className: "button button--primary button--small",
         onClick: function onClick() {
-          return _this3.openPublishFormForChannel(_this3.props.channels[0]);
+          return _this5.openPublishFormForChannel(_this5.props.channels[0]);
         }
       }, "New Entry"), props.channels.length > 1 && React.createElement("div", null, React.createElement("button", {
         type: "button",
@@ -321,7 +445,7 @@ function (_React$Component) {
           href: true,
           className: "dropdown__link",
           onClick: function onClick() {
-            return _this3.openPublishFormForChannel(channel);
+            return _this5.openPublishFormForChannel(channel);
           }
         }, channel.title);
       })))))), React.createElement("div", {
@@ -332,7 +456,7 @@ function (_React$Component) {
           onClick: function onClick(e) {
             e.preventDefault();
 
-            _this3.selectItem(item);
+            _this5.selectItem(item);
           },
           className: "dropdown__link"
         }, item.label, " ", React.createElement("span", {

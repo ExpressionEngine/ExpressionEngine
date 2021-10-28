@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,6 +19,8 @@ class Date_ft extends EE_Fieldtype
     );
 
     public $has_array_data = false;
+
+    public $size = 'small';
 
     /**
      * Parses the date input, first with the configured date format (as used
@@ -88,8 +90,10 @@ class Date_ft extends EE_Fieldtype
      *
      * @param 	array
      */
-    public function display_field($field_data)
+    public function display_field($data)
     {
+        $field_data = $data;
+        
         ee()->lang->loadfile('content');
 
         $special = array('entry_date', 'expiration_date', 'comment_expiration_date');

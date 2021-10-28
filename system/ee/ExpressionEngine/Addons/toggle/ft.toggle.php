@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -18,7 +18,10 @@ class Toggle_ft extends EE_Fieldtype
         'version' => '1.0.0'
     );
 
+    public $entry_manager_compatible = true;
     public $has_array_data = false;
+
+    public $size = 'small';
 
     // used in display_field() below to set
     // some defaults for third party usage
@@ -258,29 +261,29 @@ class Toggle_ft extends EE_Fieldtype
         return true;
     }
 
+    /**
+     * @param string $data
+     * @param integer $field_id
+     * @param integer $entry
+     * @return string
+     */
     public function renderTableCell($data, $field_id, $entry)
     {
-        switch (true) {
-            case ($data === 'y'):
-                $out = lang('yes');
+        return ee('View')->make('ee:_shared/form/fields/toggle')->render([
+            'field_name' => $this->field_name,
+            'value' => $data,
+            'disabled' => true,
+        ]);
+    }
 
-                break;
-            case ($data === 'n'):
-                $out = lang('no');
-
-                break;
-            case ($data === 1):
-                $out = lang('on');
-
-                break;
-            case ($data === 0):
-            default:
-                $out = lang('off');
-
-                break;
-        }
-
-        return $out;
+    /**
+     * @return array
+     */
+    public function getTableColumnConfig()
+    {
+        return [
+            'encode' => false
+        ];
     }
 }
 

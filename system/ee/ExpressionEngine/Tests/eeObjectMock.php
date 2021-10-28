@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,12 +17,12 @@
 // App container:
 // In your test, you must define the return value for requested object:
 //
-// 		ee()->setMock('Encrypt', new Encrypt\Encrypt('ADefaultKey'));
+//      ee()->setMock('Encrypt', new Encrypt\Encrypt('ADefaultKey'));
 //
 // Then any calls from the application to ee('Encrypt') will return the object / return value you specified.
 // In the test's tearDown() method, it should then reset the mocks so the next test does not inherit your mocks
 //
-// 		ee()->resetMocks();
+//      ee()->resetMocks();
 //
 function ee($mock = '')
 {
@@ -34,6 +34,8 @@ class eeSingletonMock
     public $load;
     public $config;
     public $session;
+    public $logger;
+    public $dbforge;
 
     protected $mock;
     protected static $mocks = [];
@@ -42,8 +44,9 @@ class eeSingletonMock
     {
         $this->load = new eeSingletonLoadMock();
         $this->config = new eeSingletonConfigMock();
-        $this->session = new eeSingletoneSessionMock();
-        $this->mock = $mock;
+        $this->session = new eeSingletonSessionMock();
+        $this->logger = new eeSingletonLoggerMock();
+        $this->dbforge = new eeSingletonDBForgeMock();
     }
 
     public function setMock($name, $return)
@@ -71,6 +74,16 @@ class eeSingletonLoadMock
     {
         return;
     }
+
+    public function library()
+    {
+        return;
+    }
+
+    public function dbforge()
+    {
+        return;
+    }
 }
 
 class eeSingletonConfigMock
@@ -93,7 +106,7 @@ class eeSingletonConfigMock
     }
 }
 
-class eeSingletoneSessionMock
+class eeSingletonSessionMock
 {
     public static $userdata = [];
 
@@ -110,5 +123,26 @@ class eeSingletoneSessionMock
     public function resetUserdata()
     {
         self::$userdata = [];
+    }
+}
+
+class eeSingletonLoggerMock
+{
+    public function developer()
+    {
+    }
+}
+
+class eeSingletonDBForgeMock
+{
+    public function add_field()
+    {
+    }
+
+    public function add_key()
+    {
+    }
+    public function create_table()
+    {
     }
 }

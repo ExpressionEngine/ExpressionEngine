@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -495,26 +495,29 @@ class Lexer extends AbstractLexer
                 }
             }
 
+            // EE PRO: we do not need to do anything here 
+            // since the template is modified after lexemes are built
+
             switch ($type) {
-                case 'BOOL':	 $obj = new Boolean($lexeme);
+                case 'BOOL': $obj = new Boolean($lexeme);
 
                     break;
-                case 'COMMENT':	 $obj = new Comment($lexeme);
+                case 'COMMENT': $obj = new Comment($lexeme);
 
                     break;
-                case 'NUMBER':	 $obj = new Number($lexeme);
+                case 'NUMBER': $obj = new Number($lexeme);
 
                     break;
                 case 'OPERATOR': $obj = new Operator($lexeme);
 
                     break;
-                case 'OTHER':	 $obj = new Other($lexeme);
+                case 'OTHER': $obj = new Other($lexeme);
 
                     break;
-                case 'STRING':	 $obj = new StringLiteral($lexeme);
+                case 'STRING': $obj = new StringLiteral($lexeme);
 
                     break;
-                case 'TAG':		 $obj = new Tag($lexeme);
+                case 'TAG': $obj = new Tag($lexeme);
 
                     break;
                 case 'VARIABLE': $obj = new Variable($lexeme);

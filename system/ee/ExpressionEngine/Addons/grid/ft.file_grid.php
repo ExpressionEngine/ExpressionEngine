@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 require_once PATH_ADDONS . 'grid/ft.grid.php';
@@ -17,6 +17,8 @@ class file_grid_ft extends Grid_ft
         'name' => 'File Grid',
         'version' => '1.0.0'
     ];
+
+    public $size = 'large';
 
     public $settings_form_field_name = 'file_grid';
 

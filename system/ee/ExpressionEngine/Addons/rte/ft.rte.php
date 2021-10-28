@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,9 +17,11 @@ class Rte_ft extends EE_Fieldtype
 
     public $entry_manager_compatible = true;
 
+    public $size = 'large';
+
     public $info = [
         'name' => 'Rich Text Editor',
-        'version' => '2.0.0'
+        'version' => '2.1.0'
     ];
 
     /**
@@ -162,14 +164,24 @@ class Rte_ft extends EE_Fieldtype
      */
     public function display_field($data)
     {
-        RteHelper::includeFieldResources();
-        $configHandle = RteHelper::insertConfigJsById(!empty($this->settings['toolset_id']) ? $this->settings['toolset_id'] : null);
+        $toolsetId = (isset($this->settings['toolset_id'])) ? (int) $this->settings['toolset_id'] : (!empty(ee()->config->item('rte_default_toolset')) ? (int) ee()->config->item('rte_default_toolset') : null);
+        if (!empty($toolsetId)) {
+            $toolset = ee('Model')->get('rte:Toolset')->filter('toolset_id', $toolsetId)->first();
+        } else {
+            $toolset = ee('Model')->get('rte:Toolset')->first();
+        }
+
+        // Load proper toolset
+        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $configHandle = ee('rte:' . $serviceName)->init($this->settings, $toolset);
 
         $id = str_replace(array('[', ']'), array('_', ''), $this->field_name);
-        $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y') ? true : false;
+        $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y')
+                    ? true
+                    : false;
 
         if (strpos($id, '_new_') === false) {
-            ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . $defer . ');</script>');
+            ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . ($defer ? 'true' : 'false') . ');</script>');
         }
 
         // pass the data through form_prep() if this is Channel Form
@@ -198,7 +210,7 @@ class Rte_ft extends EE_Fieldtype
             'id' => $id,
             'rows' => 10,
             'data-config' => $configHandle,
-            'class' => 'rte-textarea',
+            'class' => ee('rte:' . $serviceName)->getClass(),
             'data-defer' => ($defer ? 'y' : 'n')
         );
 
@@ -214,8 +226,16 @@ class Rte_ft extends EE_Fieldtype
      */
     public function grid_display_field($data)
     {
-        RteHelper::includeFieldResources();
-        $configHandle = RteHelper::insertConfigJsById(!empty($this->settings['toolset_id']) ? $this->settings['toolset_id'] : null);
+        $toolsetId = (isset($this->settings['toolset_id'])) ? (int) $this->settings['toolset_id'] : (!empty(ee()->config->item('rte_default_toolset')) ? (int) ee()->config->item('rte_default_toolset') : null);
+        if (!empty($toolsetId)) {
+            $toolset = ee('Model')->get('rte:Toolset')->filter('toolset_id', $toolsetId)->first();
+        } else {
+            $toolset = ee('Model')->get('rte:Toolset')->first();
+        }
+
+        // Load proper toolset
+        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $configHandle = ee('rte:' . $serviceName)->init($this->settings, $toolset);
 
         // get the cache
         if (! isset(ee()->session->cache['rte'])) {
@@ -224,7 +244,6 @@ class Rte_ft extends EE_Fieldtype
         $cache = & ee()->session->cache['rte'];
 
         if (! isset($cache['displayed_grid_cols'])) {
-            ee()->cp->add_to_foot('<script type="text/javascript" src="' . URL_THEMES . 'rte/scripts/grid.js"></script>');
             $cache['displayed_grid_cols'] = array();
         }
 
@@ -402,6 +421,9 @@ class Rte_ft extends EE_Fieldtype
      */
     public function replace_tag($data, $params = array(), $tagdata = false)
     {
+        //strip "read more" separator
+        $data = preg_replace('/(<figure>)?<div class=\"readmore"><span[^<]+<\/span><\/div>(<\/figure>)?/', '', $data);
+        
         // return images only?
         if (isset($params['images_only']) && $params['images_only'] == 'yes') {
             $data = $this->_parseImages($data, $params, $tagdata);

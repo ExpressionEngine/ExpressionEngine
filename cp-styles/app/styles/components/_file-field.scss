@@ -17,7 +17,7 @@
 }
 
 .file-field__dropzone {
-	position: relative;
+	position: static;
 	width: 100%;
 	margin-top: $s-s;
 	padding: $sq-inset-m;
@@ -168,6 +168,19 @@
 // Styling image grid in modal
 .modal-file .img-grid td {
   border-bottom: none;
+  overflow: hidden;
+  text-align: center;
+
+  img {
+	max-height: 125px; 
+	max-width: 125px
+  }
+}
+
+.file-thumb {
+	max-width: 125px;
+	overflow: hidden;
+	display: inline-block;
 }
 
 // File Field on Entry form

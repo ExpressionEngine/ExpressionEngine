@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -291,6 +291,17 @@ class EE_Exceptions
                 'trace' => $trace
             ];
             echo json_encode($return);
+            exit;
+        }
+
+        // If the request came from the cli, show an appropriate message
+        if (REQ === 'CLI') {
+            echo "$error_type caught:\n";
+            echo html_entity_decode($message) . "\n";
+            echo html_entity_decode($location) . "\n";
+            foreach ($trace as $stackItem) {
+                echo html_entity_decode($stackItem) . "\n";
+            }
             exit;
         }
 

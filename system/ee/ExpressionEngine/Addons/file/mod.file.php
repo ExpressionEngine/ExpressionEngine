@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -504,14 +504,21 @@ class File
     {
         ee()->load->library('mime_type');
 
-        $addon = ee('Addon')->get(ee()->input->get('addon'));
-        $png_path = $addon->getPath() . '/icon.png';
-
-        // Check if the icon is a png first, and if not use svg
-        if (file_exists($png_path) && is_file($png_path)) {
-            $path = $png_path;
+        if (IS_PRO && ee()->input->get('prolet')) {
+            $prolet = ee('Model')->get('pro:Prolet', (int) ee()->input->get('prolet'))->first();
+            if (!empty($prolet)) {
+                $path = $prolet->icon;
+            }
         } else {
-            $path = $addon->getPath() . '/icon.svg';
+            $addon = ee('Addon')->get(ee()->input->get('addon'));
+            $filename = ee()->input->get('file');
+            if (!in_array($filename, ['icon.svg', 'icon.png'])) {
+                $filename = 'icon.svg';
+            }
+            $path = $addon->getPath() . '/' . $filename;
+        }
+        if (empty($path)) {
+            $path = 'icon.svg';
         }
 
         ee()->output->out_type = 'cp_asset';

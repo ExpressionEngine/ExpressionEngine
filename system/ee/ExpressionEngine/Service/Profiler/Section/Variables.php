@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -80,7 +80,7 @@ class Variables extends ProfilerSection
                 continue;
             }
 
-            $prepped_data[$key] = htmlspecialchars(stripslashes(print_r($val, true)));
+            $prepped_data[ee('Security/XSS')->clean($key)] = htmlspecialchars(stripslashes(print_r($val, true)));
         }
 
         return $prepped_data;

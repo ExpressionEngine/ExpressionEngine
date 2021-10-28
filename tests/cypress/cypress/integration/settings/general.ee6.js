@@ -40,7 +40,7 @@ context('General Settings', () => {
     page.get('include_seconds_toggle').click()
 
     //page.submit()
-    cy.get('input').contains('Save Settings').first().click()
+    cy.get('button').contains('Save Settings').first().click()
 
     // Make sure they stuck, also test Check Now button visibility
     cy.hasNoErrors()
@@ -65,7 +65,7 @@ context('General Settings', () => {
     // getting the latest version info; unsure at the moment how to
     // best handle actual version comparison because we need to edit
     // Core.php dynamically based on the actual latest version
-    page.get('alert_error').should('not.be.visible')
+    page.get('alert_error').should('not.exist')
     page.get('wrap').invoke('text').then((text) => {
       expect(text).not.contains( 'An error occurred')
     })
@@ -95,7 +95,7 @@ context('General Settings', () => {
       page.get('site_name').clear()
 
       //page.submit()
-      cy.get('input').contains('Save Settings').first().click()
+      cy.get('button').contains('Save Settings').first().click()
 
       cy.hasNoErrors()
      
@@ -143,7 +143,7 @@ context('General Settings', () => {
 
       test_field(page.get('site_name'), '<script>alert(\'stored xss\')</script>', page.messages.xss_error)
       test_field(page.get('site_name'), 'EE2')
-      cy.get('input').contains('Save Settings').first().click()
+      cy.get('button').contains('Save Settings').first().click()
       //page.submit()
       cy.hasNoErrors()
       //should_have_no_form_errors(page)

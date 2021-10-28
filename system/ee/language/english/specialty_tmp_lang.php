@@ -42,6 +42,10 @@ $lang = array(
 
     'forgot_password_instructions_desc' => 'This template defines the instructions that a user who has forgotten their password receives',
 
+    'forgot_username_instructions' => 'User &ndash; Forgotten username instructions',
+
+    'forgot_username_instructions_desc' => 'This template defines the email sent to a user who has forgotten their username',
+    
     'forum_announcements' => 'Announcements',
 
     'forum_archives' => 'Archives',
@@ -165,6 +169,8 @@ $lang = array(
     'validated_member_notify' => 'User &ndash; Account validation notification',
 
     'validated_member_notify_desc' => 'This template defines the notification that members receive when an admin has validated their membership account',
+
+    'mbr_tmpl_should_be_in' => 'Legacy member templates should be in folder',
 
 );
 

@@ -94,7 +94,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('index').click()
 
 		cy.get('.CodeMirror-scroll').type('<h1> Hi </h1>{exp:channel:entries channel="AATestChannel"}<h2> {title} </h2>{aa_checkboxes_test}{item}<br>{/aa_checkboxes_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('[value="edit"]').click()
+		cy.get('button').contains('Save').eq(0).click()
 	    cy.visit('index.php/aaCheckboxes')
 	    cy.get('body').contains('1')
 	    cy.get('body').contains('2')
@@ -123,7 +123,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('index').click()
 
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<h1> how the Americans write it </h1> {aa_date_test format="%F %d %Y"}<h1> how the Brits write it </h1> {aa_date_test format="%d %F %Y"}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('[value="edit"]').click()
+		cy.get('button').contains('Save').eq(0).click()
 	    cy.visit('index.php/aaDate')
 
 	    cy.get('body').contains('June 17 2020')
@@ -142,7 +142,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('index').click()
 
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<h1> {title} </h1> <br>Lap 1: {aa_duration_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('[value="edit"]').click()
+		cy.get('button').contains('Save').eq(0).click()
 	    cy.visit('index.php/aaDuration')
 
 	    cy.get('body').contains('Lap 1: 1:13:00')
@@ -161,7 +161,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('index').click()
 
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}This is xqcs email: {aa_email_address_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('[value="edit"]').click()
+		cy.get('button').contains('Save').eq(0).click()
 
 		 cy.visit('index.php/aaEmailAddress')
 
@@ -184,7 +184,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('index').click()
 
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{aa_file_test} {aa_file_test wrap ="link"}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('[value="edit"]').click()
+		cy.get('button').contains('Save').eq(0).click()
 
 		 cy.visit('index.php/aaFile')
 
@@ -204,7 +204,7 @@ context('Create combinations of field', () => {
 
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{title}{aa_relationships_test}{aa_relationships_test:title}{/aa_relationships_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
 		cy.wait(500)
-		cy.get('[value="edit"]').click()
+		cy.get('button').contains('Save').eq(0).click()
 		cy.visit('index.php/aaRelationships')
 		cy.get('body').contains('AA Test Entry')
 
@@ -258,7 +258,7 @@ context('Create combinations of field', () => {
 
 		cy.get('.CodeMirror-scroll').type('<h1> Hi </h1>{exp:channel:entries channel="AATestChannel"}<h2> {title} </h2>{aa_select_dropdown_test}{item}<br>{/aa_select_dropdown_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
 		cy.wait(500)
-		cy.get('[value="edit"]').click()
+		cy.get('button').contains('Save').eq(0).click()
 		cy.visit('index.php/aaSelectDropdown')
 
 		cy.get('body').contains('2two')
@@ -276,7 +276,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('index').click()
 
 		cy.get('.CodeMirror-scroll').type('<h1> Hi </h1>{exp:channel:entries channel="AATestChannel"}<h2> {title} </h2>{aa_textarea_test} {/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('[value="edit"]').click()
+		cy.get('button').contains('Save').eq(0).click()
 		cy.visit('index.php/aaTextarea')
 
 		cy.get('body').contains('Hi')
@@ -289,7 +289,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('index').click()
 
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{if aa_toggle_test}The sale is on{if:else}No sales at this time{/if}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('[value="edit"]').click()
+		cy.get('button').contains('Save').eq(0).click()
 
 		cy.visit('index.php/aaToggle')
 		cy.get('body').contains('No sales at this time')
@@ -317,7 +317,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('index').click()
 
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<a href="{aa_url_test}">Visit us</a>{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('[value="edit"]').click()
+		cy.get('button').contains('Save').eq(0).click()
 
 		cy.visit('index.php/aaURL')
 		cy.get('body').contains('Visit us')
@@ -346,14 +346,14 @@ function addGroup(name){
 	cy.visit('admin.php?/cp/design/group/create')
 	let title = 'aa' + name;
 	cy.get('input[name="group_name"]').eq(0).type(title)
-	cy.get('input[value="Save Template Group"]').eq(0).click()
+	cy.get('[value="Save Template Group"]').eq(0).click()
 	cy.get('p').contains('has been created')
 }
 
 //creates a feild with the name
 function addField(name){
 	cy.visit('admin.php?/cp/fields/create')
-  	cy.get('div[class="select__button"]').filter(':visible').first().click()
+	cy.get('[data-input-value=field_type] .select__button').click()
   	page.get('Type_Options').contains(name).click()
   	let title = 'AA ' + name + ' Test'
   	page.get('Name').type(title)

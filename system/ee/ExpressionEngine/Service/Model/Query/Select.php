@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -598,6 +598,9 @@ class Select extends Query
         }
 
         if (in_array($fn, array('where_in', 'or_where_in'))) {
+            if (is_null($value)) {
+                $fn = substr($fn, 0, -3);
+            }
             $query->$fn($comparison, $value, $binary);
 
             return;

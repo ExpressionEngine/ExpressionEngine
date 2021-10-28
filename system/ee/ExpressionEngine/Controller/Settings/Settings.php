@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -57,6 +57,8 @@ class Settings extends CP_Controller
         }
 
         $sidebar->addItem(lang('debugging_output'), ee('CP/URL')->make('settings/debug-output'));
+
+        $sidebar->addItem(lang('logging'), ee('CP/URL')->make('settings/logging'));
 
         $content_and_design_link = null;
 
@@ -120,6 +122,15 @@ class Settings extends CP_Controller
                 $item->isActive();
             }
         }
+
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee('Permission')->canUsePro()) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $list = $sidebar->addHeader(lang('pro_settings'))
+                ->addBasicList();
+
+            $sidebar->addItem(lang('cookie_settings'), ee('CP/URL')->make('settings/pro/cookies'));
+        }
+
     }
 
     /**
@@ -158,6 +169,9 @@ class Settings extends CP_Controller
      */
     protected function saveSettings($sections)
     {
+        // Clear the add-on cache in case they've changed their site license key.
+        ee()->cache->file->delete('/addons-status');
+
         $fields = array();
 
         // Make sure we're getting only the fields we asked for

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -153,9 +153,6 @@ class Layouts extends AbstractChannelsController
         $breadcrumbs = array(
             ee('CP/URL')->make('channels')->compile() => lang('channels')
         );
-        if (!empty($channel_id)) {
-            //$breadcrumbs[ee('CP/URL')->make('channels/' . $channel_id)->compile()] = ee('Format')->make('Text', $channel->channel_title)->convertToEntities();
-        }
         $breadcrumbs[''] = lang('form_layouts');
         ee()->view->cp_breadcrumbs = $breadcrumbs;
 
@@ -164,10 +161,6 @@ class Layouts extends AbstractChannelsController
 
     public function create($channel_id)
     {
-        ee()->view->header = [
-            'title' => lang('create_form_layout')
-        ];
-
         ee()->view->left_nav = null;
 
         $channel = ee('Model')->get('Channel', $channel_id)
@@ -177,6 +170,10 @@ class Layouts extends AbstractChannelsController
         if (! $channel) {
             show_error(lang('unauthorized_access'), 403);
         }
+
+        ee()->view->header = [
+            'title' => $channel->channel_title
+        ];
 
         $entry = ee('Model')->make('ChannelEntry');
         $entry->Channel = $channel;
@@ -285,9 +282,9 @@ class Layouts extends AbstractChannelsController
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('channels')->compile() => lang('channels'),
-            //ee('CP/URL')->make('channels/edit/' . $channel_id)->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
+            ee('CP/URL')->make('channels/edit/' . $channel_id)->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
             ee('CP/URL')->make('channels/layouts/' . $channel_id)->compile() => lang('form_layouts'),
-            '' => lang('new_layout')
+            '' => lang('create')
         );
 
         ee()->view->cp_page_title = lang('create_form_layout');
@@ -302,10 +299,6 @@ class Layouts extends AbstractChannelsController
 
     public function edit($layout_id)
     {
-        ee()->view->header = [
-            'title' => lang('edit_form_layout')
-        ];
-
         ee()->view->left_nav = null;
 
         $channel_layout = ee('Model')->get('ChannelLayout', $layout_id)
@@ -320,6 +313,9 @@ class Layouts extends AbstractChannelsController
         $channel_layout->synchronize();
 
         $channel = $channel_layout->Channel;
+        ee()->view->header = [
+            'title' => $channel->channel_title
+        ];
 
         $entry = ee('Model')->make('ChannelEntry');
         $entry->Channel = $channel;
@@ -409,9 +405,9 @@ class Layouts extends AbstractChannelsController
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('channels')->compile() => lang('channels'),
-            //ee('CP/URL')->make('channels/edit/' . $channel->getId())->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
+            ee('CP/URL')->make('channels/edit/' . $channel->getId())->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
             ee('CP/URL')->make('channels/layouts/' . $channel->getId())->compile() => lang('form_layouts'),
-            '' => lang('edit_layout')
+            '' => lang('edit')
         );
 
         ee()->view->cp_page_title = lang('edit_form_layout');

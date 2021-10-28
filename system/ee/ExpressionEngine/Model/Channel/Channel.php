@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -112,8 +112,9 @@ class Channel extends StructureModel
         'channel_name' => 'required|maxLength[40]|unique[site_id]|alphaDash',
         'channel_url' => 'maxLength[100]|xss',
         'preview_url' => 'xss|validatePreviewURL',
+        'allow_preview' => 'enum[y,n]',
         'comment_url' => 'xss',
-        'channel_description' => 'xss',
+        'channel_description' => 'xss|maxLength[255]',
         'deft_comments' => 'enum[y,n]',
         'channel_require_membership' => 'enum[y,n]',
         'channel_allow_img_urls' => 'enum[y,n]',
@@ -207,6 +208,7 @@ class Channel extends StructureModel
     protected $url_title_prefix;
     protected $max_entries;
     protected $preview_url;
+    protected $allow_preview = true;
 
     /**
      * Custom validation callback to validate a comma-separated list of email

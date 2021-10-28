@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -315,6 +315,14 @@ $(document).ready(function(){
 		$.get(EE.cp.collapseNavURL, {collapsed: (!isHidden ? 1 : 0)});
 	})
 
+	// Collapse navigation sidebar
+	// -------------------------------------------------------------------
+	$('.banner-dismiss').on('click', function (e) {
+		e.preventDefault();
+		$(this).parent().remove();
+		$.get(EE.cp.dismissBannerURL);
+	})
+
 	// Toggle Developer Menu
 	// -------------------------------------------------------------------
 
@@ -381,6 +389,29 @@ $(document).ready(function(){
 			}, 1000);
 		}
 	}
+
+	// Ctrls+S to save
+	// -------------------------------------------------------------------
+	window.addEventListener('keydown', function (key) {
+		if (key.ctrlKey || key.metaKey){
+			$('.button[data-shortcut]:visible').each(function(e) {
+				$(this).addClass('button--with-shortcut');
+				if (key.key.toLowerCase() == $(this).data('shortcut').toLowerCase()) {
+					$(this).removeClass('button--with-shortcut');
+					key.preventDefault();
+					$(this).trigger('click');
+					return false;
+				}
+			});
+		}
+	});
+
+	window.addEventListener('keyup', function (key) {
+		if (key.ctrlKey || key.metaKey || key.key == 'Control' || key.key == 'Meta'){
+			$('.button[data-shortcut]').removeClass('button--with-shortcut');
+		}
+	});
+
 
 	// Filter bar toggle
 	// -------------------------------------------------------------------
@@ -561,6 +592,13 @@ $(document).ready(function(){
 			return false;
 		});
 
+		//make spans act as links, when we need that
+		$('[data-href]').on('click', function(e){
+			e.preventDefault();
+			window.location.href = $(this).data('href');
+			return false;
+		})
+
 		$('body').on('modal:open', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
 
 			// Hide any dropdowns that are currently shown
@@ -685,6 +723,13 @@ $(document).ready(function(){
 				button.val(button.data('submit-text'));
 			}
 		});
+
+		// if we have modal ID in hash, open it
+		if (window.location.hash.length > 5 && window.location.hash.indexOf('=') === -1) {
+			if ($('.app-modal[rev=' + window.location.hash.substring(1) + ']').length > 0) {
+				$('.app-modal[rev=' + window.location.hash.substring(1) + ']').trigger('modal:open');
+			}
+		}
 
 		// listen for clicks to elements with a class of m-link
 		$('body').on('click', '.m-link', function(e) {
@@ -881,6 +926,12 @@ $(document).ready(function(){
 	// ===============================
 
 		$('.filters .filter-search input[type="text"], .filters .filter-search-form input[type="text"]').keypress(function(e) {
+			if (e.which == 10 || e.which == 13) {
+				$(this).closest('form').submit();
+			}
+		});
+
+		$(document).on('keypress', '.form-standard .search-input input[type="text"]', function(e){
 			if (e.which == 10 || e.which == 13) {
 				$(this).closest('form').submit();
 			}

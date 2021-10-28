@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -285,11 +285,11 @@ class Api_channel_entries extends Api
             }
 
             if ($row['author_id'] == ee()->session->userdata('member_id')) {
-                if (! ee('Permission')->can('delete_self_entries')) {
+                if (! ee('Permission')->has('can_delete_self_entries_channel_id_' . $row['channel_id'])) {
                     return $this->_set_error('unauthorized_to_delete_self');
                 }
             } else {
-                if (! ee('Permission')->can('delete_all_entries')) {
+                if (! ee('Permission')->has('can_delete_all_entries_channel_id_' . $row['channel_id'])) {
                     return $this->_set_error('unauthorized_to_delete_others');
                 }
             }
@@ -933,7 +933,7 @@ class Api_channel_entries extends Api
             // backwards compatible for some incorrect code noticed in a few third party modules.
             // Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
             // $this->field_id should be used instead as documented
-            // https://expressionengine.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
+            // https://docs.expressionengine.com/latest/development/fieldtypes.html#class-variables
             ee()->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
 
             if (isset($data[$field_name]) or isset($mod_data[$field_name])) {
@@ -1275,7 +1275,7 @@ class Api_channel_entries extends Api
             // backwards compatible for some incorrect code noticed in a few third party modules.
             // Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
             // $this->field_id should be used instead as documented
-            // https://expressionengine.com/expressionengine/user-guide/development/fieldtypes.html#class-variables
+            // https://docs.expressionengine.com/latest/development/fieldtypes.html#class-variables
             ee()->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
 
             $fdata = isset($data[$field_name]) ? $data[$field_name] : '';

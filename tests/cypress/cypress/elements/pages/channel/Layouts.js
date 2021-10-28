@@ -25,7 +25,7 @@ class ChannelLayouts < ChannelMangerPage
   element :no_results, 'tr.no-results'
 
   element :remove_layout_modal, 'div.modal-confirm-remove'
-  element :remove_layout_modal_submit_button, 'div.modal-confirm-remove .form-ctrls input.button'
+  element :remove_layout_modal_submit_button, 'div.modal-confirm-remove .form-ctrls .button'
 
   load_layouts_for_channel(number)
     this.open_dev_menu()

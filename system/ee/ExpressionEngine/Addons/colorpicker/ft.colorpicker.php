@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -12,6 +12,10 @@ use Mexitek\PHPColors\Color;
 class Colorpicker_ft extends EE_Fieldtype
 {
     public $info = [];
+
+    public $disable_frontedit = true;
+
+    public $size = 'small';
 
     public $default_settings = [
         'allowed_colors' => 'any',

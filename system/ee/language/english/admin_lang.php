@@ -210,7 +210,13 @@ $lang = array(
 
     'captcha_require_members' => 'Require CAPTCHA with logged-in members?',
 
-    'captcha_url' => 'Full URL to CAPTCHA Folder',
+    'use_recaptcha' => 'Use ReCaptcha v3?',
+
+    'recaptcha_site_key' => 'ReCaptcha site key',
+
+    'recaptcha_site_secret' => 'ReCaptcha site secret',
+
+    'recaptcha_score_threshold' => 'Threshold score',
 
     'categories' => 'Categories',
 

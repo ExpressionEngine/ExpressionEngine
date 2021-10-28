@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -113,6 +113,31 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     }
 
                     ee()->load->remove_package_path($_ft_path);
+
+                    //frontend edit link
+                    if (IS_PRO) {
+                        if ($ft_api->field_type != 'fluid_field') {
+                            $frontedit_disabled = false;
+                            $frontEditLink = '';
+                            if (isset($obj->disable_frontedit) && $obj->disable_frontedit == true) {
+                                $frontedit_disabled = true;
+                            } elseif (isset($field['params']['disable'])) {
+                                $disable = explode("|", $field['params']['disable']);
+                                if (in_array('frontedit', $disable)) {
+                                    $frontedit_disabled = true;
+                                }
+                            }
+                            if (!$frontedit_disabled) {
+                                $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($orig_data['site_id'], $orig_data['channel_id'], $orig_data['entry_id'], $field_id);
+                            }
+                            $fulltag = $tag;
+                            if ($prefix != '' && strpos($tag, $prefix) !== 0) {
+                                $fulltag = $prefix . $tag;
+                            }
+                            $tagdata = str_replace(LD . $fulltag . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tagdata);
+                            $tag = trim(str_replace(['disable="frontedit"', "disable='frontedit'"], '', $tag));
+                        }
+                    }
                 } else {
                     // Couldn't find a fieldtype
                     $entry = ee()->typography->parse_type(

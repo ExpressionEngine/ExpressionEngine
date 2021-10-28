@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -675,8 +675,8 @@ class Simple_commerce
         //  New Member Group
         if ($new_member_group != '' && $new_member_group != 0) {
             ee()->db->where('member_id', $this->post['custom']);
-            ee()->db->where('group_id !=', 1);
-            ee()->db->update('members', array('group_id' => $new_member_group));
+            ee()->db->where('role_id !=', 1);
+            ee()->db->update('members', array('role_id' => $new_member_group));
         }
 
         //  Send Emails!

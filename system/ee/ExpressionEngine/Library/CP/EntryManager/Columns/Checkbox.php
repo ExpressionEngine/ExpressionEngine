@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,7 +32,7 @@ class Checkbox extends Column
 
     public function renderTableCell($data, $field_id, $entry)
     {
-        $title = ee('Format')->make('Text', $entry->title)->convertToEntities();
+        $title = ee('Format')->make('Text', $entry->title)->attributeSafe();
 
         return [
             'name' => 'selection[]',

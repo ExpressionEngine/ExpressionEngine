@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,28 +21,6 @@ class DashboardLayout extends Model
     protected static $_table_name = 'dashboard_layouts';
 
     protected static $_validation_rules = array();
-
-    protected static $_relationships = array(
-        'DashboardWidgets' => array(
-            'type' => 'hasAndBelongsToMany',
-            'model' => 'DashboardWidget',
-            'pivot' => array(
-                'table' => 'dashboard_layout_widgets',
-                'left' => 'layout_id',
-                'right' => 'widget_id'
-            )
-        ),
-        'Members' => array(
-            'model' => 'Member',
-            'type' => 'belongsTo',
-            'from_key' => 'member_id'
-        ),
-        'Roles' => array(
-            'model' => 'Role',
-            'type' => 'belongsTo',
-            'from_key' => 'role_id'
-        ),
-    );
 
     protected $layout_id;
     protected $member_id;

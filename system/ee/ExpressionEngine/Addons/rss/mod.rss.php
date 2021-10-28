@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -49,8 +49,8 @@ class Rss
 
         $tmp = $this->_setup_meta_query($query);
         $query = $tmp[0];
-        $last_update = $tmp[1];
-        $edit_date = $tmp[2];
+        $last_update = empty($tmp[1]) ? $tmp[3] : $tmp[1] ;
+        $edit_date = empty($tmp[2]) ? $tmp[3] : $tmp[2] ;
         $entry_date = $tmp[3];
 
         if ($query->num_rows() === 0) {
@@ -354,7 +354,6 @@ class Rss
 	<link>{$link}</link>
 	<description></description>
 	<docs>http://www.rssboard.org/rss-specification</docs>
-	<generator>ExpressionEngine v{$version} https://expressionengine.com/expressionengine</generator>
 
 	<item>
 		<title>{$content}</title>

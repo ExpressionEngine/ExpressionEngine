@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,6 +23,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
     );
 
     public $has_array_data = true;
+
+    public $size = 'small';
 
     // used in display_field() below to set
     // some defaults for third party usage
@@ -162,7 +164,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         $disabled = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
         foreach ($fields as $id => $option) {
-            $checked = (in_array(form_prep($option), $values)) ? true : false;
+            $checked = (in_array(form_prep($id), $values)) ? true : false;
 
             if (is_array($option)) {
                 $out .= '<label>' . form_checkbox($this->field_name . '[]', $id, $checked, $disabled) . NBS . $option['name'] . '</label>';

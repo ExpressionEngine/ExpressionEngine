@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -68,8 +68,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20200216');
-        define('APP_VER', '6.0.3');
+        define('APP_BUILD', '20211021');
+        define('APP_VER', '6.1.5');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -104,11 +104,18 @@ class EE_Core
         ee('App')->setupAddons(PATH_THIRD);
 
         //is this pro version?
-        if (is_dir(PATH_PRO_ADDONS) && ee('Addon')->get('pro')->isInstalled()) {
+        if (ee('Addon')->get('pro') && ee('Addon')->get('pro')->isInstalled()) {
             define('IS_PRO', true);
         } else {
             define('IS_PRO', false);
         }
+
+        // setup cookie settings for all providers
+        $providers = ee('App')->getProviders();
+        foreach ($providers as $provider) {
+            $provider->registerCookiesSettings();
+        }
+        ee('CookieRegistry')->loadCookiesSettings();
 
         // Set ->api on the legacy facade to the model factory
         ee()->set('api', ee()->di->make('Model'));

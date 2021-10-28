@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -50,6 +50,17 @@ class General extends Settings
                             'type' => 'text',
                             'value' => $site->site_name,
                             'required' => true
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'site_license_key',
+                    'desc' => 'site_license_key_desc',
+                    'fields' => array(
+                        'site_license_key' => array(
+                            'type' => 'text',
+                            'value' => ee()->config->item('site_license_key'),
+                            'required' => false
                         )
                     )
                 ),

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -121,6 +121,8 @@ class Roles extends AbstractRolesController
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
+                'faded' => '(' . $role->PrimaryMembers->count() . ')',
+                'faded-href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                 'href' => $edit_url,
                 'selected' => ($role_id && $role->getId() == $role_id),
                 'toolbar_items' => null,
@@ -403,13 +405,15 @@ class Roles extends AbstractRolesController
 
     private function setWithPost(Role $role)
     {
+        $site_id = ee()->config->item('site_id');
+        
         $role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
 
         $role->name = ee('Request')->post('name');
         $role->short_name = ee('Request')->post('short_name');
         $role->description = ee('Request')->post('description');
 
-        //We don't allow much editing for SuperAdmin role, so just enfore it's locked and return here
+        //We don't allow much editing for SuperAdmin role, so just enforce it's locked and return here
         if ($role->getId() == 1) {
             $role->is_locked = 'y';
             return $role;
@@ -417,18 +421,27 @@ class Roles extends AbstractRolesController
         $role->is_locked = ee('Request')->post('is_locked');
         $role->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
         $role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
-        $role->AssignedUploadDestinations = ee('Model')->get('UploadDestination', ee('Request')->post('upload_destination_access'))->all();
+
+        $uploadDestinationIds = !empty(ee('Request')->post('upload_destination_access')) ? ee('Request')->post('upload_destination_access') : array();
+        $assignedUploadDestinations = $role->AssignedUploadDestinations->getDictionary('id', 'site_id');
+        if (!empty($assignedUploadDestinations)) {
+            foreach ($assignedUploadDestinations as $dest_id => $dest_site_id) {
+                if ($dest_site_id != $site_id) {
+                    $uploadDestinationIds[] = $dest_id;
+                }
+            }
+        }
+        $role->AssignedUploadDestinations = ee('Model')->get('UploadDestination', $uploadDestinationIds)->all();
 
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
         unset($settings['id'], $settings['role_id'], $settings['site_id']);
-
+        
         foreach (array_keys($settings) as $key) {
-            $settings[$key] = ee('Request')->post($key);
-        }
-        if (!empty(ee('Request')->post('include_members_in'))) {
-            foreach (ee('Request')->post('include_members_in', []) as $key) {
-                $settings[$key] = 'y';
+            if (ee('Request')->post($key) !== null) {
+                $settings[$key] = ee('Request')->post($key);
+            } else {
+                unset($settings[$key]);
             }
         }
 
@@ -442,7 +455,6 @@ class Roles extends AbstractRolesController
             }
         } else {
             $role_settings = $role->RoleSettings->indexBy('site_id');
-            $site_id = ee()->config->item('site_id');
             $role_settings = $role_settings[$site_id];
 
             $role_settings->set($settings);
@@ -458,6 +470,15 @@ class Roles extends AbstractRolesController
                     $allowed_perms[] = $value;
                     $value_exploded = explode('channel_id_', $value);
                     $channel_ids[] = end($value_exploded);
+                }
+            }
+        }
+
+        $assignedChannels = $role->AssignedChannels->getDictionary('channel_id', 'site_id');
+        if (!empty($assignedChannels)) {
+            foreach ($assignedChannels as $channel_id => $channel_site_id) {
+                if ($channel_site_id != $site_id) {
+                    $channel_ids[] = $channel_id;
                 }
             }
         }
@@ -485,18 +506,11 @@ class Roles extends AbstractRolesController
         // template_access
         $template_ids = [];
         if (!empty(ee('Request')->post('assigned_templates'))) {
-            foreach (ee('Request')->post('assigned_templates') as $value) {
-                if (is_numeric($value)) {
-                    $template_ids[] = $value;
-                }
+            $posted_assigned_templates = ee('Request')->post('assigned_templates');
+            if (!is_array($posted_assigned_templates) && strpos($posted_assigned_templates, '[') === 0) {
+                $posted_assigned_templates = json_decode($posted_assigned_templates);
             }
-        }
-        if (!empty($template_ids)) {
-            $role->AssignedTemplates = ee('Model')->get('Template', $template_ids)->all();
-        }
-
-        if (!empty(ee('Request')->post('assigned_templates'))) {
-            foreach (ee('Request')->post('assigned_templates') as $value) {
+            foreach ($posted_assigned_templates as $value) {
                 if (is_numeric($value)) {
                     $template_ids[] = $value;
                 }
@@ -540,7 +554,7 @@ class Roles extends AbstractRolesController
             // Clear the slate and remove all the permissions this form has set
             ee('Model')->get('Permission')
                 ->filter('permission', 'IN', $this->getPermissionKeys())
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', $site_id)
                 ->filter('role_id', $role->getId())
                 ->delete();
 
@@ -549,7 +563,7 @@ class Roles extends AbstractRolesController
                 if (!empty($perm)) {
                     ee('Model')->make('Permission', [
                         'role_id' => $role->getId(),
-                        'site_id' => ee()->config->item('site_id'),
+                        'site_id' => $site_id,
                         'permission' => $perm
                     ])->save();
                 }
@@ -656,6 +670,28 @@ class Roles extends AbstractRolesController
                     ]
                 ]
             ]);
+        } else {
+            $section = array_merge($section, [
+                [
+                    'title' => 'include_members_in',
+                    'desc' => 'include_members_in_desc',
+                    'fields' => [
+                        'include_in_authorlist' => [
+                            'type' => 'checkbox',
+                            'choices' => ['y' => lang('include_in_authorlist')],
+                            'scalar' => true,
+                            'value' => $settings->include_in_authorlist
+                        ],
+                        'include_in_memberlist' => [
+                            'type' => 'checkbox',
+                            'margin_top' => false,
+                            'scalar' => true,
+                            'choices' => ['y' => lang('include_in_memberlist')],
+                            'value' => $settings->include_in_memberlist
+                        ]
+                    ]
+                ]
+            ]);
         }
 
         return ee('View')->make('_shared/form/section')
@@ -670,17 +706,6 @@ class Roles extends AbstractRolesController
         $settings = (isset($settings[$site_id])) ? $settings[$site_id] : ee('Model')->make('RoleSetting', ['site_id' => $site_id]);
 
         $permissions = $this->getPermissions($role);
-
-        $include_members_in_choices = [
-            'include_in_authorlist' => lang('include_in_authorlist'),
-            'include_in_memberlist' => lang('include_in_memberlist'),
-        ];
-        $include_members_in_value = [];
-        foreach (array_keys($include_members_in_choices) as $key) {
-            if ($settings->$key) {
-                $include_members_in_value[] = $key;
-            }
-        }
 
         $sections = [
             [
@@ -724,10 +749,18 @@ class Roles extends AbstractRolesController
                     'title' => 'include_members_in',
                     'desc' => 'include_members_in_desc',
                     'fields' => [
-                        'include_members_in' => [
+                        'include_in_authorlist' => [
                             'type' => 'checkbox',
-                            'choices' => $include_members_in_choices,
-                            'value' => $include_members_in_value
+                            'choices' => ['y' => lang('include_in_authorlist')],
+                            'scalar' => true,
+                            'value' => $settings->include_in_authorlist
+                        ],
+                        'include_in_memberlist' => [
+                            'type' => 'checkbox',
+                            'margin_top' => false,
+                            'scalar' => true,
+                            'choices' => ['y' => lang('include_in_memberlist')],
+                            'value' => $settings->include_in_memberlist
                         ]
                     ]
                 ]
@@ -1374,6 +1407,7 @@ class Roles extends AbstractRolesController
                         'type' => 'checkbox',
                         'nested' => true,
                         'auto_select_parents' => true,
+                        'jsonify' => true,
                         'choices' => $template_access['choices'],
                         'value' => $template_access['values'],
                     ]
@@ -1407,7 +1441,9 @@ class Roles extends AbstractRolesController
 
         if ($role) {
             foreach ($role->AssignedChannels as $channel) {
-                $channel_access['values'][] = 'channel_id_' . $channel->getId();
+                if ($channel->site_id == ee()->config->item('site_id')) {
+                    $channel_access['values'][] = 'channel_id_' . $channel->getId();
+                }
             }
 
             foreach ($channel_access['choices'] as $group => $choices) {

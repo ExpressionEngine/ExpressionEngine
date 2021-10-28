@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -125,7 +125,7 @@ class Auth
         $authed = $this->_retrieve_http_basic();
 
         if ($authed !== false) {
-            $member = ee('Model')->get('Member', $authed->member('member_id'))->first();
+            $member = ee('Model')->get('Member', $authed->member('member_id'))->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
 
             $authed = false;
 
@@ -619,7 +619,7 @@ class Auth_result
     public function has_permission($perm)
     {
         if (empty($this->permissions)) {
-            $member = ee('Model')->get('Member', $this->member('member_id'))->first();
+            $member = ee('Model')->get('Member', $this->member('member_id'))->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
 
             if ($member->role_id == 1) {
                 return true;

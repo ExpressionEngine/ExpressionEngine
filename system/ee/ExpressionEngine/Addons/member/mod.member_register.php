@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -131,13 +131,17 @@ class Member_register extends Member
         // {if captcha}
         if (preg_match("/{if captcha}(.+?){\/if}/s", $reg_form, $match)) {
             if (ee('Captcha')->shouldRequireCaptcha()) {
-                $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", $match['1'], $reg_form);
+                if (ee()->config->item('use_recaptcha') == 'y') {
+                    $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), $reg_form);
+                } else {
+                    $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", $match['1'], $reg_form);
 
-                // Bug fix.  Deprecate this later..
-                $reg_form = str_replace('{captcha_word}', '', $reg_form);
+                    // Bug fix.  Deprecate this later..
+                    $reg_form = str_replace('{captcha_word}', '', $reg_form);
 
-                if (! class_exists('Template')) {
-                    $reg_form = preg_replace("/{captcha}/", ee('Captcha')->create(), $reg_form);
+                    if (! class_exists('Template')) {
+                        $reg_form = preg_replace("/{captcha}/", ee('Captcha')->create(), $reg_form);
+                    }
                 }
             } else {
                 $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", "", $reg_form);
@@ -189,6 +193,10 @@ class Member_register extends Member
             'FROM' => ($this->in_forum == true) ? 'forum' : '',
             'P' => ee()->functions->get_protected_form_params(),
         );
+
+        if(!empty(ee()->TMPL->form_class)) {
+            $data['class'] = ee()->TMPL->form_class;
+        }
 
         if ($this->in_forum === true) {
             $data['hidden_fields']['board_id'] = $this->board_id;
@@ -319,7 +327,7 @@ class Member_register extends Member
 
         if (ee('Captcha')->shouldRequireCaptcha()) {
             if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
-                $cust_errors[] = lang('captcha_required');
+                $cust_errors[] = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
             }
         }
 
@@ -451,7 +459,8 @@ class Member_register extends Member
             $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_captcha WHERE word='" . ee()->db->escape_str($_POST['captcha']) . "' AND ip_address = '" . ee()->input->ip_address() . "' AND date > UNIX_TIMESTAMP()-7200");
 
             if ($query->row('count') == 0) {
-                return ee()->output->show_user_error('submission', array(lang('captcha_incorrect')), '', $return_error_link);
+                $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_incorrect');
+                return ee()->output->show_user_error('submission', array($captcha_error), '', $return_error_link);
             }
 
             ee()->db->query("DELETE FROM exp_captcha WHERE (word='" . ee()->db->escape_str($_POST['captcha']) . "' AND ip_address = '" . ee()->input->ip_address() . "') OR date < UNIX_TIMESTAMP()-7200");

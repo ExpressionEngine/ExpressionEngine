@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -12,13 +12,17 @@ class Relationship extends React.Component {
 
     constructor(props) {
         super(props)
-
+        this.initialItems = SelectList.formatItems(props.items)
         this.state = {
             selected: props.selected,
             items: props.items,
             channelFilter: false,
-            filterTerm: false
-        }
+            filterTerm: false,
+            filterValues: {}
+        };
+        this.ajaxFilter = (SelectList.countItems(this.initialItems) >= props.limit && props.filter_url)
+        this.ajaxTimer = null
+        this.ajaxRequest = null
     }
 
     static renderFields(context) {
@@ -91,6 +95,53 @@ class Relationship extends React.Component {
         })
     }
 
+    filterItems (items, searchTerm) {
+        items = items.map(item => {
+            // Clone item so we don't modify reference types
+            item = Object.assign({}, item)
+
+            // If any children contain the search term, we'll keep the parent
+            if (item.children) item.children = this.filterItems(item.children, searchTerm)
+
+            let itemFoundInChildren = (item.children && item.children.length > 0)
+            let itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase())
+
+            return (itemFound || itemFoundInChildren) ? item : false
+        })
+
+        return items.filter(item => item);
+    }
+
+    getSelectedValues (selected) {
+        let values = []
+        if (selected instanceof Array) {
+            values = selected.map(item => {
+                return item.value
+            })
+        } else if (selected.value) {
+            values = [selected.value]
+        }
+        return values.join('|')
+    }
+
+    forceAjaxRefresh (params) {
+        if ( ! params) {
+            params = this.state.filterValues
+            params.selected = this.getSelectedValues(this.props.selected)
+        }
+
+        return $.ajax({
+            url: this.props.filter_url,
+            data: $.param(params),
+            dataType: 'json',
+            success: (data) => {
+                this.setState({ loading: false })
+                this.initialItemsChanged(SelectList.formatItems(data))
+            },
+            error: () => {} // Defined to prevent error on .abort above
+        })
+    }
+
     // Event when a new entry was created by the channel modal
     entryWasCreated = (result, modal) => {
         let selected = this.state.selected
@@ -114,6 +165,45 @@ class Relationship extends React.Component {
         this.setState({ filterTerm: event.target.value || false })
     }
 
+    itemsChanged = (items) => {
+        this.setState({ items: items })
+    }
+
+    initialItemsChanged = (items) => {
+        this.initialItems = items
+
+        if ( ! this.ajaxFilter && this.state.filterValues.search) {
+            items = this.filterItems(items, this.state.filterValues.search)
+        }
+
+        this.setState({ items: items })
+
+        if (this.props.itemsChanged) {
+            this.props.itemsChanged(items)
+        }
+    }
+
+    filterChange = (name, value) => {
+        let filterState = this.state.filterValues
+            filterState[name] = value
+        this.setState({ filterValues: filterState }) // DOM filter
+        if ( ! this.ajaxFilter && name == 'search') {
+            this.itemsChanged(this.filterItems(this.initialItems, value))
+            return
+        } // Debounce AJAX filter
+        clearTimeout(this.ajaxTimer)
+        if (this.ajaxRequest) this.ajaxRequest.abort()
+
+        let params = filterState
+            params.selected = this.getSelectedValues(this.props.selected)
+
+        this.setState({ loading: true })
+
+        this.ajaxTimer = setTimeout(() => {
+            this.ajaxRequest = this.forceAjaxRefresh(params)
+        }, 300)
+    }
+
 	bindSortable = () => {
 		let thisRef = this
 
@@ -122,7 +212,11 @@ class Relationship extends React.Component {
 			containment: 'parent',
 			handle: '.list-item__handle',
 			items: '.list-item',
-			sort: EE.sortable_sort_helper,
+			sort: (event, ui) => {
+                try {
+                    EE.sortable_sort_helper(event, ui)
+                } catch (error) {}
+            },
 			start: (event, ui) => {
 				// Save the start index for later
 				$(this).attr('data-start-index', ui.item.index());
@@ -142,6 +236,10 @@ class Relationship extends React.Component {
 				selected.splice(newIndex, 0, selected.splice(oldIndex, 1)[0]);
 
 				thisRef.setState({ selected: selected })
+
+				$(document).trigger('entry:preview');
+
+				$("[data-publish] > form").trigger("entry:startAutosave");
 			}
 		})
 	}
@@ -176,6 +274,8 @@ class Relationship extends React.Component {
         let channelFilterItems = props.channels.map((channel) => {
             return { label: channel.title, value: channel.id}
         })
+
+        let handleSearchItem = this.handleSearch
 
         return (
             <div ref={el => this.field = el}>
@@ -223,7 +323,7 @@ class Relationship extends React.Component {
                             <div className="filter-bar flex-grow">
                                 <div className="filter-bar__item flex-grow">
                                     <div className="search-input">
-                                        <input type="text" class="search-input__input input--small" onChange={this.handleSearch} placeholder={EE.relationship.lang.search} />
+                                        <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={EE.relationship.lang.search} />
                                     </div>
                                 </div>
                                 {props.channels.length > 1 && 
@@ -232,7 +332,7 @@ class Relationship extends React.Component {
                                         keepSelectedState={true}
                                         title={EE.relationship.lang.channel}
                                         items={channelFilterItems}
-                                        onSelect={(value) => this.channelFilterChange(value)}
+                                        onSelect={(value) => this.filterChange('channel_id', value)}
                                         buttonClass="filter-bar__button"
                                     />
                                 </div>

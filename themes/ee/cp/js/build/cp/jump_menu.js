@@ -7,7 +7,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -58,7 +58,11 @@ EE.cp.JumpMenu = {
       EE.cp.JumpMenu.shortcut = '⌘';
     }
 
-    jumpContainer.$('.jump-trigger').html(EE.cp.JumpMenu.shortcut);
+    if (!jumpContainer.document.querySelector('#jumpEntry1') || jumpContainer.document.querySelector('#jumpEntry1').length == 0) {
+      return false;
+    } //jumpContainer.$('.jump-trigger').html(EE.cp.JumpMenu.shortcut);
+
+
     jumpContainer.document.addEventListener('keydown', EE.cp.JumpMenu._keyPress, false);
     jumpContainer.document.addEventListener('keyup', EE.cp.JumpMenu._keyUp, false); // jumpContainer.document.querySelector('#jumpEntry1').addEventListener("focus", function() { EE.cp.JumpMenu._showResults(1); });
 

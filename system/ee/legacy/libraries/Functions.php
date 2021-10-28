@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -426,7 +426,7 @@ class EE_Functions
         $location = $this->insert_action_ids($location);
         $location = ee()->uri->reformat($location);
 
-        if (count(ee()->session->flashdata)) {
+        if (isset(ee()->session) && count(ee()->session->flashdata)) {
             // Ajax requests don't redirect - serve the flashdata
 
             if (ee()->input->is_ajax_request()) {

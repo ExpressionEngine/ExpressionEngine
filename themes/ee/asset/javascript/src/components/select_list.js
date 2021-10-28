@@ -27,7 +27,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var SelectList =
@@ -373,6 +373,9 @@ function (_React$Component) {
 
       var props = this.props;
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
+      var values = props.selected.length ? props.selected.map(function (item) {
+        return item.value;
+      }) : [];
       return React.createElement("div", {
         className: props.tooMany ? ' lots-of-checkboxes' : '',
         ref: function ref(container) {
@@ -436,14 +439,14 @@ function (_React$Component) {
         item: this.getFullItem(props.selected[0]),
         clearSelection: this.clearSelection,
         selectionRemovable: props.selectionRemovable
-      }), props.selectable && props.selected.length == 0 && React.createElement("input", {
+      }), !props.jsonify && props.selectable && props.selected.length == 0 && React.createElement("input", {
         type: "hidden",
         name: props.multi ? props.name + '[]' : props.name,
         value: "",
         ref: function ref(input) {
           _this8.input = input;
         }
-      }), props.selectable && props.selected.map(function (item) {
+      }), !props.jsonify && props.selectable && props.selected.map(function (item) {
         return React.createElement("input", {
           type: "hidden",
           key: item.value,
@@ -453,6 +456,13 @@ function (_React$Component) {
             _this8.input = input;
           }
         });
+      }), props.jsonify && props.selectable && React.createElement("input", {
+        type: "hidden",
+        name: props.name,
+        value: JSON.stringify(values),
+        ref: function ref(input) {
+          _this8.input = input;
+        }
       }));
     }
   }], [{

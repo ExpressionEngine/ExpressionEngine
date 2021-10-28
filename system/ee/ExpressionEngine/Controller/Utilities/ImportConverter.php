@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -340,7 +340,6 @@ class ImportConverter extends Utilities
                 $fields[] = $matches[1];
             }
         }
-
         return $fields;
     }
 
@@ -502,6 +501,9 @@ class ImportConverter extends Utilities
         ee()->view->cp_page_title = lang('xml_code');
         ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/import_converter'), lang('import_converter'));
         ee()->cp->render('utilities/import/code-output', $vars);
+
+        //Clear out the cache so that unauthorized cannot access
+        ee('Filesystem')->deleteDir($this->cache, true);
     }
 
     /**

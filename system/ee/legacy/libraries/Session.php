@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -59,7 +59,6 @@ class EE_Session
     public $valid_session_types = array('cs', 'c', 's');
 
     public $c_session = 'sessionid';
-    public $c_expire = 'expiration';
     public $c_anon = 'anon';
     public $c_prefix = '';
 
@@ -220,8 +219,10 @@ class EE_Session
 
     public function setSessionCookies()
     {
-        ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $this->activity_cookie_ttl);
-        ee()->input->set_cookie('last_activity', ee()->localize->now, $this->activity_cookie_ttl);
+        if (bool_config_item('forum_is_installed')) {
+            ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $this->activity_cookie_ttl);
+            ee()->input->set_cookie('last_activity', ee()->localize->now, $this->activity_cookie_ttl);
+        }
 
         // Update session ID cookie
         if ($this->session_exists === true && $this->validation != 's') {
@@ -352,7 +353,7 @@ class EE_Session
     public function create_new_session($member_id, $admin_session = false, $can_debug = false)
     {
         if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
-            $this->member_model = ee('Model')->get('Member', $member_id)->first();
+            $this->member_model = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
         }
 
         if ($this->access_cp == true or $this->member_model->can('access_cp')) {
@@ -964,7 +965,7 @@ class EE_Session
             );
         }
 
-        ee()->input->set_cookie('tracker', json_encode($tracker), '0');
+        ee()->input->set_cookie('tracker', json_encode($tracker), 0);
     }
 
     /**
@@ -1181,7 +1182,8 @@ class EE_Session
 
         if (! is_object($this->member_model) || $member_model->member_id != $member_id) {
             $this->member_model = ee('Model')->get('Member', $member_id)
-                ->with('PrimaryRole')
+                ->with('PrimaryRole', 'Roles', 'RoleGroups')
+                ->all()
                 ->first();
         }
 
@@ -1270,7 +1272,7 @@ class EE_Session
     protected function _set_flash_cookie()
     {
         if (count($this->flashdata) > 0) {
-            ee('Cookie')->setSignedCookie('flash', $this->flashdata, 86500);
+            ee('Cookie')->setSignedCookie('flash', $this->flashdata);
         }
     }
 
