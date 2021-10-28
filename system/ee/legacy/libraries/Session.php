@@ -1307,6 +1307,8 @@ class EE_Session
 
         $this->userdata['assigned_sites'] = $assigned_sites->all()
             ->getDictionary('site_id', 'site_label');
+
+        asort($this->userdata['assigned_sites']);
     }
 
     /**
