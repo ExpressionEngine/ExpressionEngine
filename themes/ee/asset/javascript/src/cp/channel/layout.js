@@ -261,5 +261,9 @@ $(document).ready(function () {
 	});
 
 	// put debug back
-	$('body').append(debug);
+	if ( $('body .ee-main').length ) {
+		$('body .ee-main').append(debug);
+	} else {
+		$('body').append(debug);
+	}
 });
