@@ -53,6 +53,7 @@ class ModelGenerator
         $modelStub = $this->filesystem->read($this->stub('model.php'));
         $modelStub = $this->write('namespace', $this->namespace, $modelStub);
         $modelStub = $this->write('class', $this->className, $modelStub);
+        $modelStub = $this->write('addon', strtolower($this->addon), $modelStub);
 
         $this->putFile($this->className . '.php', $modelStub);
 
