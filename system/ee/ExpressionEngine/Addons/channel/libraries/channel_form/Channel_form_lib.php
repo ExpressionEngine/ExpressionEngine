@@ -687,7 +687,7 @@ class Channel_form_lib
                 'onsubmit' => ee()->TMPL->fetch_param('onsubmit'),
                 'name' => ee()->TMPL->fetch_param('name'),
                 'id' => ee()->TMPL->fetch_param('id'),
-                'class' => 'ee-cform ' . ee()->TMPL->fetch_param('class')
+                'class' => ($this->bool_string(ee()->TMPL->fetch_param('include_css'), true) ? 'ee-cform ' : '') . ee()->TMPL->fetch_param('class')
             )
         );
 

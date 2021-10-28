@@ -74,6 +74,7 @@ class SpecialtyTemplate extends Model
             'mbr_activation_instructions' => array('name',  'username', 'email', 'activation_url', 'site_name', 'site_url'),
             'email_changed_notification' => ['name', 'username', 'site_name', 'site_url'],
             'forgot_password_instructions' => array('name', 'username', 'reset_url', 'site_name', 'site_url'),
+            'forgot_username_instructions' => array('name', 'username', 'reset_url', 'site_name', 'site_url'),
             'password_changed_notification' => ['name', 'username', 'site_name', 'site_url'],
             'decline_member_validation' => array('name', 'username', 'site_name', 'site_url'),
             'validated_member_notify' => array('name', 'username', 'email', 'site_name', 'site_url'),

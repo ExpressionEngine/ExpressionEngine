@@ -24,12 +24,15 @@
     margin:0;
 
     ul {
-      list-style-type:none;margin:0;
+      list-style-type:none;
+      margin:0;
+      border-left: 1px solid var(--ee-panel-border);
+      border-right: 1px solid var(--ee-panel-border);
 
       li{
-        border-bottom:1px solid #ccc;
+        border-bottom:1px solid var(--ee-panel-border);
         font-family:'New Courier',Courier,Monospace;
-        font-size:12px;
+        font-size:14px;
         padding:10px;
         word-break:break-all;
 
@@ -38,9 +41,17 @@
         }
 
         &:nth-child(2n){
-          background-color:#f9f9f9;
+          background-color: var(--ee-bg-0);
         }
       }
+    }
+  }
+
+  .alert__content {
+    p { opacity: 1; }
+
+    .alert-notice {
+      p { word-break: break-word; }
     }
   }
 }

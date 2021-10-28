@@ -426,7 +426,7 @@ class EE_Functions
         $location = $this->insert_action_ids($location);
         $location = ee()->uri->reformat($location);
 
-        if (count(ee()->session->flashdata)) {
+        if (isset(ee()->session) && count(ee()->session->flashdata)) {
             // Ajax requests don't redirect - serve the flashdata
 
             if (ee()->input->is_ajax_request()) {
