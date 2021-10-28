@@ -430,22 +430,12 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         $choices = [];
         foreach ($entries as $entry) {
-            $choices[] = [
-                'value' => $entry->getId(),
-                'label' => $entry->title,
-                'instructions' => sprintf('%s (#%d)', $entry->Channel->channel_title, $entry->entry_id),
-                'channel_id' => $entry->Channel->getId()
-            ];
+            $choices[] = $this->_buildOption($entry);
         }
 
         $selected = [];
         foreach ($related as $child) {
-            $selected[] = [
-                'value' => $child->getId(),
-                'label' => $child->title,
-                'instructions' => sprintf('%s (#%d)', $child->Channel->channel_title, $child->entry_id),
-                'channel_id' => $child->Channel->getId()
-            ];
+            $this->_buildOption($child);
         }
 
         $field_name = $field_name . '[data]';
@@ -505,6 +495,16 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'channels' => $channel_choices,
             'in_modal' => $this->get_setting('in_modal_context')
         ]);
+    }
+
+    private function _buildOption($entry) {
+        return [
+            'value' => $entry->getId(),
+            'label' => $entry->title,
+            'instructions' => $entry->Channel->channel_title,
+            'entry_id' => (isset($this->settings['display_entry_id']) && $this->settings['display_entry_id'] == 'y') ? $entry->entry_id : '',
+            'channel_id' => $entry->Channel->getId()
+        ];
     }
 
     /**
@@ -679,6 +679,16 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                         'value' => ($values['allow_multiple']) ? 'y' : 'n'
                     )
                 )
+            ),
+            array(
+                'title' => 'rel_ft_display_entry_id',
+                'desc' => 'rel_ft_display_entry_id_desc',
+                'fields' => array(
+                    'relationship_display_entry_id' => array(
+                        'type' => 'yes_no',
+                        'value' => $values['display_entry_id']
+                    )
+                )
             )
         );
 
@@ -745,6 +755,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'limit' => 100,
             'order_field' => 'title',
             'order_dir' => 'asc',
+            'display_entry_id' => 'n',
             'allow_multiple' => 'n'
         );
 

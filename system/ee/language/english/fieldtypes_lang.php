@@ -71,6 +71,10 @@ $lang = array(
 
     'rel_ft_unrelated_only' => 'Unrelated only',
 
+    'rel_ft_display_entry_id' => 'Display Entry IDs?',
+
+    'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
+
     /* Duration */
     'duration_ft_hh' => 'hh',
 
