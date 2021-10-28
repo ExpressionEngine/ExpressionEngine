@@ -261,7 +261,7 @@ $(document).ready(function () {
 	});
 
 	// put debug back
-	if ( $('body .ee-main').length ) {
+	if ($('body .ee-main').length) {
 		$('body .ee-main').append(debug);
 	} else {
 		$('body').append(debug);
