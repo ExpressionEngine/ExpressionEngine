@@ -13,6 +13,8 @@
 	// padding-bottom: 10px;
 	border: 1px solid color(fluid-item-border);
   position: relative;
+  width: 100%;
+  overflow-x: auto;
 
   .fluid__item-fieldset {
     padding: 10px 15px 5px 15px;
