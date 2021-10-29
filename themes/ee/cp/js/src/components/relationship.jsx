@@ -186,6 +186,7 @@ class Relationship extends React.Component {
     filterChange = (name, value) => {
         let filterState = this.state.filterValues
             filterState[name] = value
+
         this.setState({ filterValues: filterState }) // DOM filter
         if ( ! this.ajaxFilter && name == 'search') {
             this.itemsChanged(this.filterItems(this.initialItems, value))
@@ -250,7 +251,6 @@ class Relationship extends React.Component {
         // Determine what items show up in the add dropdown
         let dropdownItems = this.state.items.filter((el) => {
             let allowedChannel = true
-
             // Is the user filtering by channel?
             if (this.state.channelFilter) {
                 allowedChannel = (el.channel_id == this.state.channelFilter)
@@ -291,7 +291,7 @@ class Relationship extends React.Component {
                                     <div className="list-item__content">
                                         <div class="list-item__title">{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
                                         {this.state.selected.length <= 10 &&
-                                        <div class="list-item__secondary">{item.instructions}</div>
+                                        <div class="list-item__secondary">{item.entry_id && <span> #{item.entry_id} / </span>}{item.instructions}</div>
                                         }
                                     </div>
                                     <div class="list-item__content-right">
@@ -362,8 +362,9 @@ class Relationship extends React.Component {
                         <div className="dropdown__scroll dropdown__scroll--small">
                         {
                             dropdownItems.map((item) => {
+
                                 return (
-                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label} <span className="dropdown__link-right">{item.instructions}</span></a>
+                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label}{item.entry_id && <span class="dropdown__link-entryId"> (#{item.entry_id})</span>} <span className="dropdown__link-right">{item.instructions}</span></a>
                                 )
                             })
                         }

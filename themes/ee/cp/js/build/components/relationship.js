@@ -365,7 +365,7 @@ function (_React$Component) {
           className: "meta-info ml-s float-right"
         }, " ", item.instructions)), _this5.state.selected.length <= 10 && React.createElement("div", {
           "class": "list-item__secondary"
-        }, item.instructions)), React.createElement("div", {
+        }, item.entry_id && React.createElement("span", null, " #", item.entry_id, " / "), item.instructions)), React.createElement("div", {
           "class": "list-item__content-right"
         }, React.createElement("div", {
           className: "button-group"
@@ -459,7 +459,9 @@ function (_React$Component) {
             _this5.selectItem(item);
           },
           className: "dropdown__link"
-        }, item.label, " ", React.createElement("span", {
+        }, item.label, item.entry_id && React.createElement("span", {
+          "class": "dropdown__link-entryId"
+        }, " (#", item.entry_id, ")"), " ", React.createElement("span", {
           className: "dropdown__link-right"
         }, item.instructions));
       }), dropdownItems.length == 0 && React.createElement("div", {
