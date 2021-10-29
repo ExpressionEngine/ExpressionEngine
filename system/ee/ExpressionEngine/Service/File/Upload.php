@@ -254,7 +254,7 @@ class Upload
                 ->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
                 ->now();
 
-            show_404();
+            show_error(lang('invalid_upload_destination'), 404);
         }
 
         $posted = false;

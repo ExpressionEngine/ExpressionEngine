@@ -272,10 +272,16 @@ function (_React$Component) {
             }
           } // Unexpected error, probably post_max_size is too low
           else if (xhr.readyState == 4 && xhr.status != 200) {
-              file.error = EE.lang.file_dnd_unexpected_error;
-              console.error(xhr);
-              reject(file);
-            }
+            file.error = EE.lang.file_dnd_unexpected_error;
+            try {
+              var response = JSON.parse(xhr.responseText);
+              if (typeof(response.error) != 'undefined') {
+                file.error = response.error;
+              }
+            } catch(err) {}
+            console.error(xhr);
+            reject(file);
+          }
 
           _this3.setState({
             files: _this3.state.files
