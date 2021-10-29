@@ -747,7 +747,7 @@ class Forum_Core extends Forum
         }
 
         // Fetch the permissions from the DB
-        $query = ee()->db->query("SELECT * FROM exp_forum_moderators WHERE mod_forum_id = '{$forum_id}' AND (mod_member_id = '{$member_id}' OR mod_group_id IN (" . implode($role_ids, ', ') . "))");
+        $query = ee()->db->query("SELECT * FROM exp_forum_moderators WHERE mod_forum_id = '{$forum_id}' AND (mod_member_id = '{$member_id}' OR mod_group_id IN (" . implode(', ', $role_ids) . "))");
 
         if ($query->num_rows() == 0) {
             return false;
