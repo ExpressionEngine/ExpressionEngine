@@ -2598,6 +2598,7 @@ class Member
         $member = ee('Model')
             ->get('Member', $member_id)
             ->with('PrimaryRole', 'Roles', 'RoleGroups')
+            ->all()
             ->first();
 
         if (!$member) {

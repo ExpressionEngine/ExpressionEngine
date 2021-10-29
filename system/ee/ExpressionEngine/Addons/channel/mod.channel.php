@@ -556,7 +556,7 @@ class Channel
                     if (is_array($param_value)) {
                         // Drop empty, leave 0
                         $param_value = array_filter($param_value, 'strlen');
-                        $param_value = rtrim(implode($param_value, $modifier), $modifier);
+                        $param_value = rtrim(implode($modifier, $param_value), $modifier);
                     }
 
                     $tag .= $var . '="' . $param_value . '"';
@@ -570,7 +570,7 @@ class Channel
 
                     if (is_array($param_value)) {
                         $param_value = array_filter($param_value, 'strlen');
-                        $param_value = rtrim(implode($param_value, $modifier), $modifier);
+                        $param_value = rtrim(implode($modifier, $param_value), $modifier);
                     }
 
                     $tag .= substr($var, 7) . '="' . $param_value . '"';
