@@ -217,7 +217,7 @@ class Edit extends AbstractPublishController
             $choices[$link->compile()] = $text;
         }
 
-        ee()->view->header = array(
+        $vars['head'] = array(
             'title' => lang('entry_manager'),
             'action_button' => (count($choices) || ee('Permission')->can('create_entries_channel_id_' . $channel_id)) && $show_new_button ? [
                 'text' => $channel_id ? sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title) : lang('new'),
