@@ -593,7 +593,7 @@ function (_React$Component2) {
         "data-group-toggle": props.groupToggle ? JSON.stringify(props.groupToggle) : '[]',
         disabled: disabled ? 'disabled' : ''
       }), React.createElement("div", {
-        className: "checkbox-label__text"
+        className: props.editable ? "checkbox-label__text checkbox-label__text-editable" : "checkbox-label__text"
       }, props.reorderable && React.createElement("span", {
         className: "icon-reorder icon-left"
       }), props.editable && React.createElement("a", {
@@ -616,6 +616,11 @@ function (_React$Component2) {
         }
       }, React.createElement("i", {
         "class": "fas fa-fw fa-trash-alt"
+      })), props.editable && React.createElement("a", {
+        href: "#",
+        className: "flyout-edit flyout-edit-icon"
+      }, React.createElement("i", {
+        "class": "fas fa-pencil-alt"
       }))));
 
       if (props.nested) {

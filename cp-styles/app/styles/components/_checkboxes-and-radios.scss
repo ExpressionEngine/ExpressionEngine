@@ -350,4 +350,37 @@ ul.field-nested ul {
 // LEGACY 6.0
 .field-nested li {
 	padding: 0;
+
+	.checkbox-label__text-editable {
+		&:before {
+			position: absolute;
+		  display: block;
+		  content: '';
+		  width: 10px;
+		  height: 100%;
+		  background: inherit;
+		  top: 0;
+		  left: -10px;
+			border-bottom-left-radius: 5px;
+  		border-top-left-radius: 5px;
+		}
+
+		.flyout-edit-icon {
+		  padding: 5px 15px;
+		  font-size: 0.8rem;
+		  line-height: 1.5;
+		  border-radius: 4px;
+		  float: right;
+		}		
+	}
+
+	&:hover {
+		.checkbox-label__text-editable {
+			background: var(--ee-secondary-sidebar-item-bg);
+			border-top-right-radius: 5px;
+			border-bottom-right-radius: 5px;
+  		border-top-left-radius: 0;
+  		border-bottom-left-radius: 0;			
+		}
+	}
 }
