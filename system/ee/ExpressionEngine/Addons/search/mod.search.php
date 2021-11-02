@@ -31,6 +31,8 @@ class Search
     protected $_meta = array();
     protected $custom_fields = [];
 
+    private $param_bypass = null; // we need to define a standard here, something like `BYPASS PARAM`
+
     /**
      * Do Search
      */
@@ -279,7 +281,7 @@ class Search
     {
         $site_ids = null;
 
-        if (ee()->TMPL->fetch_param('site') != 'not none') {
+        if (ee()->TMPL->fetch_param('site') != $this->param_bypass) {
             $site_ids = (ee()->TMPL->fetch_param('site'))
                 ? ee()->TMPL->site_ids
                 : array(ee()->config->item('site_id'));
