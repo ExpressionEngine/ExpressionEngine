@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '6.1.5'; // The version being installed
+    public $version = '6.2.0'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -1586,9 +1586,9 @@ class Wizard extends CI_Controller
             'password_lockout_interval' => '1',
             'require_ip_for_login' => 'y',
             'require_ip_for_posting' => 'y',
-            'require_secure_passwords' => 'n',
+            'require_secure_passwords' => 'y',
             'allow_dictionary_pw' => 'y',
-            'name_of_dictionary_file' => '',
+            'name_of_dictionary_file' => 'dictionary.txt',
             'xss_clean_uploads' => 'y',
             'redirect_method' => $this->userdata['redirect_method'],
             'deft_lang' => $this->userdata['deft_lang'],

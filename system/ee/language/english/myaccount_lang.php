@@ -342,7 +342,7 @@ $lang = array(
 
     'no_unlocked_member_groups' => 'You do not have the required permissions to add new members to any group.<br />Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.',
 
-    'not_secure_password' => 'Password must contain at least one uppercase character, one lowercase character and one number',
+    'not_secure_password' => 'The chosen password is not secure enough.',
 
     'notepad_blurb' => 'Use this form to store personal notes and information',
 

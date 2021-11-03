@@ -163,7 +163,15 @@ class SecurityPrivacy extends Settings
                     'title' => 'require_secure_passwords',
                     'desc' => 'require_secure_passwords_desc',
                     'fields' => array(
-                        'require_secure_passwords' => array('type' => 'yes_no')
+                        'require_secure_passwords' => array(
+                            'type' => 'radio',
+                            'choices' => array(
+                                'n' => lang('password_security_none'),
+                                'y' => lang('password_security_basic'),
+                                'a' => lang('password_security_advanced'),
+                                's' => lang('password_security_strict')
+                            )
+                        )
                     )
                 ),
                 array(
@@ -177,14 +185,23 @@ class SecurityPrivacy extends Settings
                     'title' => 'allow_dictionary_pw',
                     'desc' => 'allow_dictionary_pw_desc',
                     'fields' => array(
-                        'allow_dictionary_pw' => array('type' => 'yes_no')
+                        'allow_dictionary_pw' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'n' => 'dictionary_file'
+                            )
+                        ),
                     )
                 ),
                 array(
                     'title' => 'name_of_dictionary_file',
                     'desc' => 'name_of_dictionary_file_desc',
+                    'group' => 'dictionary_file',
                     'fields' => array(
-                        'name_of_dictionary_file' => array('type' => 'text')
+                        'name_of_dictionary_file' => array(
+                            'type' => 'text',
+                            'placeholder' => 'dictionary.txt'
+                        ),
                     )
                 )
             ),
@@ -247,8 +264,13 @@ class SecurityPrivacy extends Settings
             array(
                 'field' => 'pw_min_len',
                 'label' => 'lang:pw_min_len',
-                'rules' => 'integer'
-            )
+                'rules' => 'integer|callback__validatePwLen'
+            ),
+            array(
+                'field' => 'name_of_dictionary_file',
+                'label' => 'lang:name_of_dictionary_file',
+                'rules' => 'callback__validateDictionaryPath'
+            ),
         ));
 
         ee()->form_validation->validateNonTextInputs($vars['sections']);
@@ -287,6 +309,40 @@ class SecurityPrivacy extends Settings
         );
 
         ee()->cp->render('settings/form', $vars);
+    }
+
+    /**
+     * Custom validator to make sure Dictionary File exists
+     **/
+    public function _validateDictionaryPath($filename = 'dictionary.txt')
+    {
+        if (empty($filename)) {
+            $filename = 'dictionary.txt';
+        }
+        if (ee('Request')->post('allow_dictionary_pw') == 'n' && !file_exists(reduce_double_slashes(PATH_DICT . $filename))) {
+            ee()->form_validation->set_message('_validateDictionaryPath', lang('invalid_name_of_dictionary_file'));
+
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Custom validator to make sure min password length matches the selected policy
+     **/
+    public function _validatePwLen($length)
+    {
+        $rules = [
+            'a' => 8,
+            's' => 12
+        ];
+        $policy = ee('Request')->post('require_secure_passwords');
+        if (array_key_exists($policy, $rules) && $length < $rules[$policy]) {
+            ee()->form_validation->set_message('_validatePwLen', sprintf(lang('pw_min_len_does_not_match_policy'), $rules[$policy]));
+
+            return false;
+        }
+        return true;
     }
 }
 // END CLASS

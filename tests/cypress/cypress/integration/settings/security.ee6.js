@@ -84,9 +84,7 @@ context('Security & Privacy Settings', () => {
       })
     })
     cy.eeConfig({item: 'require_secure_passwords'}) .then((config) => {
-      page.get('require_secure_passwords').invoke('val').then((val) => {
-        expect(val).to.be.equal(config)
-      })
+      page.get('require_secure_passwords').filter('[value='+config+']').should('be.checked')
     })
     cy.eeConfig({item: 'pw_min_len'}) .then((config) => {
       page.get('pw_min_len').invoke('val').then((val) => {
@@ -95,11 +93,6 @@ context('Security & Privacy Settings', () => {
     })
     cy.eeConfig({item: 'allow_dictionary_pw'}) .then((config) => {
       page.get('allow_dictionary_pw').invoke('val').then((val) => {
-        expect(val).to.be.equal(config)
-      })
-    })
-    cy.eeConfig({item: 'name_of_dictionary_file'}) .then((config) => {
-      page.get('name_of_dictionary_file').invoke('val').then((val) => {
         expect(val).to.be.equal(config)
       })
     })
@@ -218,7 +211,7 @@ context('Security & Privacy Settings', () => {
     page.get('require_ip_for_login_toggle').click()
     page.get('password_lockout_toggle').click()
     page.get('password_lockout_interval').clear().type('15')
-    page.get('require_secure_passwords_toggle').click()
+    page.get('require_secure_passwords').filter('[value=y]').check()
     page.get('pw_min_len').clear().type('8')
     page.get('allow_dictionary_pw_toggle').click()
     page.get('name_of_dictionary_file').clear().type('http://dictionary')
@@ -226,6 +219,13 @@ context('Security & Privacy Settings', () => {
     page.get('require_ip_for_posting_toggle').click()
     page.get('xss_clean_uploads_toggle').click()
     page.get('redirect_submitted_links_toggle').click()
+
+    cy.get('.button--primary').contains('Errors Found');
+    page.get('name_of_dictionary_file').clear().blur()
+    cy.get('.button--primary').contains('Errors Found');
+    page.get('name_of_dictionary_file').clear().type('http://dictionary').blur()
+    cy.get('.button--primary').contains('Errors Found');
+    page.get('allow_dictionary_pw_toggle').click()
 
     page.get('force_interstitial_toggle').should('be.visible')
     page.get('force_interstitial_toggle').click()
@@ -248,9 +248,9 @@ context('Security & Privacy Settings', () => {
     page.get('require_ip_for_login').invoke('val').then((val) => { expect(val).to.be.equal('n')})
     page.get('password_lockout').invoke('val').then((val) => { expect(val).to.be.equal('n')})
     page.get('password_lockout_interval').invoke('val').then((val) => { expect(val).to.be.equal('15')})
-    page.get('require_secure_passwords').invoke('val').then((val) => { expect(val).to.be.equal('y')})
+    page.get('require_secure_passwords').filter('[value=y]').should('be.checked')
     page.get('pw_min_len').invoke('val').then((val) => { expect(val).to.be.equal('8')})
-    page.get('allow_dictionary_pw').invoke('val').then((val) => { expect(val).to.be.equal('n')})
+    page.get('allow_dictionary_pw').invoke('val').then((val) => { expect(val).to.be.equal('y')})
     page.get('name_of_dictionary_file').invoke('val').then((val) => { expect(val).to.be.equal('http://dictionary')})
     page.get('deny_duplicate_data').invoke('val').then((val) => { expect(val).to.be.equal('n')})
     page.get('require_ip_for_posting').invoke('val').then((val) => { expect(val).to.be.equal('n')})

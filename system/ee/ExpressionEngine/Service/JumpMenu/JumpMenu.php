@@ -1333,13 +1333,6 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'allow_dictionary_pw allow_dictionary_pw_desc',
                         'command_title' => 'allow_dictionary_pw'
                     ),
-                    'fieldset-name_of_dictionary_file' => array(
-                        'trail' => [
-                            'member_security_settings'
-                        ],
-                        'command' => 'name_of_dictionary_file name_of_dictionary_file_desc',
-                        'command_title' => 'name_of_dictionary_file'
-                    ),
                     'fieldset-deny_duplicate_data' => array(
                         'trail' => [
                             'form_security_settings'
