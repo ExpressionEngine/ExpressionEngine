@@ -4095,15 +4095,10 @@ class EE_Template
 
         // Lazy load templates instead, this was looping the group query with it included
 
-        try {
-            $groups = ee('Model')->get('TemplateGroup')
-                ->with('Templates')
-                ->filter('site_id', ee()->config->item('site_id'))
-                ->all();
-        } catch(\Exception $e) {
-            //if we got SQL error, silently exit
-            return false;
-        }
+        $groups = ee('Model')->get('TemplateGroup')
+            ->with('Templates')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->all();
         $group_ids_by_name = $groups->getDictionary('group_name', 'group_id');
 
         $existing = array();

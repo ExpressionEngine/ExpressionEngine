@@ -346,19 +346,11 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
 
         if ($this->isNew()) {
             $this->forwardEventToHooks('insert');
-            try {
-                $qb->insert();
-            } catch (\Exception $e) {
-                $this->catchDbExceptionOnModel($e, 'insert');
-            }
+            $qb->insert();
         } else {
             $this->constrainQueryToSelf($qb);
             $this->forwardEventToHooks('update');
-            try {
-                $qb->update();
-            } catch (\Exception $e) {
-                $this->catchDbExceptionOnModel($e, 'update');
-            }
+            $qb->update();
         }
 
         // update relationships
@@ -997,22 +989,6 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     public function __toString()
     {
         return spl_object_hash($this) . ':' . $this->getName() . ':' . $this->getId();
-    }
-
-    /**
-     * For certain exceptions, we'd like to catch those early
-     * and write to developer log
-     *
-     * @param \Exception $message
-     * @param string $operation
-     * @return void
-     */
-    private function catchDbExceptionOnModel($exception, $operation = 'update') {
-        if (strpos($exception->getMessage(), "Incorrect string value: '\x") !== false) {
-            ee()->load->library('logger');
-            ee()->logger->developer('Unable to ' . $operation . ' ' . $this->getName() . ' model. The data contains multibyte characters, however the database table does not support those.', true);
-        }
-        throw $exception;
     }
 }
 
