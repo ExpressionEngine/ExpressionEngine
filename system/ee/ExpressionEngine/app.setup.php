@@ -710,12 +710,19 @@ $setup = [
         ],
         'viewtype' => [
             'description' => 'lang:cookie_viewtype_desc',
+            'provider' => 'cp',
         ],
         'cp_last_site_id' => [
             'description' => 'lang:cookie_cp_last_site_id_desc',
+            'provider' => 'cp',
         ],
         'collapsed_nav' => [
             'description' => 'lang:cookie_collapsed_nav_desc',
+            'provider' => 'cp',
+        ],
+        'ee_cp_viewmode' => [
+            'description' => 'lang:cookie_ee_cp_viewmode_desc',
+            'provider' => 'cp',
         ],
     ],
 ];
