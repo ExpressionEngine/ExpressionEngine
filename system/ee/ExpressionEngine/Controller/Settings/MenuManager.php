@@ -741,10 +741,6 @@ class MenuManager extends Settings
             ->all()
             ->pluck('class');
 
-        if (empty($extensions)) {
-            return $result;
-        }
-
         foreach ($addons as $prefix => $addon) {
             $baseClass = ucfirst($addon->getPrefix());
             if ($addon->hasExtension()) {
