@@ -67,7 +67,16 @@ class SecurityPrivacy extends Settings
                             'type' => 'yes_no'
                         )
                     )
-                )
+                ),
+                array(
+                    'title' => 'cli_enabled',
+                    'desc' => '',
+                    'fields' => array(
+                        'cli_enabled' => array(
+                            'type' => 'yes_no',
+                        )
+                    )
+                ),
             ),
             'cookie_settings' => array(
                 array(
