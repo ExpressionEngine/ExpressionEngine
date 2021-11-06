@@ -541,6 +541,16 @@ class Fields extends AbstractFieldsController
                         )
                     )
                 ),
+                array(
+                    'title' => 'field_order',
+                    'desc' => 'global_sort_order',
+                    'fields' => array(
+                        'field_order' => array(
+                            'type' => 'text',
+                            'value' => $field->field_order,
+                        )
+                    )
+                ),
             ),
         );
 

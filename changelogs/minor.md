@@ -8,6 +8,7 @@ Bullet list below, e.g.
    - Added Google reCAPTCHA as an option for system wide CAPTCHA
    - Added ability to disable Live Preview on a per channel basis
    - Added extension hooks for Fluid Fields
+   - Added back default field order, because to have to edit layouts one by one is too much work
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
