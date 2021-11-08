@@ -33,7 +33,7 @@ class Login extends CP_Controller
         }
 
         ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-        
+
         $redirect = '';
         if ($this->input->post('return_path')) {
             $redirect = $this->input->post('return_path');
@@ -57,13 +57,15 @@ class Login extends CP_Controller
             $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
             $return_path = $member->getCPHomepageURL();
         }
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || ee()->session->userdata('skip_2fa') == 'y') {
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_2fa') !== false && ee()->config->item('enable_2fa') !== 'y') || ee()->session->userdata('skip_2fa') == 'y') {
             $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
 
             // If there is a URL= parameter in the return URL folks could end up anywhere
             // so if we see that we'll ditch everything we were told and just go to `/`
-            if (strpos($return_path, '&URL=') !== false
-                || strpos($return_path, '?URL=') !== false) {
+            if (
+                strpos($return_path, '&URL=') !== false
+                || strpos($return_path, '?URL=') !== false
+            ) {
                 $return_path = ee('CP/URL')->make('/')->compile();
             }
 
@@ -158,7 +160,7 @@ class Login extends CP_Controller
         $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
         $return_path = $member->getCPHomepageURL();
 
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || ee()->session->userdata('skip_2fa') == 'y') {
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_2fa') !== false && ee()->config->item('enable_2fa') !== 'y') || ee()->session->userdata('skip_2fa') == 'y') {
             $this->functions->redirect($return_path);
         }
 
@@ -255,8 +257,10 @@ class Login extends CP_Controller
     {
         // We don't want to allow access to the login screen to someone
         // who is already logged in.
-        if ($this->session->userdata('member_id') !== 0 &&
-            ee()->session->userdata('admin_sess') == 1) {
+        if (
+            $this->session->userdata('member_id') !== 0 &&
+            ee()->session->userdata('admin_sess') == 1
+        ) {
             $member = ee('Model')->get('Member')
                 ->filter('member_id', ee()->session->userdata('member_id'))
                 ->first();

@@ -533,7 +533,7 @@ class Member
         if (ee()->session->userdata('member_id') == 0) {
             return ee()->TMPL->no_results();
         }
-        
+
         $data = [
             'enable_2fa_link' => '',
             'disable_2fa_link' => '',
@@ -541,7 +541,7 @@ class Member
             'invoke_2fa_link' => '',
         ];
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && (ee()->config->item('enable_2fa') === false || ee()->config->item('enable_2fa') === 'y')) {
             $return = ee()->TMPL->fetch_param('return', ee()->uri->uri_string);
             if (ee()->session->userdata('2fa_authorized') == false) {
                 $data['invoke_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'invoke2FA') . AMP . 'RET=' . $return;
