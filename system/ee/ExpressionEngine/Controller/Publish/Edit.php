@@ -224,7 +224,8 @@ class Edit extends AbstractPublishController
                 'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
                 'filter_placeholder' => lang('filter_channels'),
                 'choices' => $channel_id ? null : $choices
-            ] : null
+            ] : null,
+            'class' => strtolower(lang('entry_manager'))
         );
 
         if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {
