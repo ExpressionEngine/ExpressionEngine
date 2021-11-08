@@ -8,7 +8,7 @@ Bullet list below, e.g.
    - Added Google reCAPTCHA as an option for system wide CAPTCHA
    - Added ability to disable Live Preview on a per channel basis
    - Added extension hooks for Fluid Fields
-
+   - Added MSM site info to Relationship Fields
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

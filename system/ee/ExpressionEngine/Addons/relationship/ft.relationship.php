@@ -318,10 +318,23 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             ee()->config->item('session_crypt_key')
         );
 
+        if (ee()->config->item('multiple_sites_enabled') === 'y') {
+            // Create a cache of sites
+            if (!$sites = ee()->session->cache(__CLASS__, 'sites')) {
+                $sites = ee('Model')->get('Site')
+                    ->fields('site_id', 'site_label')
+                    ->all();
+
+                ee()->session->set_cache(__CLASS__, 'sites', $sites);
+            }
+
+            $sites_by_id = $sites->getDictionary('site_id', 'site_label');
+        }
+
         // Create a cache of channel names
         if (! $channels = ee()->session->cache(__CLASS__, 'channels')) {
             $channels = ee('Model')->get('Channel')
-                ->fields('channel_title', 'max_entries', 'total_records')
+                ->fields('channel_title', 'max_entries', 'total_records', 'site_id')
                 ->all();
 
             ee()->session->set_cache(__CLASS__, 'channels', $channels);
@@ -429,23 +442,47 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         $multiple = (bool) $this->settings['allow_multiple'];
 
         $choices = [];
-        foreach ($entries as $entry) {
-            $choices[] = [
-                'value' => $entry->getId(),
-                'label' => $entry->title,
-                'instructions' => $entry->Channel->channel_title,
-                'channel_id' => $entry->Channel->getId()
-            ];
+
+        if (ee()->config->item('multiple_sites_enabled') === 'y') {
+            foreach ($entries as $entry) {
+                $choices[] = [
+                    'value' => $entry->getId(),
+                    'label' => $entry->title,
+                    'instructions' => $entry->Channel->channel_title . ' (' . $sites_by_id[$entry->Channel->site_id] . ')',
+                    'channel_id' => $entry->Channel->getId()
+                ];
+            }
+        } else {
+            foreach ($entries as $entry) {
+                $choices[] = [
+                    'value' => $entry->getId(),
+                    'label' => $entry->title,
+                    'instructions' => $entry->Channel->channel_title,
+                    'channel_id' => $entry->Channel->getId()
+                ];
+            }
         }
 
         $selected = [];
-        foreach ($related as $child) {
-            $selected[] = [
-                'value' => $child->getId(),
-                'label' => $child->title,
-                'instructions' => $child->Channel->channel_title,
-                'channel_id' => $child->Channel->getId()
-            ];
+
+        if (ee()->config->item('multiple_sites_enabled') === 'y') {
+            foreach ($related as $child) {
+                $selected[] = [
+                    'value' => $child->getId(),
+                    'label' => $child->title,
+                    'instructions' => $child->Channel->channel_title . ' (' . $sites_by_id[$child->Channel->site_id] . ')',
+                    'channel_id' => $child->Channel->getId()
+                ];
+            }
+        } else {
+            foreach ($related as $child) {
+                $selected[] = [
+                    'value' => $child->getId(),
+                    'label' => $child->title,
+                    'instructions' => $child->Channel->channel_title,
+                        'channel_id' => $child->Channel->getId()
+                ];
+            }
         }
 
         $field_name = $field_name . '[data]';
@@ -483,11 +520,20 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         $channel_choices = [];
 
-        foreach ($channels as $channel) {
-            $channel_choices[] = [
-                'title' => $channel->channel_title,
-                'id' => $channel->getId()
-            ];
+        if (ee()->config->item('multiple_sites_enabled') === 'y') {
+            foreach ($channels as $channel) {
+                $channel_choices[] = [
+                    'title' => $channel->channel_title . ' <small>(' . $sites_by_id[$channel->site_id] . ')</small>',
+                    'id' => $channel->getId(),
+                ];
+            }
+        } else {
+            foreach ($channels as $channel) {
+                $channel_choices[] = [
+                    'title' => $channel->channel_title,
+                    'id' => $channel->getId()
+                ];
+            }
         }
 
         return ee('View')->make('relationship:publish')->render([
