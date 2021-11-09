@@ -1,6 +1,6 @@
 <?php
 
-namespace {{namespace}}\Models;
+namespace {{namespace}}\Model;
 
 use ExpressionEngine\Service\Model\Model;
 
