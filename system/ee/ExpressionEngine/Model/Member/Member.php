@@ -32,7 +32,8 @@ class Member extends ContentModel
     protected static $_hook_id = 'member';
 
     protected static $_typed_columns = array(
-        'cp_homepage_channel' => 'json'
+        'cp_homepage_channel' => 'json',
+        'enable_2fa' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -222,7 +223,6 @@ class Member extends ContentModel
         'date_format' => 'validateDateFormat',
         'time_format' => 'enum[12,24]',
         'include_seconds' => 'enum[y,n]',
-        'enable_2fa' => 'boolString',
         'roles' => 'validateRoles'
     );
 
