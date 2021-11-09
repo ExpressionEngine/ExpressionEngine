@@ -523,7 +523,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         if (ee()->config->item('multiple_sites_enabled') === 'y') {
             foreach ($channels as $channel) {
                 $channel_choices[] = [
-                    'title' => $channel->channel_title . ' <small>(' . $sites_by_id[$channel->site_id] . ')</small>',
+                    'title' => $channel->channel_title . ' (' . $sites_by_id[$channel->site_id] . ')',
                     'id' => $channel->getId(),
                 ];
             }
