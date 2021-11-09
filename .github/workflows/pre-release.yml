@@ -5,13 +5,17 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 6.x
-      - release/6.0.0
+  push:
+    branches:
+      - feature/6.x/one-click-updater-tests
 
 jobs:
   build:
     if: github.event.pull_request.draft == false
     name: TEST BUILD
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.build_json.outputs.BUILD_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -24,12 +28,6 @@ jobs:
           repository: EllisLab/ExpressionEngine-Pro
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: __pro
-
-      #- name: Move Pro into core
-      #  run: |
-      #    mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-      #    mv __pro/themes/ee/pro themes/ee/pro
-      #    rm -rf __pro
 
       - name: Setup asdf
         uses: asdf-vm/actions/setup@v1
@@ -85,15 +83,6 @@ jobs:
           content=`echo "${{ steps.prev_tag.outputs.tag }}" | rev | cut -d "." -s -f 1 | rev`
           echo "dp_ver=$(( 1+$content ))" >> $GITHUB_ENV
 
-      #- name: Create the tag
-      #  uses: julb/action-manage-tag@v1
-      #  id: make_tag
-      #  with:
-      #    name: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
-      #    state: present
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
-
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
@@ -112,3 +101,100 @@ jobs:
           ls -latr
           ls -latr build-tools
           ls -latr build-tools/builds
+
+  test-one-click:
+      if: github.event.pull_request.draft == false
+      needs: build
+      runs-on: ${{ matrix.os }}
+
+      strategy:
+          fail-fast: false
+          matrix:
+              php: [7.4]
+              os: [ubuntu-18.04]
+
+      name: One-click updater, PHP${{ matrix.php }} - ${{ matrix.os }}
+
+      steps:
+
+            - name: Checkout repo
+              uses: actions/checkout@v2
+              with:
+                repository: ExpressionEngine/ExpressionEngine
+                path: __repo
+
+            - name: Download EE 6
+              run: |
+                  wget -q https://github.com/ExpressionEngine/ExpressionEngine/releases/download/6.1.5/ExpressionEngine6.1.5.zip
+                  unzip -q ExpressionEngine6.1.5.zip
+                  mv ./__repo/tests ./
+                  rm -rf system/ee/installer
+                  sudo apt-get install -yq rpl
+                  rpl -Rv https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/ExpressionEngine/Service/Updater/Runner.php
+                  rpl -Rv https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/legacy/libraries/El_pings.php
+
+            - name: List the files
+              run: |
+                  ls -lar ./
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
+                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+
+            - name: Copy config.php
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+                rpl -Rv '${{ needs.build.outputs.version }}' '6.1.5' system/user/config/config.php
+
+            - name: Setup Permissions
+              run: |
+                sudo chmod 666 system/user/config/config.php
+                sudo chmod 777 system/user/config
+                sudo chmod -R 777 system/user/cache
+                sudo chmod -R 777 system/user/templates
+                sudo chmod -R 777 system/user/language
+                sudo chmod -R 777 tests/cypress/support/tmp
+                sudo chmod -R 777 tests/cypress/support/file-sync/uploads
+                sudo chmod -R 777 images
+                sudo chmod -R 777 themes/user
+                sudo chmod -R 777 tests/cypress/cypress/screenshots
+
+            - name: Configure MySQL
+              run: |
+                sudo systemctl start mysql
+                mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
+                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
+
+            - name: Install PHP dependencies
+              working-directory: tests/cypress
+              run: composer install
+
+            - name: Start PHP Server
+              run: php -S localhost:8888 &
+
+            - name: Run Cypress Tests
+              uses: cypress-io/github-action@v2
+              with:
+                browser: chrome
+                headless: true
+                working-directory: tests/cypress
+                config-file: updater.cypress.json
+
+            - name: Archive screenshots
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: cypress-tests-updater
+                path: tests/cypress/cypress/screenshots/
+
+            - name: Archive server errors
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: updater.error.log
+                path: /home/runner/php_errors.log
