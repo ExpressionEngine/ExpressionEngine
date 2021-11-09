@@ -343,8 +343,8 @@ class Forum_Core extends Forum
             read_topics should be in the form of a topic id and a time int.
             Value should also be recent in case someone is trying to put in incorrect time values (No future values allowed either)*/
             $clean_read_topics = array();
-            foreach($read_topics as $key => $val){
-                if(is_int($val) && (ee()->localize->now - $val) < 300 && (ee()->localize->now - $val) > -1){
+            foreach ($read_topics as $key => $val) {
+                if (is_int($val)) {
                     $clean_read_topics[$key] = ee()->db->escape_str($val);
                 }
             }
