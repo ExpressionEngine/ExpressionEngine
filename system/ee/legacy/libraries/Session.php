@@ -382,14 +382,14 @@ class EE_Session
         $this->sdata['sess_start'] = $this->sdata['last_activity'];
         $this->sdata['fingerprint'] = $this->_create_fingerprint((string) $crypt_key);
         $this->sdata['can_debug'] = ($can_debug) ? 'y' : 'n';
-        $this->sdata['skip_2fa'] = ($this->member_model->enable_2fa == 'y') ? 'n' : 'y';
+        $this->sdata['skip_2fa'] = ($this->member_model->enable_2fa === true) ? 'n' : 'y';
 
         $this->userdata['member_id'] = (int) $member_id;
         $this->userdata['role_id'] = (int) $this->member_model->role_id;
         $this->userdata['session_id'] = $this->sdata['session_id'];
         $this->userdata['fingerprint'] = $this->sdata['fingerprint'];
         $this->userdata['site_id'] = ee()->config->item('site_id');
-        $this->userdata['2fa_enabled'] = get_bool_from_string($this->member_model->enable_2fa);
+        $this->userdata['2fa_enabled'] = $this->member_model->enable_2fa;
         $this->userdata['2fa_authorized'] = false;
 
         // Set the session cookie, ONLY if this method is not called from the context of the constructor, i.e. a login action
@@ -628,7 +628,7 @@ class EE_Session
         }
 
         // Check 2FA state
-        $this->userdata['2fa_enabled'] = get_bool_from_string($this->member_model->enable_2fa);
+        $this->userdata['2fa_enabled'] = $this->member_model->enable_2fa;
         $this->userdata['2fa_authorized'] = $this->userdata['2fa_enabled'] && $this->session_model->skip_2fa == 'y';
 
         // Create the array for the Ignore List
@@ -1239,7 +1239,7 @@ class EE_Session
             'include_seconds' => ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
             'role_id' => '3',
             'access_cp' => 0,
-            '2fa_enabled' => !empty($this->member_model) ? get_bool_from_string($this->member_model->enable_2fa) : false,
+            '2fa_enabled' => !empty($this->member_model) ? $this->member_model->enable_2fa : false,
             '2fa_authorized' => false,
             'last_visit' => 0,
             'is_banned' => $this->_do_ban_check(),
