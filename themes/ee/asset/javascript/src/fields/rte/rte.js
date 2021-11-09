@@ -177,8 +177,8 @@ window.Rte;
 
         // Set up restoration of original z-indexes.
         var restoreZIndexes = function (){
-            $('.modal-file').css({'z-index': 10});
-            $('.overlay, .app-overlay').css({'z-index': 10});
+            $('.modal-file').css({'z-index': ''});
+            $('.overlay, .app-overlay').css({'z-index': ''});
             $('body').css({ position:'initial', width:'initial' });
         };
 
