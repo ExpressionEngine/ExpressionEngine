@@ -225,7 +225,7 @@ class Edit extends AbstractPublishController
                 'filter_placeholder' => lang('filter_channels'),
                 'choices' => $channel_id ? null : $choices
             ] : null,
-            'class' => strtolower(lang('entry_manager'))
+            'class' => 'entries'
         );
 
         if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {
