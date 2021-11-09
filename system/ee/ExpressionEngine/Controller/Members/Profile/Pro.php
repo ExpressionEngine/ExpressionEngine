@@ -15,7 +15,7 @@ use CP_Controller;
 /**
  * Template Settings Controller
  */
-class Pro extends Profile
+class Pro extends Settings
 {
     /**
      * Constructor
@@ -24,7 +24,7 @@ class Pro extends Profile
     {
         parent::__construct();
 
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || !ee('Permission')->canUsePro()) {
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense()) {
             show_error(lang('unauthorized_access'), 403);
         }
     }
