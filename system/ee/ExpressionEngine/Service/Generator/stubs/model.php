@@ -21,7 +21,7 @@ class {{class}} extends Model
     // Example of a property getter
     protected function get__name()
     {
-        return $this->first_name.' '.$this->last_name;
+        return $this->first_name . ' ' . $this->last_name;
     }
 
     // Example of a property setter
