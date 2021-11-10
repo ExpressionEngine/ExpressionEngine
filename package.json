@@ -35,7 +35,7 @@
     "brunch": "^2.10.17",
     "clean-css-brunch": "^2.10.0",
     "less-brunch": "^2.10.0",
-    "sass-brunch": "^2.10.8",
+    "sass-brunch": "^3.0.1",
     "typescript-brunch": "^2.3.0",
     "uglify-js-brunch": "^2"
   },
