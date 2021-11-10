@@ -29,7 +29,10 @@ jobs:
             fail-fast: false
             matrix:
                 php: [7.3, 7.4, 8.0]
-                os: [ubuntu-latest, windows-latest]
+                os: [ubuntu-latest]
+                include:
+                  - php: 8,0
+                    os: windows-latest
 
         name: PHPUnit, php${{ matrix.php }} - ${{ matrix.os }}
 
@@ -50,7 +53,7 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo, php_fileinfo, , php_fileinfo.dll
+                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
                   coverage: none
 
             - name: Copy config.php
