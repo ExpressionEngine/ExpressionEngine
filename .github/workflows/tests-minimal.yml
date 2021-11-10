@@ -33,7 +33,6 @@ jobs:
             with:
               repository: EllisLab/ExpressionEngine-Pro
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
-              ref: bug/1.x/encode-email
               path: __pro
 
           - name: Setup asdf
