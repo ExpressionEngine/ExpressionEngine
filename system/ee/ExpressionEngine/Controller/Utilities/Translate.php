@@ -62,6 +62,7 @@ class Translate extends Utilities
 
     public function index()
     {
+        ee()->lang->load('settings');
         $default_language = ee()->config->item('deft_lang') ?: 'english';
 
         $vars = [];
