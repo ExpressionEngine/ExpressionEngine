@@ -11,9 +11,8 @@
 			</div>
 
 			<?=form_open(ee('CP/URL')->make('login/authenticate'))?>
-			<div class="dialog__actions">
 				<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
-				<fieldset class="fieldset-required">
+				<fieldset class="fieldset-required dialog-input-wrap">
 					<div class="field-instruct">
 						<label for="logout-confirm-password"><?=sprintf(lang('password_for'), form_prep(ee()->session->userdata('username')));?></label>
 					</div>
@@ -22,6 +21,7 @@
 					</div>
 				</fieldset>
 
+			<div class="dialog__actions">
 				<div class="dialog__buttons">
 						<?=form_submit('submit', lang('login'), 'class="button button--primary" data-submit-text="' . lang('login') . '" data-work-text="' . lang('authenticating') . '"')?>
 				</div>
