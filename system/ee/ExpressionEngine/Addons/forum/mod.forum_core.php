@@ -25,7 +25,7 @@ class Forum_Core extends Forum
     /**
      * Display forum handler
      *
-     * @param 	string
+     * @param   string
      */
     public function display_forum($function = '')
     {
@@ -167,7 +167,7 @@ class Forum_Core extends Forum
      * the queries are constructed a little different to permit the info
      * to be fetched with different data in the URL.
      *
-     * @param 	int
+     * @param   int
      */
     public function _fetch_forum_metadata($id)
     {
@@ -192,10 +192,10 @@ class Forum_Core extends Forum
         $items = array('forum_id', 'forum_name', 'forum_status', 'forum_description', 'forum_parent', 'forum_permissions', 'forum_enable_rss', 'forum_is_cat', 'forum_max_post_chars', 'forum_allow_img_urls', 'forum_notify_emails', 'forum_notify_emails_topics', 'forum_notify_moderators_topics', 'forum_notify_moderators_replies');
 
         ee()->db->select('forum_id, forum_name, forum_status, forum_description,
-								forum_parent, forum_enable_rss, forum_permissions,
-								forum_is_cat, forum_max_post_chars, forum_allow_img_urls,
-								forum_notify_emails, forum_notify_emails_topics,
-							 	forum_notify_moderators_topics, forum_notify_moderators_replies');
+                                forum_parent, forum_enable_rss, forum_permissions,
+                                forum_is_cat, forum_max_post_chars, forum_allow_img_urls,
+                                forum_notify_emails, forum_notify_emails_topics,
+                                forum_notify_moderators_topics, forum_notify_moderators_replies');
         ee()->db->where('forum_id', $id);
         ee()->db->where('board_id', $this->fetch_pref('board_id'));
         $query = ee()->db->get('forums');
@@ -242,12 +242,12 @@ class Forum_Core extends Forum
             'title', 'body', 'topic_date', 'screen_name');
 
         ee()->db->select('f.forum_id, f.forum_status, f.forum_name, f.forum_parent,
-								f.forum_description, f.forum_permissions, f.forum_enable_rss,
-								f.forum_is_cat, f.forum_notify_emails, f.forum_notify_emails_topics,
-								f.forum_notify_moderators_topics, f.forum_notify_moderators_replies,
-								f.forum_allow_img_urls, f.forum_posts_perpage, f.forum_max_post_chars,
-								t.author_id, t.status, t.sticky, t.announcement, t.title, t.body,
-								t.topic_id, t.topic_date, m.screen_name');
+                                f.forum_description, f.forum_permissions, f.forum_enable_rss,
+                                f.forum_is_cat, f.forum_notify_emails, f.forum_notify_emails_topics,
+                                f.forum_notify_moderators_topics, f.forum_notify_moderators_replies,
+                                f.forum_allow_img_urls, f.forum_posts_perpage, f.forum_max_post_chars,
+                                t.author_id, t.status, t.sticky, t.announcement, t.title, t.body,
+                                t.topic_id, t.topic_date, m.screen_name');
 
         ee()->db->from(array('forums f', 'forum_topics t', 'members m'));
         ee()->db->where('f.forum_id', 't.forum_id', false);
@@ -290,11 +290,11 @@ class Forum_Core extends Forum
         $items = array('forum_id', 'forum_status', 'forum_name', 'forum_parent', 'forum_description', 'forum_permissions', 'forum_enable_rss', 'forum_is_cat', 'forum_posts_perpage', 'forum_post_order', 'forum_max_post_chars', 'forum_allow_img_urls', 'author_id', 'title', 'status', 'topic_id', 'post_id', 'body', 'post_date', 'screen_name');
 
         ee()->db->select('f.forum_id, f.forum_status, f.forum_name, f.forum_parent,
-								f.forum_description, f.forum_permissions, f.forum_enable_rss,
-								f.forum_is_cat, f.forum_posts_perpage, f.forum_post_order,
-								f.forum_max_post_chars, f.forum_allow_img_urls, t.title,
-								t.status, p.author_id, p.topic_id, p.post_id, p.body,
-								p.post_date, m.screen_name');
+                                f.forum_description, f.forum_permissions, f.forum_enable_rss,
+                                f.forum_is_cat, f.forum_posts_perpage, f.forum_post_order,
+                                f.forum_max_post_chars, f.forum_allow_img_urls, t.title,
+                                t.status, p.author_id, p.topic_id, p.post_id, p.body,
+                                p.post_date, m.screen_name');
         ee()->db->from(array('forums f', 'forum_topics t', 'forum_posts p', 'members m'));
         ee()->db->where('f.forum_id = p.forum_id', '', false);
         ee()->db->where('p.topic_id = t.topic_id', '', false);
@@ -333,8 +333,8 @@ class Forum_Core extends Forum
         }
 
         $query = ee()->db->query("SELECT topics FROM exp_forum_read_topics
-								 WHERE member_id = '" . ee()->db->escape_str(ee()->session->userdata('member_id')) . "'
-								 AND board_id = '" . $this->fetch_pref('board_id') . "'");
+                                 WHERE member_id = '" . ee()->db->escape_str(ee()->session->userdata('member_id')) . "'
+                                 AND board_id = '" . $this->fetch_pref('board_id') . "'");
 
         // If there isn't a row yet we'll fetch the cookie version
         if ($query->num_rows() == 0) {
@@ -344,7 +344,7 @@ class Forum_Core extends Forum
             if (count($read_topics) > 0) {
                 $this->read_topics_exist = true;
                 ee()->db->query("INSERT INTO exp_forum_read_topics (member_id, board_id, topics, last_visit)
-							VALUES ('" . ee()->db->escape_str(ee()->session->userdata('member_id')) . "', '" . $this->fetch_pref('board_id') . "', '" . serialize($read_topics) . "', '" . ee()->localize->now . "')");
+                            VALUES ('" . ee()->db->escape_str(ee()->session->userdata('member_id')) . "', '" . $this->fetch_pref('board_id') . "', '" . serialize($read_topics) . "', '" . ee()->localize->now . "')");
             }
 
             return $read_topics;
@@ -556,7 +556,7 @@ class Forum_Core extends Forum
             return $this->trigger_error('can_not_post_in_forum');
         }
 
-        return true;	// User is Authorized!!
+        return true;    // User is Authorized!!
     }
 
     /**
@@ -864,7 +864,7 @@ class Forum_Core extends Forum
         $data['forum_total_posts'] = $query->row('count') ;
 
         ee()->db->select('topic_id, title, topic_date, last_post_date,
-								last_post_author_id, screen_name, announcement');
+                                last_post_author_id, screen_name, announcement');
         ee()->db->from(array('forum_topics', 'members'));
         ee()->db->where('member_id', 'last_post_author_id', false);
         ee()->db->where('forum_id', $forum_id);
@@ -1015,8 +1015,8 @@ class Forum_Core extends Forum
     {
         // Grab them prefs
         ee()->db->select('forum_id, forum_is_cat, forum_status,
-							   forum_permissions, forum_enable_rss,
-							   forum_use_http_auth')
+                               forum_permissions, forum_enable_rss,
+                               forum_use_http_auth')
             ->where('board_id', $this->fetch_pref('board_id'));
 
         // Are there specific forums being requested?
@@ -1113,13 +1113,13 @@ class Forum_Core extends Forum
 
         $qry = ee()->db->select(
             't.topic_id, t.author_id, t.title,
-				t.body, t.topic_date, t.thread_total,
-				t.last_post_author_id,  t.last_post_date,
-				t.topic_edit_date, t.parse_smileys,
-				f.forum_text_formatting, f.forum_html_formatting,
-				f.forum_auto_link_urls, f.forum_allow_img_urls,
-				lp.screen_name AS last_post_author,
-				m.screen_name AS author, m.email'
+                t.body, t.topic_date, t.thread_total,
+                t.last_post_author_id,  t.last_post_date,
+                t.topic_edit_date, t.parse_smileys,
+                f.forum_text_formatting, f.forum_html_formatting,
+                f.forum_auto_link_urls, f.forum_allow_img_urls,
+                lp.screen_name AS last_post_author,
+                m.screen_name AS author, m.email'
         )
             ->from('forum_topics t')
             ->join('forums f', 'f.forum_id = t.forum_id', 'left')
@@ -1668,11 +1668,11 @@ class Forum_Core extends Forum
 
         // Fetch the announcements
         $query = ee()->db->query("SELECT t.topic_id, t.author_id, t.title, t.thread_views, t.topic_date, m.screen_name AS author
-								FROM exp_forum_topics t, exp_members m
-								WHERE m.member_id = t.author_id
-								AND t.board_id = '" . $this->fetch_pref('board_id') . "'
-								AND (t.announcement = 'a' OR (announcement = 't' AND forum_id = '{$this->current_id}'))
-							");
+                                FROM exp_forum_topics t, exp_members m
+                                WHERE m.member_id = t.author_id
+                                AND t.board_id = '" . $this->fetch_pref('board_id') . "'
+                                AND (t.announcement = 'a' OR (announcement = 't' AND forum_id = '{$this->current_id}'))
+                            ");
 
         if ($query->num_rows() == 0) {
             return '';
@@ -1718,13 +1718,13 @@ class Forum_Core extends Forum
     public function announcements()
     {
         $tquery = ee()->db->query("SELECT f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic, f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
-									 t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title, t.body, t.status, t.announcement, t.thread_views, t.parse_smileys, t.topic_date AS date, t.topic_edit_date AS edit_date, t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
-							  		 m.role_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height
-							FROM (exp_forums f, exp_forum_topics t, exp_members m)
-							LEFT JOIN exp_members em ON t.topic_edit_author = em.member_id
-							WHERE f.forum_id = t.forum_id
-							AND t.author_id = m.member_id
-							AND t.topic_id = '{$this->current_id}'");
+                                     t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title, t.body, t.status, t.announcement, t.thread_views, t.parse_smileys, t.topic_date AS date, t.topic_edit_date AS edit_date, t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
+                                     m.role_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height
+                            FROM (exp_forums f, exp_forum_topics t, exp_members m)
+                            LEFT JOIN exp_members em ON t.topic_edit_author = em.member_id
+                            WHERE f.forum_id = t.forum_id
+                            AND t.author_id = m.member_id
+                            AND t.topic_id = '{$this->current_id}'");
 
         if ($tquery->num_rows() == 0) {
             return $this->trigger_error('thread_no_exists');
@@ -1867,12 +1867,12 @@ class Forum_Core extends Forum
 
         // Count the topics for pagination
         $query = ee()->db->query("SELECT COUNT(*) AS count
-							FROM exp_forum_topics t, exp_members m, exp_members a
-							WHERE t.last_post_author_id = m.member_id
-							AND a.member_id = t.author_id
-							AND t.announcement = 'n'
-							AND (t.forum_id = '{$this->current_id}' OR t.moved_forum_id = '{$this->current_id}')
-							{$query_limit}");
+                            FROM exp_forum_topics t, exp_members m, exp_members a
+                            WHERE t.last_post_author_id = m.member_id
+                            AND a.member_id = t.author_id
+                            AND t.announcement = 'n'
+                            AND (t.forum_id = '{$this->current_id}' OR t.moved_forum_id = '{$this->current_id}')
+                            {$query_limit}");
 
         if ($query->row('count') == 0) {
             $str = str_replace('{include:topic_rows}', $this->load_element('topic_no_results'), $str);
@@ -1917,15 +1917,15 @@ class Forum_Core extends Forum
 
         // Fetch the topics
         $query = ee()->db->query("SELECT t.topic_id, t.author_id, t.moved_forum_id, t.ip_address, t.title, t.status, t.sticky, t.poll, t.thread_views, t.topic_date, t.thread_total, t.last_post_author_id,  t.last_post_date, t.last_post_id,
-								m.screen_name AS last_post_author,
-								a.screen_name AS author
-							FROM exp_forum_topics t, exp_members m, exp_members a
-							WHERE t.last_post_author_id = m.member_id
-							AND a.member_id = t.author_id
-							AND t.announcement = 'n'
-							AND (t.forum_id = '{$this->current_id}' OR t.moved_forum_id = '{$this->current_id}')
-							" . $order . "
-							{$query_limit}");
+                                m.screen_name AS last_post_author,
+                                a.screen_name AS author
+                            FROM exp_forum_topics t, exp_members m, exp_members a
+                            WHERE t.last_post_author_id = m.member_id
+                            AND a.member_id = t.author_id
+                            AND t.announcement = 'n'
+                            AND (t.forum_id = '{$this->current_id}' OR t.moved_forum_id = '{$this->current_id}')
+                            " . $order . "
+                            {$query_limit}");
 
         // Fetch the "row" template
         $template = $this->load_element('topic_rows');
@@ -2232,9 +2232,9 @@ class Forum_Core extends Forum
     /**
      * Forum Threads
      *
-     * @param 	boolean
-     * @param	boolean
-     * @param	boolean
+     * @param   boolean
+     * @param   boolean
+     * @param   boolean
      */
     public function threads($is_announcement = false, $thread_review = false, $is_split = false)
     {
@@ -2270,17 +2270,17 @@ class Forum_Core extends Forum
 
         // Fetch The Topic
         ee()->db->select('f.forum_text_formatting, f.forum_html_formatting, f.forum_enable_rss,
-			f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic,
-			f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
-			t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title,
-			t.body, t.status, t.announcement, t.thread_views, t.parse_smileys,
-			t.topic_date AS date, t.topic_edit_date AS edit_date,
-			t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
-			m.role_id, m.screen_name AS author, m.join_date, m.total_forum_topics,
-			m.total_forum_posts, m.email, m.accept_user_email,
-			m.signature, m.sig_img_filename, m.sig_img_width,
-			m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height,
-			m.photo_filename, m.photo_width, m.photo_height');
+            f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic,
+            f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
+            t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title,
+            t.body, t.status, t.announcement, t.thread_views, t.parse_smileys,
+            t.topic_date AS date, t.topic_edit_date AS edit_date,
+            t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
+            m.role_id, m.screen_name AS author, m.join_date, m.total_forum_topics,
+            m.total_forum_posts, m.email, m.accept_user_email,
+            m.signature, m.sig_img_filename, m.sig_img_width,
+            m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height,
+            m.photo_filename, m.photo_width, m.photo_height');
         ee()->db->from(array('forums f', 'forum_topics t', 'members m'));
         ee()->db->join('members em', 't.topic_edit_author = em.member_id', 'left');
         ee()->db->where('f.forum_id', 't.forum_id', false);
@@ -2601,15 +2601,15 @@ class Forum_Core extends Forum
             }
 
             $pquery = ee()->db->query("SELECT p.post_id, p.forum_id, p.author_id, p.ip_address, p.body, p.parse_smileys, p.post_date AS date, p.post_edit_date AS edit_date, p.post_edit_author AS edit_author_id, em.screen_name AS edit_author,
-				m.role_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height,
-				f.forum_display_edit_date
-				FROM (exp_forum_posts p, exp_members m, exp_forums f)
-				LEFT JOIN exp_members em ON p.post_edit_author = em.member_id
-				WHERE p.author_id = m.member_id
-				AND f.forum_id = p.forum_id
-				AND p.topic_id = '{$this->current_id}'
-				ORDER BY date {$order}
-				{$query_limit}");
+                m.role_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height,
+                f.forum_display_edit_date
+                FROM (exp_forum_posts p, exp_members m, exp_forums f)
+                LEFT JOIN exp_members em ON p.post_edit_author = em.member_id
+                WHERE p.author_id = m.member_id
+                AND f.forum_id = p.forum_id
+                AND p.topic_id = '{$this->current_id}'
+                ORDER BY date {$order}
+                {$query_limit}");
 
             // Fetch attachments
             if ($pquery->num_rows() == 0) {
@@ -2937,9 +2937,9 @@ class Forum_Core extends Forum
     /**
      * thread rows
      *
-     * @param 	array
-     * @param	boolean
-     * @param 	boolean
+     * @param   array
+     * @param   boolean
+     * @param   boolean
      */
     public function thread_rows($data, $is_announcement = false, $thread_review = false)
     {
@@ -3308,7 +3308,7 @@ class Forum_Core extends Forum
                             'lang:change_status' => ($row['status'] == 'o') ? lang('close_thread') : lang('activate_thread'),
                             'path:change_status' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Forum', 'change_status') . '&amp;topic_id=' . $row['post_id'] . '&amp;board_id=' . $this->fetch_pref('board_id') . '&amp;trigger=' . $this->trigger,
                             'css:status_button' => ($row['status'] == 'o') ? 'buttonStatusOff' : 'buttonStatusOn'
-                            
+
                         )
                     );
                 }
@@ -3445,14 +3445,14 @@ class Forum_Core extends Forum
                     'body' => ee()->functions->encode_ee_tags(
                         $this->_quote_decode(
                             ee()->typography->parse_type(
-                                                            $row['body'],
-                                                            array(
+                                $row['body'],
+                                array(
                                                                 'text_format' => $formatting['text_format'],
                                                                 'html_format' => $formatting['html_format'],
                                                                 'auto_links' => $formatting['auto_links'],
                                                                 'allow_img_url' => $formatting['allow_img_url']
                                                             )
-                                                        )
+                            )
                         ),
                         true
                     )
@@ -3462,7 +3462,7 @@ class Forum_Core extends Forum
             /* -------------------------------------
             /*  'forum_thread_rows_loop_end' hook.
             /*  - Modify the processed row before it is appended to
-            /*  	the template output
+            /*      the template output
             /*  - Added Discussion Forums 1.3.2
             */
             if (ee()->extensions->active_hook('forum_thread_rows_loop_end') === true) {
@@ -4416,10 +4416,10 @@ class Forum_Core extends Forum
 
             if (! isset($x[1])) {
                 $query = ee()->db->query("SELECT tg.group_name
-									 FROM exp_templates t, exp_template_groups tg
-									 WHERE t.group_id = tg.group_id
-									 AND t.template_name = '" . ee()->db->escape_str($x['0']) . "'
-									 AND tg.is_site_default = 'y'");
+                                     FROM exp_templates t, exp_template_groups tg
+                                     WHERE t.group_id = tg.group_id
+                                     AND t.template_name = '" . ee()->db->escape_str($x['0']) . "'
+                                     AND tg.is_site_default = 'y'");
 
                 if ($query->num_rows() == 1) {
                     $x['1'] = $x['0'];
@@ -4565,16 +4565,16 @@ class Forum_Core extends Forum
     {
         // Fetch Prefs
         $query = ee()->db->query("SELECT board_upload_path,
-									board_max_attach_perpost,
-									board_max_attach_size,
-									board_max_width,
-									board_max_height,
-									board_use_img_thumbs,
-									board_attach_types,
-									board_thumb_width,
-									board_thumb_height
-								FROM exp_forum_boards
-								WHERE board_id = '" . $this->fetch_pref('board_id') . "'");
+                                    board_max_attach_perpost,
+                                    board_max_attach_size,
+                                    board_max_width,
+                                    board_max_height,
+                                    board_use_img_thumbs,
+                                    board_attach_types,
+                                    board_thumb_width,
+                                    board_thumb_height
+                                FROM exp_forum_boards
+                                WHERE board_id = '" . $this->fetch_pref('board_id') . "'");
 
         // Check the paths
         if ($query->row('board_upload_path') == '') {
@@ -4800,12 +4800,12 @@ class Forum_Core extends Forum
     /**
      * Remove post attachment
      *
-     * @param	int		Attachment ID to delete
-     * @param	int		Board ID attachment resides in
-     * @param	bool	Whether or not to force the delete and ignore whether
-     *		or not the user has permission to remove attchments; this is
-     *		mainly reserved for member deletion where attachments should be
-     *		deleted no matter what
+     * @param   int     Attachment ID to delete
+     * @param   int     Board ID attachment resides in
+     * @param   bool    Whether or not to force the delete and ignore whether
+     *      or not the user has permission to remove attchments; this is
+     *      mainly reserved for member deletion where attachments should be
+     *      deleted no matter what
      */
     public function _remove_attachment($id, $forum_id, $force = false)
     {
@@ -5547,9 +5547,9 @@ class Forum_Core extends Forum
         /* -------------------------------------
         /*  'forum_submit_post_end' hook.
         /*  - After the post is submitted, do some more processing
-        /* 	- Note that user notifications have not been sent at this point
+        /*  - Note that user notifications have not been sent at this point
         /*  - Added Discussion Forums 1.3.2
-        /*	- $data added Discussion Forums 2.1.1
+        /*  - $data added Discussion Forums 2.1.1
         */
         if (ee()->extensions->active_hook('forum_submit_post_end') === true) {
             $edata = ee()->extensions->call('forum_submit_post_end', $this, $data);
@@ -5732,16 +5732,16 @@ class Forum_Core extends Forum
         // Fetch some meta data based on the request
         if ($this->current_request == 'deletereply') {
             $query = ee()->db->query("SELECT p.topic_id, p.post_id, p.forum_id, p.body, p.author_id,
-								f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls
-								FROM exp_forum_posts AS p, exp_forums AS f
-								WHERE f.forum_id = p.forum_id
-								AND p.post_id = '{$this->current_id}'");
+                                f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls
+                                FROM exp_forum_posts AS p, exp_forums AS f
+                                WHERE f.forum_id = p.forum_id
+                                AND p.post_id = '{$this->current_id}'");
         } else {
             $query = ee()->db->query("SELECT t.topic_id, t.forum_id, t.title, t.body, t.author_id,
-								f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls
-								FROM exp_forum_topics AS t, exp_forums AS f
-								WHERE f.forum_id = t.forum_id
-								AND t.topic_id = '{$this->current_id}'");
+                                f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls
+                                FROM exp_forum_topics AS t, exp_forums AS f
+                                WHERE f.forum_id = t.forum_id
+                                AND t.topic_id = '{$this->current_id}'");
         }
 
         // No result?  Smack em'
@@ -6094,12 +6094,12 @@ class Forum_Core extends Forum
     {
         // Fetch the topic title
         $query = ee()->db->query("SELECT exp_forum_posts.topic_id, exp_forum_posts.forum_id, exp_forum_posts.body, exp_forum_posts.post_date, exp_forum_posts.parse_smileys,
-							exp_forums.forum_text_formatting, exp_forums.forum_html_formatting, exp_forums.forum_auto_link_urls, exp_forums.forum_allow_img_urls,
-							exp_members.screen_name
-							FROM exp_forum_posts
-							LEFT JOIN exp_forums ON exp_forums.forum_id = exp_forum_posts.forum_id
-							LEFT JOIN exp_members ON exp_members.member_id = exp_forum_posts.author_id
-							WHERE exp_forum_posts.post_id = '{$this->current_id}'");
+                            exp_forums.forum_text_formatting, exp_forums.forum_html_formatting, exp_forums.forum_auto_link_urls, exp_forums.forum_allow_img_urls,
+                            exp_members.screen_name
+                            FROM exp_forum_posts
+                            LEFT JOIN exp_forums ON exp_forums.forum_id = exp_forum_posts.forum_id
+                            LEFT JOIN exp_members ON exp_members.member_id = exp_forum_posts.author_id
+                            WHERE exp_forum_posts.post_id = '{$this->current_id}'");
 
         if ($query->num_rows() == 0) {
             return ee()->output->show_user_error('general', array(lang('not_authorized')));
@@ -7530,15 +7530,15 @@ class Forum_Core extends Forum
      * Fetch the forums that can be searched
      *
      * There are four sets of preferences which determine if a user can search:
-     *	- can_view_forum
-     *	- can_view_hidden
-     *	- can_view_topics
-     *	- can_search
+     *  - can_view_forum
+     *  - can_view_hidden
+     *  - can_view_topics
+     *  - can_search
      */
     public function _fetch_allowed_search_ids()
     {
         ee()->db->select('forum_id, forum_name, forum_status, forum_is_cat,
-								forum_parent, forum_permissions, forum_enable_rss');
+                                forum_parent, forum_permissions, forum_enable_rss');
         ee()->db->where('board_id', $this->fetch_pref('board_id'));
         ee()->db->order_by('forum_order');
         $query = ee()->db->get('forums');
@@ -7937,9 +7937,9 @@ class Forum_Core extends Forum
 
         // TOPIC QUERY
         $sql = "SELECT DISTINCT topic_id
-				FROM exp_forum_topics {$sql_topic_join}
-				WHERE board_id = '" . $this->fetch_pref('board_id') . "'
-				AND ";
+                FROM exp_forum_topics {$sql_topic_join}
+                WHERE board_id = '" . $this->fetch_pref('board_id') . "'
+                AND ";
 
         // Limit the search to specific forums
         $sql .= ' (';
@@ -8024,8 +8024,8 @@ class Forum_Core extends Forum
                     } elseif ($search_in == 'posts') {
                         $sql .= "AND (body  = '{$keywords}' OR body  LIKE '{$keywords_like}%' OR body  LIKE '%{$keywords_like}%') ";
                     } else {
-                        $sql .= "AND (	(title = '{$keywords}' OR title LIKE '{$keywords_like}%' OR title LIKE '%{$keywords_like}%') OR
-										(body  = '{$keywords}' OR body  LIKE '{$keywords_like}%' OR body  LIKE '%{$keywords_like}%') )";
+                        $sql .= "AND (  (title = '{$keywords}' OR title LIKE '{$keywords_like}%' OR title LIKE '%{$keywords_like}%') OR
+                                        (body  = '{$keywords}' OR body  LIKE '{$keywords_like}%' OR body  LIKE '%{$keywords_like}%') )";
                     }
                 } else { // Exact word match
                     if ($search_in == 'titles') {
@@ -8033,8 +8033,8 @@ class Forum_Core extends Forum
                     } elseif ($search_in == 'posts') {
                         $sql .= "AND (body  = '{$keywords}' OR body  LIKE '{$keywords_like} %' OR body  LIKE '% {$keywords_like} %') ";
                     } else {
-                        $sql .= "AND (	(title = '{$keywords}' OR title LIKE '{$keywords_like} %' OR title LIKE '% {$keywords_like} %') OR
-										(body  = '{$keywords}' OR body  LIKE '{$keywords_like} %' OR body  LIKE '% {$keywords_like} %') )";
+                        $sql .= "AND (  (title = '{$keywords}' OR title LIKE '{$keywords_like} %' OR title LIKE '% {$keywords_like} %') OR
+                                        (body  = '{$keywords}' OR body  LIKE '{$keywords_like} %' OR body  LIKE '% {$keywords_like} %') )";
                     }
                 }
             } else {
@@ -8156,8 +8156,8 @@ class Forum_Core extends Forum
 
         // POST QUERY
         $sql = "SELECT p.topic_id, p.post_id
-				FROM (exp_forum_posts p, exp_forum_topics t) {$sql_post_join}
-				WHERE t.topic_id = p.topic_id ";
+                FROM (exp_forum_posts p, exp_forum_topics t) {$sql_post_join}
+                WHERE t.topic_id = p.topic_id ";
 
         // Limit the search to specific forums
         $sql .= 'AND (';
@@ -8368,12 +8368,12 @@ class Forum_Core extends Forum
 
         // Fetch the topics
         $qry = ee()->db->select('t.forum_id, t.topic_id, t.author_id,
-									  t.moved_forum_id, t.ip_address, t.title,
-									  t.status, t.sticky, t.thread_views,
-									  t.topic_date, t.thread_total,
-									  t.last_post_author_id,  t.last_post_date,
-									  m.screen_name AS author,
-									  lp.screen_name AS last_post_author')
+                                      t.moved_forum_id, t.ip_address, t.title,
+                                      t.status, t.sticky, t.thread_views,
+                                      t.topic_date, t.thread_total,
+                                      t.last_post_author_id,  t.last_post_date,
+                                      m.screen_name AS author,
+                                      lp.screen_name AS last_post_author')
             ->from('forum_topics t')
             ->join('members m', 'm.member_id = t.author_id', 'left')
             ->join('members lp', 'lp.member_id = t.last_post_author_id', 'left')
@@ -8683,7 +8683,7 @@ class Forum_Core extends Forum
         $topic_title = $query->row('title') ;
 
         $qry = ee()->db->select('p.forum_id, p.topic_id, p.post_id,
-				p.author_id, p.body, p.post_date, m.screen_name AS author')
+                p.author_id, p.body, p.post_date, m.screen_name AS author')
             ->from('forum_posts p')
             ->join('members m', 'p.author_id = m.member_id')
             ->where('p.topic_id', $topic_id)
@@ -8799,10 +8799,10 @@ class Forum_Core extends Forum
     public function most_recent_topics()
     {
         $qry = ee()->db->select('t.title, t.body, t.topic_id, t.thread_total,
-									  t.thread_views, t.author_id,
-									  t.last_post_author_id, t.forum_id,
-									  f.forum_status, f.forum_permissions,
-									  f.forum_name')
+                                      t.thread_views, t.author_id,
+                                      t.last_post_author_id, t.forum_id,
+                                      f.forum_status, f.forum_permissions,
+                                      f.forum_name')
             ->from('forum_topics t')
             ->join('forums f', 't.forum_id = f.forum_id', 'left')
             ->where('t.board_id', $this->fetch_pref('board_id'))
@@ -8939,9 +8939,9 @@ class Forum_Core extends Forum
     public function most_popular_posts()
     {
         $qry = ee()->db->select('t.title, t.body, t.topic_id, t.thread_total,
-									  t.thread_views, t.author_id, t.last_post_author_id,
-									  t.forum_id, f.forum_status, f.forum_permissions,
-									  f.forum_name')
+                                      t.thread_views, t.author_id, t.last_post_author_id,
+                                      t.forum_id, f.forum_status, f.forum_permissions,
+                                      f.forum_name')
             ->from('forum_topics t')
             ->join('forums f', 't.forum_id = f.forum_id', 'left')
             ->where('t.board_id', $this->fetch_pref('board_id'))
@@ -9087,35 +9087,35 @@ class Forum_Core extends Forum
         $path = ee()->config->slash_item('emoticon_url');
 
         ob_start(); ?>
-		<script type="text/javascript">
-		<!--
-		function add_smiley(smiley)
-		{
-			var el = opener.document.getElementById('submit_post').body;
+        <script type="text/javascript">
+        <!--
+        function add_smiley(smiley)
+        {
+            var el = opener.document.getElementById('submit_post').body;
 
-			if ('selectionStart' in el) {
-				newStart = el.selectionStart + smiley.length;
+            if ('selectionStart' in el) {
+                newStart = el.selectionStart + smiley.length;
 
-				el.value = el.value.substr(0, el.selectionStart) +
-								smiley +
-								el.value.substr(el.selectionEnd, el.value.length);
-				el.setSelectionRange(newStart, newStart);
-			}
-			else if (opener.document.selection) {
-				el.focus();
-				opener.document.selection.createRange().text = smiley;
-			}
-			else {
-				el.value += " " + smiley + " ";
-			}
+                el.value = el.value.substr(0, el.selectionStart) +
+                                smiley +
+                                el.value.substr(el.selectionEnd, el.value.length);
+                el.setSelectionRange(newStart, newStart);
+            }
+            else if (opener.document.selection) {
+                el.focus();
+                opener.document.selection.createRange().text = smiley;
+            }
+            else {
+                el.value += " " + smiley + " ";
+            }
 
-			el.focus();
-			window.close();
-		}
-		//-->
-		</script>
+            el.focus();
+            window.close();
+        }
+        //-->
+        </script>
 
-		<?php
+        <?php
 
         $javascript = ob_get_contents();
         ob_end_clean();
@@ -9172,14 +9172,14 @@ class Forum_Core extends Forum
         $limit = (! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '10' : ee()->TMPL->fetch_param('limit');
 
         ee()->db->select('forum_topics.topic_id, forum_topics.author_id, forum_topics.last_post_author_id,
-								forum_topics.title, forum_topics.body, forum_topics.topic_date,
-								forum_topics.last_post_date, forum_topics.last_post_id,
-								forum_topics.thread_total, forum_topics.thread_views,
-								forum_topics.parse_smileys, forums.forum_status,
-								forums.forum_permissions, forums.forum_name, forums.forum_text_formatting,
-								forums.forum_html_formatting, forums.forum_auto_link_urls,
-								forums.forum_allow_img_urls, forum_boards.board_label,
-								forum_boards.board_name, forum_boards.board_forum_url', false);
+                                forum_topics.title, forum_topics.body, forum_topics.topic_date,
+                                forum_topics.last_post_date, forum_topics.last_post_id,
+                                forum_topics.thread_total, forum_topics.thread_views,
+                                forum_topics.parse_smileys, forums.forum_status,
+                                forums.forum_permissions, forums.forum_name, forums.forum_text_formatting,
+                                forums.forum_html_formatting, forums.forum_auto_link_urls,
+                                forums.forum_allow_img_urls, forum_boards.board_label,
+                                forum_boards.board_name, forum_boards.board_forum_url', false);
 
         $join = 'LEFT JOIN ' . ee()->db->dbprefix('forums') .
                     ' ON ' . ee()->db->dbprefix('forum_topics') .
