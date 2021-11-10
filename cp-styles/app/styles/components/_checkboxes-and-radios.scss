@@ -374,13 +374,21 @@ ul.field-nested ul {
 		}		
 	}
 
-	&:hover {
+	.checkbox-label:hover {
 		.checkbox-label__text-editable {
 			background: var(--ee-secondary-sidebar-item-bg);
 			border-top-right-radius: 5px;
 			border-bottom-right-radius: 5px;
   		border-top-left-radius: 0;
   		border-bottom-left-radius: 0;			
+		}
+	}
+
+	&.nestable-item {
+		& > ul.field-nested {
+			.checkbox-label__text-editable:before {
+				border-radius: 0;
+			}
 		}
 	}
 }
