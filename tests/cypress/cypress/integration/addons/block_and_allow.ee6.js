@@ -15,7 +15,7 @@ context('Block and Allow', () => {
 
     cy.auth();
 
-    // Install Pages
+    // Install Block and Allow
     addon_manager.load()
     cy.hasNoErrors()
     addon_manager.get('first_party_addons').find('.add-on-card:contains("Block and Allow") a').click()
