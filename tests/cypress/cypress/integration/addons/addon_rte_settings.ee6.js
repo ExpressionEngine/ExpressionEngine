@@ -11,25 +11,22 @@ context('RTE Settings', () => {
         cy.task('db:load', '../../support/sql/rte-settings/tool_sets.sql')
     })
 
-    beforeEach(function() {
-        cy.intercept('**/check').as('check')
-        cy.intercept('**/license/handleAccessResponse').as('license')
-
-        cy.authVisit(page.url);
-        page.get('title').contains('Rich Text Editor')
-        
-        cy.wait('@check')
-        cy.wait('@license')
-    })
-
     describe('Settings', function() {
 
         it('shows the RTE Settings page', function() {
+            cy.intercept('**/check').as('check')
+            cy.intercept('**/license/handleAccessResponse').as('license')
+            cy.authVisit(page.url);
+            page.get('title').contains('Rich Text Editor')
+            cy.wait('@check')
+            cy.wait('@license')
+
             page.get('default_tool_set').first().should('be.checked')
             page.get('tool_set_names').first().parent().should('have.class', 'default')
         })
 
         it.skip('can navigate back to the add-on manager via the breadcrumb', function() {
+            cy.authVisit(page.url);
             page.get('breadcrumb').contains('Add-ons').click()
             cy.hasNoErrors()
 
@@ -37,6 +34,7 @@ context('RTE Settings', () => {
         })
 
         it('cannot set a default tool set to an nonexistent tool set', function() {
+            cy.authVisit(page.url);
             page.get('default_tool_set').eq(0).invoke('attr', 'value', '99999')
             page.get('default_tool_set').eq(0).check()
             page.get('save_settings_button').eq(0).click()
@@ -47,6 +45,7 @@ context('RTE Settings', () => {
 
 
         it('displays an itemized modal when trying to remove 5 or less tool sets', function() {
+            cy.authVisit(page.url);
             let tool_set_name = page.$('tool_set_names').eq(1).text()
 
             // Header at 0, first "real" row is 1
@@ -61,6 +60,7 @@ context('RTE Settings', () => {
         })
 
         it('displays a bulk confirmation modal when trying to remove more than 5 tool sets', function() {
+            cy.authVisit(page.url);
             page.get('checkbox_header').find('input[type="checkbox"]:enabled').check()
             page.get('bulk_action').select("Delete")
             page.get('action_submit_button').click()
@@ -71,6 +71,7 @@ context('RTE Settings', () => {
         })
 
         it('cannot remove the default tool set', function() {
+            cy.authVisit(page.url);
             let tool_set_name = page.$('tool_set_names').eq(0).text()
 
             // This populates the modal with a hidden input so we can modify it later
@@ -94,6 +95,7 @@ context('RTE Settings', () => {
         })
 
         it('can reverse sort tool sets by name', function() {
+            cy.authVisit(page.url);
             let toolsets = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
 
             page.get('tool_set_name_header').find('a.column-sort').click().then(function() {
@@ -107,6 +109,7 @@ context('RTE Settings', () => {
         })
 
         it('can change the default tool set', function() {
+            cy.authVisit(page.url);
             page.get('default_tool_set').last().check()
             page.get('save_settings_button').eq(0).click()
             cy.hasNoErrors()
@@ -121,6 +124,7 @@ context('RTE Settings', () => {
         })
 
         it('can edit a tool set', function() {
+            cy.authVisit(page.url);
             page.get('tool_sets').eq(1).find('a').first().click()
 
             page.get('tool_set_name').clear().type('Cypress Edited')
@@ -134,6 +138,7 @@ context('RTE Settings', () => {
         })
 
         it('can remove a tool set', function() {
+            cy.authVisit(page.url);
             page.get('tool_sets').eq(3).find('input[type="checkbox"]').check()
             page.get('bulk_action').select("remove")
             page.get('action_submit_button').click()
@@ -149,6 +154,7 @@ context('RTE Settings', () => {
         })
 
         it('can bulk remove tool sets', function() {
+            cy.authVisit(page.url);
             page.get('checkbox_header').find('input[type="checkbox"]').check()
 
             // Uncheck the Default tool set
@@ -174,6 +180,8 @@ context('RTE Settings', () => {
 
     describe('Toolsets', function() {
         beforeEach(function() {
+            cy.authVisit(page.url);
+            page.get('title').contains('Rich Text Editor')
             cy.get('a').contains('Create New').filter(':visible').first().click({force:true})
         })
 
