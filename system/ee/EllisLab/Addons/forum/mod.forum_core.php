@@ -5136,7 +5136,7 @@ class Forum_Core extends Forum {
 								);
 
 		$title = str_replace('{include:', '&#123;include:', ee('Security/XSS')->clean(ee()->input->post('title')));
-
+		$body = ee('Security/XSS')->clean($body);
 		return $this->var_swap($this->load_element('preview_post'),
 								array(
 										'post_title'	=> stripslashes($this->_convert_special_chars($title)),
