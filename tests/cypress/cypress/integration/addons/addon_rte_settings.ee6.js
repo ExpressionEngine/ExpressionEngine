@@ -12,9 +12,14 @@ context('RTE Settings', () => {
     })
 
     beforeEach(function() {
-        cy.authVisit(page.url);
+        cy.intercept('**/check').as('check')
+        cy.intercept('**/license/handleAccessResponse').as('license')
 
+        cy.authVisit(page.url);
         page.get('title').contains('Rich Text Editor')
+        
+        cy.wait('@check')
+        cy.wait('@license')
     })
 
     describe('Settings', function() {

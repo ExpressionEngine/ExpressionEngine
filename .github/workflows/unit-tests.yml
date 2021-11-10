@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - feature/6.x/unit-tests
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 6.dev

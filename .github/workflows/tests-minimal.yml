@@ -1,7 +1,7 @@
 name: Tests (minimal)
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 6.dev
@@ -34,14 +34,6 @@ jobs:
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
               ref: bug/1.x/encode-email
               path: __pro
-
-        #  - name: Move Pro into core
-        #    run: |
-        #      mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-        #      mv __pro/themes/ee/pro themes/ee/pro
-        #      mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
-        #      mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-        #      rm -rf __pro
 
           - name: Setup asdf
             uses: asdf-vm/actions/setup@v1
