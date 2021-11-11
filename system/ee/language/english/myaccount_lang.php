@@ -559,7 +559,7 @@ $lang = array(
 
     'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
 
-    '2fa' => 'Two-Factor Authentication',
+    'mfa' => 'Multi-Factor Authentication',
 
 );
 

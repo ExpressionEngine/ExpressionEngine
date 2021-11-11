@@ -528,32 +528,32 @@ class Member
      *
      * @return string
      */
-    public function two_fa_links()
+    public function mfa_links()
     {
         if (ee()->session->userdata('member_id') == 0) {
             return ee()->TMPL->no_results();
         }
 
         $data = [
-            'enable_2fa_link' => '',
-            'disable_2fa_link' => '',
-            'reset_2fa_link' => '',
-            'invoke_2fa_link' => '',
+            'enable_mfa_link' => '',
+            'disable_mfa_link' => '',
+            'reset_mfa_link' => '',
+            'invoke_mfa_link' => '',
         ];
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense() && (ee()->config->item('enable_2fa') === false || ee()->config->item('enable_2fa') === 'y')) {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y')) {
             $return = ee()->TMPL->fetch_param('return', ee()->uri->uri_string);
-            if (ee()->session->userdata('2fa_authorized') == false) {
-                $data['invoke_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'invoke2FA') . AMP . 'RET=' . $return;
+            if (ee()->session->userdata('mfa_authorized') == false) {
+                $data['invoke_mfa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'invoke2FA') . AMP . 'RET=' . $return;
             }
-            if (ee()->session->userdata('2fa_enabled') == true) {
-                $data['reset_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'reset2FA') . AMP . 'RET=' . $return;
+            if (ee()->session->userdata('mfa_enabled') == true) {
+                $data['reset_mfa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'reset2FA') . AMP . 'RET=' . $return;
             }
-            if (ee()->session->userdata('2fa_enabled') == true && ee()->session->userdata('2fa_authorized') == true) {
-                $data['disable_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'disable2FA') . AMP . 'RET=' . $return;
+            if (ee()->session->userdata('mfa_enabled') == true && ee()->session->userdata('mfa_authorized') == true) {
+                $data['disable_mfa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'disable2FA') . AMP . 'RET=' . $return;
             }
-            if (ee()->session->userdata('2fa_enabled') == false) {
-                $data['enable_2fa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'enable2FA') . AMP . 'RET=' . $return;
+            if (ee()->session->userdata('mfa_enabled') == false) {
+                $data['enable_mfa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'enable2FA') . AMP . 'RET=' . $return;
             }
         }
 

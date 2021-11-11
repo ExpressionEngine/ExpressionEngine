@@ -26,7 +26,7 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
-            'add2faColumns',
+            'addmfaColumns',
             'add2FAMessageTemplate',
             'dropUnusedMemberColumns',
         ]);
@@ -38,13 +38,13 @@ class Updater
         return true;
     }
 
-    private function add2faColumns()
+    private function addmfaColumns()
     {
-        if (!ee()->db->field_exists('enable_2fa', 'members')) {
+        if (!ee()->db->field_exists('enable_mfa', 'members')) {
             ee()->smartforge->add_column(
                 'members',
                 [
-                    'enable_2fa' => [
+                    'enable_mfa' => [
                         'type' => 'char',
                         'constraint' => 1,
                         'default' => 'n',
@@ -53,11 +53,11 @@ class Updater
                 ]
             );
         }
-        if (!ee()->db->field_exists('backup_2fa_code', 'members')) {
+        if (!ee()->db->field_exists('backup_mfa_code', 'members')) {
             ee()->smartforge->add_column(
                 'members',
                 [
-                    'backup_2fa_code' => [
+                    'backup_mfa_code' => [
                         'type' => 'varchar',
                         'constraint' => 128,
                         'default' => null,
@@ -66,11 +66,11 @@ class Updater
                 ]
             );
         }
-        if (!ee()->db->field_exists('require_2fa', 'role_settings')) {
+        if (!ee()->db->field_exists('require_mfa', 'role_settings')) {
             ee()->smartforge->add_column(
                 'role_settings',
                 [
-                    'require_2fa' => [
+                    'require_mfa' => [
                         'type' => 'char',
                         'constraint' => 1,
                         'default' => 'n',
@@ -79,11 +79,11 @@ class Updater
                 ]
             );
         }
-        if (!ee()->db->field_exists('skip_2fa', 'sessions')) {
+        if (!ee()->db->field_exists('skip_mfa', 'sessions')) {
             ee()->smartforge->add_column(
                 'sessions',
                 [
-                    'skip_2fa' => [
+                    'skip_mfa' => [
                         'type' => 'char',
                         'constraint' => 1,
                         'default' => 'y',
@@ -92,11 +92,11 @@ class Updater
                 ]
             );
         }
-        if (!ee()->db->field_exists('require_2fa', 'templates')) {
+        if (!ee()->db->field_exists('require_mfa', 'templates')) {
             ee()->smartforge->add_column(
                 'templates',
                 [
-                    'require_2fa' => [
+                    'require_mfa' => [
                         'type' => 'char',
                         'constraint' => 1,
                         'default' => 'n',
@@ -119,7 +119,7 @@ class Updater
                     'template_type' => 'system',
                     'template_subtype' => null,
                     'data_title' => '',
-                    'template_data' => two_fa_message_template(),
+                    'template_data' => mfa_message_template(),
                     'site_id' => $site->site_id,
                 ])->save();
         }

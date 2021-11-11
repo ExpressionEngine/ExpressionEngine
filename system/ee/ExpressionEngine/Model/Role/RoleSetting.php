@@ -32,7 +32,7 @@ class RoleSetting extends Model
         'include_in_authorlist' => 'boolString',
         'include_in_memberlist' => 'boolString',
         'cp_homepage_channel' => 'int',
-        'require_2fa' => 'boolString',
+        'require_mfa' => 'boolString',
     ];
 
     protected static $_relationships = [
@@ -69,7 +69,7 @@ class RoleSetting extends Model
     protected $cp_homepage;
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
-    protected $require_2fa;
+    protected $require_mfa;
 }
 
 // EOF

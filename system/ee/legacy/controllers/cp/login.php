@@ -57,7 +57,7 @@ class Login extends CP_Controller
             $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
             $return_path = $member->getCPHomepageURL();
         }
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_2fa') !== false && ee()->config->item('enable_2fa') !== 'y') || ee()->session->userdata('skip_2fa') == 'y') {
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('skip_mfa') == 'y') {
             $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
 
             // If there is a URL= parameter in the return URL folks could end up anywhere
@@ -72,14 +72,14 @@ class Login extends CP_Controller
             $this->functions->redirect($return_path);
         }
 
-        if (!empty($_POST['2fa_code'])) {
-            $validated = ee('pro:TwoFactorAuth')->validateOtp(ee('Request')->post('2fa_code'), ee()->session->userdata('unique_id') . ee()->session->getMember()->backup_2fa_code);
+        if (!empty($_POST['mfa_code'])) {
+            $validated = ee('pro:TwoFactorAuth')->validateOtp(ee('Request')->post('mfa_code'), ee()->session->userdata('unique_id') . ee()->session->getMember()->backup_mfa_code);
             if (!$validated) {
                 ee()->session->save_password_lockout(ee()->session->userdata('username'));
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
-                    ->withTitle(lang('2fa_wrong_code'))
-                    ->addToBody(lang('2fa_wrong_code_desc'))
+                    ->withTitle(lang('mfa_wrong_code'))
+                    ->addToBody(lang('mfa_wrong_code_desc'))
                     ->now();
             } else {
                 ee()->session->delete_password_lockout();
@@ -89,7 +89,7 @@ class Login extends CP_Controller
                     ->filter('fingerprint', ee()->session->userdata('fingerprint'))
                     ->all();
                 foreach ($sessions as $session) {
-                    $session->skip_2fa = 'y';
+                    $session->skip_mfa = 'y';
                     $session->save();
                 }
                 //sync the session
@@ -100,7 +100,7 @@ class Login extends CP_Controller
 
         $this->view->return_path = ee('Encrypt')->encode($return_path);
 
-        $this->view->focus_field = '2fa_code';
+        $this->view->focus_field = 'mfa_code';
 
         if ($this->session->flashdata('message')) {
             ee('CP/Alert')
@@ -160,14 +160,14 @@ class Login extends CP_Controller
         $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
         $return_path = $member->getCPHomepageURL();
 
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_2fa') !== false && ee()->config->item('enable_2fa') !== 'y') || ee()->session->userdata('skip_2fa') == 'y') {
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('skip_mfa') == 'y') {
             $this->functions->redirect($return_path);
         }
 
         ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
 
         if (!empty($_POST)) {
-            if (md5(ee('Security/XSS')->clean(ee('Request')->post('backup_2fa_code'))) == $member->backup_2fa_code) {
+            if (md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))) == $member->backup_mfa_code) {
                 ee()->session->delete_password_lockout();
                 $sessions = ee('Model')
                     ->get('Session')
@@ -175,28 +175,28 @@ class Login extends CP_Controller
                     ->filter('fingerprint', ee()->session->userdata('fingerprint'))
                     ->all();
                 foreach ($sessions as $session) {
-                    $session->skip_2fa = 'y';
+                    $session->skip_mfa = 'y';
                     $session->save();
                 }
-                $member->set(['backup_2fa_code' => '', 'enable_2fa' => 'n']);
+                $member->set(['backup_mfa_code' => '', 'enable_mfa' => 'n']);
                 $member->save();
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
-                    ->withTitle(lang('2fa_reset_success'))
-                    ->addToBody(lang('2fa_reset_success_message'))
+                    ->withTitle(lang('mfa_reset_success'))
+                    ->addToBody(lang('mfa_reset_success_message'))
                     ->defer();
-                $this->functions->redirect(ee('CP/URL', 'members/profile/pro/two-factor-auth')->compile());
+                $this->functions->redirect(ee('CP/URL', 'members/profile/pro/mfa')->compile());
             } else {
                 ee()->session->save_password_lockout(ee()->session->userdata('username'));
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
-                    ->withTitle(lang('2fa_wrong_backup_code'))
-                    ->addToBody(lang('2fa_wrong_backup_code_desc'))
+                    ->withTitle(lang('mfa_wrong_backup_code'))
+                    ->addToBody(lang('mfa_wrong_backup_code_desc'))
                     ->now();
             }
         }
 
-        $this->view->focus_field = 'backup_2fa_code';
+        $this->view->focus_field = 'backup_mfa_code';
 
         if ($this->session->flashdata('message')) {
             ee('CP/Alert')

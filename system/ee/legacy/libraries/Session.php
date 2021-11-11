@@ -382,15 +382,15 @@ class EE_Session
         $this->sdata['sess_start'] = $this->sdata['last_activity'];
         $this->sdata['fingerprint'] = $this->_create_fingerprint((string) $crypt_key);
         $this->sdata['can_debug'] = ($can_debug) ? 'y' : 'n';
-        $this->sdata['skip_2fa'] = ($this->member_model->enable_2fa === true) ? 'n' : 'y';
+        $this->sdata['skip_mfa'] = ($this->member_model->enable_mfa === true) ? 'n' : 'y';
 
         $this->userdata['member_id'] = (int) $member_id;
         $this->userdata['role_id'] = (int) $this->member_model->role_id;
         $this->userdata['session_id'] = $this->sdata['session_id'];
         $this->userdata['fingerprint'] = $this->sdata['fingerprint'];
         $this->userdata['site_id'] = ee()->config->item('site_id');
-        $this->userdata['2fa_enabled'] = $this->member_model->enable_2fa;
-        $this->userdata['2fa_authorized'] = false;
+        $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
+        $this->userdata['mfa_authorized'] = false;
 
         // Set the session cookie, ONLY if this method is not called from the context of the constructor, i.e. a login action
         if (isset(ee()->session)) {
@@ -628,8 +628,8 @@ class EE_Session
         }
 
         // Check 2FA state
-        $this->userdata['2fa_enabled'] = $this->member_model->enable_2fa;
-        $this->userdata['2fa_authorized'] = $this->userdata['2fa_enabled'] && $this->session_model->skip_2fa == 'y';
+        $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
+        $this->userdata['mfa_authorized'] = $this->userdata['mfa_enabled'] && $this->session_model->skip_mfa == 'y';
 
         // Create the array for the Ignore List
         $this->userdata['ignore_list'] = ($this->userdata['ignore_list'] == '') ? array() : explode('|', $this->userdata['ignore_list']);
@@ -743,7 +743,7 @@ class EE_Session
         // Assign masquerader ID to session array
         $this->sdata['can_debug'] = $session->can_debug;
 
-        $this->sdata['skip_2fa'] = $session->skip_2fa;
+        $this->sdata['skip_mfa'] = $session->skip_mfa;
 
         // Is this an admin session?
         $this->sdata['admin_sess'] = ($session->admin_sess == 1) ? 1 : 0;
@@ -1210,7 +1210,7 @@ class EE_Session
             'fingerprint' => 0,
             'member_id' => 0,
             'admin_sess' => 0,
-            'skip_2fa' => 'y',
+            'skip_mfa' => 'y',
             'ip_address' => ee()->input->ip_address(),
             'user_agent' => substr(ee()->input->user_agent(), 0, 120),
             'last_activity' => 0,
@@ -1239,8 +1239,8 @@ class EE_Session
             'include_seconds' => ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
             'role_id' => '3',
             'access_cp' => 0,
-            '2fa_enabled' => !empty($this->member_model) ? $this->member_model->enable_2fa : false,
-            '2fa_authorized' => false,
+            'mfa_enabled' => !empty($this->member_model) ? $this->member_model->enable_mfa : false,
+            'mfa_authorized' => false,
             'last_visit' => 0,
             'is_banned' => $this->_do_ban_check(),
             'ignore_list' => array()

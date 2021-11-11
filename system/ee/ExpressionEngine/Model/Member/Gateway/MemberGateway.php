@@ -29,7 +29,7 @@ class MemberGateway extends Gateway
     protected $salt;
     protected $unique_id;
     protected $crypt_key;
-    protected $backup_2fa_code;
+    protected $backup_mfa_code;
     protected $authcode;
     protected $email;
     protected $signature;
@@ -87,7 +87,7 @@ class MemberGateway extends Gateway
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
     protected $dismissed_pro_banner;
-    protected $enable_2fa;
+    protected $enable_mfa;
 }
 
 // EOF

@@ -131,7 +131,7 @@ class EE_Template
         $this->user_vars = array(
             'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'username', 'screen_name',
             'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
-            'total_forum_posts', 'total_forum_topics', 'total_forum_replies', '2fa_enabled', '2fa_authorized'
+            'total_forum_posts', 'total_forum_topics', 'total_forum_replies', 'mfa_enabled', 'mfa_authorized'
         );
 
         $this->marker = md5(ee()->config->site_url() . $this->marker);
@@ -2532,7 +2532,7 @@ class EE_Template
         $row = $query->row_array();
 
         // Is 2FA required to access this template?
-        if (IS_PRO && ee('pro:Access')->hasValidLicense() && $row['require_2fa'] == 'y') {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && $row['require_mfa'] == 'y') {
             ee('pro:TwoFactorAuth')->invoke2FAdialog();
         }
 

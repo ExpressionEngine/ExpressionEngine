@@ -934,8 +934,8 @@ EOF;
 /* -------------------------------------
 //  2FA Messages Template
 /* -------------------------------------*/
-if (! function_exists('two_fa_message_template')) {
-    function two_fa_message_template()
+if (! function_exists('mfa_message_template')) {
+    function mfa_message_template()
     {
         return <<<EOF
 <!doctype html>

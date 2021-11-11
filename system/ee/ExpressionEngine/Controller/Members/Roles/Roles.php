@@ -651,14 +651,14 @@ class Roles extends AbstractRolesController
             ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $section = array_merge($section, [
                 [
-                    'title' => 'require_2fa',
-                    'desc' => 'require_2fa_desc',
+                    'title' => 'require_mfa',
+                    'desc' => 'require_mfa_desc',
                     'group' => 'can_access_cp',
                     'caution' => true,
                     'fields' => [
-                        'require_2fa' => [
+                        'require_mfa' => [
                             'type' => 'yes_no',
-                            'value' => $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_2fa,
+                            'value' => $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
                         ]
                     ]
                 ],
@@ -952,14 +952,14 @@ class Roles extends AbstractRolesController
             $sections = array_merge($sections, [
                 [
                     [
-                        'title' => 'require_2fa',
-                        'desc' => 'require_2fa_desc',
+                        'title' => 'require_mfa',
+                        'desc' => 'require_mfa_desc',
                         'group' => 'can_access_cp',
                         'caution' => true,
                         'fields' => [
-                            'require_2fa' => [
+                            'require_mfa' => [
                                 'type' => 'yes_no',
-                                'value' => $settings->require_2fa,
+                                'value' => $settings->require_mfa,
                             ]
                         ]
                     ],
