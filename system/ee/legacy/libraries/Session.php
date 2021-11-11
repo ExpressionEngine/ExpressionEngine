@@ -390,7 +390,6 @@ class EE_Session
         $this->userdata['fingerprint'] = $this->sdata['fingerprint'];
         $this->userdata['site_id'] = ee()->config->item('site_id');
         $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
-        $this->userdata['mfa_authorized'] = false;
 
         // Set the session cookie, ONLY if this method is not called from the context of the constructor, i.e. a login action
         if (isset(ee()->session)) {
@@ -627,9 +626,8 @@ class EE_Session
             return false;
         }
 
-        // Check 2FA state
+        // Check MFA state
         $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
-        $this->userdata['mfa_authorized'] = $this->userdata['mfa_enabled'] && $this->session_model->skip_mfa == 'y';
 
         // Create the array for the Ignore List
         $this->userdata['ignore_list'] = ($this->userdata['ignore_list'] == '') ? array() : explode('|', $this->userdata['ignore_list']);
@@ -1240,7 +1238,6 @@ class EE_Session
             'role_id' => '3',
             'access_cp' => 0,
             'mfa_enabled' => !empty($this->member_model) ? $this->member_model->enable_mfa : false,
-            'mfa_authorized' => false,
             'last_visit' => 0,
             'is_banned' => $this->_do_ban_check(),
             'ignore_list' => array()

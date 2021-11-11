@@ -332,6 +332,11 @@ class EE_Core
             }
         }
 
+        if (ee()->session->userdata('skip_mfa') == 'n' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            //only allow MFA code page
+            ee('pro:Mfa')->formValidateMfa();
+        }
+
         // Update system stats
         ee()->load->library('stats');
 
@@ -441,7 +446,7 @@ class EE_Core
         }
 
         if (ee()->session->userdata('skip_mfa') == 'n' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            //only allow 2FA code page
+            //only allow MFA code page
             if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset']))) {
                 ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
             }
@@ -455,7 +460,7 @@ class EE_Core
             return ee()->output->fatal_error(lang('not_authorized'));
         }
 
-        //is member role forced to use 2FA?
+        //is member role forced to use MFA?
         if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true && IS_PRO && ee('pro:Access')->hasValidLicense()) {
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');

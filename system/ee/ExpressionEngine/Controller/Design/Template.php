@@ -1029,20 +1029,6 @@ class Template extends AbstractDesignController
             )
         );
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-            $sections['pro_settings'][] = array(
-                'title' => 'require_mfa',
-                'desc' => 'require_mfa_tmpl_desc',
-                'fields' => array(
-                    'require_mfa' => array(
-                        'type' => 'yes_no',
-                        'value' => $template->require_mfa
-                    )
-                )
-            );
-        }
-
         $html = '';
 
         foreach ($sections as $name => $settings) {

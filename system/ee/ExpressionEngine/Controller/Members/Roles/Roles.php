@@ -647,7 +647,7 @@ class Roles extends AbstractRolesController
             ]
         ];
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense() && $role->getId() == Member::SUPERADMIN) {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
             ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $section = array_merge($section, [
                 [
@@ -946,26 +946,6 @@ class Roles extends AbstractRolesController
                 ],
             ]
         ];
-
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-            $sections = array_merge($sections, [
-                [
-                    [
-                        'title' => 'require_mfa',
-                        'desc' => 'require_mfa_desc',
-                        'group' => 'can_access_cp',
-                        'caution' => true,
-                        'fields' => [
-                            'require_mfa' => [
-                                'type' => 'yes_no',
-                                'value' => $settings->require_mfa,
-                            ]
-                        ]
-                    ],
-                ]
-            ]);
-        }
 
         $sections = array_merge($sections, [
             [

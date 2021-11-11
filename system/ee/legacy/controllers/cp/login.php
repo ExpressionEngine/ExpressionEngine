@@ -73,7 +73,7 @@ class Login extends CP_Controller
         }
 
         if (!empty($_POST['mfa_code'])) {
-            $validated = ee('pro:TwoFactorAuth')->validateOtp(ee('Request')->post('mfa_code'), ee()->session->userdata('unique_id') . ee()->session->getMember()->backup_mfa_code);
+            $validated = ee('pro:Mfa')->validateOtp(ee('Request')->post('mfa_code'), ee()->session->userdata('unique_id') . ee()->session->getMember()->backup_mfa_code);
             if (!$validated) {
                 ee()->session->save_password_lockout(ee()->session->userdata('username'));
                 ee('CP/Alert')->makeInline('shared-form')

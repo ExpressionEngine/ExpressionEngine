@@ -595,8 +595,9 @@ class EE_Output
             ee()->db->where('template_name', $template_name);
             $query = ee()->db->get('specialty_templates');
 
-            $row = $query->row_array();
-            $template_data = $row['template_data'];
+            if ($query->num_rows() > 0) {
+                $template_data = $query->row('template_data');
+            }
         }
 
         foreach ($data as $key => $val) {

@@ -27,7 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'addMfaColumns',
-            'add2FAMessageTemplate',
+            'addMfaMessageTemplate',
             'dropUnusedMemberColumns',
         ]);
 
@@ -92,22 +92,9 @@ class Updater
                 ]
             );
         }
-        if (!ee()->db->field_exists('require_mfa', 'templates')) {
-            ee()->smartforge->add_column(
-                'templates',
-                [
-                    'require_mfa' => [
-                        'type' => 'char',
-                        'constraint' => 1,
-                        'default' => 'n',
-                        'null' => false
-                    ]
-                ]
-            );
-        }
     }
 
-    protected function add2FAMessageTemplate()
+    protected function addMfaMessageTemplate()
     {
         $sites = ee('Model')->get('Site')->all();
         require_once SYSPATH . 'ee/language/' . (ee()->config->item('deft_lang') ?: 'english') . '/email_data.php';
@@ -115,7 +102,7 @@ class Updater
         foreach ($sites as $site) {
             ee('Model')->make('SpecialtyTemplate')
                 ->set([
-                    'template_name' => 'two-fa',
+                    'template_name' => 'mfa_template',
                     'template_type' => 'system',
                     'template_subtype' => null,
                     'data_title' => '',

@@ -109,7 +109,6 @@ class Template extends FileSyncedModel
     protected $hits;
     protected $protect_javascript;
     protected $enable_frontedit;
-    protected $require_mfa;
 
     /**
      * Returns the path to this template i.e. "site/index"

@@ -932,7 +932,7 @@ EOF;
 }
 
 /* -------------------------------------
-//  2FA Messages Template
+//  MFA Messages Template
 /* -------------------------------------*/
 if (! function_exists('mfa_message_template')) {
     function mfa_message_template()
