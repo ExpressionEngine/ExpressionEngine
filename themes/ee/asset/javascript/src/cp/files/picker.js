@@ -174,7 +174,7 @@
 
 					var height = this.contentWindow.document.body.scrollHeight;
 					$('.box', modal).height(height);
-					$(this).height(height + 20);
+					$(this).height(height + 2);
 				}
 			});
 

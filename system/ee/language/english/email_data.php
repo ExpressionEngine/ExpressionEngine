@@ -212,6 +212,31 @@ EOF;
     }
 }
 
+if (! function_exists('forgot_username_instructions_title')) {
+    function forgot_username_instructions_title()
+    {
+        return <<<EOF
+Username information
+EOF;
+    }
+}
+
+if (! function_exists('forgot_username_instructions')) {
+    function forgot_username_instructions()
+    {
+        return <<<EOF
+{name},
+
+Your username is: {username}
+
+If you didn't request your username yourself, please contact an administrator right away.
+
+{site_name}
+{site_url}
+EOF;
+    }
+}
+
 //---------------------------------------------------
 //	Validated Member Notification
 //--------------------------------------------------

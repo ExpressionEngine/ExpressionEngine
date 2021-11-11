@@ -46,8 +46,25 @@
   .col { position: relative;}
 }
 
-.modal-file .modal {
-  padding-top: 65px;
+.modal-wrap {
+  .m-close {
+    height: 20px;
+    top: 20px;
+    right: 20px;
+
+    &:before { font-size: 20px; }
+  }
+
+  &.modal-file {
+    .panel {
+      margin-bottom: 0;
+    }
+
+    .modal {
+      padding-top: 45px;
+      padding-bottom: 45px;
+    }
+  }
 }
 
 .modal--no-padding {

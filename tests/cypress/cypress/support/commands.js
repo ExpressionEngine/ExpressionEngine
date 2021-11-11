@@ -59,7 +59,7 @@ Cypress.Commands.add("logout", () => {
 })
 
 Cypress.Commands.add("auth", (user) => {
-    cy.visit('admin.php');
+    cy.visit('admin.php', {failOnStatusCode: false});
     cy.login(user);
 })
 

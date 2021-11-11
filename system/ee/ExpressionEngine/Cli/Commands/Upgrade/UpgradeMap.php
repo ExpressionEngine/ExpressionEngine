@@ -15,6 +15,11 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
 class UpgradeMap
 {
     public static $versionsSupported = [
+        '6.1.6',
+        '6.1.5',
+        '6.1.4',
+        '6.1.3',
+        '6.1.2',
         '6.1.1',
         '6.1.0',
         '6.1.0_rc_1',
