@@ -46,15 +46,19 @@ class NavigationSidebar extends AbstractSidebar
                     $item->isActive();
                 }
 
-                $list = $section->addList(lang('menu_entries'));
-                $list->addItem('<i class="fas fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
-
                 $allowed_channel_ids = (ee('Permission')->isSuperAdmin()) ? null : array_keys(ee()->session->userdata['assigned_channels']);
 
                 $channels = ee('Model')->get('Channel', $allowed_channel_ids)
                     ->fields('channel_id', 'channel_title', 'max_entries', 'total_records')
                     ->filter('site_id', ee()->config->item('site_id'))
                     ->order('channel_title', 'ASC');
+
+                $list = $section->addList(lang('menu_entries'));
+
+                if (count($channels->all())) {
+                    $list->addItem('<i class="fas fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
+                }
+
                 foreach ($channels->all() as $channel) {
                     $editLink = null;
                     $publishLink = null;
