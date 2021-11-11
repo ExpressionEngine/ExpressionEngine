@@ -321,7 +321,7 @@ ul.field-nested ul {
 
 	li {
 		label {
-			border-left: 2px solid color(border);
+			border-left: 2px solid color(border-dark);
       padding-left: $s-s;
 		}
 
@@ -351,6 +351,10 @@ ul.field-nested ul {
 .field-nested li {
 	padding: 0;
 
+	.flyout-right {
+		float: right;
+	}
+
 	.checkbox-label__text-editable {
 		&:before {
 			position: absolute;
@@ -371,16 +375,16 @@ ul.field-nested ul {
 		  line-height: 1.5;
 		  border-radius: 4px;
 		  float: right;
-		}		
+		}
 	}
 
 	.checkbox-label:hover {
 		.checkbox-label__text-editable {
-			background: var(--ee-secondary-sidebar-item-bg);
+			background: var(--ee-bg-0);
 			border-top-right-radius: 5px;
 			border-bottom-right-radius: 5px;
   		border-top-left-radius: 0;
-  		border-bottom-left-radius: 0;			
+  		border-bottom-left-radius: 0;
 		}
 	}
 

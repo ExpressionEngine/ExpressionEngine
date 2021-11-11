@@ -608,20 +608,22 @@ function (_React$Component2) {
         }
       }), " ", props.item.instructions && React.createElement("span", {
         className: "meta-info"
-      }, props.item.instructions), props.removable && React.createElement("a", {
+      }, props.item.instructions), React.createElement("div", {
+        "class": "button-group button-group-xsmall flyout-right"
+      }, props.editable && React.createElement("a", {
+        href: "#",
+        className: "button button--default flyout-edit flyout-edit-icon"
+      }, React.createElement("i", {
+        "class": "fas fa-pencil-alt"
+      })), props.removable && React.createElement("a", {
         href: "",
-        className: "button button--small default float-right",
+        className: "button button--default",
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
       }, React.createElement("i", {
         "class": "fas fa-fw fa-trash-alt"
-      })), props.editable && React.createElement("a", {
-        href: "#",
-        className: "flyout-edit flyout-edit-icon"
-      }, React.createElement("i", {
-        "class": "fas fa-pencil-alt"
-      }))));
+      })))));
 
       if (props.nested) {
         return React.createElement("li", {

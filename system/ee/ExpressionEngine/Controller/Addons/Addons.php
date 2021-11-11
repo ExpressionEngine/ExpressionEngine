@@ -749,7 +749,7 @@ class Addons extends CP_Controller
         if (! empty($module) && $module['installed'] === true) {
             $data = $this->getModuleSettings($addon, $method, array_slice(func_get_args(), 2));
 
-            $addon_header = (isset(ee()->cp->header)) ? ee()->cp->header : ee()->view->header;
+            $addon_header = (isset(ee()->cp->header)) ? ee()->cp->header : (isset(ee()->view->header) ? ee()->view->header : []);
             $header = array_merge($addon_header, array('title' => $module['name'] . ' ' . $licenseStatusBadge));
 
             ee()->view->header = $header;

@@ -497,7 +497,7 @@ class SelectItem extends React.Component {
             disabled={disabled ? 'disabled' : ''}
            />
         )}
-        <div className="checkbox-label__text">
+        <div className={props.editable ? "checkbox-label__text checkbox-label__text-editable" : "checkbox-label__text"}>
         {props.reorderable && (
           <span className="icon-reorder icon-left"></span>
         )}
@@ -509,9 +509,14 @@ class SelectItem extends React.Component {
         {props.item.instructions && (
           <span className="meta-info">{props.item.instructions}</span>
         )}
-        {props.removable && (
-            <a href="" className="button button--small default float-right" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
+        <div class="button-group button-group-xsmall flyout-right">
+        {props.editable && (
+          <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fas fa-pencil-alt"></i></a>
         )}
+        {props.removable && (
+            <a href="" className="button button--default" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
+        )}
+        </div>
         </div>
       </label>
     )
