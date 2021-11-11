@@ -514,7 +514,7 @@ class SelectItem extends React.Component {
           <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fas fa-pencil-alt"></i></a>
         )}
         {props.removable && (
-            <a href="" className="button button--default" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
+            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
         )}
         </div>
         </div>

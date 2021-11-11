@@ -617,7 +617,7 @@ function (_React$Component2) {
         "class": "fas fa-pencil-alt"
       })), props.removable && React.createElement("a", {
         href: "",
-        className: "button button--default",
+        className: "button button--default js-button-delete",
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
