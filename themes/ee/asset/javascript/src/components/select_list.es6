@@ -509,7 +509,7 @@ class SelectItem extends React.Component {
         {props.item.instructions && (
           <span className="meta-info">{props.item.instructions}</span>
         )}
-        <div class="button-group button-group-xsmall flyout-right">
+        <div class="button-group button-group-xsmall button-group-flyout-right">
         {props.editable && (
           <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fas fa-pencil-alt"></i></a>
         )}

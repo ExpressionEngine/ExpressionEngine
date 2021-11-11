@@ -348,12 +348,13 @@ ul.field-nested ul {
 }
 
 // LEGACY 6.0
+.button-group-flyout-right {
+	float: right;
+}
+	
 .field-nested li {
 	padding: 0;
 
-	.flyout-right {
-		float: right;
-	}
 
 	.checkbox-label__text-editable {
 		&:before {

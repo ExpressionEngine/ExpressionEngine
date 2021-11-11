@@ -609,9 +609,9 @@ function (_React$Component2) {
       }), " ", props.item.instructions && React.createElement("span", {
         className: "meta-info"
       }, props.item.instructions), React.createElement("div", {
-        "class": "button-group button-group-xsmall flyout-right"
+        "class": "button-group button-group-xsmall button-group-flyout-right"
       }, props.editable && React.createElement("a", {
-        href: "#",
+        href: "",
         className: "button button--default flyout-edit flyout-edit-icon"
       }, React.createElement("i", {
         "class": "fas fa-pencil-alt"
