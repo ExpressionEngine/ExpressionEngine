@@ -351,6 +351,10 @@ ul.field-nested ul {
 .field-nested li {
 	padding: 0;
 
+	.flyout-right {
+		float: right;
+	}
+
 	.checkbox-label__text-editable {
 		&:before {
 			position: absolute;
