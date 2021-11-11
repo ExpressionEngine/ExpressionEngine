@@ -442,8 +442,8 @@ class EE_Core
 
         if (ee()->session->userdata('skip_mfa') == 'n' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
             //only allow 2FA code page
-            if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['otp', 'otp_reset']))) {
-                ee()->functions->redirect(ee('CP/URL')->make('/login/otp', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
+            if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset']))) {
+                ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
             }
         }
 

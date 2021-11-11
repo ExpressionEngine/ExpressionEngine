@@ -26,7 +26,7 @@ class Login extends CP_Controller
         $this->lang->loadfile('login');
     }
 
-    public function otp()
+    public function mfa()
     {
         if (ee()->session->userdata('member_id') == 0) {
             return $this->authenticate();
@@ -140,7 +140,7 @@ class Login extends CP_Controller
 
         $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
 
-        $view = 'pro:account/otp';
+        $view = 'pro:account/mfa';
 
         $this->view->cp_page_title = lang('login');
 
@@ -151,7 +151,7 @@ class Login extends CP_Controller
         $this->view->render($view);
     }
 
-    public function otp_reset()
+    public function mfa_reset()
     {
         if (ee()->session->userdata('member_id') == 0) {
             return $this->authenticate();
@@ -236,7 +236,7 @@ class Login extends CP_Controller
 
         $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
 
-        $view = 'pro:account/otp-reset';
+        $view = 'pro:account/mfa-reset';
 
         $this->view->cp_page_title = lang('login');
 
