@@ -26,7 +26,7 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
-            'addmfaColumns',
+            'addMfaColumns',
             'add2FAMessageTemplate',
             'dropUnusedMemberColumns',
         ]);
@@ -38,7 +38,7 @@ class Updater
         return true;
     }
 
-    private function addmfaColumns()
+    private function addMfaColumns()
     {
         if (!ee()->db->field_exists('enable_mfa', 'members')) {
             ee()->smartforge->add_column(
