@@ -30,7 +30,12 @@ class NavigationSidebar extends AbstractSidebar
             return $this->items;
         }
 
-        $this->addItem(lang('nav_overview'), ee('CP/URL', 'homepage'))->withIcon('home');
+        if (ee()->session->getMember()->getCPHomepageURL()->path == 'homepage') {
+            $this->addItem(lang('nav_overview'), ee('CP/URL', 'homepage'))->withIcon('home');
+        } else {
+            $this->addItem(lang('nav_homepage'), ee()->session->getMember()->getCPHomepageURL())->withIcon('home');
+            $this->addItem(lang('nav_overview'), ee('CP/URL', 'homepage'))->withIcon('tachometer-alt');
+        }
 
         if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries', 'can_access_files') || (ee('Permission')->has('can_admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories'))) {
             $section = $this->addSection(lang('nav_content'));
@@ -41,15 +46,19 @@ class NavigationSidebar extends AbstractSidebar
                     $item->isActive();
                 }
 
-                $list = $section->addList(lang('menu_entries'));
-                $list->addItem('<i class="fas fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
-
                 $allowed_channel_ids = (ee('Permission')->isSuperAdmin()) ? null : array_keys(ee()->session->userdata['assigned_channels']);
 
                 $channels = ee('Model')->get('Channel', $allowed_channel_ids)
                     ->fields('channel_id', 'channel_title', 'max_entries', 'total_records')
                     ->filter('site_id', ee()->config->item('site_id'))
                     ->order('channel_title', 'ASC');
+
+                $list = $section->addList(lang('menu_entries'));
+
+                if (count($channels->all())) {
+                    $list->addItem('<i class="fas fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
+                }
+
                 foreach ($channels->all() as $channel) {
                     $editLink = null;
                     $publishLink = null;

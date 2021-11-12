@@ -523,10 +523,6 @@ $lang = array(
 
     'upload_avatar' => 'Upload — .gif, .jpg, .png (max %skb)',
 
-    'url' => 'Personal website',
-
-    'url_desc' => 'URL location of your personal website',
-
     'user_ip_address' => 'IP Address',
 
     'username' => 'Username',
