@@ -716,6 +716,10 @@ class Auth_result
             }
         }
 
+        ee()->session->userdata['mfa_dialog_required'] = (ee()->session->userdata('skip_mfa') == 'y');
+        var_dump(ee()->session->userdata['mfa_dialog_required']);
+        exit();
+
         if ($cp_sess === true) {
             // Log the login
 

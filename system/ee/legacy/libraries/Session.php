@@ -1239,6 +1239,7 @@ class EE_Session
             'role_id' => '3',
             'access_cp' => 0,
             'mfa_enabled' => !empty($this->member_model) ? $this->member_model->enable_mfa : false,
+            'mfa_dialog_required' => false,
             'last_visit' => 0,
             'is_banned' => $this->_do_ban_check(),
             'ignore_list' => array()

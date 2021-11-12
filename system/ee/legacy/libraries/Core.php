@@ -299,17 +299,20 @@ class EE_Core
         ee()->lang->loadfile('core');
 
         // Now that we have a session we'll enable debugging if the user is a super admin
-        if (ee()->config->item('debug') == 1
+        if (
+            ee()->config->item('debug') == 1
             && (
                 ee('Permission')->isSuperAdmin()
                 || ee()->session->userdata('can_debug') == 'y'
             )
-            ) {
+        ) {
             $this->_enable_debugging();
         }
 
-        if ((ee('Permission')->isSuperAdmin() || ee()->session->userdata('can_debug') == 'y')
-            && ee()->config->item('show_profiler') == 'y') {
+        if (
+            (ee('Permission')->isSuperAdmin() || ee()->session->userdata('can_debug') == 'y')
+            && ee()->config->item('show_profiler') == 'y'
+        ) {
             ee()->output->enable_profiler(true);
         }
 
@@ -330,11 +333,6 @@ class EE_Core
             } else {
                 $this->process_secure_forms();
             }
-        }
-
-        if (ee()->session->userdata('skip_mfa') == 'n' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            //only allow MFA code page
-            ee('pro:Mfa')->formValidateMfa();
         }
 
         // Update system stats
