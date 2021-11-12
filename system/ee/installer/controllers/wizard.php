@@ -67,7 +67,7 @@ class Wizard extends CI_Controller
     // party folder)
     public $native_modules = array('blacklist', 'block_and_allow', 'channel', 'comment', 'commerce', 'consent',
         'email', 'file', 'forum', 'gallery', 'ip_to_nation',
-        'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'relationship',
+        'member', 'metaweblog_api', 'moblog', 'pro', 'pages', 'query', 'relationship',
         'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
     // Third Party Modules may send error messages if something goes wrong.

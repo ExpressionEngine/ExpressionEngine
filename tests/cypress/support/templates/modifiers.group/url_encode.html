@@ -1,0 +1,25 @@
+{exp:channel:entries dynamic="no" entry_id="2"}
+<div>
+    <h4>url_encode, no params</h4>
+    <span>{title:url_encode}</span>
+    <hr />
+</div>
+<div>
+    <h4>url_encode, brace after space</h4>
+    <span>{title:url_encode }</span>
+    <hr />
+</div>
+
+<div>
+    <h4>url_encode with encoded spaces</h4>
+    <span>{title:url_encode plus_encoded_spaces='yes'}</span>
+    <hr />
+</div>
+<div>
+    <h4>url_encode, encoded spaces, break in several lines</h4>
+    <span>{title:url_encode 
+plus_encoded_spaces='yes' }</span>
+    <hr />
+</div>
+
+{/exp:channel:entries}

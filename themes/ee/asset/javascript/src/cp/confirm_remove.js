@@ -13,8 +13,11 @@ $(document).ready(function () {
 		var ajax_url = $(this).data('confirm-ajax');
 		var confirm_text = $(this).data('confirm-text');
 		var confirm_input = $(this).data('confirm-input');
-		var select = $('*[data-' + data_element + ']').closest('select').get(0)
-		var conditional_element = $(select.options[select.selectedIndex])
+		var select = $('*[data-' + data_element + ']').closest('select').get(0);
+
+		if (select) {
+			var conditional_element = $(select.options[select.selectedIndex]);
+		}
 
 		if ($(conditional_element).data(data_element) &&
 			$(conditional_element).prop($(conditional_element).data(data_element))) {

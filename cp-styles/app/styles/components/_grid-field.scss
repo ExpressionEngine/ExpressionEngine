@@ -54,19 +54,19 @@
     margin-top: 0px;
 
 	.dropdown__link, .file-field__buttons {
-		text-indent: 20px;
+		text-indent: 0;
 	}
 	.dropdown__link--selected {
 		&::before {
 			margin-right: 20px;
-			margin-left: -20px;
+			margin-left: 0;
 		}
 	}
   }
 
 	.file-field__buttons {
 		.dropdown__link {
-			text-indent: 20px;
+			text-indent: 0;
 		}
 	}
 
