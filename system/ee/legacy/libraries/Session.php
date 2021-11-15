@@ -382,7 +382,7 @@ class EE_Session
         $this->sdata['sess_start'] = $this->sdata['last_activity'];
         $this->sdata['fingerprint'] = $this->_create_fingerprint((string) $crypt_key);
         $this->sdata['can_debug'] = ($can_debug) ? 'y' : 'n';
-        $this->sdata['skip_mfa'] = ($this->member_model->enable_mfa === true) ? 'n' : 'y';
+        $this->sdata['mfa_flag'] = ($this->member_model->enable_mfa === true) ? 'show' : 'skip';
 
         $this->userdata['member_id'] = (int) $member_id;
         $this->userdata['role_id'] = (int) $this->member_model->role_id;
@@ -741,7 +741,7 @@ class EE_Session
         // Assign masquerader ID to session array
         $this->sdata['can_debug'] = $session->can_debug;
 
-        $this->sdata['skip_mfa'] = $session->skip_mfa;
+        $this->sdata['mfa_flag'] = $session->mfa_flag;
 
         // Is this an admin session?
         $this->sdata['admin_sess'] = ($session->admin_sess == 1) ? 1 : 0;
@@ -1209,7 +1209,7 @@ class EE_Session
             'fingerprint' => 0,
             'member_id' => 0,
             'admin_sess' => 0,
-            'skip_mfa' => 'y',
+            'mfa_flag' => 'skip',
             'ip_address' => ee()->input->ip_address(),
             'user_agent' => substr(ee()->input->user_agent(), 0, 120),
             'last_activity' => 0,
@@ -1239,7 +1239,6 @@ class EE_Session
             'role_id' => '3',
             'access_cp' => 0,
             'mfa_enabled' => !empty($this->member_model) ? $this->member_model->enable_mfa : false,
-            'mfa_dialog_required' => false,
             'last_visit' => 0,
             'is_banned' => $this->_do_ban_check(),
             'ignore_list' => array()

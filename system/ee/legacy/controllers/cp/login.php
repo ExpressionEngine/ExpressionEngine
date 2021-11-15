@@ -57,7 +57,7 @@ class Login extends CP_Controller
             $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
             $return_path = $member->getCPHomepageURL();
         }
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('skip_mfa') == 'y') {
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
             $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
 
             // If there is a URL= parameter in the return URL folks could end up anywhere
@@ -89,7 +89,7 @@ class Login extends CP_Controller
                     ->filter('fingerprint', ee()->session->userdata('fingerprint'))
                     ->all();
                 foreach ($sessions as $session) {
-                    $session->skip_mfa = 'y';
+                    $session->mfa_flag = 'skip';
                     $session->save();
                 }
                 //sync the session
@@ -160,7 +160,7 @@ class Login extends CP_Controller
         $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
         $return_path = $member->getCPHomepageURL();
 
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('skip_mfa') == 'y') {
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
             $this->functions->redirect($return_path);
         }
 
@@ -175,7 +175,7 @@ class Login extends CP_Controller
                     ->filter('fingerprint', ee()->session->userdata('fingerprint'))
                     ->all();
                 foreach ($sessions as $session) {
-                    $session->skip_mfa = 'y';
+                    $session->mfa_flag = 'skip';
                     $session->save();
                 }
                 $member->set(['backup_mfa_code' => '', 'enable_mfa' => 'n']);

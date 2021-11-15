@@ -716,9 +716,18 @@ class Auth_result
             }
         }
 
-        ee()->session->userdata['mfa_dialog_required'] = (ee()->session->userdata('skip_mfa') == 'y');
-        var_dump(ee()->session->userdata['mfa_dialog_required']);
-        exit();
+        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
+            $sessions = ee('Model')
+                ->get('Session')
+                ->filter('member_id', ee()->session->userdata('member_id'))
+                ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                ->all();
+            foreach ($sessions as $session) {
+                $session->mfa_flag = 'show';
+                $session->save();
+            }
+            ee()->session->mfa_flag = 'show';
+        }
 
         if ($cp_sess === true) {
             // Log the login

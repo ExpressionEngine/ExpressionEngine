@@ -79,14 +79,14 @@ class Updater
                 ]
             );
         }
-        if (!ee()->db->field_exists('skip_mfa', 'sessions')) {
+        if (!ee()->db->field_exists('mfa_flag', 'sessions')) {
             ee()->smartforge->add_column(
                 'sessions',
                 [
-                    'skip_mfa' => [
-                        'type' => 'char',
-                        'constraint' => 1,
-                        'default' => 'y',
+                    'mfa_flag' => [
+                        'type' => 'enum',
+                        'constraint' => "'skip','show','required'",
+                        'default' => 'skip',
                         'null' => false
                     ]
                 ]

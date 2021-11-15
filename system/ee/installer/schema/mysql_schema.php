@@ -70,7 +70,7 @@ class EE_Schema
 			auth_timeout int(10) unsigned DEFAULT '0' NOT NULL,
 			last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			can_debug char(1) NOT NULL DEFAULT 'n',
-			skip_mfa char(1) NOT NULL DEFAULT 'y',
+			mfa_flag ENUM('skip','show','required') NOT NULL DEFAULT 'skip',
 			PRIMARY KEY `session_id` (`session_id`),
 			KEY `member_id` (`member_id`),
 			KEY `last_activity_idx` (`last_activity`)
@@ -928,7 +928,6 @@ class EE_Schema
 			hits int(10) unsigned NOT NULL default 0,
 			protect_javascript char(1) NOT NULL default 'n',
 			enable_frontedit char(1) NOT NULL default 'y',
-			require_mfa char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `template_id` (`template_id`),
 			KEY `group_id` (`group_id`),
 			KEY `template_name` (`template_name`),

@@ -2545,13 +2545,6 @@ class EE_Template
         }
 
         $row = $query->row_array();
-        var_dump(ee()->session->userdata['mfa_dialog_required']);
-
-        // Is MFA required to access this template?
-        if (ee()->session->userdata['mfa_dialog_required'] && IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            ee('pro:Mfa')->invokeMfaDialog();
-        }
-        //ee()->session->userdata['mfa_dialog_required'] = false;
 
         // Is PHP allowed in this template?
         if (ee('Config')->getFile()->getBoolean('allow_php') && $row['allow_php'] == 'y') {
