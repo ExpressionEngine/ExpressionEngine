@@ -20,7 +20,7 @@ class Sticky extends Column
 {
     public function getTableColumnLabel()
     {
-        return 'sticky';
+        return 'sticky_entry';
     }
 
     public function getTableColumnConfig()
