@@ -763,14 +763,14 @@ $lang = array(
     'require_secure_passwords' => 'Password security policy',
 
     'require_secure_passwords_desc' => 'Choose the level of password security that your site members are required to maintain. <a href="' . DOC_URL. 'control-panel/settings/security-privacy.html#password-security-policy" target="_blank">Read more</a> about the options.',
-    
+
     'password_security_none' => 'None',
 
     'password_security_basic' => 'Basic',
 
-    'password_security_advanced' => 'Advanced',
+    'password_security_good' => 'Ranked Good',
 
-    'password_security_strict' => 'Strict',
+    'password_security_strong' => 'Ranked Strong',
 
     's_session' => 'Session ID only',
 

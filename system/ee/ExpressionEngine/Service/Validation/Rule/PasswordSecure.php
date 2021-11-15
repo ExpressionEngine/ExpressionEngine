@@ -23,37 +23,13 @@ class PasswordSecure extends ValidationRule
             case 'n':
                 return true;
                 break;
-            case 'a':
-                return ee('Member')->calculatePasswordComplexity($value) >= 40;
-                break;
             case 's':
                 return ee('Member')->calculatePasswordComplexity($value) >= 60;
                 break;
             case 'y':
+            case 'g':
             default:
-                $count = array('uc' => 0, 'lc' => 0, 'num' => 0);
-
-                $pass = preg_quote($value, "/");
-
-                $len = strlen($pass);
-
-                for ($i = 0; $i < $len; $i++) {
-                    $n = substr($pass, $i, 1);
-
-                    if (preg_match("/^[[:upper:]]$/", $n)) {
-                        $count['uc']++;
-                    } elseif (preg_match("/^[[:lower:]]$/", $n)) {
-                        $count['lc']++;
-                    } elseif (preg_match("/^[[:digit:]]$/", $n)) {
-                        $count['num']++;
-                    }
-                }
-
-                foreach ($count as $val) {
-                    if ($val == 0) {
-                        return false;
-                    }
-                }
+                return ee('Member')->calculatePasswordComplexity($value) >= 40;
                 break;
         }
 

@@ -78,7 +78,6 @@ class Member
         return $author_options;
     }
 
-    
     /**
      * Calculate password complexity/rank
      * using metrics provided by passwordmeter.com
@@ -86,6 +85,34 @@ class Member
      */
     public function calculatePasswordComplexity($password)
     {
+        if (ee()->config->item('require_secure_passwords') == 'y') {
+            //fallback to former "secure password" EE algo
+            $count = array('uc' => 0, 'lc' => 0, 'num' => 0);
+
+            $pass = preg_quote($value, "/");
+
+            $len = strlen($pass);
+
+            for ($i = 0; $i < $len; $i++) {
+                $n = substr($pass, $i, 1);
+
+                if (preg_match("/^[[:upper:]]$/", $n)) {
+                    $count['uc']++;
+                } elseif (preg_match("/^[[:lower:]]$/", $n)) {
+                    $count['lc']++;
+                } elseif (preg_match("/^[[:digit:]]$/", $n)) {
+                    $count['num']++;
+                }
+            }
+
+            foreach ($count as $val) {
+                if ($val == 0) {
+                    return 10; //weak
+                }
+            }
+            return 40; //good
+        }
+
         $rank = 0;
         $length = strlen($password);
         $charsCount = [
@@ -116,22 +143,21 @@ class Member
         $orderedNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
         $orderedStrings = range('a', 'z');
         $orderedKeyboard = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
-        for ($i = 0; $i < $length; $i++)
-        {
+        for ($i = 0; $i < $length; $i++) {
             if ($password[$i] >= 'A' && $password[$i] <= 'Z') {
                 $currentCharType = 'upper';
                 $currentCharTypeNocase = 'string';
             } elseif ($password[$i] >= 'a' && $password[$i] <= 'z') {
                 $currentCharType = 'lower';
                 $currentCharTypeNocase = 'string';
-            } elseif ($password[$i]>= '0' && $password[$i]<= '9') {
-                if ($i > 0 && $i < ($length-1)) {
+            } elseif ($password[$i] >= '0' && $password[$i] <= '9') {
+                if ($i > 0 && $i < ($length - 1)) {
                     //Middle Numbers or Symbols
                     $rank += 2;
                 }
                 $currentCharType = $currentCharTypeNocase = 'number';
             } else {
-                if ($i > 0 && $i < ($length-1)) {
+                if ($i > 0 && $i < ($length - 1)) {
                     //Middle Numbers or Symbols
                     $rank += 2;
                 }
@@ -146,10 +172,9 @@ class Member
 
             // Repeat Characters (Case Insensitive)
             $repeated = false;
-            for ($j = 0; $j < $length; $j++)
-            {
+            for ($j = 0; $j < $length; $j++) {
                 if ($i != $j && strtolower($password[$i]) == strtolower($password[$j])) {
-                    $repeatIncrement += abs($length/($j-$i));
+                    $repeatIncrement += abs($length / ($j - $i));
                     $repeated = true;
                 }
             }
@@ -163,22 +188,22 @@ class Member
             if ($currentCharTypeNocase == $prevCharTypeNocase && $prevCharTypeNocase == $prePrevCharTypeNocase) {
                 if ($currentCharTypeNocase == 'string') {
                     $idx = array_search($password[$i], $orderedStrings);
-                    if (array_search($password[$i-1], $orderedStrings) == ($idx - 1) && array_search($password[$i-2], $orderedStrings) == ($idx - 2)) {
+                    if (array_search($password[$i - 1], $orderedStrings) == ($idx - 1) && array_search($password[$i - 2], $orderedStrings) == ($idx - 2)) {
                         $sequenceCount['string']++;
                     } else {
                         $idx = array_search($password[$i], $orderedKeyboard);
-                        if (array_search($password[$i-1], $orderedKeyboard) == ($idx - 1) && array_search($password[$i-2], $orderedKeyboard) == ($idx - 2)) {
+                        if (array_search($password[$i - 1], $orderedKeyboard) == ($idx - 1) && array_search($password[$i - 2], $orderedKeyboard) == ($idx - 2)) {
                             $sequenceCount['string']++;
                         }
                     }
                 } elseif ($currentCharTypeNocase == 'number') {
                     $idx = array_search($password[$i], $orderedNumbers);
-                    if (array_search($password[$i-1], $orderedNumbers) == ($idx - 1) && array_search($password[$i-2], $orderedNumbers) == ($idx - 2)) {
+                    if (array_search($password[$i - 1], $orderedNumbers) == ($idx - 1) && array_search($password[$i - 2], $orderedNumbers) == ($idx - 2)) {
                         $sequenceCount['number']++;
                     }
                 } elseif ($currentCharTypeNocase == 'special') {
                     $idx = array_search($password[$i], $orderedSpecials);
-                    if (array_search($password[$i-1], $orderedSpecials) == ($idx - 1) && array_search($password[$i-2], $orderedSpecials) == ($idx - 2)) {
+                    if (array_search($password[$i - 1], $orderedSpecials) == ($idx - 1) && array_search($password[$i - 2], $orderedSpecials) == ($idx - 2)) {
                         $sequenceCount['special']++;
                     }
                 }
@@ -212,7 +237,7 @@ class Member
                 $rank += $requirements * 2;
             }
         }
-        
+
         // Deductions
         // Letters Only
         if ($charsCount['number'] == 0 && $charsCount['special'] == 0) {

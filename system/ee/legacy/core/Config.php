@@ -1350,7 +1350,7 @@ class EE_Config
                 'xss_clean_uploads' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'password_lockout' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'password_lockout_interval' => array('i', ''),
-                'require_secure_passwords' => array('r', array('n' => 'password_security_none', 'y' => 'password_security_basic', 'a' => 'password_security_advanced', 's' => 'password_security_strict')),
+                'require_secure_passwords' => array('r', array('n' => 'password_security_none', 'y' => 'password_security_basic', 'g' => 'password_security_good', 's' => 'password_security_strong')),
                 'allow_dictionary_pw' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'name_of_dictionary_file' => array('i', ''),
                 'un_min_len' => array('i', ''),

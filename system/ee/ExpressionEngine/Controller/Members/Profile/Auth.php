@@ -162,6 +162,10 @@ class Auth extends Settings
             );
         }
 
+        ee()->javascript->set_global([
+            'cp.validatePasswordUrl' => ee('CP/URL', 'members/validate-password')->compile()
+        ]);
+
         ee()->view->base_url = $this->base_url;
         ee()->view->ajax_validate = true;
         ee()->view->cp_page_title = lang('auth_settings');

@@ -168,8 +168,8 @@ class SecurityPrivacy extends Settings
                             'choices' => array(
                                 'n' => lang('password_security_none'),
                                 'y' => lang('password_security_basic'),
-                                'a' => lang('password_security_advanced'),
-                                's' => lang('password_security_strict')
+                                'g' => lang('password_security_good'),
+                                's' => lang('password_security_strong')
                             )
                         )
                     )
@@ -333,7 +333,7 @@ class SecurityPrivacy extends Settings
     public function _validatePwLen($length)
     {
         $rules = [
-            'a' => 8,
+            'g' => 8,
             's' => 12
         ];
         $policy = ee('Request')->post('require_secure_passwords');
