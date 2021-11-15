@@ -270,6 +270,33 @@ EE.cp.formValidation = {
 			type: 'POST',
 			dataType: 'json',
 			success: function (ret) {
+				//check how strong new password for Members
+				if ( (typeof(EE.cp.validatePasswordUrl) != 'undefined') && (field.attr('name') == 'password') ) {
+					$(field).parent('.field-control').css('position', 'relative');
+					$.ajax({
+						type: 'POST',
+						url: EE.cp.validatePasswordUrl,
+						dataType: 'json',
+						data: data+'&ee_fv_field='+field.attr('name'),
+						success: function (result) {
+							if (result['rank'] == 0) {
+								$('.rank-wrap').remove();
+								return;
+							} else {
+								var rank_text = result['rank_text'].toLowerCase();
+								var rank = result['rank'];
+								var classList = 'button button--default '+rank_text;
+								if (!$('.rank-wrap').length) {
+									$(field).after('<div class="rank-wrap button-group button-group-small"><p class="'+classList+'"><span class="rank_text">'+rank_text+'</span></p></div>');
+								} else {
+									$('.rank-wrap > p').attr('class', classList);
+									$('.rank-wrap .rank_text').text(rank_text);
+								}
+							}
+						}
+					})
+				}
+
 				that._toggleErrorForFields(field, ret);
 			}
 		});

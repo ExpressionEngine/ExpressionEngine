@@ -132,7 +132,8 @@ class Member
         $consequentCharsCount = [
             'upper' => 0,
             'lower' => 0,
-            'number' => 0
+            'number' => 0,
+            'special' => 0
         ];
         $sequenceCount = [
             'string' => 0,
