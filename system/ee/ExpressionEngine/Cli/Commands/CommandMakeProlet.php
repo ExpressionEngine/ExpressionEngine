@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Cli\Commands;
 
@@ -33,17 +41,12 @@ class CommandMakeProlet extends Cli
      * @var array
      */
     public $commandOptions = [
-        'addon,a:'       => 'command_make_prolet_option_addon',
-        'description,d:' => 'command_make_prolet_option_description',
-        'has-widget,w' => 'command_make_prolet_option_has_widget',
-        'widget-name,n:' => 'command_make_prolet_option_widget_name',
+        'addon,a:'        => 'command_make_prolet_option_addon',
+        'description,d:'  => 'command_make_prolet_option_description',
+        'generate-icon,i' => 'command_make_prolet_option_generate_icon',
+        'has-widget,w'    => 'command_make_prolet_option_has_widget',
+        'widget-name,n:'  => 'command_make_prolet_option_widget_name',
     ];
-
-    /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
 
     protected $data = [];
 
@@ -64,6 +67,9 @@ class CommandMakeProlet extends Cli
         $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_prolet_ask_prolet_name", null, true);
         $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_prolet_ask_addon", null, true);
         $this->data['description'] = $this->getOptionOrAsk('--description', "command_make_prolet_ask_description");
+
+        // Add flag for generating a default icon file
+        $this->data['generate-icon'] = $this->option('--generate-icon', false);
 
         // Has widget? We wont ask this one. If the flag isn't there, they can use the widget generator to generate a widget
         $this->data['has-widget'] = $this->option('--has-widget', false);
@@ -97,6 +103,7 @@ class CommandMakeProlet extends Cli
             } catch (\Exception $e) {
                 $this->fail($e->getMessage());
             }
+
             $this->info('command_make_prolet_widget_created_successfully');
         }
     }

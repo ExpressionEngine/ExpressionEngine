@@ -22,28 +22,6 @@ class DashboardLayout extends Model
 
     protected static $_validation_rules = array();
 
-    protected static $_relationships = array(
-        'DashboardWidgets' => array(
-            'type' => 'hasAndBelongsToMany',
-            'model' => 'DashboardWidget',
-            'pivot' => array(
-                'table' => 'dashboard_layout_widgets',
-                'left' => 'layout_id',
-                'right' => 'widget_id'
-            )
-        ),
-        'Members' => array(
-            'model' => 'Member',
-            'type' => 'belongsTo',
-            'from_key' => 'member_id'
-        ),
-        'Roles' => array(
-            'model' => 'Role',
-            'type' => 'belongsTo',
-            'from_key' => 'role_id'
-        ),
-    );
-
     protected $layout_id;
     protected $member_id;
     protected $role_id;

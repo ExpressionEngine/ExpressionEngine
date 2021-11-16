@@ -50,13 +50,18 @@ class Roles extends Profile
 
         $additional_roles_section = [];
         if (ee('Permission')->isSuperAdmin()) {
+            $role_groups = ee('Model')->get('RoleGroup')
+                ->fields('group_id', 'name')
+                ->order('name')
+                ->all()
+                ->getDictionary('group_id', 'name');
             $additional_roles_section[] = [
                 'title' => 'role_groups',
                 'desc' => 'role_groups_desc',
                 'fields' => [
                     'role_groups' => [
                         'type' => 'checkbox',
-                        'choices' => $roles,
+                        'choices' => $role_groups,
                         'value' => $this->member->RoleGroups->pluck('group_id'),
                         'no_results' => [
                             'text' => sprintf(lang('no_found'), lang('role_groups'))
@@ -152,14 +157,17 @@ class Roles extends Profile
             ee()->form_validation->run_ajax();
             exit;
         } elseif (ee()->form_validation->run() !== false) {
-            $this->member->role_id = ee('Request')->post('role_id');
+            $this->member->role_id = (int) ee('Request')->post('role_id');
 
             if (ee('Permission')->isSuperAdmin()) {
                 $groups = ee('Request')->post('role_groups');
                 $this->member->RoleGroups = ($groups) ? ee('Model')->get('RoleGroup', $groups)->all() : null;
             }
 
-            $roles = ee('Request')->post('roles');
+            $roles = array_filter(ee('Request')->post('roles'));
+            if (empty($roles)) {
+                $roles = [(int) ee('Request')->post('role_id')];
+            }
             $this->member->Roles = ($roles) ? ee('Model')->get('Role', $roles)->all() : null;
 
             $this->member->save();
@@ -206,6 +214,7 @@ class Roles extends Profile
 
     public function _valid_roles($roles)
     {
+        $roles = array_filter($roles);
         foreach ($roles as $role_id) {
             $valid = $this->_valid_role($role_id);
             if (!$valid) {

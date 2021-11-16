@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Service\Generator;
 
@@ -55,7 +63,7 @@ class AddonGenerator
         $this->author_url = $data['author_url'];
         $this->has_settings = get_bool_from_string($data['has_settings']);
         $this->has_cp_backend = $data['has_settings'] ? 'y' : 'n';
-        $this->has_publish_fields = $data['has_settings'] ? 'y' : 'n';
+        $this->has_publish_fields = 'n';
         $this->hooks = isset($data['hooks']) ? $data['hooks'] : null;
         $this->services = isset($data['services']) ? $data['services'] : null;
         $this->compatibility = isset($data['compatibility']) ? $data['compatibility'] : null;
@@ -137,7 +145,16 @@ class AddonGenerator
         $extension_settings = '';
 
         foreach ($this->hooks as $hook) {
-            $hookData = Hooks::getByKey(strtoupper($hook));
+            $hookData = Hooks::getByKey(trim(strtoupper($hook)));
+
+            // If we didnt get a real hook, set up a default
+            if ($hookData === false) {
+                $hookData = [
+                    'name' => $hook,
+                    'params' => '',
+                    'library' => ''
+                ];
+            }
 
             $hookArrayStub = $this->filesystem->read($this->stub('hook_array.php'));
             $hookArrayStub = $this->write('hook_name', $hook, $hookArrayStub);
@@ -416,20 +433,20 @@ class AddonGenerator
 
     private function clearLine($string, $contents)
     {
-        return str_replace($string . "\n", '', $contents);
+        return preg_replace("/" . preg_quote($string) . "\R/", '', $contents);
     }
 
     public function slug($word)
     {
         $word = strtolower($word);
 
-        return str_replace(['-', ' '], '_', $word);
+        return str_replace(['-', ' ', '.'], '_', $word);
     }
 
     public function studly($word)
     {
         $word = mb_convert_case($word, MB_CASE_TITLE);
 
-        return  str_replace(['-', '_', ' '], '', $word);
+        return  str_replace(['-', '_', ' ', '.'], '', $word);
     }
 }

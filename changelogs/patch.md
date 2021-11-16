@@ -6,6 +6,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 Bullet list below, e.g.
    - Added <new feature>
+   - Changed how the Toggle field renders in a column in the Entry Manager
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
    - Added RoleSetting, RoleGroup, and Permission model event hooks
    - Fix #917, allows for attributes, rows, and cols to be set for textarea in shared form view
@@ -46,6 +47,8 @@ Bullet list below, e.g.
    - Fix a bug with Typography parse_url function
    - Added CLI commands for generating Prolets and Widgets
    - Fixed a CLI bug where it didnt ask for the migration location if not specified
+   - Fix white screen on first access to a group template which exists on files, but not yet on database
+
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

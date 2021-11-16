@@ -1,0 +1,76 @@
+name: PHP Unit Tests
+
+on:
+  push:
+    branches:
+      - feature/6.x/unit-tests
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - 6.dev
+
+jobs:
+
+    cancel-running-tests:
+      runs-on: ubuntu-latest
+      timeout-minutes: 3
+      steps:
+          - name: Cancel running tests
+            uses: fkirc/skip-duplicate-actions@master
+            with:
+              cancel_others: true
+
+    php-tests:
+        if: github.event.pull_request.draft == false
+        needs: cancel-running-tests
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [7.3, 7.4, 8.0]
+                os: [ubuntu-latest]
+                include:
+                  - php: 8.0
+                    os: windows-latest
+
+        name: PHPUnit, php${{ matrix.php }} - ${{ matrix.os }}
+
+        steps:
+            - name: Install locales
+              if: runner.os != 'Windows'
+              run: |
+                sudo locale-gen en
+                sudo locale-gen de
+                sudo locale-gen de_DE
+                sudo locale-gen uk
+                sudo locale-gen ru
+
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+                  coverage: none
+
+            - name: Copy config.php
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/docker/config.php', 'system/user/config/config.php');"
+
+            - name: Install PHP dependencies
+              working-directory: system/ee/ExpressionEngine/Tests/
+              run: |
+                composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader --no-interaction
+                composer require overtrue/phplint --dev --no-progress --no-suggest --prefer-dist
+
+            - name: Run PHPLint
+              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs
+
+            - name: Configure matchers
+              uses: mheap/phpunit-matcher-action@v1
+
+            - name: Run PHPUnit Tests
+              working-directory: system/ee/ExpressionEngine/Tests/
+              run: vendor/bin/phpunit --testdox --configuration=phpunit.xml
