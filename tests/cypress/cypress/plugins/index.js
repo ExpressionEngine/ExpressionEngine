@@ -56,10 +56,10 @@ module.exports = (on, config) => {
                 var properties = JSON.parse(fs.read('../../build-tools/build.json'))
                 let command = `cd support/fixtures && php initDb.php --version ${properties.tag} --url ${config.baseUrl} --username ${config.env.USER_EMAIL} --password ${config.env.USER_PASSWORD} --db_host ${config.env.DB_HOST} --db_user ${config.env.DB_USER} --db_database ${config.env.DB_DATABASE} --db_password ${config.env.DB_PASSWORD}`;
 
-                console.log(command);
+                //console.log(command);
                 try {
                     var a = child_process.execSync(command).toString();
-                    console.log(a);
+                    //console.log(a);
                  } catch (error) {
                     console.log(error.status);  // 0 : successful exit, but here in exception it has to be greater than 0
                     console.log(error.message); // Holds the message you typically want.
