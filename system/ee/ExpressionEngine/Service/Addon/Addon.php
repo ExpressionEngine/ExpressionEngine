@@ -47,6 +47,9 @@ class Addon
      */
     public function isInstalled()
     {
+        if (defined('BOOT_ONLY') && BOOT_ONLY) {
+            return false;
+        }
         $types = array('modules', 'fieldtypes', 'extensions');
 
         ee()->load->model('addons_model');
