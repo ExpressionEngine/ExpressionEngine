@@ -76,6 +76,9 @@ class Factory
      */
     public function installed()
     {
+        if (defined('BOOT_ONLY') && BOOT_ONLY) {
+            return [];
+        }
         return array_filter($this->all(), function ($addon) {
             return $addon->isInstalled();
         });
