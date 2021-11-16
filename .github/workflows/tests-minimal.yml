@@ -107,7 +107,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -204,7 +203,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -300,7 +298,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -395,7 +392,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -490,7 +486,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -585,7 +580,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -680,7 +674,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -775,7 +768,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
