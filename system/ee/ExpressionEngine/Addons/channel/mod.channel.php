@@ -3196,31 +3196,8 @@ class Channel
 
                     $chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $row['entry_date']));
 
-                    foreach (ee()->TMPL->var_single as $key => $val) {
-                        if ($key == 'entry_id') {
-                            $chunk = ee()->TMPL->swap_var_single($key, $row['entry_id'], $chunk);
-                        }
-
-                        if ($key == 'url_title') {
-                            $chunk = ee()->TMPL->swap_var_single($key, $row['url_title'], $chunk);
-                        }
-
-                        if ($key == 'channel_id') {
-                            $chunk = ee()->TMPL->swap_var_single($key, $row['channel_id'], $chunk);
-                        }
-
-                        if ($key == 'channel_short_name') {
-                            $chunk = ee()->TMPL->swap_var_single($key, $row['channel_short_name'], $chunk);
-                        }
-
-                        if ($key == 'channel') {
-                            $chunk = ee()->TMPL->swap_var_single($key, $row['channel'], $chunk);
-                        }
-
-                        if ($key == 'channel_url') {
-                            $chunk = ee()->TMPL->swap_var_single($key, parse_config_variables($row['channel_url']), $chunk);
-                        }
-                    }
+                    $row['channel_url'] = parse_config_variables($row['channel_url']);
+                    $chunk = ee()->TMPL->parse_variables_row($chunk, $row);
 
                     $channel_array[$i . '_' . $row['cat_id']] = str_replace(LD . 'title' . RD, $row['title'], $chunk);
                     $i++;
@@ -3388,31 +3365,8 @@ class Channel
 
                             $chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $trow['entry_date']));
 
-                            foreach (ee()->TMPL->var_single as $key => $val) {
-                                if ($key == 'entry_id') {
-                                    $chunk = ee()->TMPL->swap_var_single($key, $trow['entry_id'], $chunk);
-                                }
-
-                                if ($key == 'url_title') {
-                                    $chunk = ee()->TMPL->swap_var_single($key, $trow['url_title'], $chunk);
-                                }
-
-                                if ($key == 'channel_id') {
-                                    $chunk = ee()->TMPL->swap_var_single($key, $trow['channel_id'], $chunk);
-                                }
-
-                                if ($key == 'channel_short_name') {
-                                    $chunk = ee()->TMPL->swap_var_single($key, $trow['channel_short_name'], $chunk);
-                                }
-
-                                if ($key == 'channel') {
-                                    $chunk = ee()->TMPL->swap_var_single($key, $trow['channel'], $chunk);
-                                }
-
-                                if ($key == 'channel_url') {
-                                    $chunk = ee()->TMPL->swap_var_single($key, parse_config_variables($trow['channel_url']), $chunk);
-                                }
-                            }
+                            $trow['channel_url'] = parse_config_variables($trow['channel_url']);
+                            $chunk = ee()->TMPL->parse_variables_row($chunk, $trow);
 
                             $titles_parsed .= $chunk;
                         }
@@ -3747,6 +3701,12 @@ class Channel
                 }
 
                 $chunk = $this->parseCategoryFields($cat_vars['category_id'], array_merge($val, $cat_vars), $chunk);
+
+                // Check to see if we need to parse {filedir_n}
+                if (strpos($chunk, '{filedir_') !== false) {
+                    ee()->load->library('file_field');
+                    $chunk = ee()->file_field->parse_string($chunk);
+                }
 
                 /** --------------------------------
                 /**  {count}

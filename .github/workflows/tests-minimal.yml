@@ -56,7 +56,8 @@ jobs:
               content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
               echo "::set-output name=BUILD_VERSION::$content"
 
-          - name: Run build process
+          - name: Run build process (with Pro)
+            if: github.event.pull_request.head.repo.full_name == github.repository
             working-directory: build-tools
             env:
               RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
@@ -64,6 +65,16 @@ jobs:
               APP_REPO_PATH: ${{ github.workspace }}
               PRO_REPO_PATH: ${{ github.workspace }}/__pro
             run: gulp build-app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+
+          - name: Run build process (without Pro)
+            if: github.event.pull_request.head.repo.full_name != github.repository
+            working-directory: build-tools
+            env:
+              RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+              RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+              APP_REPO_PATH: ${{ github.workspace }}
+              PRO_REPO_PATH: ${{ github.workspace }}/__pro
+            run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
             working-directory: build-tools/builds
