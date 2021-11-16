@@ -3126,10 +3126,6 @@ class Channel
                 $sql .= "exp_channel_titles.recent_comment_date desc, exp_channel_titles.entry_date";
 
                 break;
-            case 'most_used_categories':
-                $sql .= "COUNT(exp_category_posts.entry_id) DESC, exp_channel_titles.entry_date";
-
-                break;
             default:
                 $sql .= "exp_channel_titles.title";
 
