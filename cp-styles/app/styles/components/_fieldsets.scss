@@ -319,12 +319,14 @@ fieldset {
 .rank-wrap {
   position: absolute;
   right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 7px;
   background: var(--ee-button-default-bg);
   text-transform: uppercase;
 
-	.button {
+	.status-tag {
+		background: none;
+		text-transform: uppercase;
+		
 		&.strong {
 		  border-color: var(--ee-success);
 		  color: var(--ee-success);

@@ -285,9 +285,9 @@ EE.cp.formValidation = {
 							} else {
 								var rank_text = result['rank_text'].toLowerCase();
 								var rank = result['rank'];
-								var classList = 'button button--default '+rank_text;
+								var classList = 'status-tag '+rank_text;
 								if (!$('.rank-wrap').length) {
-									$(field).after('<div class="rank-wrap button-group button-group-small"><p class="'+classList+'"><span class="rank_text">'+rank_text+'</span></p></div>');
+									$(field).after('<div class="rank-wrap"><p class="'+classList+'"><span class="rank_text">'+rank_text+'</span></p></div>');
 								} else {
 									$('.rank-wrap > p').attr('class', classList);
 									$('.rank-wrap .rank_text').text(rank_text);
