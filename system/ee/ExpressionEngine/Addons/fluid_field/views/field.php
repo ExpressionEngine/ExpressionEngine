@@ -17,12 +17,12 @@
     			<button type="button" class="fluid__item-tool js-fluid-remove danger-link" title="<?=lang('remove')?>"><i class="fas fa-fw fa-trash-alt"></i></button>
     		<?php endif; ?>
 
-    		<?php if (empty($is_bulk_edit) and isset($fields)): ?>
+    		<?php if (empty($is_bulk_edit) and isset($field_filters)): ?>
     			<button type="button" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle" title="<?=lang('add_field')?>"><i class="fas fa-fw fa-plus"></i></button>
     			<div class="dropdown">
-    			<?php foreach ($fields as $field_item): ?>
-    				<a href="#" class="dropdown__link" data-field-name="<?=$field_item->getShortName()?>"><img src="<?=$field_item->getIcon()?>" width="12" height="12" /> 
-    					<?=$field_item->getItem('field_label')?>
+    			<?php foreach ($field_filters as $filter): ?>
+    				<a href="#" class="dropdown__link" data-field-name="<?=$filter->name?>"><img src="<?=$filter->icon?>" width="12" height="12" />
+    					<?=$filter->label?>
     				</a>
     			<?php endforeach; ?>
     			</div>

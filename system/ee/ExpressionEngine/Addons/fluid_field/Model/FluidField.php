@@ -24,6 +24,7 @@ class FluidField extends Model
     protected static $_typed_columns = array(
         'fluid_field_id' => 'int',
         'entry_id' => 'int',
+        'field_group_id' => 'int',
         'field_id' => 'int',
         'field_data_id' => 'int',
         'order' => 'int',
@@ -43,6 +44,17 @@ class FluidField extends Model
         'ChannelField' => array(
             'type' => 'belongsTo',
             'model' => 'ee:ChannelField',
+            'weak' => true,
+            'inverse' => array(
+                'name' => 'FluidField',
+                'type' => 'hasMany',
+                'weak' => true
+            )
+        ),
+        'ChannelFieldGroup' => array(
+            'type' => 'belongsTo',
+            'from_key' => 'field_group_id',
+            'model' => 'ee:ChannelFieldGroup',
             'weak' => true,
             'inverse' => array(
                 'name' => 'FluidField',
@@ -71,9 +83,11 @@ class FluidField extends Model
     protected $id;
     protected $fluid_field_id;
     protected $entry_id;
+    protected $field_group_id;
     protected $field_id;
     protected $field_data_id;
     protected $order;
+    protected $group;
 
     public function onAfterDelete()
     {
