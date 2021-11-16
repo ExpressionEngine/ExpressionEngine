@@ -195,6 +195,30 @@ context('Categories', () => {
 
     })
 
+    it('check sorted category archive on frontend', function() {
+    
+        cy.visit('index.php/cats/archive-sorted')
+
+        cy.get(".default-linear div").first().invoke('text').then((text) => {
+            expect(text).equal('Site Info')
+        })
+        cy.get(".default-nested div").first().invoke('text').then((text) => {
+            expect(text).equal('Site Info')
+        })
+        cy.get(".title-linear div").first().invoke('text').then((text) => {
+            expect(text).equal('Site Info')
+        })
+        cy.get(".title-nested div").first().invoke('text').then((text) => {
+            expect(text).equal('Site Info')
+        })
+        cy.get(".most_used_categories-linear div").first().invoke('text').then((text) => {
+            expect(text).equal('Staff Bios')
+        })
+        cy.get(".most_used_categories-nested div").first().invoke('text').then((text) => {
+            expect(text).equal('Staff Bios')
+        })
+    })
+
     function check_category_one() {
         cy.get('#category-one .category_name').invoke('text').then((text) => {
             expect(text).equal('category one')

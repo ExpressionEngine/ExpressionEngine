@@ -1,0 +1,44 @@
+<div class="default-linear">
+    {exp:channel:category_archive channel="about" style="linear" orderby="title"}
+        {categories}
+            <div>{category_name}</div>
+        {/categories}
+    {/exp:channel:category_archive}
+</div>
+<div class="default-nested">
+    {exp:channel:category_archive channel="about" style="nested" orderby="title"}
+        {categories}
+            <div>{category_name}</div>
+        {/categories}
+    {/exp:channel:category_archive}
+</div>
+
+<div class="title-linear">
+    {exp:channel:category_archive channel="about" style="linear" orderby="title"}
+        {categories}
+            <div>{category_name}</div>
+        {/categories}
+    {/exp:channel:category_archive}
+</div>
+<div class="title-nested">
+    {exp:channel:category_archive channel="about" style="nested" orderby="title"}
+        {categories}
+            <div>{category_name}</div>
+        {/categories}
+    {/exp:channel:category_archive}
+</div>
+
+<div class="most_used_categories-linear">
+    {exp:channel:category_archive channel="about" style="linear" orderby="most_used_categories"}
+        {categories}
+            <div>{category_name}</div>
+        {/categories}
+    {/exp:channel:category_archive}
+</div>
+<div class="most_used_categories-nested">
+    {exp:channel:category_archive channel="about" style="nested" orderby="most_used_categories"}
+        {categories}
+            <div>{category_name}</div>
+        {/categories}
+    {/exp:channel:category_archive}
+</div>
