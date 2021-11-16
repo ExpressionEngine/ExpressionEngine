@@ -61,10 +61,12 @@ module.exports = (on, config) => {
                     var a = child_process.execSync(command).toString();
                     //console.log(a);
                  } catch (error) {
+                    console.log('------')
                     console.log(error.status);  // 0 : successful exit, but here in exception it has to be greater than 0
                     console.log(error.message); // Holds the message you typically want.
                     console.log(error.stderr);  // Holds the stderr output. Use `.toString()`.
                     console.log(error.stdout);  // Holds the stdout output. Use `.toString()`.
+                    console.log('------')
                  }
                 
                 return db.load(config.env.DB_DUMP)
