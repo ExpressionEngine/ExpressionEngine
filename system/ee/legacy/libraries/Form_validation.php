@@ -963,7 +963,8 @@ class EE_Form_validation
             return false;
         }
 
-        $path = reduce_double_slashes(PATH_DICT . ee()->config->item('name_of_dictionary_file', 'dictionary.txt'));
+        $file = !empty(ee()->config->item('name_of_dictionary_file')) ? ee()->config->item('name_of_dictionary_file') : 'dictionary.txt';
+        $path = reduce_double_slashes(PATH_DICT . $file);
 
         if (! file_exists($path)) {
             return false;
