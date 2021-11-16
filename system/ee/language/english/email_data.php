@@ -1317,16 +1317,16 @@ if (! function_exists('mfa_message_template')) {
                 <section class="flex-wrap">
                     <section class="wrap">
                         <div class="panel redirect">
-                            <div class="panel-heading">
-                                <h3>{heading}</h3>
-                            </div>
-                            <div class="panel-body">
-                                {content}
-        
-        
-                            </div>
-                            <div class="panel-footer">
-                                {link}
+                            <div class="redirect-inner">
+                                <div class="panel-heading">
+                                    <h3>{heading}</h3>
+                                </div>
+                                <div class="panel-body">
+                                    {content}
+                                </div>
+                                <div class="panel-footer">
+                                    {link}
+                                </div>
                             </div>
                         </div>
                     </section>
