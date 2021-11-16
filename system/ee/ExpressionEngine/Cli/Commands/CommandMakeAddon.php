@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Cli\Commands;
 
@@ -56,12 +64,6 @@ class CommandMakeAddon extends Cli
         'cookies,k*:'     => 'command_make_addon_option_cookies',
         'hooks,o*:'       => 'command_make_addon_option_hooks',
     ];
-
-    /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
 
     protected $data = [];
 
@@ -135,7 +137,7 @@ class CommandMakeAddon extends Cli
     private function getTypeSpecificData()
     {
         // Extension specific options
-        if ($this->type['slug'] == 'module' || $this->type['slug'] == 'extension') {
+        if ($this->type['slug'] == 'extension') {
             // No hooks were passed, so we're giving info on the hooks
             if (! $this->option('--hooks')) {
                 $this->info('command_make_addon_what_hooks_to_use');
@@ -145,6 +147,7 @@ class CommandMakeAddon extends Cli
             $this->data['hooks'] = $this->getOptionOrAsk(
                 '--hooks',
                 'command_make_addon_ext_hooks',
+                'example_hook'
             );
         }
 
@@ -186,9 +189,14 @@ class CommandMakeAddon extends Cli
 
     private function build()
     {
-        $service = ee('AddonGenerator', $this->data);
+        try {
+            // Build the addon
+            $service = ee('AddonGenerator', $this->data);
 
-        return $service->build();
+            return $service->build();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+        }
     }
 
     private function getType()

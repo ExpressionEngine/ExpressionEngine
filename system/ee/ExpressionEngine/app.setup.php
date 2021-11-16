@@ -51,6 +51,8 @@ use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
 use ExpressionEngine\Service\Generator\AddonGenerator;
 use ExpressionEngine\Service\Generator\CommandGenerator;
+use ExpressionEngine\Service\Generator\ProletGenerator;
+use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
 
 // TODO should put the version in here at some point ...
@@ -342,6 +344,18 @@ $setup = [
             return new CommandGenerator($filesystem, $data);
         },
 
+        'ProletGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new ProletGenerator($filesystem, $data);
+        },
+
+        'WidgetGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new WidgetGenerator($filesystem, $data);
+        },
+
         'ModelGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
 
@@ -612,7 +626,6 @@ $setup = [
 
         // ..\Dashboard
         'DashboardLayout' => 'Model\Dashboard\DashboardLayout',
-        'DashboardWidget' => 'Model\Dashboard\DashboardWidget',
 
         // ..\Search
         'SearchLog' => 'Model\Search\SearchLog',
@@ -667,13 +680,51 @@ $setup = [
         'ee_cp_viewmode',
         'collapsed_nav'
     ],
+    'cookie_settings' => [
+        'csrf_token' => [
+            'description' => 'lang:cookie_csrf_token_desc',
+        ],
+        'flash' => [
+            'description' => 'lang:cookie_flash_desc',
+        ],
+        'remember' => [
+            'description' => 'lang:cookie_remember_desc',
+        ],
+        'sessionid' => [
+            'description' => 'lang:cookie_sessionid_desc',
+        ],
+        'visitor_consents' => [
+            'description' => 'lang:cookie_visitor_consents_desc',
+        ],
+        'last_activity' => [
+            'description' => 'lang:cookie_last_activity_desc',
+        ],
+        'last_visit' => [
+            'description' => 'lang:cookie_last_visit_desc',
+        ],
+        'anon' => [
+            'description' => 'lang:cookie_anon_desc',
+        ],
+        'tracker' => [
+            'description' => 'lang:cookie_tracker_desc',
+        ],
+        'viewtype' => [
+            'description' => 'lang:cookie_viewtype_desc',
+        ],
+        'cp_last_site_id' => [
+            'description' => 'lang:cookie_cp_last_site_id_desc',
+        ],
+        'collapsed_nav' => [
+            'description' => 'lang:cookie_collapsed_nav_desc',
+        ],
+    ],
 ];
 
 if (is_dir(SYSPATH . 'ee/ExpressionEngine/Addons/pro/')) {
     foreach ($setup['models'] as $model => $namespace) {
-        $pro_file = SYSPATH . 'ee/ExpressionEngine/Addons/Pro/' . str_replace("\\", "/", $namespace) . '.php';
+        $pro_file = SYSPATH . 'ee/ExpressionEngine/Addons/pro/' . str_replace("\\", "/", $namespace) . '.php';
         if (file_exists($pro_file)) {
-            $setup['models'][$model] = "\ExpressionEngine\Addons\Pro\\" . $namespace;
+            $setup['models'][$model] = "\ExpressionEngine\Addons\pro\\" . $namespace;
         }
     }
 }

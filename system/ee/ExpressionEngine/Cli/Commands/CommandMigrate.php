@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Cli\Commands;
 
@@ -41,12 +49,6 @@ class CommandMigrate extends Cli
         'addon,a:'     => 'command_migrate_option_addon',
         'addons'       => 'command_migrate_option_addons',
     ];
-
-    /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = false;
 
     /**
      * Run the command

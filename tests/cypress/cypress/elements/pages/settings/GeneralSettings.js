@@ -7,6 +7,7 @@ class GeneralSettings extends ControlPanel {
       this.elements({
         'site_name': 'input[type!=hidden][name=site_name]',
         'site_short_name': 'input[type!=hidden][name=site_short_name]',
+        'site_license_key': 'input[type!=hidden][name=site_license_key]',
         'is_system_on': 'input[name=is_system_on]',//: :visible => false
         'is_system_on_toggle': '[data-toggle-for=is_system_on]',
         'new_version_check': 'input[type!=hidden][name=new_version_check]',

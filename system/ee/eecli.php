@@ -66,14 +66,6 @@ defined('DEBUG') || define('DEBUG', $debug);
 defined('EE_INSTALLED') || define('EE_INSTALLED', file_exists(SYSPATH . 'user/config/config.php'));
 defined('INSTALL_MODE') || define('INSTALL_MODE', ! EE_INSTALLED);
 
-define('PATH_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/');
-
-defined('PATH_CACHE') || define('PATH_CACHE', SYSPATH . 'user/cache/');
-defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
-defined('PATH_THEMES') || define('PATH_THEMES', SYSPATH . '../themes/');
-defined('IS_CORE') || define('IS_CORE', false);
-defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/latest/');
-
 /*
  * --------------------------------------------------------------------
  *  Set the error reporting level
@@ -104,10 +96,9 @@ if (! file_exists(SYSPATH . 'ee/ExpressionEngine/Boot/boot.php')) {
     exit("\033[31mYour system folder path does not appear to be set correctly.\n");
 }
 
-// Bootstrap the standalone CLI if EE isn't installed
+// Fail if EE isn't installed
 if (! EE_INSTALLED) {
     exit("\033[31mExpressionEngine does not appear to be installed. Please install ExpressionEngine to use the CLI component.\n");
-    // include SYSPATH . 'ee/ExpressionEngine/Cli/StandaloneCli/StandaloneCli.php';
     die();
 }
 

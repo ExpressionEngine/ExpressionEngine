@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Cli\Commands;
 
@@ -42,12 +50,6 @@ class CommandMakeMigration extends Cli
     ];
 
     /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = false;
-
-    /**
      * Passed in migration name
      * @var string
      */
@@ -88,8 +90,7 @@ class CommandMakeMigration extends Cli
 
         $this->info(lang('command_make_migration_using_migration_name') . $this->migration_name);
 
-        // Set location
-        $this->migration_location = $this->option('--location', 'ExpressionEngine');
+        $this->migration_location  = $this->getOptionOrAsk("--location", lang('command_make_migration_where_to_generate_migration'), 'ExpressionEngine');
 
         // Set migration type based on create/update flags
         if ($this->option('--create')) {
@@ -143,7 +144,7 @@ class CommandMakeMigration extends Cli
 
     public function askTablename()
     {
-        $this->tableName = $this->ask(lang('command_make_migration_what_table_is_migration_for') . ' [' . $this->tableName . ']', $this->tableName);
+        $this->tableName = $this->ask(lang('command_make_migration_what_table_is_migration_for'), $this->tableName);
     }
 
     public function guessTablename()
@@ -178,7 +179,7 @@ class CommandMakeMigration extends Cli
 
     public function askMigrationAction()
     {
-        $action = $this->ask(lang('command_make_migration_ask_migration_action') . ' (generic/create/update)? [' . $this->migrationAction . ']', $this->migrationAction);
+        $action = $this->ask(lang('command_make_migration_ask_migration_action') . ' (generic/create/update)?', $this->migrationAction);
 
         $action = trim(strtolower($action));
 
@@ -205,7 +206,7 @@ class CommandMakeMigration extends Cli
 
     public function askMigrationCategory()
     {
-        $category = $this->ask(lang('command_make_migration_ask_migration_category') . ' (generic/table)? [' . $this->migrationCategory . ']', $this->migrationCategory);
+        $category = $this->ask(lang('command_make_migration_ask_migration_category') . ' (generic/table)?', $this->migrationCategory);
 
         $category = trim(strtolower($category));
 

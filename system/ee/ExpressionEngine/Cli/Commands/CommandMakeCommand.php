@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Cli\Commands;
 
@@ -38,12 +46,6 @@ class CommandMakeCommand extends Cli
         'signature,s:'   => 'command_make_command_option_signature',
     ];
 
-    /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
-
     protected $data = [];
 
     public function __construct()
@@ -59,7 +61,7 @@ class CommandMakeCommand extends Cli
     {
         $this->info('command_make_command_lets_build_command');
 
-        // Gather alll the command information
+        // Gather all the command information
         $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_command_ask_command_name", null, true);
         $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_command_ask_addon", null, true);
         $this->data['description'] = $this->getOptionOrAsk('--description', "command_make_command_ask_description");

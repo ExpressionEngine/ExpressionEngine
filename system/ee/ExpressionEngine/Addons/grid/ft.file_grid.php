@@ -18,6 +18,8 @@ class file_grid_ft extends Grid_ft
         'version' => '1.0.0'
     ];
 
+    public $size = 'large';
+
     public $settings_form_field_name = 'file_grid';
 
     public function display_field($data)
