@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - feature/6.x/unit-tests
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 6.dev
@@ -29,7 +29,10 @@ jobs:
             fail-fast: false
             matrix:
                 php: [7.3, 7.4, 8.0]
-                os: [ubuntu-latest, windows-latest]
+                os: [ubuntu-latest]
+                include:
+                  - php: 8.0
+                    os: windows-latest
 
         name: PHPUnit, php${{ matrix.php }} - ${{ matrix.os }}
 
