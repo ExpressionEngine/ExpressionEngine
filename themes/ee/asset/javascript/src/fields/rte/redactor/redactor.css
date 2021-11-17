@@ -1119,7 +1119,7 @@
     .redactor-styles ol {
       margin-bottom: 1em; }
     .redactor-styles h1,
-    .redactor-box .redactor-styles h2,
+    .redactor-styles h2,
     .redactor-styles h3,
     .redactor-styles h4,
     .redactor-styles h5,
@@ -1130,13 +1130,10 @@
       margin: 0;
       padding: 0;
       margin-bottom: 0.5em;
-      border: none;
-      text-transform: revert;
-      letter-spacing: revert;
       line-height: 1.2; }
     .redactor-styles h1 {
       font-size: 2.0736em; }
-    .redactor-box .redactor-styles h2 {
+    .redactor-styles h2 {
       font-size: 1.728em; }
     .redactor-styles h3 {
       font-size: 1.44em; }
