@@ -465,6 +465,20 @@ context('File Manager', () => {
 
 		cy.task('db:seed').then(() => {
 
+			cy.auth();
+			page.load();
+			cy.hasNoErrors()
+
+			cy.url().should('match', page.urlMatch)
+
+			// Check that the heder data is intact
+			page.get('page_title').invoke('text').then((text) => {
+				expect(text.trim()).equal('Files')
+			})
+
+			// Check that we have a sidebar
+			page.get('sidebar').should('exist')
+
 			beforeEach_all_files();
 			page.get('upload_new_file_button').click()
 			//page.wait_until_upload_new_file_filter_menu_visible

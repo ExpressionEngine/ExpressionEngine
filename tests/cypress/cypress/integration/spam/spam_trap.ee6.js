@@ -36,13 +36,14 @@ context('Spam Module', () => {
       cy.auth();
 
       // preload the spam trap
-      cy.task('db:load', '../../support/spam/spam.sql')
+      cy.task('db:load', '../../support/spam/spam.sql').then(() => {
 
-      page.load()
+        page.load()
 
-      //page.displayed?
-      page.get('page_heading').contains('All SPAM')
-      page.get('keyword_search').should('exist')
+        //page.displayed?
+        page.get('page_heading').contains('All SPAM')
+        page.get('keyword_search').should('exist')
+      })
     })
 
     it('can search by phrases', () => {
