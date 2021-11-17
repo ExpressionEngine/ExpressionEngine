@@ -52,6 +52,11 @@ module.exports = (on, config) => {
     on('task', {
         'db:seed': () => {
             fs.delete('../../system/user/cache/default_site/');
+            var renameInstaller = false;
+            if (!fs.exists('../../system/ee/installer')) {
+                renameInstaller = true;
+                fs.rename('../../system/ee/_installer', '../../system/ee/installer');
+            }
             return db.truncate().then(()=>{
                 var properties = JSON.parse(fs.read('../../build-tools/build.json'))
                 let command = `cd support/fixtures && php initDb.php --version ${properties.tag} --url ${config.baseUrl} --username ${config.env.USER_EMAIL} --password ${config.env.USER_PASSWORD} --db_host ${config.env.DB_HOST} --db_user ${config.env.DB_USER} --db_database ${config.env.DB_DATABASE} --db_password ${config.env.DB_PASSWORD}`;
@@ -60,14 +65,18 @@ module.exports = (on, config) => {
                 try {
                     var a = child_process.execSync(command).toString();
                     //console.log(a);
-                 } catch (error) {
+                } catch (error) {
                     console.log('------')
                     console.log(error.status);  // 0 : successful exit, but here in exception it has to be greater than 0
                     console.log(error.message); // Holds the message you typically want.
                     console.log(error.stderr.toString());  // Holds the stderr output. Use `.toString()`.
                     console.log(error.stdout.toString());  // Holds the stdout output. Use `.toString()`.
                     console.log('------')
-                 }
+                }
+
+                if (renameInstaller) {
+                    fs.rename('../../system/ee/installer', '../../system/ee/_installer');
+                }
                 
                 return db.load(config.env.DB_DUMP)
             })
