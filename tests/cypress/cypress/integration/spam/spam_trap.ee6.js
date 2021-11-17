@@ -33,11 +33,10 @@ context('Spam Module', () => {
   context('Spam Trap Table', () => {
 
     beforeEach(function() {
-      cy.auth();
-
       // preload the spam trap
       cy.task('db:load', '../../support/spam/spam.sql').then(() => {
 
+        cy.auth();
         page.load()
 
         //page.displayed?
