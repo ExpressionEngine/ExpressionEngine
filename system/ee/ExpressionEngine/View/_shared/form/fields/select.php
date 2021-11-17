@@ -144,6 +144,7 @@ else:
         'reorderable' => isset($reorderable) ? $reorderable : false,
         'removable' => isset($removable) ? $removable : false,
         'editable' => isset($editable) ? $editable : false,
+        'jsonify' => isset($jsonify) ? $jsonify : false,
         'manageLabel' => isset($manage_label) ? $manage_label : null,
         'reorderAjaxUrl' => isset($reorder_ajax_url) ? $reorder_ajax_url : null,
         'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null

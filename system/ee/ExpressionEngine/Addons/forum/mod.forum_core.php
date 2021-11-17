@@ -676,7 +676,7 @@ class Forum_Core extends Forum
                 return ee('Permission')->isSuperAdmin();
             }
 
-            $member = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
+            $member = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
 
             if (! $member) {
                 return false;
@@ -748,7 +748,7 @@ class Forum_Core extends Forum
         }
 
         // Fetch the permissions from the DB
-        $query = ee()->db->query("SELECT * FROM exp_forum_moderators WHERE mod_forum_id = '{$forum_id}' AND (mod_member_id = '{$member_id}' OR mod_group_id IN (" . implode($role_ids, ', ') . "))");
+        $query = ee()->db->query("SELECT * FROM exp_forum_moderators WHERE mod_forum_id = '{$forum_id}' AND (mod_member_id = '{$member_id}' OR mod_group_id IN (" . implode(', ', $role_ids) . "))");
 
         if ($query->num_rows() == 0) {
             return false;
@@ -7037,7 +7037,7 @@ class Forum_Core extends Forum
         }
 
         // Fetch the member info
-        $member = ee('Model')->get('Member', $this->current_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
+        $member = ee('Model')->get('Member', $this->current_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
 
         if (! $member) {
             return $this->trigger_error();
@@ -7101,7 +7101,7 @@ class Forum_Core extends Forum
         }
 
         // Fetch the member info
-        $member = ee('Model')->get('Member', $this->current_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
+        $member = ee('Model')->get('Member', $this->current_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
 
         if (! $member) {
             return $this->trigger_error();
@@ -9512,6 +9512,7 @@ class Forum_Core extends Forum
         $member = ee('Model')->get('Member')
             ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->filter('username', $username)
+            ->all()
             ->first();
 
         if (! $member) {

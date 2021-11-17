@@ -556,7 +556,7 @@ class Channel
                     if (is_array($param_value)) {
                         // Drop empty, leave 0
                         $param_value = array_filter($param_value, 'strlen');
-                        $param_value = rtrim(implode($param_value, $modifier), $modifier);
+                        $param_value = rtrim(implode($modifier, $param_value), $modifier);
                     }
 
                     $tag .= $var . '="' . $param_value . '"';
@@ -570,7 +570,7 @@ class Channel
 
                     if (is_array($param_value)) {
                         $param_value = array_filter($param_value, 'strlen');
-                        $param_value = rtrim(implode($param_value, $modifier), $modifier);
+                        $param_value = rtrim(implode($modifier, $param_value), $modifier);
                     }
 
                     $tag .= substr($var, 7) . '="' . $param_value . '"';
@@ -2396,6 +2396,11 @@ class Channel
             $this->return_data = ee()->TMPL->no_results();
 
             return;
+        }
+
+        // just before we pass the data to hook, let Pro do its thing
+        if (IS_PRO) {
+            ee()->TMPL->tagdata = ee('pro:FrontEdit')->prepareTemplate(ee()->TMPL->tagdata);
         }
 
         ee()->load->library('channel_entries_parser');
@@ -4355,7 +4360,7 @@ class Channel
         $query = ee()->db->query($sql);
 
         if ($query->num_rows() == 0) {
-            return;
+            return ee()->TMPL->no_results();
         }
 
         /** ---------------------------------------

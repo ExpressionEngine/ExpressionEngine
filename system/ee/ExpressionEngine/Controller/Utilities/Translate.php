@@ -62,6 +62,7 @@ class Translate extends Utilities
 
     public function index()
     {
+        ee()->lang->load('settings');
         $default_language = ee()->config->item('deft_lang') ?: 'english';
 
         $vars = [];
@@ -353,8 +354,16 @@ class Translate extends Utilities
         );
 
         $vars['base_url'] = ee('CP/URL')->make('utilities/translate/' . $language . '/save/' . $file);
-        $vars['save_btn_text'] = 'translate_btn';
-        $vars['save_btn_text_working'] = 'btn_saving';
+        $vars['buttons'] = array(
+            array(
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save',
+                'shortcut' => 's',
+                'text' => trim(sprintf(lang('translate_btn'), '')),
+                'working' => 'btn_saving'
+            )
+        );
 
         return ee()->cp->render('settings/form', $vars);
     }
@@ -376,8 +385,8 @@ class Translate extends Utilities
             $val = str_replace('<iframe', '', $val);
             $val = str_replace(array("\\", "'"), array("\\\\", "\'"), $val);
 
-            $key = ee()->db->escape_str(ee()->security->xss_clean($key));
-            $val = ee()->db->escape_str(ee()->security->xss_clean($val));
+            $key = ee('Security/XSS')->clean($key);
+            $val = ee('Security/XSS')->clean($val);
 
             $str .= '\'' . $key . '\' => ' . "\n" . '\'' . $val . '\'' . ",\n\n";
         }

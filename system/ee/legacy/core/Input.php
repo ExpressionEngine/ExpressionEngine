@@ -152,7 +152,7 @@ class EE_Input
                     ee('CookieRegistry')->registerCookieSettings($cookieSettings);
                 } else {
                     if (IS_PRO && is_numeric($loadedCookieSettings['cookie_lifetime'])) {
-                        $data['expire'] = $loadedCookieSettings['cookie_lifetime'];
+                        $data['expire'] = ($loadedCookieSettings['cookie_enforced_lifetime'] !== null) ? $loadedCookieSettings['cookie_enforced_lifetime'] : $loadedCookieSettings['cookie_lifetime'];
                     }
                 }
             }
@@ -216,9 +216,7 @@ class EE_Input
         $data['secure_cookie'] = bool_config_item('cookie_secure');
 
         if ($data['secure_cookie']) {
-            $req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : false;
-
-            if (!$req || $req === 'off') {
+            if (ee('Request') && !ee('Request')->isEncrypted()) {
                 return false;
             }
         }

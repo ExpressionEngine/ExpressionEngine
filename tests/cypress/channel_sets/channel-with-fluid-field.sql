@@ -194,6 +194,8 @@ CREATE TABLE `exp_channel_data_field_17` (
   KEY `entry_id` (`entry_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+INSERT INTO `exp_channel_data_field_17` (`id`, `entry_id`, `field_id_17`, `field_ft_17`) VALUES
+	(3, 1, NULL, 'xhtml');
 
 
 # Dump of table exp_channel_data_field_18
@@ -328,6 +330,7 @@ VALUES
 	(1,1),
 	(2,1),
 	(3,1),
+  (17,1),
 	(4,2),
 	(5,2),
 	(6,2),
@@ -599,6 +602,8 @@ CREATE TABLE `exp_relationships` (
   KEY `grid_row_id` (`grid_row_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `exp_relationships` (`relationship_id`, `parent_id`, `child_id`, `field_id`, `grid_field_id`, `grid_col_id`, `grid_row_id`, `order`, `fluid_field_data_id`) VALUES
+	(3, 1, 11, 17, 0, 0, 0, 1, 0);
 
 
 # Dump of table exp_upload_prefs

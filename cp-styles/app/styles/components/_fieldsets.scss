@@ -343,3 +343,11 @@ td.invalid {
     content: fa-content($fa-var-chevron-right);
     top: -1px;
 }
+
+// Password reveal toggle
+fieldset #eye {
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 46px;
+}

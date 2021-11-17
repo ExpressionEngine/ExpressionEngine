@@ -4,14 +4,14 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
- * HTTP Header Plugin
+ * Request Plugin
  */
-class Http_methods
+class Request
 {
     public $return_data;
 
@@ -105,7 +105,24 @@ class Http_methods
         // this from the front end.
         $val = ee()->input->{$method}($name, true);
 
-        $this->return_data = $val;
-        return $val;
+        if (is_array($val)) {
+            if (!empty(ee()->TMPL->tagdata)) {
+                $tagdata = ee()->TMPL->tagdata;
+            } else {
+                $separator = ee()->TMPL->fetch_param('separator', '|');
+                ee()->TMPL->tagparams['backspace'] = strlen($separator);
+                $tagdata = "{item}" . $separator;
+            }
+            $chunk = '';
+            $vars = [];
+            foreach ($val as $key => $item) {
+                $vars[]['item'] = $item;
+            }
+            $this->return_data = ee()->TMPL->parse_variables($tagdata, $vars);
+        } else {
+            $this->return_data = $val;
+        }
+
+        return $this->return_data;
     }
 }

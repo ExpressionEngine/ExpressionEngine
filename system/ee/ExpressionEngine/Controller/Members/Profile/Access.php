@@ -158,13 +158,15 @@ class Access extends Profile
 
                 foreach ($role->AssignedModules as $module) {
                     $addon = ee('Addon')->get(strtolower($module->module_name));
-                    $key = 'access_to_add_on_id_' . $module->getId() . ':' . $addon->getName();
+                    if ($addon) {
+                        $key = 'access_to_add_on_id_' . $module->getId() . ':' . $addon->getName(); 
 
-                    if (! array_key_exists($key, $permissions)) {
-                        $permissions[$key] = [];
+                        if (! array_key_exists($key, $permissions)) {
+                            $permissions[$key] = [];
+                        }
+
+                        $permissions[$key][] = $display;
                     }
-
-                    $permissions[$key][] = $display;
                 }
             }
         }
