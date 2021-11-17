@@ -364,6 +364,7 @@ context('File Manager', () => {
 
 
 	it('can add a new directory', () => {
+		cy.wait(10000)
 		cy.task('db:seed').then(() => {
 			cy.auth();
 			page.load();
@@ -462,6 +463,8 @@ context('File Manager', () => {
 	// Tests specific to the "All Files" view
 
 	it('must choose where to upload a new file when viewing All Files', () => {
+
+		cy.wait(10000)
 
 		cy.task('db:seed').then(() => {
 
