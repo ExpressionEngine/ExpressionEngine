@@ -8,7 +8,7 @@ const addon_manager = new AddonManager;
 
 context('Spam Module', () => {
 
-  beforeEach(function(){
+  before(function(){
     cy.task('db:seed')
   })
 
@@ -32,17 +32,20 @@ context('Spam Module', () => {
 
   context('Spam Trap Table', () => {
 
-    beforeEach(function() {
+    before(function() {
       // preload the spam trap
-      cy.task('db:load', '../../support/spam/spam.sql').then(() => {
+      cy.task('db:load', '../../support/spam/spam.sql');
+    })
 
-        cy.auth();
-        page.load()
+    beforeEach(function() {
 
-        //page.displayed?
-        page.get('page_heading').contains('All SPAM')
-        page.get('keyword_search').should('exist')
-      })
+      cy.auth();
+      page.load()
+
+      //page.displayed?
+      page.get('page_heading').contains('All SPAM')
+      page.get('keyword_search').should('exist')
+
     })
 
     it('can search by phrases', () => {
