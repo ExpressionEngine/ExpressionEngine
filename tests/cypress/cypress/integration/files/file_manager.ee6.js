@@ -455,7 +455,7 @@ context('File Manager', () => {
 			expect(text).contains('The upload directory About has been deleted.')
 		})
 
-		cy.task('db:seed').then(() => {})
+		
 
 	});
 
@@ -463,13 +463,16 @@ context('File Manager', () => {
 
 	it('must choose where to upload a new file when viewing All Files', () => {
 
-		beforeEach_all_files();
-		page.get('upload_new_file_button').click()
-		//page.wait_until_upload_new_file_filter_menu_visible
-		page.get('upload_new_file_filter_menu_items').eq(0).click()
-		cy.hasNoErrors()
+		cy.task('db:seed').then(() => {
 
-		cy.url().should('match', /files\/upload/)
+			beforeEach_all_files();
+			page.get('upload_new_file_button').click()
+			//page.wait_until_upload_new_file_filter_menu_visible
+			page.get('upload_new_file_filter_menu_items').eq(0).click()
+			cy.hasNoErrors()
+
+			cy.url().should('match', /files\/upload/)
+		})
 
 	});
 
