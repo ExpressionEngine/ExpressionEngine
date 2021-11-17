@@ -2,6 +2,7 @@
 
 define('INSTALL_MODE', true);
 define('REQ', 'CLI');
+define('INSTALL_MODE', true);
 
 require('bootstrap.php');
 
