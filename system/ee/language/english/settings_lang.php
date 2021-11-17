@@ -768,9 +768,9 @@ $lang = array(
 
     'password_security_basic' => 'Basic',
 
-    'password_security_good' => 'Ranked Good',
+    'password_security_good' => 'Good',
 
-    'password_security_strong' => 'Ranked Strong',
+    'password_security_strong' => 'Strong',
 
     's_session' => 'Session ID only',
 

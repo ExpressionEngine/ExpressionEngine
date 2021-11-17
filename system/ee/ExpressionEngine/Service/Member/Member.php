@@ -85,34 +85,6 @@ class Member
      */
     public function calculatePasswordComplexity($password)
     {
-        if (ee()->config->item('require_secure_passwords') == 'y') {
-            //fallback to former "secure password" EE algo
-            $count = array('uc' => 0, 'lc' => 0, 'num' => 0);
-
-            $pass = preg_quote($value, "/");
-
-            $len = strlen($pass);
-
-            for ($i = 0; $i < $len; $i++) {
-                $n = substr($pass, $i, 1);
-
-                if (preg_match("/^[[:upper:]]$/", $n)) {
-                    $count['uc']++;
-                } elseif (preg_match("/^[[:lower:]]$/", $n)) {
-                    $count['lc']++;
-                } elseif (preg_match("/^[[:digit:]]$/", $n)) {
-                    $count['num']++;
-                }
-            }
-
-            foreach ($count as $val) {
-                if ($val == 0) {
-                    return 10; //weak
-                }
-            }
-            return 40; //good
-        }
-
         $rank = 0;
         $length = strlen($password);
         $charsCount = [
@@ -140,7 +112,7 @@ class Member
             'number' => 0,
             'special' => 0
         ];
-        $orderedSpecials = ['`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'];
+        $orderedSpecials = ['`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '+', '_', '=', '{', '}', '|', '[', ']', '\\', ':', '"', ';', "'", ',', '.', '/'];
         $orderedNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
         $orderedStrings = range('a', 'z');
         $orderedKeyboard = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
@@ -232,11 +204,15 @@ class Member
                 $requirements++;
             }
         }
-        if ($requirements > 3) {
+        if ($requirements >= 3) {
             if ($length >= ee()->config->item('pw_min_len')) {
                 $requirements++;
                 $rank += $requirements * 2;
             }
+        }
+
+        if ($requirements < 3) {
+            return 39; //requirements not met, stop here
         }
 
         // Deductions
@@ -264,6 +240,38 @@ class Member
         $rank -= $sequenceCount['number'] * 3;
         // Sequential Symbols (3+)
         $rank -= $sequenceCount['special'] * 3;
+
+        // if we're using former "secure password" EE algo and the rank is low
+        // see if it's satisfactory at least, then return 'good'
+        if (ee()->config->item('require_secure_passwords') == 'y') {
+            $count = array('uc' => 0, 'lc' => 0, 'num' => 0);
+
+            $pass = preg_quote($password, "/");
+
+            $len = strlen($pass);
+
+            for ($i = 0; $i < $len; $i++) {
+                $n = substr($pass, $i, 1);
+
+                if (preg_match("/^[[:upper:]]$/", $n)) {
+                    $count['uc']++;
+                } elseif (preg_match("/^[[:lower:]]$/", $n)) {
+                    $count['lc']++;
+                } elseif (preg_match("/^[[:digit:]]$/", $n)) {
+                    $count['num']++;
+                }
+            }
+
+            foreach ($count as $val) {
+                if ($val == 0) {
+                    return $rank; //weak
+                }
+            }
+
+            if ($rank < 40) {
+                $rank = 40; //good
+            }
+        }
 
         return $rank;
     }

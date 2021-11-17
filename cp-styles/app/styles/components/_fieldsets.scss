@@ -166,6 +166,15 @@ fieldset {
 		}
 	}
 
+	> label {
+		> .field-control{
+			> em {
+				color: color(error);
+				font-style: normal;
+			}
+		}
+	}
+
 	> .field-control{
 		> input,
 		> textarea,
@@ -185,7 +194,7 @@ fieldset {
 
 		> em {
 			color: color(error);
-      font-style: normal;
+			font-style: normal;
 		}
 	}
 

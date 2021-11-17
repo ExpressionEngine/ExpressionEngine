@@ -36,6 +36,7 @@ $lang = array(
     'username' => 'Username',
     'e_mail' => 'Email',
     'password' => 'Password',
+    'password_note' => 'Should contain both lowercase and uppercase letters and numbers, and be at least 8 characters long.',
 
     // Default Theme
     'default_theme' => 'Default theme',

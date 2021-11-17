@@ -314,7 +314,7 @@ $lang = array(
 
     'new_password_confirm_desc' => 'Retype desired password, to confirm.',
 
-    'new_password_desc' => 'Use lowercase and uppercase letters, numbers, and symbols for the strongest passwords.',
+    'new_password_desc' => 'Use lowercase and uppercase letters, numbers, and symbols for strong passwords.',
 
     'new_release_indicator' => 'New software release indicator',
 
