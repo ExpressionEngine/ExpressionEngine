@@ -364,16 +364,17 @@ context('File Manager', () => {
 
 
 	it('can add a new directory', () => {
-		cy.task('db:seed')
-		cy.auth();
-		page.load();
+		cy.task('db:seed').then(() => {
+			cy.auth();
+			page.load();
 
-		beforeEach_all_files();
-		//page.get('new_directory_button').click()
-		cy.get('a[href="admin.php?/cp/files/uploads/create"]').first().click()
-		cy.hasNoErrors()
+			beforeEach_all_files();
+			//page.get('new_directory_button').click()
+			cy.get('a[href="admin.php?/cp/files/uploads/create"]').first().click()
+			cy.hasNoErrors()
 
-		cy.url().should('match', /files\/uploads\/create/)
+			cy.url().should('match', /files\/uploads\/create/)
+		})
 	});
 
 	it('can view a single directory', () => {
@@ -423,7 +424,7 @@ context('File Manager', () => {
 			expect(text).contains('has been deleted.')
 		})
 
-		cy.task('db:seed')
+		cy.task('db:seed').then(() => {})
 
 	});
 
@@ -454,7 +455,7 @@ context('File Manager', () => {
 			expect(text).contains('The upload directory About has been deleted.')
 		})
 
-		cy.task('db:seed')
+		cy.task('db:seed').then(() => {})
 
 	});
 
@@ -502,7 +503,7 @@ context('File Manager', () => {
 
 		page.get('wrap').find('tr.missing').should('exist')
 
-		cy.task('db:seed')
+		cy.task('db:seed').then(() => {})
 
 
 	});
