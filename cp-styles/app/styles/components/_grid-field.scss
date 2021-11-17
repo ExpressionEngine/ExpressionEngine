@@ -17,7 +17,40 @@
   }
 
   tr {
+  	td {
+  		min-width: 250px;
+  		max-width: 400px;
 
+  		@include m-tablet-down {
+  			min-width: 0 !important;
+  			width: 100% !important;
+  			max-width: 100% !important;
+  		}
+
+  		&.grid-rte,
+  		&.grid-file-upload,
+  		&.grid-multi-relate,
+  		&[data-fieldtype="wygwam"] {
+  			min-width: 400px;
+  			max-width: 600px;
+  		}
+
+  		&.grid-field__column--tools {
+  			min-width: 80px;
+  			max-width: 100px;
+  		}
+
+  		&.grid-multi-relate {
+  			@include m-tablet-down {
+  				position: relative;
+
+  				.dropdown--open {
+  					top: calc(100% + 4px) !important;
+  					transform: none !important;
+  				}
+  			}
+  		}
+  	}
 	}
 
 	tr.ui-sortable-helper {
