@@ -4,7 +4,7 @@
     <?php $this->embed('ee:_shared/ee-logo')?>
 </div>
 
-<div class="login__content">
+<div class="login__content reset-password">
 	<h1 class="login__title"><?=lang('reset_password')?><span class="icon-reset"></span></h1>
 	<?=ee('CP/Alert')->getAllInlines()?>
 	<?=form_open(ee('CP/URL')->make('login/reset_password'))?>
@@ -12,7 +12,7 @@
 			<div class="field-instruct">
 			<?=lang('new_password', 'password')?>
 			</div>
-			<div class="field-control">
+			<div class="field-control" style="position: relative;">
 				<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 			</div>
 		</fieldset>
