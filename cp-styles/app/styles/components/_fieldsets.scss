@@ -352,3 +352,11 @@ fieldset {
 		}
 	}
 }
+
+// Password reveal toggle
+fieldset #eye {
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 46px;
+}
