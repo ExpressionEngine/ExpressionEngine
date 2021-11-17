@@ -342,14 +342,6 @@ $lang = array(
 
     'password_too_short' => 'Your password must be at least %d characters long',
 
-    'password_rank_weak' => 'Weak',
-
-    'password_rank_good' => 'Good',
-
-    'password_rank_strong' => 'Strong',
-
-    'password_rank_very_strong' => 'Very Strong',
-
     'pending_activation' => 'Pending Activation',
 
     'personal_messaging' => 'Personal Messaging',

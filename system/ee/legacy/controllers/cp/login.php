@@ -717,6 +717,10 @@ class Login extends CP_Controller
             $alert->addToBody(strip_tags(form_error('password_confirm')))->now();
         }
 
+        ee()->javascript->set_global([
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+        ]);
+
         $this->view->cp_page_title = lang('enter_new_password');
         $this->view->resetcode = $resetcode;
         $this->view->focus_field = 'password';
@@ -794,6 +798,32 @@ class Login extends CP_Controller
         }
 
         $this->functions->redirect(BASE . AMP . $redirect);
+    }
+
+    /**
+     * AJAX endpoint for password strength meter
+     *
+     * @return JSON
+     */
+    public function validate_password()
+    {
+        if (! AJAX_REQUEST || ee('Request')->method() != 'POST') {
+            show_error(lang('unauthorized_access'), 403);
+        }
+        ee()->lang->load('settings');
+        $password = ee('Request')->post('password');
+        $result = [];
+        $result['rank'] = ee('Member')->calculatePasswordComplexity($password);
+        if ($result['rank'] >= 80) {
+            $result['rank_text'] = lang('password_rank_very_strong');
+        } elseif ($result['rank'] >= 60) {
+            $result['rank_text'] = lang('password_rank_strong');
+        } elseif ($result['rank'] >= 40) {
+            $result['rank_text'] = lang('password_rank_good');
+        } else {
+            $result['rank_text'] = lang('password_rank_weak');
+        }
+        ee()->output->send_ajax_response($result);
     }
 }
 // END CLASS

@@ -26,3 +26,11 @@
 		</fieldset>
 	<?=form_close()?>
 </div>
+
+<script type="text/javascript">
+	var EE = {
+		cp: {
+			validatePasswordUrl: "<?=ee('CP/URL', 'login/validate_password')->compile()?>"
+		}
+	}
+</script>

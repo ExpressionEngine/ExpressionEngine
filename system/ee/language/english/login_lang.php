@@ -59,6 +59,14 @@ $lang = array(
 
     'updating' => 'updating...',
 
+    'password_rank_weak' => 'Weak',
+
+    'password_rank_good' => 'Good',
+
+    'password_rank_strong' => 'Strong',
+
+    'password_rank_very_strong' => 'Very Strong',
+
 );
 
 // EOF
