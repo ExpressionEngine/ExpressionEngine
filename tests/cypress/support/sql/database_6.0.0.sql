@@ -137,6 +137,23 @@ INSERT INTO `exp_channel_data` (`entry_id`, `site_id`, `channel_id`, `field_id_1
 	(10, 1, 1, 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin congue mi a sapien. Duis augue erat, fringilla ac, volutpat ut, venenatis vitae, nisl. Phasellus lorem. Praesent mi. Suspendisse imperdiet felis a libero. uspendisse placerat tortor in ligula vestibulum vehicula.\n', 'xhtml', '', 'xhtml', '{filedir_2}testband300.jpg', 'none', '', NULL, '', NULL, '', NULL, '', NULL);
 /*!40000 ALTER TABLE `exp_channel_data` ENABLE KEYS */;
 
+-- Dumping structure for table ee-test.exp_channel_data_field_8
+DROP TABLE IF EXISTS `exp_channel_data_field_8`;
+CREATE TABLE IF NOT EXISTS `exp_channel_data_field_8` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `entry_id` int(10) unsigned NOT NULL,
+  `field_id_8` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `field_ft_8` tinytext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `entry_id` (`entry_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table ee-test.exp_channel_data_field_8: ~1 rows (approximately)
+/*!40000 ALTER TABLE `exp_channel_data_field_8` DISABLE KEYS */;
+INSERT INTO `exp_channel_data_field_8` (`id`, `entry_id`, `field_id_8`, `field_ft_8`) VALUES
+	(1, 2, NULL, 'xhtml');
+/*!40000 ALTER TABLE `exp_channel_data_field_8` ENABLE KEYS */;
+
 -- Dumping data for table ee-test.exp_channel_entries_autosave: ~0 rows (approximately)
 DELETE FROM `exp_channel_entries_autosave`;
 /*!40000 ALTER TABLE `exp_channel_entries_autosave` DISABLE KEYS */;
@@ -152,7 +169,8 @@ INSERT INTO `exp_channel_fields` (`field_id`, `site_id`, `field_name`, `field_la
 	(4, 1, 'about_body', 'Body', '', 'textarea', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'n', 'n', 'xhtml', 'y', 4, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=', 'y'),
 	(5, 1, 'about_image', 'Image', 'URL Only', 'file', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'n', 'n', 'none', 'n', 5, 'any', 'YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ==', 'y'),
 	(6, 1, 'about_staff_title', 'Staff Member\'s Title', 'This is the Title that the staff member has within the company.  Example: CEO', 'text', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'y', 'n', 'none', 'n', 6, 'any', 'YTo4OntzOjE4OiJmaWVsZF9jb250ZW50X3RleHQiO2I6MDtzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czozOiJhbnkiO30=', 'y'),
-	(7, 1, 'about_extended', 'Extended', '', 'textarea', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'y', 'y', 'xhtml', 'y', 7, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=', 'y');
+	(7, 1, 'about_extended', 'Extended', '', 'textarea', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'y', 'y', 'xhtml', 'y', 7, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=', 'y'),
+	(8, 0, 'related_news', 'Related news', '', 'relationship', '', 'n', NULL, NULL, 8, NULL, 'n', 'ltr', 'n', 'n', 'xhtml', 'y', 1, 'any', 'YToxMDp7czo4OiJjaGFubmVscyI7YToxOntpOjA7czoxOiIxIjt9czo3OiJleHBpcmVkIjtzOjA6IiI7czo2OiJmdXR1cmUiO3M6MDoiIjtzOjEwOiJjYXRlZ29yaWVzIjthOjA6e31zOjc6ImF1dGhvcnMiO2E6MDp7fXM6ODoic3RhdHVzZXMiO2E6MDp7fXM6NToibGltaXQiO3M6MzoiMTAwIjtzOjExOiJvcmRlcl9maWVsZCI7czo1OiJ0aXRsZSI7czo5OiJvcmRlcl9kaXIiO3M6MzoiYXNjIjtzOjE0OiJhbGxvd19tdWx0aXBsZSI7YjoxO30=', 'n');
 /*!40000 ALTER TABLE `exp_channel_fields` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_channel_field_groups_fields: ~7 rows (approximately)
@@ -165,7 +183,8 @@ INSERT INTO `exp_channel_field_groups_fields` (`field_id`, `group_id`) VALUES
 	(4, 2),
 	(5, 2),
 	(6, 2),
-	(7, 2);
+	(7, 2),
+  (8, 1);
 /*!40000 ALTER TABLE `exp_channel_field_groups_fields` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_channel_form_settings: ~0 rows (approximately)
@@ -796,6 +815,12 @@ DELETE FROM `exp_password_lockout`;
 -- Dumping data for table ee-test.exp_relationships: ~0 rows (approximately)
 DELETE FROM `exp_relationships`;
 /*!40000 ALTER TABLE `exp_relationships` DISABLE KEYS */;
+/*!40000 ALTER TABLE `exp_relationships` ENABLE KEYS */;
+
+-- Dumping data for table ee-test.exp_relationships: ~1 rows (approximately)
+/*!40000 ALTER TABLE `exp_relationships` DISABLE KEYS */;
+INSERT INTO `exp_relationships` (`relationship_id`, `parent_id`, `child_id`, `field_id`, `grid_field_id`, `grid_col_id`, `grid_row_id`, `order`, `fluid_field_data_id`) VALUES
+	(1, 2, 1, 8, 0, 0, 0, 1, 0);
 /*!40000 ALTER TABLE `exp_relationships` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_remember_me: ~0 rows (approximately)
