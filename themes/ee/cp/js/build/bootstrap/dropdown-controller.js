@@ -154,7 +154,7 @@ var DropdownController = function () {
 
 
     if (!dropdown._popper) {
-      var placement = element.dataset.dropdownPos || 'bottom-start';
+      var placement = element.dataset.dropdownPos || 'bottom-end';
       var offset = element.dataset.dropdownOffset || '0, 5px';
       dropdown._popper = new Popper(element, dropdown, {
         placement: placement,
