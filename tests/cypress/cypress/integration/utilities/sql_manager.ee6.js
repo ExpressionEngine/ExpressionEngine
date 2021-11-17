@@ -74,7 +74,7 @@ context('SQL manager', () => {
 	    });
 	    page.get('search_field').clear()
 	    page.get('search_field').type('data').type('{enter}')
-	    cy.get('h2 > i').contains('Found 7 results for "data"')
+	    cy.get('h2 > i').contains('Found 6 results for "data"')
     })
 
     it('should sort search results', () =>{
@@ -88,7 +88,7 @@ context('SQL manager', () => {
 
 	    page.get('search_field').clear()
 	    page.get('search_field').type('data').type('{enter}')
-	    cy.get('h2 > i').contains('Found 7 results for "data"')
+	    cy.get('h2 > i').contains('Found 6 results for "data"')
 	    cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_category_field_data')
 	    page.get('sort_links').eq(0).click()
 	    cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_message_data')
