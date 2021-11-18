@@ -62,6 +62,9 @@ class Member_upd extends Installer
         [
             'method' => 'recaptcha_check',
             'csrf_exempt' => 1
+        ],
+        [
+            'method' => 'validation'
         ]
     ];
 

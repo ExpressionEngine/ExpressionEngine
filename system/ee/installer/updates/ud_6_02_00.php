@@ -25,7 +25,32 @@ class Updater
      */
     public function do_update()
     {
+        $steps = new \ProgressIterator (
+            [
+                'addMemberValidationAction',
+            ]
+        );
+
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+
         return true;
+    }
+
+    private function addMemberValidationAction()
+    {
+
+        $action = ee()->db->get_where('actions', array('class' => 'Member', 'method' => 'validation'));
+
+        if ($action->num_rows() > 0) {
+            return;
+        }
+
+        ee()->db->insert('actions', array(
+            'class' => 'Member',
+            'method' => 'validation',
+        ));
     }
 }
 
