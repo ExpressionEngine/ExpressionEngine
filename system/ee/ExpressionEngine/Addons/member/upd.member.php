@@ -64,7 +64,7 @@ class Member_upd extends Installer
             'csrf_exempt' => 1
         ],
         [
-            'method' => 'validation'
+            'method' => 'validate'
         ]
     ];
 

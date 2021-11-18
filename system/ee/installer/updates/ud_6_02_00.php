@@ -41,7 +41,7 @@ class Updater
     private function addMemberValidationAction()
     {
 
-        $action = ee()->db->get_where('actions', array('class' => 'Member', 'method' => 'validation'));
+        $action = ee()->db->get_where('actions', array('class' => 'Member', 'method' => 'validate'));
 
         if ($action->num_rows() > 0) {
             return;
@@ -49,7 +49,7 @@ class Updater
 
         ee()->db->insert('actions', array(
             'class' => 'Member',
-            'method' => 'validation',
+            'method' => 'validate',
         ));
     }
 }

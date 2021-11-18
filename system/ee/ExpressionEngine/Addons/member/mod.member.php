@@ -2664,8 +2664,8 @@ class Member
         $result = [
             'success' => true
         ];
-        ee()->lang->load('settings');
-        $fields = explode('|', ee('Request')->get('fields'));
+        ee()->lang->load('login');
+        $fields = !empty(ee('Request')->get('fields')) ? explode('|', ee('Request')->get('fields')) : [];
         if (empty($fields) || array_intersect(['all', 'username', 'password', 'email', 'screen_name'], $fields)) {
             $member = ee()->session->getMember();
             if (ee('Permission')->can('edit_members') && !empty(ee('Request')->post('member_id'))) {
@@ -2721,7 +2721,7 @@ class Member
     {
         $action_id = ee()->db->select('action_id')
             ->where('class', 'Member')
-            ->where('method', 'validation')
+            ->where('method', 'validate')
             ->get('actions');
         $url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id');
         if (!empty(ee()->TMPL->fetch_param('fields'))) {

@@ -810,7 +810,6 @@ class Login extends CP_Controller
         if (! AJAX_REQUEST || ee('Request')->method() != 'POST') {
             show_error(lang('unauthorized_access'), 403);
         }
-        ee()->lang->load('settings');
         $password = ee('Request')->post('password');
         $result = [];
         $result['rank'] = ee('Member')->calculatePasswordComplexity($password);
