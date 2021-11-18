@@ -57,7 +57,6 @@
 
 				var field = $(this),
 					val = $(this).val(),
-					// newReg = val.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/);
 					upperCase= new RegExp('[A-Z]'),
 					lowerCase= new RegExp('[a-z]'),
 					numbers = new RegExp('[0-9]');
