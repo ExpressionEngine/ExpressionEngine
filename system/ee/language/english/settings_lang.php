@@ -865,7 +865,7 @@ $lang = array(
 
     'anonymize_consent_logs' => 'Anonymize Consent Audit Logs',
 
-    'anonymize_consent_logs_desc' => 'Selected fields will be anonimized in Consent Audit logs',
+    'anonymize_consent_logs_desc' => 'Selected fields will be anonymized in Consent Audit logs',
 
 );
 
