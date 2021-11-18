@@ -32,5 +32,25 @@
 
 		<script src="<?=$javascript_path?>jquery/jquery.js" type="text/javascript"></script>
 		<script src="<?=$javascript_path?>common.js" type="text/javascript"></script>
+
+		<script>
+			var eyeOpen = '<?=$theme_url.'/ee/asset/img/eye-open.svg'?>',
+				eyeClosed = '<?=$theme_url.'/ee/asset/img/eye-closed.svg'?>'
+
+			var passwordInput = $('input[name="password"]'),
+				passwordInputContainer = $('input[name="password"]').closest('.field-control'),
+				eyeImg = '<img src="' + eyeOpen + '" id="eye" />',
+				eyeIsOpen = false
+
+			$(passwordInputContainer).css({'position': 'relative'})
+			$(eyeImg).insertAfter(passwordInput)
+
+			$('#eye').click(function () {
+				$('input[name="password"]').attr('type', ($('input[name="password"]').attr('type') === 'password' ? 'text' : 'password'));
+				$(this).attr('src', eyeIsOpen ? eyeOpen : eyeClosed)
+				eyeIsOpen = !eyeIsOpen
+		    });			
+		</script>
+
 	</body>
 </html>

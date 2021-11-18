@@ -1085,7 +1085,6 @@ $(document).ready(function(){
 						dataType: 'json',
 						data: data+'&ee_fv_field='+field.attr('name'),
 						success: function (result) {
-							console.log('result', result);
 							if (result['rank'] == 0) {
 								$('.rank-wrap').remove();
 								return;
@@ -1110,23 +1109,22 @@ $(document).ready(function(){
 
 		var passwordTimeout = null
 
-		// Typing into the password field
-		$('body').on('keyup', 'input[name="password"]', function() {
-
-			var field = $(this);
-			var val = $(this).val();
-			clearTimeout(passwordTimeout)
-			passwordTimeout = setTimeout(function() {
-				if(val == 0) {
-					if ($('.rank-wrap').length) {
-						$('.rank-wrap').remove();
+		// Typing into the password field if it is not installer page
+		$('body').not('.installer-page').on('keyup', 'input[name="password"]', function() {
+				var field = $(this);
+				var val = $(this).val();
+				clearTimeout(passwordTimeout)
+				passwordTimeout = setTimeout(function() {
+					if(val == 0) {
+						if ($('.rank-wrap').length) {
+							$('.rank-wrap').remove();
+						}
+					} else {
+						passwordStrengthIndicator(field);
 					}
-				} else {
-					passwordStrengthIndicator(field);
-				}
 
-				passwordTimeout = null
-			}, 1000)
+					passwordTimeout = null
+				}, 1000);
 		});
 
 }); // close (document).ready
