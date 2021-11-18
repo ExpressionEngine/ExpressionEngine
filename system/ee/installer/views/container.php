@@ -35,7 +35,8 @@
 
 		<script>
 			var eyeOpen = '<?=$theme_url.'/ee/asset/img/eye-open.svg'?>',
-				eyeClosed = '<?=$theme_url.'/ee/asset/img/eye-closed.svg'?>'
+				eyeClosed = '<?=$theme_url.'/ee/asset/img/eye-closed.svg'?>',
+				rankWrap = '<div class="rank-wrap"><p class=""><span class="rank_text"></span></p></div>';
 
 			var passwordInput = $('input[name="password"]'),
 				passwordInputContainer = $('input[name="password"]').closest('.field-control'),
@@ -44,12 +45,39 @@
 
 			$(passwordInputContainer).css({'position': 'relative'})
 			$(eyeImg).insertAfter(passwordInput)
+			$(rankWrap).insertAfter(passwordInput)
 
 			$('#eye').click(function () {
 				$('input[name="password"]').attr('type', ($('input[name="password"]').attr('type') === 'password' ? 'text' : 'password'));
 				$(this).attr('src', eyeIsOpen ? eyeOpen : eyeClosed)
 				eyeIsOpen = !eyeIsOpen
-		    });			
+		    });
+
+			$('body').on('keyup', 'input[name="password"]', function() {
+
+				var field = $(this),
+					val = $(this).val(),
+					// newReg = val.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/);
+					upperCase= new RegExp('[A-Z]'),
+					lowerCase= new RegExp('[a-z]'),
+					numbers = new RegExp('[0-9]');
+
+				setTimeout(function() {
+					if (val.length == 0) {
+						$('.rank-wrap').hide();
+					} else {
+						$('.rank-wrap').show();
+
+						if(val.match(upperCase) && val.match(lowerCase) && val.match(numbers) && val.length >= 8) {
+							$('.rank-wrap > p').attr('class', 'status-tag good');
+							$('.rank-wrap .rank_text').text('good');
+						} else {
+							$('.rank-wrap > p').attr('class', 'status-tag weak');
+							$('.rank-wrap .rank_text').text('weak');
+						}
+					}
+				}, 1000)
+			});
 		</script>
 
 	</body>

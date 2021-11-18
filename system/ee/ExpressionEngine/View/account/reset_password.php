@@ -56,7 +56,6 @@
 					dataType: 'json',
 					data: data+'&ee_fv_field='+field.attr('name'),
 					success: function (result) {
-						console.log('result', result);
 						if (result['rank'] == 0) {
 							$('.rank-wrap').remove();
 							return;
