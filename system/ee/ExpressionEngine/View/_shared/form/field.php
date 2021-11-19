@@ -70,7 +70,9 @@ case 'text':
 case 'short-text': ?>
     <label class="flex-input <?=$class?>">
         <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
-        <span class="label-txt"><?=lang($field['label'])?></span>
+        <?php if (isset($field['label'])):?>
+            <span class="label-txt"><?=lang($field['label'])?></span>
+        <?php endif;?>
     </label>
 <?php break;
 case 'file': ?>
