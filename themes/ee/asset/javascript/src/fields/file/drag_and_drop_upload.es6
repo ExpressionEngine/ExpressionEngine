@@ -151,6 +151,7 @@ class DragAndDropUpload extends React.Component {
 
       let xhr = new XMLHttpRequest()
       xhr.open('POST', EE.dragAndDrop.endpoint, true)
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
       xhr.upload.addEventListener('progress', (e) => {
         file.progress = (e.loaded * 100.0 / e.total) || 100

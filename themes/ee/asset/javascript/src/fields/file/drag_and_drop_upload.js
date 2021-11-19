@@ -232,6 +232,7 @@ function (_React$Component) {
         formData.append('csrf_token', EE.CSRF_TOKEN);
         var xhr = new XMLHttpRequest();
         xhr.open('POST', EE.dragAndDrop.endpoint, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.upload.addEventListener('progress', function (e) {
           file.progress = e.loaded * 100.0 / e.total || 100;
 
@@ -241,9 +242,9 @@ function (_React$Component) {
         });
         xhr.addEventListener('readystatechange', function () {
           if (xhr.readyState == 4 && xhr.status == 200) {
-            var response = JSON.parse(xhr.responseText);
+            var _response = JSON.parse(xhr.responseText);
 
-            switch (response.status) {
+            switch (_response.status) {
               case 'success':
                 _this3.removeFile(file);
 
@@ -254,13 +255,13 @@ function (_React$Component) {
 
               case 'duplicate':
                 file.duplicate = true;
-                file.fileId = response.fileId;
-                file.originalFileName = response.originalFileName;
+                file.fileId = _response.fileId;
+                file.originalFileName = _response.originalFileName;
                 reject(file);
                 break;
 
               case 'error':
-                file.error = _this3.stripTags(response.error);
+                file.error = _this3.stripTags(_response.error);
                 reject(file);
                 break;
 
@@ -272,16 +273,19 @@ function (_React$Component) {
             }
           } // Unexpected error, probably post_max_size is too low
           else if (xhr.readyState == 4 && xhr.status != 200) {
-            file.error = EE.lang.file_dnd_unexpected_error;
-            try {
-              var response = JSON.parse(xhr.responseText);
-              if (typeof(response.error) != 'undefined') {
-                file.error = response.error;
-              }
-            } catch(err) {}
-            console.error(xhr);
-            reject(file);
-          }
+              file.error = EE.lang.file_dnd_unexpected_error;
+
+              try {
+                var response = JSON.parse(xhr.responseText);
+
+                if (typeof response.error != 'undefined') {
+                  file.error = response.error;
+                }
+              } catch (err) {}
+
+              console.error(xhr);
+              reject(file);
+            }
 
           _this3.setState({
             files: _this3.state.files
