@@ -104,9 +104,10 @@ class Relationship extends React.Component {
             if (item.children) item.children = this.filterItems(item.children, searchTerm)
 
             let itemFoundInChildren = (item.children && item.children.length > 0)
-            let itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase())
+            let itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
+            let itemValue = (item.value).toString().includes(searchTerm.toLowerCase());
 
-            return (itemFound || itemFoundInChildren) ? item : false
+            return (itemFound || itemFoundInChildren) || itemValue ? item : false
         })
 
         return items.filter(item => item);
@@ -362,7 +363,7 @@ class Relationship extends React.Component {
                         <div className="dropdown__scroll dropdown__scroll--small">
                         {
                             dropdownItems.map((item) => {
-
+                                
                                 return (
                                     <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label}{item.entry_id && <span class="dropdown__link-entryId"> (#{item.entry_id})</span>} <span className="dropdown__link-right">{item.instructions}</span></a>
                                 )

@@ -260,7 +260,8 @@ function (_React$Component) {
         if (item.children) item.children = _this3.filterItems(item.children, searchTerm);
         var itemFoundInChildren = item.children && item.children.length > 0;
         var itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
-        return itemFound || itemFoundInChildren ? item : false;
+        var itemValue = item.value.toString().includes(searchTerm.toLowerCase());
+        return itemFound || itemFoundInChildren || itemValue ? item : false;
       });
       return items.filter(function (item) {
         return item;
