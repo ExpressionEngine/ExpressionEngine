@@ -201,6 +201,28 @@ class Relationship extends React.Component {
 
         this.setState({ loading: true })
 
+        var checkEntryId = 0;
+
+        for (var key in this.state.items) {
+            if (!this.state.items.hasOwnProperty(key)) continue;
+
+            var obj = this.state.items[key];
+            
+            for ( var prop in obj) {
+                if (!obj.hasOwnProperty(prop)) continue;
+
+                if (prop == 'entry_id') {
+                    if( obj[prop] ) {
+                        checkEntryId = 1;
+                    } else {
+                        checkEntryId = 0;
+                    }
+                }
+            }
+        }
+
+        params.checkEntryId = checkEntryId;
+
         this.ajaxTimer = setTimeout(() => {
             this.ajaxRequest = this.forceAjaxRefresh(params)
         }, 300)
@@ -363,7 +385,6 @@ class Relationship extends React.Component {
                         <div className="dropdown__scroll dropdown__scroll--small">
                         {
                             dropdownItems.map((item) => {
-                                
                                 return (
                                     <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label}{item.entry_id && <span class="dropdown__link-entryId"> (#{item.entry_id})</span>} <span className="dropdown__link-right">{item.instructions}</span></a>
                                 )

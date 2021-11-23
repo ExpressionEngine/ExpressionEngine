@@ -54,7 +54,7 @@ class SelectList extends React.Component {
           parent: parent ? parent : null,
           component: items[key].component != undefined ? items[key].component : null,
           sectionLabel: currentSection,
-          entry_id: items[key].value || items[key].value === '' ? items[key].value : value
+          entry_id: items[key].entry_id ? items[key].entry_id : ''
         }
 
         if (items[key].children) {
