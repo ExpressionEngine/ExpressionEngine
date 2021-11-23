@@ -475,6 +475,18 @@ class Edit extends AbstractPublishController
 
         $vars['layout'] = $entry->getDisplay($channel_layout);
 
+        if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
+            $entry->setId(null);
+            while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
+                $_POST['url_title'] .= '_1';
+            }
+            foreach ($entry->getFields() as $field) {
+                if (isset($_POST[$field])) {
+                    $entry->setProperty($field, null);
+                }
+            }
+        }
+
         $result = $this->validateEntry($entry, $vars['layout']);
 
         if ($result instanceof ValidationResult) {

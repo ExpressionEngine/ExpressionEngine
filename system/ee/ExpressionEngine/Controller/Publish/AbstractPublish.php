@@ -374,6 +374,11 @@ abstract class AbstractPublish extends CP_Controller
 
         $entry->set($_POST);
 
+        if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
+            $action = 'create';
+            $entry->markAsDirty();
+        }
+
         $result = $entry->validate();
 
         if ($response = $this->ajaxValidation($result)) {
@@ -395,6 +400,10 @@ abstract class AbstractPublish extends CP_Controller
     {
         $action = ($entry->isNew()) ? 'create' : 'edit';
         $entry->edit_date = ee()->localize->now;
+        if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
+            $action = 'create';
+            $entry->markAsDirty();
+        }
         $entry->save();
 
         ee()->session->set_flashdata('entry_id', $entry->entry_id);
@@ -431,7 +440,7 @@ abstract class AbstractPublish extends CP_Controller
             }
 
             return $result;
-        } elseif (ee()->input->post('submit') == 'save') {
+        } elseif (ee()->input->post('submit') == 'save' || (defined('CLONING_MODE') && CLONING_MODE === true)) {
             if (ee()->input->get('return') != '') {
                 $redirect_url = urldecode(ee()->input->get('return'));
             } elseif (ee()->input->post('return') != '') {
@@ -519,6 +528,17 @@ abstract class AbstractPublish extends CP_Controller
             'attrs' => 'disabled="disabled"'
         ];
 
+        if ($this->entryCloningEnabled($entry)) {
+            $buttons[] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_as_new_entry',
+                'text' => 'save_as_new_entry',
+                'working' => 'btn_saving',
+                'attrs' => 'disabled="disabled"'
+            ];
+        }
+
         // get rid of Save & New button if we've reached the max entries for this channel
         if ($entry->Channel->maxEntriesLimitReached()) {
             unset($buttons[1]);
@@ -546,6 +566,18 @@ abstract class AbstractPublish extends CP_Controller
         }
 
         return $buttons;
+    }
+
+    protected function entryCloningEnabled(ChannelEntry $entry)
+    {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && !$entry->isNew()) {
+            if (ee()->config->item('enable_entry_cloning') === false || ee()->config->item('enable_entry_cloning') === 'y') {
+                if ($entry->Channel->enable_entry_cloning) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     protected function createLivePreviewModal(ChannelEntry $entry)

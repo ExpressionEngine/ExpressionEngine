@@ -194,12 +194,12 @@ class Fluid_field_ft extends EE_Fieldtype
             }
 
             // Existing field
-            if (strpos($key, 'field_') === 0) {
+            if (strpos($key, 'field_') === 0 && (!defined('CLONING_MODE') || CLONING_MODE !== true)) {
                 $id = str_replace('field_', '', $key);
                 $this->updateField($fluid_field_data[$id], $i, $value);
                 unset($fluid_field_data[$id]);
             // New field
-            } elseif (strpos($key, 'new_field_') === 0) {
+            } elseif (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
                 foreach (array_keys($value) as $k) {
                     if (strpos($k, 'field_id_') === 0) {
                         $field_id = str_replace('field_id_', '', $k);

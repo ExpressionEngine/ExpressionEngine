@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Model\Channel\ChannelEntry;
+
 /**
  * Pages Module Tab
  */
@@ -116,6 +118,37 @@ class Pages_tab
         }
 
         return $settings;
+    }
+
+    /**
+     * Clones the page data for cloned entry
+     *
+     * @param ExpressionEngine\Model\Channel\ChannelEntry $entry
+     * @param array $values An associative array of field => value
+     * @return array $values modified array of values
+     */
+    public function clone(ChannelEntry $entry, $values)
+    {
+        if ($values['pages_uri'] == '') {
+            return $values;
+        }
+        //check if submitted URI exists
+        $static_pages = ee()->config->item('site_pages');
+        $uris = $static_pages[ee()->config->item('site_id')]['uris'];
+
+        //exclude current page from check
+        if (isset($uris[$entry->entry_id])) {
+            unset($uris[$entry->entry_id]);
+        }
+        //ensure leading slash is present
+        $value = '/' . trim($values['pages_uri'], '/');
+
+        while (in_array($value, $uris)) {
+            $value .= '_1';
+        }
+        $_POST['pages__pages_uri'] = $values['pages_uri'] = $value;
+
+        return $values;
     }
 
     /**
@@ -249,14 +282,20 @@ class Pages_tab
             $static_pages = ee()->config->item('site_pages');
             $uris = $static_pages[ee()->config->item('site_id')]['uris'];
 
-            if (! isset($entry->entry_id)) {
-                $entry->entry_id == 0;
-            } elseif ($entry->entry_id !== 0) {
-                if (! isset($uris[$entry->entry_id]) && in_array($value, $uris)) {
-                    return 'duplicate_page_uri';
+            //exclude current page from check
+            if (isset($uris[$entry->entry_id])) {
+                unset($uris[$entry->entry_id]);
+            }
+            //ensure leading slash is present
+            $value = '/' . trim($value, '/');
+
+            if (in_array($value, $uris)) {
+                $entry_id = array_search($value, $uris);
+                $entry = ee('Model')->get('ChannelEntry', $entry_id)->fields('entry_id', 'title')->first();
+                if ($entry) {
+                    $edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
+                    return sprintf(lang('duplicate_page_uri_used'), $edit_link, htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
                 }
-            } elseif (in_array($value, $uris)) {
-                return 'duplicate_page_uri';
             }
 
             return true;
@@ -293,6 +332,8 @@ class Pages_tab
                 );
 
                 $page = '/' . trim($page, '/');
+
+                //if we got here, and page URI is not unique, generate new one
 
                 $site_pages[$site_id]['uris'][$entry->entry_id] = $page;
                 $site_pages[$site_id]['templates'][$entry->entry_id] = preg_replace(
