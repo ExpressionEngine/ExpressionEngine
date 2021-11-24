@@ -27,6 +27,17 @@ jobs:
           - name: Checkout code
             uses: actions/checkout@v2
 
+          - name: Find Pro reference
+            uses: FujiHaruka/issue-refs-parser-action@v1.1
+            id: pro_reference
+            with:
+              body: ${{ github.event.pull_request.body }}
+
+          - name: Get The Outputs
+            run: |
+              echo "refs: ${{ steps.pro_reference.outputs.refs }}"
+              echo "external_refs: ${{ steps.pro_reference.outputs.external_refs }}"
+
           - name: Checkout Pro
             if: github.event.pull_request.head.repo.full_name == github.repository
             uses: actions/checkout@v2
