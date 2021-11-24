@@ -65,5 +65,21 @@ context('Publish Page - Edit', () => {
 
       
     })
+
+    it('saves relationship field', () => {
+      cy.visit('admin.php?/cp/publish/edit/entry/1')
+      cy.get('button:contains("Relate Entry")').first().click()
+      cy.get('a.dropdown__link:contains("Welcome to the Example Site!")').first().click();
+      cy.get('button:contains("Relate Entry")').should('not.be.visible')
+      cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
+      cy.get('body').type('{ctrl}', {release: false}).type('s')
+      cy.get('.app-notice---success').contains('Entry Updated');
+      cy.get('[name=title]').invoke('val').should('eq', "Getting to Know ExpressionEngine")
+      cy.get('[name=field_id_1]').invoke('val').should('contain', "Thank you for choosing ExpressionEngine!")
+      cy.get('[name=field_id_3]').invoke('val').should('eq', "{filedir_2}ee_banner_120_240.gif");
+      cy.get('button:contains("Relate Entry")').should('not.be.visible')
+      cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
+    })
+
   })
 })

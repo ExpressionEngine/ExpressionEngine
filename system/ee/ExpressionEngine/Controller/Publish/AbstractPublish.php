@@ -372,11 +372,16 @@ abstract class AbstractPublish extends CP_Controller
             }
         }
 
-        $entry->set($_POST);
-
         if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
+            $entry->setId(null);
+            while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
+                $_POST['url_title'] .= '_1';
+            }
             $action = 'create';
+            $entry->set($_POST);
             $entry->markAsDirty();
+        } else {
+            $entry->set($_POST);
         }
 
         $result = $entry->validate();
@@ -570,7 +575,7 @@ abstract class AbstractPublish extends CP_Controller
 
     protected function entryCloningEnabled(ChannelEntry $entry)
     {
-        if (IS_PRO && ee('pro:Access')->hasValidLicense() && !$entry->isNew()) {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
             if (ee()->config->item('enable_entry_cloning') === false || ee()->config->item('enable_entry_cloning') === 'y') {
                 if ($entry->Channel->enable_entry_cloning) {
                     return true;
