@@ -83,7 +83,7 @@ class EE_Core
         define('PASSWORD_MAX_LENGTH', 72);
         define('DOC_URL', 'https://docs.expressionengine.com/v6/');
         define('URL_TITLE_MAX_LENGTH', 200);
-        define('CLONING_MODE', (ee('Request')->post('submit') == 'save_as_new_entry'));
+        define('CLONING_MODE', (ee('Request') && ee('Request')->post('submit') == 'save_as_new_entry'));
 
         ee()->load->helper('language');
         ee()->load->helper('string');
