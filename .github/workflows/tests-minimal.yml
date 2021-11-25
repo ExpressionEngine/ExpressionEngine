@@ -32,7 +32,7 @@ jobs:
             id: pro_reference
             with:
               body: ${{ github.event.pull_request.body }}
-              pattern: "https:\/\/github.com\/EllisLab\/ExpressionEngine-Pro\/tree\/"
+              pattern: "https://github.com/EllisLab/ExpressionEngine-Pro/tree/"
 
           - name: Save Pro branch to variable
             id: pro_branch
