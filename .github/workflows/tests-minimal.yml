@@ -39,7 +39,7 @@ jobs:
             run: |
               echo $url | jq
               pattern="https://github.com/EllisLab/ExpressionEngine-Pro/tree/"
-              ref="${$url/$pattern/}"
+              ref="${url/$pattern/}"
               echo $ref
               [$ref = ''] && echo "::set-env name=ref::$ref" || echo "::set-env name=ref::1.dev"
             env:
