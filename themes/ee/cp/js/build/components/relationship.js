@@ -124,26 +124,6 @@ function (_React$Component) {
         loading: true
       });
 
-      var checkEntryId = 0;
-
-      for (var key in _this.state.items) {
-        if (!_this.state.items.hasOwnProperty(key)) continue;
-        var obj = _this.state.items[key];
-
-        for (var prop in obj) {
-          if (!obj.hasOwnProperty(prop)) continue;
-
-          if (prop == 'entry_id') {
-            if (obj[prop]) {
-              checkEntryId = 1;
-            } else {
-              checkEntryId = 0;
-            }
-          }
-        }
-      }
-
-      params.checkEntryId = checkEntryId;
       _this.ajaxTimer = setTimeout(function () {
         _this.ajaxRequest = _this.forceAjaxRefresh(params);
       }, 300);
@@ -386,7 +366,7 @@ function (_React$Component) {
           className: "meta-info ml-s float-right"
         }, " ", item.instructions)), _this5.state.selected.length <= 10 && React.createElement("div", {
           "class": "list-item__secondary"
-        }, item.entry_id && React.createElement("span", null, " #", item.entry_id, " / "), item.instructions)), React.createElement("div", {
+        }, props.display_entry_id == 'y' && React.createElement("span", null, " #", item.value, " / "), item.instructions)), React.createElement("div", {
           "class": "list-item__content-right"
         }, React.createElement("div", {
           className: "button-group"
@@ -480,9 +460,9 @@ function (_React$Component) {
             _this5.selectItem(item);
           },
           className: "dropdown__link"
-        }, item.label, item.entry_id && React.createElement("span", {
+        }, item.label, props.display_entry_id == 'y' && React.createElement("span", {
           "class": "dropdown__link-entryId"
-        }, " (#", item.entry_id, ")"), " ", React.createElement("span", {
+        }, " (#", item.value, ")"), " ", React.createElement("span", {
           className: "dropdown__link-right"
         }, item.instructions));
       }), dropdownItems.length == 0 && React.createElement("div", {

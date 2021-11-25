@@ -202,7 +202,6 @@ class EntryList
 
         $settings['search'] = ee('Request')->get('search');
         $settings['channel_id'] = ee('Request')->get('channel_id');
-        $settings['checkEntryId'] = ee('Request')->get('checkEntryId');
         $settings['related'] = ee('Request')->get('related');
         $settings['selected'] = ee('Request')->get('selected');
         $settings['selected'] = ee('Request')->get('selected');
@@ -217,7 +216,6 @@ class EntryList
                 'value' => $entry->getId(),
                 'label' => $entry->title,
                 'instructions' => $entry->Channel->channel_title,
-                'entry_id' => ($settings['checkEntryId'] == '1') ?  $entry->getId() : ''
             ];
         }
 

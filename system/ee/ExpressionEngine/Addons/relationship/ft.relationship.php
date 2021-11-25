@@ -493,7 +493,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'no_related' => ['text' => lang('no_entries_related')],
             'select_filters' => $select_filters,
             'channels' => $channel_choices,
-            'in_modal' => $this->get_setting('in_modal_context')
+            'in_modal' => $this->get_setting('in_modal_context'),
+            'display_entry_id' => $this->settings['display_entry_id']
         ]);
     }
 
@@ -502,7 +503,6 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'value' => $entry->getId(),
             'label' => $entry->title,
             'instructions' => $entry->Channel->channel_title,
-            'entry_id' => (isset($this->settings['display_entry_id']) && $this->settings['display_entry_id'] == 'y') ? $entry->entry_id : '',
             'channel_id' => $entry->Channel->getId()
         ];
     }
@@ -686,7 +686,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 'fields' => array(
                     'relationship_display_entry_id' => array(
                         'type' => 'yes_no',
-                        'value' => $values['display_entry_id']
+                        'value' => ($values['display_entry_id']) ? 'y' : 'n'
                     )
                 )
             )
