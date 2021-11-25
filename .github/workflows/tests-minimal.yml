@@ -28,17 +28,22 @@ jobs:
             uses: actions/checkout@v2
 
           - name: Find Pro reference
-            uses: intoeetive/gh-action-issue-parser@feature/overrides
+            uses: packettide/url-extractor-gh-action@main
             id: pro_reference
             with:
               body: ${{ github.event.pull_request.body }}
-              overrides: "{actions: {pro: ['Pro branch:']}}"
+              pattern: "https:\/\/github.com\/EllisLab\/ExpressionEngine-Pro\/tree\/"
 
-          - name: Dump parsed object
+          - name: Save Pro branch to variable
+            id: pro_branch
             run: |
-              echo $parsed | jq
+              echo $url | jq
+              pattern = "https://github.com/EllisLab/ExpressionEngine-Pro/tree/"
+              ref="${$url/$pattern/}"
+              echo $ref
+              [$ref = ''] && echo "::set-env name=ref::$ref" || echo "::set-env name=ref::1.dev"
             env:
-              parsed: ${{ steps.pro_reference.outputs.parsed }}
+              url: ${{ steps.pro_reference.outputs.url }}
 
           - name: Checkout Pro
             if: github.event.pull_request.head.repo.full_name == github.repository
@@ -46,6 +51,7 @@ jobs:
             with:
               repository: EllisLab/ExpressionEngine-Pro
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
+              ref: ${{ steps.pro_branch.outputs.ref }}
               path: __pro
 
           - name: Setup asdf
