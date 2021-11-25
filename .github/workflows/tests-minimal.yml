@@ -38,7 +38,7 @@ jobs:
             id: pro_branch
             run: |
               echo $url | jq
-              pattern = "https://github.com/EllisLab/ExpressionEngine-Pro/tree/"
+              pattern="https://github.com/EllisLab/ExpressionEngine-Pro/tree/"
               ref="${$url/$pattern/}"
               echo $ref
               [$ref = ''] && echo "::set-env name=ref::$ref" || echo "::set-env name=ref::1.dev"
