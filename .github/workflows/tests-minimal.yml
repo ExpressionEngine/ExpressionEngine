@@ -28,10 +28,11 @@ jobs:
             uses: actions/checkout@v2
 
           - name: Find Pro reference
-            uses: codetheweb/gh-action-issue-parser@v1
+            uses: intoeetive/gh-action-issue-parser@feature/overrides
             id: pro_reference
             with:
               body: ${{ github.event.pull_request.body }}
+              overrides: "{actions: {pro: ['Pro branch:']}}"
 
           - name: Dump parsed object
             run: |
