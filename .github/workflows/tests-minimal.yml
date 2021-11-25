@@ -41,7 +41,7 @@ jobs:
               pattern="https://github.com/EllisLab/ExpressionEngine-Pro/tree/"
               ref="${url/$pattern/}"
               echo $ref
-              [$ref = ''] && echo "::set-env name=ref::$ref" || echo "::set-env name=ref::1.dev"
+              [$ref = ''] && echo "::set-output name=ref::$ref" || echo "::set-output name=ref::1.dev"
             env:
               url: ${{ steps.pro_reference.outputs.url }}
 
