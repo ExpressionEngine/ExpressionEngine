@@ -49,6 +49,7 @@ Bullet list below, e.g.
    - Fixed a CLI bug where it didnt ask for the migration location if not specified
    - Fix white screen on first access to a group template which exists on files, but not yet on database
    - Fixed a bug (#<1584>) where conditional was being ignored by Filesystem->emptyDir() method.
+   - Fixed a bug (#<1586>) where conditional error inFilesystem->findAndReplace() method prevented its operation.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
