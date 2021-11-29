@@ -60,5 +60,23 @@ context('Login Page', () => {
         cy.contains('Reset Password');
     })
 
+    context('when cookie domain is wrong', () => {
+        before(() => {
+            cy.eeConfig({item: 'cookie_domain', value: 'expressionengine.com'})
+        })
+        after(() => {
+            cy.eeConfig({item: 'cookie_domain', value: ''})
+        })
+        it('rejects when cookie domain is wrong', function() {
+            cy.visit('admin.php')
+            cy.contains('The configured cookie domain does not match the site URL');
+
+            cy.login();
+    
+            cy.contains('The configured cookie domain does not match the site URL');
+            cy.get('input[type=submit]').should('not.exist');
+        })
+    })
+
 
 })
