@@ -66,7 +66,7 @@ context('Publish Page - Edit', () => {
       
     })
 
-    it.only('saves relationship field', () => {
+    it('saves relationship field', () => {
       cy.visit('admin.php?/cp/publish/edit/entry/1')
       cy.get('button:contains("Relate Entry")').first().click()
       cy.get('a.dropdown__link:contains("Welcome to the Example Site!")').first().click();
