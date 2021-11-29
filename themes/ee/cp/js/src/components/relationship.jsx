@@ -292,7 +292,7 @@ class Relationship extends React.Component {
                                     <div className="list-item__content">
                                         <div class="list-item__title">{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
                                         {this.state.selected.length <= 10 &&
-                                        <div class="list-item__secondary">{props.display_entry_id == 'y' && <span> #{item.value} / </span>}{item.instructions}</div>
+                                        <div class="list-item__secondary">{props.display_entry_id && <span> #{item.value} / </span>}{item.instructions}</div>
                                         }
                                     </div>
                                     <div class="list-item__content-right">
@@ -364,7 +364,7 @@ class Relationship extends React.Component {
                         {
                             dropdownItems.map((item) => {
                                 return (
-                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label}{props.display_entry_id == 'y' && <span class="dropdown__link-entryId"> (#{item.value})</span>} <span className="dropdown__link-right">{item.instructions}</span></a>
+                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label}{props.display_entry_id && <span class="dropdown__link-entryId"> (#{item.value})</span>} <span className="dropdown__link-right">{item.instructions}</span></a>
                                 )
                             })
                         }

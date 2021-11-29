@@ -494,7 +494,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'select_filters' => $select_filters,
             'channels' => $channel_choices,
             'in_modal' => $this->get_setting('in_modal_context'),
-            'display_entry_id' => $this->settings['display_entry_id']
+            'display_entry_id' => isset($this->settings['display_entry_id']) ? (bool) $this->settings['display_entry_id'] : false
         ]);
     }
 
@@ -720,6 +720,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         // Boolstring conversion
         $save['allow_multiple'] = get_bool_from_string($save['allow_multiple']);
+        $save['display_entry_id'] = get_bool_from_string($save['display_entry_id']);
 
         foreach ($save as $field => $value) {
             if (is_array($value) && count($value)) {
@@ -755,8 +756,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'limit' => 100,
             'order_field' => 'title',
             'order_dir' => 'asc',
-            'display_entry_id' => 'n',
-            'allow_multiple' => 'n'
+            'display_entry_id' => false,
+            'allow_multiple' => 'y'
         );
 
         $field_options = array(
@@ -770,7 +771,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         // any default values that are not the empty ones
         $default_values = array(
-            'allow_multiple' => 1
+            'display_entry_id' => false,
+            'allow_multiple' => true
         );
 
         $form = $util->form($field_empty_values, $prefix);
