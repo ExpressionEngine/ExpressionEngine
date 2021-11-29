@@ -52,6 +52,7 @@ context('Login Page', () => {
 
         cy.contains('You are only permitted to make four login attempts every 1 minute(s)');
         cy.get('input[type=submit]').contains('Locked').should('be.disabled');
+        cy.wait(60000);
     })
 
     it('shows the reset password form when link is clicked', function() {
