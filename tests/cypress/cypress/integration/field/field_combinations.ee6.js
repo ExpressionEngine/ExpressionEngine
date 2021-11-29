@@ -10,9 +10,9 @@ const page = new CreateField;
 const main = new MainField;
 const group = new CreateGroup;
 
-var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","File","File Grid","Fluid", "Relationships","Rich Text Editor", "Select Dropdown","Textarea","Toggle","URL"];
+var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","File","File Grid","Fluid", "Relationships","Rich Text Editor", "Select Dropdown","Textarea","Toggle","URL", "Number"];
 
-var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL"];
+var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL", "Number"];
 
 //grid is tested in a seperate test
 context('Create combinations of field', () => {
@@ -324,6 +324,25 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('Visit us').click()
 
 		cy.url().should('contain', 'index.php/aaURL')
+
+
+	})
+
+	it('Test Number' , () => {
+		cy.visit('admin.php?/cp/publish/edit')
+		cy.get('div').contains('AA Test Entry').eq(0).click()
+
+		cy.get('input[type=number]').clear().type('183')
+		cy.get('button').contains('Save').eq(0).click()
+
+		cy.visit('admin.php?/cp/design')
+		cy.get('a').contains('aaNumber').eq(0).click()
+		cy.get('a').contains('index').click()
+		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{aa_number_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
+		cy.get('button').contains('Save').eq(0).click()
+
+		cy.visit('index.php/aaNumber')
+		cy.get('body').contains('183')
 
 
 	})

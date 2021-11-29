@@ -35,10 +35,10 @@ class Number_ft extends Text_ft
             'value' => $this->_format_number($data),
         );
 
-        if ($this->settings['field_min_value']) {
+        if ($this->settings['field_min_value'] != '') {
             $field['min'] = $this->settings['field_min_value'];
         }
-        if ($this->settings['field_max_value']) {
+        if ($this->settings['field_max_value'] != '') {
             $field['max'] = $this->settings['field_max_value'];
         }
         if ($this->settings['field_step']) {
@@ -77,7 +77,7 @@ class Number_ft extends Text_ft
                 'title' => 'field_min_value',
                 'fields' => array(
                     'field_min_value' => array(
-                        'type' => 'number',
+                        'type' => 'text',
                         'value' => isset($data['field_min_value']) ? $data['field_min_value'] : ''
                     )
                 )
@@ -86,7 +86,7 @@ class Number_ft extends Text_ft
                 'title' => 'field_max_value',
                 'fields' => array(
                     'field_max_value' => array(
-                        'type' => 'number',
+                        'type' => 'text',
                         'value' => isset($data['field_max_value']) ? $data['field_max_value'] : ''
                     )
                 )
@@ -95,7 +95,7 @@ class Number_ft extends Text_ft
                 'title' => 'field_step',
                 'fields' => array(
                     'field_step' => array(
-                        'type' => 'number',
+                        'type' => 'text',
                         'value' => isset($data['field_step']) ? $data['field_step'] : ''
                     )
                 )
@@ -149,6 +149,24 @@ class Number_ft extends Text_ft
             'integer' => lang('type_integer'),
             'decimal' => lang('type_decimal')
         );
+    }
+
+    public function validate_settings($settings)
+    {
+        $validator = ee('Validation')->make(array(
+            'field_min_value' => 'numeric|matchesContentType',
+            'field_max_value' => 'numeric|matchesContentType',
+            'field_step' => 'numeric|matchesContentType'
+        ));
+
+        $validator->defineRule('matchesContentType', function ($key, $value) use ($settings) {
+            if ($settings['field_content_type'] == 'integer' && (int)$value != $value) {
+                return 'integer';
+            }
+            return true;
+        });
+
+        return $validator->validate($settings);
     }
 
     public function save_settings($data)
