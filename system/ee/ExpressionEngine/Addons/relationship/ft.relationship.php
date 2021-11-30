@@ -432,10 +432,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         foreach ($entries as $entry) {
             $choices[] = $this->_buildOption($entry);
         }
-
         $selected = [];
         foreach ($related as $child) {
-            $this->_buildOption($child);
+            $selected[] = $this->_buildOption($child);
         }
 
         $field_name = $field_name . '[data]';
