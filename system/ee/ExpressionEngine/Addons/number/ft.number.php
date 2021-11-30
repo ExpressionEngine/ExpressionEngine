@@ -106,7 +106,7 @@ class Number_ft extends Text_ft
                 'fields' => array(
                     'datalist_items' => array(
                         'type' => 'textarea',
-                        'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
+                        'value' => isset($data['datalist_items']) ? $data['datalist_items'] : ''
                     )
                 )
             ),
