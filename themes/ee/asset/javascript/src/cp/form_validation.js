@@ -53,6 +53,19 @@ EE.cp.formValidation = {
 
 		this._focusFirstError();
 		this._scrollGrid();
+		this._checkRequiredFields();
+	},
+
+	_checkRequiredFields: function() {
+		var invalidFields = $('td.invalid');
+
+		// check and removed `.invalid` from Fluid hidden templates block
+		invalidFields.each(function(index, el) {
+			if ( $(el).parents('.fluid-field-templates').length ) {
+				$(el).removeClass('invalid');
+				$(el).find('.ee-form-error-message').remove();
+			}
+		});
 	},
 
 	/**
@@ -315,7 +328,8 @@ EE.cp.formValidation = {
 			// See if this tab has its own submit button
 			tab_has_own_button = (tab_container.size() > 0 && tab_container.find(this._buttonSelector).size() > 0),
 			// Finally, grab the button of the current form
-			button = (tab_has_own_button) ? tab_container.find(this._buttonSelector) : form.find(this._buttonSelector);
+			button = (tab_has_own_button) ? tab_container.find(this._buttonSelector) : form.find(this._buttonSelector),
+			tab_button = $(tab_container).parents('.tab-wrap').find('button[rel="'+tab_rel+'"]'); //
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places
@@ -348,6 +362,11 @@ EE.cp.formValidation = {
 					// Remove error message below Grid field
 					container.parents('div.field-control').find('> ' + errorClass).remove();
 				}
+
+				if (fieldset.find('.fluid').size() > 0 && !this._errorsExist(container)) {
+					fieldset.parent().find(errorClass).remove();
+				}
+
 			} else {
 				fieldset.removeClass('fieldset-invalid');
 			}
@@ -358,6 +377,12 @@ EE.cp.formValidation = {
 			if (tab.size() > 0 &&  ! this._errorsExist(tab_container))
 			{
 				tab.removeClass('invalid'); 
+			}
+
+			// If no more errors on this tab, remove invalid class from tab
+			if (tab_button.size() > 0 &&  ! this._errorsExist(tab_container))
+			{
+				tab_button.removeClass('invalid'); 
 			}
 
 			// Re-enable submit button only if all errors are gone
