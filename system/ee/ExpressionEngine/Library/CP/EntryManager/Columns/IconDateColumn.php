@@ -4,6 +4,12 @@ namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
 abstract class IconDateColumn extends Column
 {
+    /**
+     * Should return the Icon
+     * @param $entry
+     * @param $column
+     * @return string
+     */
     protected function getIcon($entry, $column)
     {
         $icon = '';
@@ -11,12 +17,25 @@ abstract class IconDateColumn extends Column
             $icon = 'closed';
         }
 
-        if(!$icon) {
-            if(ee()->localize->now >= $entry->entry_date) {
+        if(!$icon && !empty($entry->$column)) {
+            if(ee()->localize->now >= $entry->$column) {
                 $icon = 'past';
-            } else if(ee()->localize->now <= $entry->entry_date) {
+            } else if(ee()->localize->now <= $entry->$column) {
                 $icon = 'future';
             }
         }
+
+        return '<span="col-date-'.$icon.'">'.$icon.'</span>';
+    }
+
+    /**
+     * We gotta render some HTML
+     * @return false[]
+     */
+    public function getTableColumnConfig()
+    {
+        return [
+            'encode' => false
+        ];
     }
 }
