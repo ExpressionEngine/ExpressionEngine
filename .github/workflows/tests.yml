@@ -897,7 +897,7 @@ jobs:
                   - php: 8.1
                     os: ubuntu-21.04 #is using mysql8
 
-        name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
+        name: Cypress Heavy Load, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
