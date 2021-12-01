@@ -9,8 +9,8 @@ context('Operate the site with many members', () => {
   before(function(){
     cy.task('db:seed')
     cy.eeConfig({item: 'ignore_member_stats', value: 'y'}).then(() => {
-        for (let step = 0; step < 10; step++) {
-            cy.createMembers({n: 5000})
+        for (let step = 0; step < 100; step++) {
+            cy.createMembers({n: 500})
         }
     })
   })

@@ -284,7 +284,7 @@ jobs:
             fail-fast: false
             matrix:
                 php: [5.6]
-                os: [ubuntu-latest]
+                os: [ubuntu-18.04]
 
         name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -760,7 +760,7 @@ jobs:
             fail-fast: false
             matrix:
                 php: [5.6, 8.0]
-                os: [ubuntu-latest]
+                os: [ubuntu-18.04]
 
         name: Cypress Heavy Load, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -837,14 +837,14 @@ jobs:
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: cypress-tests-misc
+                name: cypress-tests-heavyload
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: misc.error.log
+                name: heavyload.error.log
                 path: /home/runner/php_errors.log
 
     cypress-minimal-installer:

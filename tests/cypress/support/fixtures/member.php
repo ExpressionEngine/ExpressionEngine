@@ -53,5 +53,6 @@ for ($n = $start; $n <= $total; $n++) {
 	$member->timezone = 'America/New_York';
 	$member->email = $n . $email;
 	$member->save();
+	unset($member);
 	//echo $member->getId() . "\n";
 }
