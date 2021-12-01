@@ -21,7 +21,11 @@ context('Operate the site with many members', () => {
   })
 
   it('loads the Roles page and has correct data', () => {
+    cy.eeConfig({item: 'ignore_member_stats', value: 'y'})
+
     cy.visit('admin.php?/cp/utilities/communicate');
+    page.hasAlert('important')
+    page.get('alert').contains("The mumber of members for each role might be inaccurate")
     cy.hasNoErrors()
 
     cy.visit('admin.php?/cp/utilities/stats')
@@ -34,6 +38,21 @@ context('Operate the site with many members', () => {
     cy.visit('admin.php?/cp/members/roles')
     cy.hasNoErrors()
     cy.get('.panel-body .list-item__content:contains("Members")').find('.faded').contains('50012')
+    page.hasAlert('important')
+    page.get('alert').contains("The mumber of members for each role might be inaccurate")
+  })
+
+  it('no warnings if override is not set', () => {
+    cy.eeConfig({item: 'ignore_member_stats', value: 'n'})
+
+    cy.visit('admin.php?/cp/utilities/communicate');
+    page.get('alert').should('not.contain', "The mumber of members for each role might be inaccurate")
+    cy.hasNoErrors()
+
+    cy.visit('admin.php?/cp/members/roles')
+    page.get('alert').should('not.exist')
+    cy.hasNoErrors()
+    
   })
 
   it('preserves default author in channel settings', () => {

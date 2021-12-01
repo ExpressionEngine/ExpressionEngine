@@ -228,8 +228,10 @@ class Member extends ContentModel
     protected static $_events = array(
         'afterUpdate',
         'beforeDelete',
+        'afterDelete',
         'afterBulkDelete',
         'beforeInsert',
+        'afterInsert',
         'beforeValidate',
         'afterSave'
     );
@@ -421,6 +423,26 @@ class Member extends ContentModel
         ee()->cache->file->delete('jumpmenu/' . md5($this->member_id));
     }
 
+    public function onAfterInsert()
+    {
+        if (ee()->config->item('ignore_member_stats') != 'y') {
+            foreach ($this->getAllRoles() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
+        }
+    }
+
+    public function onAfterDelete()
+    {
+        if (ee()->config->item('ignore_member_stats') != 'y') {
+            foreach ($this->getAllRoles() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
+        }
+    }
+
     /**
      * Notify of Changes
      *
@@ -481,6 +503,13 @@ class Member extends ContentModel
 
     public static function onAfterBulkDelete()
     {
+        if (ee()->config->item('ignore_member_stats') != 'y') {
+            foreach (ee('Model')->get('Role')->all() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
+        }
+
         ee()->stats->update_member_stats();
 
         // Quick and dirty private message count update; due to the order of
@@ -1138,6 +1167,20 @@ class Member extends ContentModel
         }
 
         $uploads = [];
+        $limitedRoles = [2, 3, 4];
+        if (!in_array($this->role_id, $limitedRoles) && !array_intersect($this->getAllRoles()->pluck('role_id'), $limitedRoles)) {
+            $alwaysAllowed = ['Avatars'];
+            if (bool_config_item('prv_msg_enabled') && bool_config_item('prv_msg_allow_attachments')) {
+                $alwaysAllowed[] = 'PM Attachments';
+            }
+            if (bool_config_item('enable_signatures')) {
+                $alwaysAllowed[] = 'Signature Attachments';
+            }
+            $directories = ee('Model')->get('UploadDestination')->filter('name', 'IN', $alwaysAllowed)->all();
+            foreach ($directories as $dir) {
+                $uploads[$dir->getId()] = $dir;
+            }
+        }
         foreach ($this->getAllRoles() as $role) {
             foreach ($role->AssignedUploadDestinations as $dir) {
                 $uploads[$dir->getId()] = $dir;

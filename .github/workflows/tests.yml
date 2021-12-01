@@ -99,7 +99,7 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 8.1
+                  - php: 7.3
                     os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Pro, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -193,7 +193,7 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 8.1
+                  - php: 7.3
                     os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Admin, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -294,7 +294,7 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 8.1
+                  - php: 7.3
                     os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -395,7 +395,7 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 8.1
+                  - php: 7.3
                     os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Members, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -496,7 +496,7 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 8.1
+                  - php: 7.3
                     os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -597,7 +597,7 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 8.1
+                  - php: 7.3
                     os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Utils, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -698,7 +698,7 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 8.1
+                  - php: 7.3
                     os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -796,7 +796,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6, 8.1]
+                php: [5.6, 7.3]
                 os: [ubuntu-latest]
 
         name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -894,7 +894,7 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 8.1
+                  - php: 7.3
                     os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Heavy Load, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -972,14 +972,14 @@ jobs:
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: cypress-tests-misc
+                name: cypress-tests-heavyload
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: misc.error.log
+                name: heavyload.error.log
                 path: /home/runner/php_errors.log
     cypress-installer:
         needs: build-for-testing
@@ -992,7 +992,7 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 8.1
+                  - php: 7.3
                     os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Installer, PHP${{ matrix.php }} - ${{ matrix.os }}

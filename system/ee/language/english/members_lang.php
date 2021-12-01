@@ -210,7 +210,8 @@ $lang = array(
 
     'member_assignment_none' => 'None, members with this Primary Role will be deleted',
 
-    'member_assignment_warning' => 'There are members that have some of these roles assigned as Primary Role. What Primary Role should they be re-assigned to?',
+    'member_assignment_warning' => 'There are members currently assigned to this role: <b>%d</b> as primary, <b>%d</b> as secondary.',
+    'member_reassignment_warning' => 'What Primary Role should the members be re-assigned to?',
 
     'member_cfg' => 'Role Settings',
 
@@ -271,6 +272,8 @@ $lang = array(
     'role_deleted_desc' => 'Role has been deleted successfully.',
 
     'roles_remove_problem' => 'There was a problem deleting roles.',
+
+    'roles_counter_warning' => 'The mumber of members for each role might be inaccurate because of <code>ignore_member_stats</code> configuration override being set to <code>y</code>. Plese use Statistics Utility to recount.',
 
     'member_has_cp_access' => 'Can access the control panel',
 
