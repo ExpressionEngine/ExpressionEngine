@@ -19,13 +19,13 @@ abstract class IconDateColumn extends Column
 
         if(!$icon && !empty($entry->$column)) {
             if(ee()->localize->now >= $entry->$column) {
-                $icon = 'past';
+                $icon = 'already-published';
             } else if(ee()->localize->now <= $entry->$column) {
                 $icon = 'future';
             }
         }
 
-        return '<span="col-date-'.$icon.'">'.$icon.'</span>';
+        return '<span="col-date-'.$icon.'">-'.$icon.'-</span>';
     }
 
     /**
