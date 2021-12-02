@@ -788,7 +788,7 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
-                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=32M
+                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=64M
 
             - name: Copy config.php
               run: |

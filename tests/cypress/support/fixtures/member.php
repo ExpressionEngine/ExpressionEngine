@@ -42,7 +42,7 @@ $existing = ee('Model')->get('Member')->count();
 $start = $existing + 1;
 $total = $start + $number;
 
-for ($n = $start; $n <= $total; $n++) {
+for ($n = $start; $n < $total; $n++) {
 	$member = ee('Model')->make('Member');
 	$member->role_id = $group_id;
 	$member->username = $username . $n;
