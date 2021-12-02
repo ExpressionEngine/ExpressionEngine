@@ -137,14 +137,20 @@ class Login extends CP_Controller {
 
 		$this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
 
+        // Return and after should be strings
+        $return = !is_array($this->input->get('return')) ? $this->input->get('return') : '';
+        $after = !is_array($this->input->get('after')) ? $this->input->get('after') : '';
+
 		if ($this->input->get('BK'))
 		{
 			$this->view->return_path = ee('Encrypt')->encode($this->input->get('BK'));
 		}
-		else if ($this->input->get('return'))
+		else if ($return)
 		{
-			$this->view->return_path = $this->input->get('return');
+            $this->view->return_path = ee('Security/XSS')->clean($return);
 		}
+
+        $this->view->after = ee('Security/XSS')->clean($after);
 
 		$this->view->cp_page_title = lang('login');
 
