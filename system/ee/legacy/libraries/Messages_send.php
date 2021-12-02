@@ -359,7 +359,7 @@ class EE_Messages_send extends EE_Messages {
 		{
 			if ($val != $id)
 			{
-				$this->attachments[] = $val;
+				$this->attachments[] = (int) $val;
 			}
 		}
 	}
@@ -579,7 +579,7 @@ class EE_Messages_send extends EE_Messages {
 		/** -------------------------------------*/
 		if (ee()->input->get_post('attach') !== FALSE && ee()->input->get_post('attach') != '')
 		{
-			$this->attachments = array_map('intval', explode('|', $_POST['attach']))
+			$this->attachments = array_map('intval', explode('|', $_POST['attach']));
 		}
 
 		/* -------------------------------------
@@ -942,7 +942,7 @@ class EE_Messages_send extends EE_Messages {
 		if (count($this->attachments) > 0)
 		{
 			ee()->db->query("UPDATE exp_message_attachments SET message_id = '{$message_id}'
-						WHERE attachment_id IN ('" . ee()->db->escape_str(implode("','", $this->attachments)) . "')");
+						WHERE attachment_id IN ('" . implode("','", $this->attachments) . "')");
 		}
 
 		/** -------------------------------------
