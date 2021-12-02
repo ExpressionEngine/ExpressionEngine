@@ -30,14 +30,14 @@ context('Operate the site with many members', () => {
 
     cy.visit('admin.php?/cp/utilities/stats')
     cy.hasNoErrors()
-    cy.get('.panel-body .app-listing__row:contains("Members")').find('td').eq(1).contains('50017')
+    cy.get('.panel-body .app-listing__row:contains("Members")').find('td').eq(1).contains('50007')
     cy.get('.panel-body .app-listing__row:contains("Members")').find('.sync').click()
     page.hasAlert('success')
     page.get('alert').contains("Synchronization Completed")
 
     cy.visit('admin.php?/cp/members/roles')
     cy.hasNoErrors()
-    cy.get('.panel-body .list-item__content:contains("Members")').find('.faded').contains('50012')
+    cy.get('.panel-body .list-item__content:contains("Members")').find('.faded').contains('50002')
     page.hasAlert('important')
     page.get('alert').contains("The mumber of members for each role might be inaccurate")
   })
@@ -46,6 +46,7 @@ context('Operate the site with many members', () => {
     cy.eeConfig({item: 'ignore_member_stats', value: 'n'})
 
     cy.visit('admin.php?/cp/utilities/communicate');
+    cy.screenshot({capture: 'fullPage'});
     page.get('alert').should('not.contain', "The mumber of members for each role might be inaccurate")
     cy.hasNoErrors()
 
