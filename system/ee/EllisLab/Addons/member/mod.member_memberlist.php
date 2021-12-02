@@ -87,7 +87,10 @@ class Member_memberlist extends Member {
 	/** ----------------------------------*/
 	function send_email()
 	{
-		if ( ! $member_id = ee()->input->post('MID'))
+		/** ---------------------------------
+		/**  Are we missing data?
+		/** ---------------------------------*/
+		if ( ! $member_id = (int) ee()->input->post('MID'))
 		{
 			return FALSE;
 		}
@@ -108,15 +111,6 @@ class Member_memberlist extends Member {
 		if (ee()->session->userdata('member_id') == 0)
 		{
 			return $this->profile_login_form($this->_member_path('email_console/'.$member_id));
-		}
-
-		/** ---------------------------------
-		/**  Are we missing data?
-		/** ---------------------------------*/
-
-		if ( ! $member_id = ee()->input->post('MID'))
-		{
-			return FALSE;
 		}
 
 		if ( ! isset($_POST['subject']) OR ! isset($_POST['message']))
@@ -157,7 +151,7 @@ class Member_memberlist extends Member {
 		/**  Does the recipient accept email?
 		/** ---------------------------------*/
 
-		$query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '{$member_id}'");
+		$query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '" . ee()->db->escape_str($member_id) . "'");
 
 		if ($query->num_rows() == 0)
 		{
