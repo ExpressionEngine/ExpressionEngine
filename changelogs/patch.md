@@ -7,6 +7,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
+
+   - Fixed a bug with the error message when importing invalid channel sets
    - Fixed a bug with debug variables not being filtered
    - Fix a bug with the importer converter filter
    - Fixed a bug with member import error
