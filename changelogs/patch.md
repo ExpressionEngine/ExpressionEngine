@@ -8,6 +8,7 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
    - Fixed a bug with member import error
+   - Fixed a bug with avatar filename in controller profile settings
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
