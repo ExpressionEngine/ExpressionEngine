@@ -15,17 +15,14 @@ context('Spam Module', () => {
   context('Installation', () => {
 
     it('can install from addon manager', () => {
-      cy.intercept('**/check').as('check')
-      cy.intercept('**/license/handleAccessResponse').as('license')
-      
       cy.auth();
       addon_manager.load()
-      const spam_row = addon_manager.get('wrap').find('a[data-post-url*="cp/addons/install/spam"]').click()
-
-      cy.hasNoErrors()
-
+      cy.intercept('https://updates.expressionengine.com/check').as('check')
+      cy.intercept('**/license/handleAccessResponse').as('license')
+      addon_manager.get('wrap').find('a[data-post-url*="cp/addons/install/spam"]').click()
       cy.wait('@check')
       cy.wait('@license')
+      cy.hasNoErrors()
     })
   })
 
