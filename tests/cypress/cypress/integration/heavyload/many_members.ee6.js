@@ -67,38 +67,40 @@ context('Operate the site with many members', () => {
     })
 
     it('loads the Roles page and has correct data', () => {
-      cy.eeConfig({item: 'ignore_member_stats', value: 'y'})
+      cy.eeConfig({item: 'ignore_member_stats', value: 'y'}).then(() => {
 
-      cy.visit('admin.php?/cp/utilities/communicate');
-      page.hasAlert('important')
-      page.get('alert').contains("The mumber of members for each role might be inaccurate")
-      cy.hasNoErrors()
+        cy.visit('admin.php?/cp/utilities/communicate');
+        page.hasAlert('important')
+        page.get('alert').contains("The mumber of members for each role might be inaccurate")
+        cy.hasNoErrors()
 
-      cy.visit('admin.php?/cp/utilities/stats')
-      cy.hasNoErrors()
-      cy.get('.panel-body .app-listing__row:contains("Members")').find('td').eq(1).contains('50007')
-      cy.get('.panel-body .app-listing__row:contains("Members")').find('.sync').click()
-      page.hasAlert('success')
-      page.get('alert').contains("Synchronization Completed")
+        cy.visit('admin.php?/cp/utilities/stats')
+        cy.hasNoErrors()
+        cy.get('.panel-body .app-listing__row:contains("Members")').find('td').eq(1).contains('50007')
+        cy.get('.panel-body .app-listing__row:contains("Members")').find('.sync').click()
+        page.hasAlert('success')
+        page.get('alert').contains("Synchronization Completed")
 
-      cy.visit('admin.php?/cp/members/roles')
-      cy.hasNoErrors()
-      cy.get('.panel-body .list-item__content:contains("Members")').find('.faded').contains('50002')
-      page.hasAlert('important')
-      page.get('alert').contains("The mumber of members for each role might be inaccurate")
+        cy.visit('admin.php?/cp/members/roles')
+        cy.hasNoErrors()
+        cy.get('.panel-body .list-item__content:contains("Members")').find('.faded').contains('50002')
+        page.hasAlert('important')
+        page.get('alert').contains("The mumber of members for each role might be inaccurate")
+      })
     })
 
     it('no warnings if override is not set', () => {
-      cy.eeConfig({item: 'ignore_member_stats', value: 'n'})
+      cy.eeConfig({item: 'ignore_member_stats', value: 'n'}).then(() => {
 
-      cy.visit('admin.php?/cp/utilities/communicate');
-      cy.screenshot({capture: 'fullPage'});
-      cy.get('.app-notice:visible').should('not.exist')
-      cy.hasNoErrors()
+        cy.visit('admin.php?/cp/utilities/communicate');
+        cy.screenshot({capture: 'fullPage'});
+        cy.get('.app-notice:visible').should('not.exist')
+        cy.hasNoErrors()
 
-      cy.visit('admin.php?/cp/members/roles')
-      page.get('alert').should('not.exist')
-      cy.hasNoErrors()
+        cy.visit('admin.php?/cp/members/roles')
+        page.get('alert').should('not.exist')
+        cy.hasNoErrors()
+      })
       
     })
 
