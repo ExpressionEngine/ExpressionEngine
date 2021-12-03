@@ -178,7 +178,7 @@ class Login extends CP_Controller
                     $session->mfa_flag = 'skip';
                     $session->save();
                 }
-                $member->set(['backup_mfa_code' => '', 'enable_mfa' => 'n']);
+                $member->set(['backup_mfa_code' => '', 'enable_mfa' => false]);
                 $member->save();
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
