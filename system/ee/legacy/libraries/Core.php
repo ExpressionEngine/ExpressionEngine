@@ -39,7 +39,7 @@ class EE_Core
         }
 
         // Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
-        if (function_exists("set_time_limit") == true) {
+        if (function_exists("set_time_limit") == true && php_sapi_name() !== 'cli') {
             @set_time_limit((REQ == 'CP') ? 300 : 90);
         }
 
