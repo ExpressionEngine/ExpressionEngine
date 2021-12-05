@@ -8,6 +8,7 @@ Bullet list below, e.g.
    - Added Google reCAPTCHA as an option for system wide CAPTCHA
    - Added ability to disable Live Preview on a per channel basis
    - Added extension hooks for Fluid Fields
+   - Added dynamic column width on Command List output
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
