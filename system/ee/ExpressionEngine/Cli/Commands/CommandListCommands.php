@@ -139,6 +139,10 @@ class CommandListCommands extends Cli
 
         $this->command_col_width+=3;
         $this->desc_col_width+=3;
+
+        $this->command_col_width = ($this->command_col_width > 40 ? 40 : $this->command_col_width);
+        $this->desc_col_width = ($this->desc_col_width > 100 ? 100 : $this->desc_col_width);
+
         $this->tableMask = "|%-".$this->command_col_width.".".$this->command_col_width."s |%-".$this->desc_col_width.".".$this->desc_col_width."s |";
     }
 }
