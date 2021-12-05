@@ -48,18 +48,32 @@ class CommandListCommands extends Cli
     public $tableMask = "|%-20.20s |%-60.60s |";
 
     /**
+     * The number of characters for the Command name column
+     * @var int
+     */
+    public $command_col_width = 20;
+
+    /**
+     * The number of characters for the Description column
+     * @var int
+     */
+    public $desc_col_width = 60;
+
+    /**
      * Run the command
      * @return mixed
      */
     public function handle()
     {
         $available = $this->availableCommands();
+        $this->generateMask($available);
 
+        $total_dashes = $this->command_col_width+$this->desc_col_width+5;
         $this->info('<<bold>>' . lang('command_list_all_available_commands'));
         $this->info('command_list_run_with_help');
-        $this->info('-------------------------------------------------------------------------------------');
+        $this->info(str_repeat('-', $total_dashes));
         $this->write($this->fillTableLine(lang('command_list_command_header'), lang('command_list_description_header')));
-        $this->info('-------------------------------------------------------------------------------------');
+        $this->info(str_repeat('-', $total_dashes));
 
         // Build a headers array as we list
         $headers = array();
@@ -80,7 +94,7 @@ class CommandListCommands extends Cli
             $this->printCommand($availableCommand, $availableHydratedClass->description);
         }
 
-        $this->info('-------------------------------------------------------------------------------------');
+        $this->info(str_repeat('-', $total_dashes));
     }
 
     public function printTableCommandHeader($header)
@@ -106,5 +120,25 @@ class CommandListCommands extends Cli
     public function fillTableLine($column1='', $column2='')
     {
         return sprintf($this->tableMask, " {$column1} ", " {$column2}");
+    }
+
+    protected function generateMask(array $available)
+    {
+        foreach ($available as $availableCommand => $availableClass) {
+            $length = strlen($availableCommand);
+            if($length >= $this->command_col_width) {
+                $this->command_col_width = $length;
+            }
+
+            $availableHydratedClass = new $availableClass();
+            $length = strlen($availableHydratedClass->description);
+            if($length >= $this->desc_col_width) {
+                $this->desc_col_width = $length;
+            }
+        }
+
+        $this->command_col_width+=3;
+        $this->desc_col_width+=3;
+        $this->tableMask = "|%-".$this->command_col_width.".".$this->command_col_width."s |%-".$this->desc_col_width.".".$this->desc_col_width."s |";
     }
 }
