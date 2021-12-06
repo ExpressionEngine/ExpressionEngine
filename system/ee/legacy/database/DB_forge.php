@@ -282,7 +282,7 @@ class CI_DB_forge
             show_error('A table name is required for that operation.');
         }
 
-        if ( ! is_array($column_names)) {
+        if (! is_array($column_names)) {
             $column_name = array($column_names);
         }
 

@@ -156,9 +156,9 @@ class Smartforge
             return false;
         }
 
-		$valid_columns = array_intersect($column_names, ee()->db->list_fields($table));
+        $valid_columns = array_intersect($column_names, ee()->db->list_fields($table));
 
-        if ( ! empty($valid_columns)) {
+        if (! empty($valid_columns)) {
             return ee()->dbforge->drop_column_batch($table, $column_names);
         }
 
