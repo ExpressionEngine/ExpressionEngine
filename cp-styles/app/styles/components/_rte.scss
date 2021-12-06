@@ -46,9 +46,29 @@ body.tb-dragging * { cursor: -webkit-grabbing !important; }
 
 .rte-toolbar #tb-selections .disabled .cke_button_icon { opacity: 0.2; }
 
+.redactor-box.redactor-styles-on {
+    background: var(--ee-input-bg);
+    border: 1px solid var(--ee-input-border);
+    color: var(--ee-input-color);
+}
 
+.redactor-statusbar {
+    background: var(--ee-panel-bg);
+}
 
+.redactor-statusbar li {
+    color: var(--ee-input-color);
+    border-right: 1px solid var(--ee-button-default-border);
+}
+.redactor-toolbar a,
+.redactor-air a {
+    color: var(--ee-button-default-color);
+    background: var(--ee-panel-bg);
+}
 
+.redactor-styles {
+    color: var(--ee-input-color);
+} 
 
 
 .cke_reset {
@@ -444,6 +464,34 @@ It breaks CKEditor 5 (see how <p><code>[]</code></p> looks). */
 	margin-bottom: 0;
 }
 
+.ck.ck-editor__main>.ck-editor__editable {
+  color: var(--ee-input-color) !important;
+  background: var(--ee-input-bg) !important;
+  border-color: var(--ee-input-border) !important;
+}
+
+.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+  border-color: var(--ee-input-border) !important;
+}
+
+.ck.ck-toolbar,
+.ck.ck-reset_all {
+    border-color: var(--ee-input-border) !important;
+    color: var(--ee-button-default-color) !important;
+    background: var(--ee-panel-bg) !important;
+}
+
+.ck.ck-button:not(.ck-disabled),
+a.ck.ck-button:not(.ck-disabled) {
+  color: var(--ee-button-default-color) !important;
+}
+
+.ck.ck-button:not(.ck-disabled):hover,
+a.ck.ck-button:not(.ck-disabled):hover,
+.ck.ck-button.ck-on,
+a.ck.ck-button.ck-on {
+  color: var(--ck-color-text) !important;
+}
 
 /* Redactor stuff */
 
