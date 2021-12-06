@@ -24,7 +24,7 @@ $lang = array(
 
     'search' => 'Search',
 
-    'search_all_groups' => 'Search All Member Groups',
+    'search_all_groups' => 'Search All Roles',
 
     'search_all_words' => 'Search for All Words',
 
