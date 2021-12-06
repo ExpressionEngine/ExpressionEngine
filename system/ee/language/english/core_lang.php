@@ -109,6 +109,8 @@ If you made these changes, please accept the modifications on the control panel 
 
     'csrf_token_expired' => 'This form has expired. Please refresh and try again.',
 
+    'cookie_domain_mismatch' => 'The configured cookie domain does not match the site URL.',
+
     'current_password_incorrect' => 'Your current password was not submitted correctly.',
 
     'current_password_required' => 'Your current password is required.',
