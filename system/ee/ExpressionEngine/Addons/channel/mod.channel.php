@@ -1144,6 +1144,8 @@ class Channel
         // Only Sticky Entries
         if (ee()->TMPL->fetch_param('sticky') == 'only') {
             $sql .= " AND t.sticky = 'y' ";
+        } elseif (ee()->TMPL->fetch_param('sticky') == 'none') {
+            $sql .= " AND t.sticky != 'y' ";
         }
 
         /**------
