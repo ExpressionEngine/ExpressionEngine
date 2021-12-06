@@ -1289,7 +1289,7 @@ class EE_Session
         // Fetch Assigned Sites Available to User
         $assigned_sites = ee('Model')->get('Site')
             ->fields('site_id', 'site_label')
-            ->order('site_label', 'desc');
+            ->order('site_label', 'asc');
 
         if (! $is_superadmin) {
             $roles = $this->getMember()->getAllRoles()->pluck('role_id');
