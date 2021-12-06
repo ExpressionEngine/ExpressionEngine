@@ -5101,7 +5101,9 @@ class Channel
             return ee()->output->show_user_error('off', lang('preview_domain_error_instructions'), lang('preview_cannot_display'));
         }
 
-        return ee('LivePreview')->preview($channel_id, $entry_id, $return);
+        $prefer_system_preview = ee()->input->get('prefer_system_preview') == 'y';
+
+        return ee('LivePreview')->preview($channel_id, $entry_id, $return, $prefer_system_preview);
     }
 
 }
