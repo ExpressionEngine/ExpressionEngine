@@ -1139,6 +1139,20 @@ class Member extends ContentModel
         }
 
         $uploads = [];
+        $limitedRoles = [2, 3, 4];
+        if (!in_array($this->role_id, $limitedRoles) && !array_intersect($this->getAllRoles()->pluck('role_id'), $limitedRoles)) {
+            $alwaysAllowed = ['Avatars'];
+            if (bool_config_item('prv_msg_enabled') && bool_config_item('prv_msg_allow_attachments')) {
+                $alwaysAllowed[] = 'PM Attachments';
+            }
+            if (bool_config_item('enable_signatures')) {
+                $alwaysAllowed[] = 'Signature Attachments';
+            }
+            $directories = ee('Model')->get('UploadDestination')->filter('name', 'IN', $alwaysAllowed)->all();
+            foreach ($directories as $dir) {
+                $uploads[$dir->getId()] = $dir;
+            }
+        }
         foreach ($this->getAllRoles() as $role) {
             foreach ($role->AssignedUploadDestinations as $dir) {
                 $uploads[$dir->getId()] = $dir;
