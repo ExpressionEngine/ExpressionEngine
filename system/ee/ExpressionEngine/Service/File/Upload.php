@@ -246,6 +246,9 @@ class Upload
         }
 
         if (! $dir->exists()) {
+            if (AJAX_REQUEST) {
+                show_error(lang('invalid_upload_destination'), 404);
+            }
             $upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
             ee('CP/Alert')->makeStandard()
                 ->asIssue()
@@ -254,7 +257,7 @@ class Upload
                 ->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
                 ->now();
 
-            show_error(lang('invalid_upload_destination'), 404);
+            show_404();
         }
 
         $posted = false;
