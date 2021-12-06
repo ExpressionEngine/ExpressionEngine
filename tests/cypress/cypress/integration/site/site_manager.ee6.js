@@ -11,12 +11,15 @@ context('Site Manager', () => {
 
   before(function(){
     cy.task('db:seed')
+    cy.eeConfig({item: 'multiple_sites_enabled', value: 'y'})
+    cy.wait(5000)
+    cy.eeConfig({item: 'multiple_sites_enabled'}) .then((config) => {
+      expect(config.trim()).to.be.equal('y')
+    })
   })
 
   beforeEach(function() {
-    cy.eeConfig({item: 'multiple_sites_enabled', value: 'y'})
-    cy.auth();
-    page.load();
+    cy.authVisit('admin.php?/cp/msm');
     cy.hasNoErrors()
   })
 

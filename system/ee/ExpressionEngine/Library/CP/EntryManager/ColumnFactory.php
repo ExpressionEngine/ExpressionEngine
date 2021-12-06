@@ -15,12 +15,13 @@ namespace ExpressionEngine\Library\CP\EntryManager;
  */
 class ColumnFactory
 {
-    private static $standard_columns = [
+    protected static $standard_columns = [
         'entry_id' => Columns\EntryId::class,
         'title' => Columns\Title::class,
         'url_title' => Columns\UrlTitle::class,
         'author' => Columns\Author::class,
         'status' => Columns\Status::class,
+        'sticky' => Columns\Sticky::class,
         'entry_date' => Columns\EntryDate::class,
         'expiration_date' => Columns\ExpirationDate::class,
         'channel' => Columns\ChannelName::class,
@@ -44,8 +45,8 @@ class ColumnFactory
             return self::$instances[$identifier];
         }
 
-        if (isset(self::$standard_columns[$identifier])) {
-            $class = self::$standard_columns[$identifier];
+        if (isset(static::$standard_columns[$identifier])) {
+            $class = static::$standard_columns[$identifier];
             self::$instances[$identifier] = new $class($identifier);
         } elseif (strpos($identifier, 'field_id_') === 0 && $field = self::getCompatibleField($identifier)) {
             self::$instances[$identifier] = new Columns\CustomField($identifier, $field);

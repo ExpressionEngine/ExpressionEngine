@@ -174,6 +174,8 @@ $lang = array(
 
     'sticky' => 'Make entry sticky?',
 
+    'sticky_entry' => 'Sticky Entry',
+
     'sticky_desc' => 'When enabled, this entry will be given preference in sorted listings.',
 
     'url_title' => '<abbr title="Unified Resource Locator">URL</abbr> title',
@@ -625,7 +627,7 @@ $lang = array(
 
     'preview_not_allowed' => 'Preview not allowed',
 
-    'preview_not_allowed_desc' => "Change your channel settings to allow Preview.",
+    'preview_not_allowed_desc' => "Change your channel preferences to <a href='%s' target='_blank'>allow Preview</a>.",
 
     'preview_cannot_display' => 'Live Preview cannot be displayed',
 

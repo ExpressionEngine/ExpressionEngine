@@ -244,40 +244,38 @@ class Snippets extends AbstractDesignController
             );
         }
 
-        ee()->load->library('form_validation');
-        ee()->form_validation->set_rules(array(
-            array(
-                'field' => 'snippet_name',
-                'label' => 'lang:snippet_name',
-                'rules' => 'required|max_length[50]|callback__snippet_name_checks'
-            )
-        ));
 
-        if (AJAX_REQUEST) {
-            ee()->form_validation->run_ajax();
-            exit;
-        } elseif (ee()->form_validation->run() !== false) {
+        if (! empty($_POST)) {
             $snippet = ee('Model')->make('Snippet');
             $snippet->site_id = ee()->input->post('site_id');
             $snippet->snippet_name = ee()->input->post('snippet_name');
             $snippet->snippet_contents = ee()->input->post('snippet_contents');
-            $snippet->save();
 
-            ee()->session->set_flashdata('snippet_id', $snippet->snippet_id);
+            $result = $snippet->validate();
 
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asSuccess()
-                ->withTitle(lang('create_template_partial_success'))
-                ->addToBody(sprintf(lang('create_template_partial_success_desc'), $snippet->snippet_name))
-                ->defer();
+            if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result)) {
+                return $response;
+            }
 
-            ee()->functions->redirect(ee('CP/URL')->make('design/snippets'));
-        } elseif (ee()->form_validation->errors_exist()) {
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asIssue()
-                ->withTitle(lang('create_template_partial_error'))
-                ->addToBody(lang('create_template_partial_error_desc'))
-                ->now();
+            if ($result->isValid()) {
+                $snippet->save();
+
+                ee()->session->set_flashdata('snippet_id', $snippet->snippet_id);
+
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asSuccess()
+                    ->withTitle(lang('create_template_partial_success'))
+                    ->addToBody(sprintf(lang('create_template_partial_success_desc'), $snippet->snippet_name))
+                    ->defer();
+
+                ee()->functions->redirect(ee('CP/URL')->make('design/snippets'));
+            } else {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('create_template_partial_error'))
+                    ->addToBody(lang('create_template_partial_error_desc'))
+                    ->now();
+            }
         }
 
         ee()->view->cp_page_title = lang('create_partial');
@@ -362,41 +360,38 @@ class Snippets extends AbstractDesignController
             );
         }
 
-        ee()->load->library('form_validation');
-        ee()->form_validation->set_rules(array(
-            array(
-                'field' => 'snippet_name',
-                'label' => 'lang:snippet_name',
-                'rules' => 'required|max_length[50]|callback__snippet_name_checks'
-            )
-        ));
-
-        if (AJAX_REQUEST) {
-            ee()->form_validation->run_ajax();
-            exit;
-        } elseif (ee()->form_validation->run() !== false) {
+        if (! empty($_POST)) {
             if ($this->msm) {
                 $snippet->site_id = ee()->input->post('site_id');
             }
             $snippet->snippet_name = ee()->input->post('snippet_name');
             $snippet->snippet_contents = ee()->input->post('snippet_contents');
-            $snippet->save();
 
-            ee()->session->set_flashdata('snippet_id', $snippet->snippet_id);
+            $result = $snippet->validate();
 
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asSuccess()
-                ->withTitle(lang('edit_template_partial_success'))
-                ->addToBody(sprintf(lang('edit_template_partial_success_desc'), $snippet->snippet_name))
-                ->defer();
+            if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result)) {
+                return $response;
+            }
 
-            ee()->functions->redirect(ee('CP/URL')->make('design/snippets'));
-        } elseif (ee()->form_validation->errors_exist()) {
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asIssue()
-                ->withTitle(lang('edit_template_partial_error'))
-                ->addToBody(lang('edit_template_partial_error_desc'))
-                ->now();
+            if ($result->isValid()) {
+                $snippet->save();
+
+                ee()->session->set_flashdata('snippet_id', $snippet->snippet_id);
+
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asSuccess()
+                    ->withTitle(lang('edit_template_partial_success'))
+                    ->addToBody(sprintf(lang('edit_template_partial_success_desc'), $snippet->snippet_name))
+                    ->defer();
+
+                ee()->functions->redirect(ee('CP/URL')->make('design/snippets'));
+            } else {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('edit_template_partial_error'))
+                    ->addToBody(lang('edit_template_partial_error_desc'))
+                    ->now();
+            }
         }
 
         ee()->view->cp_page_title = lang('edit_partial');
@@ -487,44 +482,7 @@ class Snippets extends AbstractDesignController
         force_download('ExpressionEngine-template-partials.zip', $data);
     }
 
-    /**
-      *	 Check Snippet Name
-      */
-    public function _snippet_name_checks($str)
-    {
-        if (! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str)) {
-            ee()->lang->loadfile('admin');
-            ee()->form_validation->set_message('_snippet_name_checks', lang('illegal_characters'));
-
-            return false;
-        }
-
-        if (in_array($str, ee()->cp->invalid_custom_field_names())) {
-            ee()->form_validation->set_message('_snippet_name_checks', lang('reserved_name'));
-
-            return false;
-        }
-
-        $snippets = ee('Model')->get('Snippet');
-        if ($this->msm) {
-            $snippets->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
-        } else {
-            $snippets->filter('site_id', ee()->config->item('site_id'));
-        }
-        $count = $snippets->filter('snippet_name', $str)->count();
-
-        if ((strtolower($this->input->post('old_name')) != strtolower($str)) and $count > 0) {
-            $this->form_validation->set_message('_snippet_name_checks', lang('snippet_name_taken'));
-
-            return false;
-        } elseif ($count > 1) {
-            $this->form_validation->set_message('_snippet_name_checks', lang('snippet_name_taken'));
-
-            return false;
-        }
-
-        return true;
-    }
+    
 }
 
 // EOF

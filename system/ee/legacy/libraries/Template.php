@@ -47,6 +47,7 @@ class EE_Template
     public $template_group_id = 0;
     public $template_name = '';			// Name of template being parsed
     public $template_id = 0;
+    public $enable_frontedit = 'y';
 
     public $tag_data = array();		// Data contained in tags
     public $tagparams = array();
@@ -232,12 +233,31 @@ class EE_Template
         //  - Modify template after tag parsing
         //
         if (ee()->extensions->active_hook('template_post_parse') === true) {
-            $this->final_template = ee()->extensions->call(
+
+            // Populate the $currentTemplateInfo array
+            $currentTemplateInfo = array();
+            if (count($this->templates_loaded)) { // don't do this if we don't have any template info! 
+                $currentTemplateInfo = array(
+                    'template_name' => $template,
+                    'template_group' => $template_group,
+                );
+            }
+
+            // Build a return packet since we don't know at this stage where we are returning it
+            $return = ee()->extensions->call(
                 'template_post_parse',
-                $this->final_template,
+                $is_embed || $is_layout ? $this->layout : $this->final_template,
                 ($is_embed || $is_layout), // $is_partial
-                $site_id
+                $site_id,
+                $currentTemplateInfo
             );
+            // Add a conditional to adjust what is updated by function depending on whether this is final template or not
+            if ($is_embed || $is_layout) {
+                $this->template = $return;
+            }
+            else {
+                $this->final_template = $return;
+            }
         }
         //
         // -------------------------------------------
@@ -318,6 +338,21 @@ class EE_Template
             'is_ajax_request' => AJAX_REQUEST,
             'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
         ];
+
+        //Pro conditionals
+        $added_globals['frontedit'] = false;
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee('pro:Access')->hasDockPermission()) {
+            if (
+                REQ == 'PAGE' && 
+                ee()->session->userdata('admin_sess') == 1 &&
+                (ee()->config->item('enable_frontedit') == 'y' || ee()->config->item('enable_frontedit') === false) &&
+                (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) &&
+                ee()->TMPL->enable_frontedit != 'n' &&
+                ee()->input->cookie('frontedit') != 'off'
+            ) {
+                $added_globals['frontedit'] = true;
+            }
+        }
 
         $added_globals = array_merge($added_globals, $this->getMemberVariables());
 
@@ -1200,6 +1235,9 @@ class EE_Template
                 $data_start = $this->in_point + $tag_length;
 
                 $tag = trim(substr($raw_tag, 1, -1));
+                if (IS_PRO) {
+                    $tag = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $tag);
+                }
                 $args = trim((preg_match("/\s+.*/", $tag, $matches))) ? $matches[0] : '';
                 $tag = trim(str_replace($args, '', $tag));
 
@@ -1342,6 +1380,10 @@ class EE_Template
                 $this->tag_data[$this->loop_count]['no_results'] = $no_results;
                 $this->tag_data[$this->loop_count]['no_results_block'] = $no_results_block;
                 $this->tag_data[$this->loop_count]['search_fields'] = $search_fields;
+                if (IS_PRO && $tag != 'exp:channel:entries') {
+                    $this->tag_data[$this->loop_count]['chunk'] = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $chunk);
+                    $this->tag_data[$this->loop_count]['block'] = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $block);
+                }
             } // END IF
 
             // Increment counter
@@ -1889,7 +1931,14 @@ class EE_Template
         $status = & $this->$status;
 
         // Bail out if this tag/template isn't set to cache
-        if (ee('LivePreview')->hasEntryData() or ! isset($args['cache']) or $args['cache'] != 'yes') {
+        if (! isset($args['cache']) or $args['cache'] != 'yes' or ee('LivePreview')->hasEntryData()) {
+            $status = 'NO_CACHE';
+
+            return false;
+        }
+
+        // do not use cache with Pro editing
+        if (IS_PRO && ee('pro:Access')->hasDockPermission()) {
             $status = 'NO_CACHE';
 
             return false;
@@ -2351,7 +2400,7 @@ class EE_Template
             }
         }
 
-        if ($template_group == '' && $show_default == false && ee()->config->item('site_404') != '') {
+        if (($template_group == '' || in_array($template_group, ['system_messages', 'pro-dashboard-widgets'])) && $show_default == false && ee()->config->item('site_404') != '') {
             $treq = ee()->config->item('site_404');
 
             $x = explode("/", $treq);
@@ -2650,6 +2699,7 @@ class EE_Template
         $this->template_group_id = $row['group_id'];
         $this->template_name = $row['template_name'];
         $this->template_id = $row['template_id'];
+        $this->enable_frontedit = $row['enable_frontedit'];
 
         return $this->convert_xml_declaration($this->remove_ee_comments($row['template_data']));
     }
@@ -2882,6 +2932,10 @@ class EE_Template
     {
         if (strpos($str, '{!--') === false) {
             return $str;
+        }
+
+        if (IS_PRO && ee('Permission')->canUsePro()) {
+            $str = preg_replace("/\{\!--\s*(\/\/)*\s*disable\s*frontedit\s*--\}/s", '<!-- ${1}disable frontedit -->', $str);
         }
 
         return preg_replace("/\{!--.*?--\}/s", '', $str);
@@ -3504,7 +3558,7 @@ class EE_Template
         }
 
         // same with modified, sometimes devs run this method themselves instead of a full parse_variables()
-        if ($this->modified_vars === false) {
+        if (empty($this->modified_vars) || $this->modified_vars === false) {
             $this->modified_vars = $this->getModifiedVariables();
         }
 
@@ -3884,7 +3938,7 @@ class EE_Template
     {
         if (is_array($dates) && ! empty($dates)) {
             $tags = implode('|', array_keys($dates));
-            if (preg_match_all("/" . LD . "(" . $tags . ")(.*?)" . RD . "/i", $tagdata, $matches)) {
+            if (preg_match_all("/" . LD . "(" . $tags . ")(.*?)" . RD . "/si", $tagdata, $matches)) {
                 foreach ($matches[2] as $key => $val) {
                     $timestamp = $dates[$matches[1][$key]];
                     $dt = $timestamp;

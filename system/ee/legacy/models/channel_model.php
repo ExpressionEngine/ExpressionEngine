@@ -442,7 +442,7 @@ class Channel_model extends CI_Model
      */
     private function _numeric_comparison_search($terms, $col_name, $site_id)
     {
-        preg_match_all('/([<>]=?)(\d+)/', $terms, $matches, PREG_SET_ORDER);
+        preg_match_all('/([<>]=?)\s?(\d+)/', $terms, $matches, PREG_SET_ORDER);
 
         if (empty($matches)) {
             return $this->_field_search($terms, $col_name, $site_id);

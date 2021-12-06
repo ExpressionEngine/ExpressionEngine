@@ -79,6 +79,10 @@ body[data-theme="dark"] .dialog--danger .dialog__header {
 	}
 }
 
+.dialog-input-wrap {
+	padding: 0 30px;
+}
+
 .dialog__actions {
 	padding: $sq-inset-m;
   background-color: color(bg-0);

@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Cli\Commands;
 
@@ -56,12 +64,6 @@ class CommandMakeAddon extends Cli
         'cookies,k*:'     => 'command_make_addon_option_cookies',
         'hooks,o*:'       => 'command_make_addon_option_hooks',
     ];
-
-    /**
-     * Command can run without EE Core
-     * @var boolean
-     */
-    public $standalone = true;
 
     protected $data = [];
 

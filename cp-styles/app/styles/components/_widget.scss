@@ -17,6 +17,8 @@ $widget-padding-x: 20px;
     letter-spacing: 1px;
     font-size: 80%;
     margin-left: auto;
+    min-width: 85px;
+    text-align: right;
   }
 }
 
@@ -24,7 +26,10 @@ $widget-padding-x: 20px;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	margin-bottom: $s-s;
+  border-bottom: 1px solid color(border);
+  padding: 12px 20px;
+  margin: -12px -20px 10px;
+  position: relative;
 }
 
 .widget__title {
@@ -56,7 +61,7 @@ $widget-padding-x: 20px;
 
 .widget-icon--reorder {
   cursor: move;
-	padding: 0 10px;
+	padding: 0 10px 0 0;
 	&:before {
 		content: fa-content($fa-var-bars);
 		color: color(text-secondary);
@@ -65,19 +70,32 @@ $widget-padding-x: 20px;
 
 .widget-icon--on,
 .widget-icon--off {
-	padding: 0 10px;
+  position: absolute;
+  top: -13px;
+  right: -14px;
+  font-size: 14px;
+  line-height: 28px;
+  width: 29px;
+  height: 29px;
+  text-align: center;
+  background-color: color(bg-blank);
+  display: inline-block;
+  border-radius: 100px;
+  border: 1px solid color(border);
+  padding: 0;
+  cursor: pointer;
 }
 
 .widget-icon--on {
 	&:before {
-		color: color(success);
+		color: color(brand-primary);
 		content: fa-content($fa-var-eye);
 	}
 }
 
 .widget-icon--off {
 	&:before {
-		color: color(danger);
+		color: color(brand-primary);
 		content: fa-content($fa-var-eye-slash);
 	}
 }
@@ -107,6 +125,12 @@ $widget-padding-x: 20px;
 		color: rgba(#000, 0.1);
 	}
 
+  .widget__title-bar {
+    padding: 0;
+    margin: 0 0 10px;
+    border-bottom: none;
+  }
+
 
 	.widget__title {
 		position: relative;
@@ -130,12 +154,28 @@ $widget-padding-x: 20px;
   .button--default {
     border: none;
   }
-}
 
+  .widget-icon--reorder {
+
+    &:before {
+  		color: #fff;
+      opacity: 0.6;
+  	}
+  }
+
+  .widget-icon--on,
+  .widget-icon--off {
+    top: -1px;
+    right: 0px;
+    border: none;
+  }
+}
 
 .widget__bottom-buttons {
 	// margin: -#{$widget-padding-y} -#{$widget-padding-x};
-	margin-top: $s-s;
+  border-top: 1px solid color(border);
+  padding: 12px 20px;
+  margin: 10px -20px -12px;
 	display: flex;
 
 	.button {
@@ -157,4 +197,8 @@ $widget-padding-x: 20px;
 		}
     */
 	}
+}
+
+.dashboard.ui-sortable {
+
 }

@@ -54,6 +54,17 @@ class General extends Settings
                     )
                 ),
                 array(
+                    'title' => 'site_license_key',
+                    'desc' => 'site_license_key_desc',
+                    'fields' => array(
+                        'site_license_key' => array(
+                            'type' => 'text',
+                            'value' => ee()->config->item('site_license_key'),
+                            'required' => false
+                        )
+                    )
+                ),
+                array(
                     'title' => 'site_online',
                     'desc' => 'site_online_desc',
                     'fields' => array(

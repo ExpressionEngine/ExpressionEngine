@@ -41,6 +41,7 @@
 		}
 	},
 	"modules": [
-		"email"
+		"email",
+		"rss"
 	]
 }

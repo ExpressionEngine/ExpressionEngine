@@ -9,6 +9,7 @@ Bullet list below, e.g.
    - Added ability to disable Live Preview on a per channel basis
    - Added extension hooks for Fluid Fields
    - Allow assign previously created field groups to importing channel sets
+   - Added Sticky entry column to entries table
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are

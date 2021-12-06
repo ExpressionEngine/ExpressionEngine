@@ -50,7 +50,7 @@ INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(23, 'Member', 'send_username', 0),
 	(24, 'Member', 'update_profile', 0),
 	(25, 'Member', 'upload_avatar', 0),
-  (26, 'Member', 'recaptcha_check', 0),
+	(26, 'Member', 'recaptcha_check', 0),
 	(27, 'Rte', 'pages_autocomplete', 0),
 	(28, 'File', 'addonIcon', 1),
 	(29, 'Relationship', 'entryList', 0),
@@ -226,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `exp_channels` (
   `channel_auto_link_urls` char(1) NOT NULL DEFAULT 'n',
   `channel_notify` char(1) NOT NULL DEFAULT 'n',
   `channel_notify_emails` varchar(255) DEFAULT NULL,
-  `sticky_enabled` char(1) NOT NULL default 'n',
+  `sticky_enabled` char(1) NOT NULL DEFAULT 'n',
   `comment_url` varchar(80) DEFAULT NULL,
   `comment_system_enabled` char(1) NOT NULL DEFAULT 'y',
   `comment_require_membership` char(1) NOT NULL DEFAULT 'n',
@@ -261,9 +261,9 @@ CREATE TABLE IF NOT EXISTS `exp_channels` (
 -- Dumping data for table ee-test.exp_channels: ~2 rows (approximately)
 DELETE FROM `exp_channels`;
 /*!40000 ALTER TABLE `exp_channels` DISABLE KEYS */;
-INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `preview_url`, `allow_preview`, `max_entries`) VALUES
-	(1, 1, 'news', 'News', 'http://ee2/index.php/news', NULL, 'en', 3, 0, 0, 1409242030, 0, '1', 'open', 2, '2', 'y', 'y', 0, 'all', 'y', 'y', 'n', '', 'http://ee2/index.php/news/comments', 'y', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 'y', 0),
-	(2, 1, 'about', 'Information Pages', 'http://ee2/index.php/about', NULL, 'en', 7, 0, 0, 1409242030, 0, '2', 'open', 7, '', 'y', 'y', 0, 'all', 'y', 'n', 'n', '', 'http://ee2/index.php/news/comments', 'n', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 'y', 0);
+INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `sticky_enabled`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `preview_url`, `allow_preview`, `max_entries`) VALUES
+	(1, 1, 'news', 'News', 'http://ee2/index.php/news', NULL, 'en', 3, 3, 0, 1409242030, 0, '1', 'open', 2, '2', 'y', 'y', 0, 'all', 'y', 'y', 'n', '', 'n', 'http://ee2/index.php/news/comments', 'y', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 'y', 0),
+	(2, 1, 'about', 'Information Pages', 'http://ee2/index.php/about', NULL, 'en', 7, 0, 0, 1409242030, 0, '2', 'open', 7, '', 'y', 'y', 0, 'all', 'y', 'n', 'n', '', 'n', 'http://ee2/index.php/news/comments', 'n', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 'y', 0);
 /*!40000 ALTER TABLE `exp_channels` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_channels_channel_fields
@@ -353,6 +353,23 @@ INSERT INTO `exp_channel_data` (`entry_id`, `site_id`, `channel_id`, `field_id_1
 	(10, 1, 1, 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin congue mi a sapien. Duis augue erat, fringilla ac, volutpat ut, venenatis vitae, nisl. Phasellus lorem. Praesent mi. Suspendisse imperdiet felis a libero. uspendisse placerat tortor in ligula vestibulum vehicula.\n', 'xhtml', '', 'xhtml', '{filedir_2}testband300.jpg', 'none', '', NULL, '', NULL, '', NULL, '', NULL);
 /*!40000 ALTER TABLE `exp_channel_data` ENABLE KEYS */;
 
+-- Dumping structure for table ee-test.exp_channel_data_field_8
+DROP TABLE IF EXISTS `exp_channel_data_field_8`;
+CREATE TABLE IF NOT EXISTS `exp_channel_data_field_8` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `entry_id` int(10) unsigned NOT NULL,
+  `field_id_8` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `field_ft_8` tinytext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `entry_id` (`entry_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table ee-test.exp_channel_data_field_8: ~1 rows (approximately)
+/*!40000 ALTER TABLE `exp_channel_data_field_8` DISABLE KEYS */;
+INSERT INTO `exp_channel_data_field_8` (`id`, `entry_id`, `field_id_8`, `field_ft_8`) VALUES
+	(1, 2, NULL, 'xhtml');
+/*!40000 ALTER TABLE `exp_channel_data_field_8` ENABLE KEYS */;
+
 -- Dumping structure for table ee-test.exp_channel_entries_autosave
 DROP TABLE IF EXISTS `exp_channel_entries_autosave`;
 CREATE TABLE IF NOT EXISTS `exp_channel_entries_autosave` (
@@ -426,10 +443,9 @@ CREATE TABLE IF NOT EXISTS `exp_channel_fields` (
   PRIMARY KEY (`field_id`),
   KEY `field_type` (`field_type`),
   KEY `site_id` (`site_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_channel_fields: ~7 rows (approximately)
-DELETE FROM `exp_channel_fields`;
+-- Dumping data for table ee-test.exp_channel_fields: ~8 rows (approximately)
 /*!40000 ALTER TABLE `exp_channel_fields` DISABLE KEYS */;
 INSERT INTO `exp_channel_fields` (`field_id`, `site_id`, `field_name`, `field_label`, `field_instructions`, `field_type`, `field_list_items`, `field_pre_populate`, `field_pre_channel_id`, `field_pre_field_id`, `field_ta_rows`, `field_maxl`, `field_required`, `field_text_direction`, `field_search`, `field_is_hidden`, `field_fmt`, `field_show_fmt`, `field_order`, `field_content_type`, `field_settings`, `legacy_field_data`) VALUES
 	(1, 1, 'news_body', 'Body', '', 'textarea', '', 'n', 0, 0, 10, 0, 'n', 'ltr', 'y', 'n', 'xhtml', 'y', 2, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=', 'y'),
@@ -438,7 +454,8 @@ INSERT INTO `exp_channel_fields` (`field_id`, `site_id`, `field_name`, `field_la
 	(4, 1, 'about_body', 'Body', '', 'textarea', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'n', 'n', 'xhtml', 'y', 4, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=', 'y'),
 	(5, 1, 'about_image', 'Image', 'URL Only', 'file', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'n', 'n', 'none', 'n', 5, 'any', 'YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ==', 'y'),
 	(6, 1, 'about_staff_title', 'Staff Member\'s Title', 'This is the Title that the staff member has within the company.  Example: CEO', 'text', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'y', 'n', 'none', 'n', 6, 'any', 'YTo4OntzOjE4OiJmaWVsZF9jb250ZW50X3RleHQiO2I6MDtzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czozOiJhbnkiO30=', 'y'),
-	(7, 1, 'about_extended', 'Extended', '', 'textarea', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'y', 'y', 'xhtml', 'y', 7, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=', 'y');
+	(7, 1, 'about_extended', 'Extended', '', 'textarea', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'y', 'y', 'xhtml', 'y', 7, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=', 'y'),
+	(8, 0, 'related_news', 'Related news', '', 'relationship', '', 'n', NULL, NULL, 8, NULL, 'n', 'ltr', 'n', 'n', 'xhtml', 'y', 1, 'any', 'YToxMDp7czo4OiJjaGFubmVscyI7YToxOntpOjA7czoxOiIxIjt9czo3OiJleHBpcmVkIjtzOjA6IiI7czo2OiJmdXR1cmUiO3M6MDoiIjtzOjEwOiJjYXRlZ29yaWVzIjthOjA6e31zOjc6ImF1dGhvcnMiO2E6MDp7fXM6ODoic3RhdHVzZXMiO2E6MDp7fXM6NToibGltaXQiO3M6MzoiMTAwIjtzOjExOiJvcmRlcl9maWVsZCI7czo1OiJ0aXRsZSI7czo5OiJvcmRlcl9kaXIiO3M6MzoiYXNjIjtzOjE0OiJhbGxvd19tdWx0aXBsZSI7YjoxO30=', 'n');
 /*!40000 ALTER TABLE `exp_channel_fields` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_channel_field_groups_fields
@@ -449,8 +466,7 @@ CREATE TABLE IF NOT EXISTS `exp_channel_field_groups_fields` (
   PRIMARY KEY (`field_id`,`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- Dumping data for table ee-test.exp_channel_field_groups_fields: ~7 rows (approximately)
-DELETE FROM `exp_channel_field_groups_fields`;
+-- Dumping data for table ee-test.exp_channel_field_groups_fields: ~8 rows (approximately)
 /*!40000 ALTER TABLE `exp_channel_field_groups_fields` DISABLE KEYS */;
 INSERT INTO `exp_channel_field_groups_fields` (`field_id`, `group_id`) VALUES
 	(1, 1),
@@ -459,7 +475,8 @@ INSERT INTO `exp_channel_field_groups_fields` (`field_id`, `group_id`) VALUES
 	(4, 2),
 	(5, 2),
 	(6, 2),
-	(7, 2);
+	(7, 2),
+	(8, 1);
 /*!40000 ALTER TABLE `exp_channel_field_groups_fields` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_channel_form_settings
@@ -550,6 +567,7 @@ INSERT INTO `exp_channel_titles` (`entry_id`, `site_id`, `channel_id`, `author_i
 	(10, 1, 1, 1, NULL, '127.0.0.1', 'Band Title', 'band_title', 'Featured', 3, 'n', 0, 0, 0, 0, 'y', 'n', 1409242030, '2014', '08', '28', 0, 0, 20140828160710, NULL, 0);
 /*!40000 ALTER TABLE `exp_channel_titles` ENABLE KEYS */;
 
+
 -- Dumping structure for table ee-test.exp_comments
 DROP TABLE IF EXISTS `exp_comments`;
 CREATE TABLE IF NOT EXISTS `exp_comments` (
@@ -610,10 +628,9 @@ CREATE TABLE IF NOT EXISTS `exp_config` (
   `value` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`config_id`),
   KEY `site_id_key` (`site_id`,`key`)
-) ENGINE=InnoDB AUTO_INCREMENT=161 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=162 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table ee-test.exp_config: ~158 rows (approximately)
-DELETE FROM `exp_config`;
+-- Dumping data for table ee-test.exp_config: ~159 rows (approximately)
 /*!40000 ALTER TABLE `exp_config` DISABLE KEYS */;
 INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(1, 1, 'image_resize_protocol', 'gd2'),
@@ -776,17 +793,6 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(160, 1, 'cp_url', '{base_url}admin.php');
 /*!40000 ALTER TABLE `exp_config` ENABLE KEYS */;
 
--- Dumping structure for table ee-test.exp_entry_manager_views
-DROP TABLE IF EXISTS `exp_entry_manager_views`;
-CREATE TABLE `exp_entry_manager_views` (
-  `view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `channel_id` int(6) unsigned NOT NULL,
-  `member_id` int(10) unsigned NOT NULL,
-  `name` varchar(128) NOT NULL DEFAULT '',
-  `columns` text NOT NULL,
-  PRIMARY KEY (`view_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 -- Dumping structure for table ee-test.exp_consents
 DROP TABLE IF EXISTS `exp_consents`;
 CREATE TABLE IF NOT EXISTS `exp_consents` (
@@ -817,7 +823,7 @@ CREATE TABLE IF NOT EXISTS `exp_consent_audit_log` (
   `consent_request_id` int(10) unsigned NOT NULL,
   `consent_request_version_id` int(10) unsigned DEFAULT NULL,
   `member_id` int(10) unsigned NOT NULL,
-  `ip_address` varchar(45) default '0' NOT NULL,
+  `ip_address` varchar(45) NOT NULL DEFAULT '0',
   `user_agent` varchar(120) NOT NULL,
   `action` text NOT NULL,
   `log_date` int(10) NOT NULL DEFAULT 0,
@@ -875,12 +881,17 @@ INSERT INTO `exp_consent_request_versions` (`consent_request_version_id`, `conse
 	(3, 3, 'These cookies are usually placed by third-party advertising networks, which may use information about your website visits to develop a profile of your interests. This information may be shared with other advertisers and/or websites to deliver more relevant advertising to you across multiple websites. If you do not allow these cookies, visits to this website will not be shared with advertising partners and will not contribute to targeted advertising on other websites.', 'none', 1615821718, 0);
 /*!40000 ALTER TABLE `exp_consent_request_versions` ENABLE KEYS */;
 
+-- Dumping structure for table ee-test.exp_consent_request_version_cookies
 DROP TABLE IF EXISTS `exp_consent_request_version_cookies`;
 CREATE TABLE IF NOT EXISTS `exp_consent_request_version_cookies` (
   `consent_request_version_id` int(10) unsigned NOT NULL,
   `cookie_id` int(10) unsigned NOT NULL,
-  KEY `consent_request_version_cookies` (`consent_request_version_id`, `cookie_id`)
+  KEY `consent_request_version_cookies` (`consent_request_version_id`,`cookie_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table ee-test.exp_consent_request_version_cookies: ~0 rows (approximately)
+/*!40000 ALTER TABLE `exp_consent_request_version_cookies` DISABLE KEYS */;
+/*!40000 ALTER TABLE `exp_consent_request_version_cookies` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_content_types
 DROP TABLE IF EXISTS `exp_content_types`;
@@ -899,6 +910,19 @@ INSERT INTO `exp_content_types` (`content_type_id`, `name`) VALUES
 	(1, 'grid');
 /*!40000 ALTER TABLE `exp_content_types` ENABLE KEYS */;
 
+-- Dumping structure for table ee-test.exp_cookie_settings
+DROP TABLE IF EXISTS `exp_cookie_settings`;
+CREATE TABLE IF NOT EXISTS `exp_cookie_settings` (
+  `cookie_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `cookie_provider` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_lifetime` int(10) unsigned DEFAULT NULL,
+  `cookie_enforced_lifetime` int(10) unsigned DEFAULT NULL,
+  `cookie_title` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`cookie_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Dumping structure for table ee-test.exp_cp_log
 DROP TABLE IF EXISTS `exp_cp_log`;
 CREATE TABLE IF NOT EXISTS `exp_cp_log` (
@@ -911,30 +935,15 @@ CREATE TABLE IF NOT EXISTS `exp_cp_log` (
   `action` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_cp_log: ~3 rows (approximately)
-DELETE FROM `exp_cp_log`;
+-- Dumping data for table ee-test.exp_cp_log: ~5 rows (approximately)
 /*!40000 ALTER TABLE `exp_cp_log` DISABLE KEYS */;
 INSERT INTO `exp_cp_log` (`id`, `site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES
 	(1, 1, 0, '0', '127.0.0.1', 1588591743, 'Hash algorithm changed for "admin" (1)'),
 	(2, 1, 1, 'admin', '127.0.0.1', 1588591743, 'Logged in'),
 	(3, 1, 1, 'admin', '127.0.0.1', 1588591844, 'Logged in');
 /*!40000 ALTER TABLE `exp_cp_log` ENABLE KEYS */;
-
--- Dumping structure for table ee6pro.exp_cookie_settings
-DROP TABLE IF EXISTS `exp_cookie_settings`;
-CREATE TABLE IF NOT EXISTS `exp_cookie_settings` (
-  `cookie_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `cookie_provider` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `cookie_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `cookie_lifetime` int(10) unsigned DEFAULT NULL,
-  `cookie_enforced_lifetime` int(10) unsigned DEFAULT NULL,
-  `cookie_title` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `cookie_description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`cookie_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 -- Dumping structure for table ee-test.exp_dashboard_layouts
 DROP TABLE IF EXISTS `exp_dashboard_layouts`;
@@ -1006,7 +1015,6 @@ CREATE TABLE IF NOT EXISTS `exp_developer_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table ee-test.exp_developer_log: ~0 rows (approximately)
-DELETE FROM `exp_developer_log`;
 /*!40000 ALTER TABLE `exp_developer_log` DISABLE KEYS */;
 /*!40000 ALTER TABLE `exp_developer_log` ENABLE KEYS */;
 
@@ -1100,6 +1108,21 @@ DELETE FROM `exp_email_tracker`;
 /*!40000 ALTER TABLE `exp_email_tracker` DISABLE KEYS */;
 /*!40000 ALTER TABLE `exp_email_tracker` ENABLE KEYS */;
 
+-- Dumping structure for table ee-test.exp_entry_manager_views
+DROP TABLE IF EXISTS `exp_entry_manager_views`;
+CREATE TABLE IF NOT EXISTS `exp_entry_manager_views` (
+  `view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `channel_id` int(6) unsigned NOT NULL,
+  `member_id` int(10) unsigned NOT NULL,
+  `name` varchar(128) NOT NULL DEFAULT '',
+  `columns` text NOT NULL,
+  PRIMARY KEY (`view_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table ee-test.exp_entry_manager_views: ~0 rows (approximately)
+/*!40000 ALTER TABLE `exp_entry_manager_views` DISABLE KEYS */;
+/*!40000 ALTER TABLE `exp_entry_manager_views` ENABLE KEYS */;
+
 -- Dumping structure for table ee-test.exp_entry_versioning
 DROP TABLE IF EXISTS `exp_entry_versioning`;
 CREATE TABLE IF NOT EXISTS `exp_entry_versioning` (
@@ -1149,10 +1172,9 @@ CREATE TABLE IF NOT EXISTS `exp_fieldtypes` (
   `settings` text DEFAULT NULL,
   `has_global_settings` char(1) DEFAULT 'n',
   PRIMARY KEY (`fieldtype_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_fieldtypes: ~17 rows (approximately)
-DELETE FROM `exp_fieldtypes`;
+-- Dumping data for table ee-test.exp_fieldtypes: ~18 rows (approximately)
 /*!40000 ALTER TABLE `exp_fieldtypes` DISABLE KEYS */;
 INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `has_global_settings`) VALUES
 	(1, 'select', '1.0.0', 'YTowOnt9', 'n'),
@@ -1172,7 +1194,7 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(15, 'toggle', '1.0.0', 'YTowOnt9', 'n'),
 	(16, 'fluid_field', '1.0.0', 'YTowOnt9', 'n'),
 	(17, 'colorpicker', '1.0.0', 'YTowOnt9', 'n'),
-  (18, 'duration', '2.0.0', 'YTowOnt9', 'n');
+	(18, 'duration', '2.0.0', 'YTowOnt9', 'n');
 /*!40000 ALTER TABLE `exp_fieldtypes` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_field_groups
@@ -1332,10 +1354,9 @@ CREATE TABLE IF NOT EXISTS `exp_global_variables` (
   PRIMARY KEY (`variable_id`),
   KEY `variable_name` (`variable_name`),
   KEY `site_id` (`site_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_global_variables: ~14 rows (approximately)
-DELETE FROM `exp_global_variables`;
+-- Dumping data for table ee-test.exp_global_variables: ~21 rows (approximately)
 /*!40000 ALTER TABLE `exp_global_variables` DISABLE KEYS */;
 INSERT INTO `exp_global_variables` (`variable_id`, `site_id`, `variable_name`, `variable_data`, `edit_date`) VALUES
 	(1, 1, '.htaccess', 'deny from all', 0),
@@ -1372,11 +1393,6 @@ CREATE TABLE IF NOT EXISTS `exp_grid_columns` (
   PRIMARY KEY (`col_id`),
   KEY `field_id` (`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Dumping data for table ee-test.exp_grid_columns: ~0 rows (approximately)
-DELETE FROM `exp_grid_columns`;
-/*!40000 ALTER TABLE `exp_grid_columns` DISABLE KEYS */;
-/*!40000 ALTER TABLE `exp_grid_columns` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_html_buttons
 DROP TABLE IF EXISTS `exp_html_buttons`;
@@ -1444,6 +1460,7 @@ DROP TABLE IF EXISTS `exp_members`;
 CREATE TABLE IF NOT EXISTS `exp_members` (
   `member_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` int(10) DEFAULT NULL,
+  `pending_role_id` int(10) DEFAULT NULL,
   `username` varchar(50) NOT NULL,
   `screen_name` varchar(50) NOT NULL,
   `password` varchar(128) NOT NULL,
@@ -1509,6 +1526,7 @@ CREATE TABLE IF NOT EXISTS `exp_members` (
   `cp_homepage` varchar(20) DEFAULT NULL,
   `cp_homepage_channel` varchar(255) DEFAULT NULL,
   `cp_homepage_custom` varchar(100) DEFAULT NULL,
+  `dismissed_pro_banner` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`member_id`),
   KEY `group_id` (`role_id`),
   KEY `unique_id` (`unique_id`),
@@ -1519,7 +1537,7 @@ CREATE TABLE IF NOT EXISTS `exp_members` (
 DELETE FROM `exp_members`;
 /*!40000 ALTER TABLE `exp_members` DISABLE KEYS */;
 INSERT INTO `exp_members` (`member_id`, `role_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `bookmarklets`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
-	(1, 1, 'admin', 'Admin', '0d4b0184ac57f2233b7a7ccb8c844b3121ddffcc67d0144d7b5ef0594eb64f96fb6ee53f9d23bb4e9ed4d1b7433eb848eee2cfca030ebd15461ca8a68ff4dcc5', '3Vlfi\'R1tviY"`hA+4~h2#TGO:m;ePK`E~\\$G[%C;+W_<Cr\\fA9~v{U&x^6Ts9.!,BT1OjSl}hFdV6FPO4bZX-=`pa_8_UPrFIU@XbTN]5?9vAJ>E~Qn`2)Zo]I$=d<t', 'bc62f762437a95f19b722924b85f76bc19fb6430', '4da80648d120e6ce5c9886df6ae5de8f1fa3c3d5', NULL, 'kevin.cupp@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1409242030, 1588591744, 1588592390, 10, 0, 0, 0, 1409242030, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', 'America/New_York', '12', '%n/%j/%Y', 'n', NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, '', NULL, 'n', 0, 'y', 0, NULL, NULL, NULL),
+	(1, 1, 'admin', 'Admin', '$2y$10$Eba.Wi81Fl0f.9gGbgv6jOHZSB25wZ2HSDQNUjTcWeVRvN8h6/63u', '', 'bc62f762437a95f19b722924b85f76bc19fb6430', '4da80648d120e6ce5c9886df6ae5de8f1fa3c3d5', NULL, 'cypress@expressionengine.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1409242030, 1588592390, 1625643622, 10, 0, 0, 0, 1409242030, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', 'America/New_York', '12', '%n/%j/%Y', 'n', NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, '', NULL, 'n', 0, 'y', 0, NULL, NULL, NULL),
 	(2, 1, 'robin', 'Robin Screen', '5zaa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bz62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'mediacow@localhost', NULL, 'procotopus.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '4', 1, 'y', 0, 0, '127.0.0.1', 1465853984, 1491259180, 1491324114, 83, 10, 7, 4, 0, 1469650137, 1487020433, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'n', 'y', 'english', 'America/New_York', '12', '%n/%j/%Y', 'n', NULL, NULL, 'Shares', NULL, '28', NULL, '18', NULL, 'Query Results|index.php?/cp/utilities/query|1\nOffsite 2|http://test.com|4', NULL, 'n', 0, 'y', 0, 'entries_edit', '{"1":"1","2":"14","3":"8"}', ''),
 	(3, 2, 'banned1', 'Banned 1', '5aaa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'by62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'edit2@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1484840926, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, 'y', 0, NULL, NULL, NULL),
 	(4, 4, 'pending1', 'Pending 1', '5daa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bx62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'edit5@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1484841088, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, 'y', 0, NULL, NULL, NULL),
@@ -1851,8 +1869,7 @@ CREATE TABLE IF NOT EXISTS `exp_modules` (
   PRIMARY KEY (`module_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_modules: ~9 rows (approximately)
-DELETE FROM `exp_modules`;
+-- Dumping data for table ee-test.exp_modules: ~11 rows (approximately)
 /*!40000 ALTER TABLE `exp_modules` DISABLE KEYS */;
 INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
 	(1, 'Consent', '1.0.0', 'n', 'n'),
@@ -2067,11 +2084,12 @@ CREATE TABLE IF NOT EXISTS `exp_relationships` (
   KEY `child_id` (`child_id`),
   KEY `field_id` (`field_id`),
   KEY `grid_row_id` (`grid_row_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_relationships: ~0 rows (approximately)
-DELETE FROM `exp_relationships`;
+-- Dumping data for table ee-test.exp_relationships: ~1 rows (approximately)
 /*!40000 ALTER TABLE `exp_relationships` DISABLE KEYS */;
+INSERT INTO `exp_relationships` (`relationship_id`, `parent_id`, `child_id`, `field_id`, `grid_field_id`, `grid_col_id`, `grid_row_id`, `order`, `fluid_field_data_id`) VALUES
+	(1, 2, 1, 8, 0, 0, 0, 1, 0);
 /*!40000 ALTER TABLE `exp_relationships` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_remember_me
@@ -2089,8 +2107,7 @@ CREATE TABLE IF NOT EXISTS `exp_remember_me` (
   KEY `member_id` (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_remember_me: ~1 rows (approximately)
-DELETE FROM `exp_remember_me`;
+-- Dumping data for table ee-test.exp_remember_me: ~0 rows (approximately)
 /*!40000 ALTER TABLE `exp_remember_me` DISABLE KEYS */;
 INSERT INTO `exp_remember_me` (`remember_me_id`, `member_id`, `ip_address`, `user_agent`, `admin_sess`, `site_id`, `expiration`, `last_refresh`) VALUES
 	('e55a8d01e4d7bc423388ea41e463f13ae03a0b86', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36', 0, 1, 1589801343, 1588591743);
@@ -2281,14 +2298,14 @@ CREATE TABLE IF NOT EXISTS `exp_security_hashes` (
   `hash` varchar(40) NOT NULL,
   PRIMARY KEY (`hash_id`),
   KEY `session_id` (`session_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_security_hashes: ~2 rows (approximately)
-DELETE FROM `exp_security_hashes`;
+-- Dumping data for table ee-test.exp_security_hashes: ~3 rows (approximately)
 /*!40000 ALTER TABLE `exp_security_hashes` DISABLE KEYS */;
 INSERT INTO `exp_security_hashes` (`hash_id`, `date`, `session_id`, `hash`) VALUES
 	(1, 1588591744, 'f2a904e290e6d7f11670d005dbd5020ee5cad37a', 'fa13719243186990ca7cf873bdd734b1db955877'),
-	(2, 1588591844, '22f12e37632a7094d83fde9c22c3016f6b861ff6', 'eeed380ee21f26cc4a8d3fe5aeed844561b64fff');
+	(2, 1588591844, '22f12e37632a7094d83fde9c22c3016f6b861ff6', 'eeed380ee21f26cc4a8d3fe5aeed844561b64fff'),
+	(3, 1625643622, '3ae75b223da9180ff6cf5c64ac34d7da5770f24d', '7a16a632b5282b1ad195c821d2e5728c3a86385e');
 /*!40000 ALTER TABLE `exp_security_hashes` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_sessions
@@ -2310,12 +2327,10 @@ CREATE TABLE IF NOT EXISTS `exp_sessions` (
   KEY `last_activity_idx` (`last_activity`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_sessions: ~2 rows (approximately)
-DELETE FROM `exp_sessions`;
+-- Dumping data for table ee-test.exp_sessions: ~1 rows (approximately)
 /*!40000 ALTER TABLE `exp_sessions` DISABLE KEYS */;
 INSERT INTO `exp_sessions` (`session_id`, `member_id`, `admin_sess`, `ip_address`, `user_agent`, `fingerprint`, `login_state`, `sess_start`, `auth_timeout`, `last_activity`, `can_debug`) VALUES
-	('22f12e37632a7094d83fde9c22c3016f6b861ff6', 1, 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36', '8620fc7bbc4339e82dbdfbed935b630b', NULL, 1588591844, 0, 1588592422, '0'),
-	('f2a904e290e6d7f11670d005dbd5020ee5cad37a', 1, 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36', '8620fc7bbc4339e82dbdfbed935b630b', NULL, 1588591743, 0, 1588591785, 'n');
+	('3ae75b223da9180ff6cf5c64ac34d7da5770f24d', 1, 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36', '737e374e4469096ad32d5d83b323a4e3', NULL, 1625643613, 0, 1625643722, '0');
 /*!40000 ALTER TABLE `exp_sessions` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_sites
@@ -2331,11 +2346,10 @@ CREATE TABLE IF NOT EXISTS `exp_sites` (
   KEY `site_name` (`site_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Dumping data for table ee-test.exp_sites: ~1 rows (approximately)
-DELETE FROM `exp_sites`;
+-- Dumping data for table ee-test.exp_sites: ~0 rows (approximately)
 /*!40000 ALTER TABLE `exp_sites` DISABLE KEYS */;
 INSERT INTO `exp_sites` (`site_id`, `site_label`, `site_name`, `site_description`, `site_bootstrap_checksums`, `site_pages`) VALUES
-	(1, 'EE6', 'default_site', NULL, 'YToxOntzOjc6ImVtYWlsZWQiO2E6MDp7fX0=', 'YToxOntpOjE7YToxOntzOjM6InVybCI7czozMjoiaHR0cDovL3ByaXZhdGU2MC50ZXN0L2luZGV4LnBocC8iO319');
+	(1, 'EE6', 'default_site', NULL, 'YToyOntzOjc6ImVtYWlsZWQiO2E6MDp7fXM6NDU6IkM6XE9TUGFuZWxcZG9tYWluc1xFeHByZXNzaW9uRW5naW5lL2luZGV4LnBocCI7czozMjoiMGM2ZDBlZjIyZGYyZjJhNWUyZTQzZGYzZGYxOTJlYzgiO30=', 'YToxOntpOjE7YToxOntzOjM6InVybCI7czozMjoiaHR0cDovL3ByaXZhdGU2MC50ZXN0L2luZGV4LnBocC8iO319');
 /*!40000 ALTER TABLE `exp_sites` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_snippets
@@ -2434,7 +2448,7 @@ CREATE TABLE IF NOT EXISTS `exp_stats` (
 DELETE FROM `exp_stats`;
 /*!40000 ALTER TABLE `exp_stats` DISABLE KEYS */;
 INSERT INTO `exp_stats` (`stat_id`, `site_id`, `total_members`, `recent_member_id`, `recent_member`, `total_entries`, `total_forum_topics`, `total_forum_posts`, `total_comments`, `last_entry_date`, `last_forum_post_date`, `last_comment_date`, `last_visitor_date`, `most_visitors`, `most_visitor_date`, `last_cache_clear`) VALUES
-	(1, 1, 1, 1, 'Admin', 1, 0, 0, 0, 1409242030, 0, 0, 0, 0, 0, 1409242030);
+	(1, 1, 1, 1, 'Admin', 10, 0, 0, 0, 1409242030, 0, 0, 0, 0, 0, 1626248343);
 /*!40000 ALTER TABLE `exp_stats` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_statuses
@@ -2494,6 +2508,7 @@ CREATE TABLE IF NOT EXISTS `exp_templates` (
   `php_parse_location` char(1) NOT NULL DEFAULT 'o',
   `hits` int(10) unsigned NOT NULL DEFAULT 0,
   `protect_javascript` char(1) NOT NULL DEFAULT 'n',
+  `enable_frontedit` char(1) NOT NULL default 'y',
   PRIMARY KEY (`template_id`),
   KEY `group_id` (`group_id`),
   KEY `template_name` (`template_name`),

@@ -879,22 +879,26 @@ class Channels extends AbstractChannelsController
                     )
                 ),
                 array(
-                    'title' => 'preview_url',
-                    'desc' => 'preview_url_desc',
-                    'fields' => array(
-                        'preview_url' => array(
-                            'type' => 'text',
-                            'value' => $channel->getRawProperty('preview_url')
-                        )
-                    )
-                ),
-                array(
                     'title' => 'allow_preview',
                     'desc' => 'allow_preview_desc',
                     'fields' => array(
                         'allow_preview' => array(
                             'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'allow_preview'
+                            ),
                             'value' => $channel->allow_preview
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'preview_url',
+                    'desc' => 'preview_url_desc',
+                    'group' => 'allow_preview',
+                    'fields' => array(
+                        'preview_url' => array(
+                            'type' => 'text',
+                            'value' => $channel->getRawProperty('preview_url')
                         )
                     )
                 )
@@ -1056,7 +1060,11 @@ class Channels extends AbstractChannelsController
                     'fields' => array(
                         'enable_versioning' => array(
                             'type' => 'yes_no',
-                            'value' => $channel->enable_versioning
+                            'value' => $channel->enable_versioning,
+                            'note' => form_label(
+                                form_checkbox('update_versioning', 'y')
+                                . lang('update_versioning')
+                            )
                         )
                     )
                 ),
@@ -1456,11 +1464,11 @@ class Channels extends AbstractChannelsController
 
         // Create Channel
         if ($channel->isNew()) {
-            $channel->default_entry_title = '';
-            $channel->url_title_prefix = '';
-            $channel->channel_url = ee()->functions->fetch_site_index();
-            $channel->channel_lang = ee()->config->item('xml_lang');
-            $channel->site_id = ee()->config->item('site_id');
+            $channel->default_entry_title = $channel->default_entry_title ?: '';
+            $channel->url_title_prefix = $channel->url_title_prefix ?: '';
+            $channel->channel_url = $channel->channel_url ?: ee()->functions->fetch_site_index();
+            $channel->channel_lang = $channel->channel_lang ?: ee()->config->item('xml_lang');
+            $channel->site_id = $channel->site_id ?: ee()->config->item('site_id');
 
             $dupe_id = ee()->input->post('duplicate_channel_prefs');
             unset($_POST['duplicate_channel_prefs']);
@@ -1492,6 +1500,10 @@ class Channels extends AbstractChannelsController
             ee()->logger->log_action($success_msg . NBS . NBS . $_POST['channel_title']);
         } else {
             $channel->save();
+        }
+
+        if (ee('Request')->post('update_versioning')) {
+            ee('Channel/ChannelEntry')->updateVersioning($channel->getId(), ee('Request')->post('enable_versioning'));
         }
 
         $perms = [];
