@@ -1460,6 +1460,7 @@ DROP TABLE IF EXISTS `exp_members`;
 CREATE TABLE IF NOT EXISTS `exp_members` (
   `member_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` int(10) DEFAULT NULL,
+  `pending_role_id` int(10) DEFAULT NULL,
   `username` varchar(50) NOT NULL,
   `screen_name` varchar(50) NOT NULL,
   `password` varchar(128) NOT NULL,
