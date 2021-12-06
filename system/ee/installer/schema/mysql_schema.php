@@ -118,7 +118,7 @@ class EE_Schema
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			member_id int(10) default '0' NOT NULL,
 			in_forum char(1) NOT NULL default 'n',
-			name varchar(50) default '0' NOT NULL,
+			name varchar(" . USERNAME_MAX_LENGTH . ") default '0' NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			date int(10) unsigned default '0' NOT NULL,
 			anon char(1) NOT NULL,
@@ -280,6 +280,7 @@ class EE_Schema
         $Q[] = "CREATE TABLE exp_members (
 			member_id int(10) unsigned NOT NULL auto_increment,
 			role_id int(10) NOT NULL default '0',
+			pending_role_id int(10) NOT NULL default '0',
 			username varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			screen_name varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			password varchar(128) NOT NULL DEFAULT '',

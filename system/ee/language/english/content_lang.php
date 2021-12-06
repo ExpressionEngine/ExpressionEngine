@@ -174,6 +174,8 @@ $lang = array(
 
     'sticky' => 'Make entry sticky?',
 
+    'sticky_entry' => 'Sticky Entry',
+
     'sticky_desc' => 'When enabled, this entry will be given preference in sorted listings.',
 
     'url_title' => '<abbr title="Unified Resource Locator">URL</abbr> title',
