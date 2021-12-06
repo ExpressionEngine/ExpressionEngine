@@ -408,7 +408,7 @@ class Member_memberlist extends Member
             $mcf_sql = '';
         }
 
-        $f_sql = "SELECT m.member_id, m.username, m.screen_name, m.email, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.name as member_group {$mcf_select} ";
+        $f_sql = "SELECT m.member_id, m.role_id, m.username, m.screen_name, m.email, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.name as member_group {$mcf_select} ";
         $p_sql = "SELECT COUNT(m.member_id) AS count ";
         $sql = "FROM exp_members m
 					LEFT JOIN exp_roles g ON g.role_id = m.role_id

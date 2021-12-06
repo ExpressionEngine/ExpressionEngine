@@ -93,4 +93,19 @@ context.only('Member List frontend', () => {
     cy.get('tbody tr').should('not.contain', 'Super Admin')
   })
 
+  it('the paths are correct', () => {
+
+    cy.visit('index.php/members/memberlist');
+    cy.get('[name=role_id]').select("Super Admin")
+    cy.get('[name=sort_order]').select('Ascending')
+    cy.get('.submit').click();
+
+    cy.get('tbody tr').its('length').should('eq', 2)
+    cy.get('tbody tr').eq(1).find('img').should('exist')
+    cy.get('tbody tr').eq(1).find('img').invoke('attr', 'src').then((src) => {
+      expect(src).to.contain('procotopus.png')
+    })
+    cy.get('tbody tr').should('not.contain', 'Member')
+  })
+
 })
