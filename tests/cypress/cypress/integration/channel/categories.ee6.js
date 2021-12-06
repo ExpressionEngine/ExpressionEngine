@@ -211,12 +211,6 @@ context('Categories', () => {
         cy.get(".title-nested div").first().invoke('text').then((text) => {
             expect(text).equal('Site Info')
         })
-        cy.get(".most_used_categories-linear div").first().invoke('text').then((text) => {
-            expect(text).equal('Staff Bios')
-        })
-        cy.get(".most_used_categories-nested div").first().invoke('text').then((text) => {
-            expect(text).equal('Staff Bios')
-        })
     })
 
     function check_category_one() {
