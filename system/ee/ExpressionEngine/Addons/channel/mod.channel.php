@@ -663,7 +663,7 @@ class Channel
                 $fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
             } // foreach($sites as $site_id)
             if (! empty($fields_sql)) {
-                $sql .= 'AND (' . $fields_sql . ')';
+                $sql .= ' AND (' . $fields_sql . ')';
             }
         }
 
@@ -1144,6 +1144,8 @@ class Channel
         // Only Sticky Entries
         if (ee()->TMPL->fetch_param('sticky') == 'only') {
             $sql .= " AND t.sticky = 'y' ";
+        } elseif (ee()->TMPL->fetch_param('sticky') == 'none') {
+            $sql .= " AND t.sticky != 'y' ";
         }
 
         /**------
@@ -2094,13 +2096,15 @@ class Channel
 				LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id
 				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id ";
 
-        if (! empty($this->mfields)) {
+        $mfieldCount = 0;
+        if ($this->enable['member_data'] && ! empty($this->mfields)) {
             $sql .= ", md.* ";
             $from .= "LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ";
 
             foreach ($this->mfields as $mfield) {
                 // Only join non-legacy field tables
                 if ($mfield[2] == 'n') {
+                    $mfieldCount++;
                     $field_id = $mfield[0];
                     $table = "exp_member_data_field_{$field_id}";
                     $sql .= ", {$table}.*";
@@ -2109,31 +2113,30 @@ class Channel
             }
         }
 
-        $cache_key = "mod.channel/Channels/" . implode(',', $channel_ids);
-
-        if (($channels = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
-            $channels = ee('Model')->get('Channel', $channel_ids)
-                ->with('FieldGroups', 'CustomFields')
-                ->all();
-
-            ee()->session->set_cache(__CLASS__, $cache_key, $channels);
-        }
-
         $fields = array();
 
-        foreach ($channels as $channel) {
-            foreach ($channel->getAllCustomFields() as $field) {
-                if (! $field->legacy_field_data) {
-                    $fields[$field->field_id] = $field;
+        if ($this->enable['custom_fields']) {
+            $cache_key = "mod.channel/Channels/" . implode(',', $channel_ids);
+
+            if (($channels = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
+                $channels = ee('Model')->get('Channel', $channel_ids)
+                    ->with('FieldGroups', 'CustomFields')
+                    ->all();
+
+                ee()->session->set_cache(__CLASS__, $cache_key, $channels);
+            }
+
+            foreach ($channels as $channel) {
+                foreach ($channel->getAllCustomFields() as $field) {
+                    if (! $field->legacy_field_data) {
+                        $fields[$field->field_id] = $field;
+                    }
                 }
             }
         }
 
         //MySQL has limit of 61 joins, so we need to make sure to not hit it
-        $join_limit = 61 - 4;
-        if (!empty($this->mfields)) {
-            $join_limit = $join_limit - 1 - count($this->mfields);
-        }
+        $join_limit = 61 - 7 - $mfieldCount;
         $chunks = array_chunk($fields, $join_limit);
 
         $chunk = (array_shift($chunks)) ?: array();
@@ -2289,7 +2292,7 @@ class Channel
 
     private function previewDataPassesCondition($condition, $data)
     {
-        list($column, $comparison, $value) = explode(' ', trim($condition));
+        list($column, $comparison, $value) = explode(' ', trim($condition, '() '));
         list($table, $key) = explode('.', $column);
 
         $datum = $data[$key];
@@ -5115,7 +5118,9 @@ class Channel
             return ee()->output->show_user_error('off', lang('preview_domain_error_instructions'), lang('preview_cannot_display'));
         }
 
-        return ee('LivePreview')->preview($channel_id, $entry_id, $return);
+        $prefer_system_preview = ee()->input->get('prefer_system_preview') == 'y';
+
+        return ee('LivePreview')->preview($channel_id, $entry_id, $return, $prefer_system_preview);
     }
 
 }
