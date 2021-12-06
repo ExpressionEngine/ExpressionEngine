@@ -92,6 +92,7 @@ context('Operate the site with many members', () => {
     it('no warnings if override is not set', () => {
       cy.eeConfig({item: 'ignore_member_stats', value: 'n'}).then(() => {
 
+        cy.wait(5000)
         cy.visit('admin.php?/cp/utilities/communicate');
         cy.screenshot({capture: 'fullPage'});
         cy.get('.app-notice:visible').its('length').should('eq', 1)
@@ -103,6 +104,7 @@ context('Operate the site with many members', () => {
 
         cy.eeConfig({item: 'ignore_member_stats', value: 'y'}).then(() => {
 
+          cy.wait(5000)
           cy.visit('admin.php?/cp/utilities/communicate');
           cy.get('.app-notice:visible').its('length').should('eq', 2)
           cy.hasNoErrors()
