@@ -94,12 +94,20 @@ context('Operate the site with many members', () => {
 
         cy.visit('admin.php?/cp/utilities/communicate');
         cy.screenshot({capture: 'fullPage'});
-        cy.get('.app-notice:visible').should('not.exist')
+        cy.get('.app-notice:visible').its('length').should('eq', 1)
         cy.hasNoErrors()
 
         cy.visit('admin.php?/cp/members/roles')
         page.get('alert').should('not.exist')
         cy.hasNoErrors()
+
+        cy.eeConfig({item: 'ignore_member_stats', value: 'y'}).then(() => {
+
+          cy.visit('admin.php?/cp/utilities/communicate');
+          cy.get('.app-notice:visible').its('length').should('eq', 2)
+          cy.hasNoErrors()
+
+        })
       })
       
     })
