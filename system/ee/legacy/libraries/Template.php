@@ -2757,6 +2757,7 @@ class EE_Template
             ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id', 'left');
             ee()->db->where('group_name', $template_group);
             ee()->db->where('template_name', $template);
+            ee()->db->where('templates.site_id', ee()->config->item('site_id'));
             $valid_count = ee()->db->count_all_results();
 
             // We found a valid template!  Er- could this loop?  Better just return FALSE
