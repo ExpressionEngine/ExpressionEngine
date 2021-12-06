@@ -332,7 +332,7 @@ class EntryListing
 
             switch ($this->search_in) {
                 case 'titles_and_content':
-                    $search_fields = array_merge(['title'], $content_fields);
+                    $search_fields = array_merge(['title', 'url_title', 'entry_id'], $content_fields);
 
                     break;
                 case 'content':
@@ -340,7 +340,7 @@ class EntryListing
 
                     break;
                 case 'titles':
-                    $search_fields = ['title'];
+                    $search_fields = ['title', 'url_title', 'entry_id'];
 
                     break;
             }
