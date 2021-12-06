@@ -166,7 +166,7 @@ class Textarea_ft extends EE_Fieldtype
                 $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('directory' => 'all'));
 
                 ee()->cp->add_js_script(array(
-                    'file' => array('fields/textarea/cp'),
+                    'file' => array('fields/textarea/textarea'),
                     'plugin' => array('ee_txtarea')
                 ));
             }

@@ -11,6 +11,7 @@
 //
 // require('@4tw/cypress-drag-drop')
 import 'cypress-file-upload';
+import 'cypress-maildev';
 
 // -- This is a parent command --
 Cypress.Commands.add("login", (user) => {
@@ -43,7 +44,7 @@ Cypress.Commands.add("logout", () => {
 })
 
 Cypress.Commands.add("auth", (user) => {
-    cy.visit('admin.php');
+    cy.visit('admin.php', {failOnStatusCode: false});
     cy.login(user);
 })
 

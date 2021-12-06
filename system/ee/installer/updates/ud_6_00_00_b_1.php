@@ -596,9 +596,7 @@ class Updater
             ee()->db->insert_batch('permissions', $insert);
         }
 
-        foreach ($permissions as $permission) {
-            ee()->smartforge->drop_column('member_groups', $permission);
-        }
+        ee()->smartforge->drop_column_batch('member_groups', $permissions);
     }
 
     private function reassignChannelsToRoles()

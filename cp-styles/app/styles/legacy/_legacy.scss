@@ -156,6 +156,16 @@
   h2:first-child {
     margin-top: 0;
   }
+
+  .redactor-styles h2 {
+  	  border: none;
+      text-transform: none;
+      letter-spacing: revert;
+      font-size: 1.728em;
+      color: #111;
+      margin-bottom: 0.5em;
+      padding: 0;
+  }
 }
 
 .field-toggle-all {

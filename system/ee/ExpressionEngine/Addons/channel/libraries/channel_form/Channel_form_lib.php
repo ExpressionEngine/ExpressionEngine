@@ -692,6 +692,7 @@ class Channel_form_lib
         );
 
         $form_attributes = array(
+            'data-ee-version' => APP_VER,
             'hidden_fields' => $hidden_fields,
             'action' => $action,
             'id' => ee()->TMPL->fetch_param('id', 'cform'),

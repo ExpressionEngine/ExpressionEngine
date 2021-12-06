@@ -1,7 +1,7 @@
 name: Tests (minimal)
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 6.dev
@@ -28,19 +28,12 @@ jobs:
             uses: actions/checkout@v2
 
           - name: Checkout Pro
+            if: github.event.pull_request.head.repo.full_name == github.repository
             uses: actions/checkout@v2
             with:
               repository: EllisLab/ExpressionEngine-Pro
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
               path: __pro
-
-        #  - name: Move Pro into core
-        #    run: |
-        #      mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-        #      mv __pro/themes/ee/pro themes/ee/pro
-        #      mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
-        #      mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-        #      rm -rf __pro
 
           - name: Setup asdf
             uses: asdf-vm/actions/setup@v1
@@ -63,7 +56,8 @@ jobs:
               content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
               echo "::set-output name=BUILD_VERSION::$content"
 
-          - name: Run build process
+          - name: Run build process (with Pro)
+            if: github.event.pull_request.head.repo.full_name == github.repository
             working-directory: build-tools
             env:
               RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
@@ -71,6 +65,16 @@ jobs:
               APP_REPO_PATH: ${{ github.workspace }}
               PRO_REPO_PATH: ${{ github.workspace }}/__pro
             run: gulp build-app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+
+          - name: Run build process (without Pro)
+            if: github.event.pull_request.head.repo.full_name != github.repository
+            working-directory: build-tools
+            env:
+              RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+              RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+              APP_REPO_PATH: ${{ github.workspace }}
+              PRO_REPO_PATH: ${{ github.workspace }}/__pro
+            run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
             working-directory: build-tools/builds
@@ -90,7 +94,7 @@ jobs:
               ls -latr build-tools/builds/ExpressionEngine
 
     cypress-minimal-pro:
-        if: github.event.pull_request.draft == false
+        if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
         needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
@@ -139,7 +143,6 @@ jobs:
 
             - name: Setup Permissions
               run: |
-                cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
                 sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
@@ -237,7 +240,6 @@ jobs:
 
             - name: Setup Permissions
               run: |
-                cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
                 sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
@@ -334,7 +336,6 @@ jobs:
 
             - name: Setup Permissions
               run: |
-                cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
                 sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
@@ -430,7 +431,6 @@ jobs:
 
             - name: Setup Permissions
               run: |
-                cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
                 sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
@@ -454,6 +454,11 @@ jobs:
 
             - name: Start PHP Server
               run: php -S localhost:8888 &
+
+            - name: Start SMTP Server
+              run: |
+                npm install -g maildev
+                maildev &
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2
@@ -526,7 +531,6 @@ jobs:
 
             - name: Setup Permissions
               run: |
-                cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
                 sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
@@ -622,7 +626,6 @@ jobs:
 
             - name: Setup Permissions
               run: |
-                cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
                 sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
@@ -718,7 +721,6 @@ jobs:
 
             - name: Setup Permissions
               run: |
-                cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
                 sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
@@ -808,7 +810,6 @@ jobs:
 
             - name: Setup Permissions
               run: |
-                cp tests/cypress/support/ExpressionEngineUpdate.pub system/ee/ExpressionEngine
                 sudo chmod 666 system/user/config/config.php
                 sudo chmod 777 system/user/config
                 sudo chmod -R 777 system/user/cache
