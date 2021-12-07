@@ -296,9 +296,15 @@ $lang = array(
 
     'members_activation_resent_success_desc' => 'Activation emails were sent to the following members:',
 
+    'members_approve_error' => 'Members Not Approved',
+
     'members_approved_success' => 'Members Approved',
 
     'members_approved_success_desc' => 'The following members have been approved:',
+
+    'cannot_activate_member_role_not_exists' => 'Unable to activate %s. The member role %s does not exist.',
+
+    'cannot_activate_member_role_is_locked' => 'Unable to activate %s. The member role %s is locked.',
 
     'members_are_deleted' => 'Member(s) have been deleted',
 
