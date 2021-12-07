@@ -10,7 +10,8 @@
 
 namespace ExpressionEngine\Controller\Members\Profile;
 
-use \ExpressionEngine\Service\Model\Collection AS FileCollection;
+use ExpressionEngine\Service\Model\Collection AS FileCollection;
+use ExpressionEngine\Model\File\File AS FileModel;
 
 /**
  * Member Profile Personal Settings Controller
@@ -306,7 +307,7 @@ class Settings extends Profile
             if($files->count() >= 1) {
                 foreach($files->getIds() AS $file_id) {
                     $file = ee('Model')->get('File', $file_id)->first();
-                    if($file instanceof \ExpressionEngine\Model\File\File) {
+                    if($file instanceof FileModel) {
                         if($file->upload_location_id == $dir_id) {
                             $file->delete();
                         }
