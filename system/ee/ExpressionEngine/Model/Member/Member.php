@@ -503,13 +503,6 @@ class Member extends ContentModel
 
     public static function onAfterBulkDelete()
     {
-        if (ee()->config->item('ignore_member_stats') != 'y') {
-            foreach (ee('Model')->get('Role')->all() as $role) {
-                $role->total_members = null;
-                $role->save();
-            }
-        }
-
         ee()->stats->update_member_stats();
 
         // Quick and dirty private message count update; due to the order of
