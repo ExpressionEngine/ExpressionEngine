@@ -164,7 +164,7 @@ class Relationships_ft_cp
 
         $member_ids = [];
         foreach ($roles as $role) {
-            $member_ids = array_merge($role->getAllMembers()->pluck('member_id'), $member_ids);
+            $member_ids = array_merge($role->getAllMembersData('member_id'), $member_ids);
         }
 
         // Then all authors who are in those groups or who have author access

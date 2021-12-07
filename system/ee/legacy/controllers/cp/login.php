@@ -100,6 +100,18 @@ class Login extends CP_Controller
                 ->now();
         }
 
+        if (ee()->config->item('cookie_domain') != '') {
+            $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
+            $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('cookie_domain'));
+            if ($domain_matches === false) {
+                ee('CP/Alert')
+                    ->makeInline()
+                    ->asIssue()
+                    ->addToBody(lang('cookie_domain_mismatch'))
+                    ->now();
+            }
+        }
+
         // Normal login button state
         $this->view->btn_class = 'button button--primary button--large button--wide';
         $this->view->btn_label = lang('login');
