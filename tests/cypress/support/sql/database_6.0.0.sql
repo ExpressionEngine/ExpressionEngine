@@ -2154,6 +2154,7 @@ CREATE TABLE IF NOT EXISTS `exp_roles` (
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `short_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `total_members` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `is_locked` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'n',
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

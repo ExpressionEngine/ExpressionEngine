@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'addEnableCliConfig',
+            'addTotalMembersCount'
         ]);
 
         foreach ($steps as $k => $v) {
@@ -36,10 +37,29 @@ class Updater
         return true;
     }
 
+
     private function addEnableCliConfig()
     {
         // Enable the CLI by default
         ee()->config->update_site_prefs(['enable_cli' => 'y'], 'all');
+    }
+
+    private function addTotalMembersCount()
+    {
+        if (!ee()->db->field_exists('total_members', 'roles')) {
+            ee()->smartforge->add_column(
+                'roles',
+                [
+                    'total_members' => [
+                        'type' => 'mediumint',
+                        'constraint' => 8,
+                        'null' => false,
+                        'unsigned' => true,
+                        'default' => 0
+                ]
+                ]
+            );
+        }
     }
 }
 
