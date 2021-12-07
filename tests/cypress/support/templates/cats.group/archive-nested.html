@@ -1,4 +1,4 @@
-{exp:channel:category_archive channel="news" style="linear"}
+{exp:channel:category_archive channel="news" style="nested"}
     {categories}
         <div id="{category_url_title}">
             <div class="category_name">{category_name}</div>
@@ -12,7 +12,7 @@
         </div>
     {/categories}
     {entry_titles}
-        <div id="details-{category_name}-{entry_id}">
+        <div id="details-{entry_id}">
             <div class="title">{title}</div>
             <div class="entry_date">{entry_date format="%Y"}</div>
             <div class="channel_id">{channel_id}</div>
