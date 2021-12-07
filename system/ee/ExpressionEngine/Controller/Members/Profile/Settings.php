@@ -207,6 +207,9 @@ class Settings extends Profile
         // If nothing was chosen, keep the current avatar.
         if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
             $this->member->avatar_filename = ee()->security->sanitize_filename(ee()->input->post('avatar_filename'));
+            if(!ee()->input->post('avatar_filename')) {
+                $this->member->avatar_width = $this->member->avatar_height = null;
+            }
 
             return true;
         }
