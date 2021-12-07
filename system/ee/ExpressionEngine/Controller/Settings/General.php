@@ -28,6 +28,8 @@ class General extends Settings
             ->filter('site_id', ee()->config->item('site_id'))
             ->first();
 
+        ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker', 'cp/color_picker'));
+
         $localization_fields = ee()->config->prep_view_vars('localization_cfg');
 
         $vars['sections'] = array(
@@ -157,7 +159,33 @@ class General extends Settings
                         'include_seconds' => array('type' => 'yes_no')
                     )
                 ),
-            )
+            ),
+            'site_color_settings' => array(
+                array(
+                    'title' => 'site_color',
+                    'desc' => 'site_color_desc',
+                    'fields' => array(
+                        'custom_site_color' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'rel_color',
+                            ),
+
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'pick_color',
+                    'group' => 'rel_color',
+                    'fields' => array(
+                        'sitecolor' => array(
+                            'type' => 'text',
+                            'attrs' => 'class="color-picker"',
+                            'value' => ee()->config->item('sitecolor') ? ee()->config->item('sitecolor') : '#5D63F1',
+                        )
+                    )
+                ),
+            ),
         );
 
         $base_url = ee('CP/URL', 'settings/general');

@@ -1,7 +1,7 @@
 			<?php $sites = ee()->session->userdata('assigned_sites'); ?>
 			<div class="ee-sidebar <?php if (!isset($ee_cp_viewmode) || $ee_cp_viewmode != 'classic') : ?> hidden<?php endif; ?><?php if (isset($collapsed_nav) && $collapsed_nav == '1') : ?> ee-sidebar__collapsed<?php endif; ?>">
 				<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($sites) > 0 || ee('Permission')->can('admin_sites'))): ?>
-				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" title="<?=ee()->config->item('site_name')?>"><span class="ee-sidebar__title-name"><i class="fas fa-desktop fa-fw"></i><span class="ee-sidebar__collapsed-hidden"> <?=ee()->config->item('site_name')?></span></span><span class="ee-sidebar__title-down-arrow ee-sidebar__collapsed-hidden"><i class="fas fa-angle-down"></i></span></a>
+				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" title="<?=ee()->config->item('site_name')?>" <?php if (ee()->config->item('custom_site_color') === 'y'): ?>style="background-color: <?php echo ee()->config->item('sitecolor')?>"<?php endif; ?>><span class="ee-sidebar__title-name"><i class="fas fa-desktop fa-fw"></i><span class="ee-sidebar__collapsed-hidden"> <?=ee()->config->item('site_name')?></span></span><span class="ee-sidebar__title-down-arrow ee-sidebar__collapsed-hidden"><i class="fas fa-angle-down"></i></span></a>
 
 				<div class="dropdown dropdown--accent">
 					<a class="dropdown__link" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="fas fa-eye"></i> <?=lang('view_site')?></a>

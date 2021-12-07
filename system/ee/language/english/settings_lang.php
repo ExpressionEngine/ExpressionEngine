@@ -855,6 +855,15 @@ $lang = array(
 
     'anonymize_consent_logs_desc' => 'Selected fields will be anonimized in Consent Audit logs',
 
+    /* Site color */
+    'site_color_settings' => 'Site color settings',
+
+    'site_color' => 'Color code this site?',
+
+    'site_color_desc' => 'Apply a custom color to the top of the control panel’s sidebar for this site.',
+
+    'pick_color' => 'Pick a Color'
+
 );
 
 // EOF
