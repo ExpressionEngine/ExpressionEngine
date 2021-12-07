@@ -273,6 +273,13 @@ class Settings extends Profile
 
         // Save the new avatar filename
         $this->member->avatar_filename = $filename;
+        if(!empty($result['image_width'])) {
+            $this->member->avatar_width = $result['image_width'];
+        }
+
+        if(!empty($result['image_height'])) {
+            $this->member->avatar_height = $result['image_height'];
+        }
 
         return true;
     }
