@@ -291,11 +291,6 @@ class Settings extends Profile
             }
 
             $thumb = realpath(ee()->config->item('avatar_path') .'/_thumbs/'. $this->member->avatar_filename);
-
-
-            ee()->load->library('filemanager');
-            echo $thumb;
-            exit;
             if ($thumb && file_exists($thumb) && is_file($thumb)) {
                 unlink($thumb);
             }
