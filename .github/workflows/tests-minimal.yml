@@ -455,6 +455,11 @@ jobs:
             - name: Start PHP Server
               run: php -S localhost:8888 &
 
+            - name: Start SMTP Server
+              run: |
+                npm install -g maildev
+                maildev &
+
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2
               with:

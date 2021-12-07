@@ -762,16 +762,26 @@ class EE_Core
         // Secure forms stuff
         if (! ee()->security->have_valid_xid($flags)) {
             ee()->output->set_status_header(403);
+            $error = lang('csrf_token_expired');
+
+            //is the cookie domain part of site URL?
+            if (ee()->config->item('cookie_domain') != '') {
+                $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
+                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('cookie_domain'));
+                if ($domain_matches === false) {
+                    $error = lang('cookie_domain_mismatch');
+                }
+            }
 
             if (REQ == 'CP') {
                 if (AJAX_REQUEST) {
                     header('X-EE-Broadcast: modal');
                 }
 
-                show_error(lang('csrf_token_expired'));
+                show_error($error);
             }
 
-            ee()->output->show_user_error('general', array(lang('csrf_token_expired')));
+            ee()->output->show_user_error('general', array($error));
         }
     }
 }
