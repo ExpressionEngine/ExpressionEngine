@@ -193,6 +193,57 @@ context('Categories', () => {
         cy.visit('index.php/cats/archive')
 
         check_category_one()
+
+        
+        cy.get("#details-News-1 .title").invoke('text').then((text) => {
+            expect(text).equal('Getting to Know ExpressionEngine')
+        })
+        cy.get("#details-News-1 .entry_date").invoke('text').then((text) => {
+            expect(text).equal('2014')
+        })
+        cy.get("#details-News-1 .channel_id").invoke('text').then((text) => {
+            expect(text).equal('1')
+        })
+        cy.get("#details-News-1 .channel").invoke('text').then((text) => {
+            expect(text).equal('News')
+        })
+        cy.get("#details-News-1 .channel_short_name").invoke('text').then((text) => {
+            expect(text).equal('news')
+        })
+        cy.get("#details-News-1 .channel_url").invoke('text').then((text) => {
+            expect(text).to.contain('/news')
+        })
+
+        check_category_two()
+
+    })
+
+    it('check category archive (nested) on frontend', function() {
+    
+        cy.visit('index.php/cats/archive-nested')
+
+        check_category_one()
+
+        
+        cy.get("#news").parent().find("#details-1 .title").invoke('text').then((text) => {
+            expect(text).equal('Getting to Know ExpressionEngine')
+        })
+        cy.get("#news").parent().find("#details-1 .entry_date").invoke('text').then((text) => {
+            expect(text).equal('2014')
+        })
+        cy.get("#news").parent().find("#details-1 .channel_id").invoke('text').then((text) => {
+            expect(text).equal('1')
+        })
+        cy.get("#news").parent().find("#details-1 .channel").invoke('text').then((text) => {
+            expect(text).equal('News')
+        })
+        cy.get("#news").parent().find("#details-1 .channel_short_name").invoke('text').then((text) => {
+            expect(text).equal('news')
+        })
+        cy.get("#news").parent().find("#details-1 .channel_url").invoke('text').then((text) => {
+            expect(text).to.contain('/news')
+        })
+        
         check_category_two()
 
     })

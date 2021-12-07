@@ -228,8 +228,10 @@ class Member extends ContentModel
     protected static $_events = array(
         'afterUpdate',
         'beforeDelete',
+        'afterDelete',
         'afterBulkDelete',
         'beforeInsert',
+        'afterInsert',
         'beforeValidate',
         'afterSave'
     );
@@ -420,6 +422,26 @@ class Member extends ContentModel
     {
         parent::onAfterSave();
         ee()->cache->file->delete('jumpmenu/' . md5($this->member_id));
+    }
+
+    public function onAfterInsert()
+    {
+        if (ee()->config->item('ignore_member_stats') != 'y') {
+            foreach ($this->getAllRoles() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
+        }
+    }
+
+    public function onAfterDelete()
+    {
+        if (ee()->config->item('ignore_member_stats') != 'y') {
+            foreach ($this->getAllRoles() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
+        }
     }
 
     /**

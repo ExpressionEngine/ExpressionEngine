@@ -3064,10 +3064,13 @@ class Channel
             $group_ids = implode('|', $group_ids);
         }
 
-        $sql = "SELECT exp_category_posts.cat_id, exp_channel_titles.entry_id, exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.entry_date
-				FROM exp_channel_titles, exp_category_posts
-				WHERE channel_id IN ('" . implode("','", $channel_ids) . "')
-				AND exp_channel_titles.entry_id = exp_category_posts.entry_id ";
+        $sql = "SELECT exp_category_posts.cat_id, exp_channel_titles.entry_id, exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.entry_date,
+            exp_channels.channel_id, exp_channels.channel_name AS channel_short_name, exp_channels.channel_title AS channel, exp_channels.channel_url
+				FROM exp_channel_titles, exp_category_posts, exp_channels
+				WHERE exp_channel_titles.channel_id IN ('" . implode("','", $channel_ids) . "')
+				AND exp_channel_titles.entry_id = exp_category_posts.entry_id
+                AND exp_channels.channel_id = exp_channel_titles.channel_id
+                ";
 
         $timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
@@ -3196,15 +3199,8 @@ class Channel
 
                     $chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $row['entry_date']));
 
-                    foreach (ee()->TMPL->var_single as $key => $val) {
-                        if ($key == 'entry_id') {
-                            $chunk = ee()->TMPL->swap_var_single($key, $row['entry_id'], $chunk);
-                        }
-
-                        if ($key == 'url_title') {
-                            $chunk = ee()->TMPL->swap_var_single($key, $row['url_title'], $chunk);
-                        }
-                    }
+                    $row['channel_url'] = parse_config_variables($row['channel_url']);
+                    $chunk = ee()->TMPL->parse_variables_row($chunk, $row);
 
                     $channel_array[$i . '_' . $row['cat_id']] = str_replace(LD . 'title' . RD, $row['title'], $chunk);
                     $i++;
@@ -3372,15 +3368,8 @@ class Channel
 
                             $chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $trow['entry_date']));
 
-                            foreach (ee()->TMPL->var_single as $key => $val) {
-                                if ($key == 'entry_id') {
-                                    $chunk = ee()->TMPL->swap_var_single($key, $trow['entry_id'], $chunk);
-                                }
-
-                                if ($key == 'url_title') {
-                                    $chunk = ee()->TMPL->swap_var_single($key, $trow['url_title'], $chunk);
-                                }
-                            }
+                            $trow['channel_url'] = parse_config_variables($trow['channel_url']);
+                            $chunk = ee()->TMPL->parse_variables_row($chunk, $trow);
 
                             $titles_parsed .= $chunk;
                         }
@@ -3715,6 +3704,12 @@ class Channel
                 }
 
                 $chunk = $this->parseCategoryFields($cat_vars['category_id'], array_merge($val, $cat_vars), $chunk);
+
+                // Check to see if we need to parse {filedir_n}
+                if (strpos($chunk, '{filedir_') !== false) {
+                    ee()->load->library('file_field');
+                    $chunk = ee()->file_field->parse_string($chunk);
+                }
 
                 /** --------------------------------
                 /**  {count}
