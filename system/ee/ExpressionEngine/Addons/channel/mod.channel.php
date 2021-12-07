@@ -663,7 +663,7 @@ class Channel
                 $fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
             } // foreach($sites as $site_id)
             if (! empty($fields_sql)) {
-                $sql .= 'AND (' . $fields_sql . ')';
+                $sql .= ' AND (' . $fields_sql . ')';
             }
         }
 
@@ -1144,6 +1144,8 @@ class Channel
         // Only Sticky Entries
         if (ee()->TMPL->fetch_param('sticky') == 'only') {
             $sql .= " AND t.sticky = 'y' ";
+        } elseif (ee()->TMPL->fetch_param('sticky') == 'none') {
+            $sql .= " AND t.sticky != 'y' ";
         }
 
         /**------
@@ -2094,13 +2096,15 @@ class Channel
 				LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id
 				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id ";
 
-        if (! empty($this->mfields)) {
+        $mfieldCount = 0;
+        if ($this->enable['member_data'] && ! empty($this->mfields)) {
             $sql .= ", md.* ";
             $from .= "LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ";
 
             foreach ($this->mfields as $mfield) {
                 // Only join non-legacy field tables
                 if ($mfield[2] == 'n') {
+                    $mfieldCount++;
                     $field_id = $mfield[0];
                     $table = "exp_member_data_field_{$field_id}";
                     $sql .= ", {$table}.*";
@@ -2109,31 +2113,30 @@ class Channel
             }
         }
 
-        $cache_key = "mod.channel/Channels/" . implode(',', $channel_ids);
-
-        if (($channels = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
-            $channels = ee('Model')->get('Channel', $channel_ids)
-                ->with('FieldGroups', 'CustomFields')
-                ->all();
-
-            ee()->session->set_cache(__CLASS__, $cache_key, $channels);
-        }
-
         $fields = array();
 
-        foreach ($channels as $channel) {
-            foreach ($channel->getAllCustomFields() as $field) {
-                if (! $field->legacy_field_data) {
-                    $fields[$field->field_id] = $field;
+        if ($this->enable['custom_fields']) {
+            $cache_key = "mod.channel/Channels/" . implode(',', $channel_ids);
+
+            if (($channels = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
+                $channels = ee('Model')->get('Channel', $channel_ids)
+                    ->with('FieldGroups', 'CustomFields')
+                    ->all();
+
+                ee()->session->set_cache(__CLASS__, $cache_key, $channels);
+            }
+
+            foreach ($channels as $channel) {
+                foreach ($channel->getAllCustomFields() as $field) {
+                    if (! $field->legacy_field_data) {
+                        $fields[$field->field_id] = $field;
+                    }
                 }
             }
         }
 
         //MySQL has limit of 61 joins, so we need to make sure to not hit it
-        $join_limit = 61 - 4;
-        if (!empty($this->mfields)) {
-            $join_limit = $join_limit - 1 - count($this->mfields);
-        }
+        $join_limit = 61 - 7 - $mfieldCount;
         $chunks = array_chunk($fields, $join_limit);
 
         $chunk = (array_shift($chunks)) ?: array();
@@ -2289,7 +2292,7 @@ class Channel
 
     private function previewDataPassesCondition($condition, $data)
     {
-        list($column, $comparison, $value) = explode(' ', trim($condition));
+        list($column, $comparison, $value) = explode(' ', trim($condition, '() '));
         list($table, $key) = explode('.', $column);
 
         $datum = $data[$key];
@@ -3849,7 +3852,7 @@ class Channel
 
                 if (! empty($var_props['modifier'])) {
                     $parse_fnc = 'replace_' . $var_props['modifier'];
-                    
+
                     if ($field_name == 'category_image') {
                         $class = $file_fieldtype;
                         ee()->load->library('file_field');
@@ -3956,7 +3959,7 @@ class Channel
       */
     public function category_heading()
     {
-        if ($this->query_string == '') {
+        if ($this->query_string == '' && !ee()->TMPL->fetch_param('category_url_title') && !ee()->TMPL->fetch_param('category_id')) {
             return ee()->TMPL->no_results();
         }
 
@@ -3990,8 +3993,17 @@ class Channel
         }
 
         // Is the category being specified by name?
-
-        if ($qstring != '' and $this->reserved_cat_segment != '' and in_array($this->reserved_cat_segment, explode("/", $qstring)) and ee()->TMPL->fetch_param('channel')) {
+        if (
+            (
+                (
+                    $qstring !== ''
+                    && $this->reserved_cat_segment !== ''
+                    && in_array($this->reserved_cat_segment, explode('/', $qstring))
+                )
+                OR ee()->TMPL->fetch_param('category_url_title')
+            )
+            && ee()->TMPL->fetch_param('channel')
+        ) {
             $qstring = preg_replace("/(.*?)\/" . preg_quote($this->reserved_cat_segment) . "\//i", '', '/' . $qstring);
 
             $sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') AND ";
@@ -4040,12 +4052,18 @@ class Channel
                 $temp = explode('/', $qstring);
                 $cut_qstring = array_shift($temp);
 
+                if (ee()->TMPL->fetch_param('category_url_title')) {
+                    $cut_qstring = ee()->TMPL->fetch_param('category_url_title');
+                }
+
                 $result = ee()->db->query("SELECT cat_id FROM exp_categories
 									  WHERE cat_url_title='" . ee()->db->escape_str($cut_qstring) . "'
 									  AND group_id IN ('" . implode("','", $valid_cats) . "')");
 
                 if ($result->num_rows() == 1) {
-                    $qstring = str_replace($cut_qstring, 'C' . $result->row('cat_id'), $qstring);
+                    $qstring = !ee()->TMPL->fetch_param('category_url_title')
+                        ? str_replace($cut_qstring, 'C' . $result->row('cat_id'), $qstring)
+                        : 'C' . $result->row('cat_id');
                 } else {
                     // give it one more try using the whole $qstring
                     $result = ee()->db->query("SELECT cat_id FROM exp_categories
@@ -4061,15 +4079,17 @@ class Channel
 
         // Is the category being specified by ID?
 
-        if (! preg_match("#(^|\/)C(\d+)#", $qstring, $match)) {
+        if (! preg_match("#(^|\/)C(\d+)#", $qstring, $match) AND ! ee()->TMPL->fetch_param('category_id')) {
             return ee()->TMPL->no_results();
         }
+
+        $cat_id = ctype_digit(ee()->TMPL->fetch_param('category_id')) ? ee()->TMPL->fetch_param('category_id') : $match[2];
 
         // fetch category field names and id's
 
         if ($this->enable['category_fields'] === true) {
             // limit to correct category group
-            $gquery = ee()->db->query("SELECT group_id FROM exp_categories WHERE cat_id = '" . ee()->db->escape_str($match[2]) . "'");
+            $gquery = ee()->db->query("SELECT group_id FROM exp_categories WHERE cat_id = '" . ee()->db->escape_str($cat_id) . "'");
 
             if ($gquery->num_rows() == 0) {
                 return ee()->TMPL->no_results();
@@ -4084,7 +4104,7 @@ class Channel
         $query = ee()->db->query("SELECT c.cat_name, c.parent_id, c.cat_url_title, c.cat_description, c.cat_image {$field_sqla}
 							FROM exp_categories AS c
 							{$field_sqlb}
-							WHERE c.cat_id = '" . ee()->db->escape_str($match[2]) . "'");
+							WHERE c.cat_id = '" . ee()->db->escape_str($cat_id) . "'");
 
         if ($query->num_rows() == 0) {
             return ee()->TMPL->no_results();
@@ -4099,7 +4119,7 @@ class Channel
             'category_url_title' => $query->row('cat_url_title'),
             'category_description' => $query->row('cat_description'),
             'category_image' => (string) $query->row('cat_image'),
-            'category_id' => $match[2],
+            'category_id' => $cat_id,
             'parent_id' => $query->row('parent_id')
         );
 
@@ -5098,7 +5118,9 @@ class Channel
             return ee()->output->show_user_error('off', lang('preview_domain_error_instructions'), lang('preview_cannot_display'));
         }
 
-        return ee('LivePreview')->preview($channel_id, $entry_id, $return);
+        $prefer_system_preview = ee()->input->get('prefer_system_preview') == 'y';
+
+        return ee('LivePreview')->preview($channel_id, $entry_id, $return, $prefer_system_preview);
     }
 
 }

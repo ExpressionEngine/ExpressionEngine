@@ -56,7 +56,7 @@ class AddonGenerator
         // Catch all, especially for advanced settings
         $this->data = $data;
 
-        $this->namespace = $this->studly($data['author']) . '\\' . $this->studly($data['name']);
+        $this->namespace = $this->createNamespace($data);
         $this->description = $data['description'];
         $this->version = $data['version'];
         $this->author = $data['author'];
@@ -389,6 +389,19 @@ class AddonGenerator
         ];
 
         $this->putFile('composer.json', json_encode($data, JSON_PRETTY_PRINT));
+    }
+
+    public function createNamespace($data)
+    {
+        // Namespace should be the Addon name
+        $namespace = $this->studly($data['name']);
+
+        // If there is an author, the Author name should preface the namespace
+        if (!empty($this->data['author'])) {
+            $namespace = $this->studly($data['author']) . '\\' . $namespace;
+        }
+
+        return $namespace;
     }
 
     private function createLangFile()

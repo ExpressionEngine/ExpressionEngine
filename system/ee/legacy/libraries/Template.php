@@ -233,12 +233,31 @@ class EE_Template
         //  - Modify template after tag parsing
         //
         if (ee()->extensions->active_hook('template_post_parse') === true) {
-            $this->final_template = ee()->extensions->call(
+
+            // Populate the $currentTemplateInfo array
+            $currentTemplateInfo = array();
+            if (count($this->templates_loaded)) { // don't do this if we don't have any template info! 
+                $currentTemplateInfo = array(
+                    'template_name' => $template,
+                    'template_group' => $template_group,
+                );
+            }
+
+            // Build a return packet since we don't know at this stage where we are returning it
+            $return = ee()->extensions->call(
                 'template_post_parse',
-                $this->final_template,
+                $is_embed || $is_layout ? $this->layout : $this->final_template,
                 ($is_embed || $is_layout), // $is_partial
-                $site_id
+                $site_id,
+                $currentTemplateInfo
             );
+            // Add a conditional to adjust what is updated by function depending on whether this is final template or not
+            if ($is_embed || $is_layout) {
+                $this->template = $return;
+            }
+            else {
+                $this->final_template = $return;
+            }
         }
         //
         // -------------------------------------------
@@ -2738,6 +2757,7 @@ class EE_Template
             ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id', 'left');
             ee()->db->where('group_name', $template_group);
             ee()->db->where('template_name', $template);
+            ee()->db->where('templates.site_id', ee()->config->item('site_id'));
             $valid_count = ee()->db->count_all_results();
 
             // We found a valid template!  Er- could this loop?  Better just return FALSE
@@ -4130,10 +4150,15 @@ class EE_Template
 
         // Lazy load templates instead, this was looping the group query with it included
 
-        $groups = ee('Model')->get('TemplateGroup')
-            ->with('Templates')
-            ->filter('site_id', ee()->config->item('site_id'))
-            ->all();
+        try {
+            $groups = ee('Model')->get('TemplateGroup')
+                ->with('Templates')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->all();
+        } catch(\Exception $e) {
+            //if we got SQL error, silently exit
+            return false;
+        }
         $group_ids_by_name = $groups->getDictionary('group_name', 'group_id');
 
         $existing = array();

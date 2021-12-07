@@ -109,6 +109,8 @@ If you made these changes, please accept the modifications on the control panel 
 
     'csrf_token_expired' => 'This form has expired. Please refresh and try again.',
 
+    'cookie_domain_mismatch' => 'The configured cookie domain does not match the site URL.',
+
     'current_password_incorrect' => 'Your current password was not submitted correctly.',
 
     'current_password_required' => 'Your current password is required.',
@@ -448,7 +450,7 @@ If you made these changes, please accept the modifications on the control panel 
     'cookie_csrf_token_desc' => 'A security cookie used to identify the user and prevent Cross Site Request Forgery attacks.',
 
     'cookie_flash' => 'Flash data',
-    'cookie_flash_desc' => 'Control panel user feedback messages, encrypted for security.',
+    'cookie_flash_desc' => 'User feedback messages, encrypted for security.',
 
     'cookie_remember' => 'Remember Me',
     'cookie_remember_desc' => 'Determines whether a user is automatically logged in upon visiting the site.',
@@ -479,6 +481,11 @@ If you made these changes, please accept the modifications on the control panel 
 
     'cookie_collapsed_nav' => 'Collapsed Navigation',
     'cookie_collapsed_nav_desc' => 'Determines whether navigation sidebar is control panel should be collapsed.',
+
+    'cookie_ee_cp_viewmode' => 'CP View Mode',
+    'cookie_ee_cp_viewmode_desc' => 'Determines view mode for control panel.',
+
+    'cp' => 'Control Panel',
 
     
 
