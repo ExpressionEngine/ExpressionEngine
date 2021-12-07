@@ -10,9 +10,6 @@
 
 namespace ExpressionEngine\Controller\Members\Profile;
 
-use CP_Controller;
-use ExpressionEngine\Addons\FilePicker\FilePicker as FilePicker;
-
 /**
  * Member Profile Personal Settings Controller
  */
