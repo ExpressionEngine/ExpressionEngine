@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Controller\Members\Profile;
 
+use \ExpressionEngine\Service\Model\Collection AS FileCollection;
+
 /**
  * Member Profile Personal Settings Controller
  */
@@ -203,19 +205,19 @@ class Settings extends Profile
     {
         ee()->load->library('filemanager');
 
-        // If nothing was chosen, keep the current avatar.
-        if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
-            if(!ee()->input->post('avatar_filename')) {
-                $this->removeAvatar();
-            }
-
-            return true;
-        }
-
         $directory = ee('Model')->get('UploadDestination')
             ->filter('name', 'Avatars')
             ->filter('site_id', ee()->config->item('site_id'))
             ->first();
+
+        // If nothing was chosen, keep the current avatar.
+        if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
+            if(!ee()->input->post('avatar_filename')) {
+                $this->removeAvatar($directory->id);
+            }
+
+            return true;
+        }
 
         $upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
 
@@ -234,8 +236,8 @@ class Settings extends Profile
         $name_array = explode('.', $_FILES['upload_avatar']['name']);
         $suffix = array_pop($name_array);
 
-        $name = $_FILES['upload_avatar']['name'];
         $name = 'avatar_' . $this->member->member_id . '.' . $suffix;
+        $name = $_FILES['upload_avatar']['name'];
 
         $file_path = ee()->filemanager->clean_filename(
             basename($name),
@@ -246,7 +248,7 @@ class Settings extends Profile
 
         // Upload the file
         ee()->load->library('upload', array('upload_path' => dirname($file_path)));
-        ee()->upload->do_upload('file');
+        ee()->upload->do_upload('upload');
         $original = ee()->upload->upload_path . ee()->upload->file_name;
 
         if (! @copy($original, $file_path)) {
@@ -276,7 +278,7 @@ class Settings extends Profile
         return true;
     }
 
-    protected function removeAvatar()
+    protected function removeAvatar($dir_id)
     {
         //check if we have to delete an image
         if($this->member->avatar_filename) {
@@ -294,6 +296,24 @@ class Settings extends Profile
         }
 
         $this->member->avatar_filename = $this->member->avatar_width = $this->member->avatar_height = null;
+
+        //now cleanup the saved File objects
+        $files = $this->member->UploadedFiles
+                            ->filter('upload_location_id', $dir_id);
+
+        if($files instanceof FileCollection ) {
+
+            if($files->count() >= 1) {
+                foreach($files->getIds() AS $file_id) {
+                    $file = ee('Model')->get('File', $file_id)->first();
+                    if($file instanceof \ExpressionEngine\Model\File\File) {
+                        if($file->upload_location_id == $dir_id) {
+                            $file->delete();
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 // END CLASS
