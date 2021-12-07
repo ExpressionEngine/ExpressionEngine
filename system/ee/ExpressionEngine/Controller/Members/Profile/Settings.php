@@ -204,24 +204,16 @@ class Settings extends Profile
 
     protected function uploadAvatar()
     {
+        ee()->load->library('filemanager');
+
         // If nothing was chosen, keep the current avatar.
         if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
-            $this->member->avatar_filename = ee()->security->sanitize_filename(ee()->input->post('avatar_filename'));
             if(!ee()->input->post('avatar_filename')) {
-                $this->member->avatar_width = $this->member->avatar_height = null;
+                $this->removeAvatar();
             }
 
             return true;
         }
-
-        $existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
-
-        // Remove the member's existing avatar
-        if (file_exists($existing) && is_file($existing)) {
-            unlink($existing);
-        }
-
-        ee()->load->library('filemanager');
 
         $directory = ee('Model')->get('UploadDestination')
             ->filter('name', 'Avatars')
@@ -285,6 +277,31 @@ class Settings extends Profile
         }
 
         return true;
+    }
+
+    protected function removeAvatar()
+    {
+        //check if we have to delete an image
+        if($this->member->avatar_filename) {
+            $existing = realpath(ee()->config->item('avatar_path') . $this->member->avatar_filename);
+
+            // Remove the member's existing avatar
+            if ($existing && file_exists($existing) && is_file($existing)) {
+                unlink($existing);
+            }
+
+            $thumb = realpath(ee()->config->item('avatar_path') .'/_thumbs/'. $this->member->avatar_filename);
+
+
+            ee()->load->library('filemanager');
+            echo $thumb;
+            exit;
+            if ($thumb && file_exists($thumb) && is_file($thumb)) {
+                unlink($thumb);
+            }
+        }
+
+        $this->member->avatar_filename = $this->member->avatar_width = $this->member->avatar_height = null;
     }
 }
 // END CLASS
