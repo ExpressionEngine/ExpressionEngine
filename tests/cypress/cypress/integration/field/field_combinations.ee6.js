@@ -346,14 +346,14 @@ function addGroup(name){
 	cy.visit('admin.php?/cp/design/group/create')
 	let title = 'aa' + name;
 	cy.get('input[name="group_name"]').eq(0).type(title)
-	cy.get('input[value="Save Template Group"]').eq(0).click()
+	cy.get('[value="Save Template Group"]').eq(0).click()
 	cy.get('p').contains('has been created')
 }
 
 //creates a feild with the name
 function addField(name){
 	cy.visit('admin.php?/cp/fields/create')
-  	cy.get('div[class="select__button"]').filter(':visible').first().click()
+	cy.get('[data-input-value=field_type] .select__button').click()
   	page.get('Type_Options').contains(name).click()
   	let title = 'AA ' + name + ' Test'
   	page.get('Name').type(title)

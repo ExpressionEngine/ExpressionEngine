@@ -20,6 +20,8 @@ class Date_ft extends EE_Fieldtype
 
     public $has_array_data = false;
 
+    public $size = 'small';
+
     /**
      * Parses the date input, first with the configured date format (as used
      * by the datepicker). If that fails it will try again with a fuzzier
@@ -88,8 +90,10 @@ class Date_ft extends EE_Fieldtype
      *
      * @param 	array
      */
-    public function display_field($field_data)
+    public function display_field($data)
     {
+        $field_data = $data;
+        
         ee()->lang->loadfile('content');
 
         $special = array('entry_date', 'expiration_date', 'comment_expiration_date');

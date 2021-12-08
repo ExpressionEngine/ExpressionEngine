@@ -17,6 +17,10 @@ class Fluid_field_ft extends EE_Fieldtype
 
     public $has_array_data = true;
 
+    public $complex_data_structure = true;
+
+    public $size = 'large';
+
     private $errors;
 
     /**
@@ -430,7 +434,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     'sortable'
                 ),
                 'file' => array(
-                    'fields/fluid_field/cp',
+                    'fields/fluid_field/ui',
                     'cp/sort_helper'
                 ),
             ));

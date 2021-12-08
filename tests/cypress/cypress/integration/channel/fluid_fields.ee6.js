@@ -108,7 +108,7 @@ context('Fluid Fields', () => {
         cy.get('button[value="save"]').first().click()
 
        // page.get('modal_submit_button').click()
-       cy.get('input[value="Confirm, and Remove"]').filter(':visible').first().click()
+       cy.get('[value="Confirm, and Remove"]').filter(':visible').first().click()
 
 
         page.get('fields').find("[value='2']").should('not.be.checked')
@@ -126,7 +126,7 @@ context('Fluid Fields', () => {
         list.get('action_submit_button').click()
 
         //list.get('modal_submit_button').click()
-        cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+        cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 
         list.get('fields').eq(0).contains('Fluid Field Body').should('not.exist')
     })

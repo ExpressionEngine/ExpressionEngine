@@ -11,14 +11,10 @@
 
 $(document).ready(function() {
 	EE.cp.formValidation.init();
-	try {
-		sessionStorage.removeItem("preventNavigateAway");
-	} catch (e) {}
 });
 
 EE.cp.formValidation = {
 
-	shouldPreventNavigateAway: false,
 	paused: false,
 	_validationCallbacks: [],
 
@@ -46,7 +42,7 @@ EE.cp.formValidation = {
 			that = this;
 
 		// These are the text input selectors we listen to for activity
-		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea';
+		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea, div.redactor-styles, div.ck-content';
 		this._buttonSelector = '.form-btns .button';
 
 		form.each(function(index, el) {
@@ -231,9 +227,6 @@ EE.cp.formValidation = {
 
 		form.each(function(index, el) {
 			that.bindInputs($(this));
-			if ($(el).parent().is('[data-publish]')) {
-				that.shouldPreventNavigateAway = true;
-			}
 		});
 	},
 
@@ -265,13 +258,6 @@ EE.cp.formValidation = {
 		if ( ! form.hasClass('ajax-validate')) {
 			this._toggleErrorForFields(field, 'success');
 			return;
-		}
-
-		//prevent navigating away if something has changed
-		if (this.shouldPreventNavigateAway) {
-			try {
-				sessionStorage.setItem("preventNavigateAway", true);
-			} catch (e) {}
 		}
 
 		var that = this,

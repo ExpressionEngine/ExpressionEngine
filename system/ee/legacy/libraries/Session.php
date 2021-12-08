@@ -59,7 +59,6 @@ class EE_Session
     public $valid_session_types = array('cs', 'c', 's');
 
     public $c_session = 'sessionid';
-    public $c_expire = 'expiration';
     public $c_anon = 'anon';
     public $c_prefix = '';
 
@@ -220,8 +219,10 @@ class EE_Session
 
     public function setSessionCookies()
     {
-        ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $this->activity_cookie_ttl);
-        ee()->input->set_cookie('last_activity', ee()->localize->now, $this->activity_cookie_ttl);
+        if (bool_config_item('forum_is_installed')) {
+            ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $this->activity_cookie_ttl);
+            ee()->input->set_cookie('last_activity', ee()->localize->now, $this->activity_cookie_ttl);
+        }
 
         // Update session ID cookie
         if ($this->session_exists === true && $this->validation != 's') {
@@ -352,7 +353,7 @@ class EE_Session
     public function create_new_session($member_id, $admin_session = false, $can_debug = false)
     {
         if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
-            $this->member_model = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
+            $this->member_model = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
         }
 
         if ($this->access_cp == true or $this->member_model->can('access_cp')) {
@@ -604,9 +605,12 @@ class EE_Session
         $this->userdata['group_description'] = $this->member_model->PrimaryRole->description;
 
         // Add in the Permissions for backwards compatibility
-        foreach ($this->member_model->getPermissions() as $perm => $perm_id) {
+        $permissions = $this->member_model->getPermissions();
+        foreach ($permissions as $perm => $perm_id) {
             $this->userdata[$perm] = 'y';
         }
+        //ensure we get those cached, as they are not cached on model layer yet
+        $this->set_cache("ExpressionEngine\Model\Member\Member", "Member/{$this->userdata['member_id']}/Permissions", $permissions);
 
         // Remember me may have validated the user agent for us, if so create a fingerprint now that we
         // can salt it properly for the user
@@ -964,7 +968,7 @@ class EE_Session
             );
         }
 
-        ee()->input->set_cookie('tracker', json_encode($tracker), '0');
+        ee()->input->set_cookie('tracker', json_encode($tracker), 0);
     }
 
     /**
@@ -1182,6 +1186,7 @@ class EE_Session
         if (! is_object($this->member_model) || $member_model->member_id != $member_id) {
             $this->member_model = ee('Model')->get('Member', $member_id)
                 ->with('PrimaryRole', 'Roles', 'RoleGroups')
+                ->all()
                 ->first();
         }
 
@@ -1270,7 +1275,7 @@ class EE_Session
     protected function _set_flash_cookie()
     {
         if (count($this->flashdata) > 0) {
-            ee('Cookie')->setSignedCookie('flash', $this->flashdata, 86500);
+            ee('Cookie')->setSignedCookie('flash', $this->flashdata);
         }
     }
 
@@ -1284,7 +1289,7 @@ class EE_Session
         // Fetch Assigned Sites Available to User
         $assigned_sites = ee('Model')->get('Site')
             ->fields('site_id', 'site_label')
-            ->order('site_label', 'desc');
+            ->order('site_label', 'asc');
 
         if (! $is_superadmin) {
             $roles = $this->getMember()->getAllRoles()->pluck('role_id');

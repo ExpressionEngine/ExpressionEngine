@@ -121,8 +121,8 @@ class Roles extends AbstractRolesController
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
-                'faded' => '(' . $role->PrimaryMembers->count() . ')',
-                'faded-href' => ee('CP/URL')->make('members', ['role_id' => $role->getId()]),
+                'faded' => '(' . $role->total_members . ')',
+                'faded-href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                 'href' => $edit_url,
                 'selected' => ($role_id && $role->getId() == $role_id),
                 'toolbar_items' => null,
@@ -166,6 +166,15 @@ class Roles extends AbstractRolesController
             ee('CP/URL')->make('members')->compile() => lang('members'),
             '' => lang('roles')
         );
+
+        if (ee()->config->item('ignore_member_stats') == 'y') {
+            ee()->lang->load('members');
+            ee('CP/Alert')->makeInline('roles-count-warn')
+                ->asWarning()
+                ->addToBody(lang('roles_counter_warning'))
+                ->cannotClose()
+                ->now();
+        }
 
         ee()->cp->render('members/roles/index', $vars);
     }
@@ -444,11 +453,6 @@ class Roles extends AbstractRolesController
                 unset($settings[$key]);
             }
         }
-        if (!empty(ee('Request')->post('include_members_in'))) {
-            foreach (ee('Request')->post('include_members_in', []) as $key) {
-                $settings[$key] = 'y';
-            }
-        }
 
         if ($role->isNew()) {
             // Apply these to all sites
@@ -511,18 +515,11 @@ class Roles extends AbstractRolesController
         // template_access
         $template_ids = [];
         if (!empty(ee('Request')->post('assigned_templates'))) {
-            foreach (ee('Request')->post('assigned_templates') as $value) {
-                if (is_numeric($value)) {
-                    $template_ids[] = $value;
-                }
+            $posted_assigned_templates = ee('Request')->post('assigned_templates');
+            if (!is_array($posted_assigned_templates) && strpos($posted_assigned_templates, '[') === 0) {
+                $posted_assigned_templates = json_decode($posted_assigned_templates);
             }
-        }
-        if (!empty($template_ids)) {
-            $role->AssignedTemplates = ee('Model')->get('Template', $template_ids)->all();
-        }
-
-        if (!empty(ee('Request')->post('assigned_templates'))) {
-            foreach (ee('Request')->post('assigned_templates') as $value) {
+            foreach ($posted_assigned_templates as $value) {
                 if (is_numeric($value)) {
                     $template_ids[] = $value;
                 }
@@ -682,6 +679,28 @@ class Roles extends AbstractRolesController
                     ]
                 ]
             ]);
+        } else {
+            $section = array_merge($section, [
+                [
+                    'title' => 'include_members_in',
+                    'desc' => 'include_members_in_desc',
+                    'fields' => [
+                        'include_in_authorlist' => [
+                            'type' => 'checkbox',
+                            'choices' => ['y' => lang('include_in_authorlist')],
+                            'scalar' => true,
+                            'value' => $settings->include_in_authorlist
+                        ],
+                        'include_in_memberlist' => [
+                            'type' => 'checkbox',
+                            'margin_top' => false,
+                            'scalar' => true,
+                            'choices' => ['y' => lang('include_in_memberlist')],
+                            'value' => $settings->include_in_memberlist
+                        ]
+                    ]
+                ]
+            ]);
         }
 
         return ee('View')->make('_shared/form/section')
@@ -696,17 +715,6 @@ class Roles extends AbstractRolesController
         $settings = (isset($settings[$site_id])) ? $settings[$site_id] : ee('Model')->make('RoleSetting', ['site_id' => $site_id]);
 
         $permissions = $this->getPermissions($role);
-
-        $include_members_in_choices = [
-            'include_in_authorlist' => lang('include_in_authorlist'),
-            'include_in_memberlist' => lang('include_in_memberlist'),
-        ];
-        $include_members_in_value = [];
-        foreach (array_keys($include_members_in_choices) as $key) {
-            if ($settings->$key) {
-                $include_members_in_value[] = $key;
-            }
-        }
 
         $sections = [
             [
@@ -750,10 +758,18 @@ class Roles extends AbstractRolesController
                     'title' => 'include_members_in',
                     'desc' => 'include_members_in_desc',
                     'fields' => [
-                        'include_members_in' => [
+                        'include_in_authorlist' => [
                             'type' => 'checkbox',
-                            'choices' => $include_members_in_choices,
-                            'value' => $include_members_in_value
+                            'choices' => ['y' => lang('include_in_authorlist')],
+                            'scalar' => true,
+                            'value' => $settings->include_in_authorlist
+                        ],
+                        'include_in_memberlist' => [
+                            'type' => 'checkbox',
+                            'margin_top' => false,
+                            'scalar' => true,
+                            'choices' => ['y' => lang('include_in_memberlist')],
+                            'value' => $settings->include_in_memberlist
                         ]
                     ]
                 ]
@@ -1400,6 +1416,7 @@ class Roles extends AbstractRolesController
                         'type' => 'checkbox',
                         'nested' => true,
                         'auto_select_parents' => true,
+                        'jsonify' => true,
                         'choices' => $template_access['choices'],
                         'value' => $template_access['values'],
                     ]
@@ -1859,11 +1876,13 @@ class Roles extends AbstractRolesController
 
         $roles = ee()->input->post('selection');
 
-        $vars['roles'] = ee('Model')->get('Role', $roles)
-            ->all()
-            ->filter(function ($role) {
-                return ee('Model')->get('Member')->filter('role_id', $role->getId())->count() > 0;
-            });
+        $roleModels = ee('Model')->get('Role', $roles)->all();
+        $vars['members_count_primary'] = 0;
+        $vars['members_count_secondary'] = 0;
+        foreach ($roleModels as $role) {
+            $vars['members_count_primary'] += $role->getMembersCount('primary');
+            $vars['members_count_secondary'] += $role->getMembersCount('secondary');
+        }
 
         $vars['new_roles'] = [];
         if (ee('Permission')->can('delete_members')) {
@@ -1871,7 +1890,7 @@ class Roles extends AbstractRolesController
         }
         $allowed_roles = ee('Model')->get('Role')
             ->fields('role_id', 'name')
-            ->filter('role_id', 'NOT IN', array_merge($roles, [1,2, 3, 4]))
+            ->filter('role_id', 'NOT IN', array_merge($roles, [1, 2, 3, 4]))
             ->order('name');
         if (! ee('Permission')->isSuperAdmin()) {
             $allowed_roles->filter('is_locked', 'n');

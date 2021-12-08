@@ -16,12 +16,6 @@ context('Channel Fields', () => {
         cy.authVisit(page.url);
     })
 
-    it('has seven fields', function() {
-        page.get('fields').its('length').should('eq', 7)
-        page.get('fields_edit').its('length').should('eq', 7)
-        page.get('fields_checkboxes').its('length').should('eq', 7)
-    })
-
     describe('when creating or editing fields', function() {
         it('creates a field', function() {
             form.createField({
@@ -50,19 +44,22 @@ context('Channel Fields', () => {
     })
 
     it('deletes a field', function() {
-        page.get('fields_checkboxes').eq(1).click()
+        page.get('fields').its('length').then((length) => {
+        
+            page.get('fields_checkboxes').eq(1).click()
 
-        page.get('bulk_action').should('exist')
-        page.get('action_submit_button').should('exist')
+            page.get('bulk_action').should('exist')
+            page.get('action_submit_button').should('exist')
 
-        page.get('bulk_action').select('Delete')
-        //page.get('action_submit_button').click()
-        cy.get('button[value="submit"]').first().click()
-        cy.wait(400)// AJ
-        //page.get('new_modal_submit_button').click()
-        cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+            page.get('bulk_action').select('Delete')
+            //page.get('action_submit_button').click()
+            cy.get('button[value="submit"]').first().click()
+            cy.wait(400)// AJ
+            //page.get('new_modal_submit_button').click()
+            cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 
-        page.hasAlert('success')
-        page.get('fields').its('length').should('eq', 6)
+            page.hasAlert('success')
+            page.get('fields').its('length').should('eq', length-1)
+        })
     })
 })

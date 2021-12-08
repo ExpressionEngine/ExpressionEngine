@@ -193,10 +193,14 @@ class Updater
 
     private function removeDefaultAvatars()
     {
-        ee('Model')->get('UploadDestination')
-            ->filter('name', 'IN', ['Default Avatars'])
-            ->all()
-            ->delete();
+        $defaultAvatars = ee('db')->select('id')->where('name', 'Default Avatars')->get('upload_prefs');
+        if ($defaultAvatars->num_rows() > 0) {
+            foreach ($defaultAvatars->result_array() as $row) {
+                ee('db')->where('id', $row['id'])->delete('upload_prefs');
+
+                ee('db')->where('upload_id', $row['id'])->delete('upload_prefs_roles');
+            }
+        }
 
         // Remove avatar config items
         ee('Model')->get('Config')->filter('key', 'IN', ['enable_avatars', 'allow_avatar_uploads'])->delete();
@@ -207,23 +211,22 @@ class Updater
 
     private function removeJqueryAddon()
     {
-        ee('Model')->get('Module')
-            ->filter('module_name', 'Jquery')
-            ->delete();
-
-        ee('Model')->get('Action')
-            ->filter('class', 'IN', ['Jquery', 'Jquery_mcp']);
+        $addon = ee('db')->select('module_id')->where('module_name', 'Jquery')->get('modules');
+        if ($addon->num_rows() > 0) {
+            ee('db')->where('module_id', $addon->row('module_id'))->delete('modules');
+            ee('db')->where('module_id', $addon->row('module_id'))->delete('module_member_roles');
+        }
+        ee('db')->where_in('class', ['Jquery', 'Jquery_mcp'])->delete('actions');
     }
 
     private function removeEmoticonAddon()
     {
-        ee('Model')->get('Module')
-            ->filter('module_name', 'Emoticon')
-            ->delete();
-
-        ee('Model')->get('Action')
-            ->filter('class', 'IN', ['Emoticon', 'Emoticon_mcp'])
-            ->delete();
+        $addon = ee('db')->select('module_id')->where('module_name', 'Emoticon')->get('modules');
+        if ($addon->num_rows() > 0) {
+            ee('db')->where('module_id', $addon->row('module_id'))->delete('modules');
+            ee('db')->where('module_id', $addon->row('module_id'))->delete('module_member_roles');
+        }
+        ee('db')->where_in('class', ['Emoticon', 'Emoticon_mcp'])->delete('actions');
     }
 
     private function addRoles()
@@ -596,9 +599,7 @@ class Updater
             ee()->db->insert_batch('permissions', $insert);
         }
 
-        foreach ($permissions as $permission) {
-            ee()->smartforge->drop_column('member_groups', $permission);
-        }
+        ee()->smartforge->drop_column_batch('member_groups', $permissions);
     }
 
     private function reassignChannelsToRoles()
@@ -1075,23 +1076,25 @@ class Updater
 
     private function migrateRte()
     {
-        ee()->smartforge->drop_table('rte_toolsets');
-        ee()->smartforge->drop_table('rte_tools');
-        ee()->db->data_cache = [];
+        if (ee()->db->table_exists('rte_toolsets')) {
+            ee()->smartforge->drop_table('rte_toolsets');
+            ee()->smartforge->drop_table('rte_tools');
+            ee()->db->data_cache = [];
 
-        require_once PATH_ADDONS . 'rte/upd.rte.php';
-        $Rte_upd = new \Rte_upd();
-        $Rte_upd->install_rte_toolsets_table();
+            require_once PATH_ADDONS . 'rte/upd.rte.php';
+            $Rte_upd = new \Rte_upd();
+            $Rte_upd->install_rte_toolsets_table();
 
-        $row_data = array(
-            'class' => 'Rte',
-            'method' => 'pages_autocomplete'
-        );
-        ee()->db->insert('actions', $row_data);
+            $row_data = array(
+                'class' => 'Rte',
+                'method' => 'pages_autocomplete'
+            );
+            ee()->db->insert('actions', $row_data);
 
-        ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.0.0']);
+            ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.0.0']);
 
-        ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.0.0']);
+            ee()->db->where('module_name', 'Rte')->update('modules', ['module_version' => '2.0.0']);
+        }
     }
 
     private function addStickyChannelPreference()

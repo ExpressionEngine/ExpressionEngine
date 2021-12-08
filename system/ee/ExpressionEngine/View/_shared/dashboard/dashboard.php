@@ -1,14 +1,3 @@
-<a href="https://expressionengine.com/blog/expressionengine-6-official-release" class="dashboard__item dashboard__item--full beta-welcome-banner beta-fade-in" target="_blank">
-  <img src="<?=URL_THEMES?>asset/img/beta-starburst.svg" class="beta-starburst" alt="v6">
-  <div class="v6-wrapper">
-    <img src="<?=URL_THEMES?>asset/img/ee-6.svg" class="v6 beta-puff-in-center" alt="v6">
-  </div>
-  <div class="beta-copy">
-    <img src="<?=URL_THEMES?>asset/img/ee-logotype-white.svg" class="logotype beta-slide-in-top" alt="ExpressionEngine">
-    <span class="beta-intro beta-slide-in-bottom">Welcome to ExpressionEngine 6!</span>
-  </div>
-</a>
-
 <?php
 ee()->load->helper('text');
 $menu = ee()->menu->generate_menu();
@@ -32,6 +21,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
                     $entries = ee('Model')->get('ChannelEntry')
                         ->fields('entry_id', 'title', 'Author.screen_name', 'entry_date')
                         ->filter('channel_id', 'IN', $assigned_channels)
+                        ->filter('site_id', ee()->config->item('site_id'))
                         ->order('entry_date', 'DESC')
                         ->limit(7)
                         ->all();
@@ -100,9 +90,10 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 		<div class="widget__title-bar">
 			<h2 class="widget__title"><?=lang('comments'); ?></h2>
 
-			<div>
+			<div class="button-group button-group-xsmall">
 				<?php if ($can_edit_comments): ?>
-					<a class="button button--default button--small" href="<?=ee('CP/URL', 'publish/comments')?>"><?=$number_of_new_comments?> <?=lang('new_comments')?></a>
+					<a class="button button--default button--small" href="<?=ee('CP/URL')->make('publish/comments', ['filter_by_date' => ee()->localize->now - ee()->session->userdata['last_visit']])?>"><?=$number_of_new_comments?> <?=lang('new_comments')?></a>
+					<a class="button button--default button--small" href="<?=ee('CP/URL', 'publish/comments')?>"><?=lang('view_all')?></a>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -121,10 +112,14 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 				<div class="d-flex">
 					<div>
 						<p class="meta-info">
-							<a href="<?=ee('CP/URL')->make('cp/members')?>"><?=$comment->name?></a>
+							<?php if ($comment->author_id) : ?>
+							<a href="<?=ee('CP/URL')->make('cp/members/profile&id=' . $comment->author_id)?>"><?=$comment->name?></a>
+							<?php else: ?>
+							<?=$comment->name?>
+							<?php endif; ?>
 							<?=lang('commented_on')?> <a href="<?=ee('CP/URL')->make('publish/edit/entry/' . $comment->getEntry()->entry_id)?>"><?=$comment->getEntry()->title?></a>
 						</p>
-						<p><?=ellipsize($comment->comment, 150)?></p>
+						<p><a href="<?=ee('CP/URL')->make('cp/publish/comments/entry/' . $comment->entry_id)?>" class="normal-link"><?=ellipsize($comment->comment, 150)?></a></p>
 					</div>
 				</div>
 			</li>

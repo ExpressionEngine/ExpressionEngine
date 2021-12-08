@@ -336,6 +336,82 @@ class Provider extends InjectionBindingDecorator
         }
     }
 
+    
+    /**
+     * Registers cookie settings in memory and database
+     *
+     * @param $name Name of the cookie
+     * @return void
+     */
+    public function registerCookiesSettings()
+    {
+        $cookieService = $this->make('ee:Cookie');
+        if ($this->getPrefix() != 'ee') {
+            $addon = ee('Addon')->get($this->getPrefix());
+            if (!$addon || !$addon->isInstalled()) {
+                return;
+            }
+        }
+        $builtinCookieSettings = $this->get('cookie_settings');
+        $providerCookieSettings = null;
+        foreach (['Necessary', 'Functionality', 'Performance', 'Targeting'] as $type) {
+            foreach ($this->get('cookies.' . strtolower($type), []) as $cookie_name) {
+                if (is_null($providerCookieSettings)) {
+                    $providerCookieSettings = ee('Model')
+                        ->get('CookieSetting')
+                        ->fields('cookie_name', 'cookie_provider');
+                    if ($this->getPrefix() != 'ee') {
+                        $providerCookieSettings->filter('cookie_provider', $this->getPrefix());
+                    } else {
+                        $providerCookieSettings->filter('cookie_provider', 'IN', ['ee', 'cp']);
+                    }
+                    $providerCookieSettings = $providerCookieSettings->all()
+                        ->getDictionary('cookie_name', 'cookie_provider');
+                }
+                $cookieParams = [
+                    'cookie_provider' => $this->getPrefix(),
+                    'cookie_name' => $cookie_name
+                ];
+                if (!isset($providerCookieSettings[$cookie_name])) {
+                    $cookieSettings = ee('Model')->make('CookieSetting', $cookieParams);
+                    switch ($cookieParams['cookie_provider']) {
+                        case 'pro':
+                            ee()->lang->load('pro', ee()->lang->getIdiom(), false, true, PATH_ADDONS . 'pro/', false);
+                            break;
+                        case 'comment':
+                        case 'forum':
+                            ee()->lang->load($cookieParams['cookie_provider']);
+                            break;
+                        case 'ee':
+                            ee()->lang->load('core');
+                            break;
+                        default:
+                            ee()->lang->loadfile($cookieParams['cookie_provider'], $cookieParams['cookie_provider'], false);
+                            break;
+                    }
+                    
+                    $cookieSettings->cookie_title = (lang('cookie_' . $cookie_name) != 'cookie_' . $cookie_name) ? lang('cookie_' . $cookie_name) : lang($cookie_name);
+                    if (!empty($builtinCookieSettings) && isset($builtinCookieSettings[$cookie_name])) {
+                        if (isset($builtinCookieSettings[$cookie_name]['description'])) {
+                            if (strpos($builtinCookieSettings[$cookie_name]['description'], 'lang:') === 0) {
+                                $cookieSettings->cookie_description = lang(substr($builtinCookieSettings[$cookie_name]['description'], 5));
+                            } else {
+                                $cookieSettings->cookie_description = $builtinCookieSettings[$cookie_name]['description'];
+                            }
+                        }
+                        if (isset($builtinCookieSettings[$cookie_name]['provider']) && $cookieParams['cookie_provider'] == 'ee') {
+                            $cookieSettings->cookie_provider = $builtinCookieSettings[$cookie_name]['provider'];
+                        }
+                    }
+                    $cookieSettings->cookie_lifetime = null; //unknown at this point
+                    $cookieSettings->cookie_enforced_lifetime = null;
+                    $cookieSettings->save();
+                    ee('CookieRegistry')->registerCookieSettings($cookieSettings);
+                }
+            }
+        }
+    }
+
     /**
      * Forcably override the first parameter on a given closure
      *

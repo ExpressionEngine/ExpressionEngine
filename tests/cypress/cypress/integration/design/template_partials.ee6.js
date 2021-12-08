@@ -73,7 +73,7 @@ context('Template Partials', () => {
         form.get('contents_editor').type('Lorem ipsum...')
 
         //form.get('save_button').first().click()
-        cy.get('input').contains('Save Partial').first().click()
+        cy.get('button').contains('Save Partial').first().click()
 
         cy.hasNoErrors()
 
@@ -84,7 +84,7 @@ context('Template Partials', () => {
 
     it('can remove a partial', function() {
         page.get('partials').its('length').then((length) => {
-            page.get('partials').eq(1).find('td:nth-child(4) input').click()
+            page.get('partials').eq(1).find('td:last-child input').click()
 
 
             page.get('bulk_action').should('exist')
@@ -94,7 +94,7 @@ context('Template Partials', () => {
             page.get('action_submit_button').click()
 
             //page.get('modal_submit_button').click()
-            cy.get('input[value="Confirm and Delete"]').filter(':visible').first().click()
+            cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 
             cy.hasNoErrors()
 

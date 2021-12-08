@@ -9,6 +9,7 @@ node_modules/
 cypress.env.json
 phpcs.ruleset.xml
 .phpunit.result.cache
+.tool-versions
 
 system/user/addons/*
 !system/user/addons/index.html
@@ -57,7 +58,7 @@ tests/rspec/fixtures/vendor/
 system/ee/ExpressionEngine/Tests/vendor/*
 system/ee/installer/updater/ExpressionEngine/Tests/vendor/*
 
-
+tests/cypress/cypress/integration/pro
 tests/cypress/vendor/
 tests/cypress/vendor/*
 cypress.env.json
@@ -123,4 +124,4 @@ system/ee/ExpressionEngine/Addons/pro
 themes/ee/pro
 
 #
-phpcs.ruleset.xml
+*.code-workspace

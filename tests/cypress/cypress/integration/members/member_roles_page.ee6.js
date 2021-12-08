@@ -80,7 +80,8 @@ context('Member Group List', () => {
       page.get('edit.can_view_profiles').invoke('val').then((val) => { expect(val).to.be.equal('y')})
       page.get('edit.can_delete_self').invoke('val').then((val) => { expect(val).to.be.equal('y')})
       page.get('edit.mbr_delete_notify_emails').invoke('val').then((val) => { expect(val).to.be.equal('team@expressionengine.com')})
-      page.get('edit.include_members_in').each(function(el){ expect(el).to.be.checked})
+      page.get('edit.include_in_authorlist').each(function(el){ expect(el).to.be.checked})
+      page.get('edit.include_in_memberlist').each(function(el){ expect(el).to.be.checked})
       page.get('edit.can_post_comments').invoke('val').then((val) => { expect(val).to.be.equal('y')})
       page.get('edit.exclude_from_moderation').invoke('val').then((val) => { expect(val).to.be.equal('y')})
       page.get('edit.comment_actions_options').each(function(el){ expect(el).to.be.checked})
@@ -214,7 +215,7 @@ context('Member Group List', () => {
 
       cy.wait(1000)
 
-      page.get('modal').find('form[action$="cp/members/groups/delete"] input[type="submit"]').click()
+      page.get('modal').find('form[action$="cp/members/groups/delete"] [type="submit"]').click()
 
       page.get('list.groups_table').should('exist')
       page.get('list.groups').should('exist')
@@ -246,7 +247,8 @@ context('Member Group List', () => {
     page.get('edit.can_view_profiles_toggle').click()
     page.get('edit.can_delete_self_toggle').click()
     page.get('edit.mbr_delete_notify_emails').clear().type('team@expressionengine.com')
-    page.get('edit.include_members_in').check()
+    page.get('edit.include_in_authorlist').check()
+    page.get('edit.include_in_memberlist').check()
     page.get('edit.can_post_comments_toggle').click()
     page.get('edit.exclude_from_moderation_toggle').click()
     page.get('edit.comment_actions_options').check()

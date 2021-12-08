@@ -3,6 +3,9 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
+		<?php if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee()->config->item('favicon')) : ?>
+		<link rel="icon" type="image/x-icon" href="<?=ee()->config->item('favicon')?>" />
+		<?php endif; ?>
 		<?php if (isset($meta_refresh)): ?>
 		<meta http-equiv='refresh' content='<?=$meta_refresh['rate']?>; url=<?=$meta_refresh['url']?>'>
 		<?php endif;?>
@@ -22,7 +25,7 @@
         ?>
 	</head>
 	<body class="iframe">
-		<div class="box" style="margin: 20px;"><?=$content?></div>
+		<div class="box" style="margin: 0 20px;"><?=$content?></div>
 		<?=ee()->javascript->inline('var EE = window.parent.EE;');?>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->cp->render_footer_js()?>

@@ -66,7 +66,10 @@ class VariableFinder
 
         foreach ($matches as $match) {
             $offset = $match[0][1];
-            $newmatch = array_map('array_shift', $match);
+            $newmatch = [];
+            foreach($match as $tag) {
+                $newmatch[] = $tag[0];
+            }
             $tags[] = array($newmatch, $offset, 'tag');
         }
 

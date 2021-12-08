@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '6.1.0'; // The version being installed
+    public $version = '6.2.0'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -67,7 +67,7 @@ class Wizard extends CI_Controller
     // party folder)
     public $native_modules = array('blacklist', 'block_and_allow', 'channel', 'comment', 'commerce', 'consent',
         'email', 'file', 'forum', 'gallery', 'ip_to_nation',
-        'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'relationship',
+        'member', 'metaweblog_api', 'moblog', 'pro', 'pages', 'query', 'relationship',
         'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
     // Third Party Modules may send error messages if something goes wrong.

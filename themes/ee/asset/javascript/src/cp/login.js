@@ -15,7 +15,7 @@ $(window).bind("onload", function() {
 
 	// Reset button state in case user presses the back button
 	// after a form submission
-	$('input.button.button--primary').removeClass('work');
+	$('.button.button--primary').removeClass('work');
 });
 
 $(document).ready(function() {
@@ -23,7 +23,7 @@ $(document).ready(function() {
 	// Bind form submission to update button text
 	$('form').submit(function(event) {
 
-		var $button = $('input.button.button--primary', this);
+		var $button = $('.button.button--primary', this);
 
 		// Add "work" class to make the buttons pulsate
 		$button.addClass('work');
@@ -35,6 +35,20 @@ $(document).ready(function() {
 			$button.attr('value', $button.data('work-text'));
 		}
 	});
+
+	var passwordInput = $('#password'),
+		passwordInputContainer = $('#password').closest('fieldset'),
+		eyeImg = '<img src="' + eyeOpen + '" id="eye" />',
+		eyeIsOpen = false
+
+	$(passwordInputContainer).css({'position': 'relative'})
+	$(eyeImg).insertAfter(passwordInput)
+
+	$('#eye').click(function () {
+		$('#password').attr('type', ($('#password').attr('type') === 'password' ? 'text' : 'password'));
+		$(this).attr('src', eyeIsOpen ? eyeOpen : eyeClosed)
+		eyeIsOpen = !eyeIsOpen
+    });
 });
 
 })(jQuery);

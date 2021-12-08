@@ -261,6 +261,7 @@ class Template extends AbstractDesignController
                     'name' => 'submit',
                     'type' => 'submit',
                     'value' => 'save',
+                    'shortcut' => 's',
                     'text' => trim(sprintf(lang('btn_save'), '')),
                     'working' => 'btn_saving'
                 ),
@@ -900,6 +901,20 @@ class Template extends AbstractDesignController
                 )
             )
         );
+
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $sections['pro_settings'][] = array(
+                'title' => 'enable_frontedit',
+                'desc' => 'enable_frontedit_tmpl_desc',
+                'fields' => array(
+                    'enable_frontedit' => array(
+                        'type' => 'yes_no',
+                        'value' => $template->enable_frontedit
+                    )
+                )
+            );
+        }
 
         $html = '';
 
