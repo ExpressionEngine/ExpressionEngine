@@ -13,11 +13,11 @@ context('Test Member roles Members ', () => {
 
 		cy.visit('admin.php?/cp/members/roles')
 
-	   cy.get('div[class="list-item__title"]').contains('MemberManager').click()
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
 
-	   cy.get('button').contains('CP Access').click()
-	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
-	   cy.get('fieldset[id="fieldset-can_access_members"]').find('button').click() // turns on accessing members
+		cy.get('button').contains('CP Access').click()
+		cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
+		cy.get('fieldset[id="fieldset-can_access_members"]').find('button').click() // turns on accessing members
 
 
 
@@ -32,6 +32,25 @@ context('Test Member roles Members ', () => {
 		cy.logout()
 	})
 
+	it('Check locked/unlocked status', () => {
+		cy.auth()
+		cy.visit('admin.php?/cp/members/roles')
+
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('unlocked').should('exist')
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('#fieldset-is_locked [data-toggle-for="is_locked"]').click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+		cy.visit('admin.php?/cp/members/roles')
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('locked').should('exist')
+
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('#fieldset-is_locked [data-toggle-for="is_locked"]').click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+		cy.visit('admin.php?/cp/members/roles')
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('unlocked').should('exist')
+	})
 
 	it('Cannot add members to "locked" groups (Super admins only)', () => {
 		cy.auth({
@@ -47,8 +66,6 @@ context('Test Member roles Members ', () => {
 	   // cy.get('em').contains('invalid_role_id')
 	})
 
-
-
 	it('Cannot add members to "locked" groups using additional permissions', () => {
 		cy.auth({
 			email: 'MemberManager1',
@@ -63,8 +80,6 @@ context('Test Member roles Members ', () => {
 	   // cy.wait(1500) //takes a second for error to show up
 	   // cy.get('em').contains('invalid_role_id')
 	})
-
-
 
 	it('Cannot access member roles before it is assigned to that', () => {
 		cy.auth({
@@ -83,14 +98,14 @@ context('Test Member roles Members ', () => {
 	})
 
 	it('Can accecss member roles after it is assigned',() =>{
-	   cy.auth();
+		cy.auth();
 
 
-	   cy.visit('admin.php?/cp/members/roles')
+		cy.visit('admin.php?/cp/members/roles')
 
-	   cy.get('div[class="list-item__title"]').contains('MemberManager').click()
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
 
-	   cy.get('button').contains('CP Access').click()
+		cy.get('button').contains('CP Access').click()
 
 
 		cy.get('#fieldset-can_admin_roles .toggle-btn').click();
