@@ -406,7 +406,7 @@ class MemberImport extends Utilities {
 			{
 				foreach($error as $val)
 				{
-					$out[] = $val;
+					$out[] = ee('Security/XSS')->clean($val);
 				}
 			}
 
