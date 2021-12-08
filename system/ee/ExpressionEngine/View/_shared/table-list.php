@@ -24,6 +24,12 @@
 					</div>
 				</a>
 
+				<?php if (isset($row['status'])): ?>
+					<div class="status-wrap">
+						<span class="status-tag st-<?=$row['status']?>"><?=$row['status']?></span>
+					</div>
+				<?php endif; ?>
+
 				<div class="list-item__content-right">
 					<?=$this->embed('_shared/toolbar', ['toolbar_items' => $row['toolbar_items']])?>
 				</div>

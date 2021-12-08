@@ -117,10 +117,10 @@ class Roles extends AbstractRolesController
 
         foreach ($roles as $role) {
             $edit_url = ee('CP/URL')->make('members/roles/edit/' . $role->getId());
-
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
+                'status' =>($role->is_locked == 'y') ? 'locked' : 'unlocked',
                 'faded' => '(' . $role->PrimaryMembers->count() . ')',
                 'faded-href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                 'href' => $edit_url,
