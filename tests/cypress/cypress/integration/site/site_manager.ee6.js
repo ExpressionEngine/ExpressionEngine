@@ -92,7 +92,7 @@ context('Site Manager', () => {
       cy.get('h1').contains('Rspec Site '+ counter)
     })
 
-    it.only('color code a site', () => {
+    it('color code a site', () => {
       page.get('sites').last().find('a').click()
       cy.get('[name=site_label]').invoke('val').then((val) => {
         expect(val).to.eq('Rspec Site ' + counter)

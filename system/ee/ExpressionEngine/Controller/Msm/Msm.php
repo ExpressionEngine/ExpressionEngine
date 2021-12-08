@@ -373,7 +373,7 @@ class Msm extends CP_Controller
      */
     private function getForm($site)
     {
-        ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker', 'cp/sites'));
+        ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker', 'cp/msm/sites'));
 
         $sections = array(array());
 
