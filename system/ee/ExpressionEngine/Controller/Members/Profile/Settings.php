@@ -220,8 +220,12 @@ class Settings extends Profile
             return true;
         }
 
-        $upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
+        $name_array = explode('.', $_FILES['upload_avatar']['name']);
+        $suffix = array_pop($name_array);
 
+        $_FILES['upload_avatar']['name'] = 'avatar_' . $this->member->member_id . '.' . $suffix;
+
+        $upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
         if (isset($upload_response['error'])) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
@@ -232,48 +236,14 @@ class Settings extends Profile
             return false;
         }
 
-        // We don't have the suffix, so first we explode to avoid passed by reference error
-        // Then we grab our suffix
-        $name_array = explode('.', $_FILES['upload_avatar']['name']);
-        $suffix = array_pop($name_array);
-
-        $name = 'avatar_' . $this->member->member_id . '.' . $suffix;
-        $name = $_FILES['upload_avatar']['name'];
-
-        $file_path = ee()->filemanager->clean_filename(
-            basename($name),
-            $directory->id,
-            array('ignore_dupes' => false)
-        );
-        $filename = basename($file_path);
-
-        // Upload the file
-        ee()->load->library('upload', array('upload_path' => dirname($file_path)));
-        ee()->upload->do_upload('upload');
-        $original = ee()->upload->upload_path . ee()->upload->file_name;
-
-        if (! @copy($original, $file_path)) {
-            if (! @move_uploaded_file($original, $file_path)) {
-                ee('CP/Alert')->makeInline('shared-form')
-                    ->asIssue()
-                    ->withTitle(lang('upload_filedata_error'))
-                    ->now();
-
-                return false;
-            }
-        }
-
-        unlink($original);
-        $result = (array) ee()->upload;
-
         // Save the new avatar filename
-        $this->member->avatar_filename = $filename;
-        if(!empty($result['image_width'])) {
-            $this->member->avatar_width = $result['image_width'];
+        $this->member->avatar_filename = $upload_response['file_name'];
+        if(!empty($upload_response['file_width'])) {
+            $this->member->avatar_width = $upload_response['file_width'];
         }
 
-        if(!empty($result['image_height'])) {
-            $this->member->avatar_height = $result['image_height'];
+        if(!empty($upload_response['file_height'])) {
+            $this->member->avatar_height = $upload_response['file_height'];
         }
 
         return true;
