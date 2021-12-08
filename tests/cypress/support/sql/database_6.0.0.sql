@@ -2365,6 +2365,7 @@ CREATE TABLE IF NOT EXISTS `exp_sites` (
   `site_label` varchar(100) NOT NULL DEFAULT '',
   `site_name` varchar(50) NOT NULL DEFAULT '',
   `site_description` text DEFAULT NULL,
+  `site_color` varchar(6) NOT NULL default '',
   `site_bootstrap_checksums` text NOT NULL,
   `site_pages` text NOT NULL,
   PRIMARY KEY (`site_id`),

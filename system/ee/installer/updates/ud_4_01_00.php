@@ -50,7 +50,7 @@ class Updater
             ->first();
 
         if (! $notify_template) {
-            $sites = ee('Model')->get('Site')->all();
+            $sites = ee('Model')->get('Site')->fields('site_id')->all();
             require_once SYSPATH . 'ee/language/' . ee()->config->item('language') . '/email_data.php';
 
             foreach ($sites as $site) {
@@ -76,7 +76,7 @@ class Updater
             ->first();
 
         if (! $notify_template) {
-            $sites = ee('Model')->get('Site')->all();
+            $sites = ee('Model')->get('Site')->fields('site_id')->all();
             require_once SYSPATH . 'ee/language/' . ee()->config->item('language') . '/email_data.php';
 
             foreach ($sites as $site) {
