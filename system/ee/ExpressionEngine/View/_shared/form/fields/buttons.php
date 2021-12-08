@@ -16,7 +16,7 @@ $disabled_choices = isset($disabled_choices) ? $disabled_choices : [];
 
 ?>
 
-<div class="button-group button-group-small <?=$class?>">
+<div class="button-group <?=$class?>">
 <?php 
     if (!$multi && is_array($value)) {
         $value = end($value);
@@ -35,7 +35,7 @@ $disabled_choices = isset($disabled_choices) ? $disabled_choices : [];
         $disabled = in_array($key, $disabled_choices) ? ' disabled' : ''; ?>
 
         <label class="button button--default<?=($checked) ? ' active' : '' ?>">
-            <input class="hidd1en" type="checkbox" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked) :?> checked="checked"<?php endif; ?><?=isset($attrs) ? $attrs : ''?><?=$disabled?>>
+            <input class="hidden" type="checkbox" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked) :?> checked="checked"<?php endif; ?><?=isset($attrs) ? $attrs : ''?><?=$disabled?>>
             <div class="checkbox-label__text">
             <?=$label?>
             </div>
