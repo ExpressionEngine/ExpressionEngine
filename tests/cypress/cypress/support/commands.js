@@ -11,6 +11,7 @@
 //
 // require('@4tw/cypress-drag-drop')
 import 'cypress-file-upload';
+import 'cypress-maildev';
 
 // -- This is a parent command --
 Cypress.Commands.add("login", (user) => {
@@ -205,6 +206,18 @@ Cypress.Commands.add("createChannel", ({ max_entries }) => {
         return harvest.stdout;
     })
 
+})
+
+Cypress.Commands.add("createMembers", ({ n }) => {
+
+    if (!n) n = 1
+
+    let command = [
+        `cd support/fixtures && php member.php`,
+        `--number ${n}`
+    ].join(' ')
+
+    cy.exec(command)
 })
 
 // -- This is a child command --

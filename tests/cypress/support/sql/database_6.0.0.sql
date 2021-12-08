@@ -924,32 +924,6 @@ CREATE TABLE IF NOT EXISTS `exp_cookie_settings` (
   PRIMARY KEY (`cookie_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table ee-test.exp_cookie_settings: ~21 rows (approximately)
-/*!40000 ALTER TABLE `exp_cookie_settings` DISABLE KEYS */;
-INSERT INTO `exp_cookie_settings` (`cookie_id`, `cookie_provider`, `cookie_name`, `cookie_lifetime`, `cookie_enforced_lifetime`, `cookie_title`, `cookie_description`) VALUES
-	(1, 'ee', 'csrf_token', 7200, NULL, 'csrf_token', NULL),
-	(2, 'ee', 'flash', 0, NULL, 'flash', NULL),
-	(3, 'ee', 'remember', NULL, NULL, 'remember', NULL),
-	(4, 'ee', 'sessionid', 3600, NULL, 'sessionid', NULL),
-	(5, 'ee', 'visitor_consents', NULL, NULL, 'visitor_consents', NULL),
-	(6, 'ee', 'last_activity', NULL, NULL, 'last_activity', NULL),
-	(7, 'ee', 'last_visit', NULL, NULL, 'last_visit', NULL),
-	(8, 'ee', 'anon', NULL, NULL, 'anon', NULL),
-	(9, 'ee', 'tracker', 0, NULL, 'tracker', NULL),
-	(10, 'ee', 'viewtype', NULL, NULL, 'viewtype', NULL),
-	(11, 'ee', 'cp_last_site_id', NULL, NULL, 'cp_last_site_id', NULL),
-	(12, 'ee', 'ee_cp_viewmode', NULL, NULL, 'ee_cp_viewmode', NULL),
-	(13, 'ee', 'collapsed_nav', NULL, NULL, 'collapsed_nav', NULL),
-	(14, 'comment', 'my_email', NULL, NULL, 'my_email', NULL),
-	(15, 'comment', 'my_location', NULL, NULL, 'my_location', NULL),
-	(16, 'comment', 'my_name', NULL, NULL, 'my_name', NULL),
-	(17, 'comment', 'my_url', NULL, NULL, 'my_url', NULL),
-	(18, 'comment', 'notify_me', NULL, NULL, 'notify_me', NULL),
-	(19, 'comment', 'save_info', NULL, NULL, 'save_info', NULL),
-	(20, 'forum', 'forum_theme', NULL, NULL, 'forum_theme', NULL),
-	(21, 'forum', 'forum_topics', NULL, NULL, 'forum_topics', NULL);
-/*!40000 ALTER TABLE `exp_cookie_settings` ENABLE KEYS */;
-
 -- Dumping structure for table ee-test.exp_cp_log
 DROP TABLE IF EXISTS `exp_cp_log`;
 CREATE TABLE IF NOT EXISTS `exp_cp_log` (
@@ -1487,6 +1461,7 @@ DROP TABLE IF EXISTS `exp_members`;
 CREATE TABLE IF NOT EXISTS `exp_members` (
   `member_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` int(10) DEFAULT NULL,
+  `pending_role_id` int(10) DEFAULT NULL,
   `username` varchar(50) NOT NULL,
   `screen_name` varchar(50) NOT NULL,
   `password` varchar(128) NOT NULL,
@@ -2180,6 +2155,7 @@ CREATE TABLE IF NOT EXISTS `exp_roles` (
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `short_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `total_members` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `is_locked` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'n',
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

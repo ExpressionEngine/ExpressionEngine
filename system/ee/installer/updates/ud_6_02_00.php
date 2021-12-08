@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator([
             'addProFieldSettings',
+            'addTotalMembersCount',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -47,6 +48,24 @@ class Updater
                         'constraint' => 1,
                         'default' => 'y',
                         'null' => false
+                    ]
+                ]
+            );
+        }
+    }
+
+    private function addTotalMembersCount()
+    {
+        if (!ee()->db->field_exists('total_members', 'roles')) {
+            ee()->smartforge->add_column(
+                'roles',
+                [
+                    'total_members' => [
+                        'type' => 'mediumint',
+                        'constraint' => 8,
+                        'null' => false,
+                        'unsigned' => true,
+                        'default' => 0
                     ]
                 ]
             );
