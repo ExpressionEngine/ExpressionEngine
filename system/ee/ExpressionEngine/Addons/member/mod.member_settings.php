@@ -1630,7 +1630,7 @@ class Member_settings extends Member
             ->all();
 
         foreach ($roles as $role) {
-            $group_opts .= "<option value='{$role->getId()}'>{$role->name()}</option>";
+            $group_opts .= "<option value='{$role->getId()}'>{$role->name}</option>";
         }
 
         $template = $this->_var_swap(
@@ -1671,6 +1671,11 @@ class Member_settings extends Member
         $search_query = array();
 
         foreach ($_POST as $key => $val) {
+            // Don't search for site_id because it isn't on the members table
+            if ($key == 'site_id') {
+                continue;
+            }
+
             if ($key == 'group_id') {
                 if ($val != 'any') {
                     $search_query[] = " role_id ='" . ee()->db->escape_str($_POST['group_id']) . "'";
@@ -1690,7 +1695,7 @@ class Member_settings extends Member
         $Q = implode(" AND ", $search_query);
 
         $sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_roles
-				WHERE exp_members.role_id = exp_roles.role_id '
+				WHERE exp_members.role_id = exp_roles.role_id
 				AND " . $Q;
 
         $query = ee()->db->query($sql);
