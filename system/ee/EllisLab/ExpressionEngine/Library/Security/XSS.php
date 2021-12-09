@@ -19,6 +19,13 @@ class XSS
 
     private $_cache_evil_attributes_regex_string = '';
 
+    /**
+     * The replacement-string for not allowed strings.
+     *
+     * @var string
+     */
+    private $_replacement = '';
+
     /* never allowed, string replacement */
     protected $_never_allowed_str = array(
         'document.cookie' => '[removed]',
@@ -724,7 +731,7 @@ class XSS
             $regex = '/(.*)((?:<[^>]+)(?<!\p{L}))(?:' . $this->_cache_evil_attributes_regex_string . ')(?:\s*=\s*)(?:\'(?:.*?)\'|"(?:.*?)")(.*)/ius';
             $strTmp = \preg_replace(
                 $regex,
-                '$1$2' . '[removed]' . '$3$4',
+                '$1$2' . $this->_replacement . '$3$4',
                 $str,
                 -1,
                 $temp_count
@@ -733,7 +740,7 @@ class XSS
                 $regex = '/(?:' . $this->_cache_evil_attributes_regex_string . ')(?:\s*=\s*)(?:\'(?:.*?)\'|"(?:.*?)")/ius';
                 $strTmp = \preg_replace(
                     $regex,
-                    '[removed]',
+                    $this->_replacement,
                     $str,
                     -1,
                     $temp_count
@@ -745,7 +752,7 @@ class XSS
             $regex =  '/(.*?)(<[^>]+)(?<!\p{L})(?:' . $this->_cache_evil_attributes_regex_string . ')\s*=\s*(?:[^\s>]*)/ius';
             $strTmp = \preg_replace(
                 $regex,
-                '$1$2' . '[removed]' . '$3',
+                '$1$2' . $this->_replacement . '$3',
                 $str,
                 -1,
                 $temp_count
@@ -754,7 +761,7 @@ class XSS
                 $regex =  '/(?<!\p{L})(?:' . $this->_cache_evil_attributes_regex_string . ')\s*=\s*(?:[^\s>]*)(.*?)/ius';
                 $strTmp = \preg_replace(
                     $regex,
-                    '$1$2' . '[removed]' . '$3',
+                    '$1$2' . $this->_replacement . '$3',
                     $str,
                     -1,
                     $temp_count
