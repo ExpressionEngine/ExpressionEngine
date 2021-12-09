@@ -768,7 +768,7 @@ class Fluid_field_ft extends EE_Fieldtype
         $field_groups = ee('Model')->get('ChannelFieldGroup', $all['field_channel_field_groups'])
             ->with('ChannelFields')
             ->filter('ChannelFields.legacy_field_data', 'y')
-            ->filter('ChannelFields.id', 'NOT IN', $all['field_channel_fields'])
+            ->filter('ChannelFields.field_id', 'NOT IN', $all['field_channel_fields'])
             ->all();
 
         $field_groups->each(function($group) {
