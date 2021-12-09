@@ -1682,7 +1682,7 @@ class Member_settings extends Member
                 }
             } else {
                 if ($val != '') {
-                    $search_query[] = $key . " LIKE '%" . ee()->db->escape_like_str($val) . "%'";
+                    $search_query[] = ee()->db->escape_like_str($key) . " LIKE '%" . ee()->db->escape_like_str($val) . "%'";
                 }
             }
         }
