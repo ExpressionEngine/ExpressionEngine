@@ -39,7 +39,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
         $result_path = (preg_match("/" . LD . $pre->prefix() . "member_search_path\s*=(.*?)" . RD . "/s", $tagdata, $match)) ? $match[1] : 'search/results';
         $result_path = str_replace(array('"',"'"), "", $result_path);
 
-        return ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;result_path=' . $result_path . '&amp;mbr=';
+        return (strpos($tagdata, 'member_search_path') !== false ) ? ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;result_path=' . $result_path . '&amp;mbr=' : '';
     }
 
     /**
@@ -76,7 +76,17 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
         // @todo remove
         $key = $tag;
         $val = $tag_options;
+        if (strpos($key, 'disable') !== false && strpos($key, 'frontedit') !== false ) {
+            $key = trim(str_replace(['disable="frontedit"', "disable='frontedit'"], '', $key));
+            $tagdata = str_replace($tag, $key, $tagdata);
+        }
 
+        if ($key == $prefix . 'title:frontedit') {
+            if (IS_PRO) {
+                $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], 'title');
+                $tagdata = str_replace(LD . $key . RD, $frontEditLink, $tagdata);
+            }
+        }
         //  parse {title}
         if ($key == $prefix . 'title') {
             $tagdata = str_replace(

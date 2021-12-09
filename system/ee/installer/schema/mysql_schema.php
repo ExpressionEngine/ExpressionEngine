@@ -118,7 +118,7 @@ class EE_Schema
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			member_id int(10) default '0' NOT NULL,
 			in_forum char(1) NOT NULL default 'n',
-			name varchar(50) default '0' NOT NULL,
+			name varchar(" . USERNAME_MAX_LENGTH . ") default '0' NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			date int(10) unsigned default '0' NOT NULL,
 			anon char(1) NOT NULL,
@@ -280,6 +280,7 @@ class EE_Schema
         $Q[] = "CREATE TABLE exp_members (
 			member_id int(10) unsigned NOT NULL auto_increment,
 			role_id int(10) NOT NULL default '0',
+			pending_role_id int(10) NOT NULL default '0',
 			username varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			screen_name varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			password varchar(128) NOT NULL DEFAULT '',
@@ -342,6 +343,7 @@ class EE_Schema
 			cp_homepage varchar(20) NULL DEFAULT NULL,
 			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
+			dismissed_pro_banner char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `role_id` (`role_id`),
 			KEY `unique_id` (`unique_id`),
@@ -353,6 +355,7 @@ class EE_Schema
 			`name` varchar(100) NOT NULL,
 			`short_name` varchar(50) NOT NULL,
 			`description` text,
+			`total_members` mediumint(8) unsigned NOT NULL DEFAULT '0',
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY (`role_id`)
 		)";
@@ -922,6 +925,7 @@ class EE_Schema
 			php_parse_location char(1) NOT NULL default 'o',
 			hits int(10) unsigned NOT NULL default 0,
 			protect_javascript char(1) NOT NULL default 'n',
+			enable_frontedit char(1) NOT NULL default 'y',
 			PRIMARY KEY `template_id` (`template_id`),
 			KEY `group_id` (`group_id`),
 			KEY `template_name` (`template_name`),
@@ -1472,6 +1476,7 @@ class EE_Schema
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('mbr_activation_instructions', 'email', 'members', " . time() . ", '" . addslashes(trim(mbr_activation_instructions_title())) . "', '" . addslashes(mbr_activation_instructions()) . "')";
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('forgot_password_instructions', 'email', 'members', " . time() . ", '" . addslashes(trim(forgot_password_instructions_title())) . "', '" . addslashes(forgot_password_instructions()) . "')";
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('password_changed_notification', 'email', 'members', " . time() . ", '" . addslashes(trim(password_changed_notification_title())) . "', '" . addslashes(password_changed_notification()) . "')";
+        $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('forgot_username_instructions', 'email', 'members', " . time() . ", '" . addslashes(trim(forgot_username_instructions_title())) . "', '" . addslashes(forgot_username_instructions()) . "')";
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('email_changed_notification', 'email', 'members', " . time() . ", '" . addslashes(trim(email_changed_notification_title())) . "', '" . addslashes(email_changed_notification()) . "')";
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('validated_member_notify', 'email', 'members', " . time() . ", '" . addslashes(trim(validated_member_notify_title())) . "', '" . addslashes(validated_member_notify()) . "')";
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('decline_member_validation', 'email', 'members', " . time() . ", '" . addslashes(trim(decline_member_validation_title())) . "', '" . addslashes(decline_member_validation()) . "')";

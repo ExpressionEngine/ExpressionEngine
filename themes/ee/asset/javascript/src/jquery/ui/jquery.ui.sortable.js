@@ -412,7 +412,6 @@ return $.widget("ui.sortable", $.ui.mouse, {
 				} else {
 					break;
 				}
-
 				this._trigger("change", event, this._uiHash());
 				break;
 			}
@@ -427,7 +426,8 @@ return $.widget("ui.sortable", $.ui.mouse, {
 		}
 
 		//Call callbacks
-		this._trigger("sort", event, this._uiHash());
+		this._trigger("sort", event, this._uiHash()); 
+
 
 		this.lastPositionAbs = this.positionAbs;
 		return false;
@@ -493,6 +493,7 @@ return $.widget("ui.sortable", $.ui.mouse, {
 		}
 
 		if (this.placeholder) {
+
 			//$(this.placeholder[0]).remove(); would have been the jQuery way - unfortunately, it unbinds ALL events from the original node!
 			if(this.placeholder[0].parentNode) {
 				this.placeholder[0].parentNode.removeChild(this.placeholder[0]);

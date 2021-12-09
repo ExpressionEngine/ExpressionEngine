@@ -105,9 +105,20 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                     $check_permissions = true;
                 }
 
-                if ($check_permissions &&
-                    $file->memberHasAccess(ee()->session->getMember()) == false) {
-                    return array('value' => '', 'error' => lang('directory_no_access'));
+                if ($check_permissions) {
+                    $member = ee()->session->getMember();
+                    if (!$member && isset(ee()->channel_form)) {
+                        ee()->load->add_package_path(PATH_ADDONS . 'channel');
+                        ee()->load->library('channel_form/channel_form_lib');
+                        ee()->channel_form_lib->fetch_logged_out_member();
+                        if (!empty(ee()->channel_form_lib->logged_out_member_id)) {
+                            $member = ee('Model')->get('Member', ee()->channel_form_lib->logged_out_member_id)->first();
+                        }
+                        ee()->load->remove_package_path(PATH_ADDONS . 'channel');
+                    }
+                    if (!$member || $file->memberHasAccess($member) == false) {
+                        return array('value' => '', 'error' => lang('directory_no_access'));
+                    }
                 }
 
                 return array('value' => $data);
@@ -532,13 +543,33 @@ JSC;
                 'y_axis' => isset($params['y']) ? (int) $params['y'] : 0,
                 'rotation_angle' => (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
             );
+            //techically, both dimentions are always required, so we'll set defaults
+            if ($imageLibConfig['master_dim'] != 'auto') {
+                $imageLibConfig['width'] = 100;
+                $imageLibConfig['height'] = 100;
+            }
             if (isset($params['width'])) {
                 $imageLibConfig['width'] = (int) $params['width'];
+                if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['height'])) {
+                    $imageLibConfig['master_dim'] = 'width';
+                    $imageLibConfig['height'] = 100;
+                }
             }
             if (isset($params['height'])) {
                 $imageLibConfig['height'] = (int) $params['height'];
+                if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['width'])) {
+                    $imageLibConfig['master_dim'] = 'height';
+                    $imageLibConfig['width'] = 100;
+                }
             }
+
             ee()->image_lib->clear();
+            if (!isset($imageLibConfig['width'])) {
+                ee()->image_lib->width = '';
+            }
+            if (!isset($imageLibConfig['height'])) {
+                ee()->image_lib->height = '';
+            }
             ee()->image_lib->initialize($imageLibConfig);
 
             if (!ee()->image_lib->$function()) {

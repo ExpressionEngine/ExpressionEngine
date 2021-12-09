@@ -52,12 +52,31 @@ context('Login Page', () => {
 
         cy.contains('You are only permitted to make four login attempts every 1 minute(s)');
         cy.get('input[type=submit]').contains('Locked').should('be.disabled');
+        cy.wait(60000);
     })
 
     it('shows the reset password form when link is clicked', function() {
         cy.contains('Remind me').click()
 
         cy.contains('Reset Password');
+    })
+
+    context('when cookie domain is wrong', () => {
+        before(() => {
+            cy.eeConfig({item: 'cookie_domain', value: 'expressionengine.com'})
+        })
+        after(() => {
+            cy.eeConfig({item: 'cookie_domain', value: ''})
+        })
+        it('rejects when cookie domain is wrong', function() {
+            cy.visit('admin.php')
+            cy.contains('The configured cookie domain does not match the site URL');
+
+            cy.login();
+    
+            cy.contains('The configured cookie domain does not match the site URL');
+            cy.get('input[type=submit]').should('not.exist');
+        })
     })
 
 

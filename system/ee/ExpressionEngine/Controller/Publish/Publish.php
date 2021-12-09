@@ -114,10 +114,16 @@ class Publish extends AbstractPublishController
             $autosave->original_entry_id = $entry_id;
             $autosave->site_id = $site_id;
             $autosave->channel_id = $channel_id;
+            $autosave->entry_data = $_POST;
+        } else {
+            $entry_data = $autosave->entry_data;
+            foreach ($_POST as $key => $val) {
+                $entry_data[$key] = $val;
+            }
+            $autosave->entry_data = $entry_data;
         }
 
         $autosave->edit_date = ee()->localize->now;
-        $autosave->entry_data = $_POST;
 
         // This is currently unused, but might be useful for display purposes
         $autosave->author_id = ee()->input->post('author_id', ee()->session->userdata('member_id'));
@@ -246,51 +252,15 @@ class Publish extends AbstractPublishController
             ]];
         }
 
-        if ($entry->isLivePreviewable()) {
-            $lp_domain_mismatch = false;
-            $configured_site_url = explode('//', ee()->config->item('site_url'));
-            $configured_domain = explode('/', $configured_site_url[1]);
-
-            if ($_SERVER['HTTP_HOST'] != strtolower($configured_domain[0])) {
-                $lp_domain_mismatch = true;
-                $lp_message = sprintf(lang('preview_domain_mismatch_desc'), $configured_domain[0], $_SERVER['HTTP_HOST']);
-            } elseif ($configured_site_url[0] != '' && ((ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) != 'https:') || (!ee('Request')->isEncrypted() && strtolower($configured_site_url[0]) == 'https:'))) {
-                $lp_domain_mismatch = true;
-                $lp_message = sprintf(lang('preview_protocol_mismatch_desc'), $configured_site_url[0], (ee('Request')->isEncrypted() ? 'https' : 'http'));
-            }
-
-            if ($lp_domain_mismatch) {
-                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-                    ->asIssue()
-                    ->canClose()
-                    ->withTitle(lang('preview_cannot_display'))
-                    ->addToBody($lp_message);
-                ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-            } else {
-                $action_id = ee()->db->select('action_id')
-                    ->where('class', 'Channel')
-                    ->where('method', 'live_preview')
-                    ->get('actions');
-                $modal = ee('View')->make('publish/live-preview-modal')->render([
-                    'preview_url' => ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'channel_id=' . $entry->channel_id
-                ]);
-                ee('CP/Modal')->addModal('live-preview', $modal);
-            }
-        } elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
-            $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-                ->asIssue()
-                ->canClose()
-                ->withTitle(lang('preview_url_not_set'))
-                ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
-            ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-
-            if (!$entry->livePreviewAllowed()) {
-                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-                    ->asIssue()
-                    ->canClose()
-                    ->withTitle(lang('preview_not_allowed'))
-                    ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
-                ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+        if (ee('Request')->get('load_autosave') == 'y') {
+            $autosaveExists = ee('Model')->get('ChannelEntryAutosave')
+                ->fields('entry_id')
+                ->filter('original_entry_id', 0)
+                ->filter('channel_id', $channel_id)
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->first();
+            if ($autosaveExists) {
+                $autosave_id = $autosaveExists->entry_id;
             }
         }
 

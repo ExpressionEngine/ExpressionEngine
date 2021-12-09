@@ -140,6 +140,13 @@ class Members extends AbstractDesignController
 
                 ee()->logger->developer('As of 4.2.2, member templates should be in folder: system/user/templates/_themes/member/.  <a href="' . $version_url . '">Please see 4.2.2 version notes.</a>', true);
             }
+        } else {
+            if (ee('Permission')->isSuperAdmin()) {
+                ee('CP/Alert')->makeBanner('message-warning')
+                    ->asWarning()
+                    ->addToBody(lang('mbr_tmpl_should_be_in') . ' ' . PATH_THIRD_THEMES . 'member')
+                    ->now();
+            }
         }
 
         $base_url = ee('CP/URL')->make('design/members/index/' . $theme);

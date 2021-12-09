@@ -49,38 +49,40 @@ $no_results = (in_array($field['type'], array('select')) &&
 $mr_class = (! isset($mr) or (isset($mr) && $mr)) ? 'mr' : '';
 ?>
 <?php if ($no_results): ?>
-	<?php $this->embed('ee:_shared/form/no_results', $field['no_results']); ?>
+    <?php $this->embed('ee:_shared/form/no_results', $field['no_results']); ?>
 <?php endif ?>
 <?php if ($has_note): ?>
-	<div class="setting-note">
+    <div class="setting-note">
 <?php endif ?>
 <?php switch ($field['type']):
 case 'text':
     if ($class): ?>
-		<div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
-	<?php endif ?>
+        <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
+    <?php endif ?>
 
-			<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+            <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
 
-	<?php if (!empty($class)): ?>
-		</div>
-	<?php endif ?>
+    <?php if (!empty($class)): ?>
+        </div>
+    <?php endif ?>
 <?php break;
     // no break
 case 'short-text': ?>
-	<label class="flex-input <?=$class?>">
-		<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
-		<span class="label-txt"><?=lang($field['label'])?></span>
-	</label>
+    <label class="flex-input <?=$class?>">
+        <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+        <?php if (isset($field['label'])):?>
+            <span class="label-txt"><?=lang($field['label'])?></span>
+        <?php endif;?>
+    </label>
 <?php break;
 case 'file': ?>
-	<input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>">
+    <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>">
 <?php break;
 case 'password': ?>
-	<input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="new-password"<?=$attrs?> class="<?=$class?>">
+    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>">
 <?php break;
 case 'hidden': ?>
-	<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
+    <input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
 <?php break;
 
 case 'radio_block':
@@ -91,29 +93,30 @@ if ($field['type'] == 'checkbox' && ! $value) {
     $value = [];
 }
 ?>
-	<?php $this->embed('ee:_shared/form/fields/select', [
-	    'field_name' => $field_name,
-	    'choices' => $field['choices'],
-	    'disabled_choices' => isset($field['disabled_choices']) ? $field['disabled_choices'] : null,
-	    'value' => $value,
-	    'scalar' => isset($field['scalar']) ? $field['scalar'] : null,
-	    'multi' => ($field['type'] == 'checkbox'),
-	    'nested' => isset($field['nested']) ? $field['nested'] : false,
-	    'selectable' => isset($field['selectable']) ? $field['selectable'] : true,
-	    'reorderable' => isset($field['reorderable']) ? $field['reorderable'] : false,
-	    'removable' => isset($field['removable']) ? $field['removable'] : false,
-	    'editable' => isset($field['editable']) ? $field['editable'] : false,
-	    'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : null,
-	    'limit' => isset($field['limit']) ? $field['limit'] : 100,
-	    'no_results' => isset($field['no_results']) ? $field['no_results'] : null,
-	    'attrs' => $attrs,
-	    'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
-	    'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : false,
-	    'encode' => isset($field['encode']) ? $field['encode'] : true,
-	    'force_react' => isset($field['force_react']) ? $field['force_react'] : false,
-	    'class' => $class,
-	    'toggle_all' => isset($field['toggle_all']) ? $field['toggle_all'] : null
-	]); ?>
+    <?php $this->embed('ee:_shared/form/fields/select', [
+        'field_name' => $field_name,
+        'choices' => $field['choices'],
+        'disabled_choices' => isset($field['disabled_choices']) ? $field['disabled_choices'] : null,
+        'value' => $value,
+        'scalar' => isset($field['scalar']) ? $field['scalar'] : null,
+        'multi' => ($field['type'] == 'checkbox'),
+        'nested' => isset($field['nested']) ? $field['nested'] : false,
+        'selectable' => isset($field['selectable']) ? $field['selectable'] : true,
+        'reorderable' => isset($field['reorderable']) ? $field['reorderable'] : false,
+        'removable' => isset($field['removable']) ? $field['removable'] : false,
+        'editable' => isset($field['editable']) ? $field['editable'] : false,
+        'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : null,
+        'limit' => isset($field['limit']) ? $field['limit'] : 100,
+        'no_results' => isset($field['no_results']) ? $field['no_results'] : null,
+        'attrs' => $attrs,
+        'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
+        'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : false,
+        'encode' => isset($field['encode']) ? $field['encode'] : true,
+        'force_react' => isset($field['force_react']) ? $field['force_react'] : false,
+        'jsonify' => isset($field['jsonify']) ? $field['jsonify'] : false,
+        'class' => $class,
+        'toggle_all' => isset($field['toggle_all']) ? $field['toggle_all'] : null
+    ]); ?>
 <?php break;
 
 case 'select':
@@ -123,102 +126,102 @@ case 'select':
 
 break;
 case 'dropdown': ?>
-	<?php $this->embed('ee:_shared/form/fields/dropdown', [
-	    'field_name' => $field_name,
-	    'choices' => $field['choices'],
-	    'value' => $value,
-	    'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : null,
-	    'limit' => isset($field['limit']) ? $field['limit'] : 100,
-	    'no_results' => isset($field['no_results']) ? $field['no_results'] : null,
-	    'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
-	    'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('choose_wisely'),
-	    'class' => $class,
-	]); ?>
+    <?php $this->embed('ee:_shared/form/fields/dropdown', [
+        'field_name' => $field_name,
+        'choices' => $field['choices'],
+        'value' => $value,
+        'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : null,
+        'limit' => isset($field['limit']) ? $field['limit'] : 100,
+        'no_results' => isset($field['no_results']) ? $field['no_results'] : null,
+        'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
+        'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('choose_wisely'),
+        'class' => $class,
+    ]); ?>
 <?php break;
 
 case 'yes_no':
 case 'toggle': ?>
-	<?php $this->embed('ee:_shared/form/fields/toggle', [
-	    'yes_no' => ($field['type'] == 'yes_no'),
-	    'value' => $value,
-	    'disabled' => (isset($field['disabled']) && $field['disabled'] == true),
-	    'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
-	    'class' => $class,
-	]); ?>
+    <?php $this->embed('ee:_shared/form/fields/toggle', [
+        'yes_no' => ($field['type'] == 'yes_no'),
+        'value' => $value,
+        'disabled' => (isset($field['disabled']) && $field['disabled'] == true),
+        'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
+        'class' => $class,
+    ]); ?>
 <?php break;
 
 case 'textarea':
     if ($class): ?>
-		<div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
-	<?php endif ?>
-			<textarea name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
-	<?php if ($margin_top or $margin_left): ?>
-		</div>
-	<?php endif ?>
+        <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
+    <?php endif ?>
+            <textarea name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
+    <?php if ($margin_top or $margin_left): ?>
+        </div>
+    <?php endif ?>
 <?php break;
     // no break
 case 'multiselect': ?>
-	<div class="fields-select" class="<?=$class?>">
-		<div class="field-inputs">
-			<?php foreach ($field['choices'] as $field_name => $options): ?>
-				<label><?=$options['label']?>
-					<?=form_dropdown($field_name, $options['choices'], $options['value'])?>
-				</label>
-			<?php endforeach ?>
-		</div>
-	</div>
+    <div class="fields-select" class="<?=$class?>">
+        <div class="field-inputs">
+            <?php foreach ($field['choices'] as $field_name => $options): ?>
+                <label><?=$options['label']?>
+                    <?=form_dropdown($field_name, $options['choices'], $options['value'])?>
+                </label>
+            <?php endforeach ?>
+        </div>
+    </div>
 <?php break;
 // no break
 case 'image': ?>
-	<figure class="file-chosen <?=$class?>">
-		<div id="<?=$field['id']?>"><img src="<?=$field['image']?>"></div>
-		<ul class="toolbar button-group">
-			<?php if (! array_key_exists('edit', $field) || $field['edit']): ?>
-			<li class="edit"><a class="edit button button--default button--xsmall" href="" title="edit"></a></li>
-			<?php endif; ?>
-			<li class="remove"><a class="remove button button--default button--xsmall" href="" title="remove"></a></li>
-		</ul>
-		<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
-	</figure>
+    <figure class="file-chosen <?=$class?>">
+        <div id="<?=$field['id']?>"><img src="<?=$field['image']?>"></div>
+        <ul class="toolbar button-group">
+            <?php if (! array_key_exists('edit', $field) || $field['edit']): ?>
+            <li class="edit"><a class="edit button button--default button--xsmall" href="" title="edit"></a></li>
+            <?php endif; ?>
+            <li class="remove"><a class="remove button button--default button--xsmall" href="" title="remove"></a></li>
+        </ul>
+        <input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
+    </figure>
 <?php break;
 
 case 'slider': ?>
-	<div class="slider <?=$class?>">
-		<input type="range" rel="range-value"
-			id="<?=$field_name?>"
-			name="<?=$field_name?>"
-			value="<?=$value?>"
-			min="<?= isset($field['min']) ? $field['min'] : 0 ?>"
-			max="<?= isset($field['max']) ? $field['max'] : 100 ?>"
-			step="<?= isset($field['step']) ? $field['step'] : 1 ?>"
-			<?= isset($field['list']) ? "list='{$field['list']}'" : null ?>
-		>
-		<div class="slider-output">
-			<output class="range-value" for="<?=$field_name?>"><?=$value?></output><?= isset($field['unit']) ? $field['unit'] : '%' ?>
-		</div>
-	</div>
+    <div class="slider <?=$class?>">
+        <input type="range" rel="range-value"
+            id="<?=$field_name?>"
+            name="<?=$field_name?>"
+            value="<?=$value?>"
+            min="<?= isset($field['min']) ? $field['min'] : 0 ?>"
+            max="<?= isset($field['max']) ? $field['max'] : 100 ?>"
+            step="<?= isset($field['step']) ? $field['step'] : 1 ?>"
+            <?= isset($field['list']) ? "list='{$field['list']}'" : null ?>
+        >
+        <div class="slider-output">
+            <output class="range-value" for="<?=$field_name?>"><?=$value?></output><?= isset($field['unit']) ? $field['unit'] : '%' ?>
+        </div>
+    </div>
 <?php break;
 
 case 'action_button': ?>
-	<a class="button button--secondary tn <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
+    <a class="button button--secondary tn <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
 <?php break;
 
 case 'html':
     if ($class): ?>
-		<div class="<?=$class?>">
-	<?php endif ?>
-		<?=$field['content']?>
-	<?php if ($class): ?>
-		</div>
-	<?php endif ?>
+        <div class="<?=$class?>">
+    <?php endif ?>
+        <?=$field['content']?>
+    <?php if ($class): ?>
+        </div>
+    <?php endif ?>
 <?php endswitch ?>
 <?php if ($has_note): ?>
-	<em><?=$field['note']?></em>
+    <em><?=$field['note']?></em>
 </div>
 <?php endif ?>
 <?php if (! $grid): ?>
-	<?=form_error(rtrim($field_name, '[]'))?>
-	<?php if (isset($errors)) {
+    <?=form_error(rtrim($field_name, '[]'))?>
+    <?php if (isset($errors)) {
         echo $errors->renderError($field_name);
     } ?>
 <?php endif;

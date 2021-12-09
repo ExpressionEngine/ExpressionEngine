@@ -165,6 +165,21 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'categories/edit',
                 'permission' => 'can_edit_categories'
             ),
+            //comments
+            'viewComments' => array(
+                'icon' => 'fa-comments',
+                'command' => 'view comments',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'publish/comments'
+            ),
+            'viewCommentsFor' => array(
+                'icon' => 'fa-comments',
+                'command' => 'view comments',
+                'dynamic' => true,
+                'addon' => false,
+                'target' => 'comments/list'
+            ),
             //files
             'viewFiles' => array(
                 'icon' => 'fa-eye',
@@ -404,6 +419,15 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'site_short_name',
                         'command_title' => 'site_short_name'
                     ),
+                    // Short name
+                    'fieldset-site_license_key' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'site_license_key',
+                        'command_title' => 'site_license_key'
+                    ),
                     // System on off
                     'fieldset-is_system_on' => array(
                         'trail' => [
@@ -579,7 +603,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-webmaster_email' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'webmaster_email webmaster_email_desc outgoing_email',
                         'command_title' => 'webmaster_email'
@@ -588,7 +612,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-webmaster_name' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'webmaster_name webmaster_name_desc outgoing_email',
                         'command_title' => 'webmaster_name'
@@ -597,7 +621,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-email_charset' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'email_charset outgoing_email',
                         'command_title' => 'email_charset'
@@ -606,7 +630,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-mail_protocol' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'mail_protocol_desc mail_protocol outgoing_email smtp_options',
                         'command_title' => 'mail_protocol'
@@ -1686,7 +1710,7 @@ class JumpMenu extends AbstractJumpMenu
             return [];
         }
 
-        $items = ee()->cache->file->get('jumpmenu/' . ee()->session->getMember()->getId());
+        $items = ee()->cache->file->get('jumpmenu/' . md5(ee()->session->getMember()->getId()));
         if (!empty($items)) {
             return $items;
         }
@@ -1709,7 +1733,7 @@ class JumpMenu extends AbstractJumpMenu
      */
     public function primeCache()
     {
-        ee()->cache->file->delete('jumpmenu/' . ee()->session->getMember()->getId());
+        ee()->cache->file->delete('jumpmenu/' . md5(ee()->session->getMember()->getId()));
 
         //load language for all the jumps
         ee()->lang->load('jump_menu');
@@ -1843,6 +1867,18 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'member_segment_trigger',
                 'command_title' => 'member_segment_trigger'
             );
+        }
+
+        //check permissions for comment links
+        if (! ee('Permission')->hasAny(
+            'can_moderate_comments',
+            'can_edit_own_comments',
+            'can_delete_own_comments',
+            'can_edit_all_comments',
+            'can_delete_all_comments'
+        )) {
+            unset($items[1]['viewComments']);
+            unset($items[1]['viewCommentsFor']);
         }
 
         //if this is multi-site install, add links
@@ -2003,7 +2039,7 @@ class JumpMenu extends AbstractJumpMenu
         // Cache our items. We're bypassing the checks for the default
         // cache driver because we want this to be cached and working
         // even if the dev has set caching to disabled.
-        ee()->cache->file->save('jumpmenu/' . ee()->session->getMember()->getId(), $items, 3600);
+        ee()->cache->file->save('jumpmenu/' . md5(ee()->session->getMember()->getId()), $items, 3600);
 
         // Assign our combined item list back to our static variable.
         self::$items = $items;

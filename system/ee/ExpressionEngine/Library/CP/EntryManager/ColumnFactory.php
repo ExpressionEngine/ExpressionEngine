@@ -15,12 +15,13 @@ namespace ExpressionEngine\Library\CP\EntryManager;
  */
 class ColumnFactory
 {
-    private static $standard_columns = [
+    protected static $standard_columns = [
         'entry_id' => Columns\EntryId::class,
         'title' => Columns\Title::class,
         'url_title' => Columns\UrlTitle::class,
         'author' => Columns\Author::class,
         'status' => Columns\Status::class,
+        'sticky' => Columns\Sticky::class,
         'entry_date' => Columns\EntryDate::class,
         'expiration_date' => Columns\ExpirationDate::class,
         'channel' => Columns\ChannelName::class,
@@ -44,8 +45,8 @@ class ColumnFactory
             return self::$instances[$identifier];
         }
 
-        if (isset(self::$standard_columns[$identifier])) {
-            $class = self::$standard_columns[$identifier];
+        if (isset(static::$standard_columns[$identifier])) {
+            $class = static::$standard_columns[$identifier];
             self::$instances[$identifier] = new $class($identifier);
         } elseif (strpos($identifier, 'field_id_') === 0 && $field = self::getCompatibleField($identifier)) {
             self::$instances[$identifier] = new Columns\CustomField($identifier, $field);
@@ -90,35 +91,30 @@ class ColumnFactory
     private static function getChannelFieldColumns($channel = false)
     {
         // Grab all the applicable fields based on the channel if there is one.
-        $cache_key = '/EntryManager/ChannelFieldColumns/' . (!empty($channel) ? $channel->getId() : 0);
-        $columns = ee()->cache->get($cache_key);
-        if (empty($columns)) {
-            if (! empty($channel)) {
-                $customFields = $channel->getAllCustomFields();
+        if (! empty($channel)) {
+            $customFields = $channel->getAllCustomFields();
 
-                $columns = $customFields->filter(function ($field) {
+            $columns = $customFields->filter(function ($field) {
+                return in_array(
+                    $field->field_type,
+                    self::getCompatibleFieldtypes()
+                );
+            })
+                ->map(function ($field) {
+                    return self::getColumn('field_id_' . $field->getId(), $field);
+                });
+        } else {
+            $columns = ee('Model')->get('ChannelField')
+                ->all()
+                ->filter(function ($field) {
                     return in_array(
                         $field->field_type,
                         self::getCompatibleFieldtypes()
                     );
                 })
-                    ->map(function ($field) {
-                        return self::getColumn('field_id_' . $field->getId(), $field);
-                    });
-            } else {
-                $columns = ee('Model')->get('ChannelField')
-                    ->all()
-                    ->filter(function ($field) {
-                        return in_array(
-                            $field->field_type,
-                            self::getCompatibleFieldtypes()
-                        );
-                    })
-                    ->map(function ($field) {
-                        return self::getColumn('field_id_' . $field->getId(), $field);
-                    });
-            }
-            ee()->cache->save($cache_key, $columns);
+                ->map(function ($field) {
+                    return self::getColumn('field_id_' . $field->getId(), $field);
+                });
         }
 
         return $columns;

@@ -123,7 +123,7 @@ class Settings extends CP_Controller
             }
         }
 
-        if (IS_PRO && ee('Permission')->canUsePro()) {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee('Permission')->canUsePro()) {
             ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $list = $sidebar->addHeader(lang('pro_settings'))
                 ->addBasicList();
@@ -169,6 +169,9 @@ class Settings extends CP_Controller
      */
     protected function saveSettings($sections)
     {
+        // Clear the add-on cache in case they've changed their site license key.
+        ee()->cache->file->delete('/addons-status');
+
         $fields = array();
 
         // Make sure we're getting only the fields we asked for

@@ -74,7 +74,7 @@ class LivePreview
     /**
      * generate and display the live preview
      */
-    public function preview($channel_id, $entry_id = null, $preview_url = null)
+    public function preview($channel_id, $entry_id = null, $preview_url = null, $prefer_system_preview = false)
     {
         if (empty($_POST)) {
             return;
@@ -112,23 +112,8 @@ class LivePreview
 
         $template_id = null;
 
-        if (! empty($_POST['pages__pages_uri'])
-            && ! empty($_POST['pages__pages_template_id'])) {
-            $values = [
-                'pages_uri' => $_POST['pages__pages_uri'],
-                'pages_template_id' => $_POST['pages__pages_template_id'],
-            ];
-
-            $page_tab = new \Pages_tab();
-            $site_pages = $page_tab->prepareSitePagesData($entry, $values);
-
-            ee()->config->set_item('site_pages', $site_pages);
-            $entry->Site->site_pages = $site_pages;
-
-            $template_id = $_POST['pages__pages_template_id'];
-        }
-
         if (!empty($preview_url)) {
+            //preview/return url directly specified
             $site_index = str_ireplace(['http:', 'https:'], '', ee()->functions->fetch_site_index());
             $preview_url = str_ireplace(['http:', 'https:'], '', $preview_url);
             $uri = str_replace($site_index, '', $preview_url);
@@ -137,28 +122,48 @@ class LivePreview
                 $uri = str_ireplace($parsed_url['host'], '', $uri);
             }
             $uri = trim($uri, '/');
-        } elseif ($entry->hasPageURI()) {
-            $uri = $entry->getPageURI();
-            ee()->uri->page_query_string = $entry->entry_id;
-            if (! $template_id) {
-                $template_id = $entry->getPageTemplateID();
-            }
-        } else {
-            // We want to avoid replacing `{url_title}` with an empty string since that
-            // can cause the wrong thing to render (like 404s).
-            if (empty($entry->url_title)) {
-                $entry->url_title = $entry->entry_id;
-            }
+        }
 
-            $uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
+        if (empty($preview_url) || $prefer_system_preview === true) {
+            if (! empty($_POST['pages__pages_uri'])
+                && ! empty($_POST['pages__pages_template_id'])) {
+                //pages data passed with POST
+                $values = [
+                    'pages_uri' => $_POST['pages__pages_uri'],
+                    'pages_template_id' => $_POST['pages__pages_template_id'],
+                ];
+
+                $page_tab = new \Pages_tab();
+                $site_pages = $page_tab->prepareSitePagesData($entry, $values);
+
+                ee()->config->set_item('site_pages', $site_pages);
+                $entry->Site->site_pages = $site_pages;
+
+                $template_id = $_POST['pages__pages_template_id'];
+            } elseif ($entry->hasPageURI()) {
+                //pre-existing page URI
+                $uri = $entry->getPageURI();
+                ee()->uri->page_query_string = $entry->entry_id;
+                if (! $template_id) {
+                    $template_id = $entry->getPageTemplateID();
+                }
+            } else {
+                //channel settings
+                // We want to avoid replacing `{url_title}` with an empty string since that
+                // can cause the wrong thing to render (like 404s).
+                if (empty($entry->url_title)) {
+                    $entry->url_title = $entry->entry_id;
+                }
+
+                $uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
+            }
         }
 
         // -------------------------------------------
         // 'publish_live_preview_route' hook.
         //  - Set alternate URI and/or template to use for preview
         //  - Added 4.2.0
-        // - skip hook for requests that already have preview URL (added in 6.0.0)
-        if (empty($preview_url) && ee()->extensions->active_hook('publish_live_preview_route') === true) {
+        if (ee()->extensions->active_hook('publish_live_preview_route') === true) {
             $route = ee()->extensions->call('publish_live_preview_route', array_merge($_POST, $data), $uri, $template_id);
             $uri = $route['uri'];
             $template_id = $route['template_id'];

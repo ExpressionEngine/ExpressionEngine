@@ -46,10 +46,12 @@ class NavigationCustomSection extends NavigationSection
             ->all();
 
         foreach ($items as $item) {
-            if ($active && $item->type == 'addon' && isset($byclass[$item->data])) {
+            if ($active && $item->type == 'addon' && isset($byclass[$item->data])) { //extension
                 foreach ($byclass[$item->data] as $metadata) {
                     ee()->extensions->call_class($item->data, 'cp_custom_menu', $metadata, $args);
                 }
+            } elseif ($item->type == 'addon') { //module
+                $custom->addItem($item->name, ee('CP/URL')->make('addons/settings/' . lcfirst($item->data)));
             } elseif ($item->type == 'submenu') {
                 $sub = $custom->addSubmenu($item->name);
 

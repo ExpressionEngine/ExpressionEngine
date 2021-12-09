@@ -44,7 +44,7 @@ class Jumps extends CP_Controller
         EE.cp.jumpMenuURL = '" . ee('CP/URL', 'JUMPTARGET')->compile() . "';
         EE.cp.JumpMenuCommands = " . json_encode($jumpMenuItems) .";";
 
-        $finfo = ee()->cache->file->get_metadata('jumpmenu/' . ee()->session->getMember()->getId());
+        $finfo = ee()->cache->file->get_metadata('jumpmenu/' . md5(ee()->session->getMember()->getId()));
         ee()->javascript_loader->set_headers('jumpmenu', $finfo['mtime']);
         ee()->output->set_header('Content-Length: ' . strlen($contents));
         ee()->output->set_output($contents);

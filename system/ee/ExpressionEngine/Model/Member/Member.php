@@ -228,8 +228,10 @@ class Member extends ContentModel
     protected static $_events = array(
         'afterUpdate',
         'beforeDelete',
+        'afterDelete',
         'afterBulkDelete',
         'beforeInsert',
+        'afterInsert',
         'beforeValidate',
         'afterSave'
     );
@@ -238,6 +240,7 @@ class Member extends ContentModel
     protected $member_id;
     protected $group_id;
     protected $role_id;
+    protected $pending_role_id;
     protected $username;
     protected $screen_name;
     protected $password;
@@ -300,6 +303,7 @@ class Member extends ContentModel
     protected $cp_homepage;
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
+    protected $dismissed_pro_banner;
 
     /**
      * Getter for legacy group_id property
@@ -417,7 +421,27 @@ class Member extends ContentModel
     public function onAfterSave()
     {
         parent::onAfterSave();
-        ee()->cache->file->delete('jumpmenu/' . $this->member_id);
+        ee()->cache->file->delete('jumpmenu/' . md5($this->member_id));
+    }
+
+    public function onAfterInsert()
+    {
+        if (ee()->config->item('ignore_member_stats') != 'y') {
+            foreach ($this->getAllRoles() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
+        }
+    }
+
+    public function onAfterDelete()
+    {
+        if (ee()->config->item('ignore_member_stats') != 'y') {
+            foreach ($this->getAllRoles() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
+        }
     }
 
     /**
@@ -591,7 +615,7 @@ class Member extends ContentModel
      * use the default of 'homepage'. We prioritize on the Member's preferences
      * then the groups preferences, falling back to the default.
      *
-     * @param	int	Optional site ID to get member homepage for, defaults to current site
+     * @param   int Optional site ID to get member homepage for, defaults to current site
      * @return ExpressionEngine\Library\CP\URL The URL
      */
     public function getCPHomepageURL($site_id = null)
@@ -654,8 +678,8 @@ class Member extends ContentModel
     /**
      * A link back to the owning member group object.
      *
-     * @return	Structure	A link back to the Structure object that defines
-     *						this Content's structure.
+     * @return  Structure   A link back to the Structure object that defines
+     *                      this Content's structure.
      */
     public function getStructure()
     {
@@ -835,11 +859,11 @@ class Member extends ContentModel
     /**
      * Hash and update Password
      *
-     * 	Validation of $this->password takes the plaintext password. But it then
-     * 	needs to be prepped as a salted hash before it's saved to the database
-     * 	so we never store a plaintext password. It is imperative that this is done
-     * 	BEFORE a call to save() the model, so it's not even ever in the database
-     * 	temporarily or in a MySQL query log, potentially transmitted over HTTP even.
+     *  Validation of $this->password takes the plaintext password. But it then
+     *  needs to be prepped as a salted hash before it's saved to the database
+     *  so we never store a plaintext password. It is imperative that this is done
+     *  BEFORE a call to save() the model, so it's not even ever in the database
+     *  temporarily or in a MySQL query log, potentially transmitted over HTTP even.
      *
      * @param  string $plaintext Plaintext password
      * @return void
@@ -1048,12 +1072,12 @@ class Member extends ContentModel
 
         return false;
     }
-    
+
     /**
      * Get all roles assigned to member, including Primary Role, extra roles and roles assigned via Role Groups
      * @param  bool $cache Whether to cache roles during this request
      *
-     * @return Collection 
+     * @return Collection
      */
     public function getAllRoles($cache = true)
     {
@@ -1137,6 +1161,20 @@ class Member extends ContentModel
         }
 
         $uploads = [];
+        $limitedRoles = [2, 3, 4];
+        if (!in_array($this->role_id, $limitedRoles) && !array_intersect($this->getAllRoles()->pluck('role_id'), $limitedRoles)) {
+            $alwaysAllowed = ['Avatars'];
+            if (bool_config_item('prv_msg_enabled') && bool_config_item('prv_msg_allow_attachments')) {
+                $alwaysAllowed[] = 'PM Attachments';
+            }
+            if (bool_config_item('enable_signatures')) {
+                $alwaysAllowed[] = 'Signature Attachments';
+            }
+            $directories = ee('Model')->get('UploadDestination')->filter('name', 'IN', $alwaysAllowed)->all();
+            foreach ($directories as $dir) {
+                $uploads[$dir->getId()] = $dir;
+            }
+        }
         foreach ($this->getAllRoles() as $role) {
             foreach ($role->AssignedUploadDestinations as $dir) {
                 $uploads[$dir->getId()] = $dir;
@@ -1254,7 +1292,7 @@ class Member extends ContentModel
         if ($this->isSuperAdmin()) {
             return true;
         }
-        
+
         $permissions = $this->getPermissions();
 
         return array_key_exists($permission, $permissions);
