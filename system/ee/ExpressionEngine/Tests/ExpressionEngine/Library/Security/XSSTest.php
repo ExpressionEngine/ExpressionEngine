@@ -37,6 +37,7 @@ class XSSTest extends TestCase
             '"><img/onload=alert(1);>' => '"><img/>',
             '"><svg onload=alert(1);>' => '"><svg >',
             '"><svg/onload=alert(1);>' => '"><svg/>',
+            '"><svg/onload=(prompt``)>' => '"><svg/>',
             '<x onclick=alert(1) src=a>1</x>' => '<x  src=a>1</x>',
             '<marquee loop=1 width=0 onfinish=confirm(1)//' => '<marquee loop=1 width=0 ',
             "<select autofocus onfocus='confirm(1)'" => '<select autofocus ',
