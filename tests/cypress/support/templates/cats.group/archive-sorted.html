@@ -1,29 +1,125 @@
 <div class="default-linear">
-    {exp:channel:category_archive channel="about" style="linear" orderby="title"}
-        {categories}
-            <div>{category_name}</div>
-        {/categories}
+    <h3>default-linear</h3>
+    {exp:channel:category_archive channel="news" style="linear"}
+    {categories}
+        <div class="{category_url_title}">
+            <div class="category_name">{category_name}</div>
+            <div class="category_url_title">{category_url_title}</div>
+            <div class="category_description">{category_description}</div>
+            <div class="custom_textfield">{custom_textfield}</div>
+            <div class="custom_textarea">{custom_textarea}</div>
+            <div class="custom_dropdown">{custom_dropdown}</div>
+            <div class="category_image"><img src="{category_image}" /></div>
+            <div class="category_image_smaller"><img src="{category_image:smaller}" /></div>
+        </div>
+    {/categories}
+    {entry_titles}
+        <a href="{path='SITE_INDEX'}">{title}</a><br />
+    {/entry_titles}
     {/exp:channel:category_archive}
 </div>
+<hr />
 <div class="default-nested">
-    {exp:channel:category_archive channel="about" style="nested" orderby="title"}
-        {categories}
-            <div>{category_name}</div>
-        {/categories}
+    <h3>default-nested</h3>
+    {exp:channel:category_archive channel="news" style="nested"}
+    {categories}
+        <div class="{category_url_title}">
+            <div class="category_name">{category_name}</div>
+            <div class="category_url_title">{category_url_title}</div>
+            <div class="category_description">{category_description}</div>
+            <div class="custom_textfield">{custom_textfield}</div>
+            <div class="custom_textarea">{custom_textarea}</div>
+            <div class="custom_dropdown">{custom_dropdown}</div>
+            <div class="category_image"><img src="{category_image}" /></div>
+            <div class="category_image_smaller"><img src="{category_image:smaller}" /></div>
+        </div>
+    {/categories}
+    {entry_titles}
+        <a href="{path='SITE_INDEX'}">{title}</a><br />
+    {/entry_titles}
     {/exp:channel:category_archive}
 </div>
-
+<hr />
 <div class="title-linear">
-    {exp:channel:category_archive channel="about" style="linear" orderby="title"}
-        {categories}
-            <div>{category_name}</div>
-        {/categories}
+    <h3>title-linear</h3>
+    {exp:channel:category_archive channel="news" style="linear" orderby="title"}
+    {categories}
+        <div class="{category_url_title}">
+            <div class="category_name">{category_name}</div>
+            <div class="category_url_title">{category_url_title}</div>
+            <div class="category_description">{category_description}</div>
+            <div class="custom_textfield">{custom_textfield}</div>
+            <div class="custom_textarea">{custom_textarea}</div>
+            <div class="custom_dropdown">{custom_dropdown}</div>
+            <div class="category_image"><img src="{category_image}" /></div>
+            <div class="category_image_smaller"><img src="{category_image:smaller}" /></div>
+        </div>
+    {/categories}
+    {entry_titles}
+        <a href="{path='SITE_INDEX'}">{title}</a><br />
+    {/entry_titles}
     {/exp:channel:category_archive}
 </div>
+<hr />
 <div class="title-nested">
-    {exp:channel:category_archive channel="about" style="nested" orderby="title"}
-        {categories}
-            <div>{category_name}</div>
-        {/categories}
+    <h3>title-nested</h3>
+    {exp:channel:category_archive channel="news" style="nested" orderby="title"}
+    {categories}
+        <div class="{category_url_title}">
+            <div class="category_name">{category_name}</div>
+            <div class="category_url_title">{category_url_title}</div>
+            <div class="category_description">{category_description}</div>
+            <div class="custom_textfield">{custom_textfield}</div>
+            <div class="custom_textarea">{custom_textarea}</div>
+            <div class="custom_dropdown">{custom_dropdown}</div>
+            <div class="category_image"><img src="{category_image}" /></div>
+            <div class="category_image_smaller"><img src="{category_image:smaller}" /></div>
+        </div>
+    {/categories}
+    {entry_titles}
+        <a href="{path='SITE_INDEX'}">{title}</a><br />
+    {/entry_titles}
+    {/exp:channel:category_archive}
+</div>
+<hr />
+<div class="date-linear">
+    <h3>date-linear</h3>
+    {exp:channel:category_archive channel="news" style="linear" orderby="date"}
+    {categories}
+        <div class="{category_url_title}">
+            <div class="category_name">{category_name}</div>
+            <div class="category_url_title">{category_url_title}</div>
+            <div class="category_description">{category_description}</div>
+            <div class="custom_textfield">{custom_textfield}</div>
+            <div class="custom_textarea">{custom_textarea}</div>
+            <div class="custom_dropdown">{custom_dropdown}</div>
+            <div class="category_image"><img src="{category_image}" /></div>
+            <div class="category_image_smaller"><img src="{category_image:smaller}" /></div>
+        </div>
+    {/categories}
+    {entry_titles}
+        <a href="{path='SITE_INDEX'}">{title}</a><br />
+    {/entry_titles}
+    {/exp:channel:category_archive}
+</div>
+<hr />
+<div class="date-nested">
+    <h3>date-nested</h3>
+    {exp:channel:category_archive channel="news" style="nested" orderby="date"}
+    {categories}
+        <div class="{category_url_title}">
+            <div class="category_name">{category_name}</div>
+            <div class="category_url_title">{category_url_title}</div>
+            <div class="category_description">{category_description}</div>
+            <div class="custom_textfield">{custom_textfield}</div>
+            <div class="custom_textarea">{custom_textarea}</div>
+            <div class="custom_dropdown">{custom_dropdown}</div>
+            <div class="category_image"><img src="{category_image}" /></div>
+            <div class="category_image_smaller"><img src="{category_image:smaller}" /></div>
+        </div>
+    {/categories}
+    {entry_titles}
+        <a href="{path='SITE_INDEX'}">{title}</a><br />
+    {/entry_titles}
     {/exp:channel:category_archive}
 </div>

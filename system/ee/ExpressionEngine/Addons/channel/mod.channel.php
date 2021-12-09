@@ -2844,7 +2844,7 @@ class Channel
 
                 $sql = substr($sql, 0, -1) . ')';
 
-                $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+                $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
 
                 $query = ee()->db->query($sql);
 
@@ -2861,7 +2861,7 @@ class Channel
                     $sql .= " AND c.parent_id = 0";
                 }
 
-                $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+                $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
 
                 $query = ee()->db->query($sql);
 
@@ -3289,7 +3289,7 @@ class Channel
                 $sql .= " AND c.parent_id = 0";
             }
 
-            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
             $query = ee()->db->query($sql);
 
             if ($query->num_rows() > 0) {
@@ -3469,7 +3469,7 @@ class Channel
 
             $query = ee()->db->query("SELECT cat_id, parent_id FROM exp_categories
 								 WHERE group_id IN ('" . str_replace('|', "','", ee()->db->escape_str($group_id)) . "')
-								 ORDER BY group_id, parent_id, cat_order");
+								 ORDER BY group_id, parent_id, cat_order, cat_id");
 
             $all = array();
 
@@ -3524,7 +3524,7 @@ class Channel
                 $sql .= " AND parent_id = 0";
             }
 
-            $sql .= " ORDER BY exp_categories.group_id, exp_categories.parent_id, exp_categories.cat_order";
+            $sql .= " ORDER BY exp_categories.group_id, exp_categories.parent_id, exp_categories.cat_order, exp_categories.cat_id";
 
             $query = ee()->db->query($sql);
 
@@ -3555,7 +3555,7 @@ class Channel
 
             $sql = substr($sql, 0, -1) . ')';
 
-            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
 
             $query = ee()->db->query($sql);
 
@@ -3572,7 +3572,7 @@ class Channel
                 $sql .= " AND c.parent_id = 0";
             }
 
-            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
 
             $query = ee()->db->query($sql);
 
