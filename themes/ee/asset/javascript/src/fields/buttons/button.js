@@ -12,10 +12,9 @@
 (function ($) {
 	$(document).ready(function () {
 
-		$('.button-group .button input[type="checkbox"]').on('change',function (e) {
+		$('body').on('change','.button-group .button input[type="checkbox"]', function (e) {
 
 			if ( !($(this).parents('.button-group').hasClass('multiple')) ) {
-
 				$('.button-group .button input[type="checkbox"]').not(this).prop('checked', false);
 			}
 
