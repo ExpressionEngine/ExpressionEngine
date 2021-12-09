@@ -11,6 +11,7 @@
 use ExpressionEngine\Library;
 use ExpressionEngine\Library\Filesystem;
 use ExpressionEngine\Library\Curl;
+use ExpressionEngine\Library\Resource;
 use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
@@ -261,6 +262,18 @@ $setup = [
                 ($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
                 $site_id
             );
+        },
+
+        'Resource/Request' => function () {
+            return new Resource\Request();
+        },
+
+        'Resource/Javascript' => function () {
+            return new Resource\Javascript();
+        },
+
+        'Resource/Stylesheet' => function () {
+            return new Resource\Stylesheet();
         },
 
         'Updater/Runner' => function ($ee) {

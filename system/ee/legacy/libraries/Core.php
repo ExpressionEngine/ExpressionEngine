@@ -281,8 +281,7 @@ class EE_Core
             isset($_GET['css']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'css')
             || isset($_GET['js']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'js')
         ) {
-            ee()->load->library('asset');
-            ee()->asset->request_asset_template();
+            ee('Resource')->request_template();
             exit;
         }
 
