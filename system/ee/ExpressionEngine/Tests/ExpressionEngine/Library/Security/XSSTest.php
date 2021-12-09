@@ -60,6 +60,7 @@ class XSSTest extends TestCase
             '%bar%' => '%bar%',
             '<a href="http://example.com/%bar%">%bar%</a>' => '<a href="http://example.com/r%">%bar%</a>',
             '<a href="http://%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D">Google</a>' => '<a href="http://www.google.com">Google</a>',
+            '<r/onmouseover=eval.call`${\'alert\x28document.domain\x29\'}`>Text</r>' => '<r/>Text</r>',
         );
 
         foreach ($testArray as $before => $after) {
