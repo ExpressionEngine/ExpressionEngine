@@ -50,6 +50,8 @@ class Buttons_ft extends Multi_select_ft
 
         $values = decode_multi_field($data);
 
+        ee()->cp->add_js_script('file', 'fields/buttons/button');
+
         if (REQ == 'CP') {
             return ee('View')->make('ee:_shared/form/fields/buttons')->render([
                 'field_name' => $this->field_name . '[]',

@@ -13,10 +13,11 @@ if (count($choices) == 0) {
 
 $encode = isset($encode) ? $encode : true;
 $disabled_choices = isset($disabled_choices) ? $disabled_choices : [];
+$allow_multi = $multi ? 'multiple' : '';
 
 ?>
 
-<div class="button-group <?=$class?>">
+<div class="button-group <?=$class?> <?=$allow_multi?>">
 <?php 
     if (!$multi && is_array($value)) {
         $value = end($value);
