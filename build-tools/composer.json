@@ -1,0 +1,6 @@
+{
+    "require-dev": {
+        "phpcompatibility/php-compatibility": "*"
+    },
+    "prefer-stable" : true
+}
