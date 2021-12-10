@@ -289,7 +289,7 @@ context('Cookie Consents', () => {
 
     });
 
-    describe.only('{exp:consent:cookies}', function() {
+    describe('{exp:consent:cookies}', function() {
         before(function(){
             
             cy.intercept('**/check').as('check')
