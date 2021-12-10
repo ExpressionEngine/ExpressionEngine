@@ -194,7 +194,6 @@ context('Publish Page - Create', () => {
       const available_fields = [
         "A Date",
         "Checkboxes",
-        "Buttons",
         "Electronic-Mail Address",
         "Home Page",
         "Image",
@@ -202,6 +201,7 @@ context('Publish Page - Create', () => {
         "Middle Class Text",
         "Multi Select",
         "Radio",
+        "Selectable Buttons",
         "Selection",
         "Stupid Grid",
         "Text",
@@ -241,7 +241,7 @@ context('Publish Page - Create', () => {
               field.find('input[type=checkbox]').eq(0 + skew).check();
               break;
             case 'selectable_buttons':
-              field.find('.button').eq(0 + skew).check();
+              field.find('.button').eq(0 + skew).click();
               break;
             case 'email_address':
               field.find('input').clear().type('rspec-' + skew.toString() + '@example.com')
@@ -269,7 +269,7 @@ context('Publish Page - Create', () => {
               page.get('title').click()
               break;
             case 'rte':
-              field.find('.ck-content').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (2 + skew))));
+              field.find('.ck-content').type('Lorem ipsum dolor sit amet' + lorem.generateSentences(Cypress._.random(1, (2 + skew))));
               break;
             case 'multi_select':
               field.find('input[type=checkbox]').eq(0 + skew).check()
@@ -290,7 +290,7 @@ context('Publish Page - Create', () => {
               fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(1).clear().type('ipsum' + skew.toString())
               break;
             case 'textarea':
-              field.find('textarea').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (3 + skew))));
+              field.find('textarea').type('Lorem ipsum dolor sit amet' + lorem.generateSentences(Cypress._.random(1, (3 + skew))));
               break;
             case 'toggle':
               field.find('.toggle-btn').click()
@@ -319,7 +319,7 @@ context('Publish Page - Create', () => {
               field.find('input[type=checkbox]').eq(0 + skew).should('be.checked')
               break;
             case 'selectable_buttons':
-              field.find('.buttons').eq(0 + skew).should('have.class', 'active')
+              field.find('.button').eq(0 + skew).should('have.class', 'active')
               break;
             case 'email_address':
               field.find('input').invoke('val').then((text) => {
@@ -387,7 +387,7 @@ context('Publish Page - Create', () => {
         })
 
         page.get('save').click()
-        cy.screenshot({capture: 'fullPage'});
+        //cy.screenshot({capture: 'fullPage'});
         page.get('alert').contains('Entry Created')
 
         // Make sure the fields stuck around after save
@@ -399,7 +399,7 @@ context('Publish Page - Create', () => {
 
         page.get('save').click()
 
-        cy.screenshot({capture: 'fullPage'});
+        //cy.screenshot({capture: 'fullPage'});
 
         page.get('alert').contains('Entry Updated')
 
@@ -506,7 +506,7 @@ context('Publish Page - Create', () => {
 
     })
 
-    context.only('various Grids', () => {
+    context('various Grids', () => {
       it('Grid with Buttons', () => {
         cy.authVisit('admin.php?/cp/fields/create/1')
         cy.get('[data-input-value=field_type] .select__button').click()
@@ -516,7 +516,7 @@ context('Publish Page - Create', () => {
 
         cy.get('.fields-grid-tool-add:visible').last().click()
         cy.get('[data-input-value="grid[cols][new_1][col_type]"] .select__button').click()
-        cy.get('[data-input-value="grid[cols][new_1][col_type]"] .select__dropdown-item').contains("Buttons").last().click()
+        cy.get('[data-input-value="grid[cols][new_1][col_type]"] .select__dropdown-item').contains("Selectable Buttons").last().click()
         cy.get('[name="grid[cols][new_1][col_label]"]:visible').type("buttons multiple")
         cy.get('[data-toggle-for="allow_multiple"]:visible').click()
         cy.get('[name="grid[cols][new_1][col_settings][field_pre_populate]"][value="n"]:visible').check()
@@ -524,7 +524,7 @@ context('Publish Page - Create', () => {
 
         cy.get('.fields-grid-tool-add:visible').last().click()
         cy.get('[data-input-value="grid[cols][new_2][col_type]"] .select__button').click()
-        cy.get('[data-input-value="grid[cols][new_2][col_type]"] .select__dropdown-item').contains("Buttons").last().click()
+        cy.get('[data-input-value="grid[cols][new_2][col_type]"] .select__dropdown-item').contains("Selectable Buttons").last().click()
         cy.get('[name="grid[cols][new_2][col_label]"]:visible').type("buttons single")
         cy.get('[name="grid[cols][new_2][col_settings][field_pre_populate]"][value="n"]:visible').check()
         cy.get('[name="grid[cols][new_2][col_settings][field_list_items]"]:visible').type('quatro{enter}cinco{enter}seis')

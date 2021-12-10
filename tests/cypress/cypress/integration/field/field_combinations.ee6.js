@@ -10,9 +10,9 @@ const page = new CreateField;
 const main = new MainField;
 const group = new CreateGroup;
 
-var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","File","File Grid","Fluid", "Relationships","Rich Text Editor", "Select Dropdown","Textarea","Toggle","URL", "Buttons"];
+var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","File","File Grid","Fluid", "Relationships","Rich Text Editor", "Select Dropdown","Textarea","Toggle","URL", "Selectable Buttons"];
 
-var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL", "Buttons"];
+var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL", "SelectableButtons"];
 
 //grid is tested in a seperate test
 context('Create combinations of field', () => {
@@ -331,13 +331,13 @@ context('Create combinations of field', () => {
 
 	it('Test Buttons' , () => {
 		cy.visit('admin.php?/cp/design')
-		cy.get('a').contains('aaButtons').eq(0).click()
+		cy.get('a').contains('aaSelectableButtons').eq(0).click()
 		cy.get('a').contains('index').click()
-		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<h2> {title} </h2>{aa_buttons_test}{item:value}<br>{/aa_buttons_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
+		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<h2> {title} </h2>{aa_selectable_buttons_test}{item:value}<br>{/aa_selectable_buttons_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
 		cy.get('button').contains('Save').eq(0).click()
 		
 		cy.visit('admin.php?/cp/fields')
-		cy.get('div').contains('AA Buttons Test').click()
+		cy.get('div').contains('AA Selectable Buttons Test').click()
 		cy.get('div').contains('Value/Label Pairs').click()
 		cy.get('a').contains('Add New').click()
 		cy.get('input[name = "value_label_pairs[rows][new_row_1][value]"]').type('uno')
@@ -358,37 +358,37 @@ context('Create combinations of field', () => {
 
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("three")').click()
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("four")').click()
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("three")').should('not.have.class', 'active')
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("four")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('not.have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').should('have.class', 'active')
 		cy.get('.button--primary').contains('Save').eq(0).click()
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("three")').should('not.have.class', 'active')
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("four")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('not.have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').should('have.class', 'active')
 
-		cy.visit('index.php/aaButtons')
+		cy.visit('index.php/aaSelectableButtons')
 		cy.get('body').should('not.contain', 'tres')
 		cy.get('body').should('contain', 'quatro')
 
 		cy.visit('admin.php?/cp/fields')
-		cy.get('div').contains('AA Buttons Test').click()
+		cy.get('div').contains('AA Selectable Buttons Test').click()
 		cy.get('[name="field_pre_populate"][value="v"]').should('be.checked')
 		cy.get('[data-toggle-for="allow_multiple"]').click()
 		cy.get('.button--primary').contains('Save').eq(0).click()
 
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("three")').click()
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("five")').click()
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
 		cy.get('.button--primary').contains('Save').eq(0).click()
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
-		cy.get('.field-instruct:contains("AA Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
 		
-		cy.visit('index.php/aaButtons')
+		cy.visit('index.php/aaSelectableButtons')
 		cy.get('body').should('contain', 'tres')
 		cy.get('body').should('contain', 'cinco')
 	})
