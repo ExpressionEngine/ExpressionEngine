@@ -27,7 +27,6 @@ context('Create combinations of field', () => {
 	  	cy.get('.main-nav__title > h1').contains('Field')
 	  	cy.get('.main-nav__toolbar > .button').contains('New Field')
 	  	cy.get('.filter-bar').should('exist')
-	  	cy.get('.filter-bar').should('exist')
 
 		cy.log('Creates a bunch of fields')
 		for(let i = 0; i < options.length; i++){

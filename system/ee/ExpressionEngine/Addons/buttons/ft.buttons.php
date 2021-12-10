@@ -119,12 +119,23 @@ class Buttons_ft extends Multi_select_ft
 
     public function grid_display_settings($data)
     {
-        return $this->getGridSettingsForm(
+        $gridSettingsForm = $this->getGridSettingsForm(
             'buttons',
             $data,
             'buttons_options',
             'grid_buttons_options_desc'
         );
+        array_unshift($gridSettingsForm['field_options'], array(
+            'title' => 'ft_allow_multi',
+            'desc' => 'ft_allow_multi_desc',
+            'fields' => array(
+                'allow_multiple' => array(
+                    'type' => 'yes_no',
+                    'value' => (isset($data['allow_multiple']) && $data['allow_multiple']) ? 'y' : 'n'
+                )
+            )
+        ));
+        return $gridSettingsForm;
     }
 
 }
