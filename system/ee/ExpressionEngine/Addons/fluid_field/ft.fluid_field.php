@@ -434,7 +434,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     'sortable'
                 ),
                 'file' => array(
-                    'fields/fluid_field/cp',
+                    'fields/fluid_field/ui',
                     'cp/sort_helper'
                 ),
             ));

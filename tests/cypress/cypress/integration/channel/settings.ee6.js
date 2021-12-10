@@ -260,6 +260,61 @@ context('Channel Settings', () => {
         page.get('comment_auto_link_urls').should('have.class', "off")
     })
 
+    context('enabling versions', function() {
+        it('saves the versioning setting', function() {
+            cy.visit('admin.php?/cp/channels/edit/2')
+            cy.hasNoErrors()
+
+            page.get('settings_tab').click()
+
+            cy.get('input[name=enable_versioning]').invoke('val').should('eq', 'n')
+            cy.get('[data-toggle-for="enable_versioning"]').should('have.class', 'off')
+
+            cy.get('[data-toggle-for="enable_versioning"]').click();
+            cy.get('button[value="save"]').eq(0).click()
+
+            cy.get('input[name=enable_versioning]').invoke('val').should('eq', 'y')
+            cy.get('[data-toggle-for="enable_versioning"]').should('have.class', 'on')
+
+            cy.visit('admin.php?/cp/publish/edit/entry/3');
+
+            cy.get('.tab-bar__tabs .tab-bar__tab:contains(Revisions)').should('exist').click()
+            cy.get('[data-toggle-for="versioning_enabled"]').should('have.class', 'off')
+
+            cy.visit('admin.php?/cp/channels/edit/2')
+            page.get('settings_tab').click()
+            cy.get('[data-toggle-for="enable_versioning"]').click();
+            cy.get('button[value="save"]').eq(0).click()
+
+            cy.visit('admin.php?/cp/publish/edit/entry/3');
+            cy.get('.tab-bar__tabs .tab-bar__tab:contains(Revisions)').should('not.exist')
+
+
+        })
+
+        it('updates existing entries when versioning setting changed', function() {
+            cy.visit('admin.php?/cp/channels/edit/2')
+            cy.hasNoErrors()
+
+            page.get('settings_tab').click()
+
+            cy.get('input[name=enable_versioning]').invoke('val').should('eq', 'n')
+            cy.get('[data-toggle-for="enable_versioning"]').should('have.class', 'off')
+
+            cy.get('[data-toggle-for="enable_versioning"]').click();
+            cy.get('input[type=checkbox][name="update_versioning"]').check()
+            cy.get('button[value="save"]').eq(0).click()
+
+            cy.get('input[name=enable_versioning]').invoke('val').should('eq', 'y')
+            cy.get('[data-toggle-for="enable_versioning"]').should('have.class', 'on')
+
+            cy.visit('admin.php?/cp/publish/edit/entry/3');
+
+            cy.get('.tab-bar__tabs .tab-bar__tab:contains(Revisions)').should('exist').click()
+            cy.get('[data-toggle-for="versioning_enabled"]').should('have.class', 'on')
+        })
+    })
+
     // TODO: Test to make sure checkboxes that apply settings to all
     // comments/entries actually do so
 
