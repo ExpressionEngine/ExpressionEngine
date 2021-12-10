@@ -9,7 +9,7 @@
   <div class="panel-body">
 
 	<div class="tab-wrap">
-		<div class="title-bar__extra-tools title-bar__extra-tools-publish">
+		<div class="title-bar__extra-tools title-bar__extra-tools-publish tab-bar__right-buttons">
 			<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 		</div>
 		<div class="tab-bar tab-bar--sticky<?php if (isset($pro_class)) : ?> hidden<?php endif; ?>">
