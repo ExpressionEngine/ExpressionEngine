@@ -14,10 +14,10 @@ require_once SYSPATH . 'ee/ExpressionEngine/Addons/select/ft.select.php';
 /**
  * Buttons Fieldtype
  */
-class Buttons_ft extends Multi_select_ft
+class Selectable_buttons_ft extends Multi_select_ft
 {
     public $info = array(
-        'name' => 'Buttons',
+        'name' => 'Selectable Buttons',
         'version' => '1.0.0'
     );
 
@@ -86,9 +86,9 @@ class Buttons_ft extends Multi_select_ft
     public function display_settings($data)
     {
         $settings = $this->getSettingsForm(
-            'buttons',
+            'selectable_buttons',
             $data,
-            'buttons_options',
+            'selectable_buttons_options',
             lang('options_field_desc') . lang('buttons_options_desc')
         );
 
@@ -103,9 +103,9 @@ class Buttons_ft extends Multi_select_ft
             )
         ));
 
-        return array('field_options_buttons' => array(
+        return array('field_options_selectable_buttons' => array(
             'label' => 'field_options',
-            'group' => 'buttons',
+            'group' => 'selectable_buttons',
             'settings' => $settings
         ));
     }
@@ -120,10 +120,10 @@ class Buttons_ft extends Multi_select_ft
     public function grid_display_settings($data)
     {
         $gridSettingsForm = $this->getGridSettingsForm(
-            'buttons',
+            'selectable_buttons',
             $data,
-            'buttons_options',
-            'grid_buttons_options_desc'
+            'selectable_buttons_options',
+            'grid_selectable_buttons_options_desc'
         );
         array_unshift($gridSettingsForm['field_options'], array(
             'title' => 'ft_allow_multi',

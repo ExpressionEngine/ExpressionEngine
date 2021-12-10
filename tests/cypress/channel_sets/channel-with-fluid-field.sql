@@ -400,7 +400,7 @@ VALUES
 	(20,1,'text','Text','','textarea','','n',NULL,NULL,6,NULL,'n','ltr','n','n','markdown','y',3,'any','YTozOntzOjI0OiJmaWVsZF9zaG93X2ZpbGVfc2VsZWN0b3IiO3M6MToibiI7czoxODoiZmllbGRfc2hvd19zbWlsZXlzIjtzOjE6Im4iO3M6MjY6ImZpZWxkX3Nob3dfZm9ybWF0dGluZ19idG5zIjtzOjE6Im4iO30=','n'),
 	(21,1,'truth_or_dare','Truth or Dare?','','toggle','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',17,'any','YToxOntzOjE5OiJmaWVsZF9kZWZhdWx0X3ZhbHVlIjtzOjE6IjAiO30=','n'),
 	(22,1,'youtube_url','YouTube URL','','text','','n',NULL,NULL,8,256,'n','ltr','n','n','none','n',1,'all','YTo0OntzOjEwOiJmaWVsZF9tYXhsIjtzOjM6IjI1NiI7czoxODoiZmllbGRfY29udGVudF90eXBlIjtzOjM6ImFsbCI7czoxODoiZmllbGRfc2hvd19zbWlsZXlzIjtzOjE6Im4iO3M6MjQ6ImZpZWxkX3Nob3dfZmlsZV9zZWxlY3RvciI7czoxOiJuIjt9','n'),
-  (9,1,'buttons','Buttons','','buttons','One\nUno\nEin','n',NULL,NULL,8,NULL,'n','ltr','n','n','none','y',10,'any','YTowOnt9','n'),;
+  (9,1,'selectable_buttons','Buttons','','selectable_buttons','One\nUno\nEin','n',NULL,NULL,8,NULL,'n','ltr','n','n','none','y',10,'any','YTowOnt9','n'),;
 
 /*!40000 ALTER TABLE `exp_channel_fields` ENABLE KEYS */;
 UNLOCK TABLES;

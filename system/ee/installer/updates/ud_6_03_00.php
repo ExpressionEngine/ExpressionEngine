@@ -40,14 +40,14 @@ class Updater
 
     private function installButtonsFieldtype()
     {
-        if (ee()->db->where('name', 'buttons')->get('fieldtypes')->num_rows() > 0) {
+        if (ee()->db->where('name', 'selectable_buttons')->get('fieldtypes')->num_rows() > 0) {
             return;
         }
 
         ee()->db->insert(
             'fieldtypes',
             array(
-                'name' => 'buttons',
+                'name' => 'selectable_buttons',
                 'version' => '1.0.0',
                 'settings' => base64_encode(serialize(array())),
                 'has_global_settings' => 'n'

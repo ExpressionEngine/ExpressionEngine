@@ -240,7 +240,7 @@ context('Publish Page - Create', () => {
             case 'checkboxes':
               field.find('input[type=checkbox]').eq(0 + skew).check();
               break;
-            case 'buttons':
+            case 'selectable_buttons':
               field.find('.button').eq(0 + skew).check();
               break;
             case 'email_address':
@@ -318,7 +318,7 @@ context('Publish Page - Create', () => {
             case 'checkboxes':
               field.find('input[type=checkbox]').eq(0 + skew).should('be.checked')
               break;
-            case 'buttons':
+            case 'selectable_buttons':
               field.find('.buttons').eq(0 + skew).should('have.class', 'active')
               break;
             case 'email_address':

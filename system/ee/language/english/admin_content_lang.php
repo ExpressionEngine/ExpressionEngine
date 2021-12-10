@@ -30,9 +30,9 @@ $lang = array(
 
     'be_careful' => 'BE CAREFUL!',
 
-    'buttons_options' => 'Buttons options',
+    'selectable_buttons_options' => 'Buttons options',
 
-    'buttons_options_desc' => '<em><i>Each item in the textarea will be included as selectable button in the publish form.</i>',
+    'selectable_buttons_options_desc' => '<em><i>Each item in the textarea will be included as selectable button in the publish form.</i>',
 
     'can_edit_status' => 'Can access status',
 

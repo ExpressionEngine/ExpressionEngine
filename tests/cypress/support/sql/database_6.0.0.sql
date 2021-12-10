@@ -1221,7 +1221,7 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(16, 'fluid_field', '1.0.0', 'YTowOnt9', 'n'),
 	(17, 'colorpicker', '1.0.0', 'YTowOnt9', 'n'),
 	(18, 'duration', '2.0.0', 'YTowOnt9', 'n'),
-	(20, 'buttons', '1.0.0', 'YTowOnt9', 'n');
+	(20, 'selectable_buttons', '1.0.0', 'YTowOnt9', 'n');
 /*!40000 ALTER TABLE `exp_fieldtypes` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_field_groups
