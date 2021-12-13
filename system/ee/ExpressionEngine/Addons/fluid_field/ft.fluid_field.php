@@ -714,6 +714,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 'fields' => array(
                     'field_channel_field_groups' => array(
                         'type' => 'checkbox',
+                        'force_react' => true,
                         'choices' => $custom_field_group_options,
                         'value' => isset($data['field_channel_field_groups']) ? $data['field_channel_field_groups'] : array(),
                         'no_results' => [
