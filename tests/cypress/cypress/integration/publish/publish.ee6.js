@@ -562,7 +562,7 @@ context('Publish Page - Create', () => {
           expect(text).to.eq('dos, tres')
         })
         cy.get('.grid_with_buttons .row-1 .buttons_single').invoke('text').then((text) => {
-          expect(text).to.eq('quatro')
+          expect(text).to.eq('cinco')
         })
       })
     })

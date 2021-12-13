@@ -12,10 +12,11 @@
 (function ($) {
 	$(document).ready(function () {
 
-		$('body').on('change','.button-group .button input[type="checkbox"]', function (e) {
+		$('body').on('change','.selectable_buttons .button input[type="checkbox"]', function (e) {
 
 			if ( !($(this).parents('.button-group').hasClass('multiple')) ) {
-				$('.button-group .button input[type="checkbox"]').not(this).prop('checked', false);
+				var elParent = $(this).parents('.selectable_buttons');
+				$(elParent).find('.button input[type="checkbox"]').not(this).prop('checked', false);
 			}
 
 			$('.button-group .button input[type="checkbox"]').each(function () {

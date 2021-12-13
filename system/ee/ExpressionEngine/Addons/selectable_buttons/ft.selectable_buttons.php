@@ -58,7 +58,8 @@ class Selectable_buttons_ft extends Multi_select_ft
                 'choices' => $this->_get_field_options($data),
                 'value' => $values,
                 'multi' => isset($this->settings['allow_multiple']) ? $this->settings['allow_multiple'] : false,
-                'disabled' => $this->get_setting('field_disabled')
+                'disabled' => $this->get_setting('field_disabled'),
+                'class' => 'selectable_buttons'
             ]);
         }
 
