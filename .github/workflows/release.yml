@@ -50,6 +50,7 @@ jobs:
         env:
           RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           APP_REPO_PATH: ${{ github.workspace }}
           DOCS_REPO_PATH: ${{ github.workspace }}/ExpressionEngine-User-Guide
         run: gulp default --local --head --skip-lint --version=${{ steps.tagName.outputs.tag }}
