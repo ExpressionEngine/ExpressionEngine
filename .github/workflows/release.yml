@@ -22,7 +22,6 @@ jobs:
           repository: EllisLab/ExpressionEngine-Build
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: build-tools
-          ref: npm-update # Remove once testing is complete
 
       - name: Checkout docs
         uses: actions/checkout@v2
