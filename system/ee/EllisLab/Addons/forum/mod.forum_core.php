@@ -5136,7 +5136,7 @@ class Forum_Core extends Forum {
 								);
 
 		$title = str_replace('{include:', '&#123;include:', ee('Security/XSS')->clean(ee()->input->post('title')));
-
+		$body = ee('Security/XSS')->clean($body);
 		return $this->var_swap($this->load_element('preview_post'),
 								array(
 										'post_title'	=> stripslashes($this->_convert_special_chars($title)),
@@ -6725,8 +6725,8 @@ class Forum_Core extends Forum {
 		$viewpath = ($query->row('announcement')  == 'n') ? 'viewthread/' : 'viewannounce/';
 		$viewpath .= ($query->row('announcement')  == 'n') ?  $_GET['topic_id'] : $_GET['topic_id'].'_'.$query->row('forum_id') ;
 
-		if ( ! $this->_mod_permission('can_change_status', $query->row('forum_id') ))
-		{
+		$token = ee('Request')->post('csrf_token');
+        if (! $this->_mod_permission('can_change_status', $query->row('forum_id')) || (! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN)) {
 			return ee()->output->show_user_error('general', array(lang('not_authorized')));
 		}
 

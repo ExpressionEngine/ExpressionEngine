@@ -1658,7 +1658,7 @@ class Member_settings extends Member {
 			{
 				if ($val != '')
 				{
-					$search_query[] = $key." LIKE '%".ee()->db->escape_like_str($val)."%'";
+					$search_query[] = ee()->db->escape_str($key)." LIKE '%".ee()->db->escape_like_str($val)."%'";
 				}
 			}
 		}
@@ -1669,7 +1669,7 @@ class Member_settings extends Member {
 			exit;
 		}
 
-  		$Q = implode(" AND ", $search_query);
+		$Q = implode(" AND ", $search_query);
 
 		$sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_member_groups
 				WHERE exp_members.group_id = exp_member_groups.group_id AND exp_member_groups.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
