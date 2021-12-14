@@ -320,7 +320,7 @@ class File extends Model
         $cat_groups = array();
 
         if ($this->UploadDestination->cat_group) {
-            $cat_groups = explode('|', $this->UploadDestination->cat_group);
+            $cat_groups = explode('|', (string) $this->UploadDestination->cat_group);
         }
 
         if (empty($categories)) {

@@ -184,7 +184,7 @@ class ImportConverter extends Utilities
     {
         // undo changes made by form prep as we need the literal characters
         // and htmlspecialchars_decode() doesn't exist until PHP 5, so...
-        $enclosure = str_replace('&#39;', "'", $enclosure);
+        $enclosure = str_replace('&#39;', "'", (string) $enclosure);
         $enclosure = str_replace('&amp;', "&", $enclosure);
         $enclosure = str_replace('&lt;', "<", $enclosure);
         $enclosure = str_replace('&gt;', ">", $enclosure);

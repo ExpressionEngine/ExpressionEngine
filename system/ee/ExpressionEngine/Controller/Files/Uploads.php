@@ -319,7 +319,7 @@ class Uploads extends AbstractFilesController
                 'cat_group' => array(
                     'type' => 'checkbox',
                     'choices' => $cat_group_options,
-                    'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array(),
+                    'value' => ($upload_destination) ? explode('|', (string) $upload_destination->cat_group) : array(),
                     'no_results' => [
                         'text' => sprintf(lang('no_found'), lang('category_groups'))
                     ]

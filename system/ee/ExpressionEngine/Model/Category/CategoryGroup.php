@@ -59,7 +59,7 @@ class CategoryGroup extends StructureModel
     {
         // Disassociate this group from channels
         foreach ($this->Channels as $channel) {
-            $groups = explode('|', $channel->cat_group);
+            $groups = explode('|', (string) $channel->cat_group);
 
             if (($key = array_search($this->getId(), $groups)) !== false) {
                 unset($groups[$key]);
@@ -78,7 +78,7 @@ class CategoryGroup extends StructureModel
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->all()
                 ->filter(function ($channel) {
-                    return in_array($this->getId(), explode('|', $channel->cat_group));
+                    return in_array($this->getId(), explode('|', (string) $channel->cat_group));
                 });
         }
 
