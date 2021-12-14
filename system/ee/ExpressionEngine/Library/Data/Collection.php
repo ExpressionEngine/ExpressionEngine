@@ -297,6 +297,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
      * @param mixed $offset Array key
      * @return mixed The element
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->elements[$offset];
