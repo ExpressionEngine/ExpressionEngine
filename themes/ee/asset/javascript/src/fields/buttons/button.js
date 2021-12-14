@@ -19,7 +19,7 @@
 				$(elParent).find('.button input[type="checkbox"]').not(this).prop('checked', false);
 			}
 
-			$('.button-group .button input[type="checkbox"]').each(function () {
+			$(this).parents('.button-group').find('.button input[type="checkbox"]').each(function () {
 				if ($(this).prop('checked')) {
 					$(this).parent().addClass('active');
 				} else {
