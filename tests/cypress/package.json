@@ -1,6 +1,7 @@
 {
     "name": "ee-tests",
     "version": "1.0.0",
+    "private": true,
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -13,12 +14,13 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@4tw/cypress-drag-drop": "^1.6.0"
+        "@4tw/cypress-drag-drop": "^2.0.0"
     },
     "dependencies": {
         "cypress": "7.2.0",
         "cypress-xpath": "^1.6.0",
         "cypress-file-upload": "^5.0.7",
+        "cypress-maildev": "^1.0.1",
         "del": "^5.1.0",
         "fs-extra": "^9.0.0",
         "glob": "^7.1.6",
