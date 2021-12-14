@@ -217,7 +217,12 @@ class URL implements \Serializable
     {
         return $this->unserialize($serialized);
     }
-    // legacy, keeping for PHP 5.6 support
+
+    /**
+     * legacy, keeping for PHP 5.6 support
+     *
+     * @return bool
+     */
     public function unserialize($serialized)
     {
         $data = json_decode($serialized, true);

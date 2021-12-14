@@ -127,6 +127,8 @@ class Link
         if (isset($value)) {
             $this->setAttribute('data-' . $name, $value);
         }
+
+        return $this;
     }
 
     /**

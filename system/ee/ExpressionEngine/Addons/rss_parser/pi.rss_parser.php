@@ -15,6 +15,8 @@ class Rss_parser
 {
     private $cache_name = 'rss_parser_plugin';
 
+    public $return_data;
+
     public function __construct()
     {
         // Fetch Parameters and set defaults

@@ -111,14 +111,14 @@ class DbBackup extends Utilities
             try {
                 $backup->startFile();
                 $backup->writeDropAndCreateStatements();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return $this->sendError($e->getMessage());
             }
         }
 
         try {
             $returned = $backup->writeTableInsertsConservatively($table_name, $offset);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
 

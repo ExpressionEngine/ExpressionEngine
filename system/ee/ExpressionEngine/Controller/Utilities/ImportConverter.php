@@ -274,12 +274,12 @@ class ImportConverter extends Utilities
         }
 
         // Get member table fields
-        $this->default_fields = ee('Model')->make('Member')->getFields();
+        $default_fields = ee('Model')->make('Member')->getFields();
 
-        ksort($this->default_fields);
+        ksort($default_fields);
         $vars['select_options'][''] = lang('select');
 
-        foreach ($this->default_fields as $key => $val) {
+        foreach ($default_fields as $key => $val) {
             $vars['select_options'][$val] = $val;
         }
 
@@ -453,7 +453,7 @@ class ImportConverter extends Utilities
 
         $this->member_file_name = ee('Encrypt')->decode(ee()->input->post('member_file'));
         $enclosure = ee()->input->post('enclosure') ?: '';
-        $encrypt = ($this->input->post('encrypt') == 'y');
+        $encrypt = (ee()->input->post('encrypt') == 'y');
 
         ee()->load->helper(array('file', 'xml'));
 
@@ -491,7 +491,7 @@ class ImportConverter extends Utilities
         }
 
         if (! empty(ee()->xmlparser->errors)) {
-            return show_error($this->xmlparser->errors);
+            show_error($this->xmlparser->errors);
         }
 
         $vars['code'] = $xml;
@@ -558,7 +558,7 @@ class ImportConverter extends Utilities
 
         if (count($mssg) > 0) {
             $out = implode('<br>', $mssg);
-            $this->form_validation->set_message('_unique_required', $out);
+            ee()->form_validation->set_message('_unique_required', $out);
 
             return false;
         }
