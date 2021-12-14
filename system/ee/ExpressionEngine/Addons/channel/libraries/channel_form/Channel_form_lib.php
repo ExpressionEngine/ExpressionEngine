@@ -1530,7 +1530,7 @@ GRID_FALLBACK;
         $this->switch_site($this->site_id);
 
         // Structure category data the way the ChannelEntry model expects it
-        $cat_groups = explode('|', $this->entry->Channel->cat_group);
+        $cat_groups = explode('|', (string) $this->entry->Channel->cat_group);
         if (! empty($cat_groups) && isset($_POST['category'])) {
             $_POST['categories'] = array('cat_group_id_' . $cat_groups[0] => (is_array($_POST['category'])) ? $_POST['category'] : [$_POST['category']]);
         }

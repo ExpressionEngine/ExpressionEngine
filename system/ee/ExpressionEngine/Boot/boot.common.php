@@ -548,7 +548,7 @@ if (! function_exists('log_message')) {
         $non_displayables[] = '/&#(?:823[78]|820[67]);/'; // HTML entity versions of RTL/LTR markers
 
         do {
-            $str = preg_replace($non_displayables, '', $str, -1, $count);
+            $str = preg_replace($non_displayables, '', (string) $str, -1, $count);
         } while ($count);
 
         return $str;

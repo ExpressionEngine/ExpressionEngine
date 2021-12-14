@@ -446,7 +446,7 @@ class EntryListing
      */
     private function createCategoryFilter($channel = null)
     {
-        $cat_id = ($channel) ? explode('|', $channel->cat_group) : null;
+        $cat_id = ($channel) ? explode('|', (string) $channel->cat_group) : null;
 
         $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
             ->with('Categories')

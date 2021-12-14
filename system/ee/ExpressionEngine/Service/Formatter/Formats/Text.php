@@ -28,6 +28,9 @@ class Text extends Formatter
 
         $this->multibyte = extension_loaded('mbstring');
 
+        // this is text formatter, make sure content is string
+        $content = strval($content);
+
         parent::__construct($content, $lang, $session, $config, $options);
     }
 

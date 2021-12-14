@@ -761,7 +761,7 @@ class ChannelEntry extends ContentModel
         $cat_groups = array();
 
         if ($this->Channel->cat_group) {
-            $cat_groups = explode('|', $this->Channel->cat_group);
+            $cat_groups = explode('|', (string) $this->Channel->cat_group);
         }
 
         if ($this->isNew() or empty($categories)) {
@@ -977,7 +977,7 @@ class ChannelEntry extends ContentModel
 
             if ($this->Channel) {
                 $cat_groups = $this->getModelFacade()->get('CategoryGroup')
-                    ->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
+                    ->filter('group_id', 'IN', explode('|', (string) $this->Channel->cat_group))
                     ->all();
 
                 foreach ($cat_groups as $cat_group) {
