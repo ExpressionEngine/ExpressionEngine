@@ -529,7 +529,7 @@ class Search
         }
 
         // do we need to limit to categories?
-        if (!empty($this->_meta['category'])) {
+        if (isset($this->_meta['category']) and is_array($this->_meta['category'])) {
             $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
 			LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
         }
@@ -540,11 +540,7 @@ class Search
 
         $sql .= "WHERE ";
 
-        if (!empty($this->_meta['site_ids']) && empty($channels)) {
-            $sql .= "exp_channels.site_id IN ('" . implode("','", $this->_meta['site_ids']) . "') ";
-        } else {
-            $sql .= "exp_channels.site_id IS NOT NULL ";
-        }
+        $sql .= "exp_channels.site_id IN ('" . implode("','", $this->_meta['site_ids']) . "') ";
 
         /** ----------------------------------------------
         /**  We only select entries that have not expired
