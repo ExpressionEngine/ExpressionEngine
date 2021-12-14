@@ -577,6 +577,7 @@ class EE_BreadthFirstIterator implements OuterIterator
      *
      * @return iterator entry of the current inner iterator
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->_iterator->current();
@@ -587,6 +588,7 @@ class EE_BreadthFirstIterator implements OuterIterator
      *
      * @return iterator key of the current inner iterator
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->_iterator->key();
