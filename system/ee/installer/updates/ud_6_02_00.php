@@ -25,7 +25,7 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator (
+        $steps = new \ProgressIterator(
             [
                 'addFluidFieldGroups'
             ]
@@ -40,11 +40,11 @@ class Updater
 
     private function addFluidFieldGroups()
     {
-        if (!ee()->db->field_exists('fluid_group_id', 'fluid_field_data')) {
+        if (!ee()->db->field_exists('field_group_id', 'fluid_field_data')) {
             ee()->smartforge->add_column(
                 'fluid_field_data',
                 array(
-                    'fluid_group_id' => [
+                    'field_group_id' => [
                         'type' => 'int',
                         'unsigned' => true,
                         'null' => true,

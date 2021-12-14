@@ -45,7 +45,10 @@ class Fluid_field_ft extends EE_Fieldtype
             return true;
         }
 
-        $field_templates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
+        $field_templates = ee('Model')->get('ChannelField')
+            ->with('ChannelFieldGroups')
+            ->filter('field_id', 'IN', $this->settings['field_channel_fields'])
+            ->orFilter('ChannelFieldGroups.group_id', 'IN', $this->settings['field_channel_field_groups'])
             ->order('field_label')
             ->all()
             ->indexByIds();

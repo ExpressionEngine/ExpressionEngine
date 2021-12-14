@@ -38,14 +38,14 @@
             </div>
         </div>
 
-        <? foreach ($field_group_fields as $field) : ?>
-            <? if($field->getType() !== 'fluid_field'): ?>
+        <?php foreach ($field_group_fields as $field) : ?>
+            <?php if($field->getType() !== 'fluid_field'): ?>
             <div class="fluid__item-field no-drag <?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid') {
                                                         echo 'fieldset-faux';
                                                     } ?>" data-field-type="<?= $field->getType() ?>">
 
                 <div class="field-instruct">
-                    <label><?= $field->getItem('field_label') ?></label>
+                    <label><?php $field->getItem('field_label') ?></label>
                 </div>
                 <?php
                 $field_name = $field->getName();
@@ -57,10 +57,10 @@
 
                 echo $form;
                 ?>
-                <?= isset($errors) ? $errors->renderError($field_name) : '' ?>
+                <?php isset($errors) ? $errors->renderError($field_name) : '' ?>
             </div>
-            <? endif; ?>
-        <? endforeach; ?>
+            <?php endif; ?>
+        <?php endforeach; ?>
     </div>
 
     <div class="fluid__item-tools fluid__item-tools--item-closed hidden">
