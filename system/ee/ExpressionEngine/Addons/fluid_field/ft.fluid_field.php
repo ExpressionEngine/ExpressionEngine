@@ -445,6 +445,9 @@ class Fluid_field_ft extends EE_Fieldtype
                 'filters' => $filters,
             ));
         }
+
+        //since this is not implemented outside of CP, return empty string
+        return '';
     }
 
     public function display_settings($data)

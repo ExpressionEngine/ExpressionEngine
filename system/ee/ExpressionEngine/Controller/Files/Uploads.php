@@ -302,8 +302,8 @@ class Uploads extends AbstractFilesController
             ? $this->upload_errors['image_sizes'] : array();
 
         // Category group assignment
-        $this->load->model('category_model');
-        $query = $this->category_model->get_category_groups('', false, 1);
+        ee()->load->model('category_model');
+        $query = ee()->category_model->get_category_groups('', false, 1);
 
         $cat_group_options = array();
         if ($query->num_rows() > 0) {
@@ -545,7 +545,7 @@ class Uploads extends AbstractFilesController
                 unset($_POST['cat_group'][0]);
             }
 
-            $upload_destination->cat_group = implode('|', $this->input->post('cat_group'));
+            $upload_destination->cat_group = implode('|', ee()->input->post('cat_group'));
         } else {
             $upload_destination->cat_group = '';
         }
@@ -979,7 +979,7 @@ class Uploads extends AbstractFilesController
 
             $file_data = array(
                 'upload_location_id' => $id,
-                'site_id' => $this->config->item('site_id'),
+                'site_id' => ee()->config->item('site_id'),
                 'mime_type' => $file['mime'],
                 'file_name' => $file['name'],
                 'file_size' => $file['size'],

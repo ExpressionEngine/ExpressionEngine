@@ -50,7 +50,7 @@ if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/r
  *
  * @deprecated 3.0.0
  * @access	private
- * @return	void
+ * @return	bool
  */
     function is_really_writable($file)
     {
