@@ -159,7 +159,7 @@ class Validator
         }
 
         foreach ($this->rules as $key => $rules) {
-            $value = null;
+            $value = '';
 
             if (array_key_exists($key, $values)) {
                 $value = $values[$key];
