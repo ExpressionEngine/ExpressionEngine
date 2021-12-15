@@ -512,9 +512,7 @@ class Search
 			DISTINCT(exp_channel_titles.entry_id), exp_channel_titles.channel_id
 			FROM exp_channel_titles ";
 
-        if (!empty($channels)) {
-            $sql .= "LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id ";
-        }
+        $sql .= "LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id ";
 
         $sql .= "LEFT JOIN exp_channel_data ON exp_channel_titles.entry_id = exp_channel_data.entry_id ";
 
@@ -540,7 +538,11 @@ class Search
 
         $sql .= "WHERE ";
 
-        $sql .= "exp_channels.site_id IN ('" . implode("','", $this->_meta['site_ids']) . "') ";
+        if (!empty($this->_meta['site_ids']) && empty($channels)) {
+            $sql .= "exp_channels.site_id IN ('" . implode("','", $this->_meta['site_ids']) . "') ";
+        } else {
+            $sql .= "exp_channels.site_id IS NOT NULL ";
+        }
 
         /** ----------------------------------------------
         /**  We only select entries that have not expired
