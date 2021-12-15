@@ -19,7 +19,7 @@ class Spam_mcp
 {
     public $stop_words_path = "spam/training/stopwords.txt";
     public $stop_words = array();
-    protected $base_url;
+    private $base_url;
     protected $total;
 
     /**

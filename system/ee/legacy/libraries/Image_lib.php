@@ -1325,8 +1325,8 @@ class EE_Image_lib
             return;
         }
 
-        $new_width = ceil($this->orig_width * $this->height / $this->orig_height);
-        $new_height = ceil($this->width * $this->orig_height / $this->orig_width);
+        $new_width = (int) ceil($this->orig_width * $this->height / $this->orig_height);
+        $new_height = (int) ceil($this->width * $this->orig_height / $this->orig_width);
 
         $ratio = (($this->orig_height / $this->orig_width) - ($this->height / $this->width));
 
@@ -1429,9 +1429,9 @@ class EE_Image_lib
         }
 
         if ($vals['new_width'] == 0) {
-            $vals['new_width'] = ceil($vals['width'] * $vals['new_height'] / $vals['height']);
+            $vals['new_width'] = (int) ceil($vals['width'] * $vals['new_height'] / $vals['height']);
         } elseif ($vals['new_height'] == 0) {
-            $vals['new_height'] = ceil($vals['new_width'] * $vals['height'] / $vals['width']);
+            $vals['new_height'] = (int) ceil($vals['new_width'] * $vals['height'] / $vals['width']);
         }
 
         return $vals;

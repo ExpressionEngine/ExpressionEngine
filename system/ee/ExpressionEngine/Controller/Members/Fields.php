@@ -21,7 +21,6 @@ use ExpressionEngine\Controller\Members;
  */
 class Fields extends Members\Members
 {
-    protected $base_url;
     protected $perpage;
     protected $params;
     protected $page = 1;
