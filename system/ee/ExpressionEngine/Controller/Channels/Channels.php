@@ -812,6 +812,9 @@ class Channels extends AbstractChannelsController
         ee()->load->model('admin_model');
 
         $author_list = $this->authorList();
+        if (!empty($channel_form->default_author) && !isset($author_list[$channel_form->default_author])) {
+            $author_list[$channel_form->default_author] = ee('Model')->get('Member', $channel_form->default_author)->first()->getMemberName();
+        }
 
         $sections = array(
             array(
@@ -1031,7 +1034,7 @@ class Channels extends AbstractChannelsController
                     'fields' => array(
                         'default_author' => array(
                             'type' => 'radio',
-                            'choices' => $this->authorList(),
+                            'choices' => $author_list,
                             'filter_url' => ee('CP/URL')->make('channels/author-list')->compile(),
                             'value' => isset($author_list[$channel_form->default_author])
                                 ? $channel_form->default_author
@@ -1060,7 +1063,11 @@ class Channels extends AbstractChannelsController
                     'fields' => array(
                         'enable_versioning' => array(
                             'type' => 'yes_no',
-                            'value' => $channel->enable_versioning
+                            'value' => $channel->enable_versioning,
+                            'note' => form_label(
+                                form_checkbox('update_versioning', 'y')
+                                . lang('update_versioning')
+                            )
                         )
                     )
                 ),
@@ -1358,9 +1365,12 @@ class Channels extends AbstractChannelsController
      *
      * @return array ID => Screen name array of authors
      */
-    public function authorList()
+    public function authorList($search = null)
     {
-        $authors = ee('Member')->getAuthors(ee('Request')->get('search'));
+        if (!empty(ee('Request')->get('search'))) {
+            $search = ee('Request')->get('search');
+        }
+        $authors = ee('Member')->getAuthors($search);
 
         if (AJAX_REQUEST) {
             return ee('View/Helpers')->normalizedChoices($authors);
@@ -1496,6 +1506,10 @@ class Channels extends AbstractChannelsController
             ee()->logger->log_action($success_msg . NBS . NBS . $_POST['channel_title']);
         } else {
             $channel->save();
+        }
+
+        if (ee('Request')->post('update_versioning')) {
+            ee('Channel/ChannelEntry')->updateVersioning($channel->getId(), ee('Request')->post('enable_versioning'));
         }
 
         $perms = [];

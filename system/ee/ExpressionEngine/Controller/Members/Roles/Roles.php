@@ -121,7 +121,7 @@ class Roles extends AbstractRolesController
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
-                'faded' => '(' . $role->PrimaryMembers->count() . ')',
+                'faded' => '(' . $role->total_members . ')',
                 'faded-href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                 'href' => $edit_url,
                 'selected' => ($role_id && $role->getId() == $role_id),
@@ -166,6 +166,15 @@ class Roles extends AbstractRolesController
             ee('CP/URL')->make('members')->compile() => lang('members'),
             '' => lang('roles')
         );
+
+        if (ee()->config->item('ignore_member_stats') == 'y') {
+            ee()->lang->load('members');
+            ee('CP/Alert')->makeInline('roles-count-warn')
+                ->asWarning()
+                ->addToBody(lang('roles_counter_warning'))
+                ->cannotClose()
+                ->now();
+        }
 
         ee()->cp->render('members/roles/index', $vars);
     }
@@ -1867,11 +1876,13 @@ class Roles extends AbstractRolesController
 
         $roles = ee()->input->post('selection');
 
-        $vars['roles'] = ee('Model')->get('Role', $roles)
-            ->all()
-            ->filter(function ($role) {
-                return ee('Model')->get('Member')->filter('role_id', $role->getId())->count() > 0;
-            });
+        $roleModels = ee('Model')->get('Role', $roles)->all();
+        $vars['members_count_primary'] = 0;
+        $vars['members_count_secondary'] = 0;
+        foreach ($roleModels as $role) {
+            $vars['members_count_primary'] += $role->getMembersCount('primary');
+            $vars['members_count_secondary'] += $role->getMembersCount('secondary');
+        }
 
         $vars['new_roles'] = [];
         if (ee('Permission')->can('delete_members')) {
@@ -1879,7 +1890,7 @@ class Roles extends AbstractRolesController
         }
         $allowed_roles = ee('Model')->get('Role')
             ->fields('role_id', 'name')
-            ->filter('role_id', 'NOT IN', array_merge($roles, [1,2, 3, 4]))
+            ->filter('role_id', 'NOT IN', array_merge($roles, [1, 2, 3, 4]))
             ->order('name');
         if (! ee('Permission')->isSuperAdmin()) {
             $allowed_roles->filter('is_locked', 'n');

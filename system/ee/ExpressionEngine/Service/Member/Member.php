@@ -43,7 +43,7 @@ class Member
 
         $member_ids = [];
         foreach ($roles as $role) {
-            $member_ids = array_merge($role->getAllMembers()->pluck('member_id'), $member_ids);
+            $member_ids = array_merge($role->getAllMembersData('member_id'), $member_ids);
         }
 
         // Then authors who are individually selected to appear in author list

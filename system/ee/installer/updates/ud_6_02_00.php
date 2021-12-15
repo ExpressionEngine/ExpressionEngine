@@ -25,11 +25,11 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator (
-            [
-                'addMemberValidationAction',
-            ]
-        );
+        $steps = new \ProgressIterator([
+            'addEnableCliConfig',
+            'addTotalMembersCount',
+            'addMemberValidationAction',
+        ]);
 
         foreach ($steps as $k => $v) {
             $this->$v();
@@ -51,6 +51,30 @@ class Updater
             'class' => 'Member',
             'method' => 'validate',
         ));
+    }
+
+    private function addEnableCliConfig()
+    {
+        // Enable the CLI by default
+        ee()->config->update_site_prefs(['enable_cli' => 'y'], 'all');
+    }
+
+    private function addTotalMembersCount()
+    {
+        if (!ee()->db->field_exists('total_members', 'roles')) {
+            ee()->smartforge->add_column(
+                'roles',
+                [
+                    'total_members' => [
+                        'type' => 'mediumint',
+                        'constraint' => 8,
+                        'null' => false,
+                        'unsigned' => true,
+                        'default' => 0
+                    ]
+                ]
+            );
+        }
     }
 }
 

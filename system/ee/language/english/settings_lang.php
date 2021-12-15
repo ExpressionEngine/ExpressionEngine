@@ -782,6 +782,8 @@ $lang = array(
 
     'share_analytics_desc' => 'ExpressionEngine asks users to help improve ExpressionEngine by occasionally <a href="%s">providing analytics, diagnostic, and usage information</a>.',
 
+    'cli_enabled' => 'Enable the Command Line Interface',
+
     'un_min_len' => 'Minimum username length',
 
     'un_min_len_desc' => 'Minimum number of characters required for new members\' usernames.',
