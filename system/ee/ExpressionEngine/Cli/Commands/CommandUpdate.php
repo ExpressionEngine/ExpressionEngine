@@ -92,6 +92,11 @@ class CommandUpdate extends Cli
     protected function runUpdater($step = null, $microapp = false, $noBootstrap = false, $rollback = false)
     {
         try {
+            // Lets autoload the updates folder since we're ready for it
+            if ($step === 'checkForDbUpdates') {
+                $this->autoload(SYSPATH . 'ee/installer/updates/');
+            }
+
             if ($microapp) {
                 return $this->updaterMicroapp($step);
             }
@@ -239,7 +244,7 @@ class CommandUpdate extends Cli
     private function autoload($dir)
     {
         if (!is_dir($dir)) {
-            throw new Exception("Could not autoload missing directory: " . $dir, 1);
+            throw new \Exception("Could not autoload missing directory: " . $dir, 1);
         }
 
         foreach (scandir($dir) as $file) {
