@@ -223,6 +223,7 @@ class CommandUpdate extends Cli
         $this->autoload(SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Logger/');
 
         require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/SteppableTrait.php';
+        require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/LegacyFiles.php';
         require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/Logger.php';
         require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/Verifier.php';
         require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/FileUpdater.php';
