@@ -287,7 +287,7 @@ class File extends Model
      */
     private function stripAndTrim($str)
     {
-        return trim(strip_tags($str));
+        return trim(strip_tags((string) $str));
     }
 
     public function set__title($value)
