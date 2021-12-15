@@ -527,7 +527,7 @@ class Search
         }
 
         // do we need to limit to categories?
-        if (isset($this->_meta['category']) and is_array($this->_meta['category'])) {
+        if (!empty($this->_meta['category']) OR !empty($_POST['cat_id'])) {
             $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
 			LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
         }
