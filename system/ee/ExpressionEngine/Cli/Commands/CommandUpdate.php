@@ -238,6 +238,10 @@ class CommandUpdate extends Cli
      */
     private function autoload($dir)
     {
+        if (!is_dir($dir)) {
+            throw new Exception("Could not autoload missing directory: " . $dir, 1);
+        }
+
         foreach (scandir($dir) as $file) {
             if (is_dir($dir . $file) && substr($file, 0, 1) == '.') {
                 continue;
