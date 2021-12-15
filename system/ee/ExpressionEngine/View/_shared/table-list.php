@@ -42,6 +42,7 @@
 								disabled="disabled"
 							<?php endif; ?>
 							type="checkbox"
+							aria-label="mark item"
 						>
 					</div>
 				<?php endif ?>

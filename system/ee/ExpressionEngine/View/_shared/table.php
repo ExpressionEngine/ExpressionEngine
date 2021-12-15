@@ -45,6 +45,7 @@
                     $label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="app-listing__header text--center">
+							<span class="sr-only">checkbox block</span>
 							<?php if (! empty($data) or $checkbox_header): // Hide checkbox if no data?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>

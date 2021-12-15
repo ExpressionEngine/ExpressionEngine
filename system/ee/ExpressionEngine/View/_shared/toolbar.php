@@ -19,6 +19,9 @@
 
                     continue;
                 }
+                if ($key == 'title') {
+                    $val .= ' button';
+                }
                 $attr .= ' ' . $key . '="' . $val . '"';
             }
             if (isset($attributes['title'])) {

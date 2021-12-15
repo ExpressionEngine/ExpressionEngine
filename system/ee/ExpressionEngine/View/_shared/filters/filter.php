@@ -10,11 +10,13 @@
 		<?php if ($has_custom_value || $has_list_filter): ?>
 			<div class="dropdown__search">
 				<div class="search-input">
+					<label for="filterSearchInput" class="sr-only">Filter search input</label>
 				<input
 					type="text"
 					name="<?=$name?>"
 					value="<?=htmlentities($custom_value, ENT_QUOTES, 'UTF-8')?>"
 					placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
+					aria-labelledby="filterSearchInput"
 					<?php if ($has_list_filter): ?>
 					data-fuzzy-filter="true"
 					<?php endif; ?>

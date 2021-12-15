@@ -943,7 +943,7 @@ class Members extends CP_Controller
 
             $username_display = "
             <div class=\"d-flex align-items-center\">
-            <img src=\"$avatar_url\" alt=\"" . $member->username . "\" class=\"avatar-icon add-mrg-right\">
+            <img src=\"$avatar_url\" alt=\"" . $member->username . " avatar\" class=\"avatar-icon add-mrg-right\">
             <div>$username_display</div>
             </div>
             ";

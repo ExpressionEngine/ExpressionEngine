@@ -1,5 +1,6 @@
 <fieldset class="bulk-action-bar hidden">
-	<select name="bulk_action" class="select-popup button--small">
+	<legend class="sr-only">Bulk action list</legend>
+	<select name="bulk_action" class="select-popup button--small" aria-label="bulk action select">
 		<?php foreach ($options as $option): ?>
 		<option
 			<?php

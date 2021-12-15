@@ -63,7 +63,7 @@ $current_page = ee()->uri->segment(2);
           <?php if (count($cp_breadcrumbs)): ?>
             <div class="breadcrumb-wrapper">
               <ul class="breadcrumb">
-					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>"><i class="fas fa-home"></i></a></li>
+					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>"><span class="sr-only">Homepage</span><i class="fas fa-home"></i></a></li>
 						<?php
                         $i = 0;
                         foreach ($cp_breadcrumbs as $link => $title):
@@ -81,7 +81,7 @@ $current_page = ee()->uri->segment(2);
             </div>
       		<?php endif ?>
 
-          <div class="field-control field-control_input--jump with-icon-start with-input-shortcut">
+          <div class="field-control field-control_input--jump with-icon-start with-input-shortcut" role="search">
 			<i class="fas fa-bullseye fa-fw icon-start jump-focus"></i>
 			<label for="jumpEntry1" class="hidden"><?=lang('jump_menu_input')?></label>
             <input type="text" id="jumpEntry1" class="input--jump input--rounded jump-to" placeholder="<?=lang('jump_menu_input')?>" autocomplete="off">

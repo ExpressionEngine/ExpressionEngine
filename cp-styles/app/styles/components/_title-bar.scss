@@ -31,6 +31,7 @@
   text-overflow: ellipsis;
   text-align: left;
   flex: 4;
+  font-size: 1.35em;
 
   @include m-tablet-down {
     padding-right: 0px;

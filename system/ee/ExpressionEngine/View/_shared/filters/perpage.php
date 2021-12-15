@@ -17,6 +17,7 @@
 				data-threshold="<?=$threshold?>"
 				data-threshold-text="<?=sprintf(lang('confirm_show_all_desc'), $threshold)?>"
 				class="search-input__input input--small"
+				aria-label="perpageSearchInput"
 			>
 			</div>
 		</div>

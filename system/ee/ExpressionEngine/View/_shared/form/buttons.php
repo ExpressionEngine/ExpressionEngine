@@ -79,6 +79,7 @@
 		<button class="<?=$class?>" <?=$button['attrs']?> <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_html?><?=$button_text?></button>
 		<?php if ($i == 0 && count($submits) > 1) : ?>
 		<button type="button" class="<?=$class?> dropdown-toggle js-dropdown-toggle saving-options" data-dropdown-pos="bottom-end">
+            <span class="sr-only">save with options</span>
 			<i class="fas fa-angle-down"></i>
 		</button>
 		<div class="dropdown">

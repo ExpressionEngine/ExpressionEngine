@@ -10,7 +10,7 @@
 <?php endif; ?>
 
 <?php if (isset($header)): ?>
-<div class="main-nav<?php if ((!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) && (empty(ee()->uri->segment(2)) || ee()->uri->segment(2) == 'homepage')) : ?> hidden<?php endif; ?>">
+<div class="main-nav<?php if ((!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) && (empty(ee()->uri->segment(2)) || ee()->uri->segment(2) == 'homepage')) : ?> hidden<?php endif; ?>"  role="banner">
 	<div class="main-nav__wrap">
 
 	<div class="main-nav__title">
@@ -20,7 +20,7 @@
 	<div class="main-nav__toolbar">
 		<?php if (isset($header['toolbar_items']) && $header['toolbar_items']): ?>
 			<?php foreach ($header['toolbar_items'] as $name => $item): ?>
-				<a class="button button--secondary icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?>"><span class="hidden"><?=$item['title']?></span></a>
+				<a class="button button--secondary icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?> button"><span class="hidden"><?=$item['title']?></span></a>
 			<?php endforeach; ?>
 		<?php endif ?>
 
@@ -95,7 +95,7 @@
 <?php endif ?>
 
 
-<div class="ee-main__content">
+<div class="ee-main__content"  role="main">
 
 	<?php if (isset($left_nav)): ?>
 	<div class="secondary-sidebar-container">
