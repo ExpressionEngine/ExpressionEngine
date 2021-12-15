@@ -8,11 +8,16 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
+
 /**
  * Duration Fieldtype
  */
-class Duration_Ft extends EE_Fieldtype
+class Duration_Ft extends EE_Fieldtype implements ConditionalSource
 {
+    use CreatesConditions;
+
     /**
      * @var array $info Legacy Fieldtype info array
      */
@@ -27,6 +32,15 @@ class Duration_Ft extends EE_Fieldtype
     public $has_array_data = false;
 
     public $size = 'small';
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = [
+        'is','is not','less than','greater than','less than or equal to','greater than or equal to'
+    ];
 
     /**
      * Validate Field

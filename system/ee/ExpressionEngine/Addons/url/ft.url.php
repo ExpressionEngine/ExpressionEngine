@@ -8,11 +8,15 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 /**
  * URL Fieldtype
  */
-class Url_Ft extends EE_Fieldtype
+class Url_Ft extends EE_Fieldtype implements ConditionalSource
 {
+    use CreatesConditions;
+
     /**
      * @var array $info Legacy Fieldtype info array
      */
@@ -25,6 +29,13 @@ class Url_Ft extends EE_Fieldtype
      * @var bool $has_array_data Whether or not this Fieldtype is setup to parse as a tag pair
      */
     public $has_array_data = false;
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = ['is', 'is not', 'contains'];
 
     /**
      * Validate Field

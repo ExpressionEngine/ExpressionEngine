@@ -9,12 +9,16 @@
  */
 
 use ExpressionEngine\Addons\FilePicker\FilePicker;
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 
 /**
  * Text Fieldtype
  */
-class Text_ft extends EE_Fieldtype
+class Text_ft extends EE_Fieldtype implements ConditionalSource
 {
+    use CreatesConditions;
+
     public $info = array(
         'name' => 'Text Input',
         'version' => '1.0.0'
@@ -22,6 +26,13 @@ class Text_ft extends EE_Fieldtype
 
     // Parser Flag (preparse pairs?)
     public $has_array_data = false;
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = ['is', 'is not', 'contains'];
 
     public function validate($data)
     {

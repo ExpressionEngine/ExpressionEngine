@@ -8,11 +8,16 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
+
 /**
  * Grid Fieldtype
  */
-class Grid_ft extends EE_Fieldtype
+class Grid_ft extends EE_Fieldtype implements ConditionalSource
 {
+    use CreatesConditions;
+
     public $info = array(
         'name' => 'Grid',
         'version' => '1.0.0'
@@ -27,6 +32,13 @@ class Grid_ft extends EE_Fieldtype
     public $settings_form_field_name = 'grid';
 
     private $errors;
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = ['is empty', 'is not empty'];
 
     public function __construct()
     {

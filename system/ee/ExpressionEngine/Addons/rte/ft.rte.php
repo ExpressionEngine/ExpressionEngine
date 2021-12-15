@@ -10,9 +10,13 @@
  */
 
 use ExpressionEngine\Addons\Rte\RteHelper;
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 
-class Rte_ft extends EE_Fieldtype
+class Rte_ft extends EE_Fieldtype implements ConditionalSource
 {
+    use CreatesConditions;
+
     public $has_array_data = true;
 
     public $entry_manager_compatible = true;
@@ -23,6 +27,13 @@ class Rte_ft extends EE_Fieldtype
         'name' => 'Rich Text Editor',
         'version' => '2.1.0'
     ];
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = ['is', 'is not', 'contains'];
 
     /**
      * Implements EntryManager\ColumnInterface

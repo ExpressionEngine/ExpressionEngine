@@ -8,11 +8,16 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
+
 /**
  * Fluid Field Fieldtype
  */
-class Fluid_field_ft extends EE_Fieldtype
+class Fluid_field_ft extends EE_Fieldtype implements ConditionalSource
 {
+    use CreatesConditions;
+
     public $info = array();
 
     public $has_array_data = true;
@@ -22,6 +27,13 @@ class Fluid_field_ft extends EE_Fieldtype
     public $size = 'large';
 
     private $errors;
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = ['is empty', 'is not empty'];
 
     /**
      * Fetch the fieldtype's name and version from its addon.setup.php file.

@@ -8,11 +8,15 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 /**
  * Toggle Fieldtype
  */
-class Toggle_ft extends EE_Fieldtype
+class Toggle_ft extends EE_Fieldtype implements ConditionalSource
 {
+    use CreatesConditions;
+
     public $info = array(
         'name' => 'Toggle',
         'version' => '1.0.0'
@@ -30,6 +34,13 @@ class Toggle_ft extends EE_Fieldtype
     );
 
     /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = ['is', 'is not'];
+
+    /**
      * Fetch the fieldtype's name and version from it's addon.setup.php file.
      */
     public function __construct()
@@ -39,6 +50,16 @@ class Toggle_ft extends EE_Fieldtype
             'name' => $addon->getName(),
             'version' => $addon->getVersion()
         );
+    }
+
+    /**
+     * The input type that should be used to get a value for conditions involving this fieldtype
+     *
+     * @return string
+     */
+    public function getConditionalFieldInputType()
+    {
+        return 'select';
     }
 
     /**

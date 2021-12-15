@@ -9,12 +9,16 @@
  */
 
 use ExpressionEngine\Addons\FilePicker\FilePicker;
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 
 /**
  * Textarea Fieldtype
  */
-class Textarea_ft extends EE_Fieldtype
+class Textarea_ft extends EE_Fieldtype implements ConditionalSource
 {
+    use CreatesConditions;
+
     public $info = array(
         'name' => 'Textarea',
         'version' => '1.0.0'
@@ -23,6 +27,13 @@ class Textarea_ft extends EE_Fieldtype
     public $has_array_data = false;
 
     public $size = 'large';
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = ['is', 'is not', 'contains'];
 
     public function validate($data)
     {

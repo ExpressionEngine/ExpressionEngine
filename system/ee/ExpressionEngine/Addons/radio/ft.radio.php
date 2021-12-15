@@ -7,13 +7,19 @@
  * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
+
 require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
  * Radio Fieldtype
  */
-class Radio_ft extends OptionFieldtype
+class Radio_ft extends OptionFieldtype implements ConditionalSource
 {
+    use CreatesConditions;
+
     public $info = array(
         'name' => 'Radio Buttons',
         'version' => '1.0.0'
@@ -32,6 +38,23 @@ class Radio_ft extends OptionFieldtype
         'field_pre_field_id' => '',
         'field_pre_channel_id' => ''
     );
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = ['is', 'is not', 'is empty', 'is not empty'];
+
+    /**
+     * The input type that should be used to get a value for conditions involving this fieldtype
+     *
+     * @return string
+     */
+    public function getConditionalFieldInputType()
+    {
+        return 'select';
+    }
 
     public function validate($data)
     {

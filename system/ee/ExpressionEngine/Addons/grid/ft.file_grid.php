@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
-require_once PATH_ADDONS . 'grid/ft.grid.php';
+ require_once PATH_ADDONS . 'grid/ft.grid.php';
 
 /**
  * File Grid Fieldtype

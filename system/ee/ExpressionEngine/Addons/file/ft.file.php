@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -11,12 +12,16 @@
 use ExpressionEngine\Addons\FilePicker\FilePicker;
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 
 /**
  * File Fieldtype
  */
-class File_ft extends EE_Fieldtype implements ColumnInterface
+class File_ft extends EE_Fieldtype implements ColumnInterface, ConditionalSource
 {
+    use CreatesConditions;
+
     public $info = array(
         'name' => 'File',
         'version' => '1.1.0'
@@ -25,6 +30,13 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     public $has_array_data = true;
 
     public $_dirs = array();
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = ['is empty', 'is not empty'];
 
     /**
      * Constructor
@@ -46,15 +58,17 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     {
         // Is it required but empty?
         if (($this->settings['field_required'] === true
-            || $this->settings['field_required'] == 'y')
-                && empty($data)) {
+                || $this->settings['field_required'] == 'y')
+            && empty($data)
+        ) {
             return array('value' => '', 'error' => lang('required'));
         }
 
         // Is it optional and empty?
         if (($this->settings['field_required'] === false
-            || $this->settings['field_required'] == 'n')
-                && empty($data)) {
+                || $this->settings['field_required'] == 'n')
+            && empty($data)
+        ) {
             return array('value' => '');
         }
 
@@ -181,7 +195,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
 
         $file = $this->_parse_field($data);
 
-        if ($file && ! $file->exists()) {
+        if ($file && !$file->exists()) {
             $status = 'warning';
         }
 
@@ -205,7 +219,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                 ->first();
         }
         // If file field is just a file ID
-        elseif (! empty($data) && is_numeric($data)) {
+        elseif (!empty($data) && is_numeric($data)) {
             $file = ee('Model')->get('File', $data)->first();
         }
 
@@ -334,9 +348,11 @@ JSC;
             return ee()->TMPL->parse_variables($tagdata, array($file_info));
         }
 
-        if (! empty($file_info['path'])
-            && ! empty($file_info['filename'])
-            && $file_info['extension'] !== false) {
+        if (
+            !empty($file_info['path'])
+            && !empty($file_info['filename'])
+            && $file_info['extension'] !== false
+        ) {
             $full_path = $file_info['path'] . $file_info['filename'] . '.' . $file_info['extension'];
 
             if (isset($params['wrap'])) {
@@ -751,7 +767,7 @@ JSC;
                 . anchor($full_path, $file_info['filename'], $file_info['file_properties'])
                 . $file_info['file_post_format'];
         } elseif ($type == 'image') {
-            $properties = (! empty($file_info['image_properties'])) ? ' ' . $file_info['image_properties'] : '';
+            $properties = (!empty($file_info['image_properties'])) ? ' ' . $file_info['image_properties'] : '';
 
             return $file_info['image_pre_format']
                 . '<img src="' . $full_path . '"' . $properties . ' alt="' . $file_info['filename'] . '" />'
@@ -772,13 +788,13 @@ JSC;
         ee()->load->model('file_upload_preferences_model');
 
         // And now the directory
-        $allowed_directories = (! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
+        $allowed_directories = (!isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
         // Show existing files? checkbox, default to yes
-        $show_existing = (! isset($data['show_existing'])) ? 'y' : $data['show_existing'];
+        $show_existing = (!isset($data['show_existing'])) ? 'y' : $data['show_existing'];
 
         // Number of existing files to show? 0 means all
-        $num_existing = (! isset($data['num_existing'])) ? 50 : $data['num_existing'];
+        $num_existing = (!isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
         $directory_choices = array('all' => lang('all'));
 
@@ -909,7 +925,7 @@ JSC;
      */
     protected function _row($cell1, $cell2 = '', $valign = 'center')
     {
-        if (! $cell2) {
+        if (!$cell2) {
             ee()->table->add_row(
                 array('data' => $cell1, 'colspan' => 2)
             );

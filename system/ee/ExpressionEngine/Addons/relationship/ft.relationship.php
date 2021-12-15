@@ -10,12 +10,16 @@
 
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
+use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 
 /**
  * Relationship Fieldtype
  */
-class Relationship_ft extends EE_Fieldtype implements ColumnInterface
+class Relationship_ft extends EE_Fieldtype implements ColumnInterface, ConditionalSource
 {
+    use CreatesConditions;
+
     public $info = array(
         'name' => 'Relationships',
         'version' => '1.0.0'
@@ -24,6 +28,13 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
     public $has_array_data = false;
 
     private $_table = 'relationships';
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    protected $conditionalFieldOperators = ['is empty', 'is not empty'];
 
     /**
      * Validate Field
