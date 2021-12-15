@@ -25,17 +25,23 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator (
-            [
-                'addTotalMembersCount'
-            ]
-        );
+        $steps = new \ProgressIterator([
+            'addEnableCliConfig',
+            'addTotalMembersCount'
+        ]);
 
         foreach ($steps as $k => $v) {
             $this->$v();
         }
 
         return true;
+    }
+
+
+    private function addEnableCliConfig()
+    {
+        // Enable the CLI by default
+        ee()->config->update_site_prefs(['enable_cli' => 'y'], 'all');
     }
 
     private function addTotalMembersCount()
