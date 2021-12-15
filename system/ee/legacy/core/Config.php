@@ -547,7 +547,7 @@ class EE_Config
             'password_lockout_interval',
             'require_ip_for_login',
             'require_ip_for_posting',
-            'secure_passwords',
+            'require_secure_passwords',
             'allow_dictionary_pw',
             'name_of_dictionary_file',
             'xss_clean_uploads',
