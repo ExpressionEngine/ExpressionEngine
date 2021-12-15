@@ -133,7 +133,7 @@ class CategoryGroup extends StructureModel
      */
     public function getFieldMetadata()
     {
-        $can_edit = explode('|', rtrim($this->can_edit_categories, '|'));
+        $can_edit = explode('|', rtrim((string) $this->can_edit_categories, '|'));
         $editable = false;
 
         if (ee('Permission')->isSuperAdmin()
@@ -141,7 +141,7 @@ class CategoryGroup extends StructureModel
             $editable = true;
         }
 
-        $can_delete = explode('|', rtrim($this->can_delete_categories, '|'));
+        $can_delete = explode('|', rtrim((string) $this->can_delete_categories, '|'));
         $deletable = false;
 
         if (ee('Permission')->isSuperAdmin()
