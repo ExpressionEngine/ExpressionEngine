@@ -159,7 +159,7 @@ class Validator
         }
 
         foreach ($this->rules as $key => $rules) {
-            $value = '';
+            $value = null;
 
             if (array_key_exists($key, $values)) {
                 $value = $values[$key];
@@ -174,6 +174,9 @@ class Validator
 
                 $rule->setAllValues($values);
 
+                if (is_null($value)) {
+                    $value = (string) $value;
+                }
                 $rule_return = $rule->validate($key, $value);
 
                 // Skip the rest of the rules?

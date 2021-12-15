@@ -95,7 +95,7 @@ class EE_Controller extends Base_Controller
  */
 class CP_Controller extends EE_Controller
 {
-    protected $base_url;
+    private $base_url;
 
     public function __construct()
     {

@@ -16,7 +16,7 @@ use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
 class Rte_mcp
 {
-    protected $base_url;
+    private $base_url;
 
     public function __construct()
     {
