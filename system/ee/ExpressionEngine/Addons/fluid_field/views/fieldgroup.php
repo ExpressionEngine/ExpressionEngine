@@ -45,7 +45,7 @@
                                                     } ?>" data-field-type="<?= $field->getType() ?>">
 
                 <div class="field-instruct">
-                    <label><?php $field->getItem('field_label') ?></label>
+                    <label><?= $field->getItem('field_label') ?></label>
                 </div>
                 <?php
                 $field_name = $field->getName();
