@@ -114,7 +114,7 @@ class EE_Image_lib
         if (count($props) > 0) {
             $intProps = ['width', 'height', 'quality', 'orig_width', 'orig_height'];
             foreach ($props as $key => $val) {
-                if(in_array($key, $intProps)) {
+                if(in_array($key, $intProps) && $val > 0) {
                     $this->$key = (int) $val;
                 } else {
                     $this->$key = $val;
