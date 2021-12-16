@@ -26,8 +26,9 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
+            'addProFieldSettings',
+            'addTotalMembersCount',
             'addEnableCliConfig',
-            'addTotalMembersCount'
         ]);
 
         foreach ($steps as $k => $v) {
@@ -37,6 +38,22 @@ class Updater
         return true;
     }
 
+    private function addProFieldSettings()
+    {
+        if (!ee()->db->field_exists('enable_frontedit', 'channel_fields')) {
+            ee()->smartforge->add_column(
+                'channel_fields',
+                [
+                    'enable_frontedit' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
+    }
 
     private function addEnableCliConfig()
     {
@@ -56,7 +73,7 @@ class Updater
                         'null' => false,
                         'unsigned' => true,
                         'default' => 0
-                ]
+                    ]
                 ]
             );
         }
