@@ -340,7 +340,7 @@ EE.cp.formValidation = {
 			grid = true;
 		}
 
-		if (fieldset.find('.fluid').size() > 0)
+		if (fieldset.find('.grid-field').size() > 0)
 		{
 			container = field.parents('td');
 			grid = true;
