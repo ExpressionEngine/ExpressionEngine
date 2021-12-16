@@ -35,7 +35,7 @@ context('Install with default theme', () => {
       //cy.screenshot({capture: 'fullPage'})
       cy.hasNoErrors()
   
-      install_form.get('db_hostname').clear().type('ddev-ee6-php81-db')
+      install_form.get('db_hostname').clear().type(Cypress.env("DB_HOST"))
       install_form.get('db_name').clear().type(Cypress.env("DB_DATABASE"))
       install_form.get('db_username').clear().type(Cypress.env("DB_USER"))
       install_form.get('db_password').clear()
