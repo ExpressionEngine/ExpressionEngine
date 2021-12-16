@@ -510,7 +510,7 @@ class SelectItem extends React.Component {
           <span className="meta-info">{props.item.instructions}</span>
         )}
         {props.removable && (
-            <a href="" className="button button--small default float-right" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
+            <a href="" className="button button--small default float-right" onClick={(e) => props.handleRemove(e, props.item)}><span class="sr-only">Remove button</span><i class="fas fa-fw fa-trash-alt"></i></a>
         )}
         </div>
       </label>

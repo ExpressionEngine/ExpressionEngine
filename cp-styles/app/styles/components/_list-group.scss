@@ -240,6 +240,7 @@
 	transition: background $t-speed ease, border $t-speed ease;
 	// cursor: default;
 	cursor: pointer;
+	margin-bottom: 0;
 
 	input {
 		position: relative;

@@ -29,7 +29,8 @@
 				</div>
 
 				<?php if ((!isset($disable_action) || empty($disable_action)) && isset($row['selection'])): ?>
-					<div class="list-item__checkbox">
+					<fieldset class="list-item__checkbox">
+						<legend class="sr-only">Select <?=form_prep($value)?></legend>
 						<input
 							name="<?=form_prep($row['selection']['name'])?>"
 							value="<?=form_prep($row['selection']['value'])?>"
@@ -44,7 +45,7 @@
 							type="checkbox"
 							aria-label="mark item"
 						>
-					</div>
+					</fieldset>
 				<?php endif ?>
 			</li>
 		<?php endforeach; ?>

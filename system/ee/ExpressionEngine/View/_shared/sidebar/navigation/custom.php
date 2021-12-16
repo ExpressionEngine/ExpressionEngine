@@ -10,7 +10,7 @@
 									<?php if ($item->hasFilter()) : ?>
 									<form class="dropdown__search">
 										<div class="search-input">
-											<input class="search-input__input input--small" type="text" value="" placeholder="<?= lang($item->placeholder) ?>">
+											<input class="search-input__input input--small" type="text" value="" placeholder="<?= lang($item->placeholder) ?>" aria-label="<?=lang('search')?>">
 										</div>
 									</form>
 										<?php if (count($item->getItems()) < 10 && !empty($item->view_all_link)) : ?>

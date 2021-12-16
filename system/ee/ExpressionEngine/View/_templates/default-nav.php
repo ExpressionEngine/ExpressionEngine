@@ -30,7 +30,7 @@
 					<?php if (isset($header['search_button_value'])): ?>
             <div class="field-control with-icon-start">
               <i class="fas fa-search icon-start"></i>
-              <input class="main-nav__toolbar-input" placeholder="<?=$header['search_button_value']?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
+              <input class="main-nav__toolbar-input" placeholder="<?=$header['search_button_value']?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>" aria-label="<?=$header['search_button_value']?>">
             </div>
 					<?php else: ?>
           <div class="field-control with-icon-start">
@@ -47,7 +47,7 @@
 						<?php if (count($header['action_button']['choices']) > 8): ?>
 							<div class="dropdown__search">
 								<div class="search-input">
-									<input type="text" value="" class="search-input__input input--small" data-fuzzy-filter="true" placeholder="<?=$header['action_button']['filter_placeholder']?>">
+									<input type="text" value="" class="search-input__input input--small" data-fuzzy-filter="true" placeholder="<?=$header['action_button']['filter_placeholder']?>" aria-label="<?=lang('search')?>">
 								</div>
 							</div>
 						<?php endif ?>

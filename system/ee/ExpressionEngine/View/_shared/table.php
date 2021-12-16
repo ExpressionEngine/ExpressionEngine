@@ -162,22 +162,25 @@
 								</td>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 								<td class="app-listing__cell app-listing__cell--input text--center">
-									<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
-									<input
-										id="<?=$table_id . '-' . $i . '-' . $row_id?>"
-										class="input--no-mrg"
-										name="<?=form_prep($column['name'])?>"
-										value="<?=form_prep($column['value'])?>"
-										<?php if (isset($column['data'])):?>
-											<?php foreach ($column['data'] as $key => $value): ?>
-												data-<?=$key?>="<?=form_prep($value)?>"
-											<?php endforeach; ?>
-										<?php endif; ?>
-										<?php if (isset($column['disabled']) && $column['disabled'] !== false):?>
-											disabled="disabled"
-										<?php endif; ?>
-										type="checkbox"
-									>
+									<fieldset>
+										<legend class="sr-only">Select item <?=form_prep($column['value'])?></legend>
+										<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
+										<input
+											id="<?=$table_id . '-' . $i . '-' . $row_id?>"
+											class="input--no-mrg"
+											name="<?=form_prep($column['name'])?>"
+											value="<?=form_prep($column['value'])?>"
+											<?php if (isset($column['data'])):?>
+												<?php foreach ($column['data'] as $key => $value): ?>
+													data-<?=$key?>="<?=form_prep($value)?>"
+												<?php endforeach; ?>
+											<?php endif; ?>
+											<?php if (isset($column['disabled']) && $column['disabled'] !== false):?>
+												disabled="disabled"
+											<?php endif; ?>
+											type="checkbox"
+										>
+									</fieldset>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_STATUS): ?>
 								<td><span class="collapsed-label"><?=$column_name?></span><?=$column['content']?></td>

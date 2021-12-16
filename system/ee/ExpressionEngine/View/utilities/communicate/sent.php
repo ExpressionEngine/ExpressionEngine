@@ -43,7 +43,7 @@
 		<div class="modal">
 			<div class="col-group">
 				<div class="col w-16">
-					<a class="m-close" href="#"></a>
+					<a class="m-close" href="#"><span class="sr-only">Close button</span></a>
 					<div class="box">
 						<h1><?=$email->subject?></h1>
 						<div class="txt-wrap">

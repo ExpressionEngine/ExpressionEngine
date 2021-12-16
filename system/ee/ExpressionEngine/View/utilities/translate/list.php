@@ -9,7 +9,7 @@
 
 		<div class="title-bar__extra-tools">
 			<div class="search-input">
-				<input class="search-input__input input--small" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
+				<input class="search-input__input input--small" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>" aria-label="<?=lang('search')?>">
 			</div>
 		</div>
 	</div>
