@@ -112,8 +112,13 @@ class EE_Image_lib
          * Convert array elements into class variables
          */
         if (count($props) > 0) {
+            $intProps = ['width', 'height', 'quality', 'orig_width', 'orig_height'];
             foreach ($props as $key => $val) {
-                $this->$key = $val;
+                if(in_array($key, $intProps)) {
+                    $this->$key = (int) $val;
+                } else {
+                    $this->$key = $val;
+                }
             }
         }
 
@@ -1325,8 +1330,8 @@ class EE_Image_lib
             return;
         }
 
-        $new_width = (int) ceil($this->orig_width * $this->height / $this->orig_height);
-        $new_height = (int) ceil($this->width * $this->orig_height / $this->orig_width);
+        $new_width = ceil($this->orig_width * $this->height / $this->orig_height);
+        $new_height = ceil($this->width * $this->orig_height / $this->orig_width);
 
         $ratio = (($this->orig_height / $this->orig_width) - ($this->height / $this->width));
 
@@ -1336,9 +1341,9 @@ class EE_Image_lib
 
         if (($this->width != $new_width) and ($this->height != $new_height)) {
             if ($this->master_dim == 'height') {
-                $this->width = $new_width;
+                $this->width = (int) $new_width;
             } else {
-                $this->height = $new_height;
+                $this->height = (int) $new_height;
             }
         }
     }
