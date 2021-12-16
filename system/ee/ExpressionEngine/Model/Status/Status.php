@@ -119,7 +119,7 @@ class Status extends Model
     {
         $status_name = ($this->status == 'closed' or $this->status == 'open') ? lang($this->status) : $this->status;
 
-        $status_class = str_replace(' ', '_', strtolower($this->status));
+        $status_class = str_replace(' ', '_', strtolower((string) $this->status));
 
         $status_component_style = [];
 

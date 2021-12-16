@@ -3,15 +3,25 @@
 
 import Installer from '../../elements/pages/installer/Installer';
 import Form from '../../elements/pages/installer/_install_form';
-import Success from '../../elements/pages/installer/_install_success';
 
 const page = new Installer
 const install_form = new Form
-const install_success = new Success
 
 context('Install with default theme', () => {
   before(function() {
-    cy.task('installer:enable')
+    cy.task('installer:enable').then(() => {
+      let installer_folder = '../../system/ee/installer';
+      cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
+        for (const item in files) {
+          if (files[item].indexOf('system/ee/installer_') >= 0) {
+            installer_folder = files[item];
+            cy.task('filesystem:delete', '../../system/ee/installer').then(()=>{
+              cy.task('filesystem:rename', {from: installer_folder, to: '../../system/ee/installer'})
+            })
+          }
+        }
+      })
+    })
   })
 
   beforeEach(function(){

@@ -227,13 +227,7 @@ abstract class AbstractFiles extends CP_Controller
                 ),
             );
 
-            if (! ee('Permission')->can('edit_files')) {
-                unset($toolbar['edit']);
-                unset($toolbar['crop']);
-            }
-
-            if (! $file->isEditableImage()) {
-                unset($toolbar['edit']);
+            if (! ee('Permission')->can('edit_files') || ! $file->isEditableImage()) {
                 unset($toolbar['crop']);
             }
 
