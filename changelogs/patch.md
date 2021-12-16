@@ -48,7 +48,7 @@ Bullet list below, e.g.
    - Added CLI commands for generating Prolets and Widgets
    - Fixed a CLI bug where it didnt ask for the migration location if not specified
    - Fix white screen on first access to a group template which exists on files, but not yet on database
-
+   - Add ?is_frontedit=y query parameter when performing Frontedit requests
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

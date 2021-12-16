@@ -602,7 +602,11 @@ class Cp
         }
 
         if (ee()->extensions->active_hook('cp_js_end') === true) {
-            $str .= '<script type="text/javascript" src="' . BASE . AMP . 'C=javascript' . AMP . 'M=load' . AMP . 'file=ext_scripts"></script>';
+            if (ee()->input->get('is_frontedit') === 'y') {
+                $str .= '<script type="text/javascript" src="' . BASE . AMP . 'C=javascript' . AMP . 'M=load' . AMP . 'file=ext_scripts' . AMP . 'is_frontedit=y"></script>';
+            } else {
+                $str .= '<script type="text/javascript" src="' . BASE . AMP . 'C=javascript' . AMP . 'M=load' . AMP . 'file=ext_scripts"></script>';
+            }
         }
 
         return $str;
