@@ -9,6 +9,10 @@ const install_form = new Form
 
 context('Install with default theme', () => {
   before(function() {
+    
+  })
+
+  beforeEach(function(){
     cy.task('installer:enable').then(() => {
       let installer_folder = '../../system/ee/installer';
       cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
@@ -22,14 +26,13 @@ context('Install with default theme', () => {
         }
       })
     })
-  })
-
-  beforeEach(function(){
+    
     // Delete existing config and create a new one
     cy.task('db:clear')
     cy.task('cache:clear')
 
     cy.task('installer:create_config').then((path)=>{
+      cy.log(path);
       page.load()
       //cy.screenshot({capture: 'runner'})
       //cy.screenshot({capture: 'fullPage'})
