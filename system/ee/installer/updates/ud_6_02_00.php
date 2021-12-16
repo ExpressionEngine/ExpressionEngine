@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator([
             'addProFieldSettings',
             'addTotalMembersCount',
+            'addEnableCliConfig',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -52,6 +53,12 @@ class Updater
                 ]
             );
         }
+    }
+
+    private function addEnableCliConfig()
+    {
+        // Enable the CLI by default
+        ee()->config->update_site_prefs(['enable_cli' => 'y'], 'all');
     }
 
     private function addTotalMembersCount()
