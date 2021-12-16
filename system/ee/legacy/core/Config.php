@@ -689,6 +689,7 @@ class EE_Config
             'enable_online_user_tracking',
             'force_redirect',
             'is_system_on',
+            'enable_cli',
             'multiple_sites_enabled',
             'newrelic_app_name',
             'use_newrelic',
