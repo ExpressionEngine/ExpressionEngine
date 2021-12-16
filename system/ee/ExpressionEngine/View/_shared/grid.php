@@ -39,7 +39,7 @@ if ($wrap): ?>
                 if ($reorder_header): ?>
 					<th class="reorder-col"><span class="ico reorder"></span></th>
 				<?php elseif ($reorder): ?>
-					<th class="first reorder-col"></th>
+					<th class="first reorder-col"><span class="sr-only">reorder column</span></th>
 				<?php endif ?>
 				<?php foreach ($columns as $settings):
                     $attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();

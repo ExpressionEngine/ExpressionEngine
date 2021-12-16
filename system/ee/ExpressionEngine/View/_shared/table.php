@@ -38,19 +38,18 @@
                 if ($reorder_header): ?>
 					<th class="reorder-col"><span class="ico reorder fas fa-bars"></span></th>
 				<?php elseif ($reorder): ?>
-					<th class="first reorder-col"></th>
+					<th class="first reorder-col"><span class="sr-only">reorder column</span></th>
 				<?php endif ?>
 				<?php foreach ($columns as $settings):
                     $attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
                     $label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="app-listing__header text--center">
-							<span class="sr-only">checkbox block</span>
 							<?php if (! empty($data) or $checkbox_header): // Hide checkbox if no data?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
-									<label for="<?=$table_id?>-select-all" class="hidden"><?=lang('select_all')?></label>
+									<label for="<?=$table_id?>-select-all" class="sr-only"><?=lang('select_all')?></label>
 									<input id="<?=$table_id?>-select-all" class="input--no-mrg" type="checkbox" title="<?=lang('select_all')?>">
 								<?php endif ?>
 							<?php endif ?>
@@ -164,7 +163,7 @@
 								<td class="app-listing__cell app-listing__cell--input text--center">
 									<fieldset>
 										<legend class="sr-only">Select item <?=form_prep($column['value'])?></legend>
-										<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
+										<label class="sr-only" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
 										<input
 											id="<?=$table_id . '-' . $i . '-' . $row_id?>"
 											class="input--no-mrg"

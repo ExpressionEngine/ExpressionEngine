@@ -3,7 +3,7 @@
 	<head>
 		<?=ee()->view->head_title($cp_page_title)?>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
+		<meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0"  name="viewport">
 		<?php if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee()->config->item('favicon')) : ?>
 		<link rel="icon" type="image/x-icon" href="<?=ee()->config->item('favicon')?>" />
 		<?php endif; ?>
@@ -61,7 +61,7 @@ $current_page = ee()->uri->segment(2);
         	</a>
 
           <?php if (count($cp_breadcrumbs)): ?>
-            <div class="breadcrumb-wrapper">
+            <nav class="breadcrumb-wrapper" aria-label='Breadcrumb'>
               <ul class="breadcrumb">
 					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>"><span class="sr-only">Homepage</span><i class="fas fa-home"></i></a></li>
 						<?php
@@ -78,7 +78,7 @@ $current_page = ee()->uri->segment(2);
                         endforeach;
                         ?>
         			</ul>
-            </div>
+            </nav>
       		<?php endif ?>
 
           <div class="field-control field-control_input--jump with-icon-start with-input-shortcut" role="search">
@@ -88,7 +88,7 @@ $current_page = ee()->uri->segment(2);
             <span class="input-shortcut jump-focus">⌘J</span>
           </div>
 
-          <div class="main-header__account">
+          <div class="main-header__account" role="navigation" aria-label="admin navigation">
             <button type="button" data-dropdown-offset="0px, 4px" data-dropdown-pos="bottom-end" class="main-nav__account-icon main-header__account-icon js-dropdown-toggle">
       				<img src="<?= $cp_avatar_path ?>" alt="<?=$cp_screen_name?>">
       			</button>

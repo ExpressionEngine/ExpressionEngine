@@ -1,4 +1,4 @@
-<div class="app-notice app-notice--<?=$alert->type?> app-notice---<?=$alert->severity?>">
+<div class="app-notice app-notice--<?=$alert->type?> app-notice---<?=$alert->severity?>" aria-modal="true" role="dialog" aria-label="modal window">
 	<div class="app-notice__tag">
 		<span class="app-notice__icon"></span>
 	</div>
@@ -24,6 +24,7 @@
 		<a href="#" class="app-notice__controls js-notice-dismiss alert__close">
 			<span class="app-notice__dismiss alert__close-icon"></span>
 			<span class="hidden"><?=lang('close')?></span>
+			<span class="sr-only"><?=lang('close')?></span>
 		</a>
 	<?php endif; ?>
 </div>
