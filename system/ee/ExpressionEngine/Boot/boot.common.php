@@ -299,7 +299,7 @@ if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/r
  */
     function get_bool_from_string($value)
     {
-        if (is_bool($value)) {
+        if (is_bool($value) || is_null($value)) {
             return $value;
         }
 

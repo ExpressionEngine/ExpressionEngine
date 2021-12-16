@@ -80,7 +80,7 @@ class Status extends Model
     protected function get__highlight()
     {
         // Old data from before validation may be invalid
-        $valid = (bool) preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $this->highlight);
+        $valid = (bool) preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', (string) $this->highlight);
 
         return $valid ? $this->highlight : '000000';
     }
