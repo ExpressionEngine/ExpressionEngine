@@ -30,30 +30,27 @@ context('Install with default theme', () => {
     cy.task('cache:clear')
 
     cy.task('installer:create_config').then((path)=>{
-        cy.log(path)
-        //cy.screenshot({capture: 'runner'})
+      page.load()
+      //cy.screenshot({capture: 'runner'})
+      //cy.screenshot({capture: 'fullPage'})
+      cy.hasNoErrors()
+  
+      install_form.get('db_hostname').clear().type('ddev-ee6-php81-db')
+      install_form.get('db_name').clear().type(Cypress.env("DB_DATABASE"))
+      install_form.get('db_username').clear().type(Cypress.env("DB_USER"))
+      install_form.get('db_password').clear()
+      if (Cypress.env("DB_PASSWORD") != '') {
+          install_form.get('db_password').type(Cypress.env("DB_PASSWORD"))
+      }
+      install_form.get('install_default_theme').check()
+      install_form.get('username').clear().type('admin')
+      install_form.get('email_address').clear().type('hello@expressionengine.com')
+      install_form.get('password').clear().type('password')
+      install_form.get('license_agreement').click()
+      install_form.get('install_submit').click()
+  
+      cy.hasNoErrors()
     })
-
-    page.load()
-    //cy.screenshot({capture: 'runner'})
-    //cy.screenshot({capture: 'fullPage'})
-    cy.hasNoErrors()
-
-    install_form.get('db_hostname').clear().type('ddev-ee6-php81-db')
-    install_form.get('db_name').clear().type(Cypress.env("DB_DATABASE"))
-    install_form.get('db_username').clear().type(Cypress.env("DB_USER"))
-    install_form.get('db_password').clear()
-    if (Cypress.env("DB_PASSWORD") != '') {
-        install_form.get('db_password').type(Cypress.env("DB_PASSWORD"))
-    }
-    install_form.get('install_default_theme').check()
-    install_form.get('username').clear().type('admin')
-    install_form.get('email_address').clear().type('hello@expressionengine.com')
-    install_form.get('password').clear().type('password')
-    install_form.get('license_agreement').click()
-    install_form.get('install_submit').click()
-
-    cy.hasNoErrors()
 
   })
 
