@@ -483,6 +483,25 @@ class Text extends Formatter
     }
 
     /**
+     * Returns a string with whitespace stripped from its beginning and end.
+     *
+     * @param  array $options Options: (string) characters
+     * @return string Regex pattern sans eval modifier
+     */
+    public function trim($options = [])
+    {
+        if (empty($this->content)) {
+            return $this;
+        }
+
+        $this->content = isset($options['characters'])
+            ? trim($this->content, $options['characters'])
+            : trim($this->content);
+
+        return $this->content;
+    }
+
+    /**
      * Normalize URLs so they can be used in HTML
      *
      * @return object $this

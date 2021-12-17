@@ -12,7 +12,14 @@
         </div>
     {/categories}
     {entry_titles}
-        <a href="{path='SITE_INDEX'}">{title}</a><br />
+        <div id="details-{category_name}-{entry_id}">
+            <div class="title">{title}</div>
+            <div class="entry_date">{entry_date format="%Y"}</div>
+            <div class="channel_id">{channel_id}</div>
+            <div class="channel">{channel}</div>
+            <div class="channel_short_name">{channel_short_name}</div>
+            <div class="channel_url">{channel_url}</div>
+        </div>
     {/entry_titles}
     <hr>
 {/exp:channel:category_archive}

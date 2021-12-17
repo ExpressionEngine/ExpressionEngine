@@ -61,13 +61,22 @@ class SecurityPrivacy extends Settings
                 array(
                     'title' => 'share_analytics',
                     'desc' => 'share_analytics_desc',
-                    'desc' => sprintf(lang('share_analytics_desc'), ee()->cp->masked_url(DOC_URL . 'cp/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team')),
+                    'desc' => sprintf(lang('share_analytics_desc'), ee()->cp->masked_url(DOC_URL . 'control-panel/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team')),
                     'fields' => array(
                         'share_analytics' => array(
                             'type' => 'yes_no'
                         )
                     )
-                )
+                ),
+                array(
+                    'title' => 'cli_enabled',
+                    'desc' => '',
+                    'fields' => array(
+                        'cli_enabled' => array(
+                            'type' => 'yes_no',
+                        )
+                    )
+                ),
             ),
             'cookie_settings' => array(
                 array(
@@ -79,7 +88,7 @@ class SecurityPrivacy extends Settings
                 ),
                 array(
                     'title' => 'cookie_path',
-                    'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url(DOC_URL . 'cp/settings/security-privacy.html#path')),
+                    'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url(DOC_URL . 'control-panel/settings/security-privacy.html#path')),
                     'fields' => array(
                         'cookie_path' => array('type' => 'text')
                     )

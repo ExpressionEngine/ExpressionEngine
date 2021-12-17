@@ -171,14 +171,16 @@ context('Categories', () => {
         check_category_one()
 
         cy.visit('admin.php?/cp/settings/urls');
-
         cy.get('input[name=use_category_name][value=y]').check()
-
         cy.get('.title-bar__extra-tools .button--primary').first().click()
 
         cy.visit('index.php/cats/heading/category/category-one')
 
         check_category_one()
+
+        cy.visit('admin.php?/cp/settings/urls');
+        cy.get('input[name=use_category_name][value=y]').check()
+        cy.get('.title-bar__extra-tools .button--primary').first().click()
     })
 
     it('check category archive on frontend', function() {
@@ -186,6 +188,57 @@ context('Categories', () => {
         cy.visit('index.php/cats/archive')
 
         check_category_one()
+
+        
+        cy.get("#details-News-1 .title").invoke('text').then((text) => {
+            expect(text).equal('Getting to Know ExpressionEngine')
+        })
+        cy.get("#details-News-1 .entry_date").invoke('text').then((text) => {
+            expect(text).equal('2014')
+        })
+        cy.get("#details-News-1 .channel_id").invoke('text').then((text) => {
+            expect(text).equal('1')
+        })
+        cy.get("#details-News-1 .channel").invoke('text').then((text) => {
+            expect(text).equal('News')
+        })
+        cy.get("#details-News-1 .channel_short_name").invoke('text').then((text) => {
+            expect(text).equal('news')
+        })
+        cy.get("#details-News-1 .channel_url").invoke('text').then((text) => {
+            expect(text).to.contain('/news')
+        })
+
+        check_category_two()
+
+    })
+
+    it('check category archive (nested) on frontend', function() {
+    
+        cy.visit('index.php/cats/archive-nested')
+
+        check_category_one()
+
+        
+        cy.get("#news").parent().find("#details-1 .title").invoke('text').then((text) => {
+            expect(text).equal('Getting to Know ExpressionEngine')
+        })
+        cy.get("#news").parent().find("#details-1 .entry_date").invoke('text').then((text) => {
+            expect(text).equal('2014')
+        })
+        cy.get("#news").parent().find("#details-1 .channel_id").invoke('text').then((text) => {
+            expect(text).equal('1')
+        })
+        cy.get("#news").parent().find("#details-1 .channel").invoke('text').then((text) => {
+            expect(text).equal('News')
+        })
+        cy.get("#news").parent().find("#details-1 .channel_short_name").invoke('text').then((text) => {
+            expect(text).equal('news')
+        })
+        cy.get("#news").parent().find("#details-1 .channel_url").invoke('text').then((text) => {
+            expect(text).to.contain('/news')
+        })
+        
         check_category_two()
 
     })
@@ -224,8 +277,6 @@ context('Categories', () => {
             })
             
         })
-
-        
 
     })
 
@@ -335,7 +386,60 @@ context('Categories', () => {
             })
         
         })
+    })
         
+    describe('static usage of category heading tag', function() {
+        it('category heading is correct when using category_id', function() {
+
+            cy.log('... when no category indicator present')
+            cy.visit('index.php/cats/manual-heading-2')
+            check_category_two()
+
+            cy.log('... when using category ID in URL')
+            cy.visit('index.php/cats/manual-heading-2/category/C5')
+            check_category_two()
+            
+            cy.log('switch the setting')
+            cy.visit('admin.php?/cp/settings/urls');    
+            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.get('.title-bar__extra-tools .button--primary').first().click()
+    
+            cy.log('... when using category slug in URL')
+            cy.visit('index.php/cats/manual-heading-2/category/category-one')    
+            check_category_two()
+
+            cy.log('switch the setting back')
+            cy.visit('admin.php?/cp/settings/urls');    
+            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.get('.title-bar__extra-tools .button--primary').first().click()
+
+        })
+
+        it('category heading is correct when using category_url_title', function() {
+
+            cy.log('... when no category indicator present')
+            cy.visit('index.php/cats/manual-heading')
+            check_category_two()
+
+            cy.log('... when using category ID in URL')
+            cy.visit('index.php/cats/manual-heading/category/C5')
+            check_category_two()
+            
+            cy.log('switch the setting')
+            cy.visit('admin.php?/cp/settings/urls');    
+            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.get('.title-bar__extra-tools .button--primary').first().click()
+    
+            cy.log('... when using category slug in URL')
+            cy.visit('index.php/cats/manual-heading/category/category-one')    
+            check_category_two()
+
+            cy.log('switch the setting back')
+            cy.visit('admin.php?/cp/settings/urls');    
+            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.get('.title-bar__extra-tools .button--primary').first().click()
+
+        })
     })
 
     function check_category_one() {

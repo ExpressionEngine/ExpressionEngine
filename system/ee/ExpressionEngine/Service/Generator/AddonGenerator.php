@@ -51,12 +51,13 @@ class AddonGenerator
         $this->slug = $this->slug($data['name']);
         $this->slug_uc = ucfirst($this->slug);
 
+        // Setup the generator data
         $this->init();
 
         // Catch all, especially for advanced settings
         $this->data = $data;
 
-        $this->namespace = $this->studly($data['author']) . '\\' . $this->studly($data['name']);
+        $this->namespace = $this->createNamespace($data);
         $this->description = $data['description'];
         $this->version = $data['version'];
         $this->author = $data['author'];
@@ -391,6 +392,23 @@ class AddonGenerator
         $this->putFile('composer.json', json_encode($data, JSON_PRETTY_PRINT));
     }
 
+    public function createNamespace($data)
+    {
+        // Make studly case and strip non-alpha characters
+        $name = $this->alphaFilter($this->studly($data['name']));
+        $author = $this->alphaFilter($this->studly($data['author']));
+
+        // Namespace should be the Addon name
+        $namespace = $name;
+
+        // If there is an author, the Author name should preface the namespace
+        if (!empty($author)) {
+            $namespace = $author . '\\' . $namespace;
+        }
+
+        return $namespace;
+    }
+
     private function createLangFile()
     {
         // Create lang file
@@ -448,5 +466,10 @@ class AddonGenerator
         $word = mb_convert_case($word, MB_CASE_TITLE);
 
         return  str_replace(['-', '_', ' ', '.'], '', $word);
+    }
+
+    public function alphaFilter($string)
+    {
+        return preg_replace("/[^A-Za-z]/", '', $string);
     }
 }

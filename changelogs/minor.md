@@ -4,8 +4,15 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
-   - Added `most_used_categories` value to `order_by` parameter of `exp:channel:category_archive`
    - Added `sticky` parameter to `exp:channel:category_archive`
+   - Fixed Files sorting reset by the perpage filter
+   - Fixed ViewType class name and removed unused class properties
+   - Add conditionals parsing to Request Module
+   - Added `category_id` and `category_url_title` to `exp:category_heading`
+   - Added `:trim` variable modifier
+   - Allow assign previously created field groups to importing channel sets
+   - Added Sticky entry column to entries table
+   - Add channel data to category archives
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
