@@ -152,6 +152,8 @@ $lang = array(
 
     'today' => 'Today',
 
+    'expired_search_results' => 'Expired search. Try again.',
+
 );
 
 // EOF

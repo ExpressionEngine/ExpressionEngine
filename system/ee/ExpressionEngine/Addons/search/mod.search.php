@@ -1097,7 +1097,7 @@ class Search
             // This should be impossible as we already know there are results
             return ee()->output->show_user_error(
                 'general',
-                array(lang('invalid_action'))
+                array(lang('expired_search_results'))
             );
         }
 
