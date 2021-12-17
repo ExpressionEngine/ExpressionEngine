@@ -146,8 +146,6 @@ if (! function_exists('forgot_password_instructions')) {
     function forgot_password_instructions()
     {
         return <<<EOF
-{name},
-
 To reset your password, please go to the following page:
 
 {reset_url}
@@ -175,8 +173,6 @@ if (! function_exists('password_changed_notification')) {
     function password_changed_notification()
     {
         return <<<EOF
-{name},
-
 Your password was just changed.
 
 If you didn't make this change yourself, please contact an administrator right away.
@@ -200,11 +196,32 @@ if (! function_exists('email_changed_notification')) {
     function email_changed_notification()
     {
         return <<<EOF
-{name},
-
 Your email address has been changed, and this email address is no longer associated with your account.
 
 If you didn't make this change yourself, please contact an administrator right away.
+
+{site_name}
+{site_url}
+EOF;
+    }
+}
+
+if (! function_exists('forgot_username_instructions_title')) {
+    function forgot_username_instructions_title()
+    {
+        return <<<EOF
+Username information
+EOF;
+    }
+}
+
+if (! function_exists('forgot_username_instructions')) {
+    function forgot_username_instructions()
+    {
+        return <<<EOF
+Your username is: {username}
+
+If you didn't request your username yourself, please contact an administrator right away.
 
 {site_name}
 {site_url}
@@ -229,8 +246,6 @@ if (! function_exists('validated_member_notify')) {
     function validated_member_notify()
     {
         return <<<EOF
-{name},
-
 Your membership account has been activated and is ready for use.
 
 Thank You!
@@ -258,8 +273,6 @@ if (! function_exists('decline_member_validation')) {
     function decline_member_validation()
     {
         return <<<EOF
-{name},
-
 We're sorry but our staff has decided not to validate your membership.
 
 {site_name}

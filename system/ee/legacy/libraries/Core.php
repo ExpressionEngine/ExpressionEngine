@@ -40,7 +40,7 @@ class EE_Core
 
         // Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
         if (function_exists("set_time_limit") == true) {
-            @set_time_limit((REQ == 'CP') ? 300 : 90);
+            @set_time_limit((REQ == 'CP' || REQ == 'CLI') ? 300 : 90);
         }
 
         // If someone's trying to access the CP but EE_APPPATH is defined, it likely
@@ -68,8 +68,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20200216');
-        define('APP_VER', '6.1.2');
+        define('APP_BUILD', '20211021');
+        define('APP_VER', '6.2.0');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -762,16 +762,26 @@ class EE_Core
         // Secure forms stuff
         if (! ee()->security->have_valid_xid($flags)) {
             ee()->output->set_status_header(403);
+            $error = lang('csrf_token_expired');
+
+            //is the cookie domain part of site URL?
+            if (ee()->config->item('cookie_domain') != '') {
+                $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
+                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('cookie_domain'));
+                if ($domain_matches === false) {
+                    $error = lang('cookie_domain_mismatch');
+                }
+            }
 
             if (REQ == 'CP') {
                 if (AJAX_REQUEST) {
                     header('X-EE-Broadcast: modal');
                 }
 
-                show_error(lang('csrf_token_expired'));
+                show_error($error);
             }
 
-            ee()->output->show_user_error('general', array(lang('csrf_token_expired')));
+            ee()->output->show_user_error('general', array($error));
         }
     }
 }

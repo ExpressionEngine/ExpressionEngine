@@ -137,7 +137,11 @@ function (_React$Component) {
         containment: 'parent',
         handle: '.list-item__handle',
         items: '.list-item',
-        sort: EE.sortable_sort_helper,
+        sort: function sort(event, ui) {
+          try {
+            EE.sortable_sort_helper(event, ui);
+          } catch (error) {}
+        },
         start: function start(event, ui) {
           // Save the start index for later
           $(_assertThisInitialized(_this)).attr('data-start-index', ui.item.index());
@@ -329,7 +333,15 @@ function (_React$Component) {
         });
         return notInSelected && allowedChannel && filterName;
       });
-      var showAddButton = this.props.limit > this.state.selected.length && (this.props.multi || this.state.selected.length == 0);
+
+      var limit; 
+      if (this.props.multi && this.props.rel_max) {
+        limit = this.props.rel_max;
+      } else {
+        limit = this.props.limit;
+      }
+
+      var showAddButton = limit > this.state.selected.length && (this.props.multi || this.state.selected.length == 0);
       var channelFilterItems = props.channels.map(function (channel) {
         return {
           label: channel.title,

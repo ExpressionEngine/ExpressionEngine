@@ -51,5 +51,7 @@ Bullet list below, e.g.
    - Remove unnecessary and duplicated queries from search module
 
 
+   - Fix #1195 improves `template_post_parse` hook when fired after sub or layout (i.e. partial) template parse completes
+
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

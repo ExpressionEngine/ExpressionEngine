@@ -9,7 +9,7 @@
     "requestTimeout": 20000,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
-    "testFiles": "!(utilities|settings|logs|addons|z_installer|publish|field|members|member_roles|files|pro)/**.ee6.js",
+    "testFiles": "!(utilities|settings|logs|addons|z_installer|publish|field|members|member_roles|files|pro|updater|heavyload)/**.ee6.js",
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",

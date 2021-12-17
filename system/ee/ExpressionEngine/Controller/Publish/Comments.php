@@ -132,18 +132,9 @@ class Comments extends AbstractPublishController
             ),
         ));
 
-        if ($channel) {
-            ee()->view->cp_breadcrumbs = array(
-                ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
-                //ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id))->compile() => $channel->channel_title,
-                '' => lang('comments')
-            );
-        } else {
-            ee()->view->cp_breadcrumbs = array(
-                ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
-                '' => lang('comments')
-            );
-        }
+        ee()->view->cp_breadcrumbs = array(
+            '' => lang('comments')
+        );
 
         // if there are Spam comments, and the user can access them, give them a link
         if (ee('Permission')->can('moderate_spam') && ee('Addon')->get('spam') && ee('Addon')->get('spam')->isInstalled()) {
@@ -163,10 +154,10 @@ class Comments extends AbstractPublishController
             }
         }
 
-        ee()->view->cp_page_title = lang('all_comments');
+        ee()->view->cp_page_title = lang('comments');
 
         ee()->view->header = array(
-            'title' => lang('all_comments'),
+            'title' => lang('comments'),
             'toolbar_items' => array(
                 'settings' => array(
                     'href' => ee('CP/URL')->make('settings/comments'),
@@ -180,7 +171,10 @@ class Comments extends AbstractPublishController
         if (! empty($search_value)) {
             ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, $search_value);
         } else {
-            ee()->view->cp_heading = lang('comments');
+            ee()->view->cp_heading = sprintf(
+                lang('all_comments'),
+                (!is_null($channel)) ? $channel->channel_title : ''
+            );
         }
 
         ee()->cp->render('publish/comments/index', $vars);
@@ -275,18 +269,20 @@ class Comments extends AbstractPublishController
         ));
 
         ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
-            //ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->getChannel()->channel_title,
-            '' => lang('comments')
+            ee('CP/URL')->make('publish/comments')->compile() => lang('comments'),
+            ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id)->compile() => lang('entry')
         );
 
-        ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
+        ee()->view->cp_page_title = lang('comments');
+        ee()->view->header = array(
+            'title' => lang('comments')
+        );
 
         // Set the page heading
         if (! empty($search_value)) {
-            ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities($search_value));
+            ee()->view->cp_heading = sprintf(lang('search_results_comments_for_entry'), ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id), $entry->title, $count, htmlentities($search_value));
         } else {
-            ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
+            ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id), $entry->title);
         }
 
         $vars['can_delete'] = ee('Permission')->hasAny(
@@ -307,6 +303,7 @@ class Comments extends AbstractPublishController
         }
 
         $comment = ee('Model')->get('Comment', $comment_id)
+            ->with('Author')
             ->filter('site_id', ee()->config->item('site_id'))
             ->first();
 
@@ -338,7 +335,9 @@ class Comments extends AbstractPublishController
 
         $move_desc = sprintf(
             lang('move_comment_desc'),
+            ee('CP/URL')->make('publish/edit/entry/' . $comment->getEntry()->getId()),
             $title,
+            ee('CP/URL')->make('publish/edit/', ['filter_by_channel' => $comment->getChannel()->getId()]),
             $comment->getChannel()->channel_title
         );
 
@@ -357,6 +356,15 @@ class Comments extends AbstractPublishController
                             'author' => [
                                 'type' => 'html',
                                 'content' => $author_information,
+                            ]
+                        ]
+                    ],
+                    'date' => [
+                        'title' => 'date',
+                        'fields' => [
+                            'author' => [
+                                'type' => 'html',
+                                'content' => ee()->localize->human_time($comment->comment_date),
                             ]
                         ]
                     ],

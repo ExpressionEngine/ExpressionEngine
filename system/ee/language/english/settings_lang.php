@@ -318,7 +318,7 @@ $lang = array(
 
     'enable_sql_caching' => 'Cache dynamic channel queries?',
 
-    'enable_sql_caching_desc' => 'When enabled, the speed of dynamic channel pages will be improved. do <b>not</b> use if you need the "future entries" or "expiring entries" features.',
+    'enable_sql_caching_desc' => 'When enabled, the speed of dynamic channel pages will be improved. Do <b>not</b> use if you need the "future entries" or "expiring entries" features.',
 
     'gd' => 'GD',
 
@@ -769,6 +769,8 @@ $lang = array(
     'share_analytics' => 'Share analytics with the ExpressionEngine Development Team?',
 
     'share_analytics_desc' => 'ExpressionEngine asks users to help improve ExpressionEngine by occasionally <a href="%s">providing analytics, diagnostic, and usage information</a>.',
+
+    'cli_enabled' => 'Enable the Command Line Interface',
 
     'un_min_len' => 'Minimum username length',
 

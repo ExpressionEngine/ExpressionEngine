@@ -645,11 +645,11 @@ class Grid_ft extends EE_Fieldtype
 
                 switch ($field) {
                     case 'col_label':
-                        $rules[$field_name] = 'required|validGridColLabel';
+                        $rules[$field_name] = 'required|maxLength[50]|validGridColLabel';
 
                         break;
                     case 'col_name':
-                        $rules[$field_name] = 'required|alphaDash|validGridColName';
+                        $rules[$field_name] = 'required|alphaDash|maxLength[32]|validGridColName';
 
                         break;
                     case 'col_width':
