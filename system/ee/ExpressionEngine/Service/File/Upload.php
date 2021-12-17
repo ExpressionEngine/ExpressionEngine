@@ -468,7 +468,12 @@ class Upload
         $action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
 
         $file->set($_POST);
-        $file->title = (ee()->input->post('title')) ?: $file->file_name;
+
+        if (ee()->config->item('use_orig_name_as_fallback_title') === 'y') {
+            $file->title = (ee()->input->post('title')) ?: $_FILES['file']['name'];
+        } else {
+            $file->title = (ee()->input->post('title')) ?: $file->file_name;
+        }
 
         $cats = array_key_exists('categories', $_POST) ? $_POST['categories'] : array();
         $file->setCategoriesFromPost($cats);

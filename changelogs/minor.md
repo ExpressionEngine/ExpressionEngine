@@ -4,6 +4,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
+Bullet list below, e.g.
+   - Allow use of original filename as title fallback by the use of `use_orig_name_as_fallback_title` config override
 
    - Display entry_id with channel name in Relationship fields
    - Added `sticky` parameter to `exp:channel:category_archive`

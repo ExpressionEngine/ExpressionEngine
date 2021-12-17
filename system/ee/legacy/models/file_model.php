@@ -153,6 +153,12 @@ class File_model extends CI_Model
     {
         $successful = true;
 
+        if (ee()->config->item('use_orig_name_as_fallback_title') === 'y') {
+            if (empty($data['title']) and !empty($data['orig_name'])) {
+                $data['title'] = $data['orig_name'];
+            }
+        }
+
         // Define valid array keys as keys to use in array_intersect_key
         $valid_keys = array(
             'file_id' => '',
