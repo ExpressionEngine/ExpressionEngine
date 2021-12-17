@@ -58,7 +58,7 @@ class Updater
     private function addEnableCliConfig()
     {
         // Enable the CLI by default
-        ee()->config->update_site_prefs(['enable_cli' => 'y'], 'all');
+        ee()->config->update_site_prefs(['cli_enabled' => 'y'], 'all');
     }
 
     private function addTotalMembersCount()
