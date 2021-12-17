@@ -15,13 +15,14 @@ You can change the environment constants to match your local setup by copying th
 `cp tests/cypress/cypress.env.example.json tests/cypress/cypress.env.json`
 
 ## Settup Composer
-cd tests/cypress  and then run composer install
+
+`cd tests/cypress  and then run composer install`
 
 ## Start PHP Server
 
 Copy the configuration file into place and then start the standalone PHP server
 
-`cp tests/cypress/support/config.php system/user/config/config.php && php -S localhost:8888`
+`cp tests/cypress/support/config/config.php system/user/config/config.php && php -S localhost:8888`
 
 Open Cypress to run tests (GUI)
 
