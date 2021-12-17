@@ -26,8 +26,9 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
-            'addEnableCliConfig',
+            'addProFieldSettings',
             'addTotalMembersCount',
+            'addEnableCliConfig',
             'addMemberValidationAction',
         ]);
 
@@ -51,6 +52,23 @@ class Updater
             'class' => 'Member',
             'method' => 'validate',
         ));
+    }
+
+    private function addProFieldSettings()
+    {
+        if (!ee()->db->field_exists('enable_frontedit', 'channel_fields')) {
+            ee()->smartforge->add_column(
+                'channel_fields',
+                [
+                    'enable_frontedit' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
     }
 
     private function addEnableCliConfig()

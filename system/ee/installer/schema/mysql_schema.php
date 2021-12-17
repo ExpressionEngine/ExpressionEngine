@@ -681,6 +681,7 @@ class EE_Schema
 			field_content_type varchar(20) NOT NULL default 'any',
 			field_settings text NULL,
 			legacy_field_data char(1) NOT NULL default 'n',
+			enable_frontedit char(1) NOT NULL default 'y',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `field_type` (`field_type`),
 			KEY `site_id` (`site_id`)

@@ -155,14 +155,14 @@ fieldset {
 			// .fieldset-icon;
 			color: color(error);
 
-				&:after{
-					@extend %fa-icon;
-					@extend .fas;
-					font-size: $font-size-small;
-					color: color(error);
-					content: fa-content($fa-var-exclamation-triangle);
-					top: -1px;
-				}
+			&:after{
+				@extend %fa-icon;
+				@extend .fas;
+				font-size: $font-size-small;
+				color: color(error);
+				content: fa-content($fa-var-exclamation-triangle);
+				top: -1px;
+			}
 		}
 	}
 
@@ -208,6 +208,34 @@ fieldset {
 		border: 1px solid color(error);
 		border-width: 1px 1px 0;
 		box-shadow: 0 0 0 1px color(error);
+	}
+}
+
+.fieldset-invalid {
+	> label{
+		color: color(error);
+
+		&:after{
+			@extend %fa-icon;
+			@extend .fas;
+			font-size: $font-size-small;
+			color: color(error);
+			content: fa-content($fa-var-exclamation-triangle);
+			top: -1px;
+		}
+	}
+}
+
+td.invalid {
+	> input,
+	> textarea,
+	.fields-select,
+	.field-drop-selected,
+	.field-drop-choices,
+	> div > input,
+	> div > textarea,
+	.c-colorpicker-input{
+		border: 1px solid color(error);
 	}
 }
 

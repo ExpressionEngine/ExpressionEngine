@@ -171,8 +171,8 @@ CREATE TABLE IF NOT EXISTS `exp_category_groups` (
 DELETE FROM `exp_category_groups`;
 /*!40000 ALTER TABLE `exp_category_groups` DISABLE KEYS */;
 INSERT INTO `exp_category_groups` (`group_id`, `site_id`, `group_name`, `sort_order`, `exclude_group`, `field_html_formatting`, `can_edit_categories`, `can_delete_categories`) VALUES
-	(1, 1, 'News Categories', 'a', 0, 'all', '', ''),
-	(2, 1, 'About', 'a', 0, 'all', '', '');
+	(1, 1, 'News Categories', 'v', 0, 'all', '', ''),
+	(2, 1, 'About', 'v', 0, 'all', '', '');
 /*!40000 ALTER TABLE `exp_category_groups` ENABLE KEYS */;
 
 -- Dumping structure for table ee-test.exp_category_posts
@@ -440,6 +440,7 @@ CREATE TABLE IF NOT EXISTS `exp_channel_fields` (
   `field_content_type` varchar(20) NOT NULL DEFAULT 'any',
   `field_settings` text DEFAULT NULL,
   `legacy_field_data` char(1) NOT NULL DEFAULT 'n',
+  `enable_frontedit` char(1) NOT NULL default 'y',
   PRIMARY KEY (`field_id`),
   KEY `field_type` (`field_type`),
   KEY `site_id` (`site_id`)
