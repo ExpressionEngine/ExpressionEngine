@@ -264,7 +264,7 @@ $setup = [
             );
         },
 
-        'Resource/Request' => function () {
+        'Resource' => function () {
             return new Resource\Request();
         },
 

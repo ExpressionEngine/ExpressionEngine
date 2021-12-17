@@ -10,25 +10,25 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-
 namespace ExpressionEngine\Library\Resource;
 
-abstract class Request
+class Request
 {
-    public $resource_cache = [];
-    public $type = '';
+    protected $resource_cache = [];
+    protected $type = '';
 
     /**
      * Request RESOURCE Template.
      *
      * Handles RESOURCE requests for the standard Template engine
      */
-    public function request_resource_template()
+    public function request_template()
     {
         if (in_array(ee()->uri->segment(1), ee()->uri->reserved) && false !== ee()->uri->segment(2)) {
             $resource = ee()->uri->segment(2).'/'.ee()->uri->segment(3);
         } elseif (isset($_GET['css'])) {
             $resource = $_GET['css'];
+            $this->type = 'css';
         } elseif (isset($_GET['js'])) {
             $resource = $_GET['js'];
             $this->type = 'js';
@@ -78,6 +78,7 @@ abstract class Request
             $query = ee()->db->get();
 
             if (0 == $query->num_rows()) {
+                var_dump('no rows');
                 show_404();
             }
 
@@ -112,7 +113,7 @@ abstract class Request
      * @param mixed $resource
      * @param mixed $modified
      */
-    public function _send_resource($resource, $modified)
+    protected function _send_resource($resource, $modified)
     {
         if ('y' == ee()->config->item('send_headers')) {
             $max_age = 604800;

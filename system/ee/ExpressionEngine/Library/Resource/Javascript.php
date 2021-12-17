@@ -23,7 +23,7 @@ class JavaScript extends Request
      */
     public function request_template()
     {
-        return $this->request_resource_template();
+        return parent::request_template();
     }
 }
 // END CLASS

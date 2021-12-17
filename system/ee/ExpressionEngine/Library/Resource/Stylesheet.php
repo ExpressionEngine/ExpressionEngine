@@ -25,7 +25,7 @@ class Stylesheet extends Request
             return $this->_ee_channel_form_css();
         }
 
-        return $this->request_resource_template();
+        return parent::request_template();
     }
 
     /**
