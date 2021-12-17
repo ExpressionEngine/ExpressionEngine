@@ -367,6 +367,14 @@ class CommandUpdate extends Cli
 
         // This will loop through all versions of EE
         do {
+            $currentVersionKey--;
+
+            if (!isset($upgradeMap[$currentVersionKey])) {
+                $this->fail(lang('command_update_error_updater_failed_missing_version') . $currentVersionKey);
+            }
+
+            $next_version = $upgradeMap[$currentVersionKey];
+
             $this->info(lang('command_update_updating_to_version') . $next_version);
 
             // Instantiate the updater class
@@ -392,19 +400,11 @@ class CommandUpdate extends Cli
                 $this->fail($errorText);
             }
 
-            $currentVersionKey--;
-
-            if (!isset($upgradeMap[$currentVersionKey])) {
-                $this->fail(lang('command_update_error_updater_failed_missing_version') . $currentVersionKey);
-            }
-
             ee()->config->set_item('app_version', $upgradeMap[$currentVersionKey]);
             ee()->config
                 ->_update_config([
                     'app_version' => $upgradeMap[$currentVersionKey]
                 ]);
-
-            $next_version = $upgradeMap[$currentVersionKey];
         } while (version_compare($next_version, $end_version, '<'));
 
         // Complete upgrades
