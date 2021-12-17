@@ -5,6 +5,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
+   - Fix validation of category fields
    - Added <new feature>
    - Changed how the Toggle field renders in a column in the Entry Manager
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
