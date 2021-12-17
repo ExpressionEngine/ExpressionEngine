@@ -341,11 +341,10 @@ class CommandUpdate extends Cli
 
         $this->autoload(SYSPATH . 'ee/installer/updates/');
 
-        ee()->load->library('session');
+        //ee()->load->library('session');
         ee()->load->library('smartforge');
         ee()->load->library('logger');
         // ee()->load->library('update_notices');
-        define('PATH_TMPL', SYSPATH . 'user/templates/');
         defined('USERNAME_MAX_LENGTH') || define('USERNAME_MAX_LENGTH', 75);
         defined('PASSWORD_MAX_LENGTH') || define('PASSWORD_MAX_LENGTH', 72);
         defined('URL_TITLE_MAX_LENGTH') || define('URL_TITLE_MAX_LENGTH', 200);
