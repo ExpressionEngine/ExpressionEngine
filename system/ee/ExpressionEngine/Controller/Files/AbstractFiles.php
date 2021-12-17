@@ -208,7 +208,6 @@ abstract class AbstractFiles extends CP_Controller
             if (! $file->memberHasAccess($member)) {
                 continue;
             }
-
             $toolbar = array(
                 'edit' => array(
                     'href' => '',
@@ -216,6 +215,11 @@ abstract class AbstractFiles extends CP_Controller
                     'class' => 'm-link',
                     'title' => lang('edit'),
                     'data-file-id' => $file->file_id
+                ),
+                'link' => array(
+                    'href' => $file->getAbsoluteURL(),
+                    'title' => lang('link'),
+                    'target' => '_blank',
                 ),
                 'crop' => array(
                     'href' => ee('CP/URL')->make('files/file/crop/' . $file->file_id),
