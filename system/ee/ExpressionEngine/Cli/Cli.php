@@ -97,7 +97,7 @@ class Cli
         ee()->load->database();
 
         //  Is the CLI disabled in the settings?
-        $this->cliEnabled = bool_config_item('cli_enabled');
+        $this->cliEnabled = ee()->config->item('cli_enabled') != false ? bool_config_item('cli_enabled') : true;
 
         // Initialize the object
         $factory = new CliFactory();
