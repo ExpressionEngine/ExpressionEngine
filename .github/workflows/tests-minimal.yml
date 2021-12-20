@@ -828,7 +828,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
