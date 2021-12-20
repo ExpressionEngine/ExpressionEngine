@@ -373,7 +373,7 @@ class MemberImport extends Utilities
 
             foreach ($errors as $error) {
                 foreach ($error as $val) {
-                    $out[] = $val;
+                    $out[] = ee('Security/XSS')->clean($val);
                 }
             }
 
