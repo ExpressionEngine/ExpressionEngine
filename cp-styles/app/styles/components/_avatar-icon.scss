@@ -13,3 +13,23 @@
 .avatar-icon--small {
 	@include avatar-icon(18px);
 }
+
+.author-info-comments {
+  position: relative;
+  padding-left: 35px;
+  padding-top: 10px;
+  display: inline-block;
+
+  .avatar-icon {
+    position: absolute;
+    top: 10px;
+    left: 0px;
+  }
+
+  .author-details {
+    display: inline-block;
+    border-left: 1px solid color(panel-border);
+    padding-left: 10px;
+    font-size: 14px;
+  }
+}

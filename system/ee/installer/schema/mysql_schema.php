@@ -281,6 +281,7 @@ class EE_Schema
         $Q[] = "CREATE TABLE exp_members (
 			member_id int(10) unsigned NOT NULL auto_increment,
 			role_id int(10) NOT NULL default '0',
+			pending_role_id int(10) NOT NULL default '0',
 			username varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			screen_name varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			password varchar(128) NOT NULL DEFAULT '',
@@ -357,6 +358,7 @@ class EE_Schema
 			`name` varchar(100) NOT NULL,
 			`short_name` varchar(50) NOT NULL,
 			`description` text,
+			`total_members` mediumint(8) unsigned NOT NULL DEFAULT '0',
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY (`role_id`)
 		)";
@@ -683,6 +685,7 @@ class EE_Schema
 			field_content_type varchar(20) NOT NULL default 'any',
 			field_settings text NULL,
 			legacy_field_data char(1) NOT NULL default 'n',
+			enable_frontedit char(1) NOT NULL default 'y',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `field_type` (`field_type`),
 			KEY `site_id` (`site_id`)

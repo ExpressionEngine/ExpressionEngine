@@ -78,6 +78,7 @@ class EE_Stylesheet
 
                 $str = read_file($basepath);
                 $row['template_data'] = ($str !== false) ? $str : $row['template_data'];
+                $row['edit_date'] = ($str !== false) ? filemtime($basepath) : $row['edit_date'];
             }
 
             $this->style_cache[$stylesheet] = str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $row['template_data']);

@@ -155,7 +155,11 @@ gulp.task('_archive_app', ['_build_directories'], function (cb) {
 });
 
 gulp.task('_archive_pro', function (cb) {
-	archive_repo('pro', cb);
+	if (process.argv.indexOf('--skip-pro') > -1) {
+		cb();
+	} else {
+		archive_repo('pro', cb);
+	}
 });
 
 /**

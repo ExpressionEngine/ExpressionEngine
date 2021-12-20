@@ -1703,6 +1703,7 @@ class Wizard extends CI_Controller
             'memberlist_row_limit' => "20",
             'is_site_on' => 'y',
             'show_ee_news' => 'y',
+            'cli_enabled' => 'y',
             'theme_folder_path' => $this->userdata['theme_folder_path'],
         );
 

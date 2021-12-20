@@ -607,9 +607,12 @@ class EE_Session
         $this->userdata['group_description'] = $this->member_model->PrimaryRole->description;
 
         // Add in the Permissions for backwards compatibility
-        foreach ($this->member_model->getPermissions() as $perm => $perm_id) {
+        $permissions = $this->member_model->getPermissions();
+        foreach ($permissions as $perm => $perm_id) {
             $this->userdata[$perm] = 'y';
         }
+        //ensure we get those cached, as they are not cached on model layer yet
+        $this->set_cache("ExpressionEngine\Model\Member\Member", "Member/{$this->userdata['member_id']}/Permissions", $permissions);
 
         // Remember me may have validated the user agent for us, if so create a fingerprint now that we
         // can salt it properly for the user
@@ -1295,7 +1298,7 @@ class EE_Session
         // Fetch Assigned Sites Available to User
         $assigned_sites = ee('Model')->get('Site')
             ->fields('site_id', 'site_label')
-            ->order('site_label', 'desc');
+            ->order('site_label', 'asc');
 
         if (! $is_superadmin) {
             $roles = $this->getMember()->getAllRoles()->pluck('role_id');

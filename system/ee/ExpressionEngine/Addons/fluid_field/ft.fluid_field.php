@@ -73,6 +73,9 @@ class Fluid_field_ft extends EE_Fieldtype
             if (strpos($key, 'field_') === 0) {
                 $fluid_field_data_id = (int) str_replace('field_', '', $key);
             }
+            if (strpos($key, 'new_field_') === 0) {
+                $fluid_field_data_id = (int) str_replace('new_field_', '', $key);
+            }
 
             $field = clone $field_templates[$field_id];
 
@@ -396,7 +399,14 @@ class Fluid_field_ft extends EE_Fieldtype
 
                 $f->setName($this->name() . '[fields][' . $key . '][field_id_' . $field->getId() . ']');
 
-                $f = $this->setupFieldInstance($f, $data, $field_id);
+                if (strpos($key, 'field_') === 0) {
+                    $fluid_field_data_id = (int) str_replace('field_', '', $key);
+                }
+                if (strpos($key, 'new_field_') === 0) {
+                    $fluid_field_data_id = (int) str_replace('new_field_', '', $key);
+                }
+
+                $f = $this->setupFieldInstance($f, $data, $fluid_field_data_id);
 
                 $fields .= ee('View')->make('fluid_field:field')->render([
                     'field' => $f,
@@ -434,7 +444,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     'sortable'
                 ),
                 'file' => array(
-                    'fields/fluid_field/cp',
+                    'fields/fluid_field/ui',
                     'cp/sort_helper'
                 ),
             ));

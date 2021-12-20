@@ -46,8 +46,8 @@ INSERT INTO `exp_category_field_data` (`cat_id`, `site_id`, `group_id`) VALUES
 DELETE FROM `exp_category_groups`;
 /*!40000 ALTER TABLE `exp_category_groups` DISABLE KEYS */;
 INSERT INTO `exp_category_groups` (`group_id`, `site_id`, `group_name`, `sort_order`, `exclude_group`, `field_html_formatting`, `can_edit_categories`, `can_delete_categories`) VALUES
-	(1, 1, 'News Categories', 'a', 0, 'all', '', ''),
-	(2, 1, 'About', 'a', 0, 'all', '', '');
+	(1, 1, 'News Categories', 'v', 0, 'all', '', ''),
+	(2, 1, 'About', 'v', 0, 'all', '', '');
 /*!40000 ALTER TABLE `exp_category_groups` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_category_posts: ~10 rows (approximately)
@@ -446,36 +446,42 @@ DELETE FROM `exp_consent_request_version_cookies`;
 /*!40000 ALTER TABLE `exp_consent_request_version_cookies` ENABLE KEYS */;
 
 
--- Dumping data for table ee-test.exp_cookie_settings: ~0 rows (approximately)
-DELETE FROM `exp_cookie_settings`;
-/*!40000 ALTER TABLE `exp_cookie_settings` DISABLE KEYS */;
-INSERT INTO `exp_cookie_settings` (`cookie_id`, `cookie_provider`, `cookie_name`, `cookie_lifetime`, `cookie_enforced_lifetime`, `cookie_title`, `cookie_description`) VALUES
-	(1, 'ee', 'csrf_token', NULL, NULL, 'csrf_token', NULL),
-	(2, 'ee', 'flash', NULL, NULL, 'flash', NULL),
-	(3, 'ee', 'remember', NULL, NULL, 'remember', NULL),
-	(4, 'ee', 'sessionid', NULL, NULL, 'sessionid', NULL),
-	(5, 'ee', 'visitor_consents', NULL, NULL, 'visitor_consents', NULL),
-	(6, 'ee', 'last_activity', NULL, NULL, 'last_activity', NULL),
-	(7, 'ee', 'last_visit', NULL, NULL, 'last_visit', NULL),
-	(8, 'ee', 'anon', NULL, NULL, 'anon', NULL),
-	(9, 'ee', 'tracker', NULL, NULL, 'tracker', NULL),
-	(10, 'ee', 'viewtype', NULL, NULL, 'viewtype', NULL),
-	(11, 'ee', 'cp_last_site_id', NULL, NULL, 'cp_last_site_id', NULL),
-	(12, 'ee', 'ee_cp_viewmode', NULL, NULL, 'ee_cp_viewmode', NULL),
-	(13, 'ee', 'collapsed_nav', NULL, NULL, 'collapsed_nav', NULL),
-	(14, 'comment', 'my_email', NULL, NULL, 'my_email', NULL),
-	(15, 'comment', 'my_location', NULL, NULL, 'my_location', NULL),
-	(16, 'comment', 'my_name', NULL, NULL, 'my_name', NULL),
-	(17, 'comment', 'my_url', NULL, NULL, 'my_url', NULL),
-	(18, 'comment', 'notify_me', NULL, NULL, 'notify_me', NULL),
-	(19, 'comment', 'save_info', NULL, NULL, 'save_info', NULL),
-	(20, 'forum', 'forum_theme', NULL, NULL, 'forum_theme', NULL),
-	(21, 'forum', 'forum_topics', NULL, NULL, 'forum_topics', NULL),
-	(22, 'pro', 'frontedit', NULL, NULL, 'frontedit', NULL);
-/*!40000 ALTER TABLE `exp_cookie_settings` ENABLE KEYS */;
+-- Dumping data for table ee-test.exp_content_types: ~2 rows (approximately)
+DELETE FROM `exp_content_types`;
+/*!40000 ALTER TABLE `exp_content_types` DISABLE KEYS */;
+INSERT INTO `exp_content_types` (`content_type_id`, `name`) VALUES
+	(2, 'channel'),
+	(1, 'grid');
+/*!40000 ALTER TABLE `exp_content_types` ENABLE KEYS */;
 
--- Dumping data for table ee-test.exp_cp_log: ~3 rows (approximately)
-DELETE FROM `exp_cp_log`;
+-- Dumping structure for table ee-test.exp_cookie_settings
+DROP TABLE IF EXISTS `exp_cookie_settings`;
+CREATE TABLE IF NOT EXISTS `exp_cookie_settings` (
+  `cookie_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `cookie_provider` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_lifetime` int(10) unsigned DEFAULT NULL,
+  `cookie_enforced_lifetime` int(10) unsigned DEFAULT NULL,
+  `cookie_title` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cookie_description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`cookie_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping structure for table ee-test.exp_cp_log
+DROP TABLE IF EXISTS `exp_cp_log`;
+CREATE TABLE IF NOT EXISTS `exp_cp_log` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `site_id` int(4) unsigned NOT NULL DEFAULT 1,
+  `member_id` int(10) unsigned NOT NULL,
+  `username` varchar(32) NOT NULL,
+  `ip_address` varchar(45) NOT NULL DEFAULT '0',
+  `act_date` int(10) NOT NULL,
+  `action` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `site_id` (`site_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+-- Dumping data for table ee-test.exp_cp_log: ~5 rows (approximately)
 /*!40000 ALTER TABLE `exp_cp_log` DISABLE KEYS */;
 INSERT INTO `exp_cp_log` (`id`, `site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES
 	(1, 1, 0, '0', '127.0.0.1', 1588591743, 'Hash algorithm changed for "admin" (1)'),

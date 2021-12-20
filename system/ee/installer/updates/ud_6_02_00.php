@@ -29,6 +29,9 @@ class Updater
             'addMfaColumns',
             'addMfaMessageTemplate',
             'dropUnusedMemberColumns',
+            'addProFieldSettings',
+            'addTotalMembersCount',
+            'addEnableCliConfig',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -96,7 +99,7 @@ class Updater
 
     protected function addMfaMessageTemplate()
     {
-        $sites = ee('Model')->get('Site')->all();
+        $sites = ee('db')->select('site_id')->get('sites')->result();
         require_once SYSPATH . 'ee/language/' . (ee()->config->item('deft_lang') ?: 'english') . '/email_data.php';
 
         foreach ($sites as $site) {
@@ -112,6 +115,23 @@ class Updater
         }
     }
 
+    private function addProFieldSettings()
+    {
+        if (!ee()->db->field_exists('enable_frontedit', 'channel_fields')) {
+            ee()->smartforge->add_column(
+                'channel_fields',
+                [
+                    'enable_frontedit' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
+    }
+
     private function dropUnusedMemberColumns()
     {
         if (ee()->db->field_exists('rte_enabled', 'members')) {
@@ -123,6 +143,29 @@ class Updater
         }
     }
 
+    private function addEnableCliConfig()
+    {
+        // Enable the CLI by default
+        ee()->config->update_site_prefs(['cli_enabled' => 'y'], 'all');
+    }
+
+    private function addTotalMembersCount()
+    {
+        if (!ee()->db->field_exists('total_members', 'roles')) {
+            ee()->smartforge->add_column(
+                'roles',
+                [
+                    'total_members' => [
+                        'type' => 'mediumint',
+                        'constraint' => 8,
+                        'null' => false,
+                        'unsigned' => true,
+                        'default' => 0
+                    ]
+                ]
+            );
+        }
+    }
 }
 
 // EOF
