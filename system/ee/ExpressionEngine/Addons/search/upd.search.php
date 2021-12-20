@@ -13,7 +13,7 @@
  */
 class Search_upd
 {
-    public $version = '2.2.2';
+    public $version = '2.3';
 
     /**
      * Module Installer
@@ -147,6 +147,10 @@ class Search_upd
             ee()->db->where('class', 'Search')
                 ->where('method', 'do_search')
                 ->update('actions', array('csrf_exempt' => 1));
+        }
+
+        if (version_compare($current, '2.3', '<')) {
+            ee()->smartforge->add_key('search', 'no_result_page');
         }
 
         return true;
