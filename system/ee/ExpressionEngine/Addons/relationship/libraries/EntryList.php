@@ -204,7 +204,6 @@ class EntryList
         $settings['channel_id'] = ee('Request')->get('channel_id');
         $settings['related'] = ee('Request')->get('related');
         $settings['selected'] = ee('Request')->get('selected');
-        $settings['selected'] = ee('Request')->get('selected');
 
         if (! AJAX_REQUEST or ! ee()->session->userdata('member_id')) {
             show_error(lang('unauthorized_access'), 403);
