@@ -12,7 +12,7 @@
     "failOnStatusCode": false,
     "redirectionLimit": 200,
     "testFiles": "**/*.ee6.js",
-    "retries": 1,
+    "retries": 0,
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",
