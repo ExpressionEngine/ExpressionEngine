@@ -169,16 +169,16 @@ class SecurityPrivacy extends Settings
                     )
                 ),
                 array(
-                    'title' => 'require_secure_passwords',
-                    'desc' => 'require_secure_passwords_desc',
+                    'title' => 'password_security_policy',
+                    'desc' => 'password_security_policy_desc',
                     'fields' => array(
-                        'require_secure_passwords' => array(
+                        'password_security_policy' => array(
                             'type' => 'radio',
                             'choices' => array(
-                                'n' => lang('password_security_none'),
-                                'y' => lang('password_security_basic'),
-                                'g' => lang('password_security_good'),
-                                's' => lang('password_security_strong')
+                                'none' => lang('password_security_none'),
+                                'basic' => lang('password_security_basic'),
+                                'good' => lang('password_security_good'),
+                                'strong' => lang('password_security_strong')
                             )
                         )
                     )
@@ -342,10 +342,10 @@ class SecurityPrivacy extends Settings
     public function _validatePwLen($length)
     {
         $rules = [
-            'g' => 8,
-            's' => 12
+            'good' => 8,
+            'strong' => 12
         ];
-        $policy = ee('Request')->post('require_secure_passwords');
+        $policy = ee('Request')->post('password_security_policy');
         if (array_key_exists($policy, $rules) && $length < $rules[$policy]) {
             ee()->form_validation->set_message('_validatePwLen', sprintf(lang('pw_min_len_does_not_match_policy'), $rules[$policy]));
 

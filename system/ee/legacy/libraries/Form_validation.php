@@ -473,7 +473,7 @@ class EE_Form_validation
         }
 
         // Are secure passwords required?
-        if (! ee('Validation')->check('passwordSecure', $str)) {
+        if (! ee('Validation')->check('passwordMatchesSecurityPolicy', $str)) {
             $this->set_message('valid_password', ee()->lang->line('not_secure_password'));
 
             return false;

@@ -1327,12 +1327,12 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'password_lockout_interval password_lockout_interval_desc',
                         'command_title' => 'password_lockout_interval'
                     ),
-                    'fieldset-require_secure_passwords' => array(
+                    'fieldset-password_security_policy' => array(
                         'trail' => [
                             'member_security_settings'
                         ],
-                        'command' => 'require_secure_passwords require_secure_passwords_desc',
-                        'command_title' => 'require_secure_passwords'
+                        'command' => 'password_security_policy password_security_policy_desc',
+                        'command_title' => 'password_security_policy'
                     ),
                     'fieldset-pw_min_len' => array(
                         'trail' => [

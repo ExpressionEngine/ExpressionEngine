@@ -228,7 +228,7 @@ class EE_Validate
         /** -------------------------------------
         /**  Are secure passwords required?
         /** -------------------------------------*/
-        if (! ee('Validation')->check('passwordSecure', $this->password)) {
+        if (! ee('Validation')->check('passwordMatchesSecurityPolicy', $this->password)) {
             return $this->errors[] = ee()->lang->line('not_secure_password');
         }
 

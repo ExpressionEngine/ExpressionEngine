@@ -760,9 +760,9 @@ $lang = array(
 
     'require_ip_for_posting_desc' => 'When enabled, members will be unable to post without a valid user agent and <abbr title="Internet Protocol">IP</abbr> address.',
 
-    'require_secure_passwords' => 'Password security policy',
+    'password_security_policy' => 'Password security policy',
 
-    'require_secure_passwords_desc' => 'Choose the level of password security that your site members are required to maintain. <a href="' . DOC_URL. 'control-panel/settings/security-privacy.html#password-security-policy" target="_blank">Read more</a> about the options.',
+    'password_security_policy_desc' => 'Choose the level of password security that your site members are required to maintain. <a href="' . DOC_URL. 'control-panel/settings/security-privacy.html#password-security-policy" target="_blank">Read more</a> about the options.',
 
     'password_security_none' => 'None',
 

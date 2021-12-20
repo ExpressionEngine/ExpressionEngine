@@ -1586,7 +1586,7 @@ class Wizard extends CI_Controller
             'password_lockout_interval' => '1',
             'require_ip_for_login' => 'y',
             'require_ip_for_posting' => 'y',
-            'require_secure_passwords' => 'y',
+            'password_security_policy' => 'basic',
             'allow_dictionary_pw' => 'y',
             'name_of_dictionary_file' => 'dictionary.txt',
             'xss_clean_uploads' => 'y',

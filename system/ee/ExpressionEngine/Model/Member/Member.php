@@ -820,7 +820,7 @@ class Member extends ContentModel
         }
 
         // Are secure passwords required?
-        if (! ee('Validation')->check('passwordSecure', $password)) {
+        if (! ee('Validation')->check('passwordMatchesSecurityPolicy', $password)) {
             return 'not_secure_password';
         }
 

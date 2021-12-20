@@ -15,11 +15,11 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * Password Validation Rule
  */
-class PasswordSecure extends ValidationRule
+class PasswordMatchesSecurityPolicy extends ValidationRule
 {
     public function validate($key, $value)
     {
-        switch (ee()->config->item('require_secure_passwords')) {
+        switch (ee()->config->item('password_security_policy')) {
             case 'n':
                 return true;
                 break;
