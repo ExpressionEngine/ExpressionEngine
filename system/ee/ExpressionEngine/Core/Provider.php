@@ -346,6 +346,12 @@ class Provider extends InjectionBindingDecorator
     public function registerCookiesSettings()
     {
         $cookieService = $this->make('ee:Cookie');
+        if ($this->getPrefix() != 'ee') {
+            $addon = ee('Addon')->get($this->getPrefix());
+            if (!$addon || !$addon->isInstalled()) {
+                return;
+            }
+        }
         $builtinCookieSettings = $this->get('cookie_settings');
         $providerCookieSettings = null;
         foreach (['Necessary', 'Functionality', 'Performance', 'Targeting'] as $type) {
@@ -353,9 +359,13 @@ class Provider extends InjectionBindingDecorator
                 if (is_null($providerCookieSettings)) {
                     $providerCookieSettings = ee('Model')
                         ->get('CookieSetting')
-                        ->fields('cookie_name', 'cookie_provider')
-                        ->filter('cookie_provider', $this->getPrefix())
-                        ->all()
+                        ->fields('cookie_name', 'cookie_provider');
+                    if ($this->getPrefix() != 'ee') {
+                        $providerCookieSettings->filter('cookie_provider', $this->getPrefix());
+                    } else {
+                        $providerCookieSettings->filter('cookie_provider', 'IN', ['ee', 'cp']);
+                    }
+                    $providerCookieSettings = $providerCookieSettings->all()
                         ->getDictionary('cookie_name', 'cookie_provider');
                 }
                 $cookieParams = [
@@ -388,6 +398,9 @@ class Provider extends InjectionBindingDecorator
                             } else {
                                 $cookieSettings->cookie_description = $builtinCookieSettings[$cookie_name]['description'];
                             }
+                        }
+                        if (isset($builtinCookieSettings[$cookie_name]['provider']) && $cookieParams['cookie_provider'] == 'ee') {
+                            $cookieSettings->cookie_provider = $builtinCookieSettings[$cookie_name]['provider'];
                         }
                     }
                     $cookieSettings->cookie_lifetime = null; //unknown at this point

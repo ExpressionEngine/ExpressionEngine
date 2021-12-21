@@ -49,7 +49,8 @@ Bullet list below, e.g.
    - Fixed a CLI bug where it didnt ask for the migration location if not specified
    - Fix white screen on first access to a group template which exists on files, but not yet on database
    - Fix `$this` being used as a parameter in extensions created via the add-on generator, (#1624)
-
+   - Remove unnecessary and duplicated queries from search module
+   - Fix #1195 improves `template_post_parse` hook when fired after sub or layout (i.e. partial) template parse completes
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
