@@ -1,17 +1,24 @@
 <div class="panel">
 <div class="form-standard" data-publish>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
+
+	<?php if (!isset($pro_class)) : ?>
 	<div class="panel-heading">
-    <div class="title-bar title-bar--large">
-      <h3 class="title-bar__title"><?=$head['title']?></h3>
-    </div>
-  </div>
-  <div class="panel-body">
+		<div class="title-bar title-bar--large">
+			<h3 class="title-bar__title"><?=$head['title']?></h3>
+		</div>
+	</div>
+	<?php endif; ?>
+	
+	<div class="panel-body">
 
 	<div class="tab-wrap">
+
+		<?php if (!isset($pro_class)) : ?>
 		<div class="title-bar__extra-tools title-bar__extra-tools-publish tab-bar__right-buttons">
 			<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 		</div>
+		<?php endif; ?>
 		<div class="tab-bar tab-bar--sticky<?php if (isset($pro_class)) : ?> hidden<?php endif; ?>">
 			<?php if (!isset($pro_class)) : ?>
 			<div class="tab-bar__tabs">
@@ -35,6 +42,12 @@
 			<?php if ($entry->getAutosaves()->count()): ?>
 				<button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
 			<?php endif; ?>
+			</div>
+			<?php endif; ?>
+
+			<?php if (isset($pro_class)) : ?>
+			<div class="tab-bar__right-buttons">
+				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 			</div>
 			<?php endif; ?>
 		</div>
