@@ -100,7 +100,7 @@ class Login extends CP_Controller
                 ->now();
         }
 
-        if (ee()->config->item('cookie_domain') != '') {
+        if (ee()->config->item('cp_session_type') != 's' && ee()->config->item('cookie_domain') != '') {
             $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
             $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('cookie_domain'));
             if ($domain_matches === false) {
@@ -296,7 +296,7 @@ class Login extends CP_Controller
 
         $data = array(
             'required_changes' => array(),
-            'focus_field' => 'new_username',
+            'focus_field' => 'password',
             'cp_page_title' => lang('login'),
             'username' => $this->input->post('username'),
             'new_username_required' => false,
@@ -319,6 +319,10 @@ class Login extends CP_Controller
         if ($plen < $pml) {
             $data['new_password_required'] = true;
             $required_changes[] = sprintf(lang('pw_len'), $pml);
+        }
+
+        if ($data['new_username_required']) {
+            $data['focus_field'] = 'new_username';
         }
 
         $alert = ee('CP/Alert')
