@@ -213,6 +213,10 @@
   visibility: hidden;
 }
 
+.list-group .list-item__secondary {
+	visibility: visible;
+}
+
 .list-item__body {
 	// margin-top: $s-s;
   color: color(text-tertiary);
