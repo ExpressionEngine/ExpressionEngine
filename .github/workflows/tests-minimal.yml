@@ -57,15 +57,10 @@ jobs:
               ref: ${{ steps.pro_branch.outputs.ref }}
               path: __pro
 
-          - name: Setup asdf
-            uses: asdf-vm/actions/setup@v1
-
-          - name: Install asdf dependencies
-            working-directory: build-tools
-            run: |
-              asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-              bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
-              asdf install
+          - name: Setup node
+            uses: actions/setup-node@v2
+            with:
+              node-version: '10'
 
           - name: Install build tool dependencies
             working-directory: build-tools
