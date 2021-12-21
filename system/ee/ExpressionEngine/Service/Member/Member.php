@@ -243,7 +243,7 @@ class Member
 
         // if we're using former "secure password" EE algo and the rank is low
         // see if it's satisfactory at least, then return 'good'
-        if (ee()->config->item('require_secure_passwords') == 'y' || ee()->config->item('password_security_policy') == 'y') {
+        if (ee()->config->item('require_secure_passwords') == 'y' || ee()->config->item('password_security_policy') == 'basic') {
             $count = array('uc' => 0, 'lc' => 0, 'num' => 0);
 
             $pass = preg_quote($password, "/");

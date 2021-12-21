@@ -37,23 +37,10 @@ jobs:
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
               path: __pro
 
-        #  - name: Move Pro into core
-        #    run: |
-        #      mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-        #      mv __pro/themes/ee/pro themes/ee/pro
-        #      mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
-        #      mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-        #      rm -rf __pro
-
-          - name: Setup asdf
-            uses: asdf-vm/actions/setup@v1
-
-          - name: Install asdf dependencies
-            working-directory: build-tools
-            run: |
-              asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-              bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
-              asdf install
+          - name: Setup node
+            uses: actions/setup-node@v2
+            with:
+              node-version: '10'
 
           - name: Install build tool dependencies
             working-directory: build-tools

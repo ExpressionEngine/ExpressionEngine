@@ -20,14 +20,15 @@ class PasswordMatchesSecurityPolicy extends ValidationRule
     public function validate($key, $value)
     {
         switch (ee()->config->item('password_security_policy')) {
-            case 'n':
+            case 'none':
                 return true;
                 break;
-            case 's':
+            case 'strong':
                 return ee('Member')->calculatePasswordComplexity($value) >= 60;
                 break;
             case 'y':
-            case 'g':
+            case 'basic':
+            case 'good':
             default:
                 return ee('Member')->calculatePasswordComplexity($value) >= 40;
                 break;
