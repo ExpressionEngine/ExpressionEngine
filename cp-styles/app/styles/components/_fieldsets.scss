@@ -355,7 +355,7 @@ td.invalid {
 
 .rank-wrap {
   position: absolute;
-  right: 15px;
+  right: 45px;
   top: 7px;
   background: var(--ee-button-default-bg);
   text-transform: uppercase;
@@ -390,36 +390,6 @@ fieldset {
 		top: 46px;
 	}
 	.field-control {
-		.eye {
-			top: 58px;
-		}
-	}
-}
-
-.reset-password,
-.installer-page {
-	.rank-wrap {
-		right: 45px;
-	}
-
-	.field-control {
-		.eye {
-			top: 10px;
-		}
-	}
-}
-
-#idle-modal {
-	fieldset {
-		.eye {
-			right: 45px;
-			top: 46px;
-		}
-	}
-}
-
-.installer-page {
-	fieldset {
 		.eye {
 			top: 12px;
 		}

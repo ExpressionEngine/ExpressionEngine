@@ -23,7 +23,7 @@
 				<?=lang('existing_password', 'password')?>
 				</div>
 				<div class="field-control" style="position: relative;">
-					<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off', 'data-password-check' => 'none'))?>
+					<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'current-password'))?>
 				</div>
 			</fieldset>
 		<?php endif; ?>
@@ -33,7 +33,7 @@
 				<?=lang('existing_password', 'verify_password')?>
 				</div>
 				<div class="field-control" style="position: relative;">
-					<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off', 'data-password-check' => 'none'))?>
+					<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'current-password'))?>
 				</div>
 			</fieldset>
 			<fieldset>

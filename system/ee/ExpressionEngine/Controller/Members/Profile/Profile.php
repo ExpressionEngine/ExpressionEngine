@@ -65,7 +65,6 @@ class Profile extends CP_Controller
 
         $this->generateSidebar();
 
-        ee()->cp->add_js_script('file', 'cp/passwords');
         ee()->javascript->set_global([
             'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
         ]);
