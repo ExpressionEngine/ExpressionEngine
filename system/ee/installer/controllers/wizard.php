@@ -65,9 +65,9 @@ class Wizard extends CI_Controller
 
     // Native First Party ExpressionEngine Modules (everything else is in third
     // party folder)
-    public $native_modules = array('blacklist', 'block_and_allow', 'channel', 'comment', 'commerce', 'consent',
-        'email', 'file', 'forum', 'gallery', 'ip_to_nation',
-        'member', 'metaweblog_api', 'moblog', 'pro', 'pages', 'query', 'relationship',
+    public $native_modules = array('blacklist', 'block_and_allow', 'channel', 'colorpicker', 'comment', 'commerce', 'consent',
+        'email', 'file', 'forum', 'gallery', 'request', 'ip_to_nation',
+        'member', 'metaweblog_api', 'moblog', 'pages', 'pro', 'query', 'relationship',
         'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
     // Third Party Modules may send error messages if something goes wrong.
@@ -1703,7 +1703,7 @@ class Wizard extends CI_Controller
             'memberlist_row_limit' => "20",
             'is_site_on' => 'y',
             'show_ee_news' => 'y',
-            'enable_cli' => 'y',
+            'cli_enabled' => 'y',
             'theme_folder_path' => $this->userdata['theme_folder_path'],
         );
 

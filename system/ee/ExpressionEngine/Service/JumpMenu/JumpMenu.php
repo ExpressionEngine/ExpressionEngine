@@ -229,12 +229,103 @@ class JumpMenu extends AbstractJumpMenu
                 'addon' => false,
                 'target' => 'login/logout'
             ),
-            'myProfile' => array(
+            'myProfileSettings' => array(
                 'icon' => 'fa-user',
                 'command' => 'my_profile my_account',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/profile'
+                'target' => 'members/profile/settings'
+            ),
+            'myProfileEmail' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account email_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/email'
+            ),
+            'myProfileAuth' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account auth_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/auth'
+            ),
+            'myProfileDate' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account date_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/date'
+            ),
+            'myProfileConsents' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account consents',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/consent'
+            ),
+            'myProfilePublishing' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account publishing_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/publishing'
+            ),
+            'myProfileButtons' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account html_buttons',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/buttons'
+            ),
+            'myProfileQuicklinks' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account quick_links',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/quicklinks'
+            ),
+            'myProfileBookmarklets' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account bookmarklets',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/bookmarks'
+            ),
+            'myProfileSubscriptions' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account subscriptions',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/subscriptions'
+            ),
+            'myProfileActivity' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account info_and_activity',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/activity'
+            ),
+            'myProfileIgnore' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account blocked_members',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/ignore'
+            ),
+            'myProfileAccess' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account access_overview',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/access'
+            ),
+            'myProfileCpSettings' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account cp_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/cp-settings'
             ),
             //addons
             'viewAddons' => array(

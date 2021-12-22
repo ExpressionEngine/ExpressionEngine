@@ -20,7 +20,7 @@
 			<div class="field-instruct">
 			<?=lang('new_password_confirm', 'password_confirm')?>
 			</div>
-			<div class="field-control">
+			<div class="field-control" style="position: relative;">
 				<?=form_password(array('dir' => 'ltr', 'name' => "password_confirm", 'id' => "password_confirm", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 			</div>
 		</fieldset>
@@ -31,14 +31,12 @@
 	<?=form_close()?>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 <script type="text/javascript">
 	var EE = {
 		cp: {
 			validatePasswordUrl: "<?=ee('CP/URL', 'login/validate_password')->compile()?>"
 		}
 	}
-
 
 	// Check password strength indicator
 	function passwordStrengthIndicator(field) {

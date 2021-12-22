@@ -524,6 +524,35 @@ class Member
     }
 
     /**
+     * MFA links, directly available
+     *
+     * @return string
+     */
+    public function mfa_links()
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return ee()->TMPL->no_results();
+        }
+
+        $data = [
+            'enable_mfa_link' => '',
+            'disable_mfa_link' => '',
+        ];
+
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y')) {
+            $return = ee()->TMPL->fetch_param('return', ee()->uri->uri_string);
+            if (ee()->session->userdata('mfa_enabled') == true) {
+                $data['disable_mfa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'disableMfa') . AMP . 'RET=' . $return;
+            }
+            if (ee()->session->userdata('mfa_enabled') == false) {
+                $data['enable_mfa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'enableMfa') . AMP . 'RET=' . $return;
+            }
+        }
+
+        return ee()->functions->insert_action_ids(ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $data));
+    }
+
+    /**
      * Member Profile Edit Page
      */
     public function edit_profile()

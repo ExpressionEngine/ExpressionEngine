@@ -66,6 +66,9 @@ $lang = array(
     'password_rank_strong' => 'Strong',
 
     'password_rank_very_strong' => 'Very Strong',
+    'reset' => 'Reset',
+
+    'confirm' => 'Confirm',
 
 );
 

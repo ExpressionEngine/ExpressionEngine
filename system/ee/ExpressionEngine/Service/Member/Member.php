@@ -158,7 +158,7 @@ class Member
             if ($currentCharType == $prevCharType) {
                 $consequentCharsCount[$currentCharType]++;
             }
-            if ($currentCharTypeNocase == $prevCharTypeNocase && $prevCharTypeNocase == $prePrevCharTypeNocase) {
+            if ($currentCharTypeNocase == $prevCharTypeNocase && $prevCharTypeNocase == $prePrevCharTypeNocase && $i > 1) {
                 if ($currentCharTypeNocase == 'string') {
                     $idx = array_search($password[$i], $orderedStrings);
                     if (array_search($password[$i - 1], $orderedStrings) == ($idx - 1) && array_search($password[$i - 2], $orderedStrings) == ($idx - 2)) {

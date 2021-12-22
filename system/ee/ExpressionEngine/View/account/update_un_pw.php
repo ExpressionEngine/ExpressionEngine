@@ -4,7 +4,7 @@
     <?php $this->embed('ee:_shared/ee-logo')?>
 </div>
 
-<div class="login__content">
+<div class="login__content reset-password">
 <h1 class="login__title"><?=lang('new_requirements')?> <i class="fas fa-redo-alt"></i></h1>
 	<?=ee('CP/Alert')->getAllInlines()?>
 
@@ -22,27 +22,35 @@
 				<div class="field-instruct">
 				<?=lang('existing_password', 'password')?>
 				</div>
-				<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
+				<div class="field-control" style="position: relative;">
+					<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off', 'data-password-check' => 'none'))?>
+				</div>
 			</fieldset>
 		<?php endif; ?>
 		<?php if ($new_password_required):?>
 			<fieldset>
 				<div class="field-instruct">
-				<?=lang('existing_password', 'password')?>
+				<?=lang('existing_password', 'verify_password')?>
 				</div>
-				<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
+				<div class="field-control" style="position: relative;">
+					<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off', 'data-password-check' => 'none'))?>
+				</div>
 			</fieldset>
 			<fieldset>
 				<div class="field-instruct">
 				<?=lang('choose_new_pw', 'new_password')?>
 				</div>
-				<?=form_password(array('dir' => 'ltr', 'name' => "new_password", 'id' => "new_password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
+				<div class="field-control" style="position: relative;">
+					<?=form_password(array('dir' => 'ltr', 'name' => "new_password", 'id' => "new_password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
+				</div>
 			</fieldset>
 			<fieldset>
 				<div class="field-instruct">
 				<?=lang('confirm_new_pw', 'new_password_confirm')?>
 				</div>
-				<?=form_password(array('dir' => 'ltr', 'name' => "new_password_confirm", 'id' => "new_password_confirm", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
+				<div class="field-control" style="position: relative;">
+					<?=form_password(array('dir' => 'ltr', 'name' => "new_password_confirm", 'id' => "new_password_confirm", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
+				</div>
 			</fieldset>
 		<?php endif; ?>
 		<fieldset class="last text-center">

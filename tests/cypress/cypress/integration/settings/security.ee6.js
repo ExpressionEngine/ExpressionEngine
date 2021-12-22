@@ -251,10 +251,18 @@ context('Security & Privacy Settings', () => {
     // Since we changed session settings, login again
     cy.auth();
     cy.get('h1').should('contain', 'New Access Requirements')
-    cy.get('[name="password"]:visible').type('password')
+    cy.get('[name="password"]').type('password')
     cy.get('[name="new_password"]:visible').type('123456789012')
     cy.get('[name="new_password_confirm"]:visible').type('123456789012')
     cy.get('.button--primary').click()
+
+    cy.get('body').should('contain', 'The chosen password is not secure enough.')
+    cy.get('[name="password"]').type('password')
+    cy.get('[name="new_password"]:visible').type('BojVMZA2xj74QGTNzmuL')
+    cy.get('[name="new_password_confirm"]:visible').type('BojVMZA2xj74QGTNzmuL')
+    cy.get('.button--primary').click()
+
+    cy.login({ email: 'admin', password: 'BojVMZA2xj74QGTNzmuL' });
     page.load()
 
     //page.get('wrap').contains('Preferences updated')
@@ -270,7 +278,7 @@ context('Security & Privacy Settings', () => {
     page.get('password_lockout').invoke('val').then((val) => { expect(val).to.be.equal('n')})
     page.get('password_lockout_interval').invoke('val').then((val) => { expect(val).to.be.equal('15')})
     page.get('password_security_policy').filter('[value=strong]').should('be.checked')
-    page.get('pw_min_len').invoke('val').then((val) => { expect(val).to.be.equal('8')})
+    page.get('pw_min_len').invoke('val').then((val) => { expect(val).to.be.equal('12')})
     page.get('allow_dictionary_pw').invoke('val').then((val) => { expect(val).to.be.equal('y')})
     page.get('name_of_dictionary_file').invoke('val').then((val) => { expect(val).to.be.equal('http://dictionary')})
     page.get('deny_duplicate_data').invoke('val').then((val) => { expect(val).to.be.equal('n')})

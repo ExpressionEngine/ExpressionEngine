@@ -299,17 +299,20 @@ class EE_Core
         ee()->lang->loadfile('core');
 
         // Now that we have a session we'll enable debugging if the user is a super admin
-        if (ee()->config->item('debug') == 1
+        if (
+            ee()->config->item('debug') == 1
             && (
                 ee('Permission')->isSuperAdmin()
                 || ee()->session->userdata('can_debug') == 'y'
             )
-            ) {
+        ) {
             $this->_enable_debugging();
         }
 
-        if ((ee('Permission')->isSuperAdmin() || ee()->session->userdata('can_debug') == 'y')
-            && ee()->config->item('show_profiler') == 'y') {
+        if (
+            (ee('Permission')->isSuperAdmin() || ee()->session->userdata('can_debug') == 'y')
+            && ee()->config->item('show_profiler') == 'y'
+        ) {
             ee()->output->enable_profiler(true);
         }
 
@@ -342,6 +345,39 @@ class EE_Core
         // Load up any Snippets
         if (REQ == 'ACTION' or REQ == 'PAGE') {
             $this->loadSnippets();
+        }
+
+        // Is MFA required?
+        if (REQ == 'PAGE' && ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            if (ee()->session->userdata('mfa_flag') == 'show') {
+                ee('pro:Mfa')->invokeMfaDialog();
+            }
+            if (ee()->session->userdata('mfa_flag') == 'required') {
+                // Kill the session and cookies
+                ee()->db->where('site_id', ee()->config->item('site_id'));
+                ee()->db->where('ip_address', ee()->input->ip_address());
+                ee()->db->where('member_id', ee()->session->userdata('member_id'));
+                ee()->db->delete('online_users');
+
+                ee()->session->destroy();
+
+                ee()->input->delete_cookie('read_topics');
+
+                /* -------------------------------------------
+                /* 'member_member_logout' hook.
+                /*  - Perform additional actions after logout
+                /*  - Added EE 1.6.1
+                */
+                ee()->extensions->call('member_member_logout');
+                if (ee()->extensions->end_script === true) {
+                    return;
+                }
+                /*
+                /* -------------------------------------------*/
+
+                header("Location: " . ee()->functions->fetch_current_uri());
+                exit();
+            }
         }
     }
 
@@ -440,6 +476,13 @@ class EE_Core
             ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
         }
 
+        if (ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            //only allow MFA code page
+            if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset', 'logout'])) && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
+                ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
+            }
+        }
+
         // Is the user banned or not allowed CP access?
         // Before rendering the full control panel we'll make sure the user isn't banned
         // But only if they are not a Super Admin, as they can not be banned
@@ -447,6 +490,20 @@ class EE_Core
             (ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp'))) {
             return ee()->output->fatal_error(lang('not_authorized'));
         }
+
+        //is member role forced to use MFA?
+        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
+                ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+                ee('CP/Alert')->makeInline('shared-form')
+                        ->asIssue()
+                        ->withTitle(lang('mfa_required'))
+                        ->addToBody(lang('mfa_required_desc'))
+                        ->defer();
+                ee()->functions->redirect(ee('CP/URL')->make('members/profile/pro/mfa'));
+            }
+        }
+
 
         // Load common helper files
         ee()->load->helper(array('url', 'form', 'quicktab', 'file'));

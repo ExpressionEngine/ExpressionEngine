@@ -32,7 +32,8 @@ class Member extends ContentModel
     protected static $_hook_id = 'member';
 
     protected static $_typed_columns = array(
-        'cp_homepage_channel' => 'json'
+        'cp_homepage_channel' => 'json',
+        'enable_mfa' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -247,6 +248,7 @@ class Member extends ContentModel
     protected $salt;
     protected $unique_id;
     protected $crypt_key;
+    protected $backup_mfa_code;
     protected $authcode;
     protected $email;
     protected $signature;
@@ -304,6 +306,7 @@ class Member extends ContentModel
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
     protected $dismissed_pro_banner;
+    protected $enable_mfa;
 
     /**
      * Getter for legacy group_id property

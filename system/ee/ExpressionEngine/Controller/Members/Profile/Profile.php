@@ -65,6 +65,11 @@ class Profile extends CP_Controller
 
         $this->generateSidebar();
 
+        ee()->cp->add_js_script('file', 'cp/passwords');
+        ee()->javascript->set_global([
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+        ]);
+
         $this->breadcrumbs = array(
             ee('CP/URL')->make('members')->compile() => lang('members'),
             ee('CP/URL')->make('members/profile', $qs)->compile() => $this->member->screen_name
@@ -94,6 +99,11 @@ class Profile extends CP_Controller
 
         $list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
         $list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
+
+        if ($this->member->member_id == ee()->session->userdata['member_id'] && IS_PRO && ee('pro:Access')->hasValidLicense() && (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y')) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $list->addItem(lang('mfa'), ee('CP/URL')->make('members/profile/pro/mfa', $this->query_string));
+        }
 
         if (ee()->config->item('allow_member_localization') == 'y' or ee('Permission')->isSuperAdmin()) {
             $list->addItem(lang('date_settings'), ee('CP/URL')->make('members/profile/date', $this->query_string));

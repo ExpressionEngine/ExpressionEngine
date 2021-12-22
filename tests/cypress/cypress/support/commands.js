@@ -13,6 +13,22 @@
 import 'cypress-file-upload';
 import 'cypress-maildev';
 
+//https://github.com/cypress-io/cypress/issues/249
+const COMMAND_DELAY = Cypress.env('COMMAND_DELAY') || 0;
+if (COMMAND_DELAY > 0) {
+    for (const command of ['visit', 'click', 'trigger', 'type', 'clear', 'reload', 'contains']) {
+        Cypress.Commands.overwrite(command, (originalFn, ...args) => {
+            const origVal = originalFn(...args);
+
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(origVal);
+                }, COMMAND_DELAY);
+            });
+        });
+    }
+}
+
 // -- This is a parent command --
 Cypress.Commands.add("login", (user) => {
     if (Cypress.$('input[name=username]:visible').length == 0) {

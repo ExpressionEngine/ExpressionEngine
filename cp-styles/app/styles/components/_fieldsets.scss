@@ -382,11 +382,18 @@ td.invalid {
 }
 
 // Password reveal toggle
-fieldset #eye {
-  cursor: pointer;
-  position: absolute;
-  right: 15px;
-  top: 46px;
+fieldset {
+	.eye {
+		cursor: pointer;
+		position: absolute;
+		right: 15px;
+		top: 46px;
+	}
+	.field-control {
+		.eye {
+			top: 58px;
+		}
+	}
 }
 
 .reset-password,
@@ -395,14 +402,25 @@ fieldset #eye {
 		right: 45px;
 	}
 
-	#eye {
-		top: 10px;
+	.field-control {
+		.eye {
+			top: 10px;
+		}
+	}
+}
+
+#idle-modal {
+	fieldset {
+		.eye {
+			right: 45px;
+			top: 46px;
+		}
 	}
 }
 
 .installer-page {
 	fieldset {
-		#eye {
+		.eye {
 			top: 12px;
 		}
 	}

@@ -17,7 +17,7 @@
 						<label for="logout-confirm-password"><?=sprintf(lang('password_for'), form_prep(ee()->session->userdata('username')));?></label>
 					</div>
 					<div class="field-control">
-						<input type="password" name="password" value="" id="logout-confirm-password">
+						<input type="password" name="password" value="" id="logout-confirm-password" data-password-check="none">
 					</div>
 				</fieldset>
 
