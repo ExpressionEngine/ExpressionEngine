@@ -44,3 +44,5 @@ table .field-no-results {
 	text-align: center;
 	padding: $sq-inset-s;
 }
+
+.field-no-results.hidden { display: none !important;}
