@@ -44,6 +44,7 @@ class Updater
     private function fixGridModifierParsing()
     {
         $grid_fields = ee('Model')->get('ChannelField')
+            ->fields('field_id')
             ->filter('field_type', 'grid')
             ->all();
 

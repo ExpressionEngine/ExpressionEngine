@@ -59,6 +59,10 @@ $lang = array(
 
     'updating' => 'updating...',
 
+    'reset' => 'Reset',
+
+    'confirm' => 'Confirm',
+
 );
 
 // EOF
