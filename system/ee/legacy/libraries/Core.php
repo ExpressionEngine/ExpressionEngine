@@ -466,7 +466,7 @@ class EE_Core
         // Does an admin session exist?
         // Only the "login" class can be accessed when there isn't an admin session
         if (ee()->session->userdata('admin_sess') == 0  //if not logged in
-            && (ee()->router->fetch_class(true) !== 'login' // if not on login page
+            && ee()->router->fetch_class(true) !== 'login' // if not on login page
             && ee()->router->fetch_class() != 'css') { // and the class isnt css
             // has their session Timed out and they are requesting a page?
             // Grab the URL, base64_encode it and send them to the login screen.
