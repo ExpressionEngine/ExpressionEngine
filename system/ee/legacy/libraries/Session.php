@@ -382,12 +382,14 @@ class EE_Session
         $this->sdata['sess_start'] = $this->sdata['last_activity'];
         $this->sdata['fingerprint'] = $this->_create_fingerprint((string) $crypt_key);
         $this->sdata['can_debug'] = ($can_debug) ? 'y' : 'n';
+        $this->sdata['mfa_flag'] = ($this->member_model->enable_mfa === true) ? 'show' : 'skip';
 
         $this->userdata['member_id'] = (int) $member_id;
         $this->userdata['role_id'] = (int) $this->member_model->role_id;
         $this->userdata['session_id'] = $this->sdata['session_id'];
         $this->userdata['fingerprint'] = $this->sdata['fingerprint'];
         $this->userdata['site_id'] = ee()->config->item('site_id');
+        $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
 
         // Set the session cookie, ONLY if this method is not called from the context of the constructor, i.e. a login action
         if (isset(ee()->session)) {
@@ -627,6 +629,9 @@ class EE_Session
             return false;
         }
 
+        // Check MFA state
+        $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
+
         // Create the array for the Ignore List
         $this->userdata['ignore_list'] = ($this->userdata['ignore_list'] == '') ? array() : explode('|', $this->userdata['ignore_list']);
 
@@ -738,6 +743,8 @@ class EE_Session
 
         // Assign masquerader ID to session array
         $this->sdata['can_debug'] = $session->can_debug;
+
+        $this->sdata['mfa_flag'] = $session->mfa_flag;
 
         // Is this an admin session?
         $this->sdata['admin_sess'] = ($session->admin_sess == 1) ? 1 : 0;
@@ -1205,6 +1212,7 @@ class EE_Session
             'fingerprint' => 0,
             'member_id' => 0,
             'admin_sess' => 0,
+            'mfa_flag' => 'skip',
             'ip_address' => ee()->input->ip_address(),
             'user_agent' => substr(ee()->input->user_agent(), 0, 120),
             'last_activity' => 0,
@@ -1233,6 +1241,7 @@ class EE_Session
             'include_seconds' => ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
             'role_id' => '3',
             'access_cp' => 0,
+            'mfa_enabled' => !empty($this->member_model) ? $this->member_model->enable_mfa : false,
             'last_visit' => 0,
             'is_banned' => $this->_do_ban_check(),
             'ignore_list' => array()

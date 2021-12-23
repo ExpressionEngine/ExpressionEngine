@@ -41,7 +41,7 @@ context('Member Registration', () => {
 
     context('regular signup', function() {
 
-        it('registers normally', function() {
+        it('registers normally', {retries: 2}, function() {
             cy.clearCookies()
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);

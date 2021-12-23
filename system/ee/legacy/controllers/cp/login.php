@@ -26,6 +26,227 @@ class Login extends CP_Controller
         $this->lang->loadfile('login');
     }
 
+    public function mfa()
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return $this->authenticate();
+        }
+
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+
+        $redirect = '';
+        if ($this->input->post('return_path')) {
+            $redirect = $this->input->post('return_path');
+        } elseif ($this->input->get('return')) {
+            $redirect = urldecode($this->input->get('return'));
+        }
+
+        if (!empty($redirect)) {
+            $return_path = ee('Encrypt')->decode(str_replace(' ', '+', $redirect));
+
+            if (strpos($return_path, '{') === 0) {
+                $uri_elements = json_decode($return_path, true);
+                $return_path = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments'])->compile();
+                if (IS_PRO && isset($uri_elements['arguments']['hide_closer']) && $uri_elements['arguments']['hide_closer'] == 'y') {
+                    $this->view->hide_topbar = true;
+                    $this->view->pro_class = 'pro-frontend-modal';
+                }
+            }
+        }
+        if (empty($return_path)) {
+            $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+            $return_path = $member->getCPHomepageURL();
+        }
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
+            $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
+
+            // If there is a URL= parameter in the return URL folks could end up anywhere
+            // so if we see that we'll ditch everything we were told and just go to `/`
+            if (
+                strpos($return_path, '&URL=') !== false
+                || strpos($return_path, '?URL=') !== false
+            ) {
+                $return_path = ee('CP/URL')->make('/')->compile();
+            }
+
+            $this->functions->redirect($return_path);
+        }
+
+        if (!empty($_POST['mfa_code'])) {
+            $validated = ee('pro:Mfa')->validateOtp(ee('Request')->post('mfa_code'), ee()->session->userdata('unique_id') . ee()->session->getMember()->backup_mfa_code);
+            if (!$validated) {
+                ee()->session->save_password_lockout(ee()->session->userdata('username'));
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('mfa_wrong_code'))
+                    ->addToBody(lang('mfa_wrong_code_desc'))
+                    ->now();
+            } else {
+                ee()->session->delete_password_lockout();
+                $sessions = ee('Model')
+                    ->get('Session')
+                    ->filter('member_id', ee()->session->userdata('member_id'))
+                    ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                    ->all();
+                foreach ($sessions as $session) {
+                    $session->mfa_flag = 'skip';
+                    $session->save();
+                }
+                //sync the session
+                ee()->session->fetch_member_data();
+                $this->functions->redirect($return_path);
+            }
+        }
+
+        $this->view->return_path = ee('Encrypt')->encode($return_path);
+
+        $this->view->focus_field = 'mfa_code';
+
+        if ($this->session->flashdata('message')) {
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody($this->session->flashdata('message'))
+                ->now();
+        }
+
+        // Normal login button state
+        $this->view->btn_class = 'button button--primary button--large button--wide';
+        $this->view->btn_label = lang('confirm');
+        $this->view->btn_disabled = '';
+
+        if (ee()->session->check_password_lockout(ee()->session->userdata('username')) === true) {
+            $this->view->btn_class .= ' disable';
+            $this->view->btn_label = lang('locked');
+            $this->view->btn_disabled = 'disabled';
+
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody(sprintf(
+                    lang('password_lockout_in_effect'),
+                    ee()->config->item('password_lockout_interval')
+                ))
+                ->cannotClose()
+                ->now();
+        }
+
+        // Show the site label
+        $site_label = ee('Model')->get('Site')
+            ->fields('site_label')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->first()
+            ->site_label;
+
+        $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
+
+        $view = 'pro:account/mfa';
+
+        $this->view->cp_page_title = lang('login');
+
+        $this->view->cp_session_type = ee()->config->item('cp_session_type');
+
+        ee()->output->enable_profiler(false);
+
+        $this->view->render($view);
+    }
+
+    public function mfa_reset()
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return $this->authenticate();
+        }
+
+        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $return_path = $member->getCPHomepageURL();
+
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
+            $this->functions->redirect($return_path);
+        }
+
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+
+        if (!empty($_POST)) {
+            if (md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))) == $member->backup_mfa_code) {
+                ee()->session->delete_password_lockout();
+                $sessions = ee('Model')
+                    ->get('Session')
+                    ->filter('member_id', ee()->session->userdata('member_id'))
+                    ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                    ->all();
+                foreach ($sessions as $session) {
+                    $session->mfa_flag = 'skip';
+                    $session->save();
+                }
+                $member->set(['backup_mfa_code' => '', 'enable_mfa' => false]);
+                $member->save();
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('mfa_reset_success'))
+                    ->addToBody(lang('mfa_reset_success_message'))
+                    ->defer();
+                $this->functions->redirect(ee('CP/URL', 'members/profile/pro/mfa')->compile());
+            } else {
+                ee()->session->save_password_lockout(ee()->session->userdata('username'));
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('mfa_wrong_backup_code'))
+                    ->addToBody(lang('mfa_wrong_backup_code_desc'))
+                    ->now();
+            }
+        }
+
+        $this->view->focus_field = 'backup_mfa_code';
+
+        if ($this->session->flashdata('message')) {
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody($this->session->flashdata('message'))
+                ->now();
+        }
+
+        // Normal login button state
+        $this->view->btn_class = 'button button--primary button--large button--wide';
+        $this->view->btn_label = lang('reset');
+        $this->view->btn_disabled = '';
+
+        if (ee()->session->check_password_lockout(ee()->session->userdata('username')) === true) {
+            $this->view->btn_class .= ' disable';
+            $this->view->btn_label = lang('locked');
+            $this->view->btn_disabled = 'disabled';
+
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody(sprintf(
+                    lang('password_lockout_in_effect'),
+                    ee()->config->item('password_lockout_interval')
+                ))
+                ->cannotClose()
+                ->now();
+        }
+
+        // Show the site label
+        $site_label = ee('Model')->get('Site')
+            ->fields('site_label')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->first()
+            ->site_label;
+
+        $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
+
+        $view = 'pro:account/mfa-reset';
+
+        $this->view->cp_page_title = lang('login');
+
+        $this->view->cp_session_type = ee()->config->item('cp_session_type');
+
+        ee()->output->enable_profiler(false);
+
+        $this->view->render($view);
+    }
+
     /**
      * Main login form
      *
@@ -36,8 +257,10 @@ class Login extends CP_Controller
     {
         // We don't want to allow access to the login screen to someone
         // who is already logged in.
-        if ($this->session->userdata('member_id') !== 0 &&
-            ee()->session->userdata('admin_sess') == 1) {
+        if (
+            $this->session->userdata('member_id') !== 0 &&
+            ee()->session->userdata('admin_sess') == 1
+        ) {
             $member = ee('Model')->get('Member')
                 ->filter('member_id', ee()->session->userdata('member_id'))
                 ->first();
