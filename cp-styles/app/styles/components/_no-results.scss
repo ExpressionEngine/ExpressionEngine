@@ -45,4 +45,6 @@ table .field-no-results {
 	padding: $sq-inset-s;
 }
 
-.field-no-results.hidden { display: none !important;}
+.field-no-results {
+	&.hidden { display: none !important;}
+}
