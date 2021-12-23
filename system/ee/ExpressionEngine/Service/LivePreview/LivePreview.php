@@ -106,6 +106,8 @@ class LivePreview
             $data['categories'] = $_POST['categories'];
         }
 
+        //TODO: perform conditional fields calculations here
+
         ee('LivePreview')->setEntryData($data);
 
         ee()->load->library('template', null, 'TMPL');

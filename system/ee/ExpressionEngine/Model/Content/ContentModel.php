@@ -337,6 +337,16 @@ abstract class ContentModel extends VariableColumnModel
                 continue;
             }
 
+            if (strpos($name, 'field_hide_') !== false) {
+                $name = str_replace('field_hide_', 'field_id_', $name);
+
+                if ($this->hasCustomField($name)) {
+                    $this->getCustomField($name)->setHidden($value);
+                }
+
+                continue;
+            }
+
             if ($this->hasCustomField($name)) {
                 $this->getCustomField($name)->setData($value);
             }
@@ -403,6 +413,10 @@ abstract class ContentModel extends VariableColumnModel
             $this->setProperty('field_ft_' . $id, $format);
         }
 
+        // TODO: conditional fields calculations to show/hide the field on save
+        $hidden = 'y';
+        $this->setProperty('field_hide_' . $id, $hidden);
+
         $facade = new FieldFacade($id, $info);
         $facade->setName($name);
         $facade->setContentId($this->getId());
@@ -410,6 +424,7 @@ abstract class ContentModel extends VariableColumnModel
         if (isset($format)) {
             $facade->setFormat($format);
         }
+        $facade->setHidden($hidden);
 
         $this->_field_facades[$name] = $facade;
     }

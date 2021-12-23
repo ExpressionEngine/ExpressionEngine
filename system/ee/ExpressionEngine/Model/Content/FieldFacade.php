@@ -19,6 +19,7 @@ class FieldFacade
     private $data; // field_id_*
     private $format;  // field_ft_*
     private $timezone; // field_dt_*
+    private $hidden; // field_hide_*
     private $metadata;
     private $required;
     private $field_name;
@@ -90,6 +91,16 @@ class FieldFacade
     public function getTimezone()
     {
         return $this->timezone;
+    }
+
+    public function setHidden($hidden)
+    {
+        $this->hidden = ($hidden === 'y' || $hidden === true) ? 'y' : 'n';
+    }
+
+    public function getHidden()
+    {
+        return $this->hidden;
     }
 
     protected function ensurePopulatedDefaults()
@@ -425,6 +436,10 @@ class FieldFacade
             $this->setTimezone($info['field_dt']);
         }
 
+        if (is_null($this->getHidden()) && isset($info['field_hidden'])) {
+            $this->setHidden($info['field_hidden']);
+        }
+
         $data = $this->setupField();
 
         $this->api->setup_handler($data['field_id']);
@@ -440,6 +455,7 @@ class FieldFacade
     {
         $field_dt = $this->timezone;
         $field_fmt = $this->getFormat();
+        $field_hidden = $this->getHidden();
         $field_data = $this->data;
         $field_name = $this->getName();
 
@@ -457,6 +473,7 @@ class FieldFacade
             'field_instructions' => trim($info['field_instructions']),
             'field_text_direction' => ($info['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
             'field_fmt' => $field_fmt,
+            'field_hidden' => $field_hidden,
             'field_dt' => $field_dt,
             'field_data' => $field_data,
             'field_name' => $field_name

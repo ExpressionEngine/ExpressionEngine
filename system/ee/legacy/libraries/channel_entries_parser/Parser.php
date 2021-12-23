@@ -172,6 +172,14 @@ class EE_Channel_data_parser
 
         // If custom fields are enabled, notify them of the data we're about to send
         if (! empty($channel->cfields)) {
+            foreach ($entries as $row_id => $row) {
+                $custom_fields = (isset($channel->cfields[$row['site_id']])) ? $channel->cfields[$row['site_id']] : array();
+                foreach ($custom_fields as $field_name => $field_id) {
+                    if (isset($row['field_id_' . $field_id]) && isset($row['field_hide_' . $field_id]) && $row['field_hide_' . $field_id] == 'y') {
+                        $entries[$row_id]['field_id_' . $field_id] = null;
+                    }
+                }
+            }
             $this->_send_custom_field_data_to_fieldtypes($entries);
         }
 
@@ -345,7 +353,7 @@ class EE_Channel_data_parser
      * potentially a single query to gather needed data instead of a query for
      * each row.
      *
-     * @param string $entries_data
+     * @param array $entries_data
      * @return void
      */
     protected function _send_custom_field_data_to_fieldtypes($entries_data)

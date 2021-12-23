@@ -27,7 +27,8 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
-                'addConditionalFieldTables'
+                'addConditionalFieldTables',
+                'addFieldHideColumns',
             ]
         );
 
@@ -123,6 +124,37 @@ class Updater
             ee()->dbforge->add_key('field_id', true);
             ee()->dbforge->add_key('field_condition_set_id', true);
             ee()->smartforge->create_table('field_conditions');
+        }
+    }
+
+    private function addFieldHideColumns()
+    {
+        $fields = ee('db')->select('field_id, legacy_field_data')
+            ->from('channel_fields')
+            ->get();
+        if ($fields->num_rows() > 0) {
+            foreach($fields->result_array() as $row) {
+                $field = 'field_hide_' . $row['field_id'];
+                if ($row['legacy_field_data'] == 'n') {
+                    $table = 'channel_data_field_' . $row['field_id'];
+                } else {
+                    $table = 'channel_data';
+                }
+                if (ee()->db->table_exists($table) && !ee()->db->field_exists($field, $table)) {
+                    ee()->smartforge->add_column(
+                        $table,
+                        [
+                            $field => [
+                                'type' => 'char',
+                                'constraint' => 1,
+                                'default' => 'n',
+                                'null' => false
+                            ]
+                        ],
+                        'field_ft_' . $row['field_id']
+                    );
+                }
+            }
         }
     }
 }

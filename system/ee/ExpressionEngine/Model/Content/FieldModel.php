@@ -313,6 +313,7 @@ abstract class FieldModel extends Model
     {
         $id_field_name = $this->getColumnPrefix() . 'field_id_' . $this->getId();
         $ft_field_name = $this->getColumnPrefix() . 'field_ft_' . $this->getId();
+        $hide_field_name = $this->getColumnPrefix() . 'field_hide_' . $this->getId();
 
         if (! isset($columns[$id_field_name])) {
             $columns[$id_field_name] = array(
@@ -325,6 +326,15 @@ abstract class FieldModel extends Model
             $columns[$ft_field_name] = array(
                 'type' => 'tinytext',
                 'null' => true
+            );
+        }
+
+        if (! isset($columns[$hide_field_name])) {
+            $columns[$hide_field_name] = array(
+                'type' => 'char',
+                'constraint' => 1,
+                'default' => 'n',
+                'null' => false
             );
         }
 
