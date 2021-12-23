@@ -18,6 +18,8 @@ use ExpressionEngine\Service\Validation\Result as ValidationResult;
  */
 abstract class FieldModel extends Model
 {
+    protected static $_use_conditional_hide = false;
+    
     protected static $_events = array(
         'afterInsert',
         'afterUpdate',
@@ -313,7 +315,6 @@ abstract class FieldModel extends Model
     {
         $id_field_name = $this->getColumnPrefix() . 'field_id_' . $this->getId();
         $ft_field_name = $this->getColumnPrefix() . 'field_ft_' . $this->getId();
-        $hide_field_name = $this->getColumnPrefix() . 'field_hide_' . $this->getId();
 
         if (! isset($columns[$id_field_name])) {
             $columns[$id_field_name] = array(
@@ -329,13 +330,16 @@ abstract class FieldModel extends Model
             );
         }
 
-        if (! isset($columns[$hide_field_name])) {
-            $columns[$hide_field_name] = array(
-                'type' => 'char',
-                'constraint' => 1,
-                'default' => 'n',
-                'null' => false
-            );
+        if (static::getMetaData('use_conditional_hide')) {
+            $hide_field_name = $this->getColumnPrefix() . 'field_hide_' . $this->getId();
+            if (! isset($columns[$hide_field_name])) {
+                $columns[$hide_field_name] = array(
+                    'type' => 'char',
+                    'constraint' => 1,
+                    'default' => 'n',
+                    'null' => false
+                );
+            }
         }
 
         return $columns;
@@ -364,6 +368,7 @@ abstract class FieldModel extends Model
     {
         $cache_key = $this->getCacheKey();
         $names = ee()->cache->get($cache_key);
+        $names = false;
 
         if ($names === false) {
             $names = array_keys($this->getColumns());

@@ -134,27 +134,32 @@ class Updater
             ->get();
         if ($fields->num_rows() > 0) {
             foreach($fields->result_array() as $row) {
-                $field = 'field_hide_' . $row['field_id'];
                 if ($row['legacy_field_data'] == 'n') {
                     $table = 'channel_data_field_' . $row['field_id'];
                 } else {
                     $table = 'channel_data';
                 }
-                if (ee()->db->table_exists($table) && !ee()->db->field_exists($field, $table)) {
-                    ee()->smartforge->add_column(
-                        $table,
-                        [
-                            $field => [
-                                'type' => 'char',
-                                'constraint' => 1,
-                                'default' => 'n',
-                                'null' => false
-                            ]
-                        ],
-                        'field_ft_' . $row['field_id']
-                    );
-                }
+                $this->addFieldHideColumn($row['field_id'], $table);
             }
+        }
+    }
+
+    private function addFieldHideColumn($field_id, $table, $prefix = '')
+    {
+        $field = $prefix . 'field_hide_' . $field_id;
+        if (ee()->db->table_exists($table) && !ee()->db->field_exists($field, $table)) {
+            ee()->smartforge->add_column(
+                $table,
+                [
+                    $field => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'n',
+                        'null' => false
+                    ]
+                ],
+                $prefix . 'field_ft_' . $field_id
+            );
         }
     }
 }
