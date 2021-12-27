@@ -8,14 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
-use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 /**
  * URL Fieldtype
  */
-class Url_Ft extends EE_Fieldtype implements ConditionalSource
+class Url_Ft extends EE_Fieldtype
 {
-    use CreatesConditions;
 
     /**
      * @var array $info Legacy Fieldtype info array
@@ -35,8 +32,7 @@ class Url_Ft extends EE_Fieldtype implements ConditionalSource
      *
      * @var array
      */
-    protected $conditionalFieldOperators = ['is', 'is not', 'contains'];
-
+    public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
     /**
      * Validate Field
      *

@@ -12,15 +12,12 @@
 use ExpressionEngine\Addons\FilePicker\FilePicker;
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
-use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
-use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 
 /**
  * File Fieldtype
  */
-class File_ft extends EE_Fieldtype implements ColumnInterface, ConditionalSource
+class File_ft extends EE_Fieldtype implements ColumnInterface
 {
-    use CreatesConditions;
 
     public $info = array(
         'name' => 'File',
@@ -36,7 +33,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface, ConditionalSource
      *
      * @var array
      */
-    protected $conditionalFieldOperators = ['is empty', 'is not empty'];
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
 
     /**
      * Constructor

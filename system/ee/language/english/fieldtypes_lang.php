@@ -276,6 +276,20 @@ $lang = array(
     'colorpicker_swatches_populate_values' => 'Values',
     'colorpicker_swatches_populate_manually' => 'Populate the swatches manually',
 
+    /* Conditional Evaluation Rules */
+    'contains' => 'contains',
+    'equal' => 'is equal to',
+    'notEqual' => 'is not equal to',
+    'isEmpty' => 'is empty',
+    'isNotEmpty' => 'is not empty',
+    'greaterThan' => 'is greater than',
+    'greaterOrEqualThan' => 'is greater or equal than',
+    'lessThan' => 'is less than',
+    'lessOrEqualThan' => 'is less or equal than',
+
+    'turnedOn' => 'is turned on',
+    'turnedOff' => 'is turned off',
+
 );
 
 // EOF

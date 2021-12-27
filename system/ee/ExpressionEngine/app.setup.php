@@ -15,6 +15,7 @@ use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
 use ExpressionEngine\Service\ChannelSet;
+use ExpressionEngine\Service\ConditionalFields;
 use ExpressionEngine\Service\Config;
 use ExpressionEngine\Service\Consent;
 use ExpressionEngine\Service\Cookie;
@@ -443,6 +444,10 @@ $setup = [
             $view = $ee->make('View');
 
             return new Sidebar\Navigation\NavigationSidebar($view);
+        },
+
+        'ConditionalFields' => function ($ee) {
+            return new ConditionalFields\Factory();
         },
 
         'Config' => function ($ee) {

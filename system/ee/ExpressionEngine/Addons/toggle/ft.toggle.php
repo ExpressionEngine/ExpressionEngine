@@ -8,14 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
-use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 /**
  * Toggle Fieldtype
  */
-class Toggle_ft extends EE_Fieldtype implements ConditionalSource
+class Toggle_ft extends EE_Fieldtype
 {
-    use CreatesConditions;
 
     public $info = array(
         'name' => 'Toggle',
@@ -38,7 +35,7 @@ class Toggle_ft extends EE_Fieldtype implements ConditionalSource
      *
      * @var array
      */
-    protected $conditionalFieldOperators = ['is', 'is not'];
+    public $supportedEvaluationRules = ['turnedOn', 'turnedOff'];
 
     /**
      * Fetch the fieldtype's name and version from it's addon.setup.php file.

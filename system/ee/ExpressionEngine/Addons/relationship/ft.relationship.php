@@ -10,15 +10,12 @@
 
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
-use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
-use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 
 /**
  * Relationship Fieldtype
  */
-class Relationship_ft extends EE_Fieldtype implements ColumnInterface, ConditionalSource
+class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 {
-    use CreatesConditions;
 
     public $info = array(
         'name' => 'Relationships',
@@ -32,9 +29,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface, Condition
     /**
      * A list of operators that this field type supports
      *
-     * @var array
+     * @var mixed
      */
-    protected $conditionalFieldOperators = ['is empty', 'is not empty'];
+    public $supportedEvaluationRules = null;
 
     /**
      * Validate Field

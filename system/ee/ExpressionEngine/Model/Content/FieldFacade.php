@@ -180,7 +180,7 @@ class FieldFacade
         if (empty($this->icon)) {
             $error_reporting = error_reporting(0);
             $fts = $this->api->fetch_all_fieldtypes();
-            $addon = ee('Addon')->get($fts[$this->getItem('field_type')]['package']);
+            $addon = ee('Addon')->get($fts[$this->getType()]['package']);
             $this->icon = $addon->getIconUrl('field.svg');
             error_reporting($error_reporting);
         }
@@ -259,6 +259,30 @@ class FieldFacade
         $field_value = $data['field_data'];
 
         return $this->api->apply('display_publish_field', array($field_value));
+    }
+
+    public function getSupportedEvaluationRules()
+    {
+        $rulesList = [];
+        $supportedEvaluationRules = [];
+        $ft = $this->getNativeField();
+
+        $defaultEvaluationRules = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty', 'contains'];
+        if (!property_exists($ft, 'supportedEvaluationRules')) {
+            $rulesList = $defaultEvaluationRules;
+        } elseif (!empty($ft->supportedEvaluationRules)) {
+            $rulesList = $ft->supportedEvaluationRules;
+        }
+
+        foreach ($rulesList as $ruleName) {
+            $rule = ee('ConditionalFields')->make($ruleName, $this->getType());
+            $supportedEvaluationRules[$ruleName] = [
+                'text'      => lang($rule->getLanguageKey()),
+                'options'   => $rule->getConditionalFieldInputOptions()
+            ];
+        }
+
+        return $supportedEvaluationRules;
     }
 
     public function getSettingsForm()

@@ -9,17 +9,14 @@
  */
 
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
-use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
-use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 
 require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
  * Option Group Fieldtype
  */
-class Checkboxes_ft extends OptionFieldtype implements ColumnInterface, ConditionalSource
+class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 {
-    use CreatesConditions;
 
     public $info = array(
         'name' => 'Checkboxes',
@@ -45,7 +42,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface, Conditio
      *
      * @var array
      */
-    protected $conditionalFieldOperators = ['is', 'is not', 'is empty', 'is not empty'];
+    public $supportedEvaluationRules = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty'];
 
     /**
      * Constructor

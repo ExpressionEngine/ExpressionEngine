@@ -8,15 +8,11 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
-use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
-
 /**
  * Email Fieldtype
  */
-class Email_address_Ft extends EE_Fieldtype implements ConditionalSource
+class Email_address_Ft extends EE_Fieldtype
 {
-    use CreatesConditions;
     /**
      * @var array $info Legacy Fieldtype info array
      */
@@ -37,7 +33,7 @@ class Email_address_Ft extends EE_Fieldtype implements ConditionalSource
      *
      * @var array
      */
-    protected $conditionalFieldOperators = ['is', 'is not'];
+    public $supportedEvaluationRules = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty', 'contains'];
 
     /**
      * Validate Field

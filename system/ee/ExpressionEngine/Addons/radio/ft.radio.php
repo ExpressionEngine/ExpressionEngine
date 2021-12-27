@@ -8,17 +8,13 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
-use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
-
 require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
  * Radio Fieldtype
  */
-class Radio_ft extends OptionFieldtype implements ConditionalSource
+class Radio_ft extends OptionFieldtype
 {
-    use CreatesConditions;
 
     public $info = array(
         'name' => 'Radio Buttons',
@@ -44,7 +40,7 @@ class Radio_ft extends OptionFieldtype implements ConditionalSource
      *
      * @var array
      */
-    protected $conditionalFieldOperators = ['is', 'is not', 'is empty', 'is not empty'];
+    public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
 
     /**
      * The input type that should be used to get a value for conditions involving this fieldtype

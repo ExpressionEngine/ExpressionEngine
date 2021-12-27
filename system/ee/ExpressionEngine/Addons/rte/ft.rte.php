@@ -10,12 +10,9 @@
  */
 
 use ExpressionEngine\Addons\Rte\RteHelper;
-use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
-use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 
-class Rte_ft extends EE_Fieldtype implements ConditionalSource
+class Rte_ft extends EE_Fieldtype
 {
-    use CreatesConditions;
 
     public $has_array_data = true;
 
@@ -33,7 +30,7 @@ class Rte_ft extends EE_Fieldtype implements ConditionalSource
      *
      * @var array
      */
-    protected $conditionalFieldOperators = ['is', 'is not', 'contains'];
+    public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
 
     /**
      * Implements EntryManager\ColumnInterface

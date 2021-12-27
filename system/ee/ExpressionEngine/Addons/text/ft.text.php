@@ -9,15 +9,12 @@
  */
 
 use ExpressionEngine\Addons\FilePicker\FilePicker;
-use ExpressionEngine\Service\ConditionalFields\Traits\CreatesConditions;
-use ExpressionEngine\Service\ConditionalFields\Contracts\ConditionalSource;
 
 /**
  * Text Fieldtype
  */
-class Text_ft extends EE_Fieldtype implements ConditionalSource
+class Text_ft extends EE_Fieldtype
 {
-    use CreatesConditions;
 
     public $info = array(
         'name' => 'Text Input',
@@ -32,7 +29,7 @@ class Text_ft extends EE_Fieldtype implements ConditionalSource
      *
      * @var array
      */
-    protected $conditionalFieldOperators = ['is', 'is not', 'contains'];
+    public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
 
     public function validate($data)
     {

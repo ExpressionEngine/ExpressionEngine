@@ -549,7 +549,9 @@ class Fields extends AbstractFieldsController
             $sections = array_merge($sections, $field_options);
         }
 
+        $evaluationRules = [];
         foreach ($fieldtypes as $fieldtype) {
+            
             if ($fieldtype->name == $field->field_type) {
                 continue;
             }
@@ -567,11 +569,14 @@ class Fields extends AbstractFieldsController
             }
             $dummy_field->field_type = $fieldtype->name;
             $field_options = $dummy_field->getSettingsForm();
+            $evaluationRules[$fieldtype->name] = $dummy_field->getSupportedEvaluationRules();
 
             if (is_array($field_options) && ! empty($field_options)) {
                 $sections = array_merge($sections, $field_options);
             }
         }
+
+        ee()->javascript->set_global('fields.evaluationRules', $evaluationRules);
 
         ee()->javascript->output('$(document).ready(function () {
 			EE.cp.fieldToggleDisable();
