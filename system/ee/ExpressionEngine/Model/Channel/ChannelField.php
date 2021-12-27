@@ -23,8 +23,6 @@ class ChannelField extends FieldModel
 
     protected static $_hook_id = 'channel_field';
 
-    protected static $_use_conditional_hide = true;
-
     protected static $_typed_columns = array(
         'field_pre_populate' => 'boolString',
         'field_pre_channel_id' => 'int',

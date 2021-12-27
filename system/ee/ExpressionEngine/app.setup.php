@@ -604,6 +604,10 @@ $setup = [
         'ChannelLayout' => 'Model\Channel\ChannelLayout',
         'FieldData' => 'Model\Content\FieldData',
 
+        // ..\ConditionalFields
+        'FieldConditionSet' => 'Model\ConditionalFields\FieldConditionSet',
+        'FieldCondition' => 'Model\ConditionalFields\FieldCondition',
+
         // ..\Comment
         'Comment' => 'Model\Comment\Comment',
         'CommentSubscription' => 'Model\Comment\CommentSubscription',

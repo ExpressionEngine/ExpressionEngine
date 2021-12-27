@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Service\ConditionalFields\Models;
+namespace ExpressionEngine\Model\ConditionalFields;
 
 use ExpressionEngine\Service\Model\Model;
 

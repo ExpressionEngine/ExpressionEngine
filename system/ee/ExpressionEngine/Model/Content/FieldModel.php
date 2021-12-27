@@ -18,8 +18,6 @@ use ExpressionEngine\Service\Validation\Result as ValidationResult;
  */
 abstract class FieldModel extends Model
 {
-    protected static $_use_conditional_hide = false;
-    
     protected static $_events = array(
         'afterInsert',
         'afterUpdate',
@@ -119,7 +117,7 @@ abstract class FieldModel extends Model
         }
 
         //validate assigned conditions
-
+        
 
         return $result;
     }
@@ -338,7 +336,7 @@ abstract class FieldModel extends Model
             );
         }
 
-        if (static::getMetaData('use_conditional_hide')) {
+        if (array_key_exists('FieldConditionSets', static::getMetaData('relationships'))) {
             $hide_field_name = $this->getColumnPrefix() . 'field_hide_' . $this->getId();
             if (! isset($columns[$hide_field_name])) {
                 $columns[$hide_field_name] = array(
