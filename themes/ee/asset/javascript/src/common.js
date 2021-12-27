@@ -941,18 +941,6 @@ $(document).ready(function(){
 	// non-React toggles
 	// =================
 
-		$('button.toggle-btn').each(function(index, value){
-			var data = $(value).data('toggle-for');
-
-			if( ($(value).data('toggle-for') == 'relationship_allow_multiple') && ( $(value).data('state') == 'on') ) {
-				$('fieldset#fieldset-rel_min').show();
-				$('fieldset#fieldset-rel_max').show();
-
-				$('fieldset#fieldset-rel_min').find('input[type="text"]').prop("disabled", false);
-				$('fieldset#fieldset-rel_max').find('input[type="text"]').prop("disabled", false);
-			}
-		});
-
 		$('body').on('click', 'button.toggle-btn', function (e) {
 			if ($(this).hasClass('disabled') ||
 				$(this).parents('.toggle-tools').size() > 0 ||
@@ -969,8 +957,6 @@ $(document).ready(function(){
 				$(this).removeClass('off');
 				$(this).addClass('on');
 				$(input).val(yes_no ? 'y' : 1);
-				$('fieldset#fieldset-rel_min').find('input[type="text"]').prop("disabled", false);
-				$('fieldset#fieldset-rel_max').find('input[type="text"]').prop("disabled", false);
 			} else {
 				$(this).removeClass('on');
 				$(this).addClass('off');
@@ -983,8 +969,26 @@ $(document).ready(function(){
 
 			if ($(input).data('groupToggle')) EE.cp.form_group_toggle(input)
 
+			if($(input).data('groupToggle')) {
+				$('#fieldset-rel_min input[name="rel_min"]').prop('disabled', false);
+				$('#fieldset-rel_max input[name="rel_max"]').prop('disabled', false);
+			}
+
 			e.preventDefault();
 		});
+
+		$('#fieldset-relationship_allow_multiple button.toggle-btn').each(function(){
+			if( $('#fieldset-relationship_allow_multiple button.toggle-btn').data('state') == 'on' ) {
+				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_min').show();
+				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_max').show();
+			}
+
+			if( $('#fieldset-relationship_allow_multiple button.toggle-btn').data('state') == 'off' ){
+				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_min').hide();
+				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_max').hide();
+			}
+		});
+
 
 		$('body').on('click', '.js-toggle-link', function(e) {
 			e.preventDefault()
