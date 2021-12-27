@@ -44,7 +44,7 @@ class Updater
         if (!ee()->db->table_exists('field_condition_sets')) {
             ee()->dbforge->add_field(
                 [
-                    'id' => [
+                    'condition_set_id' => [
                         'type' => 'int',
                         'constraint' => 10,
                         'unsigned' => true,
@@ -59,7 +59,7 @@ class Updater
                     ],
                     'match' => [
                         'type' => 'varchar',
-                        'constraint' => 50,
+                        'constraint' => 20,
                         'null' => false,
                         'default' => 'all',
                     ],
@@ -72,15 +72,15 @@ class Updater
                     ],
                 ]
             );
-            ee()->dbforge->add_key('id', true);
-            ee()->dbforge->add_key('field_id', true);
+            ee()->dbforge->add_key('condition_set_id', true);
+            ee()->dbforge->add_key('field_id');
             ee()->smartforge->create_table('field_condition_sets');
         }
 
         if (!ee()->db->table_exists('field_conditions')) {
             ee()->dbforge->add_field(
                 [
-                    'id' => [
+                    'condition_id' => [
                         'type' => 'int',
                         'constraint' => 10,
                         'unsigned' => true,
@@ -99,15 +99,15 @@ class Updater
                         'unsigned' => true,
                         'null' => false,
                     ],
-                    'operator' => [
+                    'evaluation_rule' => [
                         'type' => 'varchar',
-                        'constraint' => 256,
+                        'constraint' => 100,
                         'null' => false,
                         'default' => '',
                     ],
                     'value' => [
                         'type' => 'varchar',
-                        'constraint' => 256,
+                        'constraint' => 255,
                         'null' => true,
                         'default' => null,
                     ],
@@ -120,9 +120,9 @@ class Updater
                     ],
                 ]
             );
-            ee()->dbforge->add_key('id', true);
-            ee()->dbforge->add_key('field_id', true);
-            ee()->dbforge->add_key('field_condition_set_id', true);
+            ee()->dbforge->add_key('condition_id', true);
+            ee()->dbforge->add_key('field_id');
+            ee()->dbforge->add_key('field_condition_set_id');
             ee()->smartforge->create_table('field_conditions');
         }
     }

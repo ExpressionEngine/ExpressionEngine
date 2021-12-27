@@ -1188,6 +1188,30 @@ class EE_Schema
 			PRIMARY KEY `fieldtype_id` (`fieldtype_id`)
 		)";
 
+        // Field conditions
+        $Q[] = "CREATE TABLE `exp_field_conditions` (
+			`condition_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`field_condition_set_id` int(10) unsigned NOT NULL,
+			`field_id` int(10) unsigned NOT NULL,
+			`evaluation_rule` varchar(100) NOT NULL DEFAULT '',
+			`value` varchar(255) DEFAULT NULL,
+			`order` int(10) unsigned NOT NULL DEFAULT 0,
+			PRIMARY KEY `condition_id` (`condition_id`),
+			KEY `field_id` (`field_id`),
+			KEY `field_condition_set_id` (`field_condition_set_id`)
+		)";
+
+        $Q[] = "CREATE TABLE `exp_field_condition_sets` (
+			`condition_set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`field_id` int(10) unsigned NOT NULL,
+			`match` varchar(20) NOT NULL DEFAULT 'all',
+			`order` int(10) unsigned NOT NULL DEFAULT 0,
+			PRIMARY KEY `condition_set_id` (`condition_set_id`),
+			KEY `field_id` (`field_id`)
+		)";
+
+
+
         // Files table
         $Q[] = "CREATE TABLE `exp_files` (
 			`file_id` int(10) unsigned NOT NULL AUTO_INCREMENT,

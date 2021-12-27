@@ -1,0 +1,36 @@
+<?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
+
+namespace ExpressionEngine\Service\ConditionalFields\Models;
+
+use ExpressionEngine\Service\Model\Model;
+
+/**
+ * Condition model
+ */
+class FieldCondition extends Model
+{
+
+    protected static $_primary_key = 'condition_id';
+    protected static $_table_name = 'field_conditions';
+
+    protected $condition_id;
+    protected $condition_set_id;
+    protected $evaluation_rule;
+    protected $value;
+    protected $order;
+
+    protected static $_relationships = array(
+        'FieldConditionSet' => array(
+            'model' => 'FieldConditionSet',
+            'type' => 'BelongsTo'
+        )
+    );
+}

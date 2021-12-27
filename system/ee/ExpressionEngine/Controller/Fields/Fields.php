@@ -570,16 +570,12 @@ class Fields extends AbstractFieldsController
             $dummy_field->field_type = $fieldtype->name;
             $field_options = $dummy_field->getSettingsForm();
             $allEvaluationRules[$fieldtype->name] = $dummy_field->getSupportedEvaluationRules();
-            if (!empty($evaluationRules)) {
-                $allEvaluationRules[$fieldtype->name] = $evaluationRules;
-            }
 
             if (is_array($field_options) && ! empty($field_options)) {
                 $sections = array_merge($sections, $field_options);
             }
         }
 
-        $existingFieldsEvaluationRules = [];
         $existingFields = ee('Model')->get('ChannelField')->fields('site_id', 'field_id', 'field_name', 'field_label', 'field_type')->filter('site_id', 'IN', [0, ee()->config->item('site_id')])->all();
         if ($existingFields) {
             foreach ($existingFields as $field)
@@ -593,7 +589,7 @@ class Fields extends AbstractFieldsController
             }
         }
 
-        ee()->javascript->set_global('fields.evaluationRules', $allEvaluationRules);
+        ee()->javascript->set_global('fields', $allEvaluationRules);
 
         ee()->javascript->output('$(document).ready(function () {
 			EE.cp.fieldToggleDisable();

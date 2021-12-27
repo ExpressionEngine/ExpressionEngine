@@ -1,0 +1,39 @@
+<?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
+
+namespace ExpressionEngine\Service\ConditionalFields\Models;
+
+use ExpressionEngine\Service\Model\Model;
+
+/**
+ * Condition Set model
+ */
+class FieldConditionSet extends Model
+{
+
+    protected static $_primary_key = 'condition_set_id';
+    protected static $_table_name = 'field_condition_sets';
+
+    protected $condition_set_id;
+    protected $field_id;
+    protected $match; //'all' or 'any'
+    protected $order;
+
+    protected static $_relationships = array(
+        'FieldConditions' => array(
+            'model' => 'FieldCondition',
+            'type' => 'HasMany'
+        ),
+        'Fields' => array(
+            'model' => 'ChannelField',
+            'type' => 'BelongsTo'
+        )
+    );
+}
