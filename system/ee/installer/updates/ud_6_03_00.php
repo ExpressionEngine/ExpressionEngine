@@ -93,12 +93,6 @@ class Updater
                         'unsigned' => true,
                         'null' => false,
                     ],
-                    'field_id' => [
-                        'type' => 'int',
-                        'constraint' => 10,
-                        'unsigned' => true,
-                        'null' => false,
-                    ],
                     'evaluation_rule' => [
                         'type' => 'varchar',
                         'constraint' => 100,
@@ -121,9 +115,29 @@ class Updater
                 ]
             );
             ee()->dbforge->add_key('condition_id', true);
-            ee()->dbforge->add_key('field_id');
             ee()->dbforge->add_key('field_condition_set_id');
             ee()->smartforge->create_table('field_conditions');
+        }
+
+        if (!ee()->db->table_exists('field_conditions')) {
+            ee()->dbforge->add_field(
+                [
+                    'field_condition_set_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false
+                    ],
+                    'field_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false
+                    ]
+                ]
+            );
+            ee()->dbforge->add_key(['field_condition_set_id', 'field_id'], true);
+            ee()->smartforge->create_table('field_condition_sets_channel_fields');
         }
     }
 

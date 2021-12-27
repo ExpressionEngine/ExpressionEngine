@@ -118,6 +118,9 @@ abstract class FieldModel extends Model
             }
         }
 
+        //validate assigned conditions
+
+
         return $result;
     }
 

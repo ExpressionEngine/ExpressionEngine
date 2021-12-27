@@ -28,12 +28,8 @@ class FieldConditionSet extends Model
 
     protected static $_relationships = array(
         'FieldConditions' => array(
-            'model' => 'FieldCondition',
-            'type' => 'HasMany'
-        ),
-        'Fields' => array(
-            'model' => 'ChannelField',
-            'type' => 'BelongsTo'
+            'model'      => 'FieldCondition',
+            'type'       => 'hasMany'
         )
     );
 }

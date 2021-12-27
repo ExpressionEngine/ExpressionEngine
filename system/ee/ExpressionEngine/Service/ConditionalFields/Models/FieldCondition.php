@@ -29,8 +29,7 @@ class FieldCondition extends Model
 
     protected static $_relationships = array(
         'FieldConditionSet' => array(
-            'model' => 'FieldConditionSet',
-            'type' => 'BelongsTo'
+            'type' => 'belongsTo'
         )
     );
 }

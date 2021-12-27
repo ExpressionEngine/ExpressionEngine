@@ -63,6 +63,14 @@ class ChannelField extends FieldModel
             'to_key' => 'search_excerpt',
             'weak' => true
         ),
+        'FieldConditionSets' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'FieldConditionSet',
+            'pivot' => array(
+                'table' => 'field_condition_sets_channel_fields'
+            ),
+            'weak' => true
+        )
     );
 
     protected static $_validation_rules = array(
