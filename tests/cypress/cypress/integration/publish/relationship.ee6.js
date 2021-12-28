@@ -40,25 +40,135 @@ context('Relationship field - Edit', () => {
 	      //cy.get('button:contains("Relate Entry")').should('not.be.visible')
 	      cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 	      cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
+
+		  cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').closest('.list-item').find('[title="Remove"]').click()
+		  cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('[data-relationship-react] .list-item__title:visible').should('not.exist');
 	    })
+
+		it('add button is not visible when rel max is reached', () => {
+			cy.visit('admin.php?/cp/fields/edit/8');
+			cy.get('[data-toggle-for="relationship_allow_multiple"]').should('have.class', 'on')
+			cy.get('[name="rel_min"]').should('be.visible');
+			cy.get('[name="rel_max"]').should('be.visible');
+			cy.get('[name="rel_max"]').clear().type('2')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.hasNoErrors()
+
+			cy.visit('admin.php?/cp/publish/edit/entry/1')
+			cy.get('button:contains("Relate Entry")').first().click()
+			cy.get('a.dropdown__link:contains("Welcome to the Example Site!")').first().click();
+			cy.get('a.dropdown__link:contains("Band Title")').first().click();
+			cy.get('button:contains("Relate Entry")').should('not.be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('button:contains("Relate Entry")').should('not.be.visible')
+			cy.hasNoErrors()
+
+			cy.get('button:contains("Relate Entry")').should('not.be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('button:contains("Relate Entry")').should('not.be.visible')
+			cy.hasNoErrors()
+
+			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()
+			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('not.exist')
+			cy.get('button:contains("Relate Entry")').should('be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('button:contains("Relate Entry")').should('be.visible')
+			cy.hasNoErrors()
+
+			cy.get('button:contains("Relate Entry")').first().click()
+			cy.get('a.dropdown__link:contains("Band Title")').first().click();
+			cy.get('button:contains("Relate Entry")').should('not.be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('button:contains("Relate Entry")').should('not.be.visible')
+			cy.hasNoErrors()
+
+		})
 
 	    //  display_entry_id On, items have been added
 	    it('saves relationship field with display entry id', () => {
 	      cy.visit('admin.php?/cp/fields/edit/8');
 	      cy.get('[data-toggle-for="relationship_display_entry_id"]').click()
+		  cy.get('[data-toggle-for="relationship_allow_multiple"]').should('have.class', 'on')
+		  cy.get('[name="rel_min"]').should('be.visible');
+		  cy.get('[name="rel_max"]').should('be.visible');
+		  cy.get('[data-toggle-for="relationship_allow_multiple"]').click()
+		  cy.get('[name="rel_min"]').should('not.be.visible');
+		  cy.get('[name="rel_max"]').should('not.be.visible');
 	      cy.get('body').type('{ctrl}', {release: false}).type('s')
+		  cy.hasNoErrors()
+
 	      cy.visit('admin.php?/cp/publish/edit/entry/1')
 	      cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 	      cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').parent().find('.list-item__secondary span').invoke('val').then((val) => { expect(val).to.not.be.equal(" #2 / ") })
 	      cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
+		  cy.get('button:contains("Relate Entry")').should('not.be.visible')
+
+	      cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').closest('.list-item').find('[title="Remove"]').click()
+		  cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('not.exist')
+		  cy.get('button:contains("Relate Entry")').should('not.be.visible')
+		  cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()
+		  cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('not.exist')
+		  cy.get('button:contains("Relate Entry")').should('be.visible')
+
+		  cy.get('button:contains("Relate Entry")').first().click()
+		  cy.get('a.dropdown__link:contains("Welcome to the Example Site!") .dropdown__link-entryId').should('contain', '#2')
+	      cy.get('a.dropdown__link:contains("Welcome to the Example Site!")').first().click();
+		  cy.get('button:contains("Relate Entry")').should('not.be.visible')
 	      cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+		  cy.visit('admin.php?/cp/fields/edit/8');
+	      cy.get('[data-toggle-for="relationship_display_entry_id"]').should('have.class', 'on')
+		  cy.get('[data-toggle-for="relationship_allow_multiple"]').should('not.have.class', 'on')
+		  cy.get('[name="rel_min"]').should('not.be.visible');
+		  cy.get('[name="rel_max"]').should('not.be.visible');
+		  cy.get('[data-toggle-for="relationship_allow_multiple"]').click()
+		  cy.get('[name="rel_min"]').should('be.visible');
+		  cy.get('[name="rel_max"]').should('be.visible');
+		  cy.get('[name="rel_min"]').clear().type('1');
+		  cy.get('[name="rel_max"]').clear().type('2');
+	      cy.get('body').type('{ctrl}', {release: false}).type('s')
+		
+		  cy.visit('admin.php?/cp/publish/edit/entry/1')
+		  cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').closest('.list-item').find('[title="Remove"]').click()
+		  cy.get('body').type('{ctrl}', {release: false}).type('s')
+		  cy.get('.app-notice---error').contains('Cannot Update Entry');
+		  page.hasError(cy.get('[data-relationship-react]'), 'You need to select at least 1 entries')
+		  cy.hasNoErrors()
+
+		  cy.visit('admin.php?/cp/publish/edit/entry/1')
+	      cy.get('button:contains("Relate Entry")').first().click()
+		  cy.get('a.dropdown__link:contains("Band Title") .dropdown__link-entryId').should('contain', '#10')
+	      cy.get('a.dropdown__link:contains("Band Title")').first().click();
+		  cy.get('button:contains("Relate Entry")').should('not.be.visible')
+	      cy.get('body').type('{ctrl}', {release: false}).type('s')
+
 	      cy.get('.app-notice---success').contains('Entry Updated');
+		  cy.get('button:contains("Relate Entry")').should('not.be.visible')
+		  cy.hasNoErrors()
 	      cy.get('[name=title]').invoke('val').should('eq', "Getting to Know ExpressionEngine")
 	      cy.get('[name=field_id_1]').invoke('val').should('contain', "Thank you for choosing ExpressionEngine!")
 	      cy.get('[name=field_id_3]').invoke('val').should('eq', "{filedir_2}ee_banner_120_240.gif");
 	      //cy.get('button:contains("Relate Entry")').should('not.be.visible')
 	      cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 	      cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
+
+		  cy.visit('admin.php?/cp/fields/edit/8');
+		  cy.get('[data-toggle-for="relationship_display_entry_id"]').click()
+		  cy.get('[data-toggle-for="relationship_display_entry_id"]').should('have.class', 'on')
+		  cy.get('[data-toggle-for="relationship_allow_multiple"]').should('have.class', 'on')
+		  cy.get('[name="rel_min"]').should('be.visible');
+		  cy.get('[name="rel_max"]').should('be.visible');
+		  cy.get('[name="rel_min"]').clear();
+		  cy.get('[name="rel_max"]').clear();
+	      cy.get('body').type('{ctrl}', {release: false}).type('s')
 	    })
 
 	    //  display_entry_id Off, items have been added

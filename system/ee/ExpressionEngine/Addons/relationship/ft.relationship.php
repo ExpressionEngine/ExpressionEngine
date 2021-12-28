@@ -56,11 +56,12 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         }
 
         if ((bool) $this->settings['allow_multiple']) {
+            ee()->lang->load('fieldtypes');
             if (isset($this->settings['rel_min']) && (count($set) < (int) $this->settings['rel_min'])) {
-                return sprintf(lang('rel_ft_min_error'), $this->settings['rel_min']);
+                return sprintf(lang('rel_ft_min_error'), (int) $this->settings['rel_min']);
             }
             if (isset($this->settings['rel_max']) && $this->settings['rel_max'] !== '' && (count($set) > (int) $this->settings['rel_max'])) {
-                return sprintf(lang('rel_ft_max_error'), $this->settings['rel_max']);
+                return sprintf(lang('rel_ft_max_error'), (int) $this->settings['rel_max']);
             }
         }
 
