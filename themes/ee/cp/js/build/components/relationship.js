@@ -1,30 +1,38 @@
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } Object.defineProperty(subClass, "prototype", { value: Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }), writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -36,17 +44,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-var Relationship =
-/*#__PURE__*/
-function (_React$Component) {
+var Relationship = /*#__PURE__*/function (_React$Component) {
   _inherits(Relationship, _React$Component);
+
+  var _super = _createSuper(Relationship);
 
   function Relationship(props) {
     var _this;
 
     _classCallCheck(this, Relationship);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Relationship).call(this, props));
+    _this = _super.call(this, props);
 
     _defineProperty(_assertThisInitialized(_this), "entryWasCreated", function (result, modal) {
       var selected = _this.state.selected;
@@ -334,7 +342,8 @@ function (_React$Component) {
         });
         return notInSelected && allowedChannel && filterName;
       });
-      var showAddButton = this.props.limit > this.state.selected.length && (this.props.multi || this.state.selected.length == 0);
+      var maxItems = this.props.rel_max ? this.props.rel_max : this.props.limit;
+      var showAddButton = maxItems > this.state.selected.length && (this.props.multi || this.state.selected.length == 0) && this.props.items.length > this.state.selected.length;
       var channelFilterItems = props.channels.map(function (channel) {
         return {
           label: channel.title,
@@ -342,83 +351,83 @@ function (_React$Component) {
         };
       });
       var handleSearchItem = this.handleSearch;
-      return React.createElement("div", {
+      return /*#__PURE__*/React.createElement("div", {
         ref: function ref(el) {
           return _this5.field = el;
         }
-      }, this.state.selected.length > 0 && React.createElement("ul", {
+      }, this.state.selected.length > 0 && /*#__PURE__*/React.createElement("ul", {
         className: "list-group list-group--connected mb-s",
         ref: function ref(el) {
           return _this5.listGroup = el;
         }
       }, this.state.selected.map(function (item) {
-        return React.createElement("li", {
+        return /*#__PURE__*/React.createElement("li", {
           className: "list-item"
-        }, _this5.state.selected.length > 1 && React.createElement("div", {
+        }, _this5.state.selected.length > 1 && /*#__PURE__*/React.createElement("div", {
           "class": "list-item__handle"
-        }, React.createElement("i", {
+        }, /*#__PURE__*/React.createElement("i", {
           "class": "fas fa-bars"
-        })), React.createElement("div", {
+        })), /*#__PURE__*/React.createElement("div", {
           className: "list-item__content"
-        }, React.createElement("div", {
+        }, /*#__PURE__*/React.createElement("div", {
           "class": "list-item__title"
-        }, item.label, " ", _this5.state.selected.length > 10 && React.createElement("small", {
+        }, item.label, " ", _this5.state.selected.length > 10 && /*#__PURE__*/React.createElement("small", {
           className: "meta-info ml-s float-right"
-        }, " ", item.instructions)), _this5.state.selected.length <= 10 && React.createElement("div", {
+        }, " ", item.instructions)), _this5.state.selected.length <= 10 && /*#__PURE__*/React.createElement("div", {
           "class": "list-item__secondary"
-        }, props.display_entry_id && React.createElement("span", null, " #", item.value, " / "), item.instructions)), React.createElement("div", {
+        }, props.display_entry_id && /*#__PURE__*/React.createElement("span", null, " #", item.value, " / "), item.instructions)), /*#__PURE__*/React.createElement("div", {
           "class": "list-item__content-right"
-        }, React.createElement("div", {
+        }, /*#__PURE__*/React.createElement("div", {
           className: "button-group"
-        }, React.createElement("button", {
+        }, /*#__PURE__*/React.createElement("button", {
           type: "button",
           title: EE.relationship.lang.remove,
           onClick: function onClick() {
             return _this5.deselect(item.value);
           },
           className: "button button--small button--default"
-        }, React.createElement("i", {
+        }, /*#__PURE__*/React.createElement("i", {
           "class": "fas fa-fw fa-trash-alt"
         })))));
-      })), this.state.selected.length == 0 && React.createElement("input", {
+      })), this.state.selected.length == 0 && /*#__PURE__*/React.createElement("input", {
         type: "hidden",
         name: props.multi ? props.name + '[]' : props.name,
         value: ""
       }), this.state.selected.map(function (item) {
-        return React.createElement("input", {
+        return /*#__PURE__*/React.createElement("input", {
           type: "hidden",
           name: props.multi ? props.name + '[]' : props.name,
           value: item.value
         });
-      }), React.createElement("div", {
+      }), /*#__PURE__*/React.createElement("div", {
         style: {
           display: showAddButton ? 'block' : 'none'
         }
-      }, React.createElement("button", {
+      }, /*#__PURE__*/React.createElement("button", {
         type: "button",
         className: "js-dropdown-toggle button button--default"
-      }, React.createElement("i", {
+      }, /*#__PURE__*/React.createElement("i", {
         "class": "fas fa-plus icon-left"
-      }), " ", props.button_label ? props.button_label : EE.relationship.lang.relateEntry), React.createElement("div", {
+      }), " ", props.button_label ? props.button_label : EE.relationship.lang.relateEntry), /*#__PURE__*/React.createElement("div", {
         className: "dropdown js-dropdown-auto-focus-input"
-      }, React.createElement("div", {
+      }, /*#__PURE__*/React.createElement("div", {
         className: "dropdown__search d-flex"
-      }, React.createElement("div", {
+      }, /*#__PURE__*/React.createElement("div", {
         className: "filter-bar flex-grow"
-      }, React.createElement("div", {
+      }, /*#__PURE__*/React.createElement("div", {
         className: "filter-bar__item flex-grow"
-      }, React.createElement("div", {
+      }, /*#__PURE__*/React.createElement("div", {
         className: "search-input"
-      }, React.createElement("input", {
+      }, /*#__PURE__*/React.createElement("input", {
         type: "text",
         "class": "search-input__input input--small",
         onChange: function onChange(handleSearchItem) {
           return _this5.filterChange('search', handleSearchItem.target.value);
         },
         placeholder: EE.relationship.lang.search
-      }))), props.channels.length > 1 && React.createElement("div", {
+      }))), props.channels.length > 1 && /*#__PURE__*/React.createElement("div", {
         className: "filter-bar__item"
-      }, React.createElement(DropDownButton, {
+      }, /*#__PURE__*/React.createElement(DropDownButton, {
         keepSelectedState: true,
         title: EE.relationship.lang.channel,
         items: channelFilterItems,
@@ -426,33 +435,33 @@ function (_React$Component) {
           return _this5.filterChange('channel_id', value);
         },
         buttonClass: "filter-bar__button"
-      })), this.props.can_add_items && React.createElement("div", {
+      })), this.props.can_add_items && /*#__PURE__*/React.createElement("div", {
         className: "filter-bar__item"
-      }, props.channels.length == 1 && React.createElement("button", {
+      }, props.channels.length == 1 && /*#__PURE__*/React.createElement("button", {
         type: "button",
         className: "button button--primary button--small",
         onClick: function onClick() {
           return _this5.openPublishFormForChannel(_this5.props.channels[0]);
         }
-      }, "New Entry"), props.channels.length > 1 && React.createElement("div", null, React.createElement("button", {
+      }, "New Entry"), props.channels.length > 1 && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
         type: "button",
         className: "js-dropdown-toggle button button--primary button--small"
-      }, "New Entry ", React.createElement("i", {
+      }, "New Entry ", /*#__PURE__*/React.createElement("i", {
         "class": "fas fa-caret-down icon-right"
-      })), React.createElement("div", {
+      })), /*#__PURE__*/React.createElement("div", {
         className: "dropdown"
       }, props.channels.map(function (channel) {
-        return React.createElement("a", {
+        return /*#__PURE__*/React.createElement("a", {
           href: true,
           className: "dropdown__link",
           onClick: function onClick() {
             return _this5.openPublishFormForChannel(channel);
           }
         }, channel.title);
-      })))))), React.createElement("div", {
+      })))))), /*#__PURE__*/React.createElement("div", {
         className: "dropdown__scroll dropdown__scroll--small"
       }, dropdownItems.map(function (item) {
-        return React.createElement("a", {
+        return /*#__PURE__*/React.createElement("a", {
           href: "",
           onClick: function onClick(e) {
             e.preventDefault();
@@ -460,12 +469,12 @@ function (_React$Component) {
             _this5.selectItem(item);
           },
           className: "dropdown__link"
-        }, item.label, props.display_entry_id && React.createElement("span", {
+        }, item.label, props.display_entry_id && /*#__PURE__*/React.createElement("span", {
           "class": "dropdown__link-entryId"
-        }, " (#", item.value, ")"), " ", React.createElement("span", {
+        }, " (#", item.value, ")"), " ", /*#__PURE__*/React.createElement("span", {
           className: "dropdown__link-right"
         }, item.instructions));
-      }), dropdownItems.length == 0 && React.createElement("div", {
+      }), dropdownItems.length == 0 && /*#__PURE__*/React.createElement("div", {
         "class": "dropdown__header text-center"
       }, "No Entries Found")))));
     }
