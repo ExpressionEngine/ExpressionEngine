@@ -342,6 +342,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         });
         return notInSelected && allowedChannel && filterName;
       });
+      
       var maxItems = this.props.rel_max ? this.props.rel_max : this.props.limit;
       var showAddButton = maxItems > this.state.selected.length && (this.props.multi || this.state.selected.length == 0) && this.props.items.length > this.state.selected.length;
       var channelFilterItems = props.channels.map(function (channel) {

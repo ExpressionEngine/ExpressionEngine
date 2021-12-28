@@ -389,7 +389,7 @@ class Provider extends InjectionBindingDecorator
                             ee()->lang->loadfile($cookieParams['cookie_provider'], $cookieParams['cookie_provider'], false);
                             break;
                     }
-                    
+
                     $cookieSettings->cookie_title = (lang('cookie_' . $cookie_name) != 'cookie_' . $cookie_name) ? lang('cookie_' . $cookie_name) : lang($cookie_name);
                     if (!empty($builtinCookieSettings) && isset($builtinCookieSettings[$cookie_name])) {
                         if (isset($builtinCookieSettings[$cookie_name]['description'])) {

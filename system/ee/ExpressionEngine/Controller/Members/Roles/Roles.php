@@ -12,6 +12,7 @@ namespace ExpressionEngine\Controller\Members\Roles;
 
 use ExpressionEngine\Controller\Members\Roles\AbstractRoles as AbstractRolesController;
 use ExpressionEngine\Model\Role\Role;
+use ExpressionEngine\Service\Member\Member;
 
 /**
  * Members\Roles\Roles Controller
@@ -422,26 +423,6 @@ class Roles extends AbstractRolesController
         $role->short_name = ee('Request')->post('short_name');
         $role->description = ee('Request')->post('description');
 
-        //We don't allow much editing for SuperAdmin role, so just enforce it's locked and return here
-        if ($role->getId() == 1) {
-            $role->is_locked = 'y';
-            return $role;
-        }
-        $role->is_locked = ee('Request')->post('is_locked');
-        $role->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
-        $role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
-
-        $uploadDestinationIds = !empty(ee('Request')->post('upload_destination_access')) ? ee('Request')->post('upload_destination_access') : array();
-        $assignedUploadDestinations = $role->AssignedUploadDestinations->getDictionary('id', 'site_id');
-        if (!empty($assignedUploadDestinations)) {
-            foreach ($assignedUploadDestinations as $dest_id => $dest_site_id) {
-                if ($dest_site_id != $site_id) {
-                    $uploadDestinationIds[] = $dest_id;
-                }
-            }
-        }
-        $role->AssignedUploadDestinations = ee('Model')->get('UploadDestination', $uploadDestinationIds)->all();
-
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
         unset($settings['id'], $settings['role_id'], $settings['site_id']);
@@ -468,6 +449,26 @@ class Roles extends AbstractRolesController
 
             $role_settings->set($settings);
         }
+
+        //We don't allow much editing for SuperAdmin role, so just enforce it's locked and return here
+        if ($role->getId() == 1) {
+            $role->is_locked = 'y';
+            return $role;
+        }
+        $role->is_locked = ee('Request')->post('is_locked');
+        $role->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
+        $role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
+
+        $uploadDestinationIds = !empty(ee('Request')->post('upload_destination_access')) ? ee('Request')->post('upload_destination_access') : array();
+        $assignedUploadDestinations = $role->AssignedUploadDestinations->getDictionary('id', 'site_id');
+        if (!empty($assignedUploadDestinations)) {
+            foreach ($assignedUploadDestinations as $dest_id => $dest_site_id) {
+                if ($dest_site_id != $site_id) {
+                    $uploadDestinationIds[] = $dest_id;
+                }
+            }
+        }
+        $role->AssignedUploadDestinations = ee('Model')->get('UploadDestination', $uploadDestinationIds)->all();
 
         $allowed_perms = [];
 
@@ -650,7 +651,38 @@ class Roles extends AbstractRolesController
             ]
         ];
 
-        if ($role->getId() != 1) {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $section = array_merge($section, [
+                [
+                    'title' => 'require_mfa',
+                    'desc' => 'require_mfa_desc',
+                    'group' => 'can_access_cp',
+                    'caution' => true,
+                    'fields' => [
+                        'require_mfa' => [
+                            'type' => 'yes_no',
+                            'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
+                            'value' => $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
+                        ]
+                    ]
+                ],
+            ]);
+            if (version_compare(PHP_VERSION, 7.1, '<')) {
+                ee()->lang->load('addons');
+                $section = array_merge($section, [
+                    ee('CP/Alert')->makeInline('mfa_not_available')
+                        ->asWarning()
+                        ->withTitle(lang('mfa_not_available'))
+                        ->addToBody(sprintf(lang('version_required'), 'PHP', 7.1))
+                        ->cannotClose()
+                        ->render()
+                        . form_hidden('require_mfa', 'n')
+                ]);
+            }
+        }
+
+        if ($role->getId() != Member::SUPERADMIN) {
             $section = array_merge($section, [
                 [
                     'title' => 'security_lock',
@@ -948,6 +980,11 @@ class Roles extends AbstractRolesController
                         'can_access_cp' => $permissions['fields']['can_access_cp']
                     ]
                 ],
+            ]
+        ];
+
+        $sections = array_merge($sections, [
+            [
                 [
                     'title' => 'default_cp_homepage',
                     'desc' => 'default_cp_homepage_desc',
@@ -1341,7 +1378,7 @@ class Roles extends AbstractRolesController
                     ]
                 ]
             ]
-        ];
+        ]);
 
         $html = '';
 

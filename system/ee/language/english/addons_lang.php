@@ -59,6 +59,8 @@ $lang = array(
 
     'addons_not_installed' => 'Add-Ons Not Installed',
 
+    'addon_not_fully_functional' => '%s is not fully functional',
+
     'existing_consent_request' => 'The following add-on(s) could not be installed due to an existing Consent Request which the add-on(s) are trying to create:',
 
     'contact_developer' => 'Please contact the add-on developer(s) for assistance.',
@@ -181,6 +183,8 @@ $lang = array(
     'specific_page' => 'Specific Page?',
 
     'version' => 'Version',
+
+    'version_required' => '%s version %s or higher is required.',
 
     /* License */
 
