@@ -138,8 +138,7 @@ context('Relationship field - Edit', () => {
 		
 			cy.visit('admin.php?/cp/publish/edit/entry/1')
 			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').closest('.list-item').find('[title="Remove"]').click()
-			cy.get('body').type('{ctrl}', {release: false}).type('s')
-			cy.get('.app-notice---error').contains('Cannot Update Entry');
+			cy.get('[name=title]').click()
 			page.hasError(cy.get('[data-relationship-react]'), 'You need to select at least 1 entries')
 			cy.hasNoErrors()
 
