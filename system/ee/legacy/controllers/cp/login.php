@@ -603,14 +603,8 @@ class Login extends CP_Controller
         $new_pw = (string) $this->input->post('new_password');
         $new_pwc = (string) $this->input->post('new_password_confirm');
 
-        // Make sure validation library is available
-        if (! class_exists('EE_Validate')) {
-            require APPPATH . 'libraries/Validate.php';
-        }
-
         // Load it up with the information needed
-        $VAL = new EE_Validate(
-            array(
+        $data = array(
                 'val_type' => 'new',
                 'fetch_lang' => true,
                 'require_cpw' => false,
@@ -619,7 +613,6 @@ class Login extends CP_Controller
                 'password' => $new_pw,
                 'password_confirm' => $new_pwc,
                 'cur_password' => $this->input->post('password')
-            )
         );
 
         $un_exists = false;
@@ -630,19 +623,23 @@ class Login extends CP_Controller
 
         $pw_exists = ($new_pw !== '' and $new_pwc !== '') ? true : false;
 
+        $validationRules = [];
+
         if ($un_exists) {
-            $VAL->validate_username();
+            $validationRules['username'] = 'unique|validUsername|notBanned';
         }
 
         if ($pw_exists) {
-            $VAL->validate_password();
+            $validationRules['password'] = 'validPassword|matches[password_confirm]';
         }
 
+        $validationResult = ee('Validation')->make($validationRules)->validate($data);
+
         // Display error is there are any
-        if (count($VAL->errors) > 0) {
+        if ($validationResult->isNotValid()) {
             $er = '';
 
-            foreach ($VAL->errors as $val) {
+            foreach ($validationResult->getAllErrors() as $val) {
                 $er .= $val . BR;
             }
 

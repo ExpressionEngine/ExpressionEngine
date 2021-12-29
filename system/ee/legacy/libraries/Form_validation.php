@@ -394,27 +394,23 @@ class EE_Form_validation
      */
     public function valid_screen_name($str)
     {
-        if ($str == '') {
-            return true;
-        }
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
 
-        if (preg_match('/[\{\}<>]/', $str)) {
-            $this->set_message('valid_screen_name', ee()->lang->line('disallowed_screen_chars'));
+        $data = [
+            'screen_name' => $str
+        ];
 
-            return false;
-        }
+        $rules = array(
+            'screen_name' => 'validScreenNane|notBanned'
+        );
 
-        if (strlen($str) > USERNAME_MAX_LENGTH) {
-            $this->set_message('valid_screen_name', ee()->lang->line('username_too_long'));
+        $result = ee('Validation')->make($rules)->validate($data);
 
-            return false;
-        }
-
-        // Is screen name banned?
-
-        if (ee()->session->ban_check('screen_name', $str) or trim(preg_replace("/&nbsp;*/", '', $str)) == '') {
-            $this->set_message('valid_screen_name', ee()->lang->line('screen_name_taken'));
-
+        if ($result->isNotValid()) {
+            foreach ($result->getAllErrors() as $key => $error) {
+                $this->set_message($key, $error);
+            }
             return false;
         }
 
@@ -433,57 +429,28 @@ class EE_Form_validation
      */
     public function valid_password($str, $username_field)
     {
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+
         if (! $username_field) {
             $username_field = 'username';
         }
 
-        // Is password min length correct?
+        $data = [
+            'username' => ee('Request')->post($username_field),
+            'password' => $str
+        ];
 
-        $len = ee()->config->item('pw_min_len');
+        $rules = array(
+            'password' => 'validPassword|passwordMatchesSecurityPolicy'
+        );
 
-        if (strlen($str) < $len) {
-            $this->set_message('valid_password', sprintf(lang('password_too_short'), $len));
+        $result = ee('Validation')->make($rules)->validate($data);
 
-            return false;
-        }
-
-        // Is password max length correct?
-
-        if (strlen($str) > PASSWORD_MAX_LENGTH) {
-            $this->set_message('valid_password', ee()->lang->line('password_too_long'));
-
-            return false;
-        }
-
-        // Is password the same as username?
-        // - We check for a reversed password as well
-
-        $username = $_POST[$username_field];
-
-        //  Make UN/PW lowercase for testing
-
-        $lc_user = strtolower($username);
-        $lc_pass = strtolower($str);
-        $nm_pass = strtr($lc_pass, 'elos', '3105');
-
-        if ($lc_user == $lc_pass or $lc_user == strrev($lc_pass) or $lc_user == $nm_pass or $lc_user == strrev($nm_pass)) {
-            $this->set_message('valid_password', ee()->lang->line('password_based_on_username'));
-
-            return false;
-        }
-
-        // Are secure passwords required?
-        if (! ee('Validation')->check('passwordMatchesSecurityPolicy', $str)) {
-            $this->set_message('valid_password', ee()->lang->line('not_secure_password'));
-
-            return false;
-        }
-
-        // Does password exist in dictionary?
-
-        if ($this->_lookup_dictionary_word($lc_pass) == true) {
-            $this->set_message('valid_password', ee()->lang->line('password_in_dictionary'));
-
+        if ($result->isNotValid()) {
+            foreach ($result->getAllErrors() as $key => $error) {
+                $this->set_message($key, $error);
+            }
             return false;
         }
 
@@ -959,6 +926,9 @@ class EE_Form_validation
      */
     public function _lookup_dictionary_word($target)
     {
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3');
+
         if (ee()->config->item('allow_dictionary_pw') == 'y') {
             return false;
         }

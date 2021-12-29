@@ -428,12 +428,16 @@ class Member_register extends Member
         $result = $member->validate();
 
         // Validate password
-        if (($pw_validate = $member->validatePassword('password', $_POST['password'])) !== true) {
-            $cust_errors[] = lang($pw_validate);
-        }
+        $validator = ee('Validation')->make();
+        $validator->setRule('password', 'validPassword');
+        $validator->setRule('password_confirm', 'matches[password]');
+        $passwordValidation = $validator->validate($_POST);
 
-        if ($_POST['password'] != $_POST['password_confirm']) {
-            $cust_errors[] = lang('missmatched_passwords');
+        // Add password confirmation failure to main result object
+        if ($passwordValidation->isNotValid()) {
+            foreach ($passwordValidation->getAllErrors() as $error) {
+                $cust_errors[] = lang($error);
+            }
         }
 
         $field_labels = array();

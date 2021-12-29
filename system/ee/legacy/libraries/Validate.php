@@ -149,27 +149,24 @@ class EE_Validate
      */
     public function validate_screen_name()
     {
-        if ($this->screen_name == '') {
-            if ($this->username == '') {
-                return $this->errors[] = ee()->lang->line('missing_username');
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+
+        $data = [
+            'screen_name' => $str
+        ];
+
+        $rules = array(
+            'screen_name' => 'validScreenNane|notBanned'
+        );
+
+        $result = ee('Validation')->make($rules)->validate($data);
+
+        if ($result->isNotValid()) {
+            foreach ($result->getAllErrors() as $key => $error) {
+                $this->errors[] = $error;
             }
-
-            return $this->screen_name = $this->username;
-        }
-
-        if (preg_match('/[\{\}<>]/', $this->screen_name)) {
-            return $this->errors[] = ee()->lang->line('disallowed_screen_chars');
-        }
-
-        if (strlen($this->screen_name) > USERNAME_MAX_LENGTH) {
-            return $this->errors[] = ee()->lang->line('screenname_too_long');
-        }
-
-        /** -------------------------------------
-        /**  Is screen name banned?
-        /** -------------------------------------*/
-        if (ee()->session->ban_check('screen_name', $this->screen_name) or trim(preg_replace("/&nbsp;*/", '', $this->screen_name)) == '') {
-            return $this->errors[] = ee()->lang->line('screen_name_taken');
+            return $this->errors;
         }
     }
 
@@ -180,63 +177,29 @@ class EE_Validate
      */
     public function validate_password()
     {
-        /** ----------------------------------
-        /**  Is password missing?
-        /** ----------------------------------*/
-        if ($this->password == '' and $this->password_confirm == '') {
-            return $this->errors[] = ee()->lang->line('missing_password');
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+
+        if (! $username_field) {
+            $username_field = 'username';
         }
 
-        /** -------------------------------------
-        /**  Is password min length correct?
-        /** -------------------------------------*/
-        $len = ee()->config->item('pw_min_len');
+        $data = [
+            'username' => ee('Request')->post($username_field),
+            'password' => $str
+        ];
 
-        if (strlen($this->password) < $len) {
-            return $this->errors[] = sprintf(lang('password_too_short'), $len);
-        }
+        $rules = array(
+            'password' => 'required|validPassword|passwordMatchesSecurityPolicy'
+        );
 
-        /** -------------------------------------
-        /**  Is password max length correct?
-        /** -------------------------------------*/
-        if (strlen($this->password) > PASSWORD_MAX_LENGTH) {
-            return $this->errors[] = ee()->lang->line('password_too_long');
-        }
+        $result = ee('Validation')->make($rules)->validate($data);
 
-        /** -------------------------------------
-        /**  Is password the same as username?
-        /** -------------------------------------*/
-        // We check for a reversed password as well
-
-        //  Make UN/PW lowercase for testing
-
-        $lc_user = strtolower($this->username);
-        $lc_pass = strtolower($this->password);
-        $nm_pass = strtr($lc_pass, 'elos', '3105');
-
-        if ($lc_user == $lc_pass or $lc_user == strrev($lc_pass) or $lc_user == $nm_pass or $lc_user == strrev($nm_pass)) {
-            return $this->errors[] = ee()->lang->line('password_based_on_username');
-        }
-
-        /** -------------------------------------
-        /**  Do Password and confirm match?
-        /** -------------------------------------*/
-        if ($this->password != $this->password_confirm) {
-            return $this->errors[] = ee()->lang->line('missmatched_passwords');
-        }
-
-        /** -------------------------------------
-        /**  Are secure passwords required?
-        /** -------------------------------------*/
-        if (! ee('Validation')->check('passwordMatchesSecurityPolicy', $this->password)) {
-            return $this->errors[] = ee()->lang->line('not_secure_password');
-        }
-
-        /** -------------------------------------
-        /**  Does password exist in dictionary?
-        /** -------------------------------------*/
-        if ($this->lookup_dictionary_word($lc_pass) == true) {
-            $this->errors[] = ee()->lang->line('password_in_dictionary');
+        if ($result->isNotValid()) {
+            foreach ($result->getAllErrors() as $key => $error) {
+                $this->errors[] = $error;
+            }
+            return $this->errors;
         }
     }
 
@@ -322,6 +285,9 @@ class EE_Validate
      */
     public function lookup_dictionary_word($target)
     {
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3');
+        
         if (ee()->config->item('allow_dictionary_pw') == 'y') {
             return false;
         }
