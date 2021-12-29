@@ -549,7 +549,8 @@ class Fields extends AbstractFieldsController
             $sections = array_merge($sections, $field_options);
         }
 
-        $allEvaluationRules = [];
+        $fieldsWithEvaluationRules = [];
+        $supportedEvaluationRules = [];
         foreach ($fieldtypes as $fieldtype) {
             
             if ($fieldtype->name == $field->field_type) {
@@ -569,7 +570,7 @@ class Fields extends AbstractFieldsController
             }
             $dummy_field->field_type = $fieldtype->name;
             $field_options = $dummy_field->getSettingsForm();
-            $allEvaluationRules[$fieldtype->name] = $dummy_field->getSupportedEvaluationRules();
+            $supportedEvaluationRules[$fieldtype->name] = $dummy_field->getSupportedEvaluationRules();
 
             if (is_array($field_options) && ! empty($field_options)) {
                 $sections = array_merge($sections, $field_options);
@@ -578,18 +579,20 @@ class Fields extends AbstractFieldsController
 
         $existingFields = ee('Model')->get('ChannelField')->fields('site_id', 'field_id', 'field_name', 'field_label', 'field_type')->filter('site_id', 'IN', [0, ee()->config->item('site_id')])->all();
         if ($existingFields) {
-            foreach ($existingFields as $field)
-            if (isset($allEvaluationRules[$field->field_type]) && !empty($allEvaluationRules[$field->field_type])) {
-                $allEvaluationRules[$field->field_id] = [
-                    'field_label' => $field->field_label,
-                    'field_name' => $field->field_name,
-                    'field_type' => $field->field_type,
-                    'evaluationRules' => $allEvaluationRules[$field->field_type]
-                ];
+            foreach ($existingFields as $field) {
+                if (isset($supportedEvaluationRules[$field->field_type]) && !empty($supportedEvaluationRules[$field->field_type])) {
+                    $fieldsWithEvaluationRules[$field->field_id] = [
+                        'field_id' => $field->field_id,
+                        'field_label' => $field->field_label,
+                        'field_name' => $field->field_name,
+                        'field_type' => $field->field_type,
+                        'evaluationRules' => $supportedEvaluationRules[$field->field_type]
+                    ];
+                }
             }
         }
 
-        ee()->javascript->set_global('fields', $allEvaluationRules);
+        ee()->javascript->set_global('fields', $fieldsWithEvaluationRules);
 
         ee()->javascript->output('$(document).ready(function () {
 			EE.cp.fieldToggleDisable();
