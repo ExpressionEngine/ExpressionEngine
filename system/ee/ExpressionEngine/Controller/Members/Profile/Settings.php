@@ -10,8 +10,8 @@
 
 namespace ExpressionEngine\Controller\Members\Profile;
 
-use CP_Controller;
-use ExpressionEngine\Addons\FilePicker\FilePicker as FilePicker;
+use ExpressionEngine\Service\Model\Collection AS FileCollection;
+use ExpressionEngine\Model\File\File AS FileModel;
 
 /**
  * Member Profile Personal Settings Controller
@@ -204,22 +204,21 @@ class Settings extends Profile
 
     protected function uploadAvatar()
     {
-        // If nothing was chosen, keep the current avatar.
-        if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
-            $this->member->avatar_filename = ee()->security->sanitize_filename(ee()->input->post('avatar_filename'));
-            if (empty($this->member->avatar_filename)) {
-                $this->member->avatar_width = null;
-                $this->member->avatar_height = null;
-            }
-            return true;
-        }
-
         ee()->load->library('filemanager');
 
         $directory = ee('Model')->get('UploadDestination')
             ->filter('name', 'Avatars')
             ->filter('site_id', ee()->config->item('site_id'))
             ->first();
+
+        // If nothing was chosen, keep the current avatar.
+        if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
+            if (empty(ee()->input->post('avatar_filename'))) {
+                $this->removeAvatarFiles($directory->id);
+            }
+            $this->member->avatar_filename = ee()->security->sanitize_filename(ee()->input->post('avatar_filename'));
+            return true;
+        }
 
         $upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
 
@@ -231,13 +230,6 @@ class Settings extends Profile
                 ->now();
 
             return false;
-        }
-
-        $existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
-
-        // Remove the member's existing avatar
-        if (file_exists($existing) && is_file($existing)) {
-            unlink($existing);
         }
 
         // We don't have the suffix, so first we explode to avoid passed by reference error
@@ -268,7 +260,8 @@ class Settings extends Profile
             }
         }
 
-        unlink($original);
+        @unlink($original);
+        $this->removeAvatarFiles($directory->id); //removes old avatar files
 
         // Save the new avatar filename
         $this->member->avatar_filename = $filename;
@@ -276,6 +269,48 @@ class Settings extends Profile
         $this->member->avatar_height = $upload_response['file_height'];
 
         return true;
+    }
+
+    /**
+     * Removes the existing avatar files and data for current member
+     *
+     * @param [type] $dir_id
+     * @return void
+     */
+    protected function removeAvatarFiles($dir_id)
+    {
+        //check if we have to delete an image
+        if ($this->member->avatar_filename) {
+            $existing = realpath(ee()->config->item('avatar_path') . $this->member->avatar_filename);
+
+            // Remove the member's existing avatar
+            if ($existing && file_exists($existing) && is_file($existing)) {
+                unlink($existing);
+            }
+
+            $thumb = realpath(ee()->config->item('avatar_path') . '/_thumbs/' . $this->member->avatar_filename);
+            if ($thumb && file_exists($thumb) && is_file($thumb)) {
+                unlink($thumb);
+            }
+        }
+
+        $this->member->avatar_filename = $this->member->avatar_width = $this->member->avatar_height = null;
+
+        //now cleanup the saved File objects
+        $files = $this->member->UploadedFiles->filter('upload_location_id', $dir_id);
+
+        if ($files instanceof FileCollection) {
+            if ($files->count() >= 1) {
+                foreach ($files->getIds() as $file_id) {
+                    $file = ee('Model')->get('File', $file_id)->first();
+                    if ($file instanceof FileModel) {
+                        if ($file->upload_location_id == $dir_id) {
+                            $file->delete();
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 // END CLASS
