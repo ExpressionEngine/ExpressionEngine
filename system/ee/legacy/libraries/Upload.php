@@ -236,7 +236,8 @@ class EE_Upload
 
         // Is the file size within the allowed maximum?
         if (! $this->is_allowed_filesize()) {
-            $this->set_error('upload_invalid_filesize');
+            ee()->lang->load('upload');
+            $this->set_error(sprintf(lang('upload_invalid_filesize'), $this->max_size));
 
             return false;
         }
