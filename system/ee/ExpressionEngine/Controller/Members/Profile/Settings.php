@@ -207,15 +207,11 @@ class Settings extends Profile
         // If nothing was chosen, keep the current avatar.
         if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
             $this->member->avatar_filename = ee()->security->sanitize_filename(ee()->input->post('avatar_filename'));
-
+            if (empty($this->member->avatar_filename)) {
+                $this->member->avatar_width = null;
+                $this->member->avatar_height = null;
+            }
             return true;
-        }
-
-        $existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
-
-        // Remove the member's existing avatar
-        if (file_exists($existing) && is_file($existing)) {
-            unlink($existing);
         }
 
         ee()->load->library('filemanager');
@@ -237,6 +233,13 @@ class Settings extends Profile
             return false;
         }
 
+        $existing = ee()->config->item('avatar_path') . $this->member->avatar_filename;
+
+        // Remove the member's existing avatar
+        if (file_exists($existing) && is_file($existing)) {
+            unlink($existing);
+        }
+
         // We don't have the suffix, so first we explode to avoid passed by reference error
         // Then we grab our suffix
         $name_array = explode('.', $_FILES['upload_avatar']['name']);
@@ -252,10 +255,7 @@ class Settings extends Profile
         );
         $filename = basename($file_path);
 
-        // Upload the file
-        ee()->load->library('upload', array('upload_path' => dirname($file_path)));
-        ee()->upload->do_upload('file');
-        $original = ee()->upload->upload_path . ee()->upload->file_name;
+        $original = $upload_response['upload_directory_prefs']['server_path'] . $upload_response['file_name'];
 
         if (! @copy($original, $file_path)) {
             if (! @move_uploaded_file($original, $file_path)) {
@@ -269,10 +269,11 @@ class Settings extends Profile
         }
 
         unlink($original);
-        $result = (array) ee()->upload;
 
         // Save the new avatar filename
         $this->member->avatar_filename = $filename;
+        $this->member->avatar_width = $upload_response['file_width'];
+        $this->member->avatar_height = $upload_response['file_height'];
 
         return true;
     }
