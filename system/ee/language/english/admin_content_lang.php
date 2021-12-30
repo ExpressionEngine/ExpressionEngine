@@ -340,6 +340,10 @@ $lang = array(
 
     'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi-select in the publish form.</i>',
 
+    'make_conditional' => 'Make conditional?',
+
+    'make_conditional_desc' => 'Only display this field when conditions of other field(s) are met',
+
     'new_category' => 'New Category',
 
     'new_channel' => 'New Channel',

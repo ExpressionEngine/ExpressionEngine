@@ -1,0 +1,46 @@
+.field-conditionset-wrapper {
+	a.add-set {
+		display: inline-block;
+		margin-top: 10px;
+		font-size: 0.9em;
+	}
+}
+
+.field-conditionset {
+	background: var(--ee-bg-0);
+	border-radius: 5px;
+	padding: 20px;
+
+	h4 {
+		display: flex;
+		align-items: center;
+		margin-bottom: 20px;
+		font-weight: 400;
+		font-size: 1em;
+
+		.condition-match-field {
+			margin: 0 10px;
+		}
+	}
+
+	.rules {
+		.rule {
+			display: flex;
+			margin-bottom: 10px;
+
+			& > div {
+				flex: 1 1 32%;
+				margin-right: 10px;
+			}
+
+			select,
+			input[type="text"],
+			.select__button,
+			.select__button-label {
+				width: 100%;
+				display: block;
+				text-align: left;
+			}
+		}
+	}
+}

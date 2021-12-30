@@ -278,14 +278,14 @@ $lang = array(
 
     /* Conditional Evaluation Rules */
     'contains' => 'contains',
-    'equal' => 'is equal to',
-    'notEqual' => 'is not equal to',
+    'equal' => 'is',
+    'notEqual' => 'is not',
     'isEmpty' => 'is empty',
-    'isNotEmpty' => 'is not empty',
-    'greaterThan' => 'is greater than',
-    'greaterOrEqualThan' => 'is greater or equal than',
-    'lessThan' => 'is less than',
-    'lessOrEqualThan' => 'is less or equal than',
+    'isNotEmpty' => 'has any value',
+    'greaterThan' => 'greater than',
+    'greaterOrEqualThan' => 'greater than or equal to',
+    'lessThan' => 'less than',
+    'lessOrEqualThan' => 'less than or equal to',
 
     'turnedOn' => 'is turned on',
     'turnedOff' => 'is turned off',

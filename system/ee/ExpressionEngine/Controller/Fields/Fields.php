@@ -541,6 +541,18 @@ class Fields extends AbstractFieldsController
                         )
                     )
                 ),
+                array(
+                    'title' => 'make_conditional',
+                    'desc' => 'make_conditional_desc',
+                    'fields' => array(
+                        'field_is_conditional' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'rule_groups',
+                            )
+                        )
+                    )
+                ),
             ),
         );
 
@@ -591,11 +603,29 @@ class Fields extends AbstractFieldsController
             }
         }
 
+        $ruleGroupsField = array(
+            'title' => '',
+            'desc' => '',
+            'group' => 'rule_groups',
+            'fields' => array(
+                'condition_fields' => array(
+                    'type' => 'html',
+                    'margin_left' => true,
+                    'margin_top' => true,
+                    'content' => ee('View')->make('ee:_shared/form/condition-rule-group')->render( ['fieldsList' => $fieldsWithEvaluationRules])
+                ),
+            ),
+        );
+
+        array_push($sections[0], $ruleGroupsField);
+
         ee()->javascript->set_global('fields', $fieldsWithEvaluationRules);
 
         ee()->javascript->output('$(document).ready(function () {
-			EE.cp.fieldToggleDisable();
-		});');
+            EE.cp.fieldToggleDisable();
+        });');
+
+        ee()->cp->add_js_script('file', array('cp/conditional_logic'));
 
         return $sections;
     }

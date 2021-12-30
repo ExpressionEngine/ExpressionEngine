@@ -1,5 +1,5 @@
 <?php
-$too_many = 8;
+$too_many = isset($too_many) ? $too_many : 8;
 $empty_text = isset($empty_text) ? $empty_text : lang('choose_wisely');
 $field_disabled = isset($field_disabled) ? $field_disabled : false;
 $class = isset($class) ? $class : '';
