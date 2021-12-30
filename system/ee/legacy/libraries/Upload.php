@@ -39,6 +39,7 @@ class EE_Upload
     public $xss_clean = false;
     public $temp_prefix = "temp_file_";
     public $client_name = '';
+    public $auto_resize = false;
 
     protected $use_temp_dir = false;
     protected $raw_upload = false;
@@ -243,9 +244,19 @@ class EE_Upload
         // Are the image dimensions within the allowed size?
         // Note: This can fail if the server has an open_basdir restriction.
         if (! $this->is_allowed_dimensions()) {
-            $this->set_error('upload_invalid_dimensions');
 
-            return false;
+            //try to resize, if configured
+            if ($this->auto_resize) {
+                ee()->load->library('filemanager');
+                $auto_resize = ee()->filemanager->max_hw_check($this->file_temp, ['max_width' => $this->max_width, 'max_height' => $this->max_height]);
+                if ($auto_resize === false) {
+                    $this->set_error('upload_invalid_dimensions');
+                    return false;
+                }
+            } else {
+                $this->set_error('upload_invalid_dimensions');
+                return false;
+            }
         }
 
         // Truncate the file name if it's too long
@@ -925,7 +936,8 @@ class EE_Upload
             'remove_spaces' => true,
             'xss_clean' => false,
             'temp_prefix' => "temp_file_",
-            'client_name' => ''
+            'client_name' => '',
+            'auto_resize' => false
         );
 
         foreach ($defaults as $key => $val) {
