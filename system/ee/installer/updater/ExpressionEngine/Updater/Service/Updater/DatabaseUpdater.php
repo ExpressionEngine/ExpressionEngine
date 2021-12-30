@@ -140,7 +140,7 @@ class DatabaseUpdater
             $a = $this->getVersionForFilename($a);
             $b = $this->getVersionForFilename($b);
 
-            return version_compare($a, $b, '>');
+            return version_compare($a, $b, '>') ? 1 : -1;
         });
 
         return $update_files;

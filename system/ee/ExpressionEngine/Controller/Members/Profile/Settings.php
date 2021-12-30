@@ -213,19 +213,15 @@ class Settings extends Profile
 
         // If nothing was chosen, keep the current avatar.
         if (! isset($_FILES['upload_avatar']) || empty($_FILES['upload_avatar']['name'])) {
-            if(!ee()->input->post('avatar_filename')) {
-                $this->removeAvatar($directory->id);
+            if (empty(ee()->input->post('avatar_filename'))) {
+                $this->removeAvatarFiles($directory->id);
             }
-
+            $this->member->avatar_filename = ee()->security->sanitize_filename(ee()->input->post('avatar_filename'));
             return true;
         }
 
-        $name_array = explode('.', $_FILES['upload_avatar']['name']);
-        $suffix = array_pop($name_array);
-
-        $_FILES['upload_avatar']['name'] = 'avatar_' . $this->member->member_id . '.' . $suffix;
-
         $upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
+
         if (isset($upload_response['error'])) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
@@ -236,23 +232,55 @@ class Settings extends Profile
             return false;
         }
 
-        // Save the new avatar filename
-        $this->member->avatar_filename = $upload_response['file_name'];
-        if(!empty($upload_response['file_width'])) {
-            $this->member->avatar_width = $upload_response['file_width'];
+        // We don't have the suffix, so first we explode to avoid passed by reference error
+        // Then we grab our suffix
+        $name_array = explode('.', $_FILES['upload_avatar']['name']);
+        $suffix = array_pop($name_array);
+
+        $name = $_FILES['upload_avatar']['name'];
+        $name = 'avatar_' . $this->member->member_id . '.' . $suffix;
+
+        $file_path = ee()->filemanager->clean_filename(
+            basename($name),
+            $directory->id,
+            array('ignore_dupes' => false)
+        );
+        $filename = basename($file_path);
+
+        $original = $upload_response['upload_directory_prefs']['server_path'] . $upload_response['file_name'];
+
+        if (! @copy($original, $file_path)) {
+            if (! @move_uploaded_file($original, $file_path)) {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('upload_filedata_error'))
+                    ->now();
+
+                return false;
+            }
         }
 
-        if(!empty($upload_response['file_height'])) {
-            $this->member->avatar_height = $upload_response['file_height'];
-        }
+        @unlink($original);
+        $this->removeAvatarFiles($directory->id); //removes old avatar files
+
+        // Save the new avatar filename
+        $this->member->avatar_filename = $filename;
+        $this->member->avatar_width = $upload_response['file_width'];
+        $this->member->avatar_height = $upload_response['file_height'];
 
         return true;
     }
 
-    protected function removeAvatar($dir_id)
+    /**
+     * Removes the existing avatar files and data for current member
+     *
+     * @param [type] $dir_id
+     * @return void
+     */
+    protected function removeAvatarFiles($dir_id)
     {
         //check if we have to delete an image
-        if($this->member->avatar_filename) {
+        if ($this->member->avatar_filename) {
             $existing = realpath(ee()->config->item('avatar_path') . $this->member->avatar_filename);
 
             // Remove the member's existing avatar
@@ -260,7 +288,7 @@ class Settings extends Profile
                 unlink($existing);
             }
 
-            $thumb = realpath(ee()->config->item('avatar_path') .'/_thumbs/'. $this->member->avatar_filename);
+            $thumb = realpath(ee()->config->item('avatar_path') . '/_thumbs/' . $this->member->avatar_filename);
             if ($thumb && file_exists($thumb) && is_file($thumb)) {
                 unlink($thumb);
             }
@@ -269,16 +297,14 @@ class Settings extends Profile
         $this->member->avatar_filename = $this->member->avatar_width = $this->member->avatar_height = null;
 
         //now cleanup the saved File objects
-        $files = $this->member->UploadedFiles
-                            ->filter('upload_location_id', $dir_id);
+        $files = $this->member->UploadedFiles->filter('upload_location_id', $dir_id);
 
-        if($files instanceof FileCollection ) {
-
-            if($files->count() >= 1) {
-                foreach($files->getIds() AS $file_id) {
+        if ($files instanceof FileCollection) {
+            if ($files->count() >= 1) {
+                foreach ($files->getIds() as $file_id) {
                     $file = ee('Model')->get('File', $file_id)->first();
-                    if($file instanceof FileModel) {
-                        if($file->upload_location_id == $dir_id) {
+                    if ($file instanceof FileModel) {
+                        if ($file->upload_location_id == $dir_id) {
                             $file->delete();
                         }
                     }

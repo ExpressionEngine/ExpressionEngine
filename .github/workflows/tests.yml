@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - 6.dev
+      - 6.2.0
+      - 6.3.0
+      - 6.4.0
+      - 6.5.0
 
 jobs:
 
@@ -33,23 +37,10 @@ jobs:
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
               path: __pro
 
-        #  - name: Move Pro into core
-        #    run: |
-        #      mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-        #      mv __pro/themes/ee/pro themes/ee/pro
-        #      mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
-        #      mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-        #      rm -rf __pro
-
-          - name: Setup asdf
-            uses: asdf-vm/actions/setup@v1
-
-          - name: Install asdf dependencies
-            working-directory: build-tools
-            run: |
-              asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-              bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
-              asdf install
+          - name: Setup node
+            uses: actions/setup-node@v2
+            with:
+              node-version: '10'
 
           - name: Install build tool dependencies
             working-directory: build-tools
@@ -96,11 +87,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.1, 8.0]
+                php: [7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.4
-                    os: ubuntu-20.04 #is using mysql8
+                  - php: 7.3
+                    os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Pro, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -115,7 +106,6 @@ jobs:
             - name: Move files to webroot
               run: |
                 cp -R build-tools/builds/ExpressionEngine/* ./
-                rm -rf build-tools
 
             - name: Copy config.php
               run: |
@@ -124,7 +114,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -190,11 +180,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.1, 5.6, 8.0]
+                php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.4
-                    os: ubuntu-20.04 #is using mysql8
+                  - php: 7.3
+                    os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Admin, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -217,7 +207,6 @@ jobs:
             - name: Move files to webroot
               run: |
                 cp -R build-tools/builds/ExpressionEngine/* ./
-                rm -rf build-tools
 
             - name: Copy config.php
               run: |
@@ -226,7 +215,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -291,11 +280,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.1, 5.6, 8.0]
+                php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.4
-                    os: ubuntu-20.04 #is using mysql8
+                  - php: 7.3
+                    os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -318,7 +307,6 @@ jobs:
             - name: Move files to webroot
               run: |
                 cp -R build-tools/builds/ExpressionEngine/* ./
-                rm -rf build-tools
 
             - name: Copy config.php
               run: |
@@ -327,7 +315,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -392,11 +380,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.1, 5.6, 8.0]
+                php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.4
-                    os: ubuntu-20.04 #is using mysql8
+                  - php: 7.3
+                    os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Members, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -419,7 +407,6 @@ jobs:
             - name: Move files to webroot
               run: |
                 cp -R build-tools/builds/ExpressionEngine/* ./
-                rm -rf build-tools
 
             - name: Copy config.php
               run: |
@@ -428,7 +415,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -493,11 +480,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.1, 5.6, 8.0]
+                php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.4
-                    os: ubuntu-20.04 #is using mysql8
+                  - php: 7.3
+                    os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -520,7 +507,6 @@ jobs:
             - name: Move files to webroot
               run: |
                 cp -R build-tools/builds/ExpressionEngine/* ./
-                rm -rf build-tools
 
             - name: Copy config.php
               run: |
@@ -529,7 +515,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -594,11 +580,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.1, 5.6, 8.0]
+                php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.4
-                    os: ubuntu-20.04 #is using mysql8
+                  - php: 7.3
+                    os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Utils, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -621,7 +607,6 @@ jobs:
             - name: Move files to webroot
               run: |
                 cp -R build-tools/builds/ExpressionEngine/* ./
-                rm -rf build-tools
 
             - name: Copy config.php
               run: |
@@ -630,7 +615,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -695,11 +680,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.1, 5.6, 8.0]
+                php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.4
-                    os: ubuntu-20.04 #is using mysql8
+                  - php: 7.3
+                    os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -722,7 +707,6 @@ jobs:
             - name: Move files to webroot
               run: |
                 cp -R build-tools/builds/ExpressionEngine/* ./
-                rm -rf build-tools
 
             - name: Copy config.php
               run: |
@@ -731,7 +715,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -788,6 +772,105 @@ jobs:
               with:
                 name: misc.error.PHP${{ matrix.php }}.log
                 path: /home/runner/php_errors.log
+
+    cypress-heavyload:
+        if: github.event.pull_request.draft == false
+        needs: [cancel-running-tests, build-for-testing]
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [5.6, 7.1, 7.2, 7.4, 8.0]
+                os: [ubuntu-18.04]
+                include:
+                  - php: 7.3
+                    os: ubuntu-21.04 #is using mysql8
+
+        name: Cypress Heavy Load, PHP${{ matrix.php }} - ${{ matrix.os }}
+
+        steps:
+
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-build-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                ls -lar build-tools/builds/ExpressionEngine/
+                cp -R build-tools/builds/ExpressionEngine/. ./
+                rm -rf build-tools
+
+            - name: Directory Listing
+              run: |
+                ls -lar ./
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
+                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=32M
+
+            - name: Copy config.php
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                rm -rf system/ee/installer
+
+            - name: Setup Permissions
+              run: |
+                sudo chmod 666 system/user/config/config.php
+                sudo chmod 777 system/user/config
+                sudo chmod -R 777 system/user/cache
+                sudo chmod -R 777 system/user/templates
+                sudo chmod -R 777 system/user/language
+                sudo chmod -R 777 tests/cypress/support/tmp
+                sudo chmod -R 777 tests/cypress/support/file-sync/uploads
+                sudo chmod -R 777 images
+                sudo chmod -R 777 themes/user
+                sudo chmod -R 777 tests/cypress/cypress/screenshots
+
+            - name: Configure MySQL
+              run: |
+                sudo systemctl start mysql
+                mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
+                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
+
+            - name: Install PHP dependencies
+              working-directory: tests/cypress
+              run: composer install
+
+            - name: Start PHP Server
+              run: php -S localhost:8888 &
+
+            - name: Run Cypress Tests
+              uses: cypress-io/github-action@v2
+              with:
+                browser: chrome
+                headless: true
+                working-directory: tests/cypress
+                config-file: heavy.cypress.json
+
+            - name: Archive screenshots
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: cypress-tests-heavyload
+                path: tests/cypress/cypress/screenshots/
+
+            - name: Archive server errors
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: heavyload.error.log
+                path: /home/runner/php_errors.log
     cypress-installer:
         needs: build-for-testing
 
@@ -796,11 +879,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.1, 5.6, 8.0]
+                php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.4
-                    os: ubuntu-20.04 #is using mysql8
+                  - php: 7.3
+                    os: ubuntu-21.04 #is using mysql8
 
         name: Cypress Installer, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -823,7 +906,6 @@ jobs:
             - name: Move files to webroot
               run: |
                 cp -R build-tools/builds/ExpressionEngine/* ./
-                rm -rf build-tools
 
             - name: Setup Permissions
               run: |
