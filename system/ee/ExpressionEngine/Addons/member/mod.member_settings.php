@@ -759,7 +759,7 @@ class Member_settings extends Member
 
         //		$result_row = $result->row_array()
 
-        $this->member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $this->member = ee()->session->getMember();
 
         if (empty($this->member)) {
             if (! empty($tagdata)) {
@@ -913,7 +913,7 @@ class Member_settings extends Member
 
         $errors = array();
 
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $member = ee()->session->getMember();
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
@@ -1206,7 +1206,7 @@ class Member_settings extends Member
             return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
         }
 
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $member = ee()->session->getMember();
 
         if (! $member) {
             return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
@@ -1310,7 +1310,7 @@ class Member_settings extends Member
      */
     public function update_userpass()
     {
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $member = ee()->session->getMember();
 
         if (! $member) {
             return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
@@ -1411,7 +1411,7 @@ class Member_settings extends Member
         ee()->load->model('admin_model');
         ee()->load->helper('form');
         // Have to get tz from database since the config will have replaced null with the site default
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->fields('timezone')->first();
+        $member = ee()->session->getMember();
 
         $defaults = array(
             'site_default' => empty($member->timezone) ? 'y' : 'n',
@@ -1469,7 +1469,7 @@ class Member_settings extends Member
             return ee()->output->show_user_error('general', array(lang('invalid_action')));
         }
 
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $member = ee()->session->getMember();
         $member->set($data);
         $result = $member->validate();
 

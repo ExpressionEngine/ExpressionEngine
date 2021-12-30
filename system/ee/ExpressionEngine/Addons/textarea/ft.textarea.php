@@ -34,9 +34,7 @@ class Textarea_ft extends EE_Fieldtype
         if (isset($this->settings['field_show_formatting_btns'])
             && $this->settings['field_show_formatting_btns'] == 'y'
             && ! ee()->session->cache(__CLASS__, 'markitup_initialized')) {
-            $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))
-                ->fields('member_id')
-                ->first();
+            $member = ee()->session->getMember();
 
             // channel form only uses formatting buttons in the {custom_fields}{/custom_fields}
             // tag pair which does NOT call this method. This method is still called with {field:my_textarea}, though,

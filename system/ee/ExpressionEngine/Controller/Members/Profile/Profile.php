@@ -51,7 +51,11 @@ class Profile extends CP_Controller
         $this->query_string = $qs;
         $this->base_url = ee('CP/URL')->make('members/profile/settings');
         $this->base_url->setQueryStringVariable('id', $id);
-        $this->member = ee('Model')->get('Member', $id)->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
+        if ($id != ee()->session->userdata['member_id']) {
+            $this->member = ee('Model')->get('Member', $id)->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
+        } else {
+            $this->member = ee()->session->getMember();
+        }
 
         if (is_null($this->member)) {
             show_404();

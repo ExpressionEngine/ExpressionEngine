@@ -86,9 +86,9 @@ class Cp
             'table_open' => '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">'
         );
 
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
-
-        if (! $member) {
+        if (ee()->session->userdata('member_id')) {
+            $member = ee()->session->getMember();
+        } else {
             $member = ee('Model')->make('Member');
         }
 
@@ -280,8 +280,6 @@ class Cp
      */
     public function render($view, $data = array(), $return = false)
     {
-        $this->_menu();
-
         $date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
 
         ee()->load->helper('text');

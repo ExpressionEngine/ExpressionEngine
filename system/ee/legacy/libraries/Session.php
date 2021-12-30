@@ -654,7 +654,7 @@ class EE_Session
             $permission = new ExpressionEngine\Service\Permission\Permission(
                 ee('Model'),
                 $this->all_userdata(),
-                $this->member_model->getPermissions(),
+                $permissions,
                 $this->member_model->Roles->getDictionary('role_id', 'name'),
                 ee()->config->item('site_id')
             );
