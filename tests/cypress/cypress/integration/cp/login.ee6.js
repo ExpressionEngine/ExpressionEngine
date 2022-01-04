@@ -55,6 +55,48 @@ context('Login Page', () => {
         cy.wait(60000);
     })
 
+    it('test login as user', function() {
+        // Log in
+        cy.login({ email: 'admin', password: 'password' });
+
+        // User is logged in
+        cy.get('h2').contains("Members");
+
+        // Click the members sidebar button
+        cy.get('.ee-sidebar__item').contains('Members').click();
+
+        // Click the member "robin" (the other super admin user)
+        cy.get('a').contains('robin').click();
+
+        // Click the sidebar item "Login as robin"
+        cy.get('a').contains('Login as robin').click();
+
+        // We are now in the form where we need to type in our password
+        // First lets click the checkbox item "CP Index"
+        cy.contains('CP Index').click();
+
+        // Type in the password
+        cy.get('#fieldset-password > div.field-control > input[type=password]').type('password');
+
+        // Click log in button
+        cy.contains('Authenticate & Login').click();
+
+        // We should now be logged in as robin, and in the control panel
+
+        // Make sure user is logged in
+        cy.get('.main-header__account');
+
+        // Click the account icon
+        cy.get('.main-header__account').click();
+        cy.get('.account-menu__header h2').contains("Robin Screen");
+
+        // Click the "My Profile link"
+        cy.get('.main-header__account').contains('My Profile').click();
+
+        // Make sure we end up on the account page and that the member is "robin"
+        cy.get('h1').contains('robin');
+    })
+
     // Tests that EECORE-1582 is fixed
     it('redirects to login page', function() {
         // Visit a URL that should redirect and then make sure we end up on the login page
