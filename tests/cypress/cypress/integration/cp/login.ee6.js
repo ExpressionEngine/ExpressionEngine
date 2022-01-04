@@ -55,6 +55,31 @@ context('Login Page', () => {
         cy.wait(60000);
     })
 
+    it('test login after logout', function() {
+        // Log in
+        cy.login({ email: 'admin', password: 'password' });
+
+        // User is logged in
+        cy.get('h2').contains("Members");
+
+        // Click the account icon
+        cy.get('.main-header__account').click();
+
+        // Click the log out button
+        cy.contains('Log Out').click();
+
+        // Make sure we can see the login page
+        cy.contains('Username');
+        cy.contains('Password');
+        cy.contains('Remind me');
+
+        // Log in
+        cy.login({ email: 'admin', password: 'password' });
+
+        // User is logged in
+        cy.get('h2').contains("Members");
+    })
+
     it('test login as user', function() {
         // Log in
         cy.login({ email: 'admin', password: 'password' });
