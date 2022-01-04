@@ -345,7 +345,7 @@ $lang = array(
 
     'password_confirm_desc' => 'Retype desired password, to confirm.',
 
-    'password_desc' => 'Use lowercase and uppercase letters, numbers, and symbols for the strongest passwords.',
+    'password_desc' => 'Use lowercase and uppercase letters, numbers, and symbols for strong passwords.',
 
     'password_too_long' => 'Your password cannot be over ' . PASSWORD_MAX_LENGTH . ' characters in length',
 

@@ -9,6 +9,7 @@ const memberCreate = new MemberCreate
 context('Profile - Personal Settings', () => {
   before(function(){
     cy.task('db:seed')
+    cy.eeConfig({ item: 'password_security_policy', value: 'none' })
     cy.auth()
 
     cy.visit('admin.php?/cp/members/roles')
