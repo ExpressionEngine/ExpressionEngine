@@ -55,6 +55,20 @@ context('Login Page', () => {
         cy.wait(60000);
     })
 
+    // Tests that EECORE-1582 is fixed
+    it('redirects to login page', function() {
+        // Visit a URL that should redirect and then make sure we end up on the login page
+        cy.visit('admin.php?/cp/login/0');
+
+        // Make sure there are no errors
+        cy.hasNoErrors();
+
+        // Make sure we can see the login page
+        cy.contains('Username');
+        cy.contains('Password');
+        cy.contains('Remind me');
+    })
+
     it('shows the reset password form when link is clicked', function() {
         cy.contains('Remind me').click()
 
@@ -73,7 +87,7 @@ context('Login Page', () => {
             cy.contains('The configured cookie domain does not match the site URL');
 
             cy.login();
-    
+
             cy.contains('The configured cookie domain does not match the site URL');
             cy.get('input[type=submit]').should('not.exist');
         })
