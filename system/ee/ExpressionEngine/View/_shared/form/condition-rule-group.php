@@ -122,17 +122,8 @@
 
 					<div class="condition-rule-operator-wrap" data-new-rule-row-id="new_rule_row_0">
 						<select name="" id="" class="empty-select"></select>
-
-						<div data-input-value="condition-rule-operator" class="condition-rule-operator" style="display: none;">
-							<div class="fields-select-drop">
-								<div class="select">
-									<div class="select__button">
-										<label class="select__button-label"></label>
-									</div>
-								</div>
-							</div>
-						</div>
 					</div>
+
 					<div class="condition-rule-value-wrap" data-new-rule-row-id="new_rule_row_0">
 						<input type="text">
 					</div>
@@ -151,16 +142,6 @@
 
 					<div class="condition-rule-operator-wrap">
 						<select name="" id="" class="empty-select"></select>
-
-						<div data-input-value="condition-rule-operator" class="condition-rule-operator" style="display: none;">
-							<div class="fields-select-drop">
-								<div class="select">
-									<div class="select__button">
-										<label class="select__button-label"></label>
-									</div>
-								</div>
-							</div>
-						</div>
 					</div>
 					<div class="condition-rule-value-wrap">
 						<input type="text">

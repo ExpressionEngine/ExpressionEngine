@@ -252,6 +252,8 @@ $(document).ready(function() {
 		var fieldType;
 		var selectedItem;
 
+		parensRow.find('.condition-rule-operator-wrap .condition-rule-operator').remove();
+
 		$.each(EE.fields, function(i, val) {
 			if (fieldName == val['field_label']) {
 				evaluationRules = val['evaluationRules'];
@@ -323,7 +325,7 @@ $(document).ready(function() {
 
 		var dataDropdownReact = btoa(JSON.stringify(options));
 
-		parensRow.find('.condition-rule-operator-wrap .condition-rule-operator').attr('data-dropdown-react', dataDropdownReact);
+		parensRow.find('.condition-rule-operator-wrap').append('<div data-input-value="condition-rule-operator" class="condition-rule-operator" data-dropdown-react='+dataDropdownReact+'></div>');
 
 		Dropdown.renderFields();
 		parensRow.find('.condition-rule-operator-wrap .empty-select').hide();
