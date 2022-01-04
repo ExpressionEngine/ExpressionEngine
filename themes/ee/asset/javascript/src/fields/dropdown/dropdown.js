@@ -49,6 +49,10 @@ function (_React$Component) {
       if (_this.props.groupToggle) {
         EE.cp.form_group_toggle(_this.input);
       }
+
+      if (_this.props.conditionalRule == 'rule') {
+        EE.cp.show_hide_rule_operator_field(selected, _this.input);
+      }
     });
 
     _defineProperty(_assertThisInitialized(_this), "toggleOpen", function () {

@@ -22,8 +22,10 @@ if ($field_disabled) {
         'limit' => isset($limit) ? $limit : 100,
         'groupToggle' => isset($group_toggle) ? $group_toggle : null,
         'emptyText' => $empty_text,
-        'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null
+        'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null,
+        'conditionalRule' => isset($conditional_toggle) ? $conditional_toggle : null,
     ];
+    
     $react = 'data-dropdown-react="' . base64_encode(json_encode($component)) . '" data-input-value="' . $field_name . '"';
 }
 

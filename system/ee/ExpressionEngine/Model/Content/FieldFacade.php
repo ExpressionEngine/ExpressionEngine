@@ -263,6 +263,7 @@ class FieldFacade
 
     public function getSupportedEvaluationRules()
     {
+        ee()->lang->load('fieldtypes');
         $rulesList = [];
         $supportedEvaluationRules = [];
         $ft = $this->getNativeField();

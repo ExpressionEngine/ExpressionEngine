@@ -25,7 +25,7 @@ class Dropdown extends React.Component {
     $('div[data-dropdown-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('dropdownReact')))
       props.name = $(this).data('inputValue')
-
+      
       // In the case a Dropdown has been dynamically created, allow an initial
       // value to be set other than the one in the initial config
       if ($(this).data('initialValue')) {
@@ -44,6 +44,10 @@ class Dropdown extends React.Component {
 
     if (this.props.groupToggle) {
       EE.cp.form_group_toggle(this.input)
+    }
+
+    if (this.props.conditionalRule == 'rule') {
+      EE.cp.show_hide_rule_operator_field(selected, this.input);
     }
   }
 

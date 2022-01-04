@@ -1,8 +1,22 @@
+.rule-blank-row { display: none !important;}
+
 .field-conditionset-wrapper {
 	a.add-set {
 		display: inline-block;
 		margin-top: 10px;
 		font-size: 0.9em;
+	}
+
+	.conditionset-item {
+		margin-bottom: 10px;
+		position: relative;
+	}
+
+	a.remove-set {
+		position: absolute;
+		top: 10px;
+		right: 15px;
+		display: none;
 	}
 }
 
@@ -27,9 +41,11 @@
 		.rule {
 			display: flex;
 			margin-bottom: 10px;
+			padding-right: 20px;
+			position: relative;
 
 			& > div {
-				flex: 1 1 32%;
+				flex: 1 1 30%;
 				margin-right: 10px;
 			}
 
@@ -40,6 +56,26 @@
 				width: 100%;
 				display: block;
 				text-align: left;
+			}
+
+			.delete_rule {
+				position: absolute;
+				right: 0;
+				margin: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				display: none;
+
+				button {
+					padding: 0 !important;
+					border: none;
+					font-size: 1.2rem;
+					background: none;
+				}
+			}
+
+			&:hover {
+				.delete_rule { display: block;}
 			}
 		}
 	}
