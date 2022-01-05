@@ -698,7 +698,7 @@ class Member_register extends Member
         // If the member group hasn't been switched we'll do it.
 
         if ($member->role_id != $role_id) {
-            ee()->db->query("UPDATE exp_members SET role_id = '" . ee()->db->escape_str($role_id) . "', pending_role_id = NULL WHERE authcode = '" . ee()->db->escape_str($id) . "'");
+            ee()->db->query("UPDATE exp_members SET role_id = '" . ee()->db->escape_str($role_id) . "', pending_role_id = 0 WHERE authcode = '" . ee()->db->escape_str($id) . "'");
         }
 
         ee()->db->query("UPDATE exp_members SET authcode = '' WHERE authcode = '$id'");

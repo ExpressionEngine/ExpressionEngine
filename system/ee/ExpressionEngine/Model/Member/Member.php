@@ -32,7 +32,8 @@ class Member extends ContentModel
     protected static $_hook_id = 'member';
 
     protected static $_typed_columns = array(
-        'cp_homepage_channel' => 'json'
+        'cp_homepage_channel' => 'json',
+        'enable_mfa' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -247,6 +248,7 @@ class Member extends ContentModel
     protected $salt;
     protected $unique_id;
     protected $crypt_key;
+    protected $backup_mfa_code;
     protected $authcode;
     protected $email;
     protected $signature;
@@ -304,6 +306,7 @@ class Member extends ContentModel
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
     protected $dismissed_pro_banner;
+    protected $enable_mfa;
 
     /**
      * Getter for legacy group_id property
@@ -820,30 +823,8 @@ class Member extends ContentModel
         }
 
         // Are secure passwords required?
-        if (bool_config_item('require_secure_passwords')) {
-            $count = array('uc' => 0, 'lc' => 0, 'num' => 0);
-
-            $pass = preg_quote($password, "/");
-
-            $len = strlen($pass);
-
-            for ($i = 0; $i < $len; $i++) {
-                $n = substr($pass, $i, 1);
-
-                if (preg_match("/^[[:upper:]]$/", $n)) {
-                    $count['uc']++;
-                } elseif (preg_match("/^[[:lower:]]$/", $n)) {
-                    $count['lc']++;
-                } elseif (preg_match("/^[[:digit:]]$/", $n)) {
-                    $count['num']++;
-                }
-            }
-
-            foreach ($count as $val) {
-                if ($val == 0) {
-                    return 'not_secure_password';
-                }
-            }
+        if (! ee('Validation')->check('passwordMatchesSecurityPolicy', $password)) {
+            return 'not_secure_password';
         }
 
         // Does password exist in dictionary?

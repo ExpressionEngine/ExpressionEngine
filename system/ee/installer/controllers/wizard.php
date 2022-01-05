@@ -65,9 +65,9 @@ class Wizard extends CI_Controller
 
     // Native First Party ExpressionEngine Modules (everything else is in third
     // party folder)
-    public $native_modules = array('blacklist', 'block_and_allow', 'channel', 'comment', 'commerce', 'consent',
-        'email', 'file', 'forum', 'gallery', 'ip_to_nation',
-        'member', 'metaweblog_api', 'moblog', 'pro', 'pages', 'query', 'relationship',
+    public $native_modules = array('blacklist', 'block_and_allow', 'channel', 'colorpicker', 'comment', 'commerce', 'consent',
+        'email', 'file', 'forum', 'gallery', 'request', 'ip_to_nation',
+        'member', 'metaweblog_api', 'moblog', 'pages', 'pro', 'query', 'relationship',
         'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
     // Third Party Modules may send error messages if something goes wrong.
@@ -1586,9 +1586,9 @@ class Wizard extends CI_Controller
             'password_lockout_interval' => '1',
             'require_ip_for_login' => 'y',
             'require_ip_for_posting' => 'y',
-            'require_secure_passwords' => 'n',
+            'password_security_policy' => 'basic',
             'allow_dictionary_pw' => 'y',
-            'name_of_dictionary_file' => '',
+            'name_of_dictionary_file' => 'dictionary.txt',
             'xss_clean_uploads' => 'y',
             'redirect_method' => $this->userdata['redirect_method'],
             'deft_lang' => $this->userdata['deft_lang'],

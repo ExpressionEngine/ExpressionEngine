@@ -35,6 +35,10 @@ class Members extends CP_Controller
 
         $this->base_url = ee('CP/URL')->make('members');
         $this->stdHeader();
+
+        ee()->javascript->set_global([
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+        ]);
     }
 
     protected function generateSidebar($active = null)
