@@ -55,7 +55,7 @@ context('Login Page', () => {
         cy.wait(60000);
     })
 
-    it('test login after logout', function() {
+    it('logs in after logout', function() {
         // Log in
         cy.login({ email: 'admin', password: 'password' });
 
@@ -80,7 +80,7 @@ context('Login Page', () => {
         cy.get('h2').contains("Members");
     })
 
-    it('test login as user', function() {
+    it('logs in and then uses "login as user" in CP', function() {
         // Log in
         cy.login({ email: 'admin', password: 'password' });
 
