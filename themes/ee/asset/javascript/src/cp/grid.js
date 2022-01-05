@@ -262,9 +262,11 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		}
 
 		if(rowCount == 0) {
-			setTimeout(function(){
-				that.find('.field-no-results.hidden').hide();
-				that.find('.field-no-results').show();
+			var showAddButton = setInterval(function (){
+				if ( !that.find('.field-no-results').hasClass('hidden') ) {
+					that.find('.field-no-results').show();
+					clearInterval(showAddButton);
+				}
 			}, 50);
 		}
 	},
