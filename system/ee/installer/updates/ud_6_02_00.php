@@ -32,6 +32,7 @@ class Updater
             'addProFieldSettings',
             'addTotalMembersCount',
             'addEnableCliConfig',
+            'addMemberValidationAction',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -39,6 +40,21 @@ class Updater
         }
 
         return true;
+    }
+
+    private function addMemberValidationAction()
+    {
+
+        $action = ee()->db->get_where('actions', array('class' => 'Member', 'method' => 'validate'));
+
+        if ($action->num_rows() > 0) {
+            return;
+        }
+
+        ee()->db->insert('actions', array(
+            'class' => 'Member',
+            'method' => 'validate',
+        ));
     }
 
     private function addMfaColumns()

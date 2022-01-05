@@ -1418,12 +1418,12 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'password_lockout_interval password_lockout_interval_desc',
                         'command_title' => 'password_lockout_interval'
                     ),
-                    'fieldset-require_secure_passwords' => array(
+                    'fieldset-password_security_policy' => array(
                         'trail' => [
                             'member_security_settings'
                         ],
-                        'command' => 'require_secure_passwords require_secure_passwords_desc',
-                        'command_title' => 'require_secure_passwords'
+                        'command' => 'password_security_policy password_security_policy_desc',
+                        'command_title' => 'password_security_policy'
                     ),
                     'fieldset-pw_min_len' => array(
                         'trail' => [
@@ -1438,13 +1438,6 @@ class JumpMenu extends AbstractJumpMenu
                         ],
                         'command' => 'allow_dictionary_pw allow_dictionary_pw_desc',
                         'command_title' => 'allow_dictionary_pw'
-                    ),
-                    'fieldset-name_of_dictionary_file' => array(
-                        'trail' => [
-                            'member_security_settings'
-                        ],
-                        'command' => 'name_of_dictionary_file name_of_dictionary_file_desc',
-                        'command_title' => 'name_of_dictionary_file'
                     ),
                     'fieldset-deny_duplicate_data' => array(
                         'trail' => [

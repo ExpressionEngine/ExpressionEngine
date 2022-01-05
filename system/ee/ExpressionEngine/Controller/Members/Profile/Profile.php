@@ -65,6 +65,10 @@ class Profile extends CP_Controller
 
         $this->generateSidebar();
 
+        ee()->javascript->set_global([
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+        ]);
+
         $this->breadcrumbs = array(
             ee('CP/URL')->make('members')->compile() => lang('members'),
             ee('CP/URL')->make('members/profile', $qs)->compile() => $this->member->screen_name

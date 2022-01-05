@@ -64,7 +64,10 @@ Cypress.Commands.add("auth", (user) => {
     cy.login(user);
 })
 
-Cypress.Commands.add("addMembers", (group, count) => {
+Cypress.Commands.add("addMembers", (group, count, password = 'password') => {
+    if (password == 'password') {
+        cy.eeConfig({ item: 'password_security_policy', value: 'none' })
+    }
     cy.auth();
     let i = 1;
     for(i ; i <= count; i++){
@@ -76,8 +79,8 @@ Cypress.Commands.add("addMembers", (group, count) => {
         let username = group + i.toString();
         cy.get('input[name=username]:visible').clear().type(username)
         cy.get('input[name=email]:visible').clear().type(email)
-        cy.get('input[name=password]:visible').clear().type('password')
-        cy.get('input[name=confirm_password]:visible').clear().type('password')
+        cy.get('input[name=password]:visible').clear().type(password)
+        cy.get('input[name=confirm_password]:visible').clear().type(password)
 
         cy.get("body").then($body => {
             if ($body.find("input[name=verify_password]:visible").length > 0) {   //evaluates as true if verify is needed

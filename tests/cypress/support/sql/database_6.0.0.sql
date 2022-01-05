@@ -351,7 +351,7 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(82, 1, 'password_lockout_interval', '1'),
 	(83, 1, 'require_ip_for_login', 'y'),
 	(84, 1, 'require_ip_for_posting', 'y'),
-	(85, 1, 'require_secure_passwords', 'n'),
+	(85, 1, 'password_security_policy', 'basic'),
 	(86, 1, 'allow_dictionary_pw', 'y'),
 	(87, 1, 'name_of_dictionary_file', ''),
 	(88, 1, 'xss_clean_uploads', 'y'),
