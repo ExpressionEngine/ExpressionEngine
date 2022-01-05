@@ -53,6 +53,10 @@ function (_React$Component) {
       if (_this.props.conditionalRule == 'rule') {
         EE.cp.show_hide_rule_operator_field(selected, _this.input);
       }
+
+      if (_this.props.conditionalRule == 'operator') {
+        EE.cp.check_operator_value(selected, _this.input);
+      }
     });
 
     _defineProperty(_assertThisInitialized(_this), "toggleOpen", function () {
@@ -118,7 +122,9 @@ function (_React$Component) {
         dangerouslySetInnerHTML: {
           __html: selected.label
         }
-      })), !selected && React.createElement("i", null, this.props.emptyText), React.createElement("input", {
+      }), this.props.name == 'condition-rule-field' && React.createElement("span", {
+        className: "short-name"
+      }, "{".concat(selected.value, "}"))), !selected && React.createElement("i", null, this.props.emptyText), React.createElement("input", {
         type: "hidden",
         ref: function ref(input) {
           _this2.input = input;

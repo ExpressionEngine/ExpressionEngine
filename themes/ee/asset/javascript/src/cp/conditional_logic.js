@@ -223,7 +223,7 @@ Conditional.Publish.prototype = {
 
 
 			if (set_count.length == 1) {
-					$('.remove-set', this.activeElement).hide();
+				$('.remove-set', this.activeElement).hide();
 			}
 		});
 	},
@@ -239,6 +239,17 @@ function initRules () {
 $(document).ready(function() {
 	initRules();
 
+	function checkFieldType(fieldName) {
+		var fieldType;
+
+		$.each(EE.fields, function(i, val) {
+			if (fieldName == val['field_label']) {
+				fieldType = val['field_type'];
+			}
+		});
+		return fieldType;
+	}
+
 	EE.cp.show_hide_rule_operator_field = function(element, input) {
 
 		if ( ! $(element).size()) {
@@ -249,17 +260,19 @@ $(document).ready(function() {
 		var parensRow = $(input).parents('.rule');
 		var evaluationRules;
 		var operator = {};
-		var fieldType;
 		var selectedItem;
 
+		parensRow.find('.condition-rule-value-wrap input').removeAttr('disabled');
 		parensRow.find('.condition-rule-operator-wrap .condition-rule-operator').remove();
+		parensRow.find('.condition-rule-value-wrap input').remove();
 
 		$.each(EE.fields, function(i, val) {
 			if (fieldName == val['field_label']) {
 				evaluationRules = val['evaluationRules'];
-				fieldType = val['field_type'];
 			}
 		});
+
+		var fieldType = checkFieldType(fieldName);
 
 		$.each(evaluationRules, function(item, value){
 			operator[item] =  value['text'];
@@ -326,10 +339,68 @@ $(document).ready(function() {
 		var dataDropdownReact = btoa(JSON.stringify(options));
 
 		parensRow.find('.condition-rule-operator-wrap').append('<div data-input-value="condition-rule-operator" class="condition-rule-operator" data-dropdown-react='+dataDropdownReact+'></div>');
+		parensRow.find('.condition-rule-value-wrap').append('<input type="text">');
 
 		Dropdown.renderFields();
 		parensRow.find('.condition-rule-operator-wrap .empty-select').hide();
 		parensRow.find('.condition-rule-operator-wrap .condition-rule-operator').show();
+
+		EE.cp.show_hide_value_field(fieldType, selectedItem, parensRow);
+	}
+
+	EE.cp.check_operator_value = function(item, input) {
+		var operatorVal = item.value;
+		var parensRow = $(input).parents('.rule');
+		var ruleLabel = parensRow.find('.condition-rule-field-wrap .select__dropdown-item--selected span').text();
+
+		var rulefieldType = checkFieldType(ruleLabel);
+
+		EE.cp.show_hide_value_field(rulefieldType, operatorVal, parensRow);
+	} 
+
+	EE.cp.show_hide_value_field = function(firstSelectVal, secondSelectVal, parentRow) {
+		var enabled;
+
+		// ENABLED THIRD COLUMN CONDITION
+		if (
+			(firstSelectVal == 'checkboxes' && secondSelectVal == 'equal') ||
+			(firstSelectVal == 'checkboxes' && secondSelectVal == 'notEqual') ||
+			(firstSelectVal == 'colorpicker') || (firstSelectVal == 'date') ||
+			(firstSelectVal == 'duration') || (firstSelectVal == 'email_address') ||
+			(firstSelectVal == 'multi_select' && secondSelectVal == 'equal') ||
+			(firstSelectVal == 'multi_select' && secondSelectVal == 'notEqual') ||
+			(firstSelectVal == 'radio' && secondSelectVal == 'equal') ||
+			(firstSelectVal == 'radio' && secondSelectVal == 'notEqual') ||
+			(firstSelectVal == 'rte') ||
+			(firstSelectVal == 'select' && secondSelectVal == 'equal') ||
+			(firstSelectVal == 'select' && secondSelectVal == 'notEqual') ||
+			(firstSelectVal == 'toggle') || (firstSelectVal == 'url') ||
+			(firstSelectVal == 'textarea') || (firstSelectVal == 'text')
+		) {
+			enabled = true;
+		}
+
+		// DISABLED THIRD COLUMN CONDITION
+
+		if (
+			(firstSelectVal == 'checkboxes' && secondSelectVal == 'isEmpty') ||
+			(firstSelectVal == 'checkboxes' && secondSelectVal == 'isNotEmpty') ||
+			(firstSelectVal == 'file') ||
+			(firstSelectVal == 'multi_select' && secondSelectVal == 'isEmpty') ||
+			(firstSelectVal == 'multi_select' && secondSelectVal == 'isNotEmpty') ||
+			(firstSelectVal == 'radio' && secondSelectVal == 'isEmpty') ||
+			(firstSelectVal == 'radio' && secondSelectVal == 'isNotEmpty') ||
+			(firstSelectVal == 'select' && secondSelectVal == 'equal') ||
+			(firstSelectVal == 'select' && secondSelectVal == 'notEqual')
+		) {
+			enabled = false;
+		}
+
+		if (enabled) {
+			parentRow.find('.condition-rule-value-wrap').children().show();
+		} else {
+			parentRow.find('.condition-rule-value-wrap').children().hide();
+		}
 	}
 });
 

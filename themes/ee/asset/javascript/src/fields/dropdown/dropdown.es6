@@ -49,6 +49,10 @@ class Dropdown extends React.Component {
     if (this.props.conditionalRule == 'rule') {
       EE.cp.show_hide_rule_operator_field(selected, this.input);
     }
+
+    if (this.props.conditionalRule == 'operator') {
+      EE.cp.check_operator_value(selected, this.input);
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -95,7 +99,10 @@ class Dropdown extends React.Component {
         <div className={"select__button js-dropdown-toggle"} onClick={this.toggleOpen}>
           <label className={'select__button-label' + (this.state.selected ? ' act' : '')}>
             {selected &&
-              <span>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}<span dangerouslySetInnerHTML={{__html: selected.label}}></span></span>
+              <span>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}
+                <span dangerouslySetInnerHTML={{__html: selected.label}}></span>
+                {this.props.name == 'condition-rule-field' && <span className="short-name">{`{${selected.value}}`}</span>}
+              </span>
             }
             { ! selected && <i>{this.props.emptyText}</i>}
             <input type="hidden"

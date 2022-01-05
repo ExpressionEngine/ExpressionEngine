@@ -10,16 +10,17 @@
 	$rule = [
 		'choices' => ee('View/Helpers')->normalizedChoices($fieldLabelArr),
 		'value' => '',
-		'too_many' => 50,
+		'too_many' => 10,
 		'class' => 'condition-rule-field',
 		'empty_text' => 'Select a Field',
 		'field_name' => 'condition-rule-field',
-		'conditional_toggle' => 'rule'
+		'conditional_toggle' => 'rule',
+		'is_required' => true
 	];
 
 	$allAny = [
-		"all" => 'All',
-		"any" => 'Any',
+		"all" => 'all',
+		"any" => 'any',
 	];
 
 	$match = [

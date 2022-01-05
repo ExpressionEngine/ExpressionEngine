@@ -44,6 +44,10 @@
 			padding-right: 20px;
 			position: relative;
 
+			.select__dropdown {
+				min-width: 32%;
+			}
+
 			& > div {
 				flex: 1 1 30%;
 				margin-right: 10px;
@@ -76,6 +80,13 @@
 
 			&:hover {
 				.delete_rule { display: block;}
+			}
+
+			.short-name {
+				display: inline-block;
+				margin-left: 5px;
+				font-size: 0.9em;
+				color: var(--ee-text-secondary);
 			}
 		}
 	}
