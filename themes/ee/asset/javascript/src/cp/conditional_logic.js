@@ -351,7 +351,7 @@ $(document).ready(function() {
 	EE.cp.check_operator_value = function(item, input) {
 		var operatorVal = item.value;
 		var parensRow = $(input).parents('.rule');
-		var ruleLabel = parensRow.find('.condition-rule-field-wrap .select__dropdown-item--selected span').text();
+		var ruleLabel = parensRow.find('.condition-rule-field-wrap .select__dropdown-item--selected span:not(".short-name")').text();
 
 		var rulefieldType = checkFieldType(ruleLabel);
 
@@ -359,7 +359,7 @@ $(document).ready(function() {
 	} 
 
 	EE.cp.show_hide_value_field = function(firstSelectVal, secondSelectVal, parentRow) {
-		var enabled;
+		var enabled = true;
 
 		// ENABLED THIRD COLUMN CONDITION
 		if (
@@ -390,8 +390,8 @@ $(document).ready(function() {
 			(firstSelectVal == 'multi_select' && secondSelectVal == 'isNotEmpty') ||
 			(firstSelectVal == 'radio' && secondSelectVal == 'isEmpty') ||
 			(firstSelectVal == 'radio' && secondSelectVal == 'isNotEmpty') ||
-			(firstSelectVal == 'select' && secondSelectVal == 'equal') ||
-			(firstSelectVal == 'select' && secondSelectVal == 'notEqual')
+			(firstSelectVal == 'select' && secondSelectVal == 'isEmpty') ||
+			(firstSelectVal == 'select' && secondSelectVal == 'isNotEmpty')
 		) {
 			enabled = false;
 		}
@@ -402,6 +402,26 @@ $(document).ready(function() {
 			parentRow.find('.condition-rule-value-wrap').children().hide();
 		}
 	}
+
+	$('body').on('mousemove', '.condition-rule-field-wrap .button-segment', function(e) {
+		var X = e.offsetX;
+		var Y = e.offsetY;
+		var top = Y + 20 + 'px';
+		var left = X + 20 + 'px';
+		if ($(this).find('.tooltiptext').length) {
+			$(this).find('.tooltiptext').css({
+				display: 'block',
+				top: top,
+				left: left
+			});
+		}
+	});
+
+	$('body').on('mouseout', '.condition-rule-field-wrap .button-segment', function(e) {
+		if ($(this).find('.tooltiptext').length) {
+			$(this).find('.tooltiptext').css({display: "none"});
+		}
+	});
 });
 
 })(jQuery);

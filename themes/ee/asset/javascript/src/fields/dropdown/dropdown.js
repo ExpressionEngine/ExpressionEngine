@@ -132,7 +132,9 @@ function (_React$Component) {
         name: this.props.name,
         value: this.state.selected ? this.state.selected.value : '',
         "data-group-toggle": this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'
-      }))), React.createElement("div", {
+      })), selected && this.props.name == 'condition-rule-field' && React.createElement("span", {
+        className: "tooltiptext"
+      }, "".concat(selected.label, " {").concat(selected.value, "}"))), React.createElement("div", {
         className: "select__dropdown dropdown"
       }, this.props.initialCount > this.props.tooMany && React.createElement("div", {
         className: "select__dropdown-search"
@@ -153,7 +155,8 @@ function (_React$Component) {
           selected: _this2.state.selected && item.value == _this2.state.selected.value,
           onClick: function onClick(e) {
             return _this2.selectionChanged(item);
-          }
+          },
+          name: _this2.props.name
         });
       }))));
     }
@@ -199,7 +202,9 @@ function DropdownItem(props) {
     dangerouslySetInnerHTML: {
       __html: item.label
     }
-  }), item.instructions && React.createElement("i", null, item.instructions));
+  }), item.instructions && React.createElement("i", null, item.instructions), props.name == 'condition-rule-field' && React.createElement("span", {
+    className: "short-name"
+  }, "{".concat(item.value, "}")));
 }
 
 $(document).ready(function () {

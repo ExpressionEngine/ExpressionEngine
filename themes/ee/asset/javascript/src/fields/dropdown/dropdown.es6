@@ -112,6 +112,10 @@ class Dropdown extends React.Component {
               data-group-toggle={this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'}
             />
           </label>
+
+          {selected && this.props.name == 'condition-rule-field' && 
+            <span className="tooltiptext">{`${selected.label} {${selected.value}}`}</span>
+          }
         </div>
 
         <div className="select__dropdown dropdown">
@@ -135,7 +139,8 @@ class Dropdown extends React.Component {
               <DropdownItem key={item.value ? item.value : item.section}
                 item={item}
                 selected={this.state.selected && item.value == this.state.selected.value}
-                onClick={(e) => this.selectionChanged(item)} />
+                onClick={(e) => this.selectionChanged(item)}
+                name ={this.props.name} />
             )}
           </div>
         </div>
@@ -158,9 +163,11 @@ function DropdownItem (props) {
   return (
     <div onClick={props.onClick} className={'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')}>
       <span dangerouslySetInnerHTML={{__html: item.label}}></span>{item.instructions && <i>{item.instructions}</i>}
+      {props.name == 'condition-rule-field' && <span className="short-name">{`{${item.value}}`}</span>}
     </div>
   )
 }
+
 
 $(document).ready(function () {
   Dropdown.renderFields()

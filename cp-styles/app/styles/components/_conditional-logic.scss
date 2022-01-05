@@ -49,8 +49,9 @@
 			}
 
 			& > div {
-				flex: 1 1 30%;
+				flex: 0 0 32%;
 				margin-right: 10px;
+				width: 32%;
 			}
 
 			select,
@@ -69,6 +70,7 @@
 				top: 50%;
 				transform: translateY(-50%);
 				display: none;
+				width: auto;
 
 				button {
 					padding: 0 !important;
@@ -88,6 +90,40 @@
 				font-size: 0.9em;
 				color: var(--ee-text-secondary);
 			}
+		}
+	}
+
+	.condition-rule-field-wrap {
+		position: relative;
+
+		.select__button-label {
+			text-overflow: unset;
+
+			& > span {
+				overflow: hidden;
+				display: flex;
+				align-items: center;
+			}
+		}
+
+		.short-name {
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+
+		.tooltiptext {
+			width: auto;
+			color: var(--ee-button-default-color);
+			text-align: left;
+			padding: 0 5px;
+			position: absolute;
+			background: var(--ee-bg-dropdown-hover);
+			font-size: 0.8em;
+			border-radius: 5px;
+			border: 1px solid var(--ee-input-border);
+			line-height: 22px;
+			display: none;
+			z-index: 1200;
 		}
 	}
 }
