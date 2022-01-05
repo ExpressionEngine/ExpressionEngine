@@ -100,8 +100,11 @@ context('Login Page', () => {
         // First lets click the checkbox item "CP Index"
         cy.contains('CP Index').click();
 
+        // Add a 5 second wait, since it couldnt find the password field
+        cy.wait(5000);
+
         // Type in the password
-        cy.get('#fieldset-password > div.field-control > input[type=password]').type('password');
+        cy.get('#fieldset-password input[type=password]').type('password');
 
         // Click log in button
         cy.contains('Authenticate & Login').click();
