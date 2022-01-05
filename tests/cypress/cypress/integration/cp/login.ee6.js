@@ -104,7 +104,7 @@ context('Login Page', () => {
         cy.wait(5000);
 
         // Type in the password
-        cy.get('#fieldset-password input[type=password]').type('password');
+        cy.get('.form-standard > form .field-control input[type=password]').type('password');
 
         // Click log in button
         cy.contains('Authenticate & Login').click();
