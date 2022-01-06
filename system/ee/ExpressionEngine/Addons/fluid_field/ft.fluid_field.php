@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -424,6 +425,14 @@ class Fluid_field_ft extends EE_Fieldtype
             ->order('field_label')
             ->all();
 
+        $all_fields = ee('Model')->get('ChannelField')
+            ->with('ChannelFieldGroups')
+            ->filter('field_id', 'IN', $this->settings['field_channel_fields'])
+            ->orFilter('ChannelFieldGroups.group_id', 'IN', $this->settings['field_channel_field_groups'])
+            ->order('field_label')
+            ->all()
+            ->indexByIds();
+
         $field_groups = ee('Model')->get('ChannelFieldGroup', $this->settings['field_channel_field_groups'])
             ->with('ChannelFields')
             ->order('group_name')
@@ -540,7 +549,7 @@ class Fluid_field_ft extends EE_Fieldtype
                             "[field_id_{$field_id}]",
                         ]));
 
-                        $field = clone $field_templates[$field_id];
+                        $field = clone $all_fields[$field_id];
 
                         $f = clone $field->getField();
                         $f->setName($field_name);
