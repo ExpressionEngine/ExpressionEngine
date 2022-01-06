@@ -5,7 +5,7 @@
     <a href="https://expressionengine.com/pro" class="promo-banner-wrapper" style="background-image: url('<?=URL_THEMES?>asset/img/ee-pro-promo-banner-bg@2x.png'); background-color: #fff;" target="_blank">
       <img src="<?=URL_THEMES?>asset/img/ee-pro-promo-banner@2x.png" alt="ExpressionEngine Pro" style="max-height: 250px;">
     </a>
-    <a href="<?=ee('CP/URL')->make('homepage/dismissBanner')->compile();?>" class="banner-dismiss"></a>
+    <a href="<?=ee('CP/URL')->make('homepage/dismissBanner')->compile();?>" class="banner-dismiss"><span class="sr-only">close banner button</span></a>
   </div>
 <?php endif; ?>
 

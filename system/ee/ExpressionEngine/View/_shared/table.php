@@ -45,6 +45,7 @@
                     $label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="app-listing__header text--center">
+							<span class="sr-only">checkbox column to select existing items</span>
 							<?php if (! empty($data) or $checkbox_header): // Hide checkbox if no data?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
@@ -298,7 +299,7 @@ else: ?>
 				<?php endforeach ?>
 
 				<?php if (!empty($data)): ?>
-					<th class="grid-field__column-remove"></th>
+					<th class="grid-field__column-remove"><span class="sr-only">column for buttons move and remove row</span></th>
 				<?php endif ?>
 		</thead>
 	<?php endif ?>
@@ -412,11 +413,13 @@ else: ?>
 							<div class="grid-field__column-tools">
 								<?php if ($reorder): ?>
 								<button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
+									<span class="sr-only">button for moving rows</span>
 									<span class="grid-field__column-tool"><i class="fas fa-fw fa-arrows-alt"></i></span>
 								</button>
 								<?php endif ?>
 								<button type="button" rel="remove_row" class="button button--small button--default">
-									<span class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fas fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></span>
+									<span class="sr-only">button for remove rows</span>
+									<span class="grid-field__column-tool danger-link"><i class="fas fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></span>
 								</button>
 							</div>
 						</td>
