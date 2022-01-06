@@ -18,6 +18,41 @@ context('Login Page', () => {
         cy.get('input[type=submit]').should('not.be.disabled');
     })
 
+    it('logs out when session cookies are cleared', function() {
+        // Make sure we are using "cookie" as our session type
+        cy.eeConfig({item: 'website_session_type', value: 'c'})
+
+        cy.eeConfig({item: 'website_session_type'}) .then((config) => {
+             expect(config.trim()).to.be.equal('c')
+        })
+
+        // Make sure the exp_sessionid cookie is null
+        cy.getCookie('exp_sessionid').should('be.null')
+
+        // Log in
+        cy.login({ email: 'admin', password: 'password' });
+
+        // Make sure the exp_sessionid cookie is not null
+        cy.getCookie('exp_sessionid').should('not.be.null');
+
+        // Make sure the login modal is not visible
+        cy.contains('Log into EE6').should('not.be.visible');
+
+        // Clear the exp_sessionid cookie and make sure it is null
+        cy.clearCookie('exp_sessionid').should('be.null');
+
+        // Check that the login modal is visible now
+        cy.contains('Log into EE6').should('be.visible');
+
+        // Click the overview nav item, which will reload the page
+        cy.get('.ee-sidebar').contains('Overview').click({force: true});
+
+        // Make sure user is on the login page
+        cy.contains('Username');
+        cy.contains('Password');
+        cy.contains('Remind me');
+    })
+
     it('rejects when submitting no credentials', function() {
         cy.login({ email: '', password: '' });
 
