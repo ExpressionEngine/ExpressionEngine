@@ -55,6 +55,74 @@ context('Login Page', () => {
         cy.wait(60000);
     })
 
+    context('when cp session is idle', () => {
+        beforeEach(function() {
+            // Log in
+            cy.login({ email: 'admin', password: 'password' });
+
+            // User is logged in
+            cy.get('h2').contains("Members");
+
+            // Make sure we find the modal and it is not visible
+            cy.contains('Log into EE6').should('not.be.visible');
+
+            // Run the JS that would run to trigger the logout modal
+            cy.window().then((win) => {
+                win.EE.cp.broadcastEvents.modal()
+                win.$(window).trigger('broadcast.idleState', 'modal');
+                // win.$.get(win.EE.BASE + '&C=login&M=lock_cp');
+            })
+
+            cy.wait(1000);
+            cy.request('GET', '/admin.php?S=0&D=cp&C=login&M=lock_cp')
+
+            // Now make sure we can find the modal, but it is visible
+            cy.contains('Log into EE6').should('be.visible');
+
+        });
+
+        function isLoggedOut() {
+            // Make sure user is not logged in
+            cy.contains('Username');
+            cy.contains('Password');
+            cy.contains('Remind me');
+        }
+
+        it('user is logged out when trying to access CP', function() {
+            // Click the Overview link in the sidebar, which will go to a new page
+            cy.get('.ee-sidebar').contains('Overview').click({force: true});
+
+            // Assert that the user is logged out
+            isLoggedOut();
+        })
+
+        it('user is logged out when entering an invalid password', function() {
+            // Type the password in and click submit
+            cy.get('#idle-modal input[name=password]').type('not-the-password');
+            cy.get('#idle-modal input[name=submit]').click();
+            cy.wait(1000);
+
+            // Click the Overview link in the sidebar, which will go to a new page
+            cy.get('.ee-sidebar').contains('Overview').click({force: true});
+
+            // Assert that the user is logged out
+            isLoggedOut();
+        })
+
+        it('user is logged in when entering a valid password', function() {
+            // Type the password in and click submit
+            cy.get('#idle-modal input[name=password]').type('password');
+            cy.get('#idle-modal input[name=submit]').click();
+            cy.wait(1000);
+
+            // Click the Overview link in the sidebar, which will go to a new page
+            cy.get('.ee-sidebar').contains('Overview').click({force: true});
+
+            // Make sure user is still logged in
+            cy.get('h2').contains("Members");
+        })
+    })
+
     it('logs in after logout', function() {
         // Log in
         cy.login({ email: 'admin', password: 'password' });
