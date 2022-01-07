@@ -71,6 +71,10 @@ $lang = array(
 
     'rel_ft_unrelated_only' => 'Unrelated only',
 
+    'rel_ft_display_entry_id' => 'Display Entry IDs?',
+
+    'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
+
     'rel_ft_max' => 'Maximum selection',
 
     'rel_ft_max_desc' => 'Sets the maximum number of entries this field can be used to relate.',
