@@ -11,6 +11,23 @@
 //
 // require('@4tw/cypress-drag-drop')
 import 'cypress-file-upload';
+import 'cypress-maildev';
+
+//https://github.com/cypress-io/cypress/issues/249
+const COMMAND_DELAY = Cypress.env('COMMAND_DELAY') || 0;
+if (COMMAND_DELAY > 0) {
+    for (const command of ['visit', 'click', 'trigger', 'type', 'clear', 'reload', 'contains']) {
+        Cypress.Commands.overwrite(command, (originalFn, ...args) => {
+            const origVal = originalFn(...args);
+
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(origVal);
+                }, COMMAND_DELAY);
+            });
+        });
+    }
+}
 
 // -- This is a parent command --
 Cypress.Commands.add("login", (user) => {
@@ -47,7 +64,10 @@ Cypress.Commands.add("auth", (user) => {
     cy.login(user);
 })
 
-Cypress.Commands.add("addMembers", (group, count) => {
+Cypress.Commands.add("addMembers", (group, count, password = 'password') => {
+    if (password == 'password') {
+        cy.eeConfig({ item: 'password_security_policy', value: 'none' })
+    }
     cy.auth();
     let i = 1;
     for(i ; i <= count; i++){
@@ -59,8 +79,8 @@ Cypress.Commands.add("addMembers", (group, count) => {
         let username = group + i.toString();
         cy.get('input[name=username]:visible').clear().type(username)
         cy.get('input[name=email]:visible').clear().type(email)
-        cy.get('input[name=password]:visible').clear().type('password')
-        cy.get('input[name=confirm_password]:visible').clear().type('password')
+        cy.get('input[name=password]:visible').clear().type(password)
+        cy.get('input[name=confirm_password]:visible').clear().type(password)
 
         cy.get("body").then($body => {
             if ($body.find("input[name=verify_password]:visible").length > 0) {   //evaluates as true if verify is needed
@@ -205,6 +225,18 @@ Cypress.Commands.add("createChannel", ({ max_entries }) => {
         return harvest.stdout;
     })
 
+})
+
+Cypress.Commands.add("createMembers", ({ n }) => {
+
+    if (!n) n = 1
+
+    let command = [
+        `cd support/fixtures && php member.php`,
+        `--number ${n}`
+    ].join(' ')
+
+    cy.exec(command)
 })
 
 // -- This is a child command --

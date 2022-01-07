@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '6.1.6'; // The version being installed
+    public $version = '6.2.0'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -65,9 +65,9 @@ class Wizard extends CI_Controller
 
     // Native First Party ExpressionEngine Modules (everything else is in third
     // party folder)
-    public $native_modules = array('blacklist', 'block_and_allow', 'channel', 'comment', 'commerce', 'consent',
-        'email', 'file', 'forum', 'gallery', 'ip_to_nation',
-        'member', 'metaweblog_api', 'moblog', 'pro', 'pages', 'query', 'relationship',
+    public $native_modules = array('blacklist', 'block_and_allow', 'channel', 'colorpicker', 'comment', 'commerce', 'consent',
+        'email', 'file', 'forum', 'gallery', 'request', 'ip_to_nation',
+        'member', 'metaweblog_api', 'moblog', 'pages', 'pro', 'query', 'relationship',
         'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
     // Third Party Modules may send error messages if something goes wrong.
@@ -1586,9 +1586,9 @@ class Wizard extends CI_Controller
             'password_lockout_interval' => '1',
             'require_ip_for_login' => 'y',
             'require_ip_for_posting' => 'y',
-            'require_secure_passwords' => 'n',
+            'password_security_policy' => 'basic',
             'allow_dictionary_pw' => 'y',
-            'name_of_dictionary_file' => '',
+            'name_of_dictionary_file' => 'dictionary.txt',
             'xss_clean_uploads' => 'y',
             'redirect_method' => $this->userdata['redirect_method'],
             'deft_lang' => $this->userdata['deft_lang'],
@@ -1703,6 +1703,7 @@ class Wizard extends CI_Controller
             'memberlist_row_limit' => "20",
             'is_site_on' => 'y',
             'show_ee_news' => 'y',
+            'cli_enabled' => 'y',
             'theme_folder_path' => $this->userdata['theme_folder_path'],
         );
 

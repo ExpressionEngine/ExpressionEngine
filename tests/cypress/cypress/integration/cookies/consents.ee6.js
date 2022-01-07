@@ -4,7 +4,8 @@ import Consents from '../../elements/pages/cookies/Consents';
 const page = new Consents;
 import JumpMenu from '../../elements/pages/jumps/JumpMenu';
 const jumpMenu = new JumpMenu;
-
+import AddonManager from '../../elements/pages/addons/AddonManager';
+const addonManager = new AddonManager;
 var tracker;
 
 context('Cookie Consents', () => {
