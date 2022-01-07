@@ -32,6 +32,8 @@ class Cp
         'fp_module' => array()
     );
 
+    public $css_files = array();
+
     /**
      * Constructor
      *
@@ -875,13 +877,17 @@ class Cp
         $current_top_path = ee()->load->first_package_path();
         $package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
 
-        if (REQ == 'CP') {
-            $url = BASE . AMP . 'C=css' . AMP . 'M=third_party' . AMP . 'package=' . $package . AMP . 'file=' . $file;
-        } else {
-            $url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Channel', 'combo_loader') . AMP . 'type=css' . AMP . 'package=' . $package . AMP . 'file=' . $file;
+        if (! is_array($file)) {
+            $file = array($file);
         }
 
-        $this->add_to_head('<link type="text/css" rel="stylesheet" href="' . $url . '" />');
+        if (array_key_exists($package, $this->css_files)) {
+            $this->css_files[$package] = array_merge($this->css_files[$package], $file);
+        } else {
+            $this->css_files[$package] = $file;
+        }
+
+        $this->css_files = array_map('array_unique', $this->css_files);
     }
 
     /**
@@ -911,7 +917,28 @@ class Cp
      */
     public function get_head()
     {
-        return $this->its_all_in_your_head;
+        if (empty($this->css_files)) {
+            return $this->its_all_in_your_head;
+        }
+
+        $header_items = array_merge($this->its_all_in_your_head);
+
+        $site_index = ee()->functions->fetch_site_index();
+        $combo_loader_action_id = ee()->functions->fetch_action_id('Channel', 'combo_loader');
+
+        foreach($this->css_files as $package => $files) {
+            foreach($files as $file) {
+                if (REQ == 'CP') {
+                    $url = BASE . AMP . 'C=css' . AMP . 'M=third_party' . AMP . 'package=' . $package . AMP . 'file=' . $file;
+                } else {
+                    $url = $site_index . QUERY_MARKER . 'ACT=' . $combo_loader_action_id . AMP . 'type=css' . AMP . 'package=' . $package . AMP . 'file=' . $file;
+                }
+
+                $header_items[] = '<link type="text/css" rel="stylesheet" href="' . $url . '" />';
+            }
+        }
+
+        return $header_items;
     }
 
     /**
