@@ -18,8 +18,8 @@
 
   tr {
   	td {
-  		min-width: 250px;
-  		max-width: 400px;
+  		min-width: 400px;
+  		max-width: 600px;
 
   		@include m-tablet-down {
   			min-width: 0 !important;
@@ -29,10 +29,8 @@
 
   		&.grid-rte,
   		&.grid-file-upload,
-  		&.grid-multi-relate,
-  		&[data-fieldtype="wygwam"] {
-  			min-width: 400px;
-  			max-width: 600px;
+  		&.grid-multi-relate {
+  			// min-width: 400px;
   		}
 
   		&.grid-field__column--tools {
