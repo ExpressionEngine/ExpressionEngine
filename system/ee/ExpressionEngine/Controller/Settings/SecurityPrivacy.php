@@ -60,7 +60,6 @@ class SecurityPrivacy extends Settings
                 ),
                 array(
                     'title' => 'share_analytics',
-                    'desc' => 'share_analytics_desc',
                     'desc' => sprintf(lang('share_analytics_desc'), ee()->cp->masked_url(DOC_URL . 'control-panel/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team')),
                     'fields' => array(
                         'share_analytics' => array(

@@ -20,6 +20,8 @@ class Text_ft extends EE_Fieldtype
         'version' => '1.0.0'
     );
 
+    public $field_content_types;
+
     // Parser Flag (preparse pairs?)
     public $has_array_data = false;
 

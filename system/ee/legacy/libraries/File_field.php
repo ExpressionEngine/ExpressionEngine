@@ -613,7 +613,7 @@ class File_field
     public function parse_field($data)
     {
         // If the file field is in the "{filedir_n}image.jpg" format
-        if (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+        if (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);

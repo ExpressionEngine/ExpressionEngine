@@ -1409,7 +1409,7 @@ DOH;
                         ->first();
 
                     if ($role) {
-                        $search_query[] = " member_id IN (" . implode($role->Members->pluck('member_id'), ',') . ")";
+                        $search_query[] = " member_id IN (" . implode(',', $role->Members->pluck('member_id')) . ")";
                     }
                 }
             } elseif ($key == 'screen_name' || $key == 'email') {
@@ -1545,7 +1545,7 @@ DOH;
                         ->first();
 
                     if ($role) {
-                        $search_query[] = " member_id IN (" . implode($role->Members->pluck('member_id'), ',') . ")";
+                        $search_query[] = " member_id IN (" . implode(',', $role->Members->pluck('member_id')) . ")";
                     }
                 }
             }

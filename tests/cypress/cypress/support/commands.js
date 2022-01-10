@@ -188,6 +188,7 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
         (site_id) ? ` --site-id ${site_id}` : ''
     ].join('');
 
+    //cy.exec('ddev exec --dir /var/www/html/tests/cypress "' + command + '"').then((harvest) => {
     cy.exec(command).then((harvest) => {
         return harvest.stdout;
     })

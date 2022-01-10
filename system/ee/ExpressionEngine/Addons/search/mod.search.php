@@ -30,6 +30,7 @@ class Search
 
     protected $_meta = array();
     protected $custom_fields = [];
+    protected $m_paths;
 
     private $param_bypass = null; // we need to define a standard here, something like `BYPASS PARAM`
 
