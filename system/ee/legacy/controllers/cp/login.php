@@ -341,8 +341,7 @@ class Login extends CP_Controller
 
         if (ee()->config->item('cp_session_type') != 's' && ee()->config->item('cookie_domain') != '') {
             $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-            $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('cookie_domain'));
-            if ($domain_matches === false) {
+            if (strpos(ee()->config->item('cp_url'), $cookie_domain) === false) {
                 ee('CP/Alert')
                     ->makeInline()
                     ->asIssue()
