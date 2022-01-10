@@ -36,14 +36,13 @@ context('Login Page', () => {
         cy.getCookie('exp_sessionid').should('not.be.null');
 
         // Make sure the login modal is not visible
-        cy.contains('Log into EE6').should('not.be.visible');
+        cy.get('#idle-modal', { timeout: 20000 }).should('not.be.visible');
 
         // Clear the exp_sessionid cookie and make sure it is null
         cy.clearCookie('exp_sessionid').should('be.null');
 
         // Check that the login modal is visible now
-        cy.wait(1000);
-        cy.contains('Log into EE6').should('be.visible');
+        cy.get('#idle-modal', { timeout: 20000 }).should('be.visible');
 
         // Click the overview nav item, which will reload the page
         cy.get('.ee-sidebar').contains('Overview').click({force: true});
