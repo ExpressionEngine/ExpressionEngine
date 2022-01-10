@@ -822,9 +822,14 @@ class EE_Core
             $error = lang('csrf_token_expired');
 
             //is the cookie domain part of site URL?
-            if (ee()->config->item('cookie_domain') != '') {
+            if (
+                ee()->config->item('cookie_domain') != '' && (
+                    (REQ == 'CP' && ee()->config->item('cp_session_type') != 's') ||
+                    (REQ == 'ACTION' && ee()->config->item('website_session_type') != 's')
+                )
+            ) {
                 $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('cookie_domain'));
+                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('site_url'));
                 if ($domain_matches === false) {
                     $error = lang('cookie_domain_mismatch');
                 }

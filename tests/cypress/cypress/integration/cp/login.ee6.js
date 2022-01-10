@@ -146,9 +146,11 @@ context('Login Page', () => {
 
         it('user is logged in when entering a valid password', function() {
             // Type the password in and click submit
+            cy.intercept('**/authenticate').as('authenticate')
             cy.get('#idle-modal input[name=password]').type('password');
             cy.get('#idle-modal input[name=submit]').click();
-            cy.wait(1000);
+
+            cy.wait('@authenticate');
 
             // Click the Overview link in the sidebar, which will go to a new page
             cy.get('.ee-sidebar').contains('Overview').click({force: true});
