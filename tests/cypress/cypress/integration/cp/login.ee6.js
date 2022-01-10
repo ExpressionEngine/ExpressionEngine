@@ -42,6 +42,7 @@ context('Login Page', () => {
         cy.clearCookie('exp_sessionid').should('be.null');
 
         // Check that the login modal is visible now
+        cy.wait(1000);
         cy.contains('Log into EE6').should('be.visible');
 
         // Click the overview nav item, which will reload the page
