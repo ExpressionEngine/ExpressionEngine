@@ -1297,8 +1297,8 @@ class Comment
     /**
      * Insert New Comment
      *
-     * @access	public
-     * @return	string
+     * @access public
+     * @return void
      */
     public function insert_new_comment()
     {
@@ -1882,8 +1882,8 @@ class Comment
      * Comment subscription w/out commenting
      *
      *
-     * @access	public
-     * @return	string
+     * @access public
+     * @return void
      */
     public function comment_subscribe()
     {
@@ -2053,11 +2053,11 @@ class Comment
             );
 
             // Send back the updated comment
-            ee()->output->send_ajax_response(['comment' => $comment_vars->getVariable('comment')]);
+            return ee()->output->send_ajax_response(['comment' => $comment_vars->getVariable('comment')]);
         }
 
         // d-fence
-        ee()->output->send_ajax_response(['error' => $unauthorized]);
+        return ee()->output->send_ajax_response(['error' => $unauthorized]);
     }
 
     /**
@@ -2072,7 +2072,7 @@ class Comment
     {
         $src = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=comment_editor';
 
-        return $this->return_data = '<script type="text/javascript" charset="utf-8" src="' . $src . '"></script>';
+        return '<script type="text/javascript" charset="utf-8" src="' . $src . '"></script>';
     }
 
     /**

@@ -626,7 +626,7 @@ class Login extends CP_Controller
         }
 
         if ($this->session->userdata('is_banned') === true) {
-            return show_error(lang('unauthorized_request'));
+            show_error(lang('unauthorized_request'));
         }
 
         // Side note 'get_post' actually means 'fetch from post or get'.  It
@@ -648,7 +648,7 @@ class Login extends CP_Controller
         // If we don't find a valid token, then they
         // shouldn't be here.  Show em an error.
         if ($member_id_query->num_rows() === 0) {
-            return show_error(lang('id_not_found'));
+            show_error(lang('id_not_found'));
         }
 
         $member_id = $member_id_query->row('member_id');

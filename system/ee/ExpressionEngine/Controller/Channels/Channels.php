@@ -631,7 +631,7 @@ class Channels extends AbstractChannelsController
         $selected = ee('Request')->post('cat_group') ?: [];
 
         if ($channel && ! empty($channel->cat_group)) {
-            $selected = explode('|', $channel->cat_group);
+            $selected = explode('|', (string) $channel->cat_group);
         }
 
         $no_results = [
@@ -758,7 +758,7 @@ class Channels extends AbstractChannelsController
 
         $deft_category_options = ['' => lang('none')];
 
-        $category_group_ids = $channel->cat_group ? explode('|', $channel->cat_group) : array();
+        $category_group_ids = $channel->cat_group ? explode('|', (string) $channel->cat_group) : array();
 
         if (count($category_group_ids)) {
             $categories = ee('Model')->get('Category')

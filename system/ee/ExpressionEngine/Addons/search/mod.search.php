@@ -30,6 +30,7 @@ class Search
 
     protected $_meta = array();
     protected $custom_fields = [];
+    protected $m_paths;
 
     /**
      * Do Search

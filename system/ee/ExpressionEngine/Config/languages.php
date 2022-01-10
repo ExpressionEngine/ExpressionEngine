@@ -106,7 +106,6 @@ return array(
     'Rhaeto-Romance' => 'rm',
     'Romanian' => 'ro',
     'Russian' => 'ru',
-    'Kinyarwanda' => 'rw',
     'Sanskrit' => 'sa',
     'Sindhi' => 'sd',
     'Sangho' => 'sg',
