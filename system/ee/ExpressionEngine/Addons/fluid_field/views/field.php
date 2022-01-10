@@ -5,7 +5,10 @@
       <div class="fluid__item-tools fluid__item-tools--item-open">
 
     		<?php if (empty($is_bulk_edit)): ?>
-    		<button type="button" data-dropdown-offset="0px, -30px" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle"><i class="fas fa-fw fa-cog"></i></button>
+    		<button type="button" data-dropdown-offset="0px, -30px" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle">
+    			<span class="sr-only">tools icon</span>
+    			<i class="fas fa-fw fa-cog"></i>
+    		</button>
     		<div class="dropdown">
     			<a href class="dropdown__link js-toggle-fluid-item"><?=lang('collapse')?></a>
     			<a href class="dropdown__link js-hide-all-fluid-items"><?=lang('collapse_all')?></a>
@@ -14,14 +17,20 @@
     			<a href class="dropdown__link dropdown__link--danger js-fluid-remove"><i class="fas fa-fw fa-trash-alt"></i> <?=lang('delete')?></a>
     		</div>
     		<?php else: ?>
-    			<button type="button" class="fluid__item-tool js-fluid-remove danger-link" title="<?=lang('remove')?>"><i class="fas fa-fw fa-trash-alt"></i></button>
+    			<button type="button" class="fluid__item-tool js-fluid-remove danger-link" title="<?=lang('remove')?>">
+    				<span class="sr-only">remove icon</span>
+    				<i class="fas fa-fw fa-trash-alt"></i>
+    			</button>
     		<?php endif; ?>
 
     		<?php if (empty($is_bulk_edit) and isset($fields)): ?>
-    			<button type="button" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle" title="<?=lang('add_field')?>"><i class="fas fa-fw fa-plus"></i></button>
+    			<button type="button" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle" title="<?=lang('add_field')?>">
+    				<span class="sr-only">add icon</span>
+    				<i class="fas fa-fw fa-plus"></i>
+    			</button>
     			<div class="dropdown">
     			<?php foreach ($fields as $field_item): ?>
-    				<a href="#" class="dropdown__link" data-field-name="<?=$field_item->getShortName()?>"><img src="<?=$field_item->getIcon()?>" width="12" height="12" /> 
+    				<a href="#" class="dropdown__link" data-field-name="<?=$field_item->getShortName()?>"><img src="<?=$field_item->getIcon()?>" alt="<?=$field_item->getShortName()?> icon" width="12" height="12" /> 
     					<?=$field_item->getItem('field_label')?>
     				</a>
     			<?php endforeach; ?>

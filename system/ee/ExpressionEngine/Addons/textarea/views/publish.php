@@ -5,6 +5,7 @@ $attributes = array(
     'rows' => $settings['field_ta_rows'],
     'dir' => $settings['field_text_direction'],
     'class' => $class,
+    'aria-label' => $settings['field_label'].' field',
 );
 
 if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y') {
@@ -23,10 +24,12 @@ if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y') {
 <?=form_textarea($attributes);?>
 <?php if ($toolbar || (! $toolbar && isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y')): ?>
 <div class="format-options">
+    <?php $ariaLabel = 'aria-label="format options for '.$settings['field_label'].'"';?>
+
     <?php if ($toolbar): ?>
     <div class="d-flex align-items-center">
         <?php if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y'): ?>
-            <?=form_dropdown($format_name, $format_options, $settings['field_fmt'])?>
+            <?=form_dropdown($format_name, $format_options, $settings['field_fmt'], $ariaLabel)?>
             <span class="mr-s"></span>
         <?php endif; ?>
 
@@ -44,7 +47,7 @@ if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y') {
     <?php endif ?>
 
     <?php if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y' && ! $toolbar): ?>
-        <?=form_dropdown($format_name, $format_options, $settings['field_fmt'])?>
+        <?=form_dropdown($format_name, $format_options, $settings['field_fmt'], $ariaLabel)?>
     <?php endif ?>
 
     <?php if ($smileys_enabled && isset($settings['field_show_smileys']) && $settings['field_show_smileys'] == 'y'): ?>

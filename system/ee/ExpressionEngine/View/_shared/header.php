@@ -90,6 +90,7 @@ $current_page = ee()->uri->segment(2);
 
           <div class="main-header__account" role="navigation" aria-label="admin navigation">
             <button type="button" data-dropdown-offset="0px, 4px" data-dropdown-pos="bottom-end" class="main-nav__account-icon main-header__account-icon js-dropdown-toggle">
+            	<span class="sr-only">admin icon to show dropdown with main account information</span>
       				<img src="<?= $cp_avatar_path ?>" alt="<?=$cp_screen_name?>">
       			</button>
             <div class="dropdown dropdown--accent account-menu">

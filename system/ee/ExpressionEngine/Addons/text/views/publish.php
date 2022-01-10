@@ -7,13 +7,13 @@ $show_file_selector = (isset($settings['field_show_file_selector']) && $settings
 if ($show_fmt or $show_file_selector): ?>
 <div class="format-options">
     <div class="d-flex align-items-center">
-
+    <?php $ariaLabel = 'aria-label="format options for '.$settings['field_label'].'"';?>
     <?php if ($show_file_selector): ?>
         <div class="button-toolbar toolbar">
             <div class="button-group button-group-xsmall">
                 <a class="m-link textarea-field-filepicker html-upload button button--default" href="<?=$fp_url?>" rel="modal-file" title="<?=lang('upload_file')?>" rel="modal-file" data-input-value="<?=$name?>"></a>
                 <?php if ($show_fmt): ?>
-                    <?=form_dropdown('field_ft_' . $settings['field_id'], $format_options, $settings['field_fmt'])?>
+                    <?=form_dropdown('field_ft_' . $settings['field_id'], $format_options, $settings['field_fmt'], $ariaLabel)?>
                     <span class="mr-s"></span>
                 <?php endif; ?>
             </div>
@@ -21,7 +21,7 @@ if ($show_fmt or $show_file_selector): ?>
     <?php endif; ?>
 
     <?php if (! $show_file_selector && $show_fmt): ?>
-        <?=form_dropdown('field_ft_' . $settings['field_id'], $format_options, $settings['field_fmt'])?>
+        <?=form_dropdown('field_ft_' . $settings['field_id'], $format_options, $settings['field_fmt'], $ariaLabel)?>
     <?php endif; ?>
     </div>
 </div>

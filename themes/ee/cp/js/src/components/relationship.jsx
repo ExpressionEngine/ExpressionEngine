@@ -323,7 +323,7 @@ class Relationship extends React.Component {
                             <div className="filter-bar flex-grow">
                                 <div className="filter-bar__item flex-grow">
                                     <div className="search-input">
-                                        <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={EE.relationship.lang.search} />
+                                        <input type="text" class="search-input__input input--small" aria-label="search input" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={EE.relationship.lang.search} />
                                     </div>
                                 </div>
                                 {props.channels.length > 1 && 

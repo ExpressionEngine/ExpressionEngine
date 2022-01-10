@@ -107,7 +107,8 @@ class Text_ft extends EE_Fieldtype
             'name' => $this->field_name,
             'value' => $this->_format_number($data, $type),
             'dir' => $this->settings['field_text_direction'],
-            'field_content_type' => $type
+            'field_content_type' => $type,
+            'aria-label' => 'Field for '.$this->field_name
         );
 
         if ($this->get_setting('field_disabled')) {

@@ -30,7 +30,7 @@
 						</ul>
 					<?php endif ?>
 					<?php foreach ($row['columns'] as $column): ?>
-						<div class="field-control 333">
+						<div class="field-control">
 							<?=$column['html']?>
 						</div>
 					<?php endforeach ?>

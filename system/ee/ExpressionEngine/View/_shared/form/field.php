@@ -59,7 +59,6 @@ case 'text':
     if ($class): ?>
 		<div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
 	<?php endif ?>
-
 			<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> aria-label="<?=$field_name?> field">
 
 	<?php if (!empty($class)): ?>
@@ -69,7 +68,7 @@ case 'text':
     // no break
 case 'short-text': ?>
 	<label class="flex-input <?=$class?>">
-		<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+		<input aria-label="<?=$field_name?> field" type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
 		<span class="label-txt"><?=lang($field['label'])?></span>
 	</label>
 <?php break;
