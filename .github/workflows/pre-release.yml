@@ -105,8 +105,8 @@ jobs:
       strategy:
           fail-fast: false
           matrix:
-              php: [7.4]
-              os: [ubuntu-18.04]
+              php: [8.1]
+              os: [ubuntu-latest]
 
       name: One-click updater, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -123,7 +123,6 @@ jobs:
                   wget -q https://github.com/ExpressionEngine/ExpressionEngine/releases/download/6.1.5/ExpressionEngine6.1.5.zip
                   unzip -q ExpressionEngine6.1.5.zip
                   mv ./__repo/tests ./
-                  rm -rf system/ee/installer
                   sudo apt-get install -yq rpl
                   rpl -Rv https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/ExpressionEngine/Service/Updater/Runner.php
                   rpl -Rv https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/legacy/libraries/El_pings.php
@@ -145,6 +144,10 @@ jobs:
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
                 rpl -Rv '${{ needs.build.outputs.version }}' '6.1.5' system/user/config/config.php
+
+            - name: Remove installer
+              run: |
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
