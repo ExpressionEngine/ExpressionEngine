@@ -184,7 +184,7 @@ jobs:
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
-                    os: ubuntu-21.04 #is using mysql8
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Admin, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -284,7 +284,7 @@ jobs:
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
-                    os: ubuntu-21.04 #is using mysql8
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -384,7 +384,7 @@ jobs:
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
-                    os: ubuntu-21.04 #is using mysql8
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Members, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -489,7 +489,7 @@ jobs:
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
-                    os: ubuntu-21.04 #is using mysql8
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -589,7 +589,7 @@ jobs:
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
-                    os: ubuntu-21.04 #is using mysql8
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Utils, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -689,7 +689,7 @@ jobs:
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
-                    os: ubuntu-21.04 #is using mysql8
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -790,7 +790,7 @@ jobs:
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
-                    os: ubuntu-21.04 #is using mysql8
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Heavy Load, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -887,7 +887,7 @@ jobs:
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
-                    os: ubuntu-21.04 #is using mysql8
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Installer, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -978,7 +978,7 @@ jobs:
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
-                    os: ubuntu-21.04 #is using mysql8
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Frontend Content, PHP${{ matrix.php }} - ${{ matrix.os }}
 
