@@ -685,7 +685,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6, 7.1, 7.2, 7.4, 8.0]
+                php: [7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
@@ -827,7 +827,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
