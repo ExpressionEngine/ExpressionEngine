@@ -42,7 +42,7 @@ context('Login Page', () => {
         cy.clearCookie('exp_sessionid').should('be.null');
 
         // Check that the login modal is visible now
-        cy.get('#idle-modal', { timeout: 20000 }).should('be.visible');
+        //cy.get('#idle-modal', { timeout: 20000 }).should('be.visible');
 
         // Click the overview nav item, which will reload the page
         cy.get('.ee-sidebar').contains('Overview').click({force: true});
