@@ -20,7 +20,7 @@ context('One-Click Updater', () => {
     cy.auth();
 
     cy.get('.ee-sidebar__version').click();
-    cy.get('.app-about__status--update').should('be.visible');
+    cy.get('.app-about__status .button--primary').should('be.visible');
     //app-about__status-version 6.1.6
     
   })
@@ -32,7 +32,7 @@ context('One-Click Updater', () => {
 
   it('should fail preflight check when permissions are incorrect', () => {
     cy.exec(`chmod 444 '../../system/user/config/config.php'`)
-    cy.get('.app-about__status--update .button--primary').click()
+    cy.get('.app-about__status .button--primary').click()
     if (Cypress.platform === 'win32')
     {
         cy.log('skipped because of Windows platform')
