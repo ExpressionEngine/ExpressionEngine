@@ -6,8 +6,11 @@ const page = new Edit;
 
 
 context('Publish Page - Edit', () => {
-  beforeEach(function(){
+  before(function(){
     cy.task('db:seed')
+  })
+
+  beforeEach(function(){
     cy.auth();
     cy.hasNoErrors()
   })
