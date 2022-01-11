@@ -343,6 +343,13 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			EE.cp.formValidation.bindInputs(el);
 		}
 
+		var gridFieldWidth = $(this.rowContainer).width();
+		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width()
+
+		if (parentFieldControlWidth < gridFieldWidth) {
+			$(this.rowContainer).parents('.grid-field').addClass('overwidth');
+		}
+
 		return el;
 	},
 
