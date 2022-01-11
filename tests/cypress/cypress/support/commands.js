@@ -121,9 +121,11 @@ Cypress.Commands.add("hasNoErrors", () => {
 
     // Our custom PHP error handler
     cy.contains(', line').should('not.exist')
+    cy.contains('Stack Trace').should('not.exist')
 
     cy.contains('Exception Caught').should('not.exist')
     cy.contains('Warning Caught').should('not.exist')
+    cy.contains('Error Caught').should('not.exist')
 })
 
 Cypress.Commands.add("dragTo", { prevSubject: true }, (subject, target) => {

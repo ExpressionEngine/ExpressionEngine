@@ -87,7 +87,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6, 7.1, 7.2, 7.4, 8.0]
+                php: [7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
                   - php: 8.1
@@ -450,6 +450,11 @@ jobs:
 
             - name: Start PHP Server
               run: php -S localhost:8888 &
+
+            - name: Start SMTP Server
+              run: |
+                npm install -g maildev
+                maildev &
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2

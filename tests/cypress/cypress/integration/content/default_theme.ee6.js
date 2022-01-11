@@ -48,7 +48,7 @@ context('Install with default theme', () => {
       install_form.get('install_default_theme').check()
       install_form.get('username').clear().type('admin')
       install_form.get('email_address').clear().type('hello@expressionengine.com')
-      install_form.get('password').clear().type('password')
+      install_form.get('password').clear().type('1Password')
       install_form.get('license_agreement').click()
       install_form.get('install_submit').click()
   
@@ -81,7 +81,7 @@ context('Install with default theme', () => {
   })
 
   it('pages in default theme have no errors', () => {
-    cy.login()
+    cy.login({ email: 'admin', password: '1Password' });
 
     cy.on('uncaught:exception', (err, runnable) => {
         // return false to prevent the error from

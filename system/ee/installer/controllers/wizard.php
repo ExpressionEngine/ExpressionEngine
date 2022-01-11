@@ -148,8 +148,15 @@ class Wizard extends CI_Controller
         define('URL_TITLE_MAX_LENGTH', 200);
         define('PATH_CACHE', SYSPATH . 'user/cache/');
         define('PATH_TMPL', SYSPATH . 'user/templates/');
+        define('PATH_DICT', SYSPATH . 'user/config/');
         define('DOC_URL', 'https://docs.expressionengine.com/v6/');
+        define('SLASH', '&#47;');
+        define('LD', '{');
+        define('RD', '}');
         define('AMP', '&amp;');
+        define('NBS', '&nbsp;');
+        define('BR', '<br />');
+        define('NL', "\n");
         define('BASE', EESELF . '?D=cp');
 
         // Third party constants
@@ -1777,7 +1784,7 @@ class Wizard extends CI_Controller
             }
 
             if (strpos($data, '{' . $key . '}') !== false) {
-                $data = str_replace('{' . $key . '}', $config[$key], $data);
+                $data = str_replace('{' . $key . '}', (string) $config[$key], $data);
                 unset($config[$key]);
             }
         }
