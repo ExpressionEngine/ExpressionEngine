@@ -383,14 +383,16 @@ td.invalid {
 
 // Password reveal toggle
 fieldset {
-	.eye {
+	.eye,
+	#eye {
 		cursor: pointer;
 		position: absolute;
 		right: 15px;
 		top: 46px;
 	}
 	.field-control {
-		.eye {
+		.eye,
+		#eye {
 			top: 12px;
 		}
 	}
