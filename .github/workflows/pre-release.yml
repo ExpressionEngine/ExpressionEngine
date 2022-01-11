@@ -123,6 +123,7 @@ jobs:
                   wget -q https://github.com/ExpressionEngine/ExpressionEngine/releases/download/6.1.5/ExpressionEngine6.1.5.zip
                   unzip -q ExpressionEngine6.1.5.zip
                   mv ./__repo/tests ./
+                  mv ./__repo/build-tools ./
                   sudo apt-get install -yq rpl
                   rpl -v https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/ExpressionEngine/Service/Updater/Runner.php
                   rpl -v https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/legacy/libraries/El_pings.php
@@ -144,6 +145,7 @@ jobs:
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
                 rpl -v '${{ needs.build.outputs.version }}' '6.1.5' system/user/config/config.php
+                rpl -v '${{ needs.build.outputs.version }}' '6.1.5' build-tools/build.json
 
             - name: Remove installer
               run: |
