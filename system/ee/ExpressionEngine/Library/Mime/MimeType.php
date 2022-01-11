@@ -111,7 +111,7 @@ class MimeType
         //try another method to get mime
         if ($mime == 'application/octet-stream') {
             $file_opening = file_get_contents($path, false, null, 0, 50);//get first 50 bytes off the file
-            if (strpos($file_opening, 'RIFF' === 0) && strpos($file_opening, 'WEBPVP8' !== false)) {
+            if (strpos($file_opening, 'RIFF') === 0 && strpos($file_opening, 'WEBPVP8') !== false) {
                 $mime = 'image/webp';
             }
         }
