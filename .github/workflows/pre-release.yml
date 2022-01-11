@@ -7,7 +7,7 @@ on:
       - 6.x
   push:
     branches:
-      - feature/6.x/one-click-updater-tests
+      - feature/6.x/preparing-to-release
 
 jobs:
   build:
@@ -147,10 +147,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                mv system/ee/installer system/ee/_installer
-
-            - name: Remove installer
-              run: |
+                ls -lar system/ee
                 mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
