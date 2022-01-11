@@ -143,7 +143,7 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-                rpl -Rv '${{ needs.build.outputs.version }}' '6.1.5' system/user/config/config.php
+                rpl -v '${{ needs.build.outputs.version }}' '6.1.5' system/user/config/config.php
 
             - name: Remove installer
               run: |
