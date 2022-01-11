@@ -940,7 +940,7 @@ class ChannelEntry extends ContentModel
                     'field_label' => lang('allow_comments'),
                     'field_required' => 'n',
                     'field_show_fmt' => 'n',
-                    'field_instructions' => lang('allow_comments_desc'),
+                    'field_instructions' => lang('allow_comments_desc') . (!$this->isNew() && $this->comment_total ? BR . '<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $this->getId()) . '">' . lang('view_comments') . '</a>' : ''),
                     'field_text_direction' => 'ltr',
                     'field_type' => 'toggle',
                     'yes_no' => true,

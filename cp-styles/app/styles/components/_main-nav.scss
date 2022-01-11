@@ -310,3 +310,16 @@
 		}
 	}
 }
+
+.entry-pannel-heading {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	flex: 1 1;
+
+	.title-bar {
+		flex: 1 1;
+		margin-right: auto;
+		padding-right: 10px;
+	}
+}

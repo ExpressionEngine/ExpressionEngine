@@ -111,7 +111,7 @@ class StandardGlobals extends Variables
         if (ee()->session->userdata('member_id') != 0) {
             $name = (ee()->session->userdata['screen_name'] == '') ? ee()->session->userdata['username'] : ee()->session->userdata['screen_name'];
 
-            $path = "<a href='" . ee()->functions->create_url('/member/' . ee()->session->userdata('member_id')) . "'>" . $name . "</a>";
+            $path = "<a href='" . ee()->functions->create_url(ee()->config->item('profile_trigger') . '/' . ee()->session->userdata('member_id')) . "'>" . $name . "</a>";
 
             return $path;
         }

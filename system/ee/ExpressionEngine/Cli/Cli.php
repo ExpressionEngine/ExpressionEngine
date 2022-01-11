@@ -83,12 +83,21 @@ class Cli
      */
     protected $commandCalled;
 
+    /**
+     * config setting for if the CLI is enabled
+     * @var string
+     */
+    protected $cliEnabled;
+
     public function __construct()
     {
         // Load the language helper and the DB
         ee()->load->helper('language_helper');
         ee()->lang->loadfile('cli');
         ee()->load->database();
+
+        //  Is the CLI disabled in the settings?
+        $this->cliEnabled = ee()->config->item('cli_enabled') != false ? bool_config_item('cli_enabled') : true;
 
         // Initialize the object
         $factory = new CliFactory();
@@ -97,6 +106,11 @@ class Cli
         $this->output = $factory->newStdio();
         $this->input = $factory->newStdio();
         $this->argv = $this->command->argv->get();
+
+        // If the cli is enabled, we will fail here, before anything has really been done
+        if (!$this->cliEnabled) {
+            $this->fail('cli_error_cli_disabled');
+        }
 
         if (! isset($this->argv[1])) {
             $this->fail('cli_error_no_command_given');

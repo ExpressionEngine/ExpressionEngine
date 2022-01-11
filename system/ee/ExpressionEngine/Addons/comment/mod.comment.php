@@ -748,7 +748,8 @@ class Comment
 
         if ($query->row('allow_comments') == 'n'
             or $query->row('comment_system_enabled') == 'n'
-            or ee()->config->item('enable_comments') != 'y') {
+            or ee()->config->item('enable_comments') != 'y'
+            or !ee('Permission')->can('post_comments')) {
             $halt_processing = 'disabled';
         }
 
