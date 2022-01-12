@@ -22,9 +22,9 @@ if (! defined('BASEPATH')) {
  *
  * Opens the file specfied in the path and returns it as a string.
  *
- * @access	public
- * @param	string	path to file
- * @return	string
+ * @access  public
+ * @param   string  path to file
+ * @return  string
  */
 if (! function_exists('read_file')) {
     function read_file($file)
@@ -43,10 +43,10 @@ if (! function_exists('read_file')) {
  * Writes data to the file specified in the path.
  * Creates a new file if non-existent.
  *
- * @access	public
- * @param	string	path to file
- * @param	string	file data
- * @return	bool
+ * @access  public
+ * @param   string  path to file
+ * @param   string  file data
+ * @return  bool
  */
 if (! function_exists('write_file')) {
     function write_file($path, $data, $mode = FOPEN_WRITE_CREATE_DESTRUCTIVE)
@@ -72,12 +72,12 @@ if (! function_exists('write_file')) {
  * If the second parameter is set to TRUE, any directories contained
  * within the supplied base directory will be nuked as well.
  *
- * @access	public
- * @param	string	$path		Path to file
- * @param	bool	$del_dir	Whether to delete any directories found in the path
- * @param	int		$level		Levels deep to traverse the file tree to delete files
- * @param	array	$exclude	Array of file names to exclude from deletion
- * @return	bool
+ * @access  public
+ * @param   string  $path       Path to file
+ * @param   bool    $del_dir    Whether to delete any directories found in the path
+ * @param   int     $level      Levels deep to traverse the file tree to delete files
+ * @param   array   $exclude    Array of file names to exclude from deletion
+ * @return  bool
  */
 if (! function_exists('delete_files')) {
     function delete_files($path, $del_dir = false, $level = 0, $exclude = array())
@@ -118,9 +118,9 @@ if (! function_exists('delete_files')) {
  * Writes an index.html file to a specified path to ensure directories
  * cannot be indexed
  *
- * @access	public
- * @param	string	$path	Path to write index.html to
- * @return	bool	Success or failure of file writing
+ * @access  public
+ * @param   string  $path   Path to write index.html to
+ * @return  bool    Success or failure of file writing
  */
 if (! function_exists('write_index_html')) {
     function write_index_html($path)
@@ -137,11 +137,11 @@ if (! function_exists('write_index_html')) {
  * Reads the specified directory and builds an array containing the filenames.
  * Any sub-folders contained within the specified path are read as well.
  *
- * @access	public
- * @param	string	path to source
- * @param	bool	whether to include the path as part of the filename
- * @param	bool	internal variable to determine recursion status - do not use in calls
- * @return	array
+ * @access  public
+ * @param   string  path to source
+ * @param   bool    whether to include the path as part of the filename
+ * @param   bool    internal variable to determine recursion status - do not use in calls
+ * @return  array
  */
 if (! function_exists('get_filenames')) {
     function get_filenames($source_dir, $include_path = false, $_recursion = false)
@@ -178,11 +178,11 @@ if (! function_exists('get_filenames')) {
  *
  * Any sub-folders contained within the specified path are read as well.
  *
- * @access	public
- * @param	string	path to source
- * @param	bool	Look only at the top level directory specified?
- * @param	bool	internal variable to determine recursion status - do not use in calls
- * @return	array
+ * @access  public
+ * @param   string  path to source
+ * @param   bool    Look only at the top level directory specified?
+ * @param   bool    internal variable to determine recursion status - do not use in calls
+ * @return  array
  */
 if (! function_exists('get_dir_file_info')) {
     function get_dir_file_info($source_dir, $top_level_only = true, $_recursion = false)
@@ -222,10 +222,10 @@ if (! function_exists('get_dir_file_info')) {
 * Options are: name, server_path, size, date, readable, writable, executable, fileperms
 * Returns FALSE if the file cannot be found.
 *
-* @access	public
-* @param	string	path to file
-* @param	mixed	array or comma separated string of information returned
-* @return	array
+* @access   public
+* @param    string  path to file
+* @param    mixed   array or comma separated string of information returned
+* @return   array
 */
 if (! function_exists('get_file_info')) {
     function get_file_info($file, $returned_values = array('name', 'server_path', 'size', 'date'))
@@ -286,9 +286,9 @@ if (! function_exists('get_file_info')) {
  * Takes a numeric value representing a file's permissions and returns
  * standard symbolic notation representing that value
  *
- * @access	public
- * @param	int
- * @return	string
+ * @access  public
+ * @param   int
+ * @return  string
  */
 if (! function_exists('symbolic_permissions')) {
     function symbolic_permissions($perms)
@@ -336,9 +336,9 @@ if (! function_exists('symbolic_permissions')) {
  * Takes a numeric value representing a file's permissions and returns
  * a three character string representing the file's octal permissions
  *
- * @access	public
- * @param	int
- * @return	string
+ * @access  public
+ * @param   int
+ * @return  string
  */
 if (! function_exists('octal_permissions')) {
     function octal_permissions($perms)
