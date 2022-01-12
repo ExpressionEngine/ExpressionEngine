@@ -79,9 +79,18 @@ class Updater
     private function setPasswordSecurityPolicy()
     {
         if (ee()->config->item('require_secure_passwords') == 'y') {
-            ee()->config->set_item('password_security_policy', 'basic');
+            $password_security_policy = 'basic';
         } else {
-            ee()->config->set_item('password_security_policy', 'none');
+            $password_security_policy = 'none';
+        }
+
+        $sites = ee()->db->get('sites');
+        foreach ($sites->result_array() as $site) {
+            ee('Model')->make('Config', [
+                'site_id' => $site['site_id'],
+                'key' => 'password_security_policy',
+                'value' => $password_security_policy
+            ])->save();
         }
     }
 
