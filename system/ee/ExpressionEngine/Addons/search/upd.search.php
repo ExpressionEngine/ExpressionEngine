@@ -37,6 +37,7 @@ class Search_upd
 					 query mediumtext NULL DEFAULT NULL,
 					 custom_fields mediumtext NULL DEFAULT NULL,
 					 result_page varchar(70) NOT NULL,
+					 no_result_page varchar(70) NOT NULL,
 					 PRIMARY KEY `search_id` (`search_id`),
 					 KEY `site_id` (`site_id`)
 		 		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
