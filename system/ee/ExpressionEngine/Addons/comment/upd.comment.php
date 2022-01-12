@@ -13,6 +13,8 @@
  */
 class Comment_upd
 {
+    public $version;
+
     public function __construct()
     {
         ee()->load->dbforge();

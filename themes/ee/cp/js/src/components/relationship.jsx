@@ -104,9 +104,10 @@ class Relationship extends React.Component {
             if (item.children) item.children = this.filterItems(item.children, searchTerm)
 
             let itemFoundInChildren = (item.children && item.children.length > 0)
-            let itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase())
+            let itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
+            let itemValue = (item.value).toString().includes(searchTerm.toLowerCase());
 
-            return (itemFound || itemFoundInChildren) ? item : false
+            return (itemFound || itemFoundInChildren) || itemValue ? item : false
         })
 
         return items.filter(item => item);
@@ -186,6 +187,7 @@ class Relationship extends React.Component {
     filterChange = (name, value) => {
         let filterState = this.state.filterValues
             filterState[name] = value
+
         this.setState({ filterValues: filterState }) // DOM filter
         if ( ! this.ajaxFilter && name == 'search') {
             this.itemsChanged(this.filterItems(this.initialItems, value))
@@ -250,7 +252,6 @@ class Relationship extends React.Component {
         // Determine what items show up in the add dropdown
         let dropdownItems = this.state.items.filter((el) => {
             let allowedChannel = true
-
             // Is the user filtering by channel?
             if (this.state.channelFilter) {
                 allowedChannel = (el.channel_id == this.state.channelFilter)
@@ -269,7 +270,9 @@ class Relationship extends React.Component {
             return notInSelected && allowedChannel && filterName
         })
 
-        let showAddButton = ((this.props.limit > this.state.selected.length) && (this.props.multi || this.state.selected.length==0))
+        let maxItems = this.props.rel_max ? this.props.rel_max : this.props.limit
+
+        let showAddButton = ((maxItems > this.state.selected.length) && (this.props.multi || this.state.selected.length==0) && (this.props.items.length > this.state.selected.length))
 
         let channelFilterItems = props.channels.map((channel) => {
             return { label: channel.title, value: channel.id}
@@ -291,7 +294,7 @@ class Relationship extends React.Component {
                                     <div className="list-item__content">
                                         <div class="list-item__title">{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
                                         {this.state.selected.length <= 10 &&
-                                        <div class="list-item__secondary">{item.instructions}</div>
+                                        <div class="list-item__secondary">{props.display_entry_id && <span> #{item.value} / </span>}{item.instructions}</div>
                                         }
                                     </div>
                                     <div class="list-item__content-right">
@@ -363,7 +366,7 @@ class Relationship extends React.Component {
                         {
                             dropdownItems.map((item) => {
                                 return (
-                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label} <span className="dropdown__link-right">{item.instructions}</span></a>
+                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label}{props.display_entry_id && <span class="dropdown__link-entryId"> (#{item.value})</span>} <span className="dropdown__link-right">{item.instructions}</span></a>
                                 )
                             })
                         }

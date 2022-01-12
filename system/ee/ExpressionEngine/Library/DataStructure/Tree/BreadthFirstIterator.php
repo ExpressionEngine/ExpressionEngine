@@ -56,6 +56,7 @@ class BreadthFirstIterator implements \OuterIterator
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         if ($this->_iterator->hasChildren()) {
@@ -73,6 +74,7 @@ class BreadthFirstIterator implements \OuterIterator
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->_level = 0;
@@ -91,6 +93,7 @@ class BreadthFirstIterator implements \OuterIterator
      *
      * @return boolean iterator is valid
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         if ($this->_iterator->valid()) {
@@ -117,6 +120,7 @@ class BreadthFirstIterator implements \OuterIterator
      *
      * @return <RecursiveIterator> current sub iterator
      */
+    #[\ReturnTypeWillChange]
     public function getInnerIterator()
     {
         return $this->_iterator();
