@@ -26,6 +26,22 @@ class Login extends CP_Controller
         $this->lang->loadfile('login');
     }
 
+    /**
+     * Magic method for redirecting if someone attempts to reach a login method that does not exist
+     *
+     * @access  public
+     * @return  redirect
+     */
+    public function __call($name, $arguments)
+    {
+        // has their session Timed out and they are requesting a page?
+        // Grab the URL, base64_encode it and send them to the login screen.
+        $safe_refresh = ee()->cp->get_safe_refresh();
+        $return_url = ($safe_refresh == 'C=homepage') ? '' : AMP . 'return=' . urlencode(ee('Encrypt')->encode($safe_refresh));
+
+        ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
+    }
+
     public function mfa()
     {
         if (ee()->session->userdata('member_id') == 0) {
@@ -325,8 +341,7 @@ class Login extends CP_Controller
 
         if (ee()->config->item('cp_session_type') != 's' && ee()->config->item('cookie_domain') != '') {
             $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-            $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('cookie_domain'));
-            if ($domain_matches === false) {
+            if (strpos(ee()->config->item('cp_url'), $cookie_domain) === false) {
                 ee('CP/Alert')
                     ->makeInline()
                     ->asIssue()
@@ -878,7 +893,7 @@ class Login extends CP_Controller
         }
 
         if ($this->session->userdata('is_banned') === true) {
-            return show_error(lang('unauthorized_request'));
+            show_error(lang('unauthorized_request'));
         }
 
         // Side note 'get_post' actually means 'fetch from post or get'.  It
@@ -900,7 +915,7 @@ class Login extends CP_Controller
         // If we don't find a valid token, then they
         // shouldn't be here.  Show em an error.
         if ($member_id_query->num_rows() === 0) {
-            return show_error(lang('id_not_found'));
+            show_error(lang('id_not_found'));
         }
 
         $member_id = $member_id_query->row('member_id');

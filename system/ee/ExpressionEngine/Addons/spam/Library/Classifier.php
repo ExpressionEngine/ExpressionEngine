@@ -19,6 +19,8 @@ class Classifier
 
     // Sensitivity of the classifier, are we at least X% sure this is spam?
     public $sensitivity = .5;
+    public $corpus;
+    public $training;
 
     // This is the assumed a priori spam to ham ratio
     public $ratio = .8;

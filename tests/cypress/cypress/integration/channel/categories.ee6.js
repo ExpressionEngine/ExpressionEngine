@@ -150,10 +150,22 @@ context('Categories', () => {
 
     it('check categories list on frontend', function() {
     
-        cy.visit('index.php/cats/index')
+        cy.authVisit('admin.php?/cp/categories/group/1')
+        cy.get('.js-nestable-categories .list-item__title').then(function($title) {
+            let categoriesInCP = _.map($title, function(el) {
+                    return $(el).text().trim();
+            })
+            cy.visit('index.php/cats/index')
+            cy.get('.category_name').then(function($title) {
+                let categories = _.map($title, function(el) {
+                        return $(el).text().trim();
+                })
+                expect(categories).to.deep.equal(categoriesInCP)
 
-        check_category_one()
-        check_category_two()
+                check_category_one()
+                check_category_two()
+            })
+        })
     })
 
     it('check categories on entry page on frontend', function() {

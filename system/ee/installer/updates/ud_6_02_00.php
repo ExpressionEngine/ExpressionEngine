@@ -33,6 +33,7 @@ class Updater
             'addTotalMembersCount',
             'addEnableCliConfig',
             'addMemberValidationAction',
+            'addPendingRoleToMember',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -40,6 +41,23 @@ class Updater
         }
 
         return true;
+    }
+
+    private function addPendingRoleToMember() 
+    {
+        if (!ee()->db->field_exists('pending_role_id', 'members')) {
+            ee()->smartforge->add_column(
+                'members',
+                [
+                    'pending_role_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'default' => '0',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
     }
 
     private function addMemberValidationAction()

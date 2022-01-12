@@ -214,7 +214,7 @@ class EntryList
             $response[] = [
                 'value' => $entry->getId(),
                 'label' => $entry->title,
-                'instructions' => $entry->Channel->channel_title
+                'instructions' => $entry->Channel->channel_title,
             ];
         }
 

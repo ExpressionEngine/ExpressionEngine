@@ -201,7 +201,7 @@ class File_upload_preferences_model extends CI_Model
         $upload_pref_query = $this->db->get('upload_prefs');
 
         foreach ($upload_pref_query->result() as $upload_pref) {
-            $cat_groups = array_merge($cat_groups, explode('|', $upload_pref->cat_group));
+            $cat_groups = array_merge($cat_groups, explode('|', (string) $upload_pref->cat_group));
         }
 
         return array_unique($cat_groups);
