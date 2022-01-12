@@ -126,13 +126,13 @@ class CommandListCommands extends Cli
     {
         foreach ($available as $availableCommand => $availableClass) {
             $length = strlen($availableCommand);
-            if($length >= $this->command_col_width) {
+            if ($length >= $this->command_col_width) {
                 $this->command_col_width = $length;
             }
 
             $availableHydratedClass = new $availableClass();
             $length = strlen($availableHydratedClass->description);
-            if($length >= $this->desc_col_width) {
+            if ($length >= $this->desc_col_width) {
                 $this->desc_col_width = $length;
             }
         }
