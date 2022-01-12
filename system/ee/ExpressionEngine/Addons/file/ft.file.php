@@ -334,9 +334,7 @@ JSC;
             return ee()->TMPL->parse_variables($tagdata, array($file_info));
         }
 
-        if (! empty($file_info['path'])
-            && ! empty($file_info['filename'])
-            && $file_info['extension'] !== false) {
+        if (! empty($file_info['path']) && ! empty($file_info['filename']) && $file_info['extension'] !== false) {
             $full_path = $file_info['path'] . $file_info['filename'] . '.' . $file_info['extension'];
 
             if (isset($params['wrap'])) {

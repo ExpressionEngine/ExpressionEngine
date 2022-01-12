@@ -126,3 +126,11 @@
 	border: 1px solid color(key-border);
 	font-size: 0.85rem;
 }
+
+.click-select-text {
+  cursor: default;
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
+}

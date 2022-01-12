@@ -19,7 +19,7 @@ class NoHtml extends ValidationRule
 {
     public function validate($key, $value)
     {
-        return ! (bool) preg_match("/<[^>]*>/", $value);
+        return ! (bool) preg_match("/<[^>]*>/", (string) $value);
     }
 
     public function getLanguageKey()

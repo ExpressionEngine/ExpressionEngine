@@ -302,7 +302,7 @@ context('Bulk Edit', () => {
 
   })
 
-  it.only('should allow setting sticky on enabled channels', () => {
+  it('should allow setting sticky on enabled channels', () => {
     channel.load_edit_for_channel(1)
     channel.get('settings_tab').click()
     channel.get('sticky_enabled').click()

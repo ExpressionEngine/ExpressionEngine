@@ -148,7 +148,7 @@ class Status extends AbstractChannelsController
 
         $status_name = (empty($status->status)) ? lang('status') : $status->status;
 
-        $status_class = str_replace(' ', '_', strtolower($status->status));
+        $status_class = str_replace(' ', '_', strtolower((string) $status->status));
         $status_example = '<span class="status-tag st-' . $status_class . '" ' . $status_style . '>' . $status_name . '</span>';
 
         $vars['sections'] = array(

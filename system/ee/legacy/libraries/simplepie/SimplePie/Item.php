@@ -732,7 +732,7 @@ class SimplePie_Item
         if (!$date_format) {
             return $this->sanitize($this->get_date(''), SIMPLEPIE_CONSTRUCT_TEXT);
         } elseif (($date = $this->get_date('U')) !== null && $date !== false) {
-            return strftime($date_format, $date);
+            return date($date_format, $date);
         } else {
             return null;
         }

@@ -217,14 +217,15 @@ class Edit extends AbstractPublishController
             $choices[$link->compile()] = $text;
         }
 
-        ee()->view->header = array(
+        $vars['head'] = array(
             'title' => lang('entry_manager'),
             'action_button' => (count($choices) || ee('Permission')->can('create_entries_channel_id_' . $channel_id)) && $show_new_button ? [
                 'text' => $channel_id ? sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title) : lang('new'),
                 'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
                 'filter_placeholder' => lang('filter_channels'),
                 'choices' => $channel_id ? null : $choices
-            ] : null
+            ] : null,
+            'class' => 'entries'
         );
 
         if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {

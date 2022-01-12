@@ -16,6 +16,8 @@ use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
 class Rte_mcp
 {
+    private $base_url;
+
     public function __construct()
     {
         $this->base_url = ee('CP/URL')->make('addons/settings/rte');

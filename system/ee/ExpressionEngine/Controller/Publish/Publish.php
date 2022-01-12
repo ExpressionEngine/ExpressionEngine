@@ -327,7 +327,7 @@ class Publish extends AbstractPublishController
             return ee('View')->make('publish/modal-entry')->render($vars);
         }
 
-        ee()->cp->render('publish/entry', $vars);
+        return ee()->cp->render('publish/entry', $vars);
     }
 
     /**
