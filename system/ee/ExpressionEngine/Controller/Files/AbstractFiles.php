@@ -333,7 +333,6 @@ abstract class AbstractFiles extends CP_Controller
     protected function listingsPage($files, $base_url, $view_type = 'list')
     {
         $vars = array();
-        $reset_url = clone $base_url;
         $search_terms = ee()->input->get_post('filter_by_keyword');
 
         if ($search_terms) {
@@ -358,20 +357,8 @@ abstract class AbstractFiles extends CP_Controller
 
         $base_url->addQueryStringVariables($filter_values);
 
-        if ($view_type != 'thumb') {
-            $table = $this->buildTable($files, $perpage, $offset);
-
-            $base_url->setQueryStringVariable('sort_col', $table->sort_col);
-            $base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-            ee()->view->filters = $filters->render($reset_url);
-
-            $vars['table'] = $table->viewData($base_url);
-            $vars['form_url'] = $vars['table']['base_url'];
-        } else {
-            $vars['form_url'] = $base_url;
-
-            ee()->view->filters = $filters->render($reset_url);
+        if ($view_type === 'thumb') {
+            ee()->view->filters = $filters->render($base_url);
 
             if ($files->count() == 0) {
                 $vars['no_results'] = [
@@ -383,6 +370,17 @@ abstract class AbstractFiles extends CP_Controller
                 ->offset($offset);
 
             $vars['files'] = $files->all();
+            $vars['form_url'] = $base_url;
+        } else {
+            $table = $this->buildTable($files, $perpage, $offset);
+
+            $base_url->setQueryStringVariable('sort_col', $table->sort_col);
+            $base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+
+            ee()->view->filters = $filters->render($base_url);
+
+            $vars['table'] = $table->viewData($base_url);
+            $vars['form_url'] = $vars['table']['base_url'];
         }
 
         $vars['pagination'] = ee('CP/Pagination', $total_files)

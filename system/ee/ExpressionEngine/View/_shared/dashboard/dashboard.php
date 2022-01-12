@@ -90,9 +90,10 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 		<div class="widget__title-bar">
 			<h2 class="widget__title"><?=lang('comments'); ?></h2>
 
-			<div>
+			<div class="button-group button-group-xsmall">
 				<?php if ($can_edit_comments): ?>
-					<a class="button button--default button--small" href="<?=ee('CP/URL', 'publish/comments')?>"><?=$number_of_new_comments?> <?=lang('new_comments')?></a>
+					<a class="button button--default button--small" href="<?=ee('CP/URL')->make('publish/comments', ['filter_by_date' => ee()->localize->now - ee()->session->userdata['last_visit']])?>"><?=$number_of_new_comments?> <?=lang('new_comments')?></a>
+					<a class="button button--default button--small" href="<?=ee('CP/URL', 'publish/comments')?>"><?=lang('view_all')?></a>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -111,10 +112,14 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 				<div class="d-flex">
 					<div>
 						<p class="meta-info">
-							<a href="<?=ee('CP/URL')->make('cp/members')?>"><?=$comment->name?></a>
+							<?php if ($comment->author_id) : ?>
+							<a href="<?=ee('CP/URL')->make('cp/members/profile&id=' . $comment->author_id)?>"><?=$comment->name?></a>
+							<?php else: ?>
+							<?=$comment->name?>
+							<?php endif; ?>
 							<?=lang('commented_on')?> <a href="<?=ee('CP/URL')->make('publish/edit/entry/' . $comment->getEntry()->entry_id)?>"><?=$comment->getEntry()->title?></a>
 						</p>
-						<p><?=ellipsize($comment->comment, 150)?></p>
+						<p><a href="<?=ee('CP/URL')->make('cp/publish/comments/entry/' . $comment->entry_id)?>" class="normal-link"><?=ellipsize($comment->comment, 150)?></a></p>
 					</div>
 				</div>
 			</li>
