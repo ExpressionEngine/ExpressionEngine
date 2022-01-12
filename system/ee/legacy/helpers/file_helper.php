@@ -85,9 +85,13 @@ if (! function_exists('delete_files')) {
         // Trim the trailing slash
         $path = rtrim($path, DIRECTORY_SEPARATOR);
 
-        if (! $current_dir = @opendir($path)) {
+        // If this isnt a directory, lets return false
+        if (! is_dir($path)) {
             return false;
         }
+
+        // Get the current directory
+        $current_dir = @opendir($path);
 
         $exclude[] = '.';
         $exclude[] = '..';
