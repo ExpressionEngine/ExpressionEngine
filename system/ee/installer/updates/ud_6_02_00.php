@@ -33,6 +33,7 @@ class Updater
             'addTotalMembersCount',
             'addEnableCliConfig',
             'addMemberValidationAction',
+            'setPasswordSecurityPolicy',
             'addPendingRoleToMember',
         ]);
 
@@ -73,6 +74,15 @@ class Updater
             'class' => 'Member',
             'method' => 'validate',
         ));
+    }
+
+    private function setPasswordSecurityPolicy()
+    {
+        if (ee()->config->item('require_secure_passwords') == 'y') {
+            ee()->config->set_item('password_security_policy', 'basic');
+        } else {
+            ee()->config->set_item('password_security_policy', 'none');
+        }
     }
 
     private function addMfaColumns()
