@@ -159,6 +159,7 @@ class Collection extends CoreCollection
         $this->association = $association;
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         parent::offsetSet($offset, $value);

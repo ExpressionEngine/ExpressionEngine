@@ -50,7 +50,10 @@ Bullet list below, e.g.
    - Fix white screen on first access to a group template which exists on files, but not yet on database
    - Fixed a bug (#<1584>) where conditional was being ignored by Filesystem->emptyDir() method.
    - Fixed a bug (#<1586>) where conditional error inFilesystem->findAndReplace() method prevented its operation.
+   - Remove unnecessary and duplicated queries from search module
 
+
+   - Fix #1195 improves `template_post_parse` hook when fired after sub or layout (i.e. partial) template parse completes
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

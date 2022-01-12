@@ -22,6 +22,11 @@ class Comments extends Column
         return 'comments';
     }
 
+    public function getEntryManagerColumnSortField()
+    {
+        return 'comment_total';
+    }
+
     public function renderTableCell($data, $field_id, $entry)
     {
         if ($entry->comment_total > 0 && ee('Permission')->can('moderate_comments')) {

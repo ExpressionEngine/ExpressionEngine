@@ -155,7 +155,11 @@ gulp.task('_archive_app', ['_build_directories'], function (cb) {
 });
 
 gulp.task('_archive_pro', function (cb) {
-	archive_repo('pro', cb);
+	if (process.argv.indexOf('--skip-pro') > -1) {
+		cb();
+	} else {
+		archive_repo('pro', cb);
+	}
 });
 
 /**
@@ -357,6 +361,9 @@ gulp.task('_delete_files', function (cb) {
 		'npm-shrinkwrap.json',
 		'jest.config.js',
 		'babel.config.js',
+		'system/ee/ExpressionEngine/Addons/pro/composer.json',
+		'system/ee/ExpressionEngine/Addons/pro/composer.lock',
+		'system/ee/ExpressionEngine/Addons/pro/Composer.php',
 	];
 
 	//if (properties.dp !== true) {

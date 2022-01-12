@@ -190,6 +190,11 @@ class URL implements \Serializable
      *
      * @return string A JSON encoded string.
      */
+    public function __serialize()
+    {
+        return $this->serialize();
+    }
+    // legacy, keeping for PHP 5.6 support
     public function serialize()
     {
         $serialize = array(
@@ -207,6 +212,16 @@ class URL implements \Serializable
      * Unserializes the data by JSON decoding.
      *
      * @return bool FALSE if serialized data was not JSON encoded; TRUE otherwise
+     */
+    public function __unserialize($serialized)
+    {
+        return $this->unserialize($serialized);
+    }
+
+    /**
+     * legacy, keeping for PHP 5.6 support
+     *
+     * @return bool
      */
     public function unserialize($serialized)
     {

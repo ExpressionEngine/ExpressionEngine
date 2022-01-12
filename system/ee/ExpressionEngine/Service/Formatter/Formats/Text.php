@@ -28,6 +28,9 @@ class Text extends Formatter
 
         $this->multibyte = extension_loaded('mbstring');
 
+        // this is text formatter, make sure content is string
+        $content = strval($content);
+
         parent::__construct($content, $lang, $session, $config, $options);
     }
 
@@ -480,6 +483,25 @@ class Text extends Formatter
         $pattern_parts[$pattern_last] = str_replace('e', '', $pattern_parts[$pattern_last]);
 
         return implode($pattern[0], $pattern_parts);
+    }
+
+    /**
+     * Returns a string with whitespace stripped from its beginning and end.
+     *
+     * @param  array $options Options: (string) characters
+     * @return string Regex pattern sans eval modifier
+     */
+    public function trim($options = [])
+    {
+        if (empty($this->content)) {
+            return $this;
+        }
+
+        $this->content = isset($options['characters'])
+            ? trim($this->content, $options['characters'])
+            : trim($this->content);
+
+        return $this->content;
     }
 
     /**

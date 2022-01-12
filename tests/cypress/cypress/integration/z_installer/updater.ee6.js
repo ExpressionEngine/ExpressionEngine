@@ -58,7 +58,7 @@ context('Updater', () => {
   })
 
   it('appears when using a database.php file', () => {
-    cy.task('db:seed').then(()=>{
+    cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
       page.load()
       cy.hasNoErrors()
       page.get('inline_errors').should('not.exist')
@@ -71,7 +71,7 @@ context('Updater', () => {
   it('shows an error when no database information exists at all', () => {
     cy.wait(5000);
     cy.task('installer:delete_database_config').then(()=>{
-      cy.task('db:seed').then(()=>{
+      cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
         page.load()
         page.get('header').invoke('text').then((text) => {
           expect(text).to.eq('Install Failed')

@@ -83,10 +83,8 @@ context('Security & Privacy Settings', () => {
         expect(val).to.be.equal(config)
       })
     })
-    cy.eeConfig({item: 'require_secure_passwords'}) .then((config) => {
-      page.get('require_secure_passwords').invoke('val').then((val) => {
-        expect(val).to.be.equal(config)
-      })
+    cy.eeConfig({item: 'password_security_policy'}) .then((config) => {
+      page.get('password_security_policy').filter('[value='+config+']').should('be.checked')
     })
     cy.eeConfig({item: 'pw_min_len'}) .then((config) => {
       page.get('pw_min_len').invoke('val').then((val) => {
@@ -95,11 +93,6 @@ context('Security & Privacy Settings', () => {
     })
     cy.eeConfig({item: 'allow_dictionary_pw'}) .then((config) => {
       page.get('allow_dictionary_pw').invoke('val').then((val) => {
-        expect(val).to.be.equal(config)
-      })
-    })
-    cy.eeConfig({item: 'name_of_dictionary_file'}) .then((config) => {
-      page.get('name_of_dictionary_file').invoke('val').then((val) => {
         expect(val).to.be.equal(config)
       })
     })
@@ -218,14 +211,37 @@ context('Security & Privacy Settings', () => {
     page.get('require_ip_for_login_toggle').click()
     page.get('password_lockout_toggle').click()
     page.get('password_lockout_interval').clear().type('15')
-    page.get('require_secure_passwords_toggle').click()
-    page.get('pw_min_len').clear().type('8')
+    page.get('password_security_policy').filter('[value=strong]').check()
+    page.get('pw_min_len').clear().type('8').blur()
+    cy.get('.button--primary').contains('Errors Found');
+    page.get('pw_min_len').parents('fieldset').should('contain', 'The minimum number of password characters cannot be less than 12 for selected password security policy.')
+    page.get('password_security_policy').filter('[value=basic]').check()
+    page.get('pw_min_len').focus().blur()
+    cy.get('.button--primary').should('not.contain', 'Errors Found');
+    page.get('pw_min_len').parents('fieldset').should('not.contain', 'The minimum number of password characters cannot be less than 12 for selected password security policy.')
+    page.get('password_security_policy').filter('[value=strong]').check()
+    page.get('pw_min_len').focus().blur()
+    cy.get('.button--primary').contains('Errors Found');
+    page.get('pw_min_len').parents('fieldset').should('contain', 'The minimum number of password characters cannot be less than 12 for selected password security policy.')
+    page.get('pw_min_len').clear().type('12').blur()
+    cy.get('.button--primary').should('not.contain', 'Errors Found');
+    page.get('pw_min_len').parents('fieldset').should('not.contain', 'The minimum number of password characters cannot be less than 12 for selected password security policy.')
     page.get('allow_dictionary_pw_toggle').click()
     page.get('name_of_dictionary_file').clear().type('http://dictionary')
     page.get('deny_duplicate_data_toggle').click()
     page.get('require_ip_for_posting_toggle').click()
     page.get('xss_clean_uploads_toggle').click()
     page.get('redirect_submitted_links_toggle').click()
+
+    cy.get('.button--primary').contains('Errors Found');
+    page.get('name_of_dictionary_file').clear().blur()
+    cy.get('.button--primary').contains('Errors Found');
+    page.get('name_of_dictionary_file').clear().type('http://dictionary').blur()
+    cy.get('.button--primary').contains('Errors Found');
+    page.get('allow_dictionary_pw_toggle').click()
+    page.get('pw_min_len').focus().blur()
+    page.get('name_of_dictionary_file').should('not.be.visible')
+    cy.get('.button--primary').should('not.contain', 'Errors Found');
 
     page.get('force_interstitial_toggle').should('be.visible')
     page.get('force_interstitial_toggle').click()
@@ -234,6 +250,19 @@ context('Security & Privacy Settings', () => {
 
     // Since we changed session settings, login again
     cy.auth();
+    cy.get('h1').should('contain', 'New Access Requirements')
+    cy.get('[name="password"]').type('password')
+    cy.get('[name="new_password"]:visible').type('123456789012')
+    cy.get('[name="new_password_confirm"]:visible').type('123456789012')
+    cy.get('.button--primary').click()
+
+    cy.get('body').should('contain', 'The chosen password is not secure enough.')
+    cy.get('[name="password"]').type('password')
+    cy.get('[name="new_password"]:visible').type('BojVMZA2xj74QGTNzmuL')
+    cy.get('[name="new_password_confirm"]:visible').type('BojVMZA2xj74QGTNzmuL')
+    cy.get('.button--primary').click()
+
+    cy.login({ email: 'admin', password: 'BojVMZA2xj74QGTNzmuL' });
     page.load()
 
     //page.get('wrap').contains('Preferences updated')
@@ -248,9 +277,9 @@ context('Security & Privacy Settings', () => {
     page.get('require_ip_for_login').invoke('val').then((val) => { expect(val).to.be.equal('n')})
     page.get('password_lockout').invoke('val').then((val) => { expect(val).to.be.equal('n')})
     page.get('password_lockout_interval').invoke('val').then((val) => { expect(val).to.be.equal('15')})
-    page.get('require_secure_passwords').invoke('val').then((val) => { expect(val).to.be.equal('y')})
-    page.get('pw_min_len').invoke('val').then((val) => { expect(val).to.be.equal('8')})
-    page.get('allow_dictionary_pw').invoke('val').then((val) => { expect(val).to.be.equal('n')})
+    page.get('password_security_policy').filter('[value=strong]').should('be.checked')
+    page.get('pw_min_len').invoke('val').then((val) => { expect(val).to.be.equal('12')})
+    page.get('allow_dictionary_pw').invoke('val').then((val) => { expect(val).to.be.equal('y')})
     page.get('name_of_dictionary_file').invoke('val').then((val) => { expect(val).to.be.equal('http://dictionary')})
     page.get('deny_duplicate_data').invoke('val').then((val) => { expect(val).to.be.equal('n')})
     page.get('require_ip_for_posting').invoke('val').then((val) => { expect(val).to.be.equal('n')})

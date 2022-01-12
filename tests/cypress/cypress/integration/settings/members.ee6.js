@@ -114,7 +114,7 @@ context('Member Settings', () => {
     page.get('req_mbr_activation').filter('[value=none]').check()
     page.get('require_terms_of_service_toggle').click()
     page.get('allow_member_localization_toggle').click()
-    page.get('default_primary_role').filter('[value=1]').check()
+    page.get('default_primary_role').filter('[value=2]').check()
     page.get('member_theme').filter('[value=default]').check()
     page.get('memberlist_order_by').filter('[value=dates]').check()
     page.get('memberlist_sort_order').filter('[value=asc]').check()
@@ -135,7 +135,7 @@ context('Member Settings', () => {
     page.get('allow_member_localization').invoke('val').then((val) => {
       expect(val).not.to.be.equal(allow_member_localization)
     })
-    page.get('default_primary_role').filter('[value=1]').should('be.checked')
+    page.get('default_primary_role').filter('[value=2]').should('be.checked')
     page.get('member_theme').filter('[value=default').should('be.checked')
     page.get('memberlist_order_by').filter('[value=dates]').should('be.checked')
     page.get('memberlist_sort_order').filter('[value=asc]').should('be.checked')
