@@ -36,19 +36,6 @@ $(document).ready(function() {
 		}
 	});
 
-	var passwordInput = $('#password'),
-		passwordInputContainer = $('#password').closest('fieldset'),
-		eyeImg = '<img src="' + eyeOpen + '" id="eye" />',
-		eyeIsOpen = false
-
-	$(passwordInputContainer).css({'position': 'relative'})
-	$(eyeImg).insertAfter(passwordInput)
-
-	$('#eye').click(function () {
-		$('#password').attr('type', ($('#password').attr('type') === 'password' ? 'text' : 'password'));
-		$(this).attr('src', eyeIsOpen ? eyeOpen : eyeClosed)
-		eyeIsOpen = !eyeIsOpen
-    });
 });
 
 })(jQuery);

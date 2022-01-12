@@ -67,7 +67,7 @@ class Sandr extends Utilities
         }
 
         ee()->load->model('tools_model');
-        ee()->view->replace_options = $this->tools_model->get_search_replace_options();
+        ee()->view->replace_options = ee()->tools_model->get_search_replace_options();
 
         ee()->view->cp_page_title = lang('sandr');
 
@@ -92,9 +92,9 @@ class Sandr extends Utilities
     public function _do_search_and_replace($search, $replace, $where)
     {
         // escape search and replace for use in queries
-        $search_escaped = $this->db->escape_str($search);
-        $replace_escaped = $this->db->escape_str($replace);
-        $where = $this->db->escape_str($where);
+        $search_escaped = ee()->db->escape_str($search);
+        $replace_escaped = ee()->db->escape_str($replace);
+        $where = ee()->db->escape_str($where);
 
         $show_reindex_tip = false;
 
@@ -104,7 +104,7 @@ class Sandr extends Utilities
             $rows = 0;
 
             if ($where == 'preferences') {
-                $site_id = $this->config->item('site_id');
+                $site_id = ee()->config->item('site_id');
             } else {
                 $site_id = substr($where, strlen('site_preferences_'));
             }
@@ -145,34 +145,34 @@ class Sandr extends Utilities
             );
 
             foreach ($preferences as $table => $fields) {
-                if (! $this->db->table_exists($table) or $table == 'exp_forums') {
+                if (! ee()->db->table_exists($table) or $table == 'exp_forums') {
                     continue;
                 }
 
                 $site_field = ($table == 'exp_forum_boards') ? 'board_site_id' : 'site_id';
 
                 foreach ($fields as $field) {
-                    $this->db->query("UPDATE `{$table}`
+                    ee()->db->query("UPDATE `{$table}`
 								SET `{$field}` = REPLACE(`{$field}`, '{$search_escaped}', '{$replace_escaped}')
-								WHERE `{$site_field}` = '" . $this->db->escape_str($site_id) . "'");
+								WHERE `{$site_field}` = '" . ee()->db->escape_str($site_id) . "'");
 
-                    $rows += $this->db->affected_rows();
+                    $rows += ee()->db->affected_rows();
                 }
             }
 
-            if ($this->db->table_exists('exp_forum_boards')) {
-                $this->db->select('board_id');
-                $this->db->where('board_site_id', $site_id);
-                $query = $this->db->get('forum_boards');
+            if (ee()->db->table_exists('exp_forum_boards')) {
+                ee()->db->select('board_id');
+                ee()->db->where('board_site_id', $site_id);
+                $query = ee()->db->get('forum_boards');
 
                 if ($query->num_rows() > 0) {
                     foreach ($query->result_array() as $row) {
                         foreach ($preferences['exp_forums'] as $field) {
-                            $this->db->query("UPDATE `exp_forums`
+                            ee()->db->query("UPDATE `exp_forums`
 										SET `{$field}` = REPLACE(`{$field}`, '{$search_escaped}', '{$replace_escaped}')
-										WHERE `board_id` = '" . $this->db->escape_str($row['board_id']) . "'");
+										WHERE `board_id` = '" . ee()->db->escape_str($row['board_id']) . "'");
 
-                            $rows += $this->db->affected_rows();
+                            $rows += ee()->db->affected_rows();
                         }
                     }
                 }
@@ -181,7 +181,7 @@ class Sandr extends Utilities
             /** -------------------------------------------
             /**  Site Preferences in Database
             /** -------------------------------------------*/
-            $this->config->update_site_prefs(array(), $site_id, $search, $replace);
+            ee()->config->update_site_prefs(array(), $site_id, $search, $replace);
 
             $rows += 5;
         } elseif (strncmp($where, 'template_', 9) == 0) {
@@ -225,8 +225,8 @@ class Sandr extends Utilities
         }
 
         if (isset($sql)) {
-            $this->db->query($sql);
-            $rows = $this->db->affected_rows();
+            ee()->db->query($sql);
+            $rows = ee()->db->affected_rows();
         }
 
         if (isset($affected_grid_rows)) {

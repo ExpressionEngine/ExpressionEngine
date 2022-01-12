@@ -53,26 +53,6 @@ class Factory
 
         return $fp;
     }
-
-    /**
-     * Handle a filepicker request. Does all the default stuff.
-     */
-    public function handleRequest()
-    {
-        $fp = $this->fromRequest();
-
-        return $fp->render();
-    }
-
-    /**
-     * Take the request from the url and deal with it
-     */
-    protected function fromRequest()
-    {
-        $request = new RequestParser();
-
-        return new Endpoint($request);
-    }
 }
 
 // EOF

@@ -21,8 +21,8 @@ use ExpressionEngine\Controller\Members;
  */
 class Fields extends Members\Members
 {
-    protected $base_url;
     protected $perpage;
+    protected $params;
     protected $page = 1;
     protected $offset = 0;
 
@@ -244,7 +244,7 @@ class Fields extends Members\Members
         $field_ids = ee()->input->post('selection');
 
         if (! is_array($field_ids)) {
-            $field_ids = array($selected);
+            $field_ids = array($field_ids);
         }
 
         $fields = ee('Model')->get('MemberField', $field_ids)->all();

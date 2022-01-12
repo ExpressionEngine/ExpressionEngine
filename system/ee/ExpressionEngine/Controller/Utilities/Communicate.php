@@ -19,6 +19,7 @@ use ExpressionEngine\Model\Email\EmailCache;
 class Communicate extends Utilities
 {
     private $attachments = array();
+    private $member;
 
     /**
      * Constructor
@@ -36,6 +37,7 @@ class Communicate extends Utilities
      * Index
      *
      * @param	obj	$email	An EmailCache object for use in re-populating the form (see: resend())
+     * @return string
      */
     public function index(EmailCache $email = null)
     {
@@ -82,9 +84,9 @@ class Communicate extends Utilities
             $member_roles = [];
             $disabled_roles = [];
             foreach ($roles as $role) {
-                $member_roles[$role->role_id] = $role->name;
+                $member_roles[$role->role_id] = $role->name . '&nbsp<span class="faded">(' . $role->total_members . ')</span>';
 
-                if ($role->PrimaryMembers->count() == 0 && $role->Members->count() == 0) {
+                if ($role->total_members == 0) {
                     $disabled_roles[] = $role->role_id;
                 }
             }
@@ -196,6 +198,19 @@ class Communicate extends Utilities
         );
 
         if (ee('Permission')->can('email_roles')) {
+            $vars['sections']['recipient_options'][] = ee('CP/Alert')->makeInline('roles-warn')
+                    ->asWarning()
+                    ->addToBody(lang('roles_send_warning'))
+                    ->cannotClose()
+                    ->render();
+            if (ee()->config->item('ignore_member_stats') == 'y') {
+                ee()->lang->load('members');
+                $vars['sections']['recipient_options'][] = ee('CP/Alert')->makeInline('roles-count-warn')
+                    ->asWarning()
+                    ->addToBody(lang('roles_counter_warning'))
+                    ->cannotClose()
+                    ->render();
+            }
             $vars['sections']['recipient_options'][] = array(
                 'title' => 'add_member_roles',
                 'desc' => 'add_member_roles_desc',
@@ -352,7 +367,6 @@ class Communicate extends Utilities
             'mailtype' => $mailtype,
             'wordwrap' => $wordwrap,
             'text_fmt' => $text_fmt,
-            'total_sent' => 0,
             'plaintext_alt' => $plaintext_alt,
             'attachments' => $this->attachments,
         );
@@ -375,9 +389,7 @@ class Communicate extends Utilities
 
         $email_addresses = array();
         foreach ($member_roles as $role) {
-            foreach ($role->getAllMembers() as $member) {
-                $email_addresses[] = $member->email;
-            }
+            $email_addresses = array_merge($email_addresses, $role->getAllMembersData('email'));
         }
 
         if (empty($email_addresses) and $recipient == '') {

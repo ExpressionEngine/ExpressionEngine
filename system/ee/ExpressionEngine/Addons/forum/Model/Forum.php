@@ -240,7 +240,7 @@ class Forum extends Model
     {
         $email_string = '';
 
-        foreach ($forum->Moderators as $moderator) {
+        foreach ($this->Moderators as $moderator) {
             if ($moderator->Member) {
                 $email_string .= ',' . $moderator->Member->email;
             }
