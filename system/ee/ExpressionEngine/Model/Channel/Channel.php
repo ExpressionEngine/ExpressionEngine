@@ -328,7 +328,7 @@ class Channel extends StructureModel
 
                     break;
                 case 'deft_category':
-                    if (! isset($this->cat_group) or count(array_diff(explode('|', $this->cat_group), explode('|', $channel->cat_group))) == 0) {
+                    if (! isset($this->cat_group) or count(array_diff(explode('|',(string) $this->cat_group), explode('|', (string) $channel->cat_group))) == 0) {
                         $this->setRawProperty($property, $channel->{$property});
                     }
 
@@ -402,7 +402,7 @@ class Channel extends StructureModel
     {
         $cat_groups = array();
 
-        foreach (explode('|', $this->cat_group) as $group_id) {
+        foreach (explode('|', (string) $this->cat_group) as $group_id) {
             $cat_groups['categories[cat_group_id_' . $group_id . ']'] = true;
         }
 
@@ -528,7 +528,7 @@ class Channel extends StructureModel
 
     public function getCategoryGroups()
     {
-        $groups = explode('|', $this->cat_group);
+        $groups = explode('|', (string) $this->cat_group);
 
         return $this->getModelFacade()->get('CategoryGroup', $groups)->all();
     }

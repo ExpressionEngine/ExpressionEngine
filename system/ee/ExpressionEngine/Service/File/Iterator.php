@@ -35,6 +35,7 @@ class Iterator extends FilesystemIterator
         $this->root_url = $url;
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
         parent::next();

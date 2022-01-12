@@ -92,7 +92,7 @@ class Views extends CP_Controller
         ee('Model')->get('EntryManagerView', $view_id)->delete();
     }
 
-    private function viewForm(View $view, $vars)
+    private function viewForm(View $view, $vars = [])
     {
         $channels = ee('Model')->get('Channel')
             ->with('Site')

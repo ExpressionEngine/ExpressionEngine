@@ -19,6 +19,8 @@ class Spam_mcp
 {
     public $stop_words_path = "spam/training/stopwords.txt";
     public $stop_words = array();
+    private $base_url;
+    protected $total;
 
     /**
      * Constructor
@@ -928,7 +930,7 @@ class Spam_mcp
      * @param mixed $variance
      * @param mixed $data
      * @access private
-     * @return void
+     * @return array
      */
     private function onlineStatistics($count = 0, $mean = 0, $variance = 0, $data = array())
     {

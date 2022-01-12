@@ -24,7 +24,7 @@ class SecuritySettings extends ControlPanel {
         'password_lockout': 'input[name=password_lockout]', //visible => false
         'password_lockout_toggle': '[data-toggle-for=password_lockout]',
         'password_lockout_interval': 'input[name=password_lockout_interval]',
-        'require_secure_passwords': 'input[name=require_secure_passwords]', //visible => false
+        'password_security_policy': 'input[name=password_security_policy]', //visible => false
         'require_secure_passwords_toggle': '[data-toggle-for=require_secure_passwords]',
         'pw_min_len': 'input[type!=hidden][name=pw_min_len]',
         'allow_dictionary_pw': 'input[name=allow_dictionary_pw]', //visible => false

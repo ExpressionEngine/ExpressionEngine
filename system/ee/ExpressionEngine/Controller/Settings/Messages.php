@@ -185,7 +185,7 @@ class Messages extends Settings
      *
      * @param mixed $data
      * @access private
-     * @return void
+     * @return bool
      */
     private function updateUploadDirectory($data)
     {

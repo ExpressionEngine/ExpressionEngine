@@ -19,7 +19,7 @@ class ValidateNumeric extends ValidationRule
 {
     public function validate($key, $value)
     {
-        return (bool) preg_match('/^[+-]?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)$/', $value);
+        return (bool) preg_match('/^[+-]?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)$/', (string) $value);
     }
 
     public function getLanguageKey()

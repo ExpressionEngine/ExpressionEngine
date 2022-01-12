@@ -2,7 +2,9 @@
 
 [Cypress](https://www.cypress.io/) is an end-to-end testing framework written in javascript.
 
-An overview and documentation are [available here](https://docs.cypress.io/guides/overview/why-cypress.html#In-a-nutshell).
+An overview and documentation for Cypress are [available here](https://docs.cypress.io/guides/overview/why-cypress.html#In-a-nutshell).
+
+The documentation on using Cypress with ExpressionEngine is [available here](https://docs.expressionengine.com/latest/development/cypress-tests.html).
 
 ## Install Cypress
 
@@ -14,9 +16,8 @@ You can change the environment constants to match your local setup by copying th
 
 `cp tests/cypress/cypress.env.example.json tests/cypress/cypress.env.json`
 
-## Settup Composer
-
-`cd tests/cypress  and then run composer install`
+## Set up Composer
+`cd tests/cypress`  and then run `composer install`
 
 ## Start PHP Server
 

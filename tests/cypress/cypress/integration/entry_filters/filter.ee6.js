@@ -5,6 +5,7 @@ context('Entry filtering', () => {
 
 		before(function(){
 			cy.task('db:seed')
+			cy.eeConfig({ item: 'password_security_policy', value: 'none' })
 			cy.auth()
 
 			//it('Creates Channels to work with', () => {
@@ -122,7 +123,7 @@ context('Entry filtering', () => {
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')
 		})
@@ -132,29 +133,29 @@ context('Entry filtering', () => {
 
 			cy.visit('admin.php?/cp/publish/edit')
 
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('StatusSort').click()
 
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',12)
 
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();//Channel
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			//entry.get('Entries').contains('No Entries found')
 			entry.get('Entries').find('tr').should('have.length',1)
 
@@ -162,19 +163,19 @@ context('Entry filtering', () => {
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Contact').click();//Contact
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').contains('No Entries found')
 
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();//Discover
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').contains('No Entries found')
 		})
 
@@ -200,7 +201,7 @@ context('Entry filtering', () => {
 			cy.get('a').contains('Author').should('exist')
 			entry.get('ColumnsSort').click()
 			entry.get('Author').uncheck()
-			cy.get('h1').contains('Entries').click() //need to click out of the columns menu to have the action occur
+			cy.get('h3').contains('Entries').click() //need to click out of the columns menu to have the action occur
 			cy.get('a').contains('Author').should('not.exist')
 		})
 
@@ -219,7 +220,7 @@ context('Entry filtering', () => {
 			entry.get('Comments').uncheck({force:true})
 			entry.get('Category').uncheck({force:true})
 			entry.get('Title').uncheck({force:true})
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 
 			cy.get('a').contains('ID#').should('exist')
 			cy.get('a').contains('Title').should('exist')
@@ -236,13 +237,13 @@ context('Entry filtering', () => {
 		  	entry.get('AuthorSort').click()
 		  	cy.get('a').contains('user2').click()
 		  	cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 		  	entry.get('Entries').find('tr').should('have.length',1)
 
 		  	entry.get('AuthorSort').click()
 		  	cy.get('a').contains('Admin').click()
 		  	cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 		  	entry.get('Entries').find('tr').should('have.length',13)
 
 		})
@@ -254,26 +255,26 @@ context('Entry filtering', () => {
 			entry.get('AuthorSort').click()
 			cy.get('a').contains('Admin').click()
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',13)
 
 			entry.get('StatusSort').click()
 
 			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click(); //Open
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',11)
 
 			entry.get('ChannelSort').click()
 			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').contains('No Entries found')
 
 			entry.get('ChannelSort').click()
 			cy.get('.dropdown--open .dropdown__link:nth-child(2)').click();
 			cy.wait("@ajax")
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
 		})
 
@@ -328,7 +329,7 @@ context('Entry filtering', () => {
 			cy.get('[href="admin.php?/cp/publish/edit&search_in=titles_and_content&perpage=25"]').click()
 			cy.wait("@ajax")
 			entry.get('SearchBar').type('The Quick Brown{enter}')
-			cy.get('h1').contains('Entries').click()
+			cy.get('h3').contains('Entries').click()
 
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Discover Entry').should('exist')

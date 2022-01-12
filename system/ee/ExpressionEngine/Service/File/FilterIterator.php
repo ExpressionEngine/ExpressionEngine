@@ -15,6 +15,7 @@ namespace ExpressionEngine\Service\File;
  */
 class FilterIterator extends \FilterIterator
 {
+    #[\ReturnTypeWillChange]
     public function accept()
     {
         $inner = $this->getInnerIterator();
