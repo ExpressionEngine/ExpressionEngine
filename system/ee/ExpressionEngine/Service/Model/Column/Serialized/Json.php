@@ -24,7 +24,7 @@ class Json extends SerializedType
      */
     public static function unserialize($db_data)
     {
-        return strlen($db_data) ? json_decode($db_data, true) : array();
+        return !is_null($db_data) && strlen($db_data) ? json_decode($db_data, true) : array();
     }
 
     /**

@@ -1286,7 +1286,6 @@ break;
 
             ],
             'sections' => $this->getAliasForm($alias),
-            'errors' => $errors,
             'required' => true
         );
 

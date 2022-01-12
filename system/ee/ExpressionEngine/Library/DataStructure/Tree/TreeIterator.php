@@ -21,6 +21,7 @@ class TreeIterator extends \RecursiveArrayIterator
      *
      * @return boolean
      */
+    #[\ReturnTypeWillChange]
     public function hasChildren()
     {
         return ! $this->current()->isLeaf();
@@ -33,6 +34,7 @@ class TreeIterator extends \RecursiveArrayIterator
      *
      * @return TreeIterator
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         $children = $this->current()->getChildren();

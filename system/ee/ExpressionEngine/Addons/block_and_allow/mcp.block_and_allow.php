@@ -262,7 +262,7 @@ class Block_and_allow_mcp
      * Update Blockedlist
      *
      * @access public
-     * @return string
+     * @return void
      */
     public function ee_blockedlist()
     {
@@ -279,7 +279,7 @@ class Block_and_allow_mcp
      * Update Allowedlist
      *
      * @access public
-     * @return string
+     * @return void
      */
     public function ee_allowedlist()
     {
@@ -471,7 +471,7 @@ class Block_and_allow_mcp
      * Download and update ExpressionEngine.com Blocked- or Allowedlist
      *
      * @access private
-     * @return string
+     * @return void
      */
     private function _download_update_list($listtype = "blocked")
     {

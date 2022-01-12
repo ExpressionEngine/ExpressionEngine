@@ -41,7 +41,7 @@ class Forums extends AbstractDesignController
     public function index($theme = null)
     {
         $base_path = false;
-        $this->load->helper('directory');
+        ee()->load->helper('directory');
         $files = array();
         $theme_dirs = ee('Theme')->listUserThemes('forum');
 

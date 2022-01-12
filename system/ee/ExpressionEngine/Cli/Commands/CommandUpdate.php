@@ -92,6 +92,11 @@ class CommandUpdate extends Cli
     protected function runUpdater($step = null, $microapp = false, $noBootstrap = false, $rollback = false)
     {
         try {
+            // Lets autoload the updates folder since we're ready for it
+            if ($step === 'checkForDbUpdates') {
+                $this->autoload(SYSPATH . 'ee/installer/updates/');
+            }
+
             if ($microapp) {
                 return $this->updaterMicroapp($step);
             }
@@ -221,9 +226,9 @@ class CommandUpdate extends Cli
     {
         $this->autoload(SYSPATH . 'ee/updater/ExpressionEngine/Updater/Library/');
         $this->autoload(SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Logger/');
-        $this->autoload(SYSPATH . 'ee/installer/updates/');
 
         require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/SteppableTrait.php';
+        require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/LegacyFiles.php';
         require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/Logger.php';
         require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/Verifier.php';
         require_once SYSPATH . 'ee/updater/ExpressionEngine/Updater/Service/Updater/FileUpdater.php';
@@ -238,6 +243,10 @@ class CommandUpdate extends Cli
      */
     private function autoload($dir)
     {
+        if (!is_dir($dir)) {
+            throw new \Exception("Could not autoload missing directory: " . $dir, 1);
+        }
+
         foreach (scandir($dir) as $file) {
             if (is_dir($dir . $file) && substr($file, 0, 1) == '.') {
                 continue;
@@ -332,11 +341,10 @@ class CommandUpdate extends Cli
 
         $this->autoload(SYSPATH . 'ee/installer/updates/');
 
-        ee()->load->library('session');
+        //ee()->load->library('session');
         ee()->load->library('smartforge');
         ee()->load->library('logger');
         // ee()->load->library('update_notices');
-        define('PATH_TMPL', SYSPATH . 'user/templates/');
         defined('USERNAME_MAX_LENGTH') || define('USERNAME_MAX_LENGTH', 75);
         defined('PASSWORD_MAX_LENGTH') || define('PASSWORD_MAX_LENGTH', 72);
         defined('URL_TITLE_MAX_LENGTH') || define('URL_TITLE_MAX_LENGTH', 200);
@@ -359,6 +367,14 @@ class CommandUpdate extends Cli
 
         // This will loop through all versions of EE
         do {
+            $currentVersionKey--;
+
+            if (!isset($upgradeMap[$currentVersionKey])) {
+                $this->fail(lang('command_update_error_updater_failed_missing_version') . $currentVersionKey);
+            }
+
+            $next_version = $upgradeMap[$currentVersionKey];
+
             $this->info(lang('command_update_updating_to_version') . $next_version);
 
             // Instantiate the updater class
@@ -384,19 +400,11 @@ class CommandUpdate extends Cli
                 $this->fail($errorText);
             }
 
-            $currentVersionKey--;
-
-            if (!isset($upgradeMap[$currentVersionKey])) {
-                $this->fail(lang('command_update_error_updater_failed_missing_version') . $currentVersionKey);
-            }
-
             ee()->config->set_item('app_version', $upgradeMap[$currentVersionKey]);
             ee()->config
                 ->_update_config([
                     'app_version' => $upgradeMap[$currentVersionKey]
                 ]);
-
-            $next_version = $upgradeMap[$currentVersionKey];
         } while (version_compare($next_version, $end_version, '<'));
 
         // Complete upgrades

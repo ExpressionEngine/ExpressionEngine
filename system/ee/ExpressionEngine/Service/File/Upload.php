@@ -113,7 +113,7 @@ class Upload
         );
 
         $cat_groups = ee('Model')->get('CategoryGroup')
-            ->filter('group_id', 'IN', explode('|', $file->UploadDestination->cat_group))
+            ->filter('group_id', 'IN', explode('|', (string) $file->UploadDestination->cat_group))
             ->all();
 
         if (count($cat_groups) == 0) {
