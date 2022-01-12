@@ -19,7 +19,7 @@ class Alpha extends ValidationRule
 {
     public function validate($key, $value)
     {
-        return (bool) preg_match("/^([a-z])+$/i", $value);
+        return (bool) preg_match("/^([a-z])+$/i", (string) $value);
     }
 }
 

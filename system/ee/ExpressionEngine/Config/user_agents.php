@@ -130,7 +130,6 @@ return array(
         'symbian' => "Symbian",
         'SymbianOS' => "SymbianOS",
         'elaine' => "Palm",
-        'palm' => "Palm",
         'series60' => "Symbian S60",
         'windows ce' => "Windows CE",
 

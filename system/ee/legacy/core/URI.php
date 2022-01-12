@@ -64,7 +64,7 @@ class EE_URI
         if (is_array($_GET)) {
             if (isset($_GET['S'])) {
                 $key = 'S';
-            } elseif (trim(key($_GET), '/') == 'S') {
+            } elseif (trim((string) key($_GET), '/') == 'S') {
                 $key = key($_GET);
             }
         }

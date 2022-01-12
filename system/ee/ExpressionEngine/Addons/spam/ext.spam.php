@@ -6,6 +6,7 @@
 class Spam_ext
 {
     public $settings = array();
+    public $version;
 
     public function __construct()
     {

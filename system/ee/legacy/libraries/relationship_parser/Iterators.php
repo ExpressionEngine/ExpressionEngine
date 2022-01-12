@@ -15,6 +15,7 @@
  */
 class ParseNodeIterator extends EE_TreeIterator
 {
+    #[\ReturnTypeWillChange]
     public function hasChildren()
     {
         if (! parent::hasChildren()) {
@@ -39,6 +40,7 @@ class ParseNodeIterator extends EE_TreeIterator
      *
      * @return Object<TreeIterator>
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         $current = $this->current();
@@ -75,6 +77,7 @@ class QueryNodeIterator extends EE_TreeIterator
      *
      * @return boolean
      */
+    #[\ReturnTypeWillChange]
     public function hasChildren()
     {
         $current = $this->current();
@@ -95,6 +98,7 @@ class QueryNodeIterator extends EE_TreeIterator
      *
      * @return Object<TreeIterator>
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         $current = $this->current();

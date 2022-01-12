@@ -95,7 +95,7 @@ class DefaultChannelLayout extends DefaultLayout
         // Category Tab --------------------------------------------------------
 
         $cat_groups = ee('Model')->get('CategoryGroup')
-            ->filter('group_id', 'IN', explode('|', $channel->cat_group))
+            ->filter('group_id', 'IN', explode('|', (string) $channel->cat_group))
             ->all();
 
         $category_group_fields = array();

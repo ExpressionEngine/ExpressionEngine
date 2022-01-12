@@ -111,8 +111,7 @@ class Avatars extends Settings
                 'avatar_max_height' => ee()->input->post('avatar_max_height')
             );
 
-            if ($this->saveSettings($vars['sections'])
-                && $this->updateUploadDirectory($directory_settings)) {
+            if ($this->saveSettings($vars['sections']) && $this->updateUploadDirectory($directory_settings)) {
                 ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), true);
             }
 
@@ -139,7 +138,7 @@ class Avatars extends Settings
      *
      * @param mixed $data
      * @access private
-     * @return void
+     * @return bool
      */
     private function updateUploadDirectory($data)
     {

@@ -357,38 +357,7 @@ UNLOCK TABLES;
 # Dump of table exp_channel_fields
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `exp_channel_fields`;
-
-CREATE TABLE `exp_channel_fields` (
-  `field_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(10) unsigned DEFAULT NULL,
-  `field_name` varchar(32) NOT NULL,
-  `field_label` varchar(50) NOT NULL,
-  `field_instructions` text,
-  `field_type` varchar(50) NOT NULL DEFAULT 'text',
-  `field_list_items` text NOT NULL,
-  `field_pre_populate` char(1) NOT NULL DEFAULT 'n',
-  `field_pre_channel_id` int(6) unsigned DEFAULT NULL,
-  `field_pre_field_id` int(6) unsigned DEFAULT NULL,
-  `field_ta_rows` tinyint(2) DEFAULT '8',
-  `field_maxl` smallint(3) DEFAULT NULL,
-  `field_required` char(1) NOT NULL DEFAULT 'n',
-  `field_text_direction` char(3) NOT NULL DEFAULT 'ltr',
-  `field_search` char(1) NOT NULL DEFAULT 'n',
-  `field_is_hidden` char(1) NOT NULL DEFAULT 'n',
-  `field_fmt` varchar(40) NOT NULL DEFAULT 'xhtml',
-  `field_show_fmt` char(1) NOT NULL DEFAULT 'y',
-  `field_order` int(3) unsigned NOT NULL,
-  `field_content_type` varchar(20) NOT NULL DEFAULT 'any',
-  `field_settings` text,
-  `legacy_field_data` char(1) NOT NULL DEFAULT 'n',
-  PRIMARY KEY (`field_id`),
-  KEY `field_type` (`field_type`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-LOCK TABLES `exp_channel_fields` WRITE;
-/*!40000 ALTER TABLE `exp_channel_fields` DISABLE KEYS */;
+TRUNCATE `exp_channel_fields`;
 
 INSERT INTO `exp_channel_fields` (`field_id`, `site_id`, `field_name`, `field_label`, `field_instructions`, `field_type`, `field_list_items`, `field_pre_populate`, `field_pre_channel_id`, `field_pre_field_id`, `field_ta_rows`, `field_maxl`, `field_required`, `field_text_direction`, `field_search`, `field_is_hidden`, `field_fmt`, `field_show_fmt`, `field_order`, `field_content_type`, `field_settings`, `legacy_field_data`)
 VALUES

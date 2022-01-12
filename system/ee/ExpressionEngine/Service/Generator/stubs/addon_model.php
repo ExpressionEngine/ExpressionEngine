@@ -1,1 +1,1 @@
-        '{{class}}'    => '{{namespace}}\Models\{{class}}',
+        '{{class}}'    => 'Model\{{class}}',

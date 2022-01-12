@@ -21,7 +21,7 @@ context('Developer Log', () => {
 	})
 
 	it('searches by phrases', () => {
-		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today');")
+		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today', '');")
 		cy.visit('/admin.php?/cp/logs/developer')
 		page.get('search').type('Hello{enter}')
 		page.get('list').find('div[class="list-item"]').should('have.length',1)
@@ -41,8 +41,8 @@ context('Developer Log', () => {
         page.get('confirm').filter(':visible').first().click()
 
 
-		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today');")
-		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (1, 'n', 'Hello from 1969');")
+		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today', '');")
+		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (1, 'n', 'Hello from 1969', '');")
 		cy.reload()
 		page.get('list').find('div[class="list-item"]').should('have.length',2)
 		page.get('empty').should('not.exist')
@@ -60,7 +60,7 @@ context('Developer Log', () => {
 
       var i = 0;
         for (i = 0; i < 55; i++) {
-         cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today');")
+         cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today', '');")
         }
 
         cy.visit('/admin.php?/cp/logs/developer')
@@ -80,7 +80,7 @@ context('Developer Log', () => {
 
       var i = 0;
         for (i = 0; i < 50; i++) {
-          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today');")
+          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today', '');")
         }
 
 
@@ -103,11 +103,11 @@ context('Developer Log', () => {
 
          var i = 0;
         for (i = 0; i < 15; i++) {
-          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today');")
+          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today', '');")
         }
 
     	for (i = 0; i < 15; i++) {
-          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (1, 'n', 'Hello from 1969');")
+          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (1, 'n', 'Hello from 1969', '');")
         }
 
         cy.visit('/admin.php?/cp/logs/developer')
@@ -126,11 +126,11 @@ context('Developer Log', () => {
 
          var i = 0;
         for (i = 0; i < 15; i++) {
-          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today');")
+          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today', '');")
         }
 
     	for (i = 0; i < 15; i++) {
-          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (1, 'n', 'Hello from 1969');")
+          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (1, 'n', 'Hello from 1969', '');")
         }
 
         cy.visit('/admin.php?/cp/logs/developer')
@@ -161,11 +161,11 @@ context('Developer Log', () => {
 
          var i = 0;
         for (i = 0; i < 30; i++) {
-          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today');")
+          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today', '');")
         }
 
     	for (i = 0; i < 30; i++) {
-          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`) VALUES (1, 'n', 'Hello from 1969');")
+          cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (1, 'n', 'Hello from 1969', '');")
         }
 
         cy.visit('/admin.php?/cp/logs/developer')

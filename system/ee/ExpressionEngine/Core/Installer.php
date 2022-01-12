@@ -23,6 +23,7 @@ class Installer extends Core
         define('APPPATH', SYSPATH . 'ee/installer/');
         define('EE_APPPATH', BASEPATH);
 
+        define('PATH_PRO_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/pro/levelups/');
         define('PATH_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/');
         define('PATH_MOD', SYSPATH . 'ee/ExpressionEngine/Addons/');
         define('PATH_PI', SYSPATH . 'ee/ExpressionEngine/Addons/');
