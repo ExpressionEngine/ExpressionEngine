@@ -146,6 +146,8 @@ $lang = array(
 
     'your_name' => 'Your Name',
 
+    'roles_send_warning' => '<b>Warning</b>: Sending message to role that includes a lot of members can cause server performance issues and should be used with caution.',
+
 );
 
 // EOF

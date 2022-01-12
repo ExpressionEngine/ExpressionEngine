@@ -9,6 +9,7 @@ $lang = array(
     'cli_error_is_required_field'                  => 'Field is required. Field: ',
     'cli_option_help'                              => 'See help menu for given command',
     'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
+    'cli_error_cli_disabled'                       => 'The ExpressionEngine CLI is currently disabled. To use the CLI, you must enable it in the settings.',
 
     // Lang entries for command cache:clear
     'command_cache_clear_description'              => 'Clears all ExpressionEngine caches',

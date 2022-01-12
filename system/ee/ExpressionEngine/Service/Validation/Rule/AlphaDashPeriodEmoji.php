@@ -33,7 +33,7 @@ class AlphaDashPeriodEmoji extends ValidationRule
     {
         $regex = '/(?:' . EMOJI_REGEX . ')/u';
 
-        $value = preg_replace($regex, '', $value);
+        $value = preg_replace($regex, '', (string) $value);
 
         return $value;
     }
