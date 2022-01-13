@@ -10,12 +10,12 @@
 
 namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
-use ExpressionEngine\Library\CP\EntryManager\ColumnIconDate;
+use ExpressionEngine\Library\CP\EntryManager\ColumnDate;
 
 /**
  * Expiration Date Column
  */
-class ExpirationDate extends ColumnIconDate
+class ExpirationDate extends ColumnDate
 {
     public function getTableColumnLabel()
     {

@@ -1016,7 +1016,7 @@ $lang = array(
     'entry_manager_view_not_updated' => 'Cannot Update View',
 
     'entry_manager_view_not_updated_desc' => 'We were unable to update this view, please review and fix errors below.',
-    
+
 
 );
 
