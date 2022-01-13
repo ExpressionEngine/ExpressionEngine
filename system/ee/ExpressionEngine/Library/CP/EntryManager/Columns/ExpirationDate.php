@@ -10,12 +10,12 @@
 
 namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
-use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
+use ExpressionEngine\Library\CP\EntryManager\IconDateColumn;
 
 /**
  * Expiration Date Column
  */
-class ExpirationDate extends Column
+class ExpirationDate extends IconDateColumn
 {
     public function getTableColumnLabel()
     {
@@ -31,6 +31,10 @@ class ExpirationDate extends Column
 
     public function renderTableCell($data, $field_id, $entry)
     {
+        if (ee()->config->item('entry_icon_dates') == 'y') {
+            return $entry->expiration_date ? $this->getIcon($entry, 'expiration_date').ee()->localize->human_time($entry->expiration_date) : '';
+        }
+
         return $entry->expiration_date ? ee()->localize->human_time($entry->expiration_date) : '';
     }
 }

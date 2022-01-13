@@ -10,12 +10,12 @@
 
 namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
-use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
+use ExpressionEngine\Library\CP\EntryManager\IconDateColumn;
 
 /**
  * Entry Date Column
  */
-class EntryDate extends Column
+class EntryDate extends IconDateColumn
 {
     public function getTableColumnLabel()
     {
@@ -24,6 +24,10 @@ class EntryDate extends Column
 
     public function renderTableCell($data, $field_id, $entry)
     {
+        if (ee()->config->item('entry_icon_dates') == 'y') {
+            return $this->getIcon($entry, 'entry_date').ee()->localize->human_time($entry->entry_date);
+        }
+
         return ee()->localize->human_time($entry->entry_date);
     }
 }
