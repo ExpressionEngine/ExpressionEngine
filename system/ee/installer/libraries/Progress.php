@@ -89,6 +89,7 @@ class ProgressIterator extends ArrayIterator
         parent::__construct($arr);
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $current_step = $this->key();

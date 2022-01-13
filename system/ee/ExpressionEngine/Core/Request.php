@@ -208,13 +208,13 @@ class Request
      */
     public function isEncrypted()
     {
-        if (strcasecmp($this->server('HTTPS'), 'on') == 0) {
+        if (strcasecmp($this->server('HTTPS', ''), 'on') == 0) {
             return true;
         }
-        if (strcasecmp($this->server('REQUEST_SCHEME'), 'https') == 0) {
+        if (strcasecmp($this->server('REQUEST_SCHEME', ''), 'https') == 0) {
             return true;
         }
-        if (strcasecmp($this->server('HTTP_X_FORWARDED_PROTO'), 'https') == 0) {
+        if (strcasecmp($this->server('HTTP_X_FORWARDED_PROTO', ''), 'https') == 0) {
             return true;
         }
 

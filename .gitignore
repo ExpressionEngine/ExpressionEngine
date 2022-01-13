@@ -122,3 +122,6 @@ system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/Verifier.ph
 # Pro files
 system/ee/ExpressionEngine/Addons/pro
 themes/ee/pro
+
+#
+*.code-workspace

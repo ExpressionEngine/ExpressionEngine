@@ -18,6 +18,8 @@ use ExpressionEngine\Library\CP\Table;
 class Buttons extends Settings
 {
     private $base_url = 'members/profile/buttons';
+    private $index_url;
+    private $predefined;
 
     // The current HTMLButton object
     private $button;
@@ -266,7 +268,7 @@ class Buttons extends Settings
      * Save HTMLButtons
      *
      * @access private
-     * @return void
+     * @return bool
      */
     private function saveButtons($form)
     {

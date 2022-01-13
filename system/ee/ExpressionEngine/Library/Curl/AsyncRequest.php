@@ -18,6 +18,8 @@ use ExpressionEngine\Library\Data\Collection;
 class AsyncRequest extends Request
 {
     private $request;
+    public $url;
+    public $config;
 
     public function __construct(Request $request)
     {

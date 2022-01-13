@@ -18,6 +18,10 @@
         "DB_PASSWORD": "root",
         "DB_DATABASE": "ee-test",
         "DB_DUMP": "database_6.0.0.sql",
-        "TEMP_DIR": "/tmp"
+        "TEMP_DIR": "/tmp",
+        "MAILDEV_PROTOCOL": "http",
+        "MAILDEV_HOST": "127.0.0.1",
+        "MAILDEV_SMTP_PORT": "1025",
+        "MAILDEV_API_PORT": "1080"
     }
 }
