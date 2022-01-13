@@ -35,9 +35,17 @@ abstract class IconDateColumn extends Column
      */
     public function getTableColumnConfig()
     {
-        $encode = ee()->config->item('entry_icon_dates') != 'y';
+        $encode = $this->shouldDisplayIcon() === false;
         return [
             'encode' => $encode
         ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldDisplayIcon()
+    {
+        return ee()->config->item('entry_icon_dates') == 'y';
     }
 }

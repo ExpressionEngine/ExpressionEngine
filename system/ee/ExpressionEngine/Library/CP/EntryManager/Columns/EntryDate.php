@@ -24,7 +24,7 @@ class EntryDate extends IconDateColumn
 
     public function renderTableCell($data, $field_id, $entry)
     {
-        if (ee()->config->item('entry_icon_dates') == 'y') {
+        if ($this->shouldDisplayIcon()) {
             return $this->getIcon($entry, 'entry_date').ee()->localize->human_time($entry->entry_date);
         }
 
