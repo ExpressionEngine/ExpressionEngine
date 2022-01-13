@@ -12,7 +12,7 @@ abstract class ColumnIconDate extends Column
      * @param $column
      * @return string
      */
-    protected function getIcon($entry, $column)
+    protected function getIcon($entry, $column): string
     {
         $icon = '';
         if ($entry->status == 'closed') {
@@ -44,7 +44,7 @@ abstract class ColumnIconDate extends Column
     /**
      * @return bool
      */
-    protected function shouldDisplayIcon()
+    protected function shouldDisplayIcon(): bool
     {
         return ee()->config->item('entry_icon_dates') == 'y';
     }
