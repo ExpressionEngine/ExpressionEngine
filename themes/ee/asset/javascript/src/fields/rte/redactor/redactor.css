@@ -177,6 +177,22 @@
   
   .re-icon-widget:before {
     content: "\e929"; }
+
+
+    .re-icon-pages,
+    .re-icon-filebrowser {
+      font-family: 'Font Awesome 5 Free' !important;
+      content: none;
+      opacity: 1 !important;
+    }
+
+  .re-icon-pages:before {
+    content: "\f1fa";
+  }
+
+  .re-icon-filebrowser:before {
+    content: "\f302";
+  }
   
   .redactor-box,
   .redactor-box textarea {
@@ -268,7 +284,8 @@
       margin: 0;
       height: 3px;
       border: none;
-      background: rgba(0, 0, 0, 0.1); }
+      background: var(--ee-text-primary);
+      opacity: 0.1; }
   
   .redactor-script-tag {
     display: none !important; }
@@ -480,7 +497,7 @@
     color: var(--ee-button-default-color);
     border-radius: 2px;
     background: var(--ee-panel-bg);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 1px 2px var(--ee-text-placeholder);
     margin-right: 5px;
     margin-bottom: 4px; }
   
@@ -492,12 +509,13 @@
   .redactor-toolbar a:hover,
   .redactor-air a:hover {
     outline: none;
-    color: #fff;
-    background: #449aef; }
+    color: var(--ee-button-primary-color);
+    background: var(--ee-button-primary-bg); }
   
   .redactor-toolbar a.redactor-button-active {
-    background: rgba(245, 245, 245, 0.95);
-    color: rgba(0, 0, 0, 0.4); }
+    background: var(--ee-panel-bg);
+    color: var(--ee-button-default-color);
+    opacity: 0.5; }
   
   .redactor-toolbar a.redactor-button-disabled,
   .redactor-air a.redactor-button-disabled {
@@ -646,7 +664,7 @@
     display: none;
     position: absolute;
     z-index: 1051;
-    background-color: #fff;
+    background-color: var(--ee-panel-bg);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
     border-radius: 2px;
     width: 264px;
@@ -671,13 +689,14 @@
     .redactor-dropdown a:last-child {
       border-bottom-color: transparent; }
     .redactor-dropdown a {
-      color: #000; }
+      color: var(--ee-button-default-color); }
       .redactor-dropdown a:hover {
-        color: #fff !important;
-        background-color: #449aef !important; }
+        color: var(--ee-button-primary-color) !important;
+        background-color: var(--ee-accent) !important; }
       .redactor-dropdown a.redactor-dropdown-item-disabled {
-        color: rgba(0, 0, 0, 0.4);
-        background: #fff; }
+        color: var(--ee-button-default-color);
+        background: var(--ee-panel-bg);
+        opacity: 0.4; }
   
   .redactor-dropdown-cells {
     margin: 10px auto; }
@@ -698,16 +717,18 @@
       flex-grow: 1;
       font-size: 12px;
       padding: 8px;
-      cursor: pointer; }
+      cursor: pointer;
+      backfround-color: var(--ee-button-secondary-bg); }
       .redactor-dropdown-selector span:hover {
-        background: #eee; }
+        background: var(--ee-button-primary-border); }
       .redactor-dropdown-selector span.active {
         cursor: text;
-        color: rgba(0, 0, 0, 0.3);
-        background: #eee; }
+        color: var(--ee-text-primary);
+        background: var(--ee-bg-0); }
   
   .redactor-dropdown-format .redactor-dropdown-item-blockquote {
-    color: rgba(0, 0, 0, 0.4);
+    color: var(--ee-button-default-color);
+    opacity: 0.4;
     font-style: italic; }
   
   .redactor-dropdown-format .redactor-dropdown-item-pre {
@@ -760,10 +781,10 @@
     position: relative;
     margin: 16px auto;
     padding: 0;
-    background: #fff;
+    background: var(--ee-panel-bg);
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 2px 15px rgba(80, 80, 80, 0.25);
     border-radius: 3px;
-    color: #000; }
+    color: var(--ee-text-normal); }
     .redactor-modal form {
       margin: 0;
       padding: 0;
@@ -779,7 +800,7 @@
       height: 40px;
       outline: none;
       vertical-align: middle;
-      background-color: #fff;
+      background-color: var(--ee-panel-bg);
       border: 1px solid #cacfd4;
       border-radius: 0.1875em;
       box-shadow: none;
@@ -851,16 +872,16 @@
     .redactor-modal textarea:hover,
     .redactor-modal select:hover {
       outline: none;
-      background-color: #fff;
-      border-color: #969fa9;
+      background-color: transparent;
+      border-color: var(--ee-input-focus-border);
       box-shadow: none; }
     .redactor-modal input:not([type='checkbox']):focus,
     .redactor-modal textarea:focus,
     .redactor-modal select:focus {
       transition: all linear .2s;
       outline: none;
-      background-color: #fff;
-      border-color: rgba(0, 125, 255, 0.5);
+      background-color: transparent;
+      border-color: var(--ee-input-focus-border);
       box-shadow: 0 0 3px rgba(0, 125, 255, 0.5); }
     .redactor-modal input.error,
     .redactor-modal textarea.error,
@@ -925,7 +946,7 @@
       font-size: 30px;
       line-height: 30px;
       padding: 0px 4px;
-      color: #000;
+      color: var(--ee-text-primary);
       opacity: .3;
       cursor: pointer; }
       .redactor-modal .redactor-close:hover {
@@ -940,10 +961,10 @@
       font-family: inherit;
       font-size: 15px;
       font-weight: 500;
-      color: #007dff;
-      background-color: #fff;
+      color: var(--ee-button-primary-border);
+      background-color: transparent ;
       border-radius: 3px;
-      border: 2px solid #007dff;
+      border: 2px solid var(--ee-button-primary-border);
       min-height: 40px;
       outline: none;
       padding: 0.5em 1.25em;
@@ -954,9 +975,8 @@
     .redactor-modal button:hover {
       outline: none;
       text-decoration: none;
-      background: none;
-      color: rgba(0, 125, 255, 0.6);
-      border-color: rgba(0, 125, 255, 0.5); }
+      background: var(--ee-button-primary-bg);
+      color: var(--ee-button-primary-color);}
     .redactor-modal button.redactor-button-secondary {
       border-color: #2a2e34;
       color: #2a2e34; }
@@ -967,12 +987,14 @@
     .redactor-modal button.redactor-button-unstyled {
       background: none;
       border-color: transparent;
-      color: rgba(42, 46, 52, 0.6); }
+      color: var(--ee-text-primary);
+      opacity: 0.6; }
       .redactor-modal button.redactor-button-danger:hover,
       .redactor-modal button.redactor-button-unstyled:hover {
         background: none;
         border-color: transparent;
         color: #ff3265;
+        opacity: 1;
         text-decoration: underline; }
     .redactor-modal .redactor-modal-group:after {
       content: "";
@@ -1007,8 +1029,8 @@
     font-size: 18px;
     line-height: 24px;
     font-weight: bold;
-    color: #000;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+    color: var(--ee-text-primary);
+    border-bottom: 1px solid var(--ee-panel-border); }
     .redactor-modal-header:empty {
       display: none; }
   
@@ -1018,7 +1040,7 @@
   
   .redactor-modal-footer {
     padding: 24px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-top: 1px solid var(--ee-panel-border);
     overflow: hidden; }
     .redactor-modal-footer button {
       margin-right: 4px; }
@@ -1126,7 +1148,7 @@
     .redactor-styles h5,
     .redactor-styles h6 {
       font-weight: bold;
-      color: #111;
+      color: var(--ee-text-primary);
       text-rendering: optimizeLegibility;
       margin: 0;
       padding: 0;
@@ -1148,7 +1170,8 @@
       letter-spacing: .035em; }
     .redactor-styles blockquote {
       font-style: italic;
-      color: rgba(0, 0, 0, 0.5);
+      color: var(--ee-text-primary);
+      opacity: 0.5;
       border: none; }
     .redactor-styles table {
       width: 100%; }
@@ -1157,7 +1180,7 @@
       font-family: Consolas, Menlo, Monaco, "Courier New", monospace;
       font-size: 87.5%;
       line-height: 1;
-      color: rgba(51, 51, 51, 0.9); }
+      color: var(--ee-text-primary); }
     .redactor-styles var, .redactor-styles cite {
       opacity: .6; }
     .redactor-styles var {
@@ -1177,7 +1200,7 @@
       padding-bottom: 0.2em;
       border-radius: 2px; }
     .redactor-styles code {
-      background-color: #eff1f2; }
+      background-color: var(--ee-panel-bg); }
     .redactor-styles mark {
       border-radius: 2px;
       padding: 0.125em 0.25em;
@@ -1199,12 +1222,12 @@
       font-size: .9em; }
     .redactor-styles pre,
     .redactor-styles pre code {
-      background-color: #f6f7f8;
+      background-color: var(--ee-bg-5);
       padding: 0;
       top: 0;
       display: block;
       line-height: 1.5;
-      color: rgba(51, 51, 51, 0.85);
+      color: var(--ee-text-primary);
       overflow: none;
       white-space: pre-wrap; }
     .redactor-styles pre {
