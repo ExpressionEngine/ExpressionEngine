@@ -44,7 +44,7 @@ abstract class IconDateColumn extends Column
     /**
      * @return bool
      */
-    public function shouldDisplayIcon()
+    protected function shouldDisplayIcon()
     {
         return ee()->config->item('entry_icon_dates') == 'y';
     }
