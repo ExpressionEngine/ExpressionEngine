@@ -10,12 +10,12 @@
 
 namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
-use ExpressionEngine\Library\CP\EntryManager\IconDateColumn;
+use ExpressionEngine\Library\CP\EntryManager\ColumnIconDate;
 
 /**
  * Entry Date Column
  */
-class EntryDate extends IconDateColumn
+class EntryDate extends ColumnIconDate
 {
     public function getTableColumnLabel()
     {

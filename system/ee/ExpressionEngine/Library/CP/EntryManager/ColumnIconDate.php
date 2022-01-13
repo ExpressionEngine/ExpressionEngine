@@ -4,7 +4,7 @@ namespace ExpressionEngine\Library\CP\EntryManager;
 
 use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
 
-abstract class IconDateColumn extends Column
+abstract class ColumnIconDate extends Column
 {
     /**
      * Should return the Icon
