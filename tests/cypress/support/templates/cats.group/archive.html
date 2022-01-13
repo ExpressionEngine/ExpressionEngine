@@ -1,7 +1,7 @@
 {exp:channel:category_archive channel="news" style="linear"}
     {categories}
         <div id="{category_url_title}">
-            <div class="category_name">{category_name}</div>
+            <div class="category_name" style="font-weight: bold;">{category_name}</div>
             <div class="category_url_title">{category_url_title}</div>
             <div class="category_description">{category_description}</div>
             <div class="custom_textfield">{custom_textfield}</div>
@@ -12,6 +12,14 @@
         </div>
     {/categories}
     {entry_titles}
-        <a href="{path='SITE_INDEX'}">{title}</a><br />
+        <div id="details-{category_name}-{entry_id}">
+            <div class="title">{title}</div>
+            <div class="entry_date">{entry_date format="%Y"}</div>
+            <div class="channel_id">{channel_id}</div>
+            <div class="channel">{channel}</div>
+            <div class="channel_short_name">{channel_short_name}</div>
+            <div class="channel_url">{channel_url}</div>
+        </div>
     {/entry_titles}
+    <hr>
 {/exp:channel:category_archive}

@@ -19,7 +19,7 @@ class AlphaNumeric extends ValidationRule
 {
     public function validate($key, $value)
     {
-        return (bool) preg_match("/^([a-z0-9])+$/i", $value);
+        return (bool) preg_match("/^([a-z0-9])+$/i", (string) $value);
     }
 
     public function getLanguageKey()

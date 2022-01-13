@@ -492,7 +492,8 @@ function (_React$Component) {
             children: null,
             parent: parent ? parent : null,
             component: items[key].component != undefined ? items[key].component : null,
-            sectionLabel: currentSection
+            sectionLabel: currentSection,
+            entry_id: items[key].entry_id ? items[key].entry_id : ''
           };
 
           if (items[key].children) {

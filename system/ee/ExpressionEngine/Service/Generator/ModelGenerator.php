@@ -38,7 +38,7 @@ class ModelGenerator
     {
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
         $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
-        $this->modelPath = SYSPATH . 'user/addons/' . $this->addon . '/Models/';
+        $this->modelPath = SYSPATH . 'user/addons/' . $this->addon . '/Model/';
 
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs' . '/';
@@ -53,6 +53,7 @@ class ModelGenerator
         $modelStub = $this->filesystem->read($this->stub('model.php'));
         $modelStub = $this->write('namespace', $this->namespace, $modelStub);
         $modelStub = $this->write('class', $this->className, $modelStub);
+        $modelStub = $this->write('addon', strtolower($this->addon), $modelStub);
 
         $this->putFile($this->className . '.php', $modelStub);
 

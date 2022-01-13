@@ -111,7 +111,7 @@ class Sql extends Utilities
             '' => lang('sql_manager')
         );
 
-        ee()->cp->render('utilities/sql/manager', $vars);
+        return ee()->cp->render('utilities/sql/manager', $vars);
     }
 
     /**

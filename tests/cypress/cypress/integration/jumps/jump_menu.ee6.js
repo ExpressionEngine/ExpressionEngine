@@ -60,14 +60,6 @@ context('Jump Menu', () => {
 			closeJumpMenu();
 		})
 
-		it('view entries list', function() {
-			cy.route("POST", "**/jumps/**").as("ajax");
-			page.get('jump_menu').contains("View Entries").click()
-			cy.wait("@ajax");
-			page.get('jump_menu').contains("Information Pages").click()
-			page.get('page_heading').contains("All Information Pages entries")
-		})
-
 		it('edit entry', function() {
 			cy.route("POST", "**/jumps/**").as("ajax");
 			page.get('jump_menu').contains("Edit Entry").click()

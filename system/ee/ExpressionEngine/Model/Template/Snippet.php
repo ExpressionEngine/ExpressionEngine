@@ -310,7 +310,7 @@ class Snippet extends FileSyncedModel
     */
     public function validateSnippetName($key, $value, array $params = array())
     {
-        if (! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $value)) {
+        if (! preg_match("#^[a-zA-Z0-9_\-/]+$#i", (string) $value)) {
             return 'illegal_characters';
         }
 
@@ -326,7 +326,7 @@ class Snippet extends FileSyncedModel
         }
         $count = $snippets->filter('snippet_name', $value)->count();
 
-        if ((strtolower($this->getBackup($key)) != strtolower($value)) and $count > 0) {
+        if ((strtolower((string) $this->getBackup($key)) != strtolower((string) $value)) and $count > 0) {
             return 'snippet_name_taken';
         } elseif ($count > 1) {
             return 'snippet_name_taken';

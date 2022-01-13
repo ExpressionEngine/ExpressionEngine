@@ -14,7 +14,7 @@
 	<div class="main-nav__wrap">
 
 	<div class="main-nav__title">
-		<h1></i> <?=$header['title']?></h1>
+		<h1><?=$header['title']?></h1>
 	</div>
 
 	<div class="main-nav__toolbar">

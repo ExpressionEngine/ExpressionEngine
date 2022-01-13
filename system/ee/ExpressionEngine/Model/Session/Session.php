@@ -41,6 +41,7 @@ class Session extends Model
     protected $auth_timeout;
     protected $last_activity;
     protected $can_debug;
+    protected $mfa_flag;
 
     /**
      * Manage sudo-like timeout for "trust but verify" actions
