@@ -29,4 +29,12 @@ abstract class IconDateColumn extends Column
 
         return '<span="col-date-'.$icon.'">-'.$icon.'-</span>';
     }
+
+    public function getTableColumnConfig()
+    {
+        $encode = ee()->config->item('entry_icon_dates') != 'y';
+        return [
+            'encode' => $encode
+        ];
+    }
 }
