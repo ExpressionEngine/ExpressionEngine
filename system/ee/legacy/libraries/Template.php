@@ -246,7 +246,7 @@ class EE_Template
             // Build a return packet since we don't know at this stage where we are returning it
             $return = ee()->extensions->call(
                 'template_post_parse',
-                $is_embed || $is_layout ? $this->layout : $this->final_template,
+                $is_embed || $is_layout ? $this->template : $this->final_template,
                 ($is_embed || $is_layout), // $is_partial
                 $site_id,
                 $currentTemplateInfo
