@@ -78,20 +78,44 @@ class Updater
 
     private function setPasswordSecurityPolicy()
     {
-        if (ee()->config->item('require_secure_passwords') == 'y') {
-            $password_security_policy = 'basic';
-        } else {
-            $password_security_policy = 'none';
+        $sites = ee()->db->get('sites');
+        $site_ids = [0 => 0];
+        foreach ($sites->result_array() as $site) {
+            $site_ids[] = $site['site_id'];
         }
 
-        $sites = ee()->db->get('sites');
-        foreach ($sites->result_array() as $site) {
-            ee('Model')->make('Config', [
-                'site_id' => $site['site_id'],
-                'key' => 'password_security_policy',
-                'value' => $password_security_policy
-            ])->save();
+        //update config record for each site
+        foreach ($site_ids as $site_id) {
+            $configQuery = ee()->db->select('config_id, value')
+                ->from('config')
+                ->where('site_id', $site_id)
+                ->where('key', 'require_secure_passwords')
+                ->get();
+            $data = [
+                'site_id' => $site_id,
+                'key' => 'password_security_policy'
+            ];
+            if ($configQuery->num_rows() > 0 && $configQuery->row('value') == 'y') {
+                $data['value'] = 'basic';
+            } else {
+                $data['value'] = 'none';
+            }
+            if ($configQuery->num_rows() > 0 ) {
+                ee()->db->where('config_id', $configQuery->row('config_id'));
+                ee()->db->update('config', $data);
+            } else if ($site_id != 0) {
+                ee()->db->insert('config', $data);
+            }
         }
+
+        //specifically check config file
+        $require_secure_passwords = ee('Config')->getFile()->get('require_secure_passwords');
+        if (!empty($require_secure_passwords)) {
+            ee('Config')->getFile()->set('require_secure_passwords', 'n', true);
+            ee('Config')->getFile()->set('password_security_policy', $require_secure_passwords == 'y' ? 'basic' : 'none', true);
+        }
+
+
     }
 
     private function addMfaColumns()
