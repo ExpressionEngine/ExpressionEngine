@@ -14,6 +14,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
    - Added `:trim` variable modifier
    - Allow assign previously created field groups to importing channel sets
    - Added Sticky entry column to entries table
+   - Added fluid Columns to List Command in order to accommodate longer Command lengths
    - Add channel data to category archives
 
 
