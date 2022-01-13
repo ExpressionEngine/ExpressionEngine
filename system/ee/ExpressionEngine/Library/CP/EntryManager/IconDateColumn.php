@@ -1,6 +1,8 @@
 <?php
 
-namespace ExpressionEngine\Library\CP\EntryManager\Columns;
+namespace ExpressionEngine\Library\CP\EntryManager;
+
+use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
 
 abstract class IconDateColumn extends Column
 {
@@ -26,16 +28,5 @@ abstract class IconDateColumn extends Column
         }
 
         return '<span="col-date-'.$icon.'">-'.$icon.'-</span>';
-    }
-
-    /**
-     * We gotta render some HTML
-     * @return false[]
-     */
-    public function getTableColumnConfig()
-    {
-        return [
-            'encode' => false
-        ];
     }
 }
