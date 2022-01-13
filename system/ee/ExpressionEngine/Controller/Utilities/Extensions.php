@@ -95,18 +95,18 @@ class Extensions extends Utilities
             }
 
             switch ($info['enabled']) {
-                case true: $status = array('class' => 'enable', 'content' => lang('enabled'));
-
-break;
-                case false: $status = array('class' => 'disable', 'content' => lang('disabled'));
-
-break;
+                case true:
+                    $status = array('class' => 'enable', 'content' => lang('enabled'));
+                    break;
+                case false:
+                    $status = array('class' => 'disable', 'content' => lang('disabled'));
+                    break;
             }
 
             $data[] = array(
                 'attrs' => $attrs,
                 'columns' => array(
-                    'name' => $info['name'] . '(' . $info['version'] . ')',
+                    'name' => $info['name'] . ' (' . $info['version'] . ')',
                     'status' => $status,
                     array('toolbar_items' => $toolbar),
                     array(

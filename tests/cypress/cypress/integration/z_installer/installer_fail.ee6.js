@@ -99,7 +99,7 @@ context.skip('Installer (should fail)', () => {
       install_form.get('db_username').clear().type('nonsense')
       install_form.get('username').clear().type('admin')
       install_form.get('email_address').clear().type('hello@expressionengine.com')
-      install_form.get('password').clear().type('password')
+      install_form.get('password').clear().type('1Password')
       install_form.get('license_agreement').click()
       install_form.get('install_submit').click()
 
@@ -220,7 +220,7 @@ context.skip('Installer (should fail)', () => {
       }
       install_form.get('username').clear().type('admin')
       install_form.get('email_address').clear().type('hello@expressionengine.com')
-      install_form.get('password').clear().type('password')
+      install_form.get('password').clear().type('1Password')
       install_form.get('install_submit').click()
 
       cy.hasNoErrors()

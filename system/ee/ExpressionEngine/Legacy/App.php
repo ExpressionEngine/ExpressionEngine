@@ -15,6 +15,7 @@ namespace ExpressionEngine\Legacy;
  */
 class App
 {
+    protected $facade;
     protected $router_ready = false;
 
     /**

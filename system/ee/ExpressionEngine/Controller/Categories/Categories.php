@@ -288,7 +288,7 @@ class Categories extends AbstractCategoriesController
         //  Check discrete privileges when editig (we have no discrete create
         //  permissions)
         if (AJAX_REQUEST) {
-            $can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
+            $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
 
             if (! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_edit)) {
                 show_error(lang('unauthorized_access'), 403);

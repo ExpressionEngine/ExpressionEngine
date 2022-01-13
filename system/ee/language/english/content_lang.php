@@ -4,9 +4,11 @@ $lang = array(
 
     'all_channel_entries' => 'All %s entries',
 
-    'all_comments' => 'All Comments',
+    'all_comments' => 'All %s Comments',
 
-    'all_comments_for_entry' => 'All Comments for %s',
+    'all_comments_for_entry' => 'All Comments for <a href="%s">%s</a>',
+
+    'search_results_comments_for_entry' => 'Search Comments for <a href="%s">%s</a><br><i>Found %d results for "%s"</i>',
 
     'all_entries' => 'All %d entries',
 
@@ -162,7 +164,7 @@ $lang = array(
 
     'move_comment' => 'Move Comment?',
 
-    'move_comment_desc' => 'Enter an Entry <abbr title="Identifier">ID</abbr> to move this comment to.<br>Currently on: %s (%s)',
+    'move_comment_desc' => 'Enter an Entry <abbr title="Identifier">ID</abbr> to move this comment to.<br>Currently on: <a href="%s">%s</a> (<a href="%s">%s</a>)',
 
     'no_comments' => 'No comments were found.',
 
@@ -173,6 +175,8 @@ $lang = array(
     'set_to_pending' => 'Set to pending',
 
     'sticky' => 'Make entry sticky?',
+
+    'sticky_entry' => 'Sticky Entry',
 
     'sticky_desc' => 'When enabled, this entry will be given preference in sorted listings.',
 

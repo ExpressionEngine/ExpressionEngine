@@ -410,7 +410,7 @@ abstract class AbstractDesign extends CP_Controller
 
         $template_id = ee()->session->flashdata('template_id');
 
-        $hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '_';
+        $hidden_indicator = (ee()->config->item('hidden_template_indicator') != '') ? ee()->config->item('hidden_template_indicator') : '_';
         $hidden_indicator_length = strlen($hidden_indicator);
 
         $filters = ee('CP/Filter')
