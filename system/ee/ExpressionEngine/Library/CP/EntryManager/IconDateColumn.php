@@ -15,14 +15,14 @@ abstract class IconDateColumn extends Column
     protected function getIcon($entry, $column)
     {
         $icon = '';
-        if($entry->status == 'closed') {
+        if ($entry->status == 'closed') {
             $icon = 'closed';
         }
 
-        if(!$icon && !empty($entry->$column)) {
-            if(ee()->localize->now >= $entry->$column) {
+        if (!$icon && !empty($entry->$column)) {
+            if (ee()->localize->now >= $entry->$column) {
                 $icon = 'already-published';
-            } else if(ee()->localize->now <= $entry->$column) {
+            } else if (ee()->localize->now <= $entry->$column) {
                 $icon = 'future';
             }
         }
@@ -30,6 +30,9 @@ abstract class IconDateColumn extends Column
         return '<span="col-date-'.$icon.'">-'.$icon.'-</span>';
     }
 
+    /**
+     * @return bool[]
+     */
     public function getTableColumnConfig()
     {
         $encode = ee()->config->item('entry_icon_dates') != 'y';
