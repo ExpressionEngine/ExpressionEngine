@@ -21,7 +21,7 @@ class GetRequest extends Request
             $url = trim($url, '/') . '?' . http_build_query($data);
         }
 
-        return parent::__construct($url, array(), $callback);
+        parent::__construct($url, array(), $callback);
     }
 }
 
