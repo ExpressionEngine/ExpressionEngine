@@ -2952,6 +2952,14 @@ class Channel
 
             ee()->load->library('typography');
 
+            $parent_ids = array();
+
+            foreach ($this->cat_array as $val) {
+                if (!empty($val[1]) && !in_array($val[1], $parent_ids)) {
+                    $parent_ids[] = $val[1];
+                }
+            }
+
             foreach ($this->cat_array as $key => $val) {
                 $chunk = ee()->TMPL->tagdata;
 
@@ -2962,6 +2970,7 @@ class Channel
                     'category_image' => (string) $val[5],
                     'category_id' => $val[0],
                     'parent_id' => $val[1],
+                    'has_children' => in_array($val[0], $parent_ids),
                     'active' => ($active_cat == $val[0] || $active_cat == $val[6])
                 );
 
@@ -3343,12 +3352,19 @@ class Channel
 
             if ($query->num_rows() > 0) {
                 $used = array();
+                $parent_ids = array();
 
                 // Get category ID from URL for {if active} conditional
                 ee()->load->helper('segment');
                 $active_cat = parse_category($this->query_string);
 
                 ee()->load->library('typography');
+
+                foreach ($query->result_array() as $row) {
+                    if (!empty($row['parent_id']) && !in_array($row['parent_id'], $parent_ids)) {
+                        $parent_ids[] = $row['parent_id'];
+                    }
+                }
 
                 foreach ($query->result_array() as $row) {
                     // We'll concatenate parsed category and title chunks here for
@@ -3366,6 +3382,7 @@ class Channel
                             'category_image' => (string) $row['cat_image'],
                             'category_id' => $row['cat_id'],
                             'parent_id' => $row['parent_id'],
+                            'has_children' => in_array($row['cat_id'], $parent_ids),
                             'active' => ($active_cat == $row['cat_id'] || $active_cat == $row['cat_url_title'])
                         );
 
@@ -3715,6 +3732,14 @@ class Channel
             ee()->load->helper('segment');
         }
 
+        $parent_ids = array();
+
+        foreach ($this->cat_array as $val) {
+            if (!empty($val[0]) && !in_array($val[0], $parent_ids)) {
+                $parent_ids[] = $val[0];
+            }
+        }
+
         foreach ($this->cat_array as $key => $val) {
             if ($parent_id == $val[0]) {
                 if ($open == 0) {
@@ -3733,6 +3758,7 @@ class Channel
                     'category_image' => (string) $val[2],
                     'category_id' => $key,
                     'parent_id' => $val[0],
+                    'has_children' => in_array($key, $parent_ids),
                     'active' => ($active_cat == $key || $active_cat == $val[4])
                 );
 
