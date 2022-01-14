@@ -271,9 +271,7 @@ class Relationship extends React.Component {
             return notInSelected && allowedChannel && filterName
         })
 
-        let maxItems = this.props.rel_max ? this.props.rel_max : this.props.limit
-
-        let showAddButton = ((maxItems > this.state.selected.length) && (this.props.multi || this.state.selected.length==0) && (this.props.items.length > this.state.selected.length))
+        let showAddButton = ( (this.props.multi || this.state.selected.length==0) && ( this.props.rel_max == 0 || this.props.rel_max > this.state.selected.length) );
 
         let channelFilterItems = props.channels.map((channel) => {
             return { label: channel.title, value: channel.id}
