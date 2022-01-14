@@ -2422,7 +2422,7 @@ GRID_FALLBACK;
         $options = array();
 
         $field_data = (is_array($this->entry('field_id_' . $field->field_id)))
-            ? $this->entry('field_id_' . $field->field_id) : explode('|', $this->entry('field_id_' . $field->field_id));
+            ? $this->entry('field_id_' . $field->field_id) : explode('|', (string) $this->entry('field_id_' . $field->field_id));
 
         if (in_array($field->field_type, $this->option_fields)) {
             $field_settings = $field->getField()->getItem('field_settings');
@@ -2461,7 +2461,7 @@ GRID_FALLBACK;
                     ->all();
 
                 if ($pop_entries && $pop_content = $pop_entries->pluck('field_id_' . $field->field_pre_field_id)) {
-                    $current = explode('|', $this->entry('field_id_' . $field->field_id));
+                    $current = explode('|', (string) $this->entry('field_id_' . $field->field_id));
 
                     foreach ($pop_content as $content) {
                         $options[] = array(

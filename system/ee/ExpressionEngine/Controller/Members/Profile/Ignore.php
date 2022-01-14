@@ -28,7 +28,7 @@ class Ignore extends Profile
         parent::__construct();
         $this->index_url = $this->base_url;
         $this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
-        $this->ignore_list = explode('|', $this->member->ignore_list);
+        $this->ignore_list = explode('|', (string) $this->member->ignore_list);
     }
 
     /**
