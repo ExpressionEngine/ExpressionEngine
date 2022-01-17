@@ -48,6 +48,7 @@ Bullet list below, e.g.
    - Added CLI commands for generating Prolets and Widgets
    - Fixed a CLI bug where it didnt ask for the migration location if not specified
    - Fix white screen on first access to a group template which exists on files, but not yet on database
+   - Fixed a bug (#<1584>) where conditional was being ignored by Filesystem->emptyDir() method.
    - Remove unnecessary and duplicated queries from search module
 
 
