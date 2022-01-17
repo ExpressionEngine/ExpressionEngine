@@ -301,6 +301,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
       }
 
       return $.ajax({
+        method: 'POST',
         url: this.props.filter_url,
         data: $.param(params),
         dataType: 'json',
@@ -342,8 +343,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         });
         return notInSelected && allowedChannel && filterName;
       });
-      var maxItems = this.props.rel_max ? this.props.rel_max : this.props.limit;
-      var showAddButton = maxItems > this.state.selected.length && (this.props.multi || this.state.selected.length == 0) && this.props.items.length > this.state.selected.length;
+      var showAddButton = (this.props.multi || this.state.selected.length == 0) && (this.props.rel_max == 0 || this.props.rel_max > this.state.selected.length);
       var channelFilterItems = props.channels.map(function (channel) {
         return {
           label: channel.title,
