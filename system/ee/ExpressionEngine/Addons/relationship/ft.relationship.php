@@ -74,7 +74,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
     public function validate_settings($data)
     {
         $rules = [
-            'rel_min' => 'isNatural|gtLimit',
+            'rel_min' => 'isNatural',
             'rel_max' => 'isNaturalNoZero'
         ];
 
