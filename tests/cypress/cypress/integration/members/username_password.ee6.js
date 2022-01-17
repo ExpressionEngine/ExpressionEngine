@@ -6,6 +6,7 @@ const page = new UsernamePassword
 
 context('Profile - Username and Password', () => {
   beforeEach(function() {
+    cy.eeConfig({ item: 'password_security_policy', value: 'none' })
     cy.auth();
 
     page.load()

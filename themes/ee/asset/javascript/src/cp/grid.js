@@ -223,7 +223,8 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 */
 	_toggleRowManipulationButtons: function() {
 		var rowCount = this._getRows().length,
-			showControls = rowCount > 0;
+			showControls = rowCount > 0,
+			that = this.root;
 
 		// Show add button below field when there are more than zero rows
 		this.addButtonToolbar.toggle(showControls && ! this.isFileGrid);
@@ -258,6 +259,15 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Inside File Grid? Hide Grid completely if there are no rows
 		if (this.isFileGrid) {
 			this.root.toggleClass('hidden', rowCount == 0)
+		}
+
+		if(rowCount == 0) {
+			var showAddButton = setInterval(function (){
+				if ( !that.find('.field-no-results').hasClass('hidden') ) {
+					that.find('.field-no-results').show();
+					clearInterval(showAddButton);
+				}
+			}, 50);
 		}
 	},
 

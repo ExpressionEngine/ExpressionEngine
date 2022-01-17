@@ -13,6 +13,8 @@
  */
 class Forum_ext
 {
+    public $version;
+
     public function __construct()
     {
         $this->version = ee('Addon')->get('forum')->getVersion();
