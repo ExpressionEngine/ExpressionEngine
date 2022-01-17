@@ -612,7 +612,7 @@ class Filesystem
      */
     public function findAndReplace($file, $search, $replace)
     {
-        if ($this->exists($file)) {
+        if (!$this->exists($file)) {
             return;
         }
 

@@ -50,9 +50,8 @@ Bullet list below, e.g.
    - Fixed a CLI bug where it didnt ask for the migration location if not specified
    - Fix white screen on first access to a group template which exists on files, but not yet on database
    - Fixed a bug (#<1584>) where conditional was being ignored by Filesystem->emptyDir() method.
+   - Fixed a bug (#<1586>) where conditional error inFilesystem->findAndReplace() method prevented its operation.
    - Remove unnecessary and duplicated queries from search module
-
-
    - Fix #1195 improves `template_post_parse` hook when fired after sub or layout (i.e. partial) template parse completes
    - Fix WEBP Mime type detection
 
