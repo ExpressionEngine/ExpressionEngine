@@ -80,17 +80,6 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         $validator = ee('Validation')->make($rules);
 
-        $validator->defineRule('gtLimit', function ($key, $value, $parameters, $rule) use ($data) {
-            if (
-                ((isset($data['allow_multiple']) && $data['allow_multiple'] == true) || (isset($data['relationship_allow_multiple']) && $data['relationship_allow_multiple'] == 'y'))
-                && $data['limit'] < $data['rel_min']
-            ) {
-                    $rule->stop();
-                    return lang('rel_ft_min_settings_error');
-            }
-            return true;
-        });
-
         $this->errors = $validator->validate($data);
 
         return $this->errors;
