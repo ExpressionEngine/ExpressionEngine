@@ -301,6 +301,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
       }
 
       return $.ajax({
+        method: 'POST',
         url: this.props.filter_url,
         data: $.param(params),
         dataType: 'json',
