@@ -397,7 +397,9 @@ EE.cp.formValidation = {
 						if (thisButton.is('input')) {
 							thisButton.attr('value', decodeURIComponent(thisButton.data('submit-text')));
 						} else if (thisButton.is('button')) {
-							thisButton.html(decodeURIComponent(thisButton.data('submit-text')));
+							if (typeof(thisButton.data('submit-text')) != 'undefined') {
+								thisButton.html(decodeURIComponent(thisButton.data('submit-text')));
+							}
 						}
 					}
 				});

@@ -1085,7 +1085,7 @@ class EE_Config
                 } elseif (is_bool($val)) {
                     $val = ($val == true) ? 'TRUE' : 'FALSE';
                 } else {
-                    $val = str_replace("\\\"", "\"", $val);
+                    $val = str_replace("\\\"", "\"", (string) $val);
                     $val = str_replace("\\'", "'", $val);
                     $val = str_replace('\\\\', '\\', $val);
 

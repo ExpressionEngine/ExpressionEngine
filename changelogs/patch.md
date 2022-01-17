@@ -51,9 +51,8 @@ Bullet list below, e.g.
    - Fixed a bug (#<1584>) where conditional was being ignored by Filesystem->emptyDir() method.
    - Fixed a bug (#<1586>) where conditional error inFilesystem->findAndReplace() method prevented its operation.
    - Remove unnecessary and duplicated queries from search module
-
-
    - Fix #1195 improves `template_post_parse` hook when fired after sub or layout (i.e. partial) template parse completes
+   - Fix WEBP Mime type detection
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
