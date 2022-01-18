@@ -35,6 +35,7 @@ $(document).ready(function() {
 			$button.attr('value', $button.data('work-text'));
 		}
 	});
+
 });
 
 })(jQuery);

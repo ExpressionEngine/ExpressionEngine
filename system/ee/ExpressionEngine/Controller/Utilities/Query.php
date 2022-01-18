@@ -74,7 +74,7 @@ class Query extends Utilities
             '' => lang('sql_query_form')
         );
 
-        ee()->cp->render('utilities/query/index');
+        return ee()->cp->render('utilities/query/index');
     }
 
     /**

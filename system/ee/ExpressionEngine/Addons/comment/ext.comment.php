@@ -5,6 +5,8 @@
  */
 class Comment_ext
 {
+    public $version;
+
     public function __construct()
     {
         $addon = ee('Addon')->get('comment');

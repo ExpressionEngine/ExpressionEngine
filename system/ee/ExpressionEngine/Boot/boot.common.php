@@ -50,7 +50,7 @@ if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/r
  *
  * @deprecated 3.0.0
  * @access	private
- * @return	void
+ * @return	bool
  */
     function is_really_writable($file)
     {
@@ -299,7 +299,7 @@ if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/r
  */
     function get_bool_from_string($value)
     {
-        if (is_bool($value)) {
+        if (is_bool($value) || is_null($value)) {
             return $value;
         }
 
@@ -548,7 +548,7 @@ if (! function_exists('log_message')) {
         $non_displayables[] = '/&#(?:823[78]|820[67]);/'; // HTML entity versions of RTL/LTR markers
 
         do {
-            $str = preg_replace($non_displayables, '', $str, -1, $count);
+            $str = preg_replace($non_displayables, '', (string) $str, -1, $count);
         } while ($count);
 
         return $str;

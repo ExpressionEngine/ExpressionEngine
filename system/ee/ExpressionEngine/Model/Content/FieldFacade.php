@@ -502,7 +502,7 @@ class FieldFacade
         $info = array_merge($defaults, $info);
 
         $settings = array(
-            'field_instructions' => trim($info['field_instructions']),
+            'field_instructions' => trim((string) $info['field_instructions']),
             'field_text_direction' => ($info['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
             'field_fmt' => $field_fmt,
             'field_hidden' => $field_hidden,

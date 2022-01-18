@@ -44,11 +44,11 @@ class Fluid_field_ft extends EE_Fieldtype
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
     }
 
-    public function validate($field_data)
+    public function validate($data)
     {
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
 
-        if (empty($field_data)) {
+        if (empty($data)) {
             return true;
         }
 
@@ -57,7 +57,7 @@ class Fluid_field_ft extends EE_Fieldtype
             ->all()
             ->indexByIds();
 
-        foreach ($field_data['fields'] as $key => $data) {
+        foreach ($data['fields'] as $key => $data) {
             $field_id = null;
             $fluid_field_data_id = null;
 
@@ -79,6 +79,9 @@ class Fluid_field_ft extends EE_Fieldtype
 
             if (strpos($key, 'field_') === 0) {
                 $fluid_field_data_id = (int) str_replace('field_', '', $key);
+            }
+            if (strpos($key, 'new_field_') === 0) {
+                $fluid_field_data_id = (int) str_replace('new_field_', '', $key);
             }
 
             $field = clone $field_templates[$field_id];
@@ -349,7 +352,7 @@ class Fluid_field_ft extends EE_Fieldtype
      * @param string $data Stored data for the field
      * @return string Field display
      */
-    public function display_field($field_data)
+    public function display_field($data)
     {
         $fields = '';
 
@@ -365,7 +368,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $field_templates = $field_templates->indexByIds();
 
-        if (! is_array($field_data)) {
+        if (! is_array($data)) {
             if ($this->content_id) {
                 $fluid_field_data = $this->getFieldData();
 
@@ -386,7 +389,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 }
             }
         } else {
-            foreach ($field_data['fields'] as $key => $data) {
+            foreach ($data['fields'] as $key => $data) {
                 $field_id = null;
 
                 foreach (array_keys($data) as $datum) {
@@ -403,7 +406,14 @@ class Fluid_field_ft extends EE_Fieldtype
 
                 $f->setName($this->name() . '[fields][' . $key . '][field_id_' . $field->getId() . ']');
 
-                $f = $this->setupFieldInstance($f, $data, $field_id);
+                if (strpos($key, 'field_') === 0) {
+                    $fluid_field_data_id = (int) str_replace('field_', '', $key);
+                }
+                if (strpos($key, 'new_field_') === 0) {
+                    $fluid_field_data_id = (int) str_replace('new_field_', '', $key);
+                }
+
+                $f = $this->setupFieldInstance($f, $data, $fluid_field_data_id);
 
                 $fields .= ee('View')->make('fluid_field:field')->render([
                     'field' => $f,
@@ -441,7 +451,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     'sortable'
                 ),
                 'file' => array(
-                    'fields/fluid_field/cp',
+                    'fields/fluid_field/ui',
                     'cp/sort_helper'
                 ),
             ));
@@ -452,6 +462,9 @@ class Fluid_field_ft extends EE_Fieldtype
                 'filters' => $filters,
             ));
         }
+
+        //since this is not implemented outside of CP, return empty string
+        return '';
     }
 
     public function display_settings($data)

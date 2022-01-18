@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -18,7 +17,6 @@ use ExpressionEngine\Library\CP\Table;
  */
 class File_ft extends EE_Fieldtype implements ColumnInterface
 {
-
     public $info = array(
         'name' => 'File',
         'version' => '1.1.0'
@@ -27,13 +25,6 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     public $has_array_data = true;
 
     public $_dirs = array();
-
-    /**
-     * A list of operators that this field type supports
-     *
-     * @var array
-     */
-    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
 
     /**
      * Constructor
@@ -55,17 +46,15 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     {
         // Is it required but empty?
         if (($this->settings['field_required'] === true
-                || $this->settings['field_required'] == 'y')
-            && empty($data)
-        ) {
+            || $this->settings['field_required'] == 'y')
+                && empty($data)) {
             return array('value' => '', 'error' => lang('required'));
         }
 
         // Is it optional and empty?
         if (($this->settings['field_required'] === false
-                || $this->settings['field_required'] == 'n')
-            && empty($data)
-        ) {
+            || $this->settings['field_required'] == 'n')
+                && empty($data)) {
             return array('value' => '');
         }
 
@@ -192,7 +181,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
 
         $file = $this->_parse_field($data);
 
-        if ($file && !$file->exists()) {
+        if ($file && ! $file->exists()) {
             $status = 'warning';
         }
 
@@ -216,7 +205,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                 ->first();
         }
         // If file field is just a file ID
-        elseif (!empty($data) && is_numeric($data)) {
+        elseif (! empty($data) && is_numeric($data)) {
             $file = ee('Model')->get('File', $data)->first();
         }
 
@@ -319,41 +308,37 @@ JSC;
      *
      * @access	public
      */
-    public function replace_tag($file_info, $params = array(), $tagdata = false)
+    public function replace_tag($data, $params = array(), $tagdata = false)
     {
         // Make sure we have file_info to work with
-        if ($tagdata !== false && $file_info === false) {
+        if ($tagdata !== false && $data === false) {
             $tagdata = ee()->TMPL->parse_variables($tagdata, array());
         }
 
         // Experimental parameter, do not use
         if (isset($params['raw_output']) && $params['raw_output'] == 'yes') {
-            return $file_info['raw_output'];
+            return $data['raw_output'];
         }
 
         // Let's allow our default thumbs to be used inside the tag pair
-        if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension'])) {
-            $file_info['url:thumbs'] = $file_info['path'] . '_thumbs/' . $file_info['filename'] . '.' . $file_info['extension'];
+        if (isset($data['path']) && isset($data['filename']) && isset($data['extension'])) {
+            $data['url:thumbs'] = $data['path'] . '_thumbs/' . $data['filename'] . '.' . $data['extension'];
         }
 
-        if (isset($file_info['file_id'])) {
-            $file_info['id_path'] = array('/' . $file_info['file_id'], array('path_variable' => true));
+        if (isset($data['file_id'])) {
+            $data['id_path'] = array('/' . $data['file_id'], array('path_variable' => true));
         }
 
         // Make sure we have file_info to work with
-        if ($tagdata !== false && isset($file_info['file_id'])) {
-            return ee()->TMPL->parse_variables($tagdata, array($file_info));
+        if ($tagdata !== false && isset($data['file_id'])) {
+            return ee()->TMPL->parse_variables($tagdata, array($data));
         }
 
-        if (
-            !empty($file_info['path'])
-            && !empty($file_info['filename'])
-            && $file_info['extension'] !== false
-        ) {
-            $full_path = $file_info['path'] . $file_info['filename'] . '.' . $file_info['extension'];
+        if (! empty($data['path']) && ! empty($data['filename']) && $data['extension'] !== false) {
+            $full_path = $data['path'] . $data['filename'] . '.' . $data['extension'];
 
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($file_info, $params['wrap'], $full_path);
+                return $this->_wrap_it($data, $params['wrap'], $full_path);
             }
 
             return $full_path;
@@ -724,18 +709,18 @@ JSC;
      *
      * @access	public
      */
-    public function replace_tag_catchall($file_info = [], $params = array(), $tagdata = false, $modifier = '')
+    public function replace_tag_catchall($data = [], $params = array(), $tagdata = false, $modifier = '')
     {
         // These are single variable tags only, so no need for replace_tag
         if ($modifier) {
             $key = 'url:' . $modifier;
 
             if ($modifier == 'thumbs') {
-                if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension'])) {
-                    $data = $file_info['path'] . '_thumbs/' . $file_info['filename'] . '.' . $file_info['extension'];
+                if (isset($data['path']) && isset($data['filename']) && isset($data['extension'])) {
+                    $data = $data['path'] . '_thumbs/' . $data['filename'] . '.' . $data['extension'];
                 }
-            } elseif (isset($file_info[$key])) {
-                $data = $file_info[$key];
+            } elseif (isset($data[$key])) {
+                $data = $data[$key];
             }
 
             if (empty($data)) {
@@ -743,7 +728,7 @@ JSC;
             }
 
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($file_info, $params['wrap'], $data);
+                return $this->_wrap_it($data, $params['wrap'], $data);
             }
 
             return $data;
@@ -755,20 +740,20 @@ JSC;
      *
      * @access	private
      */
-    public function _wrap_it($file_info, $type, $full_path)
+    public function _wrap_it($data, $type, $full_path)
     {
         if ($type == 'link') {
             ee()->load->helper('url_helper');
 
-            return $file_info['file_pre_format']
-                . anchor($full_path, $file_info['filename'], $file_info['file_properties'])
-                . $file_info['file_post_format'];
+            return $data['file_pre_format']
+                . anchor($full_path, $data['filename'], $data['file_properties'])
+                . $data['file_post_format'];
         } elseif ($type == 'image') {
-            $properties = (!empty($file_info['image_properties'])) ? ' ' . $file_info['image_properties'] : '';
+            $properties = (! empty($data['image_properties'])) ? ' ' . $data['image_properties'] : '';
 
-            return $file_info['image_pre_format']
-                . '<img src="' . $full_path . '"' . $properties . ' alt="' . $file_info['filename'] . '" />'
-                . $file_info['image_post_format'];
+            return $data['image_pre_format']
+                . '<img src="' . $full_path . '"' . $properties . ' alt="' . $data['filename'] . '" />'
+                . $data['image_post_format'];
         }
 
         return $full_path;
@@ -785,13 +770,13 @@ JSC;
         ee()->load->model('file_upload_preferences_model');
 
         // And now the directory
-        $allowed_directories = (!isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
+        $allowed_directories = (! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
         // Show existing files? checkbox, default to yes
-        $show_existing = (!isset($data['show_existing'])) ? 'y' : $data['show_existing'];
+        $show_existing = (! isset($data['show_existing'])) ? 'y' : $data['show_existing'];
 
         // Number of existing files to show? 0 means all
-        $num_existing = (!isset($data['num_existing'])) ? 50 : $data['num_existing'];
+        $num_existing = (! isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
         $directory_choices = array('all' => lang('all'));
 
@@ -922,7 +907,7 @@ JSC;
      */
     protected function _row($cell1, $cell2 = '', $valign = 'center')
     {
-        if (!$cell2) {
+        if (! $cell2) {
             ee()->table->add_row(
                 array('data' => $cell1, 'colspan' => 2)
             );

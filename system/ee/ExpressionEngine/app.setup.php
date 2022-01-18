@@ -14,6 +14,7 @@ use ExpressionEngine\Library\Curl;
 use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
+use ExpressionEngine\Service\Channel;
 use ExpressionEngine\Service\ChannelSet;
 use ExpressionEngine\Service\ConditionalFields;
 use ExpressionEngine\Service\Config;
@@ -396,6 +397,10 @@ $setup = [
             return new Library\Captcha();
         },
 
+        'Channel/ChannelEntry' => function ($ee) {
+            return new Channel\ChannelEntry();
+        },
+
         'ChannelSet' => function ($ee) {
             return new ChannelSet\Factory(
                 ee()->config->item('site_id')
@@ -719,12 +724,19 @@ $setup = [
         ],
         'viewtype' => [
             'description' => 'lang:cookie_viewtype_desc',
+            'provider' => 'cp',
         ],
         'cp_last_site_id' => [
             'description' => 'lang:cookie_cp_last_site_id_desc',
+            'provider' => 'cp',
         ],
         'collapsed_nav' => [
             'description' => 'lang:cookie_collapsed_nav_desc',
+            'provider' => 'cp',
+        ],
+        'ee_cp_viewmode' => [
+            'description' => 'lang:cookie_ee_cp_viewmode_desc',
+            'provider' => 'cp',
         ],
     ],
 ];
