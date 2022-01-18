@@ -51,12 +51,6 @@ class Updater
                         'null' => false,
                         'auto_increment' => true
                     ],
-                    'field_id' => [
-                        'type' => 'int',
-                        'constraint' => 10,
-                        'unsigned' => true,
-                        'null' => false,
-                    ],
                     'match' => [
                         'type' => 'varchar',
                         'constraint' => 20,
@@ -87,7 +81,13 @@ class Updater
                         'null' => false,
                         'auto_increment' => true
                     ],
-                    'field_condition_set_id' => [
+                    'condition_set_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                    ],
+                    'condition_field_id' => [
                         'type' => 'int',
                         'constraint' => 10,
                         'unsigned' => true,
@@ -115,14 +115,14 @@ class Updater
                 ]
             );
             ee()->dbforge->add_key('condition_id', true);
-            ee()->dbforge->add_key('field_condition_set_id');
+            ee()->dbforge->add_key('condition_set_id');
             ee()->smartforge->create_table('field_conditions');
         }
 
-        if (!ee()->db->table_exists('field_conditions')) {
+        if (!ee()->db->table_exists('field_condition_sets_channel_fields')) {
             ee()->dbforge->add_field(
                 [
-                    'field_condition_set_id' => [
+                    'condition_set_id' => [
                         'type' => 'int',
                         'constraint' => 10,
                         'unsigned' => true,
@@ -136,7 +136,7 @@ class Updater
                     ]
                 ]
             );
-            ee()->dbforge->add_key(['field_condition_set_id', 'field_id'], true);
+            ee()->dbforge->add_key(['condition_set_id', 'field_id']);
             ee()->smartforge->create_table('field_condition_sets_channel_fields');
         }
     }

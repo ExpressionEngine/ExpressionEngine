@@ -66,8 +66,7 @@ class ChannelField extends FieldModel
             'model' => 'FieldConditionSet',
             'pivot' => array(
                 'table' => 'field_condition_sets_channel_fields'
-            ),
-            'weak' => true
+            )
         )
     );
 

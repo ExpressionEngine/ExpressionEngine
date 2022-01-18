@@ -22,7 +22,6 @@ class FieldConditionSet extends Model
     protected static $_table_name = 'field_condition_sets';
 
     protected $condition_set_id;
-    protected $field_id;
     protected $match; //'all' or 'any'
     protected $order;
 
@@ -30,6 +29,13 @@ class FieldConditionSet extends Model
         'FieldConditions' => array(
             'model'      => 'FieldCondition',
             'type'       => 'hasMany'
+        ),
+        'ChannelFields' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'ChannelField',
+            'pivot' => array(
+                'table' => 'field_condition_sets_channel_fields'
+            )
         )
     );
 }
