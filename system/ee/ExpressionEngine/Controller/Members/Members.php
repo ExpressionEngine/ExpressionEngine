@@ -21,8 +21,6 @@ use ExpressionEngine\Service\Member\Member;
  */
 class Members extends CP_Controller
 {
-    protected $base_url;
-
     public function __construct()
     {
         parent::__construct();
@@ -35,6 +33,10 @@ class Members extends CP_Controller
 
         $this->base_url = ee('CP/URL')->make('members');
         $this->stdHeader();
+
+        ee()->javascript->set_global([
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+        ]);
     }
 
     protected function generateSidebar($active = null)

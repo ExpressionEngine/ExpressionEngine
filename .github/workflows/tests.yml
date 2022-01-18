@@ -90,8 +90,8 @@ jobs:
                 php: [7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.3
-                    os: ubuntu-21.04 #is using mysql8
+                  - php: 8.1
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Pro, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -183,8 +183,8 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.3
-                    os: ubuntu-21.04 #is using mysql8
+                  - php: 8.1
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Admin, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -283,8 +283,8 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.3
-                    os: ubuntu-21.04 #is using mysql8
+                  - php: 8.1
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -383,8 +383,8 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.3
-                    os: ubuntu-21.04 #is using mysql8
+                  - php: 8.1
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Members, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -451,6 +451,11 @@ jobs:
             - name: Start PHP Server
               run: php -S localhost:8888 &
 
+            - name: Start SMTP Server
+              run: |
+                npm install -g maildev
+                maildev &
+
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2
               with:
@@ -483,8 +488,8 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.3
-                    os: ubuntu-21.04 #is using mysql8
+                  - php: 8.1
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -583,8 +588,8 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.3
-                    os: ubuntu-21.04 #is using mysql8
+                  - php: 8.1
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Utils, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -680,11 +685,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6, 7.1, 7.2, 7.4, 8.0]
+                php: [7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.3
-                    os: ubuntu-21.04 #is using mysql8
+                  - php: 8.1
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -781,11 +786,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6, 7.1, 7.2, 7.4, 8.0]
+                php: [7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.3
-                    os: ubuntu-21.04 #is using mysql8
+                  - php: 8.1
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Heavy Load, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -801,7 +806,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -822,7 +826,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -882,8 +886,8 @@ jobs:
                 php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 include:
-                  - php: 7.3
-                    os: ubuntu-21.04 #is using mysql8
+                  - php: 8.1
+                    os: ubuntu-latest #is using mysql8
 
         name: Cypress Installer, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -961,4 +965,96 @@ jobs:
               if: failure()
               with:
                 name: installer.error.PHP${{ matrix.php }}.log
+                path: /home/runner/php_errors.log
+    cypress-content:
+        if: github.event.pull_request.draft == false
+        needs: [cancel-running-tests, build-for-testing]
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [5.6, 7.1, 7.2, 7.4, 8.0]
+                os: [ubuntu-18.04]
+                include:
+                  - php: 8.1
+                    os: ubuntu-latest #is using mysql8
+
+        name: Cypress Frontend Content, PHP${{ matrix.php }} - ${{ matrix.os }}
+
+        steps:
+
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-build-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                ls -lar build-tools/builds/ExpressionEngine/
+                cp -R build-tools/builds/ExpressionEngine/. ./
+                rm -rf build-tools
+
+            - name: Directory Listing
+              run: |
+                ls -lar ./
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
+                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+
+            - name: Copy config.php
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+
+            - name: Setup Permissions
+              run: |
+                sudo chmod 666 system/user/config/config.php
+                sudo chmod 777 system/user/config
+                sudo chmod -R 777 system/user/cache
+                sudo chmod -R 777 system/user/templates
+                sudo chmod -R 777 system/user/language
+                sudo chmod -R 777 tests/cypress/support/tmp
+                sudo chmod -R 777 tests/cypress/support/file-sync/uploads
+                sudo chmod -R 777 images
+                sudo chmod -R 777 themes/user
+                sudo chmod -R 777 tests/cypress/cypress/screenshots
+
+            - name: Configure MySQL
+              run: |
+                sudo systemctl start mysql
+                mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
+                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
+                
+            - name: Install PHP dependencies
+              working-directory: tests/cypress
+              run: composer install
+
+            - name: Start PHP Server
+              run: php -S localhost:8888 &
+
+            - name: Run Cypress Tests
+              uses: cypress-io/github-action@v2
+              with:
+                browser: chrome
+                headless: true
+                working-directory: tests/cypress
+                config-file: content.cypress.json
+
+            - name: Archive screenshots
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: cypress-tests-content
+                path: tests/cypress/cypress/screenshots/
+
+            - name: Archive server errors
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: installer.error.log
                 path: /home/runner/php_errors.log

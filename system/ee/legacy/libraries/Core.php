@@ -39,8 +39,8 @@ class EE_Core
         }
 
         // Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
-        if (function_exists("set_time_limit") == true) {
-            @set_time_limit((REQ == 'CP' || REQ == 'CLI') ? 300 : 90);
+        if (function_exists("set_time_limit") == true && php_sapi_name() !== 'cli') {
+            @set_time_limit((REQ == 'CP') ? 300 : 90);
         }
 
         // If someone's trying to access the CP but EE_APPPATH is defined, it likely
@@ -69,7 +69,7 @@ class EE_Core
         // application constants
         define('APP_NAME', 'ExpressionEngine');
         define('APP_BUILD', '20211021');
-        define('APP_VER', '6.2.0');
+        define('APP_VER', '6.2.2');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -465,9 +465,9 @@ class EE_Core
 
         // Does an admin session exist?
         // Only the "login" class can be accessed when there isn't an admin session
-        if (ee()->session->userdata('admin_sess') == 0 &&
-            ee()->router->fetch_class(true) != 'login' &&
-            ee()->router->fetch_class() != 'css') {
+        if (ee()->session->userdata('admin_sess') == 0  //if not logged in
+            && ee()->router->fetch_class(true) !== 'login' // if not on login page
+            && ee()->router->fetch_class() != 'css') { // and the class isnt css
             // has their session Timed out and they are requesting a page?
             // Grab the URL, base64_encode it and send them to the login screen.
             $safe_refresh = ee()->cp->get_safe_refresh();
@@ -822,9 +822,14 @@ class EE_Core
             $error = lang('csrf_token_expired');
 
             //is the cookie domain part of site URL?
-            if (ee()->config->item('cookie_domain') != '') {
+            if (
+                ee()->config->item('cookie_domain') != '' && (
+                    (REQ == 'CP' && ee()->config->item('cp_session_type') != 's') ||
+                    (REQ == 'ACTION' && ee()->config->item('website_session_type') != 's')
+                )
+            ) {
                 $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('cookie_domain'));
+                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('site_url'));
                 if ($domain_matches === false) {
                     $error = lang('cookie_domain_mismatch');
                 }

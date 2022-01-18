@@ -24,7 +24,7 @@ class Settings extends Profile
     {
         $id = ee()->input->get('id');
 
-        if ($id != $this->session->userdata['member_id'] && ! empty($id)) {
+        if ($id != ee()->session->userdata['member_id'] && ! empty($id)) {
             parent::permissionCheck();
         }
     }
@@ -36,8 +36,8 @@ class Settings extends Profile
     {
         $this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
-        $this->load->helper('html');
-        $this->load->helper('directory');
+        ee()->load->helper('html');
+        ee()->load->helper('directory');
 
         $vars['has_file_input'] = true;
         $vars['sections'] = [];

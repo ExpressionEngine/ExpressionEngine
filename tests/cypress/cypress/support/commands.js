@@ -64,7 +64,10 @@ Cypress.Commands.add("auth", (user) => {
     cy.login(user);
 })
 
-Cypress.Commands.add("addMembers", (group, count) => {
+Cypress.Commands.add("addMembers", (group, count, password = 'password') => {
+    if (password == 'password') {
+        cy.eeConfig({ item: 'password_security_policy', value: 'none' })
+    }
     cy.auth();
     let i = 1;
     for(i ; i <= count; i++){
@@ -76,8 +79,8 @@ Cypress.Commands.add("addMembers", (group, count) => {
         let username = group + i.toString();
         cy.get('input[name=username]:visible').clear().type(username)
         cy.get('input[name=email]:visible').clear().type(email)
-        cy.get('input[name=password]:visible').clear().type('password')
-        cy.get('input[name=confirm_password]:visible').clear().type('password')
+        cy.get('input[name=password]:visible').clear().type(password)
+        cy.get('input[name=confirm_password]:visible').clear().type(password)
 
         cy.get("body").then($body => {
             if ($body.find("input[name=verify_password]:visible").length > 0) {   //evaluates as true if verify is needed
@@ -118,9 +121,11 @@ Cypress.Commands.add("hasNoErrors", () => {
 
     // Our custom PHP error handler
     cy.contains(', line').should('not.exist')
+    cy.contains('Stack Trace').should('not.exist')
 
     cy.contains('Exception Caught').should('not.exist')
     cy.contains('Warning Caught').should('not.exist')
+    cy.contains('Error Caught').should('not.exist')
 })
 
 Cypress.Commands.add("dragTo", { prevSubject: true }, (subject, target) => {
@@ -185,6 +190,7 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
         (site_id) ? ` --site-id ${site_id}` : ''
     ].join('');
 
+    //cy.exec('ddev exec --dir /var/www/html/tests/cypress "' + command + '"').then((harvest) => {
     cy.exec(command).then((harvest) => {
         return harvest.stdout;
     })

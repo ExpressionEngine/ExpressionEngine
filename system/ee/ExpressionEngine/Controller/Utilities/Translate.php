@@ -145,7 +145,7 @@ class Translate extends Utilities
 
         $data = array();
 
-        $this->load->helper('file');
+        ee()->load->helper('file');
 
         $path = $this->getLanguageDirectory($language);
 
@@ -245,6 +245,7 @@ class Translate extends Utilities
         }
 
         ee()->view->set_message('issue', lang('cannot_access'));
+        return '';
     }
 
     /**

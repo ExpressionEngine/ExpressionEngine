@@ -132,7 +132,7 @@ class Email extends Logs
         if (is_null($email)) {
             ee()->lang->load('communicate');
             ee()->view->set_message('issue', lang('no_cached_email'), '', true);
-            $this->functions->redirect(ee('CP/URL')->make('logs/email'));
+            ee()->functions->redirect(ee('CP/URL')->make('logs/email'));
         }
 
         ee()->view->cp_page_title = lang('email_log') . ': ' . $email->subject;

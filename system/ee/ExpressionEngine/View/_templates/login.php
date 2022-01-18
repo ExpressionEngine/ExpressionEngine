@@ -20,16 +20,20 @@
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.min.js')?>
 		<?=ee()->view->script_tag('vendor/focus-visible.js')?>
-		<script>
-			var eyeOpen = '<?=URL_THEMES_GLOBAL_ASSET.'img/eye-open.svg'?>',
-				eyeClosed = '<?=URL_THEMES_GLOBAL_ASSET.'img/eye-closed.svg'?>'
-		</script>
-		<?=ee()->view->script_tag('cp/login.js')?>
+		
 		<script type="text/javascript">
+			var EE = {
+				PATH_CP_GBL_IMG: "<?=PATH_CP_GBL_IMG?>",
+				cp: {
+					validatePasswordUrl: "<?=ee('CP/URL', 'login/validate_password')->compile()?>"
+				}
+			}
 			$(document).ready(function()
 			{
 				document.getElementById('<?=$focus_field?>').focus();
 			});
 		</script>
+		<?=ee()->view->script_tag('cp/login.js')?>
+		<?=ee()->view->script_tag('cp/passwords.js')?>
 	</body>
 </html>

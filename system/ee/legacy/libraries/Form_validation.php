@@ -473,33 +473,10 @@ class EE_Form_validation
         }
 
         // Are secure passwords required?
+        if (! ee('Validation')->check('passwordMatchesSecurityPolicy', $str)) {
+            $this->set_message('valid_password', ee()->lang->line('not_secure_password'));
 
-        if (ee()->config->item('require_secure_passwords') == 'y') {
-            $count = array('uc' => 0, 'lc' => 0, 'num' => 0);
-
-            $pass = preg_quote($str, "/");
-
-            $len = strlen($pass);
-
-            for ($i = 0; $i < $len; $i++) {
-                $n = substr($pass, $i, 1);
-
-                if (preg_match("/^[[:upper:]]$/", $n)) {
-                    $count['uc']++;
-                } elseif (preg_match("/^[[:lower:]]$/", $n)) {
-                    $count['lc']++;
-                } elseif (preg_match("/^[[:digit:]]$/", $n)) {
-                    $count['num']++;
-                }
-            }
-
-            foreach ($count as $val) {
-                if ($val == 0) {
-                    $this->set_message('valid_password', ee()->lang->line('not_secure_password'));
-
-                    return false;
-                }
-            }
+            return false;
         }
 
         // Does password exist in dictionary?
@@ -982,11 +959,12 @@ class EE_Form_validation
      */
     public function _lookup_dictionary_word($target)
     {
-        if (ee()->config->item('allow_dictionary_pw') == 'y' or ee()->config->item('name_of_dictionary_file') == '') {
+        if (ee()->config->item('allow_dictionary_pw') == 'y') {
             return false;
         }
 
-        $path = reduce_double_slashes(PATH_DICT . ee()->config->item('name_of_dictionary_file'));
+        $file = !empty(ee()->config->item('name_of_dictionary_file')) ? ee()->config->item('name_of_dictionary_file') : 'dictionary.txt';
+        $path = reduce_double_slashes(PATH_DICT . $file);
 
         if (! file_exists($path)) {
             return false;
