@@ -70,6 +70,8 @@ $lang = array(
 
     'link' => 'Link',
 
+    'invalid_upload_destination' => 'The upload destination is invalid.',
+
     'location' => 'Location',
 
     'no_file' => 'No file selected',

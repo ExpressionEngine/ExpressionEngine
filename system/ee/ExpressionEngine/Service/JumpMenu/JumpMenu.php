@@ -1334,6 +1334,14 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'share_analytics share_analytics_desc',
                         'command_title' => 'share_analytics'
                     ),
+                    'fieldset-cli_enabled' => array(
+                        'trail' => [
+                            'settings',
+                            'security_privacy'
+                        ],
+                        'command' => 'cli_enabled cli_enabled_shorthand cli_enabled_desc',
+                        'command_title' => 'cli_enabled'
+                    ),
                     'fieldset-cookie_domain' => array(
                         'trail' => [
                             'cookie_settings'

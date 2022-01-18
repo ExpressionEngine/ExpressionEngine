@@ -151,6 +151,7 @@ class DragAndDropUpload extends React.Component {
 
       let xhr = new XMLHttpRequest()
       xhr.open('POST', EE.dragAndDrop.endpoint, true)
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
       xhr.upload.addEventListener('progress', (e) => {
         file.progress = (e.loaded * 100.0 / e.total) || 100
@@ -189,6 +190,12 @@ class DragAndDropUpload extends React.Component {
         // Unexpected error, probably post_max_size is too low
         else if (xhr.readyState == 4 && xhr.status != 200) {
           file.error = EE.lang.file_dnd_unexpected_error
+          try {
+            var response = JSON.parse(xhr.responseText);
+            if (typeof(response.error) != 'undefined') {
+              file.error = response.error;
+            }
+          } catch(err) {}
           console.error(xhr)
           reject(file)
         }
