@@ -386,6 +386,7 @@ class EE_Session
 
         $this->userdata['member_id'] = (int) $member_id;
         $this->userdata['role_id'] = (int) $this->member_model->role_id;
+        $this->userdata['role_ids'] = $this->member_model->Roles->pluck('role_id');
         $this->userdata['session_id'] = $this->sdata['session_id'];
         $this->userdata['fingerprint'] = $this->sdata['fingerprint'];
         $this->userdata['site_id'] = ee()->config->item('site_id');
@@ -1240,6 +1241,7 @@ class EE_Session
             'time_format' => ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
             'include_seconds' => ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
             'role_id' => '3',
+            'role_ids' => ['3'],
             'access_cp' => 0,
             'mfa_enabled' => !empty($this->member_model) ? $this->member_model->enable_mfa : false,
             'last_visit' => 0,
