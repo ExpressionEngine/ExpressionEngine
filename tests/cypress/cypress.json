@@ -13,8 +13,8 @@
     "redirectionLimit": 200,
     "testFiles": "**/*.ee6.js",
     "retries": 0,
-    "viewportWidth": 1024,
-    "viewportHeight": 1280,
+    "viewportWidth": 1280,
+    "viewportHeight": 1024,
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",
