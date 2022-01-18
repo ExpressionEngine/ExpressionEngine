@@ -30,7 +30,7 @@ class Auth extends Settings
 
         if (! empty($_POST)) {
             // set and save the member as the various permissions allow
-            if ($this->config->item('allow_username_change') == 'y' or
+            if (ee()->config->item('allow_username_change') == 'y' or
                 ee('Permission')->isSuperAdmin()) {
                 $this->member->username = ee()->input->post('username');
             }

@@ -23,6 +23,16 @@ context('Categories', () => {
         cy.task('filesystem:delete', '../../system/user/config/stopwords.php')
     })
 
+    it('trim modifier in templates', function() {
+        cy.visit('index.php/modifiers/trim')
+
+        cy.get('.no-trim').invoke('text').should('eq', '		Hello, world!	')
+
+        cy.get('.on-trim').invoke('text').should('eq', 'Hello, world!');
+
+        cy.get('.on-trim--characters').invoke('text').should('eq', 'o, wor');
+
+    })
 
     it('check the variables in templates', function() {
     
@@ -124,7 +134,7 @@ context('Categories', () => {
         cy.get('h4').contains('limit, preserve words').next('span').invoke('text').should('eq', 'Welcome to the…')
     })
 
-    it.only('modifiers inside relationships', function() {
+    it('modifiers inside relationships', function() {
         cy.visit('index.php/modifiers/relation')
 
         cy.get('h4').contains('original entry with all params').next('span').invoke('text').should('contain', 'EUR')

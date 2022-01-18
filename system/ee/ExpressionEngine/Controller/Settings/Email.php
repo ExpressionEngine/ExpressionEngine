@@ -221,7 +221,7 @@ class Email extends Settings
      **/
     public function _smtp_required_field($str)
     {
-        if (ee()->input->post('mail_protocol') == 'smtp' && trim($str) == '') {
+        if (ee()->input->post('mail_protocol') == 'smtp' && trim((string) $str) == '') {
             ee()->form_validation->set_message('_smtp_required_field', lang('empty_stmp_fields'));
 
             return false;

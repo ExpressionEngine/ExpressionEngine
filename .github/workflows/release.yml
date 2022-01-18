@@ -3,16 +3,15 @@ name: Release
 on:
   push:
     tags:
-      - '6.1.4'
-      - '6.1.5'
-      - '6.1.6'
-      - '6.1.7'
-      - '6.1.8'
-      - '6.1.9'
-      - '6.1.10'
-      - '6.2.0'
       - '6.2.1'
       - '6.2.2'
+      - '6.2.3'
+      - '6.2.4'
+      - '6.2.5'
+      - '6.3.0'
+      - '6.3.1'
+      - '6.3.2'
+      - '6.3.2'
 
 jobs:
   build:
@@ -33,15 +32,10 @@ jobs:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: __pro
 
-      - name: Setup asdf
-        uses: asdf-vm/actions/setup@v1
-
-      - name: Install asdf dependencies
-        working-directory: build-tools
-        run: |
-          asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-          bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
-          asdf install
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '10'
 
       - name: Install build tool dependencies
         working-directory: build-tools

@@ -15,6 +15,9 @@ namespace ExpressionEngine\Addons\Spam\Library;
  */
 class Tokenizer
 {
+    public $ngram;
+    public $pattern;
+    
     /**
      * __construct
      *

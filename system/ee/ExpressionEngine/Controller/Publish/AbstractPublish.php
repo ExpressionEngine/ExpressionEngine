@@ -630,6 +630,9 @@ abstract class AbstractPublish extends CP_Controller
                 if (ee()->input->get('return') != '') {
                     $preview_url .= AMP . 'return=' . rawurlencode(base64_encode(urldecode(ee()->input->get('return', true))));
                 }
+                if (ee()->input->get('prefer_system_preview') == 'y') {
+                    $preview_url .= AMP . 'prefer_system_preview=y';
+                }
                 //cross-domain live previews are only possible if $_SERVER['HTTP_HOST'] is set
                 if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
                     $preview_url .= AMP . 'from=' . rawurlencode(base64_encode((ee('Request')->isEncrypted() ? 'https://' : 'http://') . strtolower($_SERVER['HTTP_HOST'])));

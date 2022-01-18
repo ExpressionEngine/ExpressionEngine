@@ -52,7 +52,7 @@ class SystemPreferences extends CustomType
     protected $password_lockout_interval;
     protected $require_ip_for_login;
     protected $require_ip_for_posting;
-    protected $require_secure_passwords;
+    protected $password_security_policy;
     protected $allow_dictionary_pw;
     protected $name_of_dictionary_file;
     protected $xss_clean_uploads;

@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
-use ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\Spam\Library\Vectorizer;
 
 /**
  * Spam Module Entropy Vectorizer

@@ -165,6 +165,21 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'categories/edit',
                 'permission' => 'can_edit_categories'
             ),
+            //comments
+            'viewComments' => array(
+                'icon' => 'fa-comments',
+                'command' => 'view comments',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'publish/comments'
+            ),
+            'viewCommentsFor' => array(
+                'icon' => 'fa-comments',
+                'command' => 'view comments',
+                'dynamic' => true,
+                'addon' => false,
+                'target' => 'comments/list'
+            ),
             //files
             'viewFiles' => array(
                 'icon' => 'fa-eye',
@@ -214,12 +229,103 @@ class JumpMenu extends AbstractJumpMenu
                 'addon' => false,
                 'target' => 'login/logout'
             ),
-            'myProfile' => array(
+            'myProfileSettings' => array(
                 'icon' => 'fa-user',
                 'command' => 'my_profile my_account',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/profile'
+                'target' => 'members/profile/settings'
+            ),
+            'myProfileEmail' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account email_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/email'
+            ),
+            'myProfileAuth' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account auth_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/auth'
+            ),
+            'myProfileDate' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account date_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/date'
+            ),
+            'myProfileConsents' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account consents',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/consent'
+            ),
+            'myProfilePublishing' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account publishing_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/publishing'
+            ),
+            'myProfileButtons' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account html_buttons',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/buttons'
+            ),
+            'myProfileQuicklinks' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account quick_links',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/quicklinks'
+            ),
+            'myProfileBookmarklets' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account bookmarklets',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/bookmarks'
+            ),
+            'myProfileSubscriptions' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account subscriptions',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/subscriptions'
+            ),
+            'myProfileActivity' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account info_and_activity',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/activity'
+            ),
+            'myProfileIgnore' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account blocked_members',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/ignore'
+            ),
+            'myProfileAccess' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account access_overview',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/access'
+            ),
+            'myProfileCpSettings' => array(
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account cp_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/cp-settings'
             ),
             //addons
             'viewAddons' => array(
@@ -588,7 +694,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-webmaster_email' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'webmaster_email webmaster_email_desc outgoing_email',
                         'command_title' => 'webmaster_email'
@@ -597,7 +703,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-webmaster_name' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'webmaster_name webmaster_name_desc outgoing_email',
                         'command_title' => 'webmaster_name'
@@ -606,7 +712,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-email_charset' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'email_charset outgoing_email',
                         'command_title' => 'email_charset'
@@ -615,7 +721,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-mail_protocol' => array(
                         'trail' => [
                             'settings',
-                            // 'outgoing_email'
+                            'outgoing_email'
                         ],
                         'command' => 'mail_protocol_desc mail_protocol outgoing_email smtp_options',
                         'command_title' => 'mail_protocol'
@@ -1228,6 +1334,14 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'share_analytics share_analytics_desc',
                         'command_title' => 'share_analytics'
                     ),
+                    'fieldset-cli_enabled' => array(
+                        'trail' => [
+                            'settings',
+                            'security_privacy'
+                        ],
+                        'command' => 'cli_enabled cli_enabled_shorthand cli_enabled_desc',
+                        'command_title' => 'cli_enabled'
+                    ),
                     'fieldset-cookie_domain' => array(
                         'trail' => [
                             'cookie_settings'
@@ -1312,12 +1426,12 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'password_lockout_interval password_lockout_interval_desc',
                         'command_title' => 'password_lockout_interval'
                     ),
-                    'fieldset-require_secure_passwords' => array(
+                    'fieldset-password_security_policy' => array(
                         'trail' => [
                             'member_security_settings'
                         ],
-                        'command' => 'require_secure_passwords require_secure_passwords_desc',
-                        'command_title' => 'require_secure_passwords'
+                        'command' => 'password_security_policy password_security_policy_desc',
+                        'command_title' => 'password_security_policy'
                     ),
                     'fieldset-pw_min_len' => array(
                         'trail' => [
@@ -1332,13 +1446,6 @@ class JumpMenu extends AbstractJumpMenu
                         ],
                         'command' => 'allow_dictionary_pw allow_dictionary_pw_desc',
                         'command_title' => 'allow_dictionary_pw'
-                    ),
-                    'fieldset-name_of_dictionary_file' => array(
-                        'trail' => [
-                            'member_security_settings'
-                        ],
-                        'command' => 'name_of_dictionary_file name_of_dictionary_file_desc',
-                        'command_title' => 'name_of_dictionary_file'
                     ),
                     'fieldset-deny_duplicate_data' => array(
                         'trail' => [
@@ -1852,6 +1959,18 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'member_segment_trigger',
                 'command_title' => 'member_segment_trigger'
             );
+        }
+
+        //check permissions for comment links
+        if (! ee('Permission')->hasAny(
+            'can_moderate_comments',
+            'can_edit_own_comments',
+            'can_delete_own_comments',
+            'can_edit_all_comments',
+            'can_delete_all_comments'
+        )) {
+            unset($items[1]['viewComments']);
+            unset($items[1]['viewCommentsFor']);
         }
 
         //if this is multi-site install, add links

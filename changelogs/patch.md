@@ -5,6 +5,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
+   - Fix `search_no_stopwords` unclear message
    - Added <new feature>
    - Changed how the Toggle field renders in a column in the Entry Manager
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
@@ -48,7 +49,11 @@ Bullet list below, e.g.
    - Added CLI commands for generating Prolets and Widgets
    - Fixed a CLI bug where it didnt ask for the migration location if not specified
    - Fix white screen on first access to a group template which exists on files, but not yet on database
-
+   - Fixed a bug (#<1584>) where conditional was being ignored by Filesystem->emptyDir() method.
+   - Fixed a bug (#<1586>) where conditional error inFilesystem->findAndReplace() method prevented its operation.
+   - Remove unnecessary and duplicated queries from search module
+   - Fix #1195 improves `template_post_parse` hook when fired after sub or layout (i.e. partial) template parse completes
+   - Fix WEBP Mime type detection
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

@@ -772,7 +772,7 @@ class ChannelEntry extends ContentModel
         $cat_groups = array();
 
         if ($this->Channel->cat_group) {
-            $cat_groups = explode('|', $this->Channel->cat_group);
+            $cat_groups = explode('|', (string) $this->Channel->cat_group);
         }
 
         if ($this->isNew() or empty($categories)) {
@@ -951,7 +951,7 @@ class ChannelEntry extends ContentModel
                     'field_label' => lang('allow_comments'),
                     'field_required' => 'n',
                     'field_show_fmt' => 'n',
-                    'field_instructions' => lang('allow_comments_desc'),
+                    'field_instructions' => lang('allow_comments_desc') . (!$this->isNew() && $this->comment_total ? BR . '<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $this->getId()) . '">' . lang('view_comments') . '</a>' : ''),
                     'field_text_direction' => 'ltr',
                     'field_type' => 'toggle',
                     'yes_no' => true,
@@ -988,7 +988,7 @@ class ChannelEntry extends ContentModel
 
             if ($this->Channel) {
                 $cat_groups = $this->getModelFacade()->get('CategoryGroup')
-                    ->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
+                    ->filter('group_id', 'IN', explode('|', (string) $this->Channel->cat_group))
                     ->all();
 
                 foreach ($cat_groups as $cat_group) {

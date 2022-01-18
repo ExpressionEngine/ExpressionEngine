@@ -97,32 +97,43 @@ class Request
         $name = ee()->TMPL->fetch_param('name');
 
         if (!$name) {
-            $this->return_data = '';
-            return '';
+            if (empty(ee()->TMPL->tagdata)) {
+                $this->return_data = '';
+                return $this->return_data;
+            }
+
+            return ee()->TMPL->no_results();
         }
 
         // We will always want to XSS code, since we will be accessing
         // this from the front end.
         $val = ee()->input->{$method}($name, true);
 
+        if (empty($val)) {
+            return ee()->TMPL->no_results();
+        }
+
+        if (!empty(ee()->TMPL->tagdata)) {
+            $tagdata = ee()->TMPL->tagdata;
+        } else {
+            $separator = ee()->TMPL->fetch_param('separator', '|');
+            ee()->TMPL->tagparams['backspace'] = strlen($separator);
+            $tagdata = "{item}" . $separator;
+        }
+
+        $vars = [];
+
         if (is_array($val)) {
-            if (!empty(ee()->TMPL->tagdata)) {
-                $tagdata = ee()->TMPL->tagdata;
-            } else {
-                $separator = ee()->TMPL->fetch_param('separator', '|');
-                ee()->TMPL->tagparams['backspace'] = strlen($separator);
-                $tagdata = "{item}" . $separator;
-            }
-            $chunk = '';
-            $vars = [];
-            foreach ($val as $key => $item) {
+            foreach ($val as $item) {
                 $vars[]['item'] = $item;
             }
-            $this->return_data = ee()->TMPL->parse_variables($tagdata, $vars);
         } else {
-            $this->return_data = $val;
+            $vars[]['item'] = $val;
         }
+
+        $this->return_data = ee()->TMPL->parse_variables($tagdata, $vars);
 
         return $this->return_data;
     }
 }
+// EOF
