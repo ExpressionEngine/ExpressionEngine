@@ -68,6 +68,11 @@ abstract class FieldModel extends Model
         return $this->getField($this->getSettingsValues())->getSupportedEvaluationRules();
     }
 
+    public function getPossibleValuesForEvaluation()
+    {
+        return $this->getField($this->getSettingsValues())->getPossibleValuesForEvaluation();
+    }
+
     public function getSettingsForm()
     {
         return $this->getField($this->getSettingsValues())->getSettingsForm();

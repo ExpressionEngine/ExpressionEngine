@@ -23,6 +23,7 @@ class FieldCondition extends Model
 
     protected $condition_id;
     protected $condition_set_id;
+    protected $condition_field_id;
     protected $evaluation_rule;
     protected $value;
     protected $order;

@@ -34,14 +34,10 @@ interface EvaluationRuleInterface
     public function getLanguageKey();
     
     /**
-     * The options for input that should be used to get a value for conditions involving this fieldtype
-     * ex. [
-     *  'type' => 'select',
-     *  'options' => [...]
-     * ]
+     * The input type for the expected value (text, select, etc)
      * If returning NULL, the field is not displayed
      *
      * @return mixed
      */
-    public function getConditionalFieldInputOptions();
+    public function getConditionalFieldInputType();
 }

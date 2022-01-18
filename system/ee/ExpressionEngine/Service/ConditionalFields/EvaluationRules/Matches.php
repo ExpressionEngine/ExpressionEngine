@@ -11,17 +11,24 @@
 namespace ExpressionEngine\Service\ConditionalFields\EvaluationRules;
 
 /**
- * Is Not Empty Rule
+ * Matches Rule
  */
-class IsNotEmpty extends AbstractEvaluationRule implements EvaluationRuleInterface
+class Matches extends AbstractEvaluationRule implements EvaluationRuleInterface
 {
+    /**
+     * Evaluate the rule
+     *
+     * @param mixed $fieldValue
+     * @param mixed $expectedValue
+     * @return bool whether the condition is met
+     */
     public function evaluate($fieldValue, $expectedValue)
     {
-        return !is_null($fieldValue) && $fieldValue !== '';
+        return $fieldValue === $expectedValue;
     }
 
     public function getConditionalFieldInputType()
     {
-        return null;
+        return 'select';
     }
 }

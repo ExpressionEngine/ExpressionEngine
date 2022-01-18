@@ -1164,6 +1164,14 @@ abstract class EE_Fieldtype
     {
         return '';
     }
+
+    /**
+     * Conditional Fields
+     */
+    public function getPossibleValuesForEvaluation()
+    {
+        return [];
+    }
 }
 // END EE_Fieldtype class
 

@@ -22,7 +22,7 @@ class TurnedOff extends AbstractEvaluationRule implements EvaluationRuleInterfac
         return is_null($fieldValue) || $fieldValue==='n' || $fieldValue === false;
     }
 
-    public function getConditionalFieldInputOptions()
+    public function getConditionalFieldInputType()
     {
         return null;
     }

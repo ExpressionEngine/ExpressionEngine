@@ -279,11 +279,18 @@ class FieldFacade
             $rule = ee('ConditionalFields')->make($ruleName, $this->getType());
             $supportedEvaluationRules[$ruleName] = [
                 'text'      => lang($rule->getLanguageKey()),
-                'options'   => $rule->getConditionalFieldInputOptions()
+                'type'      => $rule->getConditionalFieldInputType()
             ];
         }
 
         return $supportedEvaluationRules;
+    }
+
+    public function getPossibleValuesForEvaluation()
+    {
+        $data = $this->initField();
+
+        return $this->api->apply('getPossibleValuesForEvaluation', [$data]);
     }
 
     public function getSettingsForm()
