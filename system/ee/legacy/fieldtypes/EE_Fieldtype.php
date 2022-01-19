@@ -382,6 +382,7 @@ abstract class EE_Fieldtype
         $boolean_fields = array(
             'field_disabled',
             'field_is_hidden',
+            'field_is_conditional',
             'field_pre_populate',
             'field_required',
             'field_search',

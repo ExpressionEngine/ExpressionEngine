@@ -21,6 +21,11 @@ class FieldConditionSet extends Model
     protected static $_primary_key = 'condition_set_id';
     protected static $_table_name = 'field_condition_sets';
 
+    protected static $_validation_rules = array(
+        'match' => 'enum[all,any]',
+        'order' => 'int'
+    );
+
     protected $condition_set_id;
     protected $match; //'all' or 'any'
     protected $order;

@@ -348,12 +348,77 @@ class Fields extends AbstractFieldsController
             $field = $this->setWithPost($field);
             $result = $field->validate();
 
+            //if the conditional toggle is on, set it up and perform validation
+            if (ee('Request')->post('field_is_conditional') == 'y') {
+                $condition_sets = [];
+                $conditions = [];
+                $set_index = 0;
+                foreach (ee('Request')->post('condition_set') as $set_order => $condition_set_data) {
+                    $condition_set_id = $condition_set_data['condition_set_id'];
+                    if (!is_numeric($condition_set_id)) {
+                        $fieldConditionSet = ee('Model')->make('FieldConditionSet');
+                    } else {
+                        $fieldConditionSet = ee('Model')->get('FieldConditionSet', $condition_set_id);
+                        if (empty($fieldConditionSet)) {
+                            $fieldConditionSet = ee('Model')->make('FieldConditionSet');
+                        }
+                    }
+                    $fieldConditionSet->match = $condition_set_data['match'];
+                    $fieldConditionSet->order = $set_order;
+                    $fieldConditionSetValidation = $fieldConditionSet->validate();
+                    if (!$fieldConditionSetValidation->isValid()) {
+                        $rules = $fieldConditionSetValidation->getFailed();
+                        foreach ($rules as $piece => $rule) {
+                            $result->addFailed($piece, $rule[0]);
+                        }
+                    }
+                    $condition_sets[$set_index] = $fieldConditionSet;
+
+                    foreach (ee('Request')->post('condition.' . $condition_set_id) as $order => $condition_data) {
+                        $condition_id = $condition_data['condition_id'];
+                        if (!is_numeric($condition_id)) {
+                            $fieldCondition = ee('Model')->make('FieldCondition');
+                        } else {
+                            $fieldCondition = ee('Model')->get('FieldCondition', $condition_id);
+                            if (empty($fieldCondition)) {
+                                $fieldCondition = ee('Model')->make('FieldCondition');
+                            }
+                        }
+                        $fieldCondition->evaluation_rule = $condition_data['evaluation_rule'];
+                        $fieldCondition->value = $condition_data['value'];
+                        $fieldCondition->condition_field_id = $condition_data['condition_field_id'];
+                        $fieldCondition->order = $order;
+                        $fieldConditionValidation = $fieldCondition->validate();
+                        if (!$fieldConditionValidation->isValid()) {
+                            $rules = $fieldConditionValidation->getFailed();
+                            foreach ($rules as $piece => $rule) {
+                                $result->addFailed($piece, $rule[0]);
+                            }
+                        }
+
+                        $conditions[$set_index][] = $fieldCondition;
+                    }
+
+                    $set_index++;
+                }
+            }
+
             if ($response = $this->ajaxValidation($result)) {
                 return $response;
             }
 
             if ($result->isValid()) {
                 $field->save();
+                if (ee('Request')->post('field_is_conditional') == 'y') {
+                    foreach ($condition_sets as $i => $condition_set) {
+                        $condition_set->ChannelFields->getAssociation()->set($field);
+                        $condition_set->save();
+                        foreach ($conditions[$i] as $condition) {
+                            $condition->condition_set_id = $condition_set->getId();
+                            $condition->save();
+                        }
+                    }
+                }
 
                 if (ee()->input->post('update_formatting') == 'y') {
                     ee()->db->where('field_ft_' . $field->field_id . ' IS NOT NULL', null, false);
@@ -547,6 +612,7 @@ class Fields extends AbstractFieldsController
                     'fields' => array(
                         'field_is_conditional' => array(
                             'type' => 'yes_no',
+                            'value' => $field->field_is_conditional,
                             'group_toggle' => array(
                                 'y' => 'rule_groups',
                             )

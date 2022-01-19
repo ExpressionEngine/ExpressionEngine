@@ -27,7 +27,7 @@
 		'choices' => ee('View/Helpers')->normalizedChoices($allAny),
 		'value' => 'all',
 		'class' => 'condition-match-field',
-		'field_name' => 'condition-match-field',
+		'field_name' => 'condition_set',
 	];
 
 ?>

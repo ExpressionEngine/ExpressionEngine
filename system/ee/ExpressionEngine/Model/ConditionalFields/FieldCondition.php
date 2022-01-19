@@ -21,6 +21,11 @@ class FieldCondition extends Model
     protected static $_primary_key = 'condition_id';
     protected static $_table_name = 'field_conditions';
 
+    protected static $_validation_rules = array(
+        'condition_field_id' => 'int|required',
+        'order' => 'int'
+    );
+
     protected $condition_id;
     protected $condition_set_id;
     protected $condition_field_id;
@@ -31,6 +36,15 @@ class FieldCondition extends Model
     protected static $_relationships = array(
         'FieldConditionSet' => array(
             'type' => 'belongsTo'
+        ),
+        'UsesConditionField' => array(
+            'type' => 'belongsTo',
+            'from_key' => 'condition_field_id',
+            'to_key' => 'field_id',
+            'inverse' => array(
+                'name' => 'UsesFieldConditions',
+                'type' => 'hasMany'
+            )
         )
     );
 }

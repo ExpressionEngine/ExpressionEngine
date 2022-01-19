@@ -679,6 +679,7 @@ class EE_Schema
 			field_text_direction CHAR(3) NOT NULL default 'ltr',
 			field_search char(1) NOT NULL default 'n',
 			field_is_hidden char(1) NOT NULL default 'n',
+			field_is_conditional char(1) NOT NULL default 'n',
 			field_fmt varchar(40) NOT NULL default 'xhtml',
 			field_show_fmt char(1) NOT NULL default 'y',
 			field_order int(3) unsigned NOT NULL,
@@ -1204,8 +1205,8 @@ class EE_Schema
 			`value` varchar(255) DEFAULT NULL,
 			`order` int(10) unsigned NOT NULL DEFAULT 0,
 			PRIMARY KEY `condition_id` (`condition_id`),
-			KEY `field_id` (`field_id`),
-			KEY `condition_set_id` (`condition_set_id`)
+			KEY `condition_set_id` (`condition_set_id`),
+			KEY `condition_field_id` (`condition_field_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_field_condition_sets` (
@@ -1213,8 +1214,7 @@ class EE_Schema
 			`field_id` int(10) unsigned NOT NULL,
 			`match` varchar(20) NOT NULL DEFAULT 'all',
 			`order` int(10) unsigned NOT NULL DEFAULT 0,
-			PRIMARY KEY `condition_set_id` (`condition_set_id`),
-			KEY `field_id` (`field_id`)
+			PRIMARY KEY `condition_set_id` (`condition_set_id`)
 		)";
 
         $Q[] = "CREATE TABLE exp_field_condition_sets_channel_fields (

@@ -67,7 +67,6 @@ class Updater
                 ]
             );
             ee()->dbforge->add_key('condition_set_id', true);
-            ee()->dbforge->add_key('field_id');
             ee()->smartforge->create_table('field_condition_sets');
         }
 
@@ -116,6 +115,7 @@ class Updater
             );
             ee()->dbforge->add_key('condition_id', true);
             ee()->dbforge->add_key('condition_set_id');
+            ee()->dbforge->add_key('condition_field_id');
             ee()->smartforge->create_table('field_conditions');
         }
 
@@ -138,6 +138,18 @@ class Updater
             );
             ee()->dbforge->add_key(['condition_set_id', 'field_id']);
             ee()->smartforge->create_table('field_condition_sets_channel_fields');
+        }
+        if (! ee()->db->field_exists('field_is_conditional', 'channel_fields')) {
+            ee()->smartforge->add_column(
+                'channel_fields',
+                array(
+                    'field_is_conditional' => array(
+                        'type' => 'CHAR(1)',
+                        'null' => false,
+                        'default' => 'n'
+                    )
+                )
+            );
         }
     }
 
