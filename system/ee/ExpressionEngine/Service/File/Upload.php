@@ -469,10 +469,12 @@ class Upload
 
         $file->set($_POST);
 
-        if (ee()->config->item('use_orig_name_as_fallback_title') === 'y') {
-            $file->title = (ee()->input->post('title')) ?: $_FILES['file']['name'];
+        if (!empty(ee()->input->post('title'))) {
+            $file->title = ee()->input->post('title');
+        } else if (!empty($_FILES) && isset($_FILES['file']) && isset($_FILES['file']['name'])) {
+            $file->title = pathinfo($_FILES['file']['name'], PATHINFO_FILENAME);
         } else {
-            $file->title = (ee()->input->post('title')) ?: $file->file_name;
+            $file->title = $file->file_name;
         }
 
         $cats = array_key_exists('categories', $_POST) ? $_POST['categories'] : array();
