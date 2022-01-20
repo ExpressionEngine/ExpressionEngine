@@ -111,7 +111,7 @@ class Response
      */
     public function enableCompression()
     {
-        if ($this->supportCompression()) {
+        if ($this->supportsCompression()) {
             $this->compress = true;
         }
     }

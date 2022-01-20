@@ -41,7 +41,11 @@ context('Member Registration', () => {
 
     context('regular signup', function() {
 
-        it('registers normally', function() {
+        before(function(){
+            cy.eeConfig({ item: 'password_security_policy', value: 'none' })
+        })
+
+        it('registers normally', {retries: 2}, function() {
             cy.clearCookies()
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
@@ -87,7 +91,7 @@ context('Member Registration', () => {
             
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
-            cy.get('#email').clear().type('user3@expressionengine.com');
+            cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
             cy.get('#password').clear().type('password');
             cy.get('#password_confirm').clear().type('password');
             cy.get('#accept_terms').check();
@@ -156,6 +160,46 @@ context('Member Registration', () => {
             cy.get("a:contains('user" + userCount + "')").should('not.exist')
         })
 
+        it('cannot register with weak password', function() {
+            cy.clearCookies()
+            cy.eeConfig({ item: 'password_security_policy', value: 'good' })
+            
+            cy.visit('index.php/mbr/register');
+            cy.get('#username').clear().type('user' + userCount);
+            cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
+            cy.get('#password').clear().type('password');
+            cy.get('#password_confirm').clear().type('password');
+            cy.get('#accept_terms').check();
+            cy.get('#submit').click();
+
+            cy.contains('The chosen password is not secure enough')
+            cy.clearCookies()
+
+            cy.authVisit('admin.php?/cp/members');
+            cy.get("a:contains('user" + userCount + "')").should('not.exist')
+        })
+
+        it('can register with good password', function() {
+            cy.clearCookies()
+            cy.eeConfig({ item: 'password_security_policy', value: 'good' })
+            
+            cy.visit('index.php/mbr/register');
+            cy.get('#username').clear().type('user' + userCount);
+            cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
+            cy.get('#password').clear().type('1Password');
+            cy.get('#password_confirm').clear().type('1Password');
+            cy.get('#accept_terms').check();
+            cy.get('#submit').click();
+
+            cy.get('h1').invoke('text').then((text) => {
+                expect(text).equal('Member Registration Home')//redirected successfully
+            })
+            cy.clearCookies()
+
+            cy.authVisit('admin.php?/cp/members');
+            cy.get("a:contains('user" + userCount + "')").should('exist')
+        })
+
     })
 
 
@@ -163,6 +207,7 @@ context('Member Registration', () => {
 
         before(function(){
             cy.eeConfig({ item: 'req_mbr_activation', value: 'manual' })
+            cy.eeConfig({ item: 'password_security_policy', value: 'none' })
         })
 
         it('registers normally', function() {
@@ -356,6 +401,7 @@ context('Member Registration', () => {
 
         before(function(){
             cy.eeConfig({ item: 'req_mbr_activation', value: 'email' })
+            cy.eeConfig({ item: 'password_security_policy', value: 'none' })
             cy.authVisit('admin.php?/cp/settings/email')
 
             emailSettings.get('mail_format').filter('[value=html]').check()

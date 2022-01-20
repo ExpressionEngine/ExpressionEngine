@@ -19,7 +19,7 @@ class LimitHtml extends ValidationRule
 {
     public function validate($key, $value)
     {
-        if (preg_match_all('/<(\w+)/', $value, $matches)) {
+        if (preg_match_all('/<(\w+)/', (string) $value, $matches)) {
             // There may be some regex to do this more efficiently
             foreach ($matches[1] as $tag) {
                 if (! in_array($tag, $this->parameters)) {

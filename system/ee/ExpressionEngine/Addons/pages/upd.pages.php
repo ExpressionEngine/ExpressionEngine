@@ -116,6 +116,8 @@ class Pages_upd extends Installer
         if (version_compare($current, '2.2', '<')) {
             $this->_do_22_update();
         }
+
+        return true;
     }
 
     /**

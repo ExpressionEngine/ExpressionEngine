@@ -2847,7 +2847,7 @@ class Channel
 
                 $sql = substr($sql, 0, -1) . ')';
 
-                $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+                $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
 
                 $query = ee()->db->query($sql);
 
@@ -2864,7 +2864,7 @@ class Channel
                     $sql .= " AND c.parent_id = 0";
                 }
 
-                $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+                $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
 
                 $query = ee()->db->query($sql);
 
@@ -3074,6 +3074,10 @@ class Channel
 
         $timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
+        if (ee()->TMPL->fetch_param('sticky') === 'only') {
+            $sql .= "AND exp_channel_titles.sticky = 'y'";
+        }
+
         if (ee()->TMPL->fetch_param('show_future_entries') != 'yes') {
             $sql .= "AND exp_channel_titles.entry_date < " . $timestamp . " ";
         }
@@ -3081,8 +3085,6 @@ class Channel
         if (ee()->TMPL->fetch_param('show_expired') != 'yes') {
             $sql .= "AND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > " . $timestamp . ") ";
         }
-
-        $sql .= "AND exp_channel_titles.status != 'closed' ";
 
         if ($status = ee()->TMPL->fetch_param('status')) {
             $status = str_replace('Open', 'open', $status);
@@ -3099,29 +3101,39 @@ class Channel
 
         $orderby = ee()->TMPL->fetch_param('orderby');
 
+        $sql .= " ORDER BY ";
+
+        if(ee()->TMPL->fetch_param('sticky') === 'yes') {
+            $sql .= "exp_channel_titles.sticky desc, ";
+        }
+
         switch ($orderby) {
             case 'date':
-                $sql .= "ORDER BY exp_channel_titles.entry_date";
+                $sql .= "exp_channel_titles.entry_date";
+
+                break;
+            case 'edit_date':
+                $sql .= "exp_channel_titles.edit_date";
 
                 break;
             case 'expiration_date':
-                $sql .= "ORDER BY exp_channel_titles.expiration_date";
+                $sql .= "exp_channel_titles.expiration_date";
 
                 break;
             case 'title':
-                $sql .= "ORDER BY exp_channel_titles.title";
+                $sql .= "exp_channel_titles.title";
 
                 break;
             case 'comment_total':
-                $sql .= "ORDER BY exp_channel_titles.entry_date";
+                $sql .= "exp_channel_titles.entry_date";
 
                 break;
             case 'most_recent_comment':
-                $sql .= "ORDER BY exp_channel_titles.recent_comment_date desc, exp_channel_titles.entry_date";
+                $sql .= "exp_channel_titles.recent_comment_date desc, exp_channel_titles.entry_date";
 
                 break;
             default:
-                $sql .= "ORDER BY exp_channel_titles.title";
+                $sql .= "exp_channel_titles.title";
 
                 break;
         }
@@ -3296,7 +3308,7 @@ class Channel
                 $sql .= " AND c.parent_id = 0";
             }
 
-            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
             $query = ee()->db->query($sql);
 
             if ($query->num_rows() > 0) {
@@ -3478,7 +3490,7 @@ class Channel
 
             $query = ee()->db->query("SELECT cat_id, parent_id FROM exp_categories
 								 WHERE group_id IN ('" . str_replace('|', "','", ee()->db->escape_str($group_id)) . "')
-								 ORDER BY group_id, parent_id, cat_order");
+								 ORDER BY group_id, parent_id, cat_order, cat_id");
 
             $all = array();
 
@@ -3533,7 +3545,7 @@ class Channel
                 $sql .= " AND parent_id = 0";
             }
 
-            $sql .= " ORDER BY exp_categories.group_id, exp_categories.parent_id, exp_categories.cat_order";
+            $sql .= " ORDER BY exp_categories.group_id, exp_categories.parent_id, exp_categories.cat_order, exp_categories.cat_id";
 
             $query = ee()->db->query($sql);
 
@@ -3564,7 +3576,7 @@ class Channel
 
             $sql = substr($sql, 0, -1) . ')';
 
-            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
 
             $query = ee()->db->query($sql);
 
@@ -3581,7 +3593,7 @@ class Channel
                 $sql .= " AND c.parent_id = 0";
             }
 
-            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+            $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
 
             $query = ee()->db->query($sql);
 

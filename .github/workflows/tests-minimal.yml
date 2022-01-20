@@ -57,15 +57,10 @@ jobs:
               ref: ${{ steps.pro_branch.outputs.ref }}
               path: __pro
 
-          - name: Setup asdf
-            uses: asdf-vm/actions/setup@v1
-
-          - name: Install asdf dependencies
-            working-directory: build-tools
-            run: |
-              asdf plugin-add nodejs https://github.com/asdf-vm/asdf-nodejs.git
-              bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
-              asdf install
+          - name: Setup node
+            uses: actions/setup-node@v2
+            with:
+              node-version: '10'
 
           - name: Install build tool dependencies
             working-directory: build-tools
@@ -123,7 +118,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [8.0]
+                php: [8.1]
                 os: [ubuntu-latest]
 
         name: Cypress Pro, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -140,7 +135,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -161,7 +155,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -220,7 +214,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [8.0]
+                php: [8.1]
                 os: [ubuntu-latest]
 
         name: Cypress Admin, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -237,7 +231,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -258,7 +251,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -316,8 +309,8 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.1]
-                os: [ubuntu-18.04]
+                php: [8.1]
+                os: [ubuntu-latest]
 
         name: Cypress Files, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -333,7 +326,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -354,7 +346,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -411,7 +403,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [8.0]
+                php: [8.1]
                 os: [ubuntu-latest]
 
         name: Cypress Members, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -428,7 +420,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -449,7 +440,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -511,7 +502,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [8.0]
+                php: [8.1]
                 os: [ubuntu-latest]
 
         name: Cypress Publish, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -528,7 +519,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -549,7 +539,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -606,7 +596,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [8.0]
+                php: [8.1]
                 os: [ubuntu-latest]
 
         name: Cypress Utilities, PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -623,7 +613,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -644,7 +633,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -701,10 +690,10 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4]
+                php: [8.1]
                 os: [ubuntu-latest]
 
-        name: Cypress Misc, PHP${{ matrix.php }} - ${{ matrix.os }}
+        name: Cypress Utilities, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
@@ -718,7 +707,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -739,7 +727,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -814,7 +802,6 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-                rm -rf build-tools
 
             - name: Directory Listing
               run: |
@@ -835,7 +822,7 @@ jobs:
 
             - name: Remove installer
               run: |
-                rm -rf system/ee/installer
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
@@ -893,10 +880,98 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [8.0]
+                php: [8.1]
                 os: [ubuntu-latest]
 
         name: Cypress Installer, PHP${{ matrix.php }} - ${{ matrix.os }}
+
+        steps:
+
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-build-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                ls -lar build-tools/builds/ExpressionEngine/
+                cp -R build-tools/builds/ExpressionEngine/. ./
+
+            - name: Directory Listing
+              run: |
+                ls -lar ./
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
+                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+
+            - name: Copy config.php
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
+
+            - name: Setup Permissions
+              run: |
+                sudo chmod 666 system/user/config/config.php
+                sudo chmod 777 system/user/config
+                sudo chmod -R 777 system/user/cache
+                sudo chmod -R 777 system/user/templates
+                sudo chmod -R 777 system/user/language
+                sudo chmod -R 777 tests/cypress/support/tmp
+                sudo chmod -R 777 tests/cypress/support/file-sync/uploads
+                sudo chmod -R 777 images
+                sudo chmod -R 777 themes/user
+                sudo chmod -R 777 tests/cypress/cypress/screenshots
+
+            - name: Configure MySQL
+              run: |
+                sudo systemctl start mysql
+                mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
+                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
+                
+            - name: Install PHP dependencies
+              working-directory: tests/cypress
+              run: composer install
+
+            - name: Start PHP Server
+              run: php -S localhost:8888 &
+
+            - name: Run Cypress Tests
+              uses: cypress-io/github-action@v2
+              with:
+                browser: chrome
+                headless: true
+                working-directory: tests/cypress
+                config-file: installer.cypress.json
+
+            - name: Archive screenshots
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: cypress-tests-installer
+                path: tests/cypress/cypress/screenshots/
+
+            - name: Archive server errors
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: installer.error.log
+                path: /home/runner/php_errors.log
+    cypress-minimal-content:
+        if: github.event.pull_request.draft == false
+        needs: [cancel-running-tests, build-for-testing]
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [8.0]
+                os: [ubuntu-latest]
+
+        name: Cypress Frontend Content, PHP${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
 
@@ -959,13 +1034,13 @@ jobs:
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress
-                config-file: installer.cypress.json
+                config-file: content.cypress.json
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v2
               if: failure()
               with:
-                name: cypress-tests-installer
+                name: cypress-tests-content
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors

@@ -454,8 +454,10 @@ class Addons extends CP_Controller
      */
     public function install($addons)
     {
-        if (! ee('Permission')->can('admin_addons') or
-            ee('Request')->method() !== 'POST') {
+        if (
+            ! ee('Permission')->can('admin_addons') or
+            ee('Request')->method() !== 'POST'
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -481,8 +483,32 @@ class Addons extends CP_Controller
         foreach ($addons as $addon) {
             $info = ee('Addon')->get($addon);
 
-            $party = ($info->getAuthor() == 'ExpressionEngine') ? 'first' : 'third';
+            $requires = $info->getProvider()->get('requires');
+            if (!empty($requires) && isset($requires['php'])) {
+                if (version_compare(PHP_VERSION, $requires['php'], '<')) {
+                    $can_install = false;
+                    ee('CP/Alert')->makeInline($addon . 'NotInstalled_php')
+                        ->asWarning()
+                        ->withTitle(lang('addons_not_installed'))
+                        ->addToBody(sprintf(lang('version_required'), 'PHP', $requires['php']))
+                        ->addToBody([$info->getName()])
+                        ->defer();
+                }
+            }
 
+            if (!empty($requires) && isset($requires['ee'])) {
+                if (version_compare(APP_VER, $requires['ee'], '<')) {
+                    $can_install = false;
+                    ee('CP/Alert')->makeInline($addon . 'NotInstalled_ee')
+                        ->asWarning()
+                        ->withTitle(lang('addons_not_installed'))
+                        ->addToBody(sprintf(lang('version_required'), 'ExpressionEngine', $requires['ee']))
+                        ->addToBody([$info->getName()])
+                        ->defer();
+                }
+            }
+
+            $party = ($info->getAuthor() == 'ExpressionEngine') ? 'first' : 'third';
             $requests[$party] = array_merge($requests[$party], $info->getInstalledConsentRequests());
         }
 
@@ -742,6 +768,27 @@ class Addons extends CP_Controller
                 break;
             default:
                 break;
+        }
+
+        $requires = $info->getProvider()->get('requires');
+        if (!empty($requires) && isset($requires['php'])) {
+            if (version_compare(PHP_VERSION, $requires['php'], '<')) {
+                ee('CP/Alert')->makeBanner($addon . 'NotFunctional_php')
+                    ->asWarning()
+                    ->withTitle(sprintf(lang('addon_not_fully_functional'), $info->getName()))
+                    ->addToBody(sprintf(lang('version_required'), 'PHP', $requires['php']))
+                    ->now();
+            }
+        }
+
+        if (!empty($requires) && isset($requires['ee'])) {
+            if (version_compare(APP_VER, $requires['ee'], '<')) {
+                ee('CP/Alert')->makeBanner($addon . 'NotFunctional_ee')
+                    ->asWarning()
+                    ->withTitle(sprintf(lang('addon_not_fully_functional'), $info->getName()))
+                    ->addToBody(sprintf(lang('version_required'), 'ExpressionEngine', $requires['ee']))
+                    ->now();
+            }
         }
 
         // Module

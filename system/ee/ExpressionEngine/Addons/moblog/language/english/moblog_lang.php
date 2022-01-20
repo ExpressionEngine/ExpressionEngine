@@ -163,15 +163,6 @@ $lang = array(
     'invalid_moblog' =>
     'Invalid Moblog selection',
 
-    'emails_done' =>
-    'Emails Retrieved:',
-
-    'entries_added' =>
-    'Entries Added:',
-
-    'attachments_uploaded' =>
-    'Attachments Uploaded:',
-
     // ------------------------
     // Processing Errors
     // ------------------------

@@ -134,7 +134,7 @@ context('Categories', () => {
         cy.get('h4').contains('limit, preserve words').next('span').invoke('text').should('eq', 'Welcome to the…')
     })
 
-    it.only('modifiers inside relationships', function() {
+    it('modifiers inside relationships', function() {
         cy.visit('index.php/modifiers/relation')
 
         cy.get('h4').contains('original entry with all params').next('span').invoke('text').should('contain', 'EUR')
