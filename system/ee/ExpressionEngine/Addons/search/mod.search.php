@@ -344,6 +344,9 @@ class Search
     {
         ee()->load->model('addons_model');
 
+        $channel_meta = isset($this->_meta['channel'])
+            ? ee('Variables/Parser')->parseOrParameter($this->_meta['channel'])
+            : array('options' => [], 'not' => false);
         $channel_array = array();
 
         /** ---------------------------------------
@@ -366,7 +369,12 @@ class Search
                 if ($channels) {
                     $custom_fields = array();
                     foreach ($channels as $channel) {
-                        $channel_array[] = $channel->channel_id;
+                        // as we're already looping through channels,
+                        // let's get the necessary IDs
+                        if (in_array($channel->channel_name, $channel_meta['options'])) {
+                            $channel_array[] = $channel->channel_id;
+                        }
+
                         $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
                     }
                     $this->custom_fields = array_chunk($custom_fields, 50);
@@ -454,7 +462,9 @@ class Search
 
             if ($id_query != '') {
                 $id_query = substr($id_query, 0, -2);
-                $id_query = ' AND  exp_channel_titles.channel_id IN (' . $id_query . ') ';
+                $id_query = $channel_meta['not']
+                    ? ' AND  exp_channel_titles.channel_id NOT IN (' . $id_query . ') '
+                    : ' AND  exp_channel_titles.channel_id IN (' . $id_query . ') ';
             }
         }
 
