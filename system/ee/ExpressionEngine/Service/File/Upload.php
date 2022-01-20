@@ -246,6 +246,9 @@ class Upload
         }
 
         if (! $dir->exists()) {
+            if (AJAX_REQUEST) {
+                show_error(lang('invalid_upload_destination'), 404);
+            }
             $upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
             ee('CP/Alert')->makeStandard()
                 ->asIssue()

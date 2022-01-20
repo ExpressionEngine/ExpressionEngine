@@ -619,7 +619,7 @@ class Channel_form_lib
         $captcha_conditional = array(
             'captcha' => (
                 $this->channel('channel_id') &&
-                $this->logged_out_member_id &&
+                ($this->logged_out_member_id || ee()->session->userdata('member_id') !=0) &&
                 ee('Captcha')->shouldRequireCaptcha()
             )
         );

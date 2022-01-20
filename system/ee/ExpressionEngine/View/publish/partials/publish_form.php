@@ -118,7 +118,7 @@
 			<fieldset>
 				<div class="field-instruct<?=$field_class?>">
 					<label><span class="ico sub-arrow js-toggle-field"></span><?=lang('autosaved_versions')?></label>
-					<em><?=lang('autosaved_versions')?></em>
+					<em><?=lang('autosaved_versions_desc')?></em>
 				</div>
 				<div class="field-control">
 					<?=$autosaves?>
