@@ -232,7 +232,9 @@ class Filesystem
     public function emptyDir($path, $add_index = true)
     {
         $this->deleteDir($path, true);
-        $this->addIndexHtml($path);
+        if($add_index) {
+            $this->addIndexHtml($path);
+        }
     }
 
     /**
@@ -610,7 +612,7 @@ class Filesystem
      */
     public function findAndReplace($file, $search, $replace)
     {
-        if ($this->exists($file)) {
+        if (!$this->exists($file)) {
             return;
         }
 
