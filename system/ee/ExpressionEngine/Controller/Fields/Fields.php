@@ -208,14 +208,28 @@ class Fields extends AbstractFieldsController
 
         if (! empty($_POST)) {
             $field = $this->setWithPost($field);
-            $result = $field->validate();
+            $this->validationResult = $field->validate();
 
-            if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result)) {
+            if (ee('Request')->post('field_is_conditional') == 'y') {
+                list($conditionSets, $conditions) = $this->prepareFieldConditions();
+            }
+
+            if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($this->validationResult)) {
                 return $response;
             }
 
-            if ($result->isValid()) {
+            if ($this->validationResult->isValid()) {
                 $field->save();
+                if (ee('Request')->post('field_is_conditional') == 'y') {
+                    foreach ($conditionSets as $i => $conditionSet) {
+                        $conditionSet->ChannelFields->getAssociation()->set($field);
+                        $conditionSet->save();
+                        foreach ($conditions[$i] as $condition) {
+                            $condition->condition_set_id = $conditionSet->getId();
+                            $condition->save();
+                        }
+                    }
+                }
 
                 if ($group_id) {
                     $field_group = ee('Model')->get('ChannelFieldGroup', $group_id)->first();
@@ -244,7 +258,7 @@ class Fields extends AbstractFieldsController
                     ee()->functions->redirect(ee('CP/URL')->make('fields/edit/' . $field->getId()));
                 }
             } else {
-                $errors = $result;
+                $errors = $this->validationResult;
 
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
@@ -346,78 +360,29 @@ class Fields extends AbstractFieldsController
 
         if (! empty($_POST)) {
             $field = $this->setWithPost($field);
-            $result = $field->validate();
+            $this->validationResult = $field->validate();
 
-            //if the conditional toggle is on, set it up and perform validation
             if (ee('Request')->post('field_is_conditional') == 'y') {
-                $condition_sets = [];
-                $conditions = [];
-                $set_index = 0;
-                foreach (ee('Request')->post('condition_set') as $set_order => $condition_set_data) {
-                    $condition_set_id = $condition_set_data['condition_set_id'];
-                    if (!is_numeric($condition_set_id)) {
-                        $fieldConditionSet = ee('Model')->make('FieldConditionSet');
-                    } else {
-                        $fieldConditionSet = ee('Model')->get('FieldConditionSet', $condition_set_id);
-                        if (empty($fieldConditionSet)) {
-                            $fieldConditionSet = ee('Model')->make('FieldConditionSet');
-                        }
-                    }
-                    $fieldConditionSet->match = $condition_set_data['match'];
-                    $fieldConditionSet->order = $set_order;
-                    $fieldConditionSetValidation = $fieldConditionSet->validate();
-                    if (!$fieldConditionSetValidation->isValid()) {
-                        $rules = $fieldConditionSetValidation->getFailed();
-                        foreach ($rules as $piece => $rule) {
-                            $result->addFailed($piece, $rule[0]);
-                        }
-                    }
-                    $condition_sets[$set_index] = $fieldConditionSet;
-
-                    foreach (ee('Request')->post('condition.' . $condition_set_id) as $order => $condition_data) {
-                        $condition_id = $condition_data['condition_id'];
-                        if (!is_numeric($condition_id)) {
-                            $fieldCondition = ee('Model')->make('FieldCondition');
-                        } else {
-                            $fieldCondition = ee('Model')->get('FieldCondition', $condition_id);
-                            if (empty($fieldCondition)) {
-                                $fieldCondition = ee('Model')->make('FieldCondition');
-                            }
-                        }
-                        $fieldCondition->evaluation_rule = $condition_data['evaluation_rule'];
-                        $fieldCondition->value = $condition_data['value'];
-                        $fieldCondition->condition_field_id = $condition_data['condition_field_id'];
-                        $fieldCondition->order = $order;
-                        $fieldConditionValidation = $fieldCondition->validate();
-                        if (!$fieldConditionValidation->isValid()) {
-                            $rules = $fieldConditionValidation->getFailed();
-                            foreach ($rules as $piece => $rule) {
-                                $result->addFailed($piece, $rule[0]);
-                            }
-                        }
-
-                        $conditions[$set_index][] = $fieldCondition;
-                    }
-
-                    $set_index++;
-                }
+                list($conditionSets, $conditions) = $this->prepareFieldConditions();
             }
 
-            if ($response = $this->ajaxValidation($result)) {
+            if ($response = $this->ajaxValidation($this->validationResult)) {
                 return $response;
             }
 
-            if ($result->isValid()) {
+            if ($this->validationResult->isValid()) {
                 $field->save();
                 if (ee('Request')->post('field_is_conditional') == 'y') {
-                    foreach ($condition_sets as $i => $condition_set) {
-                        $condition_set->ChannelFields->getAssociation()->set($field);
-                        $condition_set->save();
+                    foreach ($conditionSets as $i => $conditionSet) {
+                        $conditionSet->ChannelFields->getAssociation()->set($field);
+                        $conditionSet->save();
                         foreach ($conditions[$i] as $condition) {
-                            $condition->condition_set_id = $condition_set->getId();
+                            $condition->condition_set_id = $conditionSet->getId();
                             $condition->save();
                         }
                     }
+                } else {
+                    $field->FieldConditionSets->delete();
                 }
 
                 if (ee()->input->post('update_formatting') == 'y') {
@@ -442,7 +407,7 @@ class Fields extends AbstractFieldsController
                     ee()->functions->redirect(ee('CP/URL')->make('fields/edit/' . $field->getId()));
                 }
             } else {
-                $errors = $result;
+                $errors = $this->validationResult;
 
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
@@ -666,18 +631,18 @@ class Fields extends AbstractFieldsController
             }
         }
 
-        $existingFields = ee('Model')->get('ChannelField')->filter('site_id', 'IN', [0, ee()->config->item('site_id')])->all();
-        if ($existingFields) {
-            foreach ($existingFields as $field) {
-                $evaluationRules = $field->getSupportedEvaluationRules();
+        $siteFields = ee('Model')->get('ChannelField')->filter('site_id', 'IN', [0, ee()->config->item('site_id')])->all();
+        if ($siteFields) {
+            foreach ($siteFields as $siteField) {
+                $evaluationRules = $siteField->getSupportedEvaluationRules();
                 if (!empty($evaluationRules)) {
-                    $fieldsWithEvaluationRules[$field->field_id] = [
-                        'field_id' => $field->field_id,
-                        'field_label' => $field->field_label,
-                        'field_name' => $field->field_name,
-                        'field_type' => $field->field_type,
+                    $fieldsWithEvaluationRules[$siteField->field_id] = [
+                        'field_id' => $siteField->field_id,
+                        'field_label' => $siteField->field_label,
+                        'field_name' => $siteField->field_name,
+                        'field_type' => $siteField->field_type,
                         'evaluationRules' => $evaluationRules,
-                        'evaluationValues' => $field->getPossibleValuesForEvaluation()
+                        'evaluationValues' => $siteField->getPossibleValuesForEvaluation()
                     ];
                 }
             }
@@ -692,7 +657,10 @@ class Fields extends AbstractFieldsController
                     'type' => 'html',
                     'margin_left' => true,
                     'margin_top' => true,
-                    'content' => ee('View')->make('ee:_shared/form/condition-rule-group')->render( ['fieldsList' => $fieldsWithEvaluationRules])
+                    'content' => ee('View')->make('ee:_shared/form/condition-rule-group')->render([
+                        'fieldsList' => $fieldsWithEvaluationRules,
+                        'fieldConditionSets' => $field->FieldConditionSets
+                    ])
                 ),
             ),
         );

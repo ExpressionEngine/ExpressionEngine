@@ -22,8 +22,9 @@ class FieldCondition extends Model
     protected static $_table_name = 'field_conditions';
 
     protected static $_validation_rules = array(
-        'condition_field_id' => 'int|required',
-        'order' => 'int'
+        'condition_field_id' => 'integer|required',
+        'evaluation_rule' => 'required',
+        'order' => 'integer'
     );
 
     protected $condition_id;
@@ -39,6 +40,7 @@ class FieldCondition extends Model
         ),
         'UsesConditionField' => array(
             'type' => 'belongsTo',
+            'model' => 'ee:ChannelField',
             'from_key' => 'condition_field_id',
             'to_key' => 'field_id',
             'inverse' => array(

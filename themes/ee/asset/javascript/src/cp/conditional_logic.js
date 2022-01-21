@@ -324,7 +324,7 @@ $(document).ready(function() {
 		}
 
 		var options = {
-			name: 'condition-rule-operator',
+			name: 'condition[new_set_0][new_0][evaluation_rule]',
 			items: operator,
 			initialItems: operator,
 			selected: selectedItem,
@@ -339,7 +339,7 @@ $(document).ready(function() {
 		var dataDropdownReact = btoa(JSON.stringify(options));
 
 		parensRow.find('.condition-rule-operator-wrap').append('<div data-input-value="condition-rule-operator" class="condition-rule-operator" data-dropdown-react='+dataDropdownReact+'></div>');
-		parensRow.find('.condition-rule-value-wrap').append('<input type="text">');
+		parensRow.find('.condition-rule-value-wrap').append('<input type="text" name="condition[new_set_0][new_0][value]">');
 
 		Dropdown.renderFields();
 		parensRow.find('.condition-rule-operator-wrap .empty-select').hide();

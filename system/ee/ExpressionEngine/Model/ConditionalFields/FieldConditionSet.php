@@ -23,7 +23,7 @@ class FieldConditionSet extends Model
 
     protected static $_validation_rules = array(
         'match' => 'enum[all,any]',
-        'order' => 'int'
+        'order' => 'integer'
     );
 
     protected $condition_set_id;
