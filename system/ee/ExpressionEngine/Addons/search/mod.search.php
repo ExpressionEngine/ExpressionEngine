@@ -1018,8 +1018,8 @@ class Search
             }
 
             return $query->row('total_results') == 0
-            ? ee()->TMPL->no_results()
-                : ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, (array) $query->row(), true);
+                ? ee()->TMPL->no_results()
+                : ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $query->row_array());
         }
 
         return empty(ee()->TMPL->tagdata)
