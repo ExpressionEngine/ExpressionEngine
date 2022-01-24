@@ -300,6 +300,10 @@
 
 				&:last-child {
 					border-bottom: none;
+
+					@include m-tablet-down {
+						border-bottom-width: 1px;
+					}
 				}
 
 				td {

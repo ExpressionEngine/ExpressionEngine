@@ -973,4 +973,27 @@ $(document).ready(function () {
 	});
 });
 
+$(window).on('resize', function () {
+	var gridTables = $('.grid-field');
+
+	gridTables.each(function (el) {
+
+		if ( $(this).parents('.hidden').length ) return;
+		var tableInnerWidth = $(this).find('.grid-field__table').width();
+		var containerWidth = $(this).parents('.field-control').width();
+
+		console.log(containerWidth +" "+ tableInnerWidth);
+
+		console.log('window', $(window).width());
+
+		if (containerWidth < tableInnerWidth) {
+			$(this).addClass('overwidth');
+		} 
+
+		if (containerWidth >= tableInnerWidth && $(window).width() > 1440) {
+			$(this).removeClass('overwidth');
+		}
+	});
+});
+
 })(jQuery);
