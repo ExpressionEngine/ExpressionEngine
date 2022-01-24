@@ -190,6 +190,16 @@ class URL implements \Serializable
      */
     public function __serialize()
     {
+        return $this->buildSerializeArray();
+    }
+    // legacy, keeping for PHP 5.6 support
+    public function serialize()
+    {
+        return serialize($this->buildSerializeArray());
+    }
+
+    private function buildSerializeArray()
+    {
         return array(
             'path' => $this->path,
             'session_id' => $this->session_id,
@@ -197,19 +207,6 @@ class URL implements \Serializable
             'base' => $this->base,
             'requested_uri' => $this->requested_uri
         );
-    }
-    // legacy, keeping for PHP 5.6 support
-    public function serialize()
-    {
-        $serialize = array(
-            'path' => $this->path,
-            'session_id' => $this->session_id,
-            'qs' => $this->qs,
-            'base' => $this->base,
-            'requested_uri' => $this->requested_uri
-        );
-
-        return serialize($serialize);
     }
 
     /**
@@ -219,19 +216,7 @@ class URL implements \Serializable
      */
     public function __unserialize($serialized)
     {
-        $data = $serialized;
-        
-        if (! is_array($data)) {
-            return false;
-        }
-
-        $this->path = $data['path'];
-        $this->session_id = $data['session_id'];
-        $this->qs = $data['qs'];
-        $this->base = $data['base'];
-        $this->requested_uri = $data['requested_uri'];
-
-        return true;
+        return $this->processUnserialize($serialized);
     }
 
     /**
@@ -241,8 +226,11 @@ class URL implements \Serializable
      */
     public function unserialize($serialized)
     {
-        $data = unserialize($serialized);
+        return $this->processUnserialize(unserialize($serialized));
+    }
 
+    private function processUnserialize($data)
+    {
         if (! is_array($data)) {
             return false;
         }
