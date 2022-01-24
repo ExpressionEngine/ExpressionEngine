@@ -121,7 +121,7 @@ class Roles extends AbstractRolesController
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
-                'status' => ($role->is_locked == 'y') ? 'locked' : 'unlocked',
+                'status' => $role->is_locked,
                 'faded' => '(' . $role->total_members . ')',
                 'faded-href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                 'href' => $edit_url,

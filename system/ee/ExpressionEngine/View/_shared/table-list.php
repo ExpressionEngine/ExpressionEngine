@@ -26,7 +26,11 @@
 
 				<?php if (isset($row['status'])): ?>
 					<div class="status-wrap">
-						<span class="status-tag st-<?=$row['status']?>"><?=$row['status']?></span>
+						<?php 
+							$class = $row['status'] ? 'locked' : 'unlocked';
+							$status = $row['status'] ? lang('locked') : lang('unlocked');
+						?>
+						<span class="status-tag st-<?=$class?>"><?=$status?></span>
 					</div>
 				<?php endif; ?>
 
