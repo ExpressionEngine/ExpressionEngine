@@ -15,6 +15,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
    - Allow assign previously created field groups to importing channel sets
    - Added Sticky entry column to entries table
    - Add channel data to category archives
+   - Update Typed Columns/timestamp to accept date text (strtotime()) as valid input
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
