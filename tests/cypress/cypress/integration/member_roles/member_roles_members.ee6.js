@@ -36,20 +36,20 @@ context('Test Member roles Members ', () => {
 		cy.auth()
 		cy.visit('admin.php?/cp/members/roles')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('unlocked').should('exist')
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('Unlocked').should('exist')
 		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
 		cy.get('#fieldset-is_locked [data-toggle-for="is_locked"]').click()
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.visit('admin.php?/cp/members/roles')
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('locked').should('exist')
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('Locked').should('exist')
 
 		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
 		cy.get('#fieldset-is_locked [data-toggle-for="is_locked"]').click()
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.visit('admin.php?/cp/members/roles')
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('unlocked').should('exist')
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('Unlocked').should('exist')
 	})
 
 	it('Cannot add members to "locked" groups (Super admins only)', () => {
