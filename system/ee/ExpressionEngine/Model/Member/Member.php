@@ -429,6 +429,7 @@ class Member extends ContentModel
 
     public function onAfterInsert()
     {
+        parent::onAfterInsert();
         if (ee()->config->item('ignore_member_stats') != 'y') {
             foreach ($this->getAllRoles() as $role) {
                 $role->total_members = null;

@@ -663,7 +663,7 @@ class Roles extends AbstractRolesController
                         'require_mfa' => [
                             'type' => 'yes_no',
                             'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
-                            'value' => $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
+                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
                         ]
                     ]
                 ],
