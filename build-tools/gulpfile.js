@@ -774,7 +774,7 @@ var deleteFiles = function(path, filesToDelete) {
 				return gulp.src(file)
 					.pipe(plugin.replace(
 						"6_2_3",
-						properties.version.replace('.', '_')
+						properties.version.replace('.', '_').replace('.', '_').replace('.', '_')
 					))
 					.pipe(gulp.dest('system/ee/installer/updates/', {cwd: path}));
 			});
