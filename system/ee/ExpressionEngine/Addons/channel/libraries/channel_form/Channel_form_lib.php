@@ -1642,7 +1642,7 @@ GRID_FALLBACK;
         }
 
         if ($this->json) {
-            return $this->send_ajax_response(
+            return ee()->output->send_ajax_response(
                 array(
                     'success' => (empty($this->errors) && empty($this->field_errors)) ? 1 : 0,
                     'errors' => (empty($this->errors)) ? array() : $this->errors,
