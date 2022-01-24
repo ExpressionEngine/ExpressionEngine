@@ -34,6 +34,8 @@
   tbody td {
     vertical-align: top;
     border-right: 1px solid color(table-border);
+    min-width: 250px;
+    max-width: 600px;
 
      @include m-tablet-down {
        border-right: none;
@@ -47,6 +49,7 @@
   td:last-child, th:last-child {
     padding-right: 15px;
     border-right: none;
+    min-width: 80px;
   }
   
 

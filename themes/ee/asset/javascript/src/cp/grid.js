@@ -261,6 +261,9 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			this.root.toggleClass('hidden', rowCount == 0)
 		}
 
+		var gridFieldWidth = $(this.rowContainer).width();
+		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width()
+			
 		if(rowCount == 0) {
 			var showAddButton = setInterval(function (){
 				if ( !that.find('.field-no-results').hasClass('hidden') ) {
@@ -268,6 +271,10 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 					clearInterval(showAddButton);
 				}
 			}, 50);
+
+			if (parentFieldControlWidth >= gridFieldWidth) {
+				$(this.rowContainer).parents('.grid-field').removeClass('overwidth');
+			}
 		}
 	},
 
