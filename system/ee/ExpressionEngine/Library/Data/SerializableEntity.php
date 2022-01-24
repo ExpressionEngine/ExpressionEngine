@@ -26,7 +26,7 @@ class SerializableEntity extends Entity implements Serializable
      */
     public function __serialize()
     {
-        return $this->serialize();
+        return $this->getSerializeData();
     }
     // legacy, keeping for PHP 5.6 support
     public function serialize()
@@ -42,7 +42,8 @@ class SerializableEntity extends Entity implements Serializable
      */
     public function __unserialize($serialized)
     {
-        return $this->unserialize($serialized);
+        $this->__construct();
+        $this->setSerializeData($serialized);
     }
     // legacy, keeping for PHP 5.6 support
     public function unserialize($serialized)
