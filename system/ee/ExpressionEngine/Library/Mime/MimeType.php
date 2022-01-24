@@ -115,7 +115,7 @@ class MimeType
                 $mime = 'image/webp';
                 // PDF files start with "%PDF" (25 50 44 46) or " %PDF"
                 // @see https://en.wikipedia.org/wiki/Magic_number_%28programming%29#Examples
-            } else if (strpos($file_opening, '%PDF') >= 0) {
+            } else if (strpos($file_opening, '%PDF') !== false) {
                 $mime = 'application/pdf';
             }
         }
