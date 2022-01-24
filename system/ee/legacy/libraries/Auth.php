@@ -176,6 +176,21 @@ class Auth
      */
     public function verify()
     {
+        // If this is being called from the CP, use the hook
+        if (REQ == 'CP') {
+            /* -------------------------------------------
+            /* 'login_authenticate_start' hook.
+            /*  - Take control of CP authentication routine
+            /*  - Added EE 1.4.2
+            */
+            ee()->extensions->call('login_authenticate_start');
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+            /*
+            /* -------------------------------------------*/
+        }
+        
         $username = (string) ee()->input->post('username');
 
         // No username/password?  Bounce them...
@@ -191,21 +206,6 @@ class Auth
             $this->errors[] = 'no_password';
 
             return false;
-        }
-
-        // If this is being called from the CP, use the hook
-        if (REQ == 'CP') {
-            /* -------------------------------------------
-            /* 'login_authenticate_start' hook.
-            /*  - Take control of CP authentication routine
-            /*  - Added EE 1.4.2
-            */
-            ee()->extensions->call('login_authenticate_start');
-            if (ee()->extensions->end_script === true) {
-                return;
-            }
-            /*
-            /* -------------------------------------------*/
         }
 
         // Is IP and User Agent required for login?
@@ -714,6 +714,19 @@ class Auth_result
             } else {
                 ee()->remember->delete();
             }
+        }
+
+        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
+            $sessions = ee('Model')
+                ->get('Session')
+                ->filter('member_id', ee()->session->userdata('member_id'))
+                ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                ->all();
+            foreach ($sessions as $session) {
+                $session->mfa_flag = 'show';
+                $session->save();
+            }
+            ee()->session->mfa_flag = 'show';
         }
 
         if ($cp_sess === true) {

@@ -619,7 +619,7 @@ class Channel_form_lib
         $captcha_conditional = array(
             'captcha' => (
                 $this->channel('channel_id') &&
-                $this->logged_out_member_id &&
+                ($this->logged_out_member_id || ee()->session->userdata('member_id') !=0) &&
                 ee('Captcha')->shouldRequireCaptcha()
             )
         );
@@ -1530,7 +1530,7 @@ GRID_FALLBACK;
         $this->switch_site($this->site_id);
 
         // Structure category data the way the ChannelEntry model expects it
-        $cat_groups = explode('|', $this->entry->Channel->cat_group);
+        $cat_groups = explode('|', (string) $this->entry->Channel->cat_group);
         if (! empty($cat_groups) && isset($_POST['category'])) {
             $_POST['categories'] = array('cat_group_id_' . $cat_groups[0] => (is_array($_POST['category'])) ? $_POST['category'] : [$_POST['category']]);
         }
@@ -2422,7 +2422,7 @@ GRID_FALLBACK;
         $options = array();
 
         $field_data = (is_array($this->entry('field_id_' . $field->field_id)))
-            ? $this->entry('field_id_' . $field->field_id) : explode('|', $this->entry('field_id_' . $field->field_id));
+            ? $this->entry('field_id_' . $field->field_id) : explode('|', (string) $this->entry('field_id_' . $field->field_id));
 
         if (in_array($field->field_type, $this->option_fields)) {
             $field_settings = $field->getField()->getItem('field_settings');
@@ -2461,7 +2461,7 @@ GRID_FALLBACK;
                     ->all();
 
                 if ($pop_entries && $pop_content = $pop_entries->pluck('field_id_' . $field->field_pre_field_id)) {
-                    $current = explode('|', $this->entry('field_id_' . $field->field_id));
+                    $current = explode('|', (string) $this->entry('field_id_' . $field->field_id));
 
                     foreach ($pop_content as $content) {
                         $options[] = array(

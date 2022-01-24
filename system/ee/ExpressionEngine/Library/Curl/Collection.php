@@ -27,7 +27,7 @@ class RequestCollection extends Collection
         $urls = array();
 
         foreach ($requests as $request) {
-            if (is_subclass($request, 'Request')) {
+            if (is_subclass_of($request, 'Request')) {
                 $objs[] = $request;
 
                 continue;
@@ -50,7 +50,7 @@ class RequestCollection extends Collection
                 $request = new $method($url, $config['data']);
 
                 if (isset($config['async']) && $config['async'] === true) {
-                    $request = new AsynRequest($request);
+                    $request = new AsyncRequest($request);
                 }
 
                 return $request;

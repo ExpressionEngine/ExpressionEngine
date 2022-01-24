@@ -23,12 +23,14 @@ class MemberGateway extends Gateway
     // Properties
     protected $member_id;
     protected $role_id;
+    protected $pending_role_id;
     protected $username;
     protected $screen_name;
     protected $password;
     protected $salt;
     protected $unique_id;
     protected $crypt_key;
+    protected $backup_mfa_code;
     protected $authcode;
     protected $email;
     protected $signature;
@@ -86,6 +88,7 @@ class MemberGateway extends Gateway
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
     protected $dismissed_pro_banner;
+    protected $enable_mfa;
 }
 
 // EOF

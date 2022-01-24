@@ -160,6 +160,7 @@ class ContentDesign extends Settings
      **/
     public function _validateResizeLibraryPath($path)
     {
+        $path = (string) $path;
         $protocol = ee()->input->post('image_resize_protocol');
 
         if (in_array($protocol, array('imagemagick', 'netpbm')) && trim($path) == '') {

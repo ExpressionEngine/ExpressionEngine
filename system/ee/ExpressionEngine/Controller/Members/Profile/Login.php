@@ -76,7 +76,7 @@ class Login extends Profile
                     'title' => 'existing_password',
                     'desc' => 'existing_password_exp',
                     'fields' => array(
-                        'password' => array(
+                        'password_confirm' => array(
                             'type' => 'password',
                             'required' => true,
                             'maxlength' => PASSWORD_MAX_LENGTH
@@ -86,7 +86,7 @@ class Login extends Profile
             );
 
             $rules[] = [
-                'field' => 'password',
+                'field' => 'password_confirm',
                 'label' => 'lang:password',
                 'rules' => 'required|auth_password[useAuthTimeout]'
             ];

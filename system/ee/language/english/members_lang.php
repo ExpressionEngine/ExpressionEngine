@@ -210,7 +210,8 @@ $lang = array(
 
     'member_assignment_none' => 'None, members with this Primary Role will be deleted',
 
-    'member_assignment_warning' => 'There are members that have some of these roles assigned as Primary Role. What Primary Role should they be re-assigned to?',
+    'member_assignment_warning' => 'There are members currently assigned to this role: <b>%d</b> as primary, <b>%d</b> as secondary.',
+    'member_reassignment_warning' => 'What Primary Role should the members be re-assigned to?',
 
     'member_cfg' => 'Role Settings',
 
@@ -272,6 +273,8 @@ $lang = array(
 
     'roles_remove_problem' => 'There was a problem deleting roles.',
 
+    'roles_counter_warning' => 'The mumber of members for each role might be inaccurate because of <code>ignore_member_stats</code> configuration override being set to <code>y</code>. Plese use Statistics Utility to recount.',
+
     'member_has_cp_access' => 'Can access the control panel',
 
     'member_id' => 'ID',
@@ -296,9 +299,15 @@ $lang = array(
 
     'members_activation_resent_success_desc' => 'Activation emails were sent to the following members:',
 
+    'members_approve_error' => 'Members Not Approved',
+
     'members_approved_success' => 'Members Approved',
 
     'members_approved_success_desc' => 'The following members have been approved:',
+
+    'cannot_activate_member_role_not_exists' => 'Unable to activate %s. The member role %s does not exist.',
+
+    'cannot_activate_member_role_is_locked' => 'Unable to activate %s. The member role %s is locked.',
 
     'members_are_deleted' => 'Member(s) have been deleted',
 
@@ -336,7 +345,7 @@ $lang = array(
 
     'password_confirm_desc' => 'Retype desired password, to confirm.',
 
-    'password_desc' => 'Use lowercase and uppercase letters, numbers, and symbols for the strongest passwords.',
+    'password_desc' => 'Use lowercase and uppercase letters, numbers, and symbols for strong passwords.',
 
     'password_too_long' => 'Your password cannot be over ' . PASSWORD_MAX_LENGTH . ' characters in length',
 
