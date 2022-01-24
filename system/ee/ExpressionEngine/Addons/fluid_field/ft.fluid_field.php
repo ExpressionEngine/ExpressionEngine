@@ -37,11 +37,11 @@ class Fluid_field_ft extends EE_Fieldtype
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
     }
 
-    public function validate($field_data)
+    public function validate($data)
     {
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
 
-        if (empty($field_data)) {
+        if (empty($data)) {
             return true;
         }
 
@@ -50,7 +50,7 @@ class Fluid_field_ft extends EE_Fieldtype
             ->all()
             ->indexByIds();
 
-        foreach ($field_data['fields'] as $key => $data) {
+        foreach ($data['fields'] as $key => $data) {
             $field_id = null;
             $fluid_field_data_id = null;
 
@@ -345,7 +345,7 @@ class Fluid_field_ft extends EE_Fieldtype
      * @param string $data Stored data for the field
      * @return string Field display
      */
-    public function display_field($field_data)
+    public function display_field($data)
     {
         $fields = '';
 
@@ -361,7 +361,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $field_templates = $field_templates->indexByIds();
 
-        if (! is_array($field_data)) {
+        if (! is_array($data)) {
             if ($this->content_id) {
                 $fluid_field_data = $this->getFieldData();
 
@@ -382,7 +382,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 }
             }
         } else {
-            foreach ($field_data['fields'] as $key => $data) {
+            foreach ($data['fields'] as $key => $data) {
                 $field_id = null;
 
                 foreach (array_keys($data) as $datum) {

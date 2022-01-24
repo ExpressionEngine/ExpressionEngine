@@ -356,13 +356,16 @@ td.invalid {
 .rank-wrap {
   position: absolute;
   right: 45px;
-  top: 7px;
+  top: 8px;
   background: var(--ee-button-default-bg);
   text-transform: uppercase;
 
 	.status-tag {
 		background: none;
 		text-transform: uppercase;
+		max-height: 24px;
+		line-height: 24px;
+		padding: 0 8px;
 		
 		&.strong {
 		  border-color: var(--ee-success);
