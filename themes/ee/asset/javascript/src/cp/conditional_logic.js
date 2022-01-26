@@ -49,7 +49,7 @@ Conditional.Publish = function(field, settings) {
 	this.mainParentContainer = this.root.parents('#fieldset-condition_fields');
 	this.blankSet = $('.conditionset-temlates-row', this.mainParentContainer);
 	this.activeElement = this.root.not(this.blankSet);
-	this.setParent = this.activeElement.parents('.field-conditionset-wrapper');
+	this.setParent = $('#fieldset-condition_fields').find('.field-conditionset-wrapper');
 	this.blankRow = $('.rule-blank-row', this.activeElement);
 	this.rowContainer = this.activeElement.find('.rules');
 	this.addButtonToolbar = $('[rel=add_row]', this.activeElement);
@@ -66,6 +66,7 @@ Conditional.Publish = function(field, settings) {
 Conditional.Publish.prototype = {
 
 	init: function() {
+		this._firstCloneSet();
 		this._bindAddButton();
 		this._bindDeleteButton();
 		this._bindAddSetButton();
@@ -104,6 +105,13 @@ Conditional.Publish.prototype = {
 			el.html().replace(
 				RegExp('new_rule_row_[0-9]{1,}', 'g'),
 				'new_rule_row_' + this.original_row_count
+			)
+		);
+
+		el.html(
+			el.html().replace(
+				RegExp('new_row_[0-9]{1,}', 'g'),
+				'new_row_' + this.original_row_count
 			)
 		);
 
@@ -168,6 +176,9 @@ Conditional.Publish.prototype = {
 			set.html().replace(
 				RegExp('new_conditionset_block[0-9]{1,}', 'g'),
 				'new_conditionset_block_' + this.original_set_count
+			).replace(
+				RegExp('new_set_[0-9]{1,}', 'g'),
+				'new_set_' + this.original_set_count
 			)
 		);
 
@@ -205,7 +216,6 @@ Conditional.Publish.prototype = {
 			Dropdown.renderFields();
 		});
 	},
-
 	/**
 	 * Binds click listener to Delete button in row column to delete the set
 	 */
@@ -228,6 +238,16 @@ Conditional.Publish.prototype = {
 		});
 	},
 
+	_firstCloneSet: function() {
+		$('body').on('click', '[data-toggle-for="field_is_conditional"]', function(event) {
+			var setCount = $('#fieldset-condition_fields').find('.conditionset-item');
+
+			if (setCount.length == 1) {
+				$('#fieldset-condition_fields .add-set').trigger('click');
+				$('#fieldset-condition_fields .condition-btn').trigger('click');
+			}
+		})
+	}
 }
 
 function initRules () {
@@ -260,7 +280,6 @@ $(document).ready(function() {
 		var parensRow = $(input).parents('.rule');
 		var evaluationRules;
 		var operator = {};
-		var selectedItem;
 
 		parensRow.find('.condition-rule-value-wrap input').removeAttr('disabled');
 		parensRow.find('.condition-rule-operator-wrap .condition-rule-operator').remove();
@@ -278,53 +297,13 @@ $(document).ready(function() {
 			operator[item] =  value['text'];
 		});
 
-		switch (fieldType) {
-			case 'checkboxes':
-				selectedItem = 'equal';
-				break;
-			case 'colorpicker':
-				selectedItem = 'notEqual';
-				break;
-			case 'date':
-				selectedItem = 'notEqual';
-				break;
-			case 'duration':
-				selectedItem = 'notEqual';
-				break;
-			case 'email_address':
-				selectedItem = 'notEqual';
-				break;
-			case 'file':
-				selectedItem = 'isNotEmpty';
-				break;
-			case 'multi_select':
-				selectedItem = 'equal';
-				break;
-			case 'radio':
-				selectedItem = 'equal';
-				break;
-			case 'rte':
-				selectedItem = 'notEqual';
-				break;
-			case 'select':
-				selectedItem = 'equal';
-				break;
-			case 'text':
-				selectedItem = 'notEqual';
-				break;
-			case 'textarea':
-				selectedItem = 'notEqual';
-				break;
-			case 'toggle':
-				selectedItem = 'turnedOn';
-				break;
-			case 'url':
-				selectedItem = 'notEqual';
-				break;
-		}
+		var selectedItem = Object.keys(operator)[0];
+
+		var evaluation_rule_name = parensRow.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'evaluation_rule');
+		var value_name = parensRow.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'value');
 
 		var options = {
-			name: 'condition[new_set_0][new_0][evaluation_rule]',
+			name: evaluation_rule_name,
 			items: operator,
 			initialItems: operator,
 			selected: selectedItem,
@@ -338,8 +317,8 @@ $(document).ready(function() {
 
 		var dataDropdownReact = btoa(JSON.stringify(options));
 
-		parensRow.find('.condition-rule-operator-wrap').append('<div data-input-value="condition-rule-operator" class="condition-rule-operator" data-dropdown-react='+dataDropdownReact+'></div>');
-		parensRow.find('.condition-rule-value-wrap').append('<input type="text" name="condition[new_set_0][new_0][value]">');
+		parensRow.find('.condition-rule-operator-wrap').append('<div data-input-value="'+evaluation_rule_name+'" class="condition-rule-operator" data-dropdown-react='+dataDropdownReact+'></div>');
+		parensRow.find('.condition-rule-value-wrap').append('<input type="text" name="'+value_name+'">');
 
 		Dropdown.renderFields();
 		parensRow.find('.condition-rule-operator-wrap .empty-select').hide();
@@ -360,47 +339,23 @@ $(document).ready(function() {
 
 	EE.cp.show_hide_value_field = function(firstSelectVal, secondSelectVal, parentRow) {
 		var enabled = true;
+		var evaluationRules;
 
-		// ENABLED THIRD COLUMN CONDITION
-		if (
-			(firstSelectVal == 'checkboxes' && secondSelectVal == 'equal') ||
-			(firstSelectVal == 'checkboxes' && secondSelectVal == 'notEqual') ||
-			(firstSelectVal == 'colorpicker') || (firstSelectVal == 'date') ||
-			(firstSelectVal == 'duration') || (firstSelectVal == 'email_address') ||
-			(firstSelectVal == 'multi_select' && secondSelectVal == 'equal') ||
-			(firstSelectVal == 'multi_select' && secondSelectVal == 'notEqual') ||
-			(firstSelectVal == 'radio' && secondSelectVal == 'equal') ||
-			(firstSelectVal == 'radio' && secondSelectVal == 'notEqual') ||
-			(firstSelectVal == 'rte') ||
-			(firstSelectVal == 'select' && secondSelectVal == 'equal') ||
-			(firstSelectVal == 'select' && secondSelectVal == 'notEqual') ||
-			(firstSelectVal == 'toggle') || (firstSelectVal == 'url') ||
-			(firstSelectVal == 'textarea') || (firstSelectVal == 'text')
-		) {
-			enabled = true;
-		}
+		$.each(EE.fields, function(i, val) {
+			if (firstSelectVal == val['field_type']) {
+				evaluationRules = val['evaluationRules'];
+			}
+		});
 
-		// DISABLED THIRD COLUMN CONDITION
-
-		if (
-			(firstSelectVal == 'checkboxes' && secondSelectVal == 'isEmpty') ||
-			(firstSelectVal == 'checkboxes' && secondSelectVal == 'isNotEmpty') ||
-			(firstSelectVal == 'file') ||
-			(firstSelectVal == 'multi_select' && secondSelectVal == 'isEmpty') ||
-			(firstSelectVal == 'multi_select' && secondSelectVal == 'isNotEmpty') ||
-			(firstSelectVal == 'radio' && secondSelectVal == 'isEmpty') ||
-			(firstSelectVal == 'radio' && secondSelectVal == 'isNotEmpty') ||
-			(firstSelectVal == 'select' && secondSelectVal == 'isEmpty') ||
-			(firstSelectVal == 'select' && secondSelectVal == 'isNotEmpty')
-		) {
-			enabled = false;
-		}
-
-		if (enabled) {
-			parentRow.find('.condition-rule-value-wrap').children().show();
-		} else {
-			parentRow.find('.condition-rule-value-wrap').children().hide();
-		}
+		$.each(evaluationRules, function(el, val) {
+			if (secondSelectVal == el) {
+				if (val['type'] == null) {
+					parentRow.find('.condition-rule-value-wrap').children().hide();
+				} else {
+					parentRow.find('.condition-rule-value-wrap').children().show();
+				}
+			}
+		})
 	}
 
 	$('body').on('mousemove', '.condition-rule-field-wrap .button-segment', function(e) {

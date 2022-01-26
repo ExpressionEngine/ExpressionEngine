@@ -659,7 +659,8 @@ class Fields extends AbstractFieldsController
                     'margin_top' => true,
                     'content' => ee('View')->make('ee:_shared/form/condition-rule-group')->render([
                         'fieldsList' => $fieldsWithEvaluationRules,
-                        'fieldConditionSets' => $field->FieldConditionSets
+                        'fieldConditionSets' => $field->FieldConditionSets,
+                        'errors' => $this->validationResult
                     ])
                 ),
             ),
