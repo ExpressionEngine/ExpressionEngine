@@ -70,8 +70,7 @@ class Login extends CP_Controller
             }
         }
         if (empty($return_path)) {
-            $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
-            $return_path = $member->getCPHomepageURL();
+            $return_path = ee()->session->getMember()->getCPHomepageURL();
         }
         if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
             $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
@@ -173,7 +172,7 @@ class Login extends CP_Controller
             return $this->authenticate();
         }
 
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $member = ee()->session->getMember();
         $return_path = $member->getCPHomepageURL();
 
         if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
@@ -490,8 +489,7 @@ class Login extends CP_Controller
                 $return_path = ee()->uri->reformat($base . AMP . $return_path, $base);
             }
         } else {
-            $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
-            $return_path = $member->getCPHomepageURL();
+            $return_path = ee()->session->getMember()->getCPHomepageURL();
         }
 
         $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
