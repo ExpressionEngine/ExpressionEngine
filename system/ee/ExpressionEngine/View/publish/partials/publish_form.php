@@ -34,9 +34,24 @@
 				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 			</div>
 		</div>
-		
+
+    <fieldset>
+      <div class="note-fieldtype">
+
+        <div class="note-fieldtype__icon">
+          <i class="fa fa-hand-point-right"></i>
+        </div>
+
+        <div class="note-fieldtype__content">
+
+          <p><strong>Sample Note:</strong> Vis eu recusabo no fugit affert usu qui philosophia debitis oportere facer at. Nullam diam est usu ut equidem liber consectetuer ne blandit ne an legimus vim. Probo alterum augue ex admodum ne voluptatum nam te tale velit erroribus te nonumy sed. Facer at tamquam in albucius eos mel ullamcorper per sea quaestio has eu an. Eam erat duo fugit et mei duo cu cu mea atqui.</p>
+
+        </div>
+      </div>
+    </fieldset>
+
 		<?=ee('CP/Alert')->getAllInlines(isset($pro_class) ? 'error' : null)?>
-		<?php foreach ($layout->getTabs() as $index => $tab): 
+		<?php foreach ($layout->getTabs() as $index => $tab):
 			if (ee('Request')->get('field_id') != '') {
 				$tabIsHidden = true;
 				foreach ($tab->getFields() as $field) {
@@ -49,7 +64,7 @@
 					continue;
 				}
 			}
-			
+
 			if (! $tab->isVisible()) {
                 continue;
             } ?>
