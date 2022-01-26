@@ -193,6 +193,18 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     }
 
     /**
+     * Remove some variables to get cleaner var_dump
+     *
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $footptint = get_object_vars($this);
+        unset($footptint['_facade']);
+        return $footptint;
+    }
+
+    /**
      * Get the short name
      *
      * @return String short name
