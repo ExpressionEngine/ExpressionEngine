@@ -308,6 +308,8 @@ class Member extends ContentModel
     protected $dismissed_pro_banner;
     protected $enable_mfa;
 
+    protected $_cpHomepageUrl;
+
     /**
      * Getter for legacy group_id property
      *
@@ -624,6 +626,10 @@ class Member extends ContentModel
      */
     public function getCPHomepageURL($site_id = null)
     {
+        if (!empty($this->_cpHomepageUrl)) {
+            return $this->_cpHomepageUrl;
+        }
+        
         $cp_homepage = null;
         $cp_homepage_custom = 'homepage';
 
@@ -659,24 +665,24 @@ class Member extends ContentModel
 
         switch ($cp_homepage) {
             case 'entries_edit':
-                $url = ee('CP/URL', 'publish/edit');
+                $this->_cpHomepageUrl = ee('CP/URL', 'publish/edit');
 
                 break;
             case 'publish_form':
-                $url = ee('CP/URL', 'publish/create/' . $cp_homepage_channel);
+                $this->_cpHomepageUrl = ee('CP/URL', 'publish/create/' . $cp_homepage_channel);
 
                 break;
             case 'custom':
-                $url = ee('CP/URL', $cp_homepage_custom);
+                $this->_cpHomepageUrl = ee('CP/URL', $cp_homepage_custom);
 
                 break;
             default:
-                $url = ee('CP/URL', 'homepage');
+                $this->_cpHomepageUrl = ee('CP/URL', 'homepage');
 
                 break;
         }
 
-        return $url;
+        return $this->_cpHomepageUrl;
     }
 
     /**

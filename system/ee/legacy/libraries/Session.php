@@ -651,18 +651,10 @@ class EE_Session
 
         // Assign Sites, Channel, Template, and Module Access Privs
         if (REQ == 'CP') {
-            $permission = new ExpressionEngine\Service\Permission\Permission(
-                ee('Model'),
-                $this->all_userdata(),
-                $this->member_model->getPermissions(),
-                $this->member_model->Roles->getDictionary('role_id', 'name'),
-                ee()->config->item('site_id')
-            );
-
-            $this->_setup_channel_privs($permission->isSuperAdmin());
+            $this->_setup_channel_privs($this->member_model->isSuperAdmin());
             $this->_setup_module_privs();
             $this->_setup_template_privs();
-            $this->_setup_assigned_sites($permission->isSuperAdmin());
+            $this->_setup_assigned_sites($this->member_model->isSuperAdmin());
         }
 
         // Does the member have admin privileges?
