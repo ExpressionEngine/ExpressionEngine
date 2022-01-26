@@ -1067,7 +1067,7 @@ abstract class EE_Fieldtype
     {
         $channels_options = ee()->cache->get('fieldtype/channel-field-list');
 
-        if (! empty($channels_options)) {
+        if ($channels_options !== false) {
             return $channels_options;
         }
 
