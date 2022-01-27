@@ -2,16 +2,14 @@
 <html>
     <body>
         {exp:search:total_results}
-            {if total_results}
-                <dl>
-                    <dt>total_results:</dt>
-                    <dd id="total-results__within-pair">{total_results}</dd>
-                </dl>
-            {/if}
+            <dl>
+                <dt>Total results:</dt>
+                <dd id="total-results__within-pair">{total_results}</dd>
+            </dl>
             {if no_results}
                 <dl>
-                    <dt>total_results:</dt>
-                    <dd id="total-results__within-pair--no-results">No results</dd>
+                    <dt>Total results:</dt>
+                    <dd id="total-results__within-pair--no-results">None</dd>
                 </dl>
             {/if}
         {/exp:search:total_results}

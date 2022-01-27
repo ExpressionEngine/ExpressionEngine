@@ -19,7 +19,7 @@ context('Search', () => {
     cy.get('.submit').first().click()
 
     cy.get('#total-results__within-pair').should('contain', '1')
-	cy.get('#total-results__within-pair--no-results').should('not.exist')
+    cy.get('#total-results__within-pair--no-results').should('not.exist')
     cy.get('#total-results__single-var').should('contain', '1')
     cy.get('#total-results__single-var--zero').should('not.exist')
   })
@@ -30,7 +30,7 @@ context('Search', () => {
     cy.get('.submit').first().click()
 
     cy.get('#total-results__within-pair').should('not.exist')
-    cy.get('#total-results__within-pair--no-results').should('contain', 'No results')
+    cy.get('#total-results__within-pair--no-results').should('contain', 'None')
     cy.get('#total-results__single-var').should('contain', '0')
     cy.get('#total-results__single-var--zero').should('exist')
   })
