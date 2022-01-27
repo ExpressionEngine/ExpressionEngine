@@ -48,19 +48,19 @@ class Builder
     /**
      *
      */
-    public function first()
+    public function first($cache = false)
     {
         $this->limit(1);
 
-        return $this->fetch()->first();
+        return $this->fetch($cache)->first();
     }
 
     /**
      *
      */
-    public function all()
+    public function all($cache = false)
     {
-        return $this->fetch()->all();
+        return $this->fetch($cache)->all();
     }
 
     /**
@@ -124,8 +124,20 @@ class Builder
     /**
      * Send a fetch to the datastore
      */
-    protected function fetch()
+    protected function fetch($cache = false)
     {
+        if ($cache) {
+            $copyOfThis = clone $this;
+            unset($copyOfThis->facade);
+            unset($copyOfThis->datastore);
+            $cacheKey = crc32(serialize($copyOfThis));
+            unset($copyOfThis);
+            $fetched = $this->getFromCache($cacheKey);
+            if ($fetched !== false) {
+                return $fetched;
+            }
+        }
+        
         if (! $this->filterStackIsEmpty()) {
             throw new \Exception('Unclosed filter group.');
         }
@@ -134,9 +146,15 @@ class Builder
             return new Result(array(), array(), array());
         }
 
-        return $this->datastore
+        $fetched = $this->datastore
             ->selectQuery($this)
             ->setFacade($this->facade);
+
+        if ($cache) {
+            $this->saveToCache($cacheKey, $fetched);
+        }
+
+        return $fetched;
     }
 
     /**
@@ -570,6 +588,22 @@ class Builder
     public function getFacade()
     {
         return $this->facade;
+    }
+
+    protected function saveToCache($key, $data)
+    {
+        if (isset(ee()->session)) {
+            ee()->session->set_cache(__CLASS__, $key, $data);
+        }
+    }
+
+    protected function getFromCache($key)
+    {
+        if (isset(ee()->session)) {
+            return ee()->session->cache(__CLASS__, $key, false);
+        }
+
+        return false;
     }
 }
 
