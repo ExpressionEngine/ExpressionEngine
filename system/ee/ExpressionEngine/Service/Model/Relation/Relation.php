@@ -60,9 +60,9 @@ abstract class Relation
      */
     public function __debugInfo()
     {
-        $footptint = get_object_vars($this);
-        unset($footptint['datastore']);
-        return $footptint;
+        $footprint = get_object_vars($this);
+        unset($footprint['datastore']);
+        return $footprint;
     }
 
     /**

@@ -46,11 +46,11 @@ class Association
     public function __debugInfo()
     {
         $footptint = get_object_vars($this);
-        unset($footptint['facade']);
-        if (empty($footptint['related'])) {
-            unset($footptint['diff']);
-            unset($footptint['model']);
-            unset($footptint['relation']);
+        unset($footprint['facade']);
+        if (empty($footprint['related'])) {
+            unset($footprint['diff']);
+            unset($footprint['model']);
+            unset($footprint['relation']);
         }
         return $footptint;
     }
