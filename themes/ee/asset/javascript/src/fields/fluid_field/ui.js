@@ -19,12 +19,17 @@
 			$('.fluid-field-templates :input').attr('disabled', 'disabled');
 		});
 
-	    var addField = function(e) {
+		$('.fluid').each(function() {
+			var savedFluidItems = $(this).find('.js-sorting-container .fluid__item').length;
+			$(this).attr('data-field-count', savedFluidItems);
+		});
+
+		var addField = function(e) {
 			var fluidField   = $(this).closest('.fluid'),
-			    fieldToAdd   = $(this).data('field-name'),
-			    fieldCount   = fluidField.attr('data-field-count'),
-			    fieldToClone = fluidField.find('.fluid-field-templates .fluid__item[data-field-name="' + fieldToAdd + '"]'),
-			    fieldClone   = fieldToClone.clone();
+				fieldToAdd   = $(this).data('field-name'),
+				fieldCount   = fluidField.attr('data-field-count'),
+				fieldToClone = fluidField.find('.fluid-field-templates .fluid__item[data-field-name="' + fieldToAdd + '"]'),
+				fieldClone   = fieldToClone.clone();
 
 			fieldCount++;
 
@@ -75,8 +80,10 @@
 			FluidField.fireEvent($(el).data('field-type'), 'remove', el);
 			$(document).trigger('entry:preview');
 
-			fluidCount--;
-			el.parents('.fluid').attr('data-field-count', fluidCount);
+			if (fluidCount > 0) {
+				fluidCount--;
+				el.parents('.fluid').attr('data-field-count', fluidCount);
+			}
 
 			el.remove();
 			e.preventDefault();
