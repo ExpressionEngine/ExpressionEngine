@@ -142,7 +142,7 @@ class Captcha
         // Determine angle and position
         $length = strlen($word);
         $angle = ($length >= 6) ? rand(-($length - 6), ($length - 6)) : 0;
-        $x_axis = rand(6, (360 / $length) - 16);
+        $x_axis = rand(6, (int) (360 / $length) - 16);
         $y_axis = ($angle >= 0) ? rand($img_height, $img_width) : rand(6, $img_height);
 
         // Create image
@@ -174,7 +174,7 @@ class Captcha
             $rad1 = $radius * (($i + 1) / $points);
             $x1 = ($rad1 * cos($theta)) + $x_axis;
             $y1 = ($rad1 * sin($theta)) + $y_axis;
-            imageline($im, $x, $y, $x1, $y1, $grid_color);
+            imageline($im, (int) $x, (int) $y, (int) $x1, (int) $y1, $grid_color);
             $theta = $theta - $thetac;
         }
 

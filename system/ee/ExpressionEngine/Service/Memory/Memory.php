@@ -81,7 +81,7 @@ class Memory
 
         list($memory_limit, $unit) = sscanf($memory_ini_setting, "%d %s");
 
-        switch (strtolower($unit)) {
+        switch (strtolower((string) $unit)) {
             // no breaks so it's progressively multiplied as needed
             case 'g':
                 $memory_limit *= 1024;

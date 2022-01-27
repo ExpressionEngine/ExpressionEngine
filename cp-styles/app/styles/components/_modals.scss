@@ -47,6 +47,12 @@
 }
 
 .modal-wrap {
+  &.modal-template-settings {
+    .panel {
+      padding: 0 15px;
+    }
+  }
+
   .m-close {
     height: 20px;
     top: 20px;
@@ -80,6 +86,7 @@
 	top: -12px;
   width: 16px;
   height: 24px;
+  z-index: 10;
 
 		&:before{
 			@extend %fa-icon;

@@ -21,8 +21,6 @@ use ExpressionEngine\Service\Member\Member;
  */
 class Members extends CP_Controller
 {
-    protected $base_url;
-
     public function __construct()
     {
         parent::__construct();
@@ -35,6 +33,10 @@ class Members extends CP_Controller
 
         $this->base_url = ee('CP/URL')->make('members');
         $this->stdHeader();
+
+        ee()->javascript->set_global([
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+        ]);
     }
 
     protected function generateSidebar($active = null)
@@ -1016,7 +1018,7 @@ class Members extends CP_Controller
                     $role = ee('Model')->get('Role', $value)->first();
 
                     if ($role) {
-                        $members->filter('member_id', 'IN', $role->getAllMembers()->pluck('member_id'));
+                        $members->filter('member_id', 'IN', $role->getAllMembersData('member_id'));
                     }
                 } else {
                     $members->filter($key, $value);
@@ -1713,7 +1715,7 @@ class Members extends CP_Controller
         }
 
         $members = ee('Model')->get('Member', $ids)
-            ->fields('member_id', 'username', 'screen_name', 'email', 'role_id')
+            ->fields('member_id', 'username', 'screen_name', 'email', 'role_id', 'pending_role_id')
             ->filter('role_id', 4)
             ->all();
 
@@ -1721,14 +1723,38 @@ class Members extends CP_Controller
             $template = ee('Model')->get('SpecialtyTemplate')
                 ->filter('template_name', 'validated_member_notify')
                 ->first();
+        }
 
-            foreach ($members as $member) {
+        $errors = [];
+        $approvedCount = 0;
+        foreach ($members as $member) {
+            $role_id = ee()->config->item('default_primary_role');
+            if ($member->pending_role_id != 0) {
+                $pendingRole = ee('Model')->get('Role', $member->pending_role_id)->fields('role_id', 'name')->first();
+                if (!empty($pendingRole)) {
+                    $role_id = $pendingRole->role_id;
+                } else {
+                    $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username, $pendingRole->name);
+                    continue;
+                }
+            }
+            $role = ee('Model')->get('Role', $role_id)->fields('role_id', 'name', 'is_locked')->first();
+            if (empty($role)) {
+                $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username, $role->name);
+                continue;
+            }
+            if ($role->is_locked == 'y') {
+                $errors[] = sprintf(lang('cannot_activate_member_role_is_locked'), $member->username, $role->name);
+                continue;
+            }
+            $member->role_id = $role_id;
+            $member->save();
+            $approvedCount++;
+
+            if (ee()->config->item('approved_member_notification') == 'y') {
                 $this->pendingMemberNotification($template, $member, array('email' => $member->email));
             }
         }
-
-        $members->role_id = ee()->config->item('default_primary_role');
-        $members->save();
 
         /* -------------------------------------------
         /* 'cp_members_validate_members' hook.
@@ -1745,19 +1771,29 @@ class Members extends CP_Controller
         // Update
         ee()->stats->update_member_stats();
 
-        if ($members->count() == 1) {
+        if ($approvedCount == 1) {
             ee('CP/Alert')->makeInline('view-members')
                 ->asSuccess()
                 ->withTitle(lang('member_approved_success'))
                 ->addToBody(sprintf(lang('member_approved_success_desc'), $members->first()->username))
                 ->defer();
-        } else {
+        } elseif ($approvedCount > 0) {
             ee('CP/Alert')->makeInline('view-members')
                 ->asSuccess()
                 ->withTitle(lang('members_approved_success'))
                 ->addToBody(lang('members_approved_success_desc'))
                 ->addToBody($members->pluck('username'))
                 ->defer();
+        }
+
+        if (count($errors) > 0) {
+            $alert = ee('CP/Alert')->makeBanner('members-error')
+                ->asWarning()
+                ->withTitle(lang('members_approve_error'));
+            foreach ($errors as $error) {
+                $alert->addToBody($error);
+            }
+            $alert->defer();
         }
 
         ee()->functions->redirect(ee('CP/URL', 'members/pending'));

@@ -25,7 +25,7 @@ class DashboardLayout extends Model
     protected $layout_id;
     protected $member_id;
     protected $role_id;
-    protected $order;
+    protected $order = '';
 
     /**
      * Generate dashboard html

@@ -1,15 +1,16 @@
 <li class="js-nested-item" data-id="<?=$category->data->cat_id?>">
-	<div class="list-item list-item--action <?php if (ee()->session->flashdata('highlight_id') == $category->data->cat_id): ?> list-item--selected<?php endif ?>">
+	<div class="list-item list-item--action <?php if (ee()->session->flashdata('highlight_id') == $category->data->cat_id): ?> list-item--selected<?php endif ?>" style="position: relative;">
 		<?php if ($can_edit_categories): ?>
 		<div class="list-item__handle"><i class="fas fa-bars"></i></div>
 		<?php endif; ?>
+    <div class="list-item__secondary" style="left: 51px;">
+      #<?=$category->data->cat_id?> <span class="faded">/</span> <span class="click-select-text"><?=$category->data->cat_url_title?></span>
+    </div>
 		<a class="list-item__content" <?php if ($can_edit_categories): ?>href="<?=ee('CP/URL')->make('categories/edit/' . $category->data->group_id . '/' . $category->data->cat_id)?>"<?php endif; ?>>
 			<div class="list-item__title">
 				<?=ee('Format')->make('Text', $category->data->cat_name)->convertToEntities()?>
 			</div>
-			<div class="list-item__secondary">
-				#<?=$category->data->cat_id?> <span class="faded">/</span> <?=$category->data->cat_url_title?>
-			</div>
+			<div class="list-item__secondary">&#160;</div>
 		</a>
 		<?php if ($can_delete_categories): ?>
 		<fieldset class="list-item__checkbox" role="group" arial-label="<?=lang('select') . ' ' . $category->data->cat_name?>">

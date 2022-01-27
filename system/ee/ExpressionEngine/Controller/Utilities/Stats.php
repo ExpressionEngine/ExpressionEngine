@@ -210,6 +210,12 @@ class Stats extends Utilities
                 ee()->db->where_not_in('member_id', array_keys($member_entries));
                 ee()->db->update('members', $data);
             }
+
+            // re-save every role since that will trigger members recount automatically
+            foreach (ee('Model')->get('Role')->all() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
         }
 
         if (in_array('channel_titles', $this->sources)) {

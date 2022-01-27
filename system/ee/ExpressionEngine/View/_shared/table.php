@@ -152,7 +152,7 @@
 								<?php if (isset($column['href'])): ?>
 								<td><span class="collapsed-label"><?=$column_name?></span><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
 								<?php else: ?>
-								<td><span class="collapsed-label"><?=$column_name?></span><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
+								<td><span class="collapsed-label"><?=$column_name?></span><?=htmlentities((string) $column['content'], ENT_QUOTES, 'UTF-8')?></td>
 								<?php endif; ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td class="app-listing__cell">

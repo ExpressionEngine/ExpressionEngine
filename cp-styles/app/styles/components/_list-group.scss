@@ -203,6 +203,18 @@
 .list-item__secondary {
 	color: color(text-secondary);
 	font-size: 0.9em;
+  position: absolute;
+  top: 34px;
+  left: 15px;
+}
+
+.list-item__content .list-item__secondary {
+  position: inherit;
+  visibility: hidden;
+}
+
+.list-group .list-item__secondary {
+	visibility: visible;
 }
 
 .list-item__body {

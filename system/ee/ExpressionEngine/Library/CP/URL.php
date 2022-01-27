@@ -186,32 +186,51 @@ class URL implements \Serializable
     }
 
     /**
-     * Serializes the object by JSON encoding
-     *
-     * @return string A JSON encoded string.
+     * Serializes the object
      */
+    public function __serialize()
+    {
+        return $this->buildSerializeArray();
+    }
+    // legacy, keeping for PHP 5.6 support
     public function serialize()
     {
-        $serialize = array(
+        return serialize($this->buildSerializeArray());
+    }
+
+    private function buildSerializeArray()
+    {
+        return array(
             'path' => $this->path,
             'session_id' => $this->session_id,
             'qs' => $this->qs,
             'base' => $this->base,
             'requested_uri' => $this->requested_uri
         );
-
-        return json_encode($serialize);
     }
 
     /**
-     * Unserializes the data by JSON decoding.
+     * Unserializes the data
      *
-     * @return bool FALSE if serialized data was not JSON encoded; TRUE otherwise
+     * @return bool FALSE if serialized data was not serialized; TRUE otherwise
+     */
+    public function __unserialize($serialized)
+    {
+        return $this->processUnserialize($serialized);
+    }
+
+    /**
+     * legacy, keeping for PHP 5.6 support
+     *
+     * @return bool
      */
     public function unserialize($serialized)
     {
-        $data = json_decode($serialized, true);
+        return $this->processUnserialize(unserialize($serialized));
+    }
 
+    private function processUnserialize($data)
+    {
         if (! is_array($data)) {
             return false;
         }

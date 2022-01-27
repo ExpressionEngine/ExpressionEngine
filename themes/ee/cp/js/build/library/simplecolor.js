@@ -60,7 +60,7 @@ var SimpleColor = /** @class */ (function () {
         get: function () {
             return this._rgba;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(SimpleColor.prototype, "rgb255", {
@@ -68,7 +68,7 @@ var SimpleColor = /** @class */ (function () {
         get: function () {
             return { r: Math.round(this._rgba.r * 255), g: Math.round(this._rgba.g * 255), b: Math.round(this._rgba.b * 255), a: this._rgba.a };
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(SimpleColor.prototype, "hsv", {
@@ -76,7 +76,7 @@ var SimpleColor = /** @class */ (function () {
         get: function () {
             return SimpleColor.rgbToHsv(this._rgba);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(SimpleColor.prototype, "brightness", {
@@ -85,7 +85,7 @@ var SimpleColor = /** @class */ (function () {
             var rgb255 = this.rgb255;
             return (rgb255.r * 299 + rgb255.g * 587 + rgb255.b * 114) / 1000;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(SimpleColor.prototype, "hexStr", {
@@ -98,7 +98,7 @@ var SimpleColor = /** @class */ (function () {
             };
             return '#' + componentToHex(rgb255.r) + componentToHex(rgb255.g) + componentToHex(rgb255.b);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(SimpleColor.prototype, "rgbaStr", {
@@ -107,7 +107,7 @@ var SimpleColor = /** @class */ (function () {
             var rgb255 = this.rgb255;
             return 'rgba(' + rgb255.r + ', ' + rgb255.g + ', ' + rgb255.b + ', ' + (+this._rgba.a.toFixed(2)) + ')';
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /** Returns true or false if this color is considered dark */
@@ -147,7 +147,7 @@ var SimpleColor = /** @class */ (function () {
         get: function () {
             return new SimpleColor({ r: 0, g: 0, b: 0, a: 1 });
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(SimpleColor, "white", {
@@ -155,7 +155,7 @@ var SimpleColor = /** @class */ (function () {
         get: function () {
             return new SimpleColor({ r: 1, g: 1, b: 1, a: 1 });
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /** Tries to get the rgba values from a css rgb() or rgba() string */
