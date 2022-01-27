@@ -17,10 +17,9 @@ context('Search', () => {
     cy.authVisit('index.php/search/simple_form');
     cy.get('#keywords').clear().type('ExpressionEngine')
     cy.get('.submit').first().click()
-    cy.get('h3:contains(Results)').should('exist')
-    cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
-    cy.get('body').should('not.contain', 'Welcome to the Example Site!')
+
     cy.get('#total-results__within-pair').should('contain', '1')
+	cy.get('#total-results__within-pair--no-results').should('not.exist')
     cy.get('#total-results__single-var').should('contain', '1')
     cy.get('#total-results__single-var--zero').should('not.exist')
   })
@@ -29,10 +28,9 @@ context('Search', () => {
     cy.authVisit('index.php/search/simple_form');
     cy.get('#keywords').clear().type('WordPress')
     cy.get('.submit').first().click()
-    cy.get('h3:contains(Results)').should('not.exist')
-    cy.get('body').should('not.contain', 'Getting to Know ExpressionEngine')
-    cy.get('body').should('contain', 'Nothing found')
+
     cy.get('#total-results__within-pair').should('not.exist')
+    cy.get('#total-results__within-pair--no-results').should('contain', 'No results')
     cy.get('#total-results__single-var').should('contain', '0')
     cy.get('#total-results__single-var--zero').should('exist')
   })
