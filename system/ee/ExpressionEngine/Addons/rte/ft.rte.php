@@ -211,7 +211,8 @@ class Rte_ft extends EE_Fieldtype
             'rows' => 10,
             'data-config' => $configHandle,
             'class' => ee('rte:' . $serviceName)->getClass(),
-            'data-defer' => ($defer ? 'y' : 'n')
+            'data-defer' => ($defer ? 'y' : 'n'),
+            'aria-label' => 'rte textarea field'
         );
 
         return form_textarea($field);
@@ -274,7 +275,8 @@ class Rte_ft extends EE_Fieldtype
             'name' => $this->field_name,
             'value' => $data,
             'rows' => 10,
-            'data-config' => $configHandle
+            'data-config' => $configHandle,
+            'aria-label' => "textarea field",
         );
 
         return form_textarea($field);

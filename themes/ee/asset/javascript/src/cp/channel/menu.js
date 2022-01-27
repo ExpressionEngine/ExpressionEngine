@@ -23,7 +23,8 @@ $(document).ready(function () {
 	function bindChannelSetImport() {
 		var fileInput = $('<input/>', {
 			type: 'file',
-			name: 'set_file'
+			name: 'set_file',
+			'aria-label': 'set file'
 		})
 
 		var channelSetForm = $('<form/>', {

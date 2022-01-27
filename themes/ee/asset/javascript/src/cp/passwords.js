@@ -19,7 +19,7 @@ $(document).ready(function() {
         var passwordInputContainer = passwordInput.closest('fieldset'),
             eyeOpen = EE.PATH_CP_GBL_IMG + 'eye-open.svg',
             eyeClosed = EE.PATH_CP_GBL_IMG + 'eye-closed.svg',
-            eyeImg = '<img src="' + eyeOpen + '" class="eye js-show-password" />',
+            eyeImg = '<img src="' + eyeOpen + '" class="eye js-show-password" alt=" show and hide password button" />',
             eyeIsOpen = false
 
         $(passwordInputContainer).css({'position': 'relative'})
