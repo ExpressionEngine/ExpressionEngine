@@ -53,6 +53,10 @@ module.exports = (on, config) => {
     on('task', {
         'db:seed': () => {
             fs.delete('../../system/user/cache/default_site/');
+<<<<<<< HEAD
+=======
+            // return db.seed(config.env.DB_DUMP);
+>>>>>>> 218f32c601 (Fix testing config issues)
             var renameInstaller = false;
             if (!fs.exists('../../system/ee/installer')) {
                 renameInstaller = true;
@@ -216,6 +220,12 @@ module.exports = (on, config) => {
     on('task', {
         'installer:create_config': () => {
             return installer.create_config()
+        }
+    })
+
+    on('task', {
+        'installer:test': () => {
+            return 'testing';
         }
     })
 

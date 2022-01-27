@@ -33,6 +33,8 @@ class Installer {
 
 	set_base_url(baseUrl) {
 		let config_contents = fs.readFileSync(path.resolve(config), "utf8");
+        // Make sure baseUrl has trailing slash
+        baseUrl = baseUrl.replace(/\/?$/, '/');
 		config_contents = config_contents.replace(
 			new RegExp('http://localhost:8888/', 'g'),
 			baseUrl
@@ -48,7 +50,7 @@ class Installer {
 	// @param [Type] file The path to the config file you want to use, set to blank to only move existing file
 	// @return [void]
 	replace_config(file = 'support/config/config.php', options = { attempt: 0 }) {
-		if (typeof(options.attempt)==='undefined') {
+        if (typeof(options.attempt)==='undefined') {
 			options.attempt = 0;
 		}
 
@@ -80,16 +82,22 @@ class Installer {
 
 		// Check for database options
 		if (typeof(options.database)!=='undefined') {
+            console.log('replacing database');
 			config_contents = fs.readFileSync(path.resolve(config), "utf8");
+            // config_contents = config_contents.replace(new RegExp('root', 'g'), 'NOOOOOOO');
 			for (const property in options.database) {
-				config_contents = config_contents.replace(
-					/'${property}' => .*?,/,
-					"'${property}' => '${options.database[property]}',"
-				)
+                var find = new RegExp(`'${property}' => .*?,`, 'g');
+                var replace = `'${property}' => '${options.database[property]}',`;
+                // console.log({
+                //     find,
+                //     replace,
+                //     match: config_contents.match(find) !== null,
+                //     result: config_contents.replace(find, replace)
+                // });
+                config_contents = config_contents.replace(find, replace)
 			}
 		}
-		//console.log(config_contents);
-		for (const property in options) {			
+		for (const property in options) {
 			if (property != 'database' && property != 'app_version') {
 				var rege = new RegExp("\\$config\\['" + property + "'\]\\s+=\\s+.*?;" , "g");
 				config_contents = config_contents.replace(
