@@ -1,8 +1,28 @@
 
 <html>
     <body>
-        {exp:search:search_results}
+        {exp:search:total_results}
+            {if total_results}
+                <dl>
+                    <dt>total_results:</dt>
+                    <dd id="total-results__within-pair">{total_results}</dd>
+                </dl>
+            {/if}
+        {/exp:search:total_results}
 
+        <dl>
+            <dt>total_results:</dt>
+            <dd id="total-results__single-var">{exp:search:total_results}</dd>
+        </dl>
+
+        {if '{exp:search:total_results}'=='0'}
+            <dl>
+                <dt>total_results:</dt>
+                <dd id="total-results__single-var--zero">{exp:search:total_results}</dd>
+            </dl>
+        {/if}
+
+        {exp:search:search_results}
             {if no_results} Nothing found {/if}
 
             <h3>Results:</h3>

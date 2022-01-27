@@ -13,6 +13,30 @@ context('Search', () => {
     cy.authVisit('admin.php?/cp/design')
   })
 
+  it('search and get results', function(){
+    cy.authVisit('index.php/search/simple_form');
+    cy.get('#keywords').clear().type('ExpressionEngine')
+    cy.get('.submit').first().click()
+    cy.get('h3:contains(Results)').should('exist')
+    cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
+    cy.get('body').should('not.contain', 'Welcome to the Example Site!')
+    cy.get('#total-results__within-pair').should('contain', '1')
+    cy.get('#total-results__single-var').should('contain', '1')
+    cy.get('#total-results__single-var--zero').should('not.exist')
+  })
+
+  it('search and get no results (on same page)', function(){
+    cy.authVisit('index.php/search/simple_form');
+    cy.get('#keywords').clear().type('WordPress')
+    cy.get('.submit').first().click()
+    cy.get('h3:contains(Results)').should('not.exist')
+    cy.get('body').should('not.contain', 'Getting to Know ExpressionEngine')
+    cy.get('body').should('contain', 'Nothing found')
+    cy.get('#total-results__within-pair').should('not.exist')
+    cy.get('#total-results__single-var').should('contain', '0')
+    cy.get('#total-results__single-var--zero').should('exist')
+  })
+
   it('searches everywhere', function(){
     cy.authVisit('admin.php?/cp/design/manager/search');
     cy.get('a:contains(simple_form)').click()
@@ -61,7 +85,7 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('exist')
         cy.get('body').should('contain', 'About the Label')
         cy.hasNoErrors()
-        
+
     })
 
     it('exclude channel', function(){
