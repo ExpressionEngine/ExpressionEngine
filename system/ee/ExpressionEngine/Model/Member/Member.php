@@ -1102,18 +1102,26 @@ class Member extends ContentModel
      */
     public function getAssignedModules()
     {
-        if ($this->isSuperAdmin()) {
-            return $this->getModelFacade()->get('Module')->all();
-        }
+        $cache_key = "Member/{$this->member_id}/Modules";
 
-        $modules = [];
-        foreach ($this->getAllRoles() as $role) {
-            foreach ($role->AssignedModules as $module) {
-                $modules[$module->getId()] = $module;
+        $modulesCollection = $this->getFromCache($cache_key);
+
+        if ($modulesCollection === false) {
+            if ($this->isSuperAdmin()) {
+                $modulesCollection = $this->getModelFacade()->get('Module')->all();
+            } else {
+                $modules = [];
+                foreach ($this->getAllRoles() as $role) {
+                    foreach ($role->AssignedModules as $module) {
+                        $modules[$module->getId()] = $module;
+                    }
+                }
+                $modulesCollection = new Collection($modules);
             }
+            $this->saveToCache($cache_key, $modulesCollection);
         }
 
-        return new Collection($modules);
+        return $modulesCollection;
     }
 
     /**
