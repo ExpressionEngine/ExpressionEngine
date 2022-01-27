@@ -1191,26 +1191,23 @@ class Channel
         /**------*/
 
         if ($channel = ee()->TMPL->fetch_param('channel')) {
-            $xql = "SELECT channel_id FROM exp_channels WHERE ";
-
-            $str = ee()->functions->sql_andor_string($channel, 'channel_name');
-
-            if (substr($str, 0, 3) == 'AND') {
-                $str = substr($str, 3);
+            $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true)->getDictionary('channel_name', 'channel_id');
+            if (strpos($channel, '|') !== false) {
+                $options = preg_split('/\|/', $channel, -1, PREG_SPLIT_NO_EMPTY);
+                $options = array_map('trim', $options);
+            } elseif (! empty($channel)) {
+                $options = [$channel];
+            }
+            $channel_ids = array();
+            foreach ($options as $channel_name) {
+                if (isset($channels[$channel_name])) {
+                    $channel_ids[] = $channels[$channel_name];
+                }
             }
 
-            $xql .= $str;
-
-            $query = ee()->db->query($xql);
-
-            if ($query->num_rows() == 0) {
+            if (empty($channel_ids)) {
                 return '';
             } else {
-                $channel_ids = array();
-                foreach ($query->result_array() as $row) {
-                    $channel_ids[] = $row['channel_id'];
-                }
-
                 $sql .= "AND t.channel_id IN (" . implode(',', $channel_ids) . ") ";
             }
         }

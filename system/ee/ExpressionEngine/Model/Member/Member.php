@@ -944,22 +944,6 @@ class Member extends ContentModel
         return (bool) preg_match('/^redacted\d+$/', $this->email);
     }
 
-    protected function saveToCache($key, $data)
-    {
-        if (isset(ee()->session)) {
-            ee()->session->set_cache(__CLASS__, $key, $data);
-        }
-    }
-
-    protected function getFromCache($key)
-    {
-        if (isset(ee()->session)) {
-            return ee()->session->cache(__CLASS__, $key, false);
-        }
-
-        return false;
-    }
-
     /**
      * Get all roles assigned to member, including Primary Role, extra roles and roles assigned via Role Groups
      * @param  bool $cache Whether to cache roles during this request
