@@ -27,7 +27,7 @@ context('File Manager / Crop File', () => {
         cy.get('.sidebar__link').contains('About').click()
         cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:first-child em').invoke('text').as('file_name')
         //cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4) ul.toolbar li.crop').click()
-        cy.get('a[title="Crop"]').first().click({force: true})
+        cy.get('a[title="Crop button"]').first().click({force: true})
         // page = CropFile.new
         // @return = FileManager.new
         // @file_name = page.load

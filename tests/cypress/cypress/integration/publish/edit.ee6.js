@@ -35,7 +35,7 @@ context('Publish Page - Edit', () => {
       cy.get('input[name=title]').invoke('val').then((val) => { expect(val).to.be.equal("Getting to Know ExpressionEngine") })
 
       cy.get('[rel=t-autosaves]').click();
-      cy.get('a[title=View]').click()
+      cy.get('a[title="View button"]').click()
       cy.get('input[name=title]').invoke('val').then((val) => { expect(val).to.be.equal("Auto Saved Title") })
 
       cy.get('[rel=t-autosaves]').click();

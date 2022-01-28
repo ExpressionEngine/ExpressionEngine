@@ -40,7 +40,7 @@
 
 				<?php if ((!isset($disable_action) || empty($disable_action)) && isset($row['selection'])): ?>
 					<fieldset class="list-item__checkbox">
-						<legend class="sr-only">Select <?=form_prep($value)?></legend>
+						<legend class="sr-only">Select <?=ee('Format')->make('Text', $row['label'])->convertToEntities()?></legend>
 						<input
 							name="<?=form_prep($row['selection']['name'])?>"
 							value="<?=form_prep($row['selection']['value'])?>"

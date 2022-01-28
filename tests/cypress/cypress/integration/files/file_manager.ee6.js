@@ -275,7 +275,7 @@ context('File Manager', () => {
 		beforeEach_all_files();
 
 		//page.get('manage_actions').eq(0).find('li.edit a').click()
-		cy.get('a[title="Edit"]').filter(':visible').first().click()
+		cy.get('a[title="Edit button"]').filter(':visible').first().click()
 		cy.hasNoErrors()
 
 
@@ -284,7 +284,7 @@ context('File Manager', () => {
 	it('can crop an image', () => {
 		beforeEach_all_files();
 		//page.get('manage_actions').eq(0).find('li.crop a').click()
-		cy.get('a[title="Crop"]').filter(':visible').first().click()
+		cy.get('a[title="Crop button"]').filter(':visible').first().click()
 		cy.hasNoErrors()
 	});
 

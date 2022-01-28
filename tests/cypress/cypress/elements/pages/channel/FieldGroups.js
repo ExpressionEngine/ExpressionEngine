@@ -13,7 +13,7 @@ class FieldGroups extends ControlPanel {
 
             "field_groups": '.folder-list > div',
             //"field_groups_edit": '.folder-list div li.edit a',
-            "field_groups_edit": 'a[title="Edit"]',
+            "field_groups_edit": 'a[title="Edit button"]',
 
             "field_groups_fields": '.folder-list > div > a',
         })

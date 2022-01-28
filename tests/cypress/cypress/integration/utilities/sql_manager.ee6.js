@@ -39,6 +39,7 @@ context('SQL manager', () => {
 			let x = [];
 			var z;
 			for(z=0; z< groups.length;z++){
+				console.log(groups[z]);
 				x.push(groups[z]["Tables_in_ee-test"])
 			}
 			console.log(x);
@@ -163,7 +164,7 @@ context('SQL manager', () => {
 
 		//page.get('manage_links').eq(0).click()AJ
 
-		cy.get('a[title="View"]').first().click()
+		cy.get('a[title="View button"]').first().click()
 
 		cy.hasNoErrors()
 		cy.get('.breadcrumb').contains('SQL Manager')

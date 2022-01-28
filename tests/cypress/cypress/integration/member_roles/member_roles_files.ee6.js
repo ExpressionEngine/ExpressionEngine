@@ -44,7 +44,8 @@ context('Test Member roles Channels ', () => {
 		cy.get('#fieldset-file_upload_directories .checkbox-label:nth-child(2) > input').click();
 		cy.get('#fieldset-file_upload_directories .checkbox-label:nth-child(1) > input').click();
 
-	   cy.get('button').contains('save').eq(0).click()
+		cy.get('.form-btns-top .saving-options').click()
+		cy.get('button').contains('Save & Close').eq(0).click()
 	})
 
 	it('can login now and can view files but nothing else', () => {

@@ -129,7 +129,7 @@ context('Template Manager', () => {
 
            // page.get('template_groups').eq(0).find('.toolbar .edit a').click() AJ
 
-           cy.get('a[title="Edit"]').first().click({force: true})
+           cy.get('a[title="Edit button"]').first().click({force: true})
 
 
             cy.hasNoErrors()
@@ -167,7 +167,7 @@ context('Template Manager', () => {
         it('can change the settings for a template', function() {
 
 
-            cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
+            cy.get('.table-responsive a[title="Edit button"]').first().click({force: true})
 
             cy.get('button').contains('Settings').first().click()
             let form = new TemplateEdit
@@ -195,7 +195,7 @@ context('Template Manager', () => {
             cy.eeConfig({ item: 'allow_php', value: 'y' }).then((config) => {
                 cy.wait(5000);
                 cy.authVisit(page.url);
-                cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
+                cy.get('.table-responsive a[title="Edit button"]').first().click({force: true})
 
                 cy.get('button').contains('Settings').first().click()
                 let form = new TemplateEdit
@@ -215,7 +215,7 @@ context('Template Manager', () => {
         })
 
         it('should validate the settings form', function() {
-            cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
+            cy.get('.table-responsive a[title="Edit button"]').first().click({force: true})
             cy.get('button').contains('Settings').click()
 
             let form = new TemplateEdit

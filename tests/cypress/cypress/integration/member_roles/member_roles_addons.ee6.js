@@ -50,9 +50,7 @@ context('Test Member roles Addons ', () => {
 		//cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(2) > input').click();
 		//cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(3) > input').click(); //lets them do anything with addons
 
-
-
-		cy.get('button').contains('save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 	})
 
 	it('Can see the Addons now but nothing else',() => {
