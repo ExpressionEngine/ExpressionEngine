@@ -92,7 +92,7 @@ class Pages_tab
                 'field_required' => 'n',
                 'field_data' => $pages_uri,
                 'field_text_direction' => 'ltr',
-                'field_maxl' => 100,
+                'field_maxl' => 200,
                 'field_instructions' => '',
                 'field_placeholder' => lang('example_uri')
             ),
