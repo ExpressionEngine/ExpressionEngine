@@ -533,7 +533,7 @@ abstract class AbstractPublish extends CP_Controller
             'attrs' => 'disabled="disabled"'
         ];
 
-        if ($this->entryCloningEnabled($entry)) {
+        if (!$entry->isNew() && $this->entryCloningEnabled($entry)) {
             $buttons[] = [
                 'name' => 'submit',
                 'type' => 'submit',
