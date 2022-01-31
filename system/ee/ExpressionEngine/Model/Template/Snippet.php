@@ -268,8 +268,8 @@ class Snippet extends FileSyncedModel
             if ($item->isFile() && $item->getExtension() == 'html') {
                 $name = $item->getBasename('.html');
 
-                // limited to 50 characters in db
-                if (strlen($name) > 50) {
+                // limited to 75 characters in db
+                if (strlen($name) > 75) {
                     continue;
                 }
 
