@@ -253,7 +253,7 @@ class EE_Config
 
         // ee()->config is loaded before ee()->db, but the site_prefs() all happens after ee()->db
         // is loaded, so we do this check here instead of in _initialize().
-        if (! array_key_exists('multiple_sites_enabled', $this->default_ini) && ee()->db->table_exists('config')) {
+        if (! array_key_exists('multiple_sites_enabled', $this->default_ini) && (! INSTALLER || ee()->db->table_exists('config'))) {
             $msm = ee('Model')->get('Config')
                 ->filter('site_id', 0)
                 ->filter('key', 'multiple_sites_enabled')
@@ -294,7 +294,7 @@ class EE_Config
         // Fetch the query result array
         $row = $query->row_array();
 
-        if (ee()->db->table_exists('config')) {
+        if (! INSTALLER || ee()->db->table_exists('config')) {
             $site_configs = ee('Model')->get('Config')
                 ->filter('site_id', 'IN', [0, $row['site_id']])
                 ->all()
@@ -793,7 +793,7 @@ class EE_Config
 
             $this->_update_pages($site_id, $new_values, $query);
 
-            if (ee()->db->table_exists('config')) {
+            if (! INSTALLER || ee()->db->table_exists('config')) {
                 if (empty($new_values)) {
                     $configs = [];
                 } else {
