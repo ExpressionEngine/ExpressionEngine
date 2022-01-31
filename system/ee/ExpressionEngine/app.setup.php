@@ -11,6 +11,7 @@
 use ExpressionEngine\Library;
 use ExpressionEngine\Library\Filesystem;
 use ExpressionEngine\Library\Curl;
+use ExpressionEngine\Library\Emoji;
 use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
@@ -199,8 +200,6 @@ $setup = [
                 'foreign_chars' => ee()->config->loadFile('foreign_chars'),
                 'stopwords' => ee()->config->loadFile('stopwords'),
                 'word_separator' => ee()->config->item('word_separator'),
-                'emoji_regex' => EMOJI_REGEX,
-                'emoji_map' => ee()->config->loadFile('emoji'),
             ];
 
             return new Formatter\FormatterFactory(ee()->lang, ee()->session, $config_items, $format_opts);
@@ -468,6 +467,10 @@ $setup = [
             $db->getLog()->saveQueries($save_queries);
 
             return $db;
+        },
+
+        'Emoji' => function ($ee) {
+            return new Emoji\Emoji();
         },
 
         'Encrypt/Cookie' => function ($ee) {

@@ -458,7 +458,6 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
         ];
 
         $config['stopwords'] = ['a', 'and', 'into', 'to'];
-        $config['emoji_regex'] = EMOJI_REGEX;
 
         $text = (string) $this->format($content, $config)->urlSlug($params);
         $this->assertEquals($expected, $text);
