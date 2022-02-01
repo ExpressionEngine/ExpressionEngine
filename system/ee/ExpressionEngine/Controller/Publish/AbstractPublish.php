@@ -408,7 +408,17 @@ abstract class AbstractPublish extends CP_Controller
         if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
             $action = 'clone';
             $entry->markAsDirty();
-            $entry->status = 'closed';
+            $entry->set([
+                'status' => 'closed',
+                'recent_comment_date' => null,
+                'comment_total' => 0,
+                'forum_topic_id' => null,
+                'view_count_one' => 0,
+                'view_count_two' => 0,
+                'view_count_three' => 0,
+                'view_count_four' => 0,
+                'entry_date' => ee()->localize->now,
+            ]);
         }
         $entry->save();
 
