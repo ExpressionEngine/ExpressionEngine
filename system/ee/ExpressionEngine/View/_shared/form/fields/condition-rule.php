@@ -3,7 +3,7 @@
 	$rule = $rule;
 	$hiddenTemplate = isset($hiddenTemplate) ? true : false;
 ?>
-<div class="rule <?php if ($hiddenTemplate):?> rule-blank-row hidden <?php endif; ?>" >
+<div class="rule <?php if ($hiddenTemplate):?>rule-blank-row hidden <?php endif; ?>" >
 	<div class="condition-rule-field-wrap" data-new-rule-row-id="new_rule_row_<?=$setId?>">
 		<?=$this->embed('_shared/form/fields/dropdown', $rule)?>
 	</div>

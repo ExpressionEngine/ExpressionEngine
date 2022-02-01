@@ -7,7 +7,7 @@ foreach($fieldsList as $fieldLabel) {
 	$fieldLabelArr[$fieldLabel['field_id']] = $fieldLabel['field_label'];
 }
 
-var_dump('errors', $errors);
+// var_dump('errors', $errors);
 
 $rule = [
 	'choices' => ee('View/Helpers')->normalizedChoices($fieldLabelArr),
@@ -42,6 +42,8 @@ if (!empty($fieldConditionSets)) {
 	}
 }
 var_dump($data);
+
+ee()->javascript->set_global('conditionData', $data);
 ?>
 <div class="field-conditionset-wrapper">
 	<?php $this->embed('ee:_shared/form/fields/condition-set', [

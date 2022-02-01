@@ -13,7 +13,7 @@
 	<div class="field-conditionset">
 		<h4>
 			Match
-				<?=$this->embed('_shared/form/fields/dropdown', $match)?>
+				<span class="match-react-element"><?=$this->embed('_shared/form/fields/dropdown', $match)?></span>
 			conditions:
 		</h4>
 
