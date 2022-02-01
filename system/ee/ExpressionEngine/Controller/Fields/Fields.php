@@ -668,7 +668,7 @@ class Fields extends AbstractFieldsController
 
         array_push($sections[0], $ruleGroupsField);
 
-        ee()->javascript->set_global('fields', $fieldsWithEvaluationRules);
+        ee()->javascript->set_global('fieldsInfo', $fieldsWithEvaluationRules);
 
         ee()->javascript->output('$(document).ready(function () {
             EE.cp.fieldToggleDisable();
