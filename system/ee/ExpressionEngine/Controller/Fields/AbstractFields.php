@@ -179,7 +179,7 @@ abstract class AbstractFields extends CP_Controller
                         }
                     }
 
-                    $conditions[$rule_index][] = $fieldCondition;
+                    $conditions[$set_index][$rule_index] = $fieldCondition;
                     $rule_index++;
                 }
             }
