@@ -62,9 +62,15 @@ defined('SYSDIR') || define('SYSDIR', basename($system_path));
 // The $debug value as a constant for global access
 defined('DEBUG') || define('DEBUG', $debug);
 
+// The update command requires some special setup to work in EE 2.x
+if ($argv[1] == 'update') {
+    defined('INSTALL_MODE') || define('INSTALL_MODE', true);
+    define('CLI_UPDATE', true);
+}
+
 // If EE is not installed, we will not boot the core, but CLI commands are more limited as well.
 defined('EE_INSTALLED') || define('EE_INSTALLED', file_exists(SYSPATH . 'user/config/config.php'));
-defined('INSTALL_MODE') || define('INSTALL_MODE', ! EE_INSTALLED);
+defined('INSTALL_MODE') || define('INSTALL_MODE', !EE_INSTALLED);
 
 /*
  * --------------------------------------------------------------------
@@ -92,12 +98,12 @@ $assign_to_config['disable_csrf_protection'] = 'y';
  * And away we go...
  *
  */
-if (! file_exists(SYSPATH . 'ee/ExpressionEngine/Boot/boot.php')) {
+if (!file_exists(SYSPATH . 'ee/ExpressionEngine/Boot/boot.php')) {
     exit("\033[31mYour system folder path does not appear to be set correctly.\n");
 }
 
 // Fail if EE isn't installed
-if (! EE_INSTALLED) {
+if (!EE_INSTALLED) {
     exit("\033[31mExpressionEngine does not appear to be installed. Please install ExpressionEngine to use the CLI component.\n");
     die();
 }

@@ -94,7 +94,13 @@ class Cli
         // Load the language helper and the DB
         ee()->load->helper('language_helper');
         ee()->lang->loadfile('cli');
-        ee()->load->database();
+        try {
+            ee()->load->database();
+        }catch(\Exception $e) {
+            // This may be too early to load the database library successfully
+            // The update command needs to convert 2.x config variables from a 
+            // separate file before it can load the database connection
+        }
 
         //  Is the CLI disabled in the settings?
         $this->cliEnabled = ee()->config->item('cli_enabled') != false ? bool_config_item('cli_enabled') : true;

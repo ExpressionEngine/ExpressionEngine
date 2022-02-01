@@ -49,6 +49,7 @@ class CommandUpdate extends Cli
         'no-bootstrap'         => 'command_update_option_no_bootstrap',
         'force-addon-upgrades' => 'command_update_option_force_addon_upgrades',
         'y'                    => 'command_update_option_y',
+        'skip-cleanup'         => 'command_update_option_skip_cleanup',
     ];
 
     protected $verbose;
@@ -199,7 +200,7 @@ class CommandUpdate extends Cli
         ee()->load->helper('language');
         // ee()->lang->loadfile('installer');
         ee()->load->library('progress');
-        // ee()->load->model('installer_template_model', 'template_model');
+        ee()->load->model('installer_template_model', 'template_model');
 
         if (!isset(ee()->addons)) {
             ee()->load->library('addons');
@@ -344,13 +345,19 @@ class CommandUpdate extends Cli
         //ee()->load->library('session');
         ee()->load->library('smartforge');
         ee()->load->library('logger');
-        // ee()->load->library('update_notices');
+        ee()->load->library('update_notices');
         defined('USERNAME_MAX_LENGTH') || define('USERNAME_MAX_LENGTH', 75);
         defined('PASSWORD_MAX_LENGTH') || define('PASSWORD_MAX_LENGTH', 72);
         defined('URL_TITLE_MAX_LENGTH') || define('URL_TITLE_MAX_LENGTH', 200);
         defined('PATH_CACHE') || define('PATH_CACHE', SYSPATH . 'user/cache/');
         defined('PATH_TMPL') || define('PATH_TMPL', SYSPATH . 'user/templates/');
+        defined('PATH_THIRD') || define('PATH_THIRD', SYSPATH . 'user/addons/');
+        defined('PATH_ADDONS') || define('PATH_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/');
         defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/v5/');
+        defined('FILE_READ_MODE') || define('FILE_READ_MODE', 0644);
+        defined('FILE_WRITE_MODE') || define('FILE_WRITE_MODE', 0666);
+        defined('DIR_READ_MODE') || define('DIR_READ_MODE', 0755);
+        defined('DIR_WRITE_MODE') || define('DIR_WRITE_MODE', 0777);
 
         // Load versions of EE
         $upgradeMap = UpgradeMap::$versionsSupported;
@@ -407,8 +414,10 @@ class CommandUpdate extends Cli
                 ]);
         } while (version_compare($next_version, $end_version, '<'));
 
-        // Complete upgrades
-        UpgradeUtility::run();
+        if (!$this->option('--skip-cleanup', false)) {
+            // Complete upgrades
+            UpgradeUtility::run();
+        }
     }
 
     protected function upgradeFromDownloadedVersion()
@@ -427,11 +436,15 @@ class CommandUpdate extends Cli
         if (version_compare($this->currentVersion, '3.0.0', '<')) {
             if (! ee()->config->item('avatar_path')) {
                 $this->info('command_update_missing_avatar_path_message');
-                $guess = ee()->config->item('base_path') ?: rtrim(ee()->config->item('base_path'), '/') . '/images/avatars';
-                SYSPATH . '../images/avatars';
-                $result = $this->confirm('Use ' . $guess . '?')
+                $guess = ee()->config->item('base_path') ? rtrim(ee()->config->item('base_path'), '/') . '/images/avatars': SYSPATH . '../images/avatars';
+                if ($this->defaultToYes) {
+                    $this->info("Avatar Path: $guess");
+                    $result = $guess;
+                } else {
+                    $result = $this->confirm('Use ' . $guess . '?')
                         ? $guess
                         : $this->ask('command_update_enter_full_avatar_path');
+                }
 
                 ee()->config->_update_config([
                     'avatar_path' => $result,

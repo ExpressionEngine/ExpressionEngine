@@ -112,11 +112,15 @@ class EE_Core
         }
 
         // setup cookie settings for all providers
-        $providers = ee('App')->getProviders();
-        foreach ($providers as $provider) {
-            $provider->registerCookiesSettings();
+        if (REQ == 'CP') {
+            $providers = ee('App')->getProviders();
+            foreach ($providers as $provider) {
+                $provider->registerCookiesSettings();
+            }
         }
-        ee('CookieRegistry')->loadCookiesSettings();
+        if (REQ != 'CLI') {
+            ee('CookieRegistry')->loadCookiesSettings();
+        }
 
         // Set ->api on the legacy facade to the model factory
         ee()->set('api', ee()->di->make('Model'));

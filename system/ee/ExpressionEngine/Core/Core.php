@@ -125,7 +125,12 @@ abstract class Core
 
         // We need to load the core bootstrap globals here
         ee()->load->library('core');
-        ee()->core->bootstrap();
+
+        if (!defined('CLI_UPDATE') || !CLI_UPDATE) {
+            ee()->core->bootstrap();
+        } else {
+            define('PATH_THIRD', SYSPATH . 'user/addons/');
+        }
 
         $cli = new Cli();
 
