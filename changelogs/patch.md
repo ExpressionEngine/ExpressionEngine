@@ -55,6 +55,7 @@ Bullet list below, e.g.
    - Fix #1195 improves `template_post_parse` hook when fired after sub or layout (i.e. partial) template parse completes
    - Fix WEBP Mime type detection
    - Fix channels being ignored on search module
+   - Fixed a bad path to the plugin folder that could cause an error on the frontend.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
