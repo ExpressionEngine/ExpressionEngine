@@ -1,16 +1,9 @@
-name: Tests (full)
+name: Tests (new)
 
 on:
   push:
-    branches:
-      - 6.dev
-      - 6.2.0
-      - 6.3.0
-      - 6.4.0
-      - 6.5.0
 
 jobs:
-
     cancel-running-tests:
       runs-on: ubuntu-latest
       timeout-minutes: 3
@@ -22,83 +15,24 @@ jobs:
 
     build-for-testing:
         needs: cancel-running-tests
-
-        name: Build EE for testing
-
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout code
-            uses: actions/checkout@v2
-
-          - name: Checkout Pro
-            uses: actions/checkout@v2
-            with:
-              repository: EllisLab/ExpressionEngine-Pro
-              token: ${{ secrets.ORG_ACCESS_TOKEN }}
-              path: __pro
-
-          - name: Setup node
-            uses: actions/setup-node@v2
-            with:
-              node-version: '10'
-
-          - name: Install build tool dependencies
-            working-directory: build-tools
-            run: npm install
-
-          - name: Get version
-            id: build_json
-            working-directory: build-tools
-            run: |
-              content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
-              echo "::set-output name=BUILD_VERSION::$content"
-
-          - name: Run build process
-            working-directory: build-tools
-            env:
-              RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
-              RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-              APP_REPO_PATH: ${{ github.workspace }}
-              PRO_REPO_PATH: ${{ github.workspace }}/__pro
-            run: gulp build-app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
-
-          - name: Rename build directory
-            working-directory: build-tools/builds
-            run: |
-              mv ExpressionEngine${{ steps.build_json.outputs.BUILD_VERSION }} ExpressionEngine
-
-          - name: Cache built EE version
-            uses: actions/cache@v2
-            with:
-              path: build-tools/builds/ExpressionEngine
-              key: cache-ee-build-${{ github.sha }}
-          
-          - name: Directory Listing on Failure
-            if: failure()
-            run: |
-              ls -latr build-tools/builds
-              ls -latr build-tools/builds/ExpressionEngine
+        uses: bryannielsen/ee-private/.github/workflows/create-testing-build.yml@f56996fd8ef310204a0f0ae8ee6a9cd2abca9490
 
     cypress:
         needs: build-for-testing
-
         runs-on: ${{ matrix.os }}
-
         strategy:
             fail-fast: false
             matrix:
-                php: [7.1, 7.2, 7.4, 8.0]
-                os: [ubuntu-18.04]
-                containers: [0, 1, 2, 3, 4, 5]
-                include:
-                  - php: 8.1
-                    os: ubuntu-latest #is using mysql8
-                    containers: [0, 1, 2, 3, 4, 5]
+                containers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                # php: [7.1, 7.2, 7.4, 8.0]
+                php: [8.1]
+                os: [ubuntu-latest]
+                # include:
+                #   - php: 8.1
+                #     os: ubuntu-latest #is using mysql8
 
         name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}
-
         steps:
-
             - name: Use cached EE build
               uses: actions/cache@v2
               with:
@@ -109,22 +43,22 @@ jobs:
               run: |
                 cp -R build-tools/builds/ExpressionEngine/* ./
 
+            - name: Directory Listing
+              run: |
+                ls -lar ./
+
             - name: Copy config.php
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-            
-            - name: Copy .env.php
-              run: |
-                rm -f .env.php
-                cp -f tests/cypress/support/config/.env.php .env.php
 
-            - name: Remove installer
-              run: |
-                mv system/ee/installer system/ee/_installer
+            # - name: Remove installer
+            #   run: |
+            #     mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |
+                  sudo chmod 666 .env.php
                   sudo chmod 666 system/user/config/config.php
                   sudo chmod 777 system/user/config
                   sudo chmod -R 777 system/user/cache
@@ -156,15 +90,15 @@ jobs:
 
             - name: Start PHP Server
               run: php tests/serve.php &
-            
+
             - name: Start SMTP Server
               run: |
                 npm install -g maildev
                 maildev &
-            
+
             - name: Get Cypress Specs
               run: |
-                echo "::set-output name=SPECS::$(node tests/cypress-split.js 6 ${{ matrix.containers }})"
+                echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
               id: specs
 
             - name: Run Cypress Tests
@@ -196,3 +130,8 @@ jobs:
               with:
                 name: error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
                 path: /home/runner/php_errors.log
+
+            - name: Show Directory Structure
+              if: failure()
+              run: |
+                ls -latr

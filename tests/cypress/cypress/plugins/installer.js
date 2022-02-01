@@ -11,6 +11,8 @@ const database          = system + 'user/config/database.php'
 const wizard            = system + 'ee/installer/controllers/wizard.php'
 const old_templates     = system + 'user/templates/default_site.old'
 const current_templates = system + 'user/templates/default_site'
+const install_dir       = system + 'ee/installer';
+const install_temp_dir  = system + 'ee/_installer';
 
 class Installer {
 	enable_installer() {
@@ -19,6 +21,10 @@ class Installer {
 			dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=FALSE');", "putenv('EE_INSTALL_MODE=TRUE');")
 			fs.writeFileSync(path.resolve(env), dotenv)
 		}
+
+        if (fs.existsSync(install_temp_dir)) {
+            fs.renameSync(install_temp_dir, install_dir);
+        }
 		return true
 	}
 
@@ -28,6 +34,10 @@ class Installer {
 			dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=TRUE');", "putenv('EE_INSTALL_MODE=FALSE');")
 			fs.writeFileSync(path.resolve(env), dotenv)
 		}
+
+        if (fs.existsSync(install_dir)) {
+            fs.renameSync(install_dir, install_temp_dir);
+        }
 		return true
 	}
 

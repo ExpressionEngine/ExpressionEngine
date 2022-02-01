@@ -37,6 +37,9 @@ module.exports = (on, config) => {
     const Installer = require('./installer.js');
     const installer = new Installer;
 
+    const Updater = require('./updater.js');
+    const updater = new Updater;
+
     const baseUrl = config.env.CYPRESS_BASE_URL || null;
     if (baseUrl) {
         config.baseUrl = baseUrl;
@@ -52,11 +55,13 @@ module.exports = (on, config) => {
 
     on('task', {
         'db:seed': () => {
+            var tempSeed = 'seed.sql';
             fs.delete('../../system/user/cache/default_site/');
-<<<<<<< HEAD
-=======
-            // return db.seed(config.env.DB_DUMP);
->>>>>>> 218f32c601 (Fix testing config issues)
+
+            if(fs.exists(db.sqlPath(tempSeed))) {
+                return db.seed(tempSeed);
+            }
+
             var renameInstaller = false;
             if (!fs.exists('../../system/ee/installer')) {
                 renameInstaller = true;
@@ -79,11 +84,17 @@ module.exports = (on, config) => {
                     console.log('------')
                 }
 
-                if (renameInstaller) {
+                if (renameInstaller || fs.exists('../../system/ee/installer')) {
                     fs.rename('../../system/ee/installer', '../../system/ee/_installer');
                 }
-                
-                return db.load(config.env.DB_DUMP)
+
+                // Load content from dump
+                return db.load(config.env.DB_DUMP).then(() => {;
+                    // Store database changes to skip initDb step in subsequent test runs
+                    return db.dump(tempSeed);
+                });
+
+                // return db.load(config.env.DB_DUMP)
             })
         }
     })
@@ -276,6 +287,18 @@ module.exports = (on, config) => {
     on('task', {
         'installer:version': () => {
             return installer.version()
+        }
+    })
+
+    on('task', {
+        'updater:backup_files': () => {
+            return updater.backup_files()
+        }
+    })
+
+    on('task', {
+        'updater:restore_files': () => {
+            return updater.restore_files()
         }
     })
 

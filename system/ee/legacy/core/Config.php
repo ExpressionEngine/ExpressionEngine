@@ -1192,7 +1192,7 @@ class EE_Config
 
         fclose($fp);
 
-        if (! empty($this->_config_path_errors)) {
+        if (!empty($this->_config_path_errors)) {
             return $this->_config_path_errors;
         }
 
@@ -1643,7 +1643,6 @@ class EE_Config
                     $details = array('name' => $name, 'value' => ee()->form_validation->set_value($name, $value), 'id' => $name);
 
                     break;
-
             }
 
             $vars['fields'][$name] = array('type' => $options[0], 'value' => $details, 'subtext' => $sub, 'selected' => $selected);

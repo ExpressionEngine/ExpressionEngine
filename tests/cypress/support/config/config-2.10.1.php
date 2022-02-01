@@ -14,7 +14,7 @@
 $config['base_url'] = 'http://localhost:8888/';
 $config['site_url'] = $config['base_url'];
 
-$config['app_version'] = '2.20.0';
+$config['app_version'] = '2.10.1';
 $config['license_contact'] = 'team@ellislab.com';
 $config['license_number'] = '1123-5813-2134-5589';
 $config['debug'] = '2';
