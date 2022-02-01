@@ -56,6 +56,7 @@ use ExpressionEngine\Service\Generator\CommandGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
+use ExpressionEngine\Model\Channel\ChannelEntry;
 
 // TODO should put the version in here at some point ...
 $setup = [
@@ -385,6 +386,9 @@ $setup = [
             );
         },
 
+        'ConditionalFieldEvaluator' => function ($ee, ChannelEntry $channelEntry) {
+            return new ConditionalFields\Evaluator($channelEntry);
+        },
     ),
 
     'services.singletons' => array(

@@ -3,45 +3,73 @@
 namespace ExpressionEngine\Service\ConditionalFields;
 
 use ExpressionEngine\Field;
+use ExpressionEngine\Model\ConditionalFields;
+use ExpressionEngine\Model\Channel\ChannelEntry;
 
-class Evaluator {
+class Evaluator
+{
+    protected $channelEntry;
+    protected $channelFields;
 
-    public static function evaluate($expression)
+    public function __construct($channelEntry)
     {
-        if($expression instanceof Models\Condition) {
-            return (new static)->evaluateCondition($expression);
-        }elseif($expression instanceof Models\ConditionSet) {
-            return (new static)->evaluateConditionSet($expression);
-        }elseif($expression instanceof Contracts\Conditionable) {
-            return (new static)->evaluateConditionableEntity($expression);
+        $this->channelEntry = $channelEntry;
+        $this->channelFields = $this->getFieldArray();
+    }
+
+    protected function getFieldArray()
+    {
+        // Loop through the channel entry fields and set a simple field_id => field_value array
+        foreach ($this->channelEntry->getCustomFields() as $field) {
+            $fields[$field->getId()] = $field->getData();
+        }
+
+        return $fields;
+    }
+
+    public function evaluate($expression)
+    {
+        if ($expression instanceof ConditionalFields\FieldCondition) {
+            return $this->evaluateCondition($expression);
+        } elseif ($expression instanceof ConditionalFields\FieldConditionSet) {
+            return $this->evaluateConditionSet($expression);
+        } elseif (method_exists($expression, 'getConditionSets')) {
+            return $this->evaluateConditionableEntity($expression);
         }
     }
 
-    public function evaluateCondition(Models\Condition $condition)
+    public function evaluateCondition(ConditionalFields\FieldCondition $condition)
     {
-        $operatorFunction = $condition->field->getFieldType()->getConditionalFieldOperator($condition->operator);
+        // Get the conditional field
+        $evaluationRule = ee('ConditionalFields')->make($condition->evaluation_rule);
 
-        return $operatorFunction($condition->field->getValue(), $condition->value);
-    }
-
-    public function evaluateConditionSet(Models\ConditionSet $set)
-    {
-        if(empty($set->conditions)) {
+        // If this field isnt set on the channel entry, then we fail the conditions
+        if (!isset($this->channelFields[$condition->condition_field_id])) {
             return false;
         }
 
-        foreach($set->conditions as $condition) {
+        // Now lets evaluate the condition_field value and the rule value
+        return $evaluationRule->evaluate($this->channelFields[$condition->condition_field_id], $condition->value);
+    }
+
+    public function evaluateConditionSet(ConditionalFields\FieldConditionSet $set)
+    {
+        if ($set->FieldConditions->count() === 0) {
+            return false;
+        }
+
+        foreach ($set->FieldConditions as $condition) {
             $result = $this->evaluateCondition($condition);
 
             // If the condition is true and the set should match any condition
             // we can stop evaluating and return true
-            if($result && $set->match == 'any') {
+            if ($result && $set->match === 'any') {
                 return true;
             }
 
             // If the condition is false and the set should match all conditions
             // we can stop evaluating and return false
-            if(!$result && $set->match == 'all') {
+            if (!$result && $set->match === 'all') {
                 return false;
             }
         }
@@ -50,25 +78,25 @@ class Evaluator {
         // can assume that if the set was supposed to match 'any' conditions that
         // it did not and return false.  Likewise if the set was supposed to match
         // 'all' conditions and did not return early with false then it is true
-        return ($set->match == 'any') ? false : true;
+        return ($set->match === 'any') ? false : true;
     }
 
-    public function evaluateConditionableEntity(Contracts\Conditionable $entity)
+    public function evaluateConditionableEntity($entity)
     {
-        if(empty($entity->getConditionSets())) {
+        if (!method_exists($entity, 'getConditionSets')) {
+            throw new \Exception(get_class($entity) . " needs to implement getConditionSets() to be evaluated as conditional.", 1);
+        }
+
+        if (empty($entity->getConditionSets())) {
             return false;
         }
 
-        // Iterate through all of the entity's condition sets.
-        // If any are false we will exit with a false value.
-        foreach($entity->getConditionSets() as $set) {
-            if(!$this->evaluateConditionSet($set)) {
+        foreach ($entity->getConditionSets() as $set) {
+            if (!$this->evaluateConditionSet($set)) {
                 return false;
             }
         }
 
         return true;
     }
-
-
 }
