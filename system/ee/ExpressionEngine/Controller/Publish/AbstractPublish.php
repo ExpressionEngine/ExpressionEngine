@@ -406,8 +406,9 @@ abstract class AbstractPublish extends CP_Controller
         $action = ($entry->isNew()) ? 'create' : 'edit';
         $entry->edit_date = ee()->localize->now;
         if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
-            $action = 'create';
+            $action = 'clone';
             $entry->markAsDirty();
+            $entry->status = 'closed';
         }
         $entry->save();
 

@@ -230,7 +230,7 @@ $lang = array(
 
     'save_and_close' => 'Save & Close',
 
-    'save_as_new_entry' => 'Save as New Entry',
+    'save_as_new_entry' => 'Clone to New Entry',
 
     'save_changes' => 'Save changes',
 

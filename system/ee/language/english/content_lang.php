@@ -84,6 +84,10 @@ $lang = array(
 
     'comments_status_updated_desc' => 'The following comments were set to %s',
 
+    'clone_entry_success' => 'This is your new cloned entry',
+
+    'clone_entry_success_desc' => 'The entry status has been set to <b>closed</b>.',
+
     'create_entry_error' => 'Cannot Create Entry',
 
     'create_entry_error_desc' => 'We were unable to create this entry, please review and fix errors below.',
