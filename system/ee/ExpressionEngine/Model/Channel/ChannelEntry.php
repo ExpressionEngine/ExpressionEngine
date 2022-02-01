@@ -213,6 +213,9 @@ class ChannelEntry extends ContentModel
     {
         $result = parent::validate();
 
+        // Validate the conditional fields
+        $this->evaluateConditionalFields();
+
         // Some Tabs might call ee()->api_channel_fields
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
@@ -627,8 +630,8 @@ class ChannelEntry extends ContentModel
     /**
      * A link back to the owning channel object.
      *
-     * @return	Structure	A link back to the Structure object that defines
-     *						this Content's structure.
+     * @return  Structure   A link back to the Structure object that defines
+     *                      this Content's structure.
      */
     public function getStructure()
     {
@@ -743,6 +746,48 @@ class ChannelEntry extends ContentModel
         }
 
         return $module_tabs;
+    }
+
+    /**
+     * Evaluates all the conditional fields in a channel entry and sets the hidden flags
+     *
+     * @return  array   List of only the fields whose hidden flag changed
+     */
+    public function evaluateConditionalFields()
+    {
+        // Lets keep track of if any of the hidden values that changed
+        $changed = [];
+        $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
+
+        foreach ($this->getCustomFields() as $field_name => $field) {
+            // If the ID isnt numeric, we can skip it since its something like title
+            if (! is_numeric($field->getId())) {
+                continue;
+            }
+
+            // This is the hide column on the field
+            $fieldHidden = 'field_hide_' . $field->getId();
+
+            // This is the default status for hidden fields
+            $hidden = 'n';
+
+            if ($field->getItem('field_is_conditional') === true) {
+                // Lets evaluate the condition sets
+                // if false, the field should be hidden
+                if (! $evaluator->evaluate($field)) {
+                    $hidden = 'y';
+                }
+            }
+
+            // Set hidden on the field, entry, and set the changed flag
+            if ($hidden !== $this->$fieldHidden) {
+                $field->setHidden($hidden);
+                $this->$fieldHidden = $hidden;
+                $changed[$fieldHidden] = $hidden;
+            }
+        }
+
+        return ['changed' => $changed];
     }
 
     public function get__versioning_enabled()
@@ -1064,13 +1109,13 @@ class ChannelEntry extends ContentModel
      * Populate the Authors dropdown
      *
      * @param   object  $field  ChannelEntry object
-     * @return	void    Sets author field metaddata
+     * @return  void    Sets author field metaddata
      *
      * The following are included in the author list regardless of
      * their channel posting permissions (assuming the user has permission to assign entries to others):
-     *	  The current user
-     *	  The current author (if editing)
-     *	  Anyone in a group set to 'include_in_authorlist'
+     *    The current user
+     *    The current author (if editing)
+     *    Anyone in a group set to 'include_in_authorlist'
      *    Any individual member 'in_authorlist'
      *
      */
@@ -1232,13 +1277,13 @@ class ChannelEntry extends ContentModel
         return false;
     }
 
-    public function livePreviewAllowed() {
+    public function livePreviewAllowed()
+    {
         if ($this->Channel->allow_preview =='y') {
             return true;
         }
         return false;
     }
-
 }
 
 // EOF
