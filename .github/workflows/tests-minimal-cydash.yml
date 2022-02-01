@@ -1,18 +1,13 @@
-name: Tests (minimal)
+name: Tests (Cypress Dashboard)
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+  push:
     branches:
-      - 6.dev
-      - 6.2.0
-      - 6.3.0
-      - 6.4.0
-      - 6.5.0
+      - feature/improve-test-performance
 
 jobs:
     cancel-running-tests:
-      if: github.event.pull_request.draft == false
+      #if: github.event.pull_request.draft == false
       runs-on: ubuntu-latest
       timeout-minutes: 3
       steps:
@@ -103,15 +98,15 @@ jobs:
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
-          
+
           - name: Directory Listing on Failure
             if: failure()
             run: |
               ls -latr build-tools/builds
               ls -latr build-tools/builds/ExpressionEngine
 
-    cypress-minimal:
-        if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
+    cypress-minimal-pro:
+        #if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
         needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
@@ -192,23 +187,23 @@ jobs:
               run: |
                 npm install -g maildev
                 maildev &
-            
-            - name: Get Cypress Specs
-              run: |
-                echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
-              id: specs
+
+            # - name: Get Cypress Specs
+            #   run: |
+            #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
+            #   id: specs
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2
               with:
-                spec: ${{ steps.specs.outputs.SPECS }}
+                # spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress
                 config-file: cypress.json
-                #record: true
-                #parallel: true
-                #group: PHP${{ matrix.php }}
+                record: true
+                parallel: true
+                group: PHP${{ matrix.php }}
               env:
                 CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

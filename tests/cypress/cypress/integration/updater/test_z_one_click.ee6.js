@@ -5,9 +5,16 @@ import Installer from '../../elements/pages/installer/Installer';
 const page = new Installer
 
 context('One-Click Updater', () => {
-
+ 
   before(function(){
+    cy.task('updater:backup_files')
     cy.task('db:seed')
+    cy.task('installer:disable')
+    
+    // This test is also used in the pre-release.yml workflow and gets a copy of 6.1.5
+    // We've just selected the same version here to not interfere with that test
+    // but also allow this to do a simple check for working updater in current code
+    cy.eeConfig({item: 'app_version', value: '6.1.5'})
   })
 
   beforeEach(function() {
@@ -22,12 +29,16 @@ context('One-Click Updater', () => {
     cy.get('.ee-sidebar__version').click();
     cy.get('.app-about__status .button--primary').should('be.visible');
     //app-about__status-version 6.1.6
-    
+
   })
 
   afterEach(function() {
     // Expand stack trace if we have one
     //click_link('view stack trace') unless page.has_no_css?('a[rel="updater-stack-trace"]')
+  })
+
+  after(function() {
+      cy.task('updater:restore_files')
   })
 
   it('should fail preflight check when permissions are incorrect', () => {
@@ -55,7 +66,7 @@ context('One-Click Updater', () => {
   it.skip('should continue update when permissions are fixed', () => {
     cy.screenshot({capture: 'fullPage'});
     page.get('wrap').contains('Update Stopped')
-    
+
     if (Cypress.platform === 'win32')
     {
         cy.log('skipped because of Windows platform')
