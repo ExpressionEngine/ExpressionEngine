@@ -446,6 +446,18 @@ class FieldFacade
         return $ft->renderTableCell($data, $field_id, $entry);
     }
 
+    public function getConditionSets()
+    {
+        // Field is not conditional, so there should be no conditional sets
+        if (! $this->getItem('field_is_conditional')) {
+            return [];
+        }
+
+        $field = ee('Model')->get('ChannelField', $this->getId())->first();
+
+        return $field->FieldConditionSets;
+    }
+
     public function initField()
     {
         $this->ensurePopulatedDefaults();
