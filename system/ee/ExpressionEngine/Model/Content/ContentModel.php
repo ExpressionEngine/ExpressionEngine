@@ -38,8 +38,8 @@ abstract class ContentModel extends VariableColumnModel
     /**
      * A link back to the owning Structure object.
      *
-     * @return	Structure	A link back to the Structure object that defines
-     *						this Content's structure.
+     * @return  Structure   A link back to the Structure object that defines
+     *                      this Content's structure.
      */
     abstract public function getStructure();
 
@@ -413,9 +413,10 @@ abstract class ContentModel extends VariableColumnModel
             $this->setProperty('field_ft_' . $id, $format);
         }
 
-        // TODO: conditional fields calculations to show/hide the field on save
-        $hidden = 'y';
-        $this->setProperty('field_hide_' . $id, $hidden);
+        if ($this->hasProperty('field_hide_' . $id)) {
+            $hidden = $this->getProperty('field_hide_' . $id);
+            $this->setProperty('field_hide_' . $id, $hidden);
+        }
 
         $facade = new FieldFacade($id, $info);
         $facade->setName($name);
@@ -424,7 +425,10 @@ abstract class ContentModel extends VariableColumnModel
         if (isset($format)) {
             $facade->setFormat($format);
         }
-        $facade->setHidden($hidden);
+
+        if (isset($hidden)) {
+            $facade->setHidden($hidden);
+        }
 
         $this->_field_facades[$name] = $facade;
     }
