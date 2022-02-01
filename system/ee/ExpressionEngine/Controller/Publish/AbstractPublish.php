@@ -447,6 +447,14 @@ abstract class AbstractPublish extends CP_Controller
 
             return $result;
         } elseif (ee()->input->post('submit') == 'save' || (defined('CLONING_MODE') && CLONING_MODE === true)) {
+            $cloneAlert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
+                ? ee('CP/Alert')->makeStandard()
+                : ee('CP/Alert')->makeInline('entry-form-clone');
+
+            $cloneAlert->asWarning()
+                ->canClose()
+                ->addToBody(sprintf(lang('status_changed_desc'), lang('closed')))
+                ->defer();
             if (ee()->input->get('return') != '') {
                 $redirect_url = urldecode(ee()->input->get('return'));
             } elseif (ee()->input->post('return') != '') {
