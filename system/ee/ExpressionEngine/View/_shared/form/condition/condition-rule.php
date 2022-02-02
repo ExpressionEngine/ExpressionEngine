@@ -1,33 +1,29 @@
 <?php
     $setId = $setId;
-    $rule = $rule;
+    $conditionFieldVal = $conditionFieldVal;
     $hiddenTemplate = isset($hiddenTemplate) ? true : false;
     $evaluation_rule = isset($evaluation_rule) ? $evaluation_rule : null;
     $value = isset($value) ? $value : '';
-    $rowId = isset($$rowId) ? $rowId : null;
+    $rowId = isset($rowId) ? $rowId : null;
 
     if ($hiddenTemplate) {
-        $ruleRowId = 'new_rule_row_'.$setId;
+        $ruleRowId = 'new_rule_row_' . $setId;
     } else {
-        $ruleRowId = 'rule_row_'.$setId;
+        $ruleRowId = 'rule_row_' . $setId;
 
-        $operatorLabelArr = [];
+        $operatorRuleArr = [];
 
-        foreach ($fieldsList as $item) {
-            if ($item['field_id'] == $rule['value']) {
-                $newArr = $item['evaluationRules'];
-            }
+        foreach ($fieldsList[$conditionFieldVal['value']]['evaluationRules'] as $ruleName => $ruleInfo) {
+            $operatorRuleArr[$ruleName] = $ruleInfo['text'];
         }
 
-        var_dump($newArr);
-
-        $operator = [
-            'choices' => ee('View/Helpers')->normalizedChoices($item['evaluationRules']),
+        $operaionFieldDefault = [
+            'choices' => ee('View/Helpers')->normalizedChoices($operatorRuleArr),
             'value' => $evaluation_rule,
             'too_many' => 20,
             'class' => 'condition-rule-operator',
             'empty_text' => 'Select a Field',
-            'field_name' => 'condition[set_'.$setId.'][row_'.$rowId.'][evaluation_rule]',
+            'field_name' => 'condition[set_' . $setId . '][row_' . $rowId . '][evaluation_rule]',
             'conditional_toggle' => 'operator',
             'is_required' => false
         ];
@@ -35,7 +31,7 @@
 ?>
 <div class="rule <?php if ($hiddenTemplate) :?>rule-blank-row hidden <?php endif; ?>" >
     <div class="condition-rule-field-wrap" data-new-rule-row-id="<?=$ruleRowId?>">
-        <?=$this->embed('_shared/form/fields/dropdown', $rule)?>
+        <?=$this->embed('_shared/form/fields/dropdown', $conditionFieldVal)?>
     </div>
 
     <div class="condition-rule-operator-wrap" data-new-rule-row-id="<?=$ruleRowId?>">
@@ -52,12 +48,15 @@
                 </div>
             </div>
         <?php else: ?>
-
+            <?=$this->embed('_shared/form/fields/dropdown', $operaionFieldDefault)?>
         <?php endif; ?>
     </div>
 
     <div class="condition-rule-value-wrap" data-new-rule-row-id="<?=$ruleRowId?>">
-        <input type="text">
+        <input type="text"
+            <?php if (!$hiddenTemplate) : ?>value="<?=$value?>"<?php endif; ?>
+            <?php if (!$hiddenTemplate && empty($value)) : ?>style="display: none;"<?php endif; ?>
+        >
     </div>
 
     <div class="delete_rule">

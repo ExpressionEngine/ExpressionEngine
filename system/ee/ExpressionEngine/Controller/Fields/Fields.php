@@ -657,7 +657,7 @@ class Fields extends AbstractFieldsController
                     'type' => 'html',
                     'margin_left' => true,
                     'margin_top' => true,
-                    'content' => ee('View')->make('ee:_shared/form/condition-rule-group')->render([
+                    'content' => ee('View')->make('ee:_shared/form/condition/condition-rule-group')->render([
                         'fieldsList' => $fieldsWithEvaluationRules,
                         'fieldConditionSets' => $field->FieldConditionSets,
                         'errors' => $this->validationResult

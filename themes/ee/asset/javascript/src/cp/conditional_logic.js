@@ -71,6 +71,8 @@ Conditional.Publish.prototype = {
         this.original_row_count = this._getRowsInSet().length;
         this.original_set_count = this._getSets().length;
 
+        console.log(Object.keys(EE.conditionData).length);
+
         if (!Object.keys(EE.conditionData).length) {
             this._firstCloneSet();
         }
@@ -78,12 +80,8 @@ Conditional.Publish.prototype = {
         this._bindDeleteSetButton();
         this._bindDeleteButton();
         this._bindAddButton();
-
-        // if (Object.keys(EE.conditionData).length) {
-        //     this._showSavedData();
-        //     this._bindAddSetButton();
-        // }
-
+        this._bindAddSetButton();
+        this._checkHiddenEl();
 
         // Disable input elements in our blank template container so they
         // don't get submitted on form submission
@@ -310,222 +308,6 @@ Conditional.Publish.prototype = {
                     clearInterval(newTimer);
                 }
             },20);
-        }
-    },
-
-    /**
-     * Show saved data on FE
-     */
-    _showSavedData: function() {
-        var that = this;
-        var condDataLength = Object.keys(EE.conditionData).length;
-        var createdBlocksLength = 0;
-
-        if (Object.keys(EE.conditionData).length) {
-            let setId;
-            let match;
-
-            $.each(EE.conditionData, function(key, value) {
-                setId = key;
-                match = value['match'];
-                let conditions = value['conditions'];
-
-                that._addSavedSetBlock(setId, match, conditions);
-                createdBlocksLength++;
-            })
-        }
-
-        that._savedSets();
-        that._checkHiddenEl();
-    },
-
-    _addSavedSetBlock: function(setId, match, conditions) {
-        // Clone our blank row
-        var that = this;
-
-        var savedSet = this.blankSet.clone();
-
-        savedSet.removeClass('conditionset-temlates-row');
-        savedSet.removeClass('hidden');
-
-        savedSet.html(
-            savedSet.html().replace(
-                RegExp('new_conditionset_block[0-9]{1,}', 'g'),
-                setId
-            ).replace(
-                RegExp('new_set_[0-9]{1,}', 'g'),
-                setId
-            )
-        );
-
-        // Add the new row ID to the field data
-        $(savedSet).attr(
-            'id',
-            'new_conditionset_block_' + setId
-        );
-
-        // Enable remove button
-        savedSet.find('[rel=remove_row]').removeAttr('disabled');
-
-        var match_name = 'condition_set[new_set_'+setId+'][match]';
-
-        var operatorMatch = {
-            "all": 'all',
-            "any": 'any'
-        }
-        var matchOptions = {
-            name: match_name,
-            items: operatorMatch,
-            initialItems: operatorMatch,
-            selected: match,
-            disabled: false,
-            emptyText: "Select a Field",
-        };
-
-        var dataMatchReact = btoa(JSON.stringify(matchOptions));
-
-        savedSet.find('.field-conditionset .condition-match-field').remove();
-        savedSet.find('.field-conditionset .match-react-element').append('<div data-input-value="'+match_name+'" class="condition-match-field" data-dropdown-react='+dataMatchReact+'></div>');
-
-        let rowID;
-        let condition_field_id;
-        let evaluation_rule;
-        let value;
-
-        $.each(conditions, function(i, el) {
-            rowID = el['condition_id'];
-            condition_field_id = el['condition_field_id'];
-            evaluation_rule = el['evaluation_rule'];
-            value = el['value'];
-
-            that._addSavedRuleRow(savedSet, rowID, condition_field_id, evaluation_rule, value);
-        });
-
-        // Append the row to the end of the row container
-        this.setParent.append(savedSet);
-        Dropdown.renderFields();
-
-        return savedSet;
-    },
-    _addSavedRuleRow: function(savedSet, rowID, condition_field_id, evaluation_rule, value) {
-        var that = this;
-
-        // Clone our blank row
-        var el = savedSet.find('.rule-blank-row').clone();
-
-        el.removeClass('rule-blank-row');
-        el.removeClass('hidden');
-
-        el.html(
-            el.html().replace(
-                RegExp('new_rule_row_[0-9]{1,}', 'g'),
-                'new_rule_row_' + rowID
-            )
-        );
-
-        el.html(
-            el.html().replace(
-                RegExp('new_row_[0-9]{1,}', 'g'),
-                'new_row_' + rowID
-            )
-        );
-
-        // Add the new row ID to the field data
-        $('> '+this.cellSelector, el).attr(
-            'data-new-rule-row-id',
-            'new_rule_row_' + rowID
-        );
-
-        var condition_field_name = el.find('.condition-rule-field-wrap input').attr('name');
-        var operator_name = el.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'evaluation_rule');
-        var value_name = el.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'value');
-
-        var ruleOperator = {};
-        var operatorType = {};
-
-        $.each(EE.fieldsInfo, function(i, val) {
-            ruleOperator[i] =  val['field_label'];
-
-            if (i == condition_field_id) {
-                $.each(val['evaluationRules'], function(item, value){
-                    operatorType[item] =  value['text'];
-                });
-            }
-        });
-
-        var ruleOptions = {
-            name: condition_field_name,
-            items: ruleOperator,
-            initialItems: ruleOperator,
-            selected: condition_field_id,
-            disabled: false,
-            tooMany: 20,
-            limit: 100,
-            groupToggle: null,
-            emptyText: "Select a Field",
-            conditionalRule: 'rule',
-        };
-
-        var operatorOptions = {
-            name: operator_name,
-            items: operatorType,
-            initialItems: operatorType,
-            selected: evaluation_rule,
-            disabled: false,
-            tooMany: 20,
-            limit: 100,
-            groupToggle: null,
-            emptyText: "Select a Field",
-            conditionalRule: 'operator',
-        };
-
-        var dataRuleOptionsReact = btoa(JSON.stringify(ruleOptions));
-        var dataOperatorOptionsReact = btoa(JSON.stringify(operatorOptions));
-
-        el.find('.condition-rule-field-wrap .condition-rule-field').remove();
-        el.find('.condition-rule-operator-wrap .condition-rule-operator').remove();
-
-        el.find('.condition-rule-field-wrap').append('<div data-input-value="'+condition_field_name+'" class="condition-rule-operator" data-dropdown-react='+dataRuleOptionsReact+'></div>');
-        el.find('.condition-rule-operator-wrap').append('<div data-input-value="'+operator_name+'" class="condition-rule-operator" data-dropdown-react='+dataOperatorOptionsReact+'></div>');
-
-        if (value.length) {
-            el.find('.condition-rule-value-wrap input').attr('name', value_name);
-            el.find('.condition-rule-value-wrap input').attr('value', value);
-        } else {
-            el.find('.condition-rule-value-wrap input').hide();
-        }
-
-        el.find('.condition-rule-operator-wrap .empty-select').hide();
-        el.find('.condition-rule-operator-wrap .condition-rule-operator').show();
-
-        // Append the row to the end of the row container
-        savedSet.find('.rules').append(el);
-
-        Dropdown.renderFields();
-
-        if ($(savedSet).find('.rule:not(.hidden)').length > 1) {
-            var timer = setInterval(function() {
-                if ($(savedSet).find('.rule:not(.hidden) [rel="remove_row"]').prop('disabled')) {
-                    $(savedSet).find('.rule:not(.hidden) [rel="remove_row"]').show();
-                    $(savedSet).find('.rule:not(.hidden) [rel="remove_row"]').prop('disabled', false);
-                    clearInterval(timer);
-                }
-            },50);
-        } else {
-            $(savedSet).find('.rule:not(.hidden) [rel="remove_row"]').hide();
-        }
-
-        that._checkHiddenEl();
-
-        return el;
-    },
-    _savedSets: function() {
-        var savedSets = $('#fieldset-condition_fields .conditionset-item:not(.hidden)');
-
-        if (savedSets.length > 1) {
-            $.each(savedSets, function(item, el) {
-                $(this).find('.remove-set').show();
-            })
         }
     }
 }
