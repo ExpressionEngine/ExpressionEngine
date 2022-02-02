@@ -1339,7 +1339,7 @@ class Search
      * @return array Nested array containing tag and resulting paths for member
      *               path tags (e.g. {member_path="member/index"})
      */
-    private function get_member_path_tags($tagdata = null)
+    private function get_member_path_tags($tagdata = '')
     {
         if (isset($this->m_paths)) {
             return $this->m_paths;
@@ -1366,7 +1366,7 @@ class Search
      * @param  String $tagdata  The tagdata to get member_path tags from
      * @return int              The number of tags found
      */
-    private function tag_count($tag_name, $tagdata = null)
+    private function tag_count($tag_name, $tagdata = '')
     {
         $tagdata = ($tagdata) ?: ee()->TMPL->tagdata;
 
