@@ -682,7 +682,7 @@ class Api_channel_fields extends Api
     {
         $tab_modules = $this->get_modules();
 
-        $set = false;
+        $set = [];
 
         if ($tab_modules == false) {
             return false;
@@ -872,7 +872,7 @@ class Api_channel_fields extends Api
 
         // Do we have modules in play
         ee()->load->model('addons_model');
-        $custom_field_modules = false;
+        $custom_field_modules = [];
 
         $mquery = ee()->addons_model->get_installed_modules(false, true);
 
