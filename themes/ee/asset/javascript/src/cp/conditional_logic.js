@@ -79,10 +79,10 @@ Conditional.Publish.prototype = {
         this._bindDeleteButton();
         this._bindAddButton();
 
-        if (Object.keys(EE.conditionData).length) {
-            this._showSavedData();
-            this._bindAddSetButton();
-        }
+        // if (Object.keys(EE.conditionData).length) {
+        //     this._showSavedData();
+        //     this._bindAddSetButton();
+        // }
 
 
         // Disable input elements in our blank template container so they
@@ -351,10 +351,10 @@ Conditional.Publish.prototype = {
         savedSet.html(
             savedSet.html().replace(
                 RegExp('new_conditionset_block[0-9]{1,}', 'g'),
-                'new_conditionset_block_' + setId
+                setId
             ).replace(
                 RegExp('new_set_[0-9]{1,}', 'g'),
-                'new_set_' + setId
+                setId
             )
         );
 

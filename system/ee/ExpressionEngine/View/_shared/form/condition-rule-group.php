@@ -1,6 +1,18 @@
 
 <?php
 
+if (!empty($fieldConditionSets)) {
+    $data = [];
+    foreach ($fieldConditionSets->sortBy('order') as $fieldConditionSet) {
+        $data[$fieldConditionSet->getId()] = [
+            'match' => $fieldConditionSet->match,
+            'conditions' => $fieldConditionSet->FieldConditions->sortBy('order')->toArray()
+        ];
+    }
+}
+
+// var_dump($data);
+
 $fieldLabelArr = [];
 
 foreach ($fieldsList as $fieldLabel) {
@@ -8,6 +20,8 @@ foreach ($fieldsList as $fieldLabel) {
 }
 
 // var_dump('errors', $errors);
+
+var_dump($fieldLabelArr);
 
 $rule = [
     'choices' => ee('View/Helpers')->normalizedChoices($fieldLabelArr),
@@ -32,18 +46,9 @@ $match = [
     'field_name' => 'condition_set[new_set_0][match]',
 ];
 
-if (!empty($fieldConditionSets)) {
-    $data = [];
-    foreach ($fieldConditionSets->sortBy('order') as $fieldConditionSet) {
-        $data[$fieldConditionSet->getId()] = [
-            'match' => $fieldConditionSet->match,
-            'conditions' => $fieldConditionSet->FieldConditions->sortBy('order')->toArray()
-        ];
-    }
-}
-var_dump($data);
-
 ee()->javascript->set_global('conditionData', $data);
+
+// var_dump($data);
 ?>
 <div class="field-conditionset-wrapper">
     <?php $this->embed('ee:_shared/form/fields/condition-set', [
@@ -52,4 +57,23 @@ ee()->javascript->set_global('conditionData', $data);
         'temlates' => true
     ]); ?>
 
+    <?php if (count($data)):
+        foreach ($data as $newData) {
+            $conditionArr = array();
+            $match['value'] = $newData['match'];
+
+            foreach ($newData['conditions'] as $condition) {
+                $setId = $condition["condition_set_id"];
+                $match['field_name'] = 'condition_set[set_'.$condition["condition_set_id"].'][match]';
+                array_push($conditionArr, $condition);
+            }
+
+            $this->embed('ee:_shared/form/fields/condition-set', [
+                'match' => $match,
+                'rule' => $rule,
+                'savedSetId' => $setId,
+                'conditionArr' => $conditionArr
+            ]);
+        }
+    endif;?>
 </div>
