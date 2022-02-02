@@ -11,7 +11,7 @@ const page = new Installer
 const install_form = new Form
 const install_success = new Success
 
-context.skip('Installer', () => {
+context('Installer', () => {
   before(function() {
 
   })
@@ -98,7 +98,7 @@ context.skip('Installer', () => {
       }
       install_form.get('username').clear().type('admin')
       install_form.get('email_address').clear().type('hello@expressionengine.com')
-      install_form.get('password').clear().type('password')
+      install_form.get('password').clear().type('1Password')
       install_form.get('license_agreement').click()
       install_form.get('install_submit').click()
 
@@ -116,7 +116,7 @@ context.skip('Installer', () => {
       }
       install_form.get('username').clear().type('admin')
       install_form.get('email_address').clear().type('hello@expressionengine.com')
-      install_form.get('password').clear().type('password')
+      install_form.get('password').clear().type('1Password')
       install_form.get('license_agreement').click()
       install_form.get('install_submit').click()
 
@@ -138,7 +138,7 @@ context.skip('Installer', () => {
         install_form.get('install_default_theme').click()
         install_form.get('username').clear().type('admin')
         install_form.get('email_address').clear().type('hello@expressionengine.com')
-        install_form.get('password').clear().type('password')
+        install_form.get('password').clear().type('1Password')
         install_form.get('license_agreement').click()
         install_form.get('install_submit').click()
 
@@ -159,7 +159,7 @@ context.skip('Installer', () => {
       }
       install_form.get('username').clear().type('admin')
       install_form.get('email_address').clear().type('hello@expressionengine.com')
-      install_form.get('password').clear().type('password')
+      install_form.get('password').clear().type('1Password')
       install_form.get('license_agreement').click()
       install_form.get('install_submit').click()
 
@@ -193,7 +193,7 @@ context.skip('Installer', () => {
       }
       install_form.get('username').clear().type('admin')
       install_form.get('email_address').clear().type('hello@expressionengine.com')
-      install_form.get('password').clear().type('password')
+      install_form.get('password').clear().type('1Password')
       install_form.get('license_agreement').click()
       install_form.get('install_submit').click()
 
@@ -216,7 +216,7 @@ context.skip('Installer', () => {
                   if ($body.find('p.msg-choices a').length) {
                     install_success.get('login_button').click()
                   }
-                  cy.login();
+                  cy.login({ email: 'admin', password: '1Password' });
 
                   let settings = new UrlsSettings
                   settings.load()

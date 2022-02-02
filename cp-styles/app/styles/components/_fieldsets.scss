@@ -356,13 +356,16 @@ td.invalid {
 .rank-wrap {
   position: absolute;
   right: 45px;
-  top: 7px;
+  top: 8px;
   background: var(--ee-button-default-bg);
   text-transform: uppercase;
 
 	.status-tag {
 		background: none;
 		text-transform: uppercase;
+		max-height: 24px;
+		line-height: 24px;
+		padding: 0 8px;
 		
 		&.strong {
 		  border-color: var(--ee-success);
@@ -383,14 +386,16 @@ td.invalid {
 
 // Password reveal toggle
 fieldset {
-	.eye {
+	.eye,
+	#eye {
 		cursor: pointer;
 		position: absolute;
 		right: 15px;
 		top: 46px;
 	}
 	.field-control {
-		.eye {
+		.eye,
+		#eye {
 			top: 12px;
 		}
 	}

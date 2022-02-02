@@ -498,7 +498,7 @@ class File
 
     /**
      * Add-on Icon
-     * @return string icon url
+     * @return void icon url
      */
     public function addonIcon()
     {

@@ -24,6 +24,11 @@ class Application
     protected $registry;
 
     /**
+     * @var Autoloader object
+     */
+    protected $autoloader;
+
+    /**
      * @var ServiceProvider object
      */
     protected $dependencies;

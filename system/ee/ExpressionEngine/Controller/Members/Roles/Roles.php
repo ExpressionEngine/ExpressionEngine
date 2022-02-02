@@ -118,10 +118,10 @@ class Roles extends AbstractRolesController
 
         foreach ($roles as $role) {
             $edit_url = ee('CP/URL')->make('members/roles/edit/' . $role->getId());
-
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
+                'status' => $role->is_locked,
                 'faded' => '(' . $role->total_members . ')',
                 'faded-href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                 'href' => $edit_url,
@@ -662,11 +662,24 @@ class Roles extends AbstractRolesController
                     'fields' => [
                         'require_mfa' => [
                             'type' => 'yes_no',
-                            'value' => $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
+                            'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
+                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
                         ]
                     ]
                 ],
             ]);
+            if (version_compare(PHP_VERSION, 7.1, '<')) {
+                ee()->lang->load('addons');
+                $section = array_merge($section, [
+                    ee('CP/Alert')->makeInline('mfa_not_available')
+                        ->asWarning()
+                        ->withTitle(lang('mfa_not_available'))
+                        ->addToBody(sprintf(lang('version_required'), 'PHP', 7.1))
+                        ->cannotClose()
+                        ->render()
+                        . form_hidden('require_mfa', 'n')
+                ]);
+            }
         }
 
         if ($role->getId() != Member::SUPERADMIN) {

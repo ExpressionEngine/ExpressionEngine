@@ -17,6 +17,7 @@ module.exports = (on, config) => {
     const Database = require('./database.js');
     const db = new Database({
         host: config.env.DB_HOST,
+        port: config.env.DB_PORT,
         user: config.env.DB_USER,
         password: config.env.DB_PASSWORD,
         database: config.env.DB_DATABASE

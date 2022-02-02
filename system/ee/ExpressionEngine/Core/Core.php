@@ -30,6 +30,8 @@ abstract class Core
      */
     protected $running = false;
 
+    protected $legacy;
+
     /**
      * Boot the application
      */

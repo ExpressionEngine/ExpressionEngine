@@ -65,7 +65,7 @@ class Date extends Settings
                         ),
                         'time_format' => array(
                             'type' => 'radio',
-                            'choices' => array(12 => '12 hour', 24 => '24 hour'),
+                            'choices' => array(12 => lang('12_hour'), 24 => lang('24_hour')),
                             'value' => $this->member->time_format
                         )
                     )

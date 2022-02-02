@@ -34,6 +34,7 @@ class Installer
 
     /**
      * Module installer
+     * @return bool
      */
     public function install()
     {
@@ -60,6 +61,7 @@ class Installer
 
     /**
      * Module updater
+     * @return bool
      */
     public function update($current = '')
     {
@@ -85,6 +87,7 @@ class Installer
 
     /**
      * Module uninstaller
+     * @return bool
      */
     public function uninstall()
     {
@@ -118,6 +121,7 @@ class Installer
 
     /**
      * Extension installer
+     * @return bool
      */
     public function activate_extension()
     {
@@ -140,6 +144,7 @@ class Installer
 
     /**
      * Extension installer
+     * @return bool
      */
     public function disable_extension()
     {

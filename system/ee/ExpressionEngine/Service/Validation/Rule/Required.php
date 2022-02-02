@@ -19,6 +19,10 @@ class Required extends ValidationRule
 {
     public function validate($key, $value)
     {
+        if (is_null($value)) {
+            return $this->stop();
+        }
+        
         if (! is_array($value)) {
             $value = trim($value);
         }

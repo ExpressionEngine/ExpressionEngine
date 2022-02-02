@@ -1298,8 +1298,8 @@ class Comment
     /**
      * Insert New Comment
      *
-     * @access	public
-     * @return	string
+     * @access public
+     * @return void
      */
     public function insert_new_comment()
     {
@@ -1724,19 +1724,19 @@ class Comment
         /**  Set cookies
         /** ----------------------------------------*/
         if ($notify == 'y') {
-            ee()->input->set_cookie('notify_me', 'yes');
+            ee()->input->set_cookie('notify_me', 'yes', 31104000);
         } else {
-            ee()->input->set_cookie('notify_me', 'no');
+            ee()->input->set_cookie('notify_me', 'no', 31104000);
         }
 
         if (ee()->input->post('save_info')) {
-            ee()->input->set_cookie('save_info', 'yes');
+            ee()->input->set_cookie('save_info', 'yes', 31104000);
             ee('Cookie')->setSignedCookie('my_name', $_POST['name'], 31104000);
             ee('Cookie')->setSignedCookie('my_email', $_POST['email'], 31104000);
             ee('Cookie')->setSignedCookie('my_url', $_POST['url'], 31104000);
             ee('Cookie')->setSignedCookie('my_location', $_POST['location'], 31104000);
         } else {
-            ee()->input->set_cookie('save_info', 'no');
+            ee()->input->set_cookie('save_info', 'no', 31104000);
             ee()->input->delete_cookie('my_name');
             ee()->input->delete_cookie('my_email');
             ee()->input->delete_cookie('my_url');
@@ -1883,8 +1883,8 @@ class Comment
      * Comment subscription w/out commenting
      *
      *
-     * @access	public
-     * @return	string
+     * @access public
+     * @return void
      */
     public function comment_subscribe()
     {
@@ -2054,11 +2054,11 @@ class Comment
             );
 
             // Send back the updated comment
-            ee()->output->send_ajax_response(['comment' => $comment_vars->getVariable('comment')]);
+            return ee()->output->send_ajax_response(['comment' => $comment_vars->getVariable('comment')]);
         }
 
         // d-fence
-        ee()->output->send_ajax_response(['error' => $unauthorized]);
+        return ee()->output->send_ajax_response(['error' => $unauthorized]);
     }
 
     /**
@@ -2073,7 +2073,7 @@ class Comment
     {
         $src = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=comment_editor';
 
-        return $this->return_data = '<script type="text/javascript" charset="utf-8" src="' . $src . '"></script>';
+        return '<script type="text/javascript" charset="utf-8" src="' . $src . '"></script>';
     }
 
     /**
