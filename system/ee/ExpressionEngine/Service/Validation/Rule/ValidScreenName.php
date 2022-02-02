@@ -27,7 +27,7 @@ class ValidScreenName extends ValidationRule
             return 'screenname_too_long';
         }
 
-        if (trim(preg_replace("/&nbsp;*/", '', $this->screen_name)) == '') {
+        if (trim(preg_replace("/&nbsp;*/", '', $screen_name)) == '') {
             return 'screen_name_taken';
         }
 

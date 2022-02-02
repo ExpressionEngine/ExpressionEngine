@@ -654,8 +654,10 @@ class Login extends CP_Controller
         if ($validationResult->isNotValid()) {
             $er = '';
 
-            foreach ($validationResult->getAllErrors() as $val) {
-                $er .= $val . BR;
+            foreach ($validationResult->getAllErrors() as $error) {
+                foreach ($error as $val) {
+                    $er .= $val . BR;
+                }
             }
 
             return $this->_un_pw_update_form(trim($er, BR));

@@ -163,7 +163,7 @@ class EE_Validate
         ];
 
         $rules = array(
-            'screen_name' => 'validScreenNane|notBanned'
+            'screen_name' => 'validScreenName|notBanned'
         );
 
         $result = ee('Validation')->make($rules)->validate($data);
