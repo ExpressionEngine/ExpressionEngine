@@ -645,7 +645,7 @@ class Login extends CP_Controller
         }
 
         if ($pw_exists) {
-            $validationRules['password'] = 'validPassword|matches[password_confirm]';
+            $validationRules['password'] = 'validPassword|passwordMatchesSecurityPolicy|matches[password_confirm]';
         }
 
         $validationResult = ee('Validation')->make($validationRules)->validate($data);

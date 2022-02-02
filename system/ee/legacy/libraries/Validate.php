@@ -72,6 +72,9 @@ class EE_Validate
      */
     public function password_safety_check()
     {
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+
         if ($this->cur_password == '') {
             return $this->errors[] = ee()->lang->line('missing_current_password');
         }
@@ -90,6 +93,9 @@ class EE_Validate
      */
     public function validate_username()
     {
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+
         $type = $this->val_type;
 
         // Is username missing?
@@ -211,6 +217,9 @@ class EE_Validate
      */
     public function validate_email()
     {
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+
         $type = $this->val_type;
 
         /** -------------------------------------

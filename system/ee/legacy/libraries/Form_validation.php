@@ -323,6 +323,9 @@ class EE_Form_validation
      */
     public function valid_username($str, $type)
     {
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+
         if (! $type) {
             $type = 'update';
         }
@@ -500,6 +503,9 @@ class EE_Form_validation
      */
     public function valid_user_email($str, $type)
     {
+        ee()->load->library('logger');
+        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+
         if (! $type) {
             $type = 'update';
         }
