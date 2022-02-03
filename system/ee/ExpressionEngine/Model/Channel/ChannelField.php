@@ -185,11 +185,23 @@ class ChannelField extends FieldModel
     {
         $this->removeFromLayouts();
         $this->removeFromFluidFields();
+        $this->removeOrphanFieldConditionSets();
 
         foreach ($this->SearchExcerpts as $channel) {
             $channel->search_excerpt = null;
             $channel->save();
         }
+    }
+
+    /**
+     * Removes condition sets that are not assigned anywhere else
+     * At this point, the record in pivot table has already been removed, so we need to loop through all of those
+     *
+     * @return void
+     */
+    private function removeOrphanFieldConditionSets()
+    {
+        ee('Model')->get('FieldConditionSet')->with('ChannelFields')->filter('ChannelFields.field_id', null)->delete();
     }
 
     public function getAllChannels()

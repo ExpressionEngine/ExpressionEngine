@@ -1,7 +1,7 @@
 <?php
 
+$data = [];
 if (!empty($fieldConditionSets)) {
-    $data = [];
     foreach ($fieldConditionSets->sortBy('order') as $fieldConditionSet) {
         $data[$fieldConditionSet->getId()] = [
             'match' => $fieldConditionSet->match,
