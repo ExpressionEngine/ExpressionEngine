@@ -23,7 +23,7 @@
             'too_many' => 20,
             'class' => 'condition-rule-operator',
             'empty_text' => 'Select a Field',
-            'field_name' => 'condition[set_' . $setId . '][row_' . $rowId . '][evaluation_rule]',
+            'field_name' => 'condition['. $setId .']['. $rowId .'][evaluation_rule]',
             'conditional_toggle' => 'operator',
             'is_required' => false
         ];
@@ -54,7 +54,7 @@
 
     <div class="condition-rule-value-wrap" data-new-rule-row-id="<?=$ruleRowId?>">
         <input type="text"
-            <?php if (!$hiddenTemplate) : ?>value="<?=$value?>"<?php endif; ?>
+            <?php if (!$hiddenTemplate) : ?>value="<?=$value?>" name="condition[<?=$setId?>][<?=$rowId?>][value]"<?php endif; ?>
             <?php if (!$hiddenTemplate && empty($value)) : ?>style="display: none;"<?php endif; ?>
         >
     </div>

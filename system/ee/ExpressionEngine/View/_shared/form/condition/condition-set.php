@@ -38,7 +38,7 @@
                 foreach ($conditions['conditions'] as $conditionRow) {
                     $conditionFieldVal['value'] = $conditionRow['condition_field_id'];
                     $rowId = $conditionRow['condition_id'];
-                    $conditionFieldVal['field_name'] = 'condition[set_' . $setId . '][row_' . $rowId . '][condition_field_id]';
+                    $conditionFieldVal['field_name'] = 'condition['. $setId .']['. $rowId .'][condition_field_id]';
                     $evaluation_rule = $conditionRow['evaluation_rule'];
                     $value = $conditionRow['value'];
 

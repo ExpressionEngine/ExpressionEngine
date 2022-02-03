@@ -54,6 +54,7 @@ ee()->javascript->set_global('conditionData', $data);
     <?php if (count($data)):
         foreach ($data as $conditionSetId => $conditions) {
             $matchFieldDefault['value'] = $conditions['match'];
+            $matchFieldDefault['field_name'] = 'condition_set['. $conditionSetId .'][match]';
 
             $this->embed('ee:_shared/form/condition/condition-set', [
                 'matchVal' => $matchFieldDefault,
