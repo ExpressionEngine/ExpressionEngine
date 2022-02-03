@@ -43,6 +43,7 @@ $matchFieldDefault = [
 
 ee()->javascript->set_global('conditionData', $data);
 
+// var_dump($data);
 ?>
 <div class="field-conditionset-wrapper">
     <?php $this->embed('ee:_shared/form/condition/condition-set', [

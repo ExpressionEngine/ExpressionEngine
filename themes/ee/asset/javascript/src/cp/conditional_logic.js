@@ -71,8 +71,6 @@ Conditional.Publish.prototype = {
         this.original_row_count = this._getRowsInSet().length;
         this.original_set_count = this._getSets().length;
 
-        console.log(Object.keys(EE.conditionData).length);
-
         if (!Object.keys(EE.conditionData).length) {
             this._firstCloneSet();
         }
@@ -86,6 +84,8 @@ Conditional.Publish.prototype = {
         // Disable input elements in our blank template container so they
         // don't get submitted on form submission
         this.blankRow.find(':input').attr('disabled', 'disabled');
+
+        this._showHideDeleteBtns();
     },
 
     _getRowsInSet: function() {
@@ -123,6 +123,34 @@ Conditional.Publish.prototype = {
                     $(value).find('input').attr('disabled', 'disabled');
                 }
             },50);
+        });
+    },
+
+    _showHideDeleteBtns: function() {
+        var setsNotHidden = $('.field-conditionset-wrapper .conditionset-item:not(.hidden)');
+
+        if (Object.keys(EE.conditionData).length > 1) {
+            setsNotHidden.each(function() {
+                $(this).find('.remove-set').show();
+            });
+        }
+
+        setsNotHidden.each(function() {
+            var rowsNotHidden = $(this).find('.rule:not(.hidden)');
+
+            if (rowsNotHidden.length > 1) {
+                rowsNotHidden.each(function() {
+                    var el = $(this);
+                var timer = setInterval(function() {
+                    if (el.find('.delete_rule button').prop('disabled')) {
+                        el.find('.delete_rule button').prop('disabled', false);
+                        clearInterval(timer);
+                    }
+                },50);
+                });
+            } else {
+                rowsNotHidden.find('.delete_rule').hide();
+            }
         });
     },
 

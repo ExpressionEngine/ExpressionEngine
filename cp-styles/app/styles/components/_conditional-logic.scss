@@ -44,6 +44,28 @@
 			padding-right: 20px;
 			position: relative;
 
+			@include m-custom-down(1200px) {
+				flex-wrap: wrap;
+				margin-bottom: 30px;
+
+				&:after {
+					position: absolute;	
+					display: block;
+					content: '';
+					width: calc(100% - 20px);
+					height: 2px;
+					left: 0;
+					bottom: -15px;
+					background: var(--ee-tab-bar-border);
+				}
+
+				&:last-child {
+					margin-bottom: 10px;
+
+					&:after { display: none;}
+				}
+			}
+
 			.select__dropdown {
 				min-width: 32%;
 			}
@@ -52,6 +74,17 @@
 				flex: 0 0 32%;
 				margin-right: 10px;
 				width: 32%;
+
+				@include m-custom-down(1200px) {
+					flex-basis: 100%;
+					width: 100%;
+					margin-right: 0;
+					margin-bottom: 10px;
+
+					&.condition-rule-value-wrap {
+						margin-bottom: 0;
+					}
+				}
 			}
 
 			select,
