@@ -373,6 +373,7 @@ class Fields extends AbstractFieldsController
             if ($this->validationResult->isValid()) {
                 $field->save();
                 if (ee('Request')->post('field_is_conditional') == 'y') {
+                    $assignedConditionalSetIds = [];
                     foreach ($conditionSets as $i => $conditionSet) {
                         $conditionSet->ChannelFields->getAssociation()->set($field);
                         $conditionSet->save();
@@ -380,7 +381,9 @@ class Fields extends AbstractFieldsController
                             $condition->condition_set_id = $conditionSet->getId();
                             $condition->save();
                         }
+                        $assignedConditionalSetIds[] = $conditionSet->getId();
                     }
+                    $field->FieldConditionSets->filter('condition_set_id', 'NOT IN', $assignedConditionalSetIds)->delete();
                 } else {
                     $field->FieldConditionSets->delete();
                 }
