@@ -1,6 +1,15 @@
 
 // LEGACY 6.0 All st- classes are legacy
 
+.status-wrap {
+	display: flex;
+	align-items: center;
+
+	.status-tag {
+		text-transform: capitalize;
+	}
+}
+
 .status-tag {
 	display: inline-block;
 	padding: 3px 8px 2px;

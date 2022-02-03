@@ -111,6 +111,7 @@ return array(
     'image/x-png', // .png
     'image/webp', // .webp
     'image/x-icon', // .ico
+    'image/vnd.microsoft.icon', //.ico
     'message/rfc822', // .eml
     'text/comma-separated-values', // .csv
     'text/css', // .css

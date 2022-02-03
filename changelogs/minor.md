@@ -12,6 +12,7 @@ Bullet list below, e.g.
    - Fixed ViewType class name and removed unused class properties
    - Add conditionals parsing to Request Module
    - Added `category_id` and `category_url_title` to `exp:category_heading`
+   - Added Page modules variables to Category Archive
    - Added `:trim` variable modifier
    - Allow assign previously created field groups to importing channel sets
    - Added Sticky entry column to entries table

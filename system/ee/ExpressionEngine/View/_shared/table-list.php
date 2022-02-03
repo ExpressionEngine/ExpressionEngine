@@ -24,6 +24,16 @@
 					<div class="list-item__secondary">&#160;</div>
 				</a>
 
+				<?php if (isset($row['status'])): ?>
+					<div class="status-wrap">
+						<?php 
+							$class = $row['status'] ? 'locked' : 'unlocked';
+							$status = $row['status'] ? lang('locked') : lang('unlocked');
+						?>
+						<span class="status-tag st-<?=$class?>"><?=$status?></span>
+					</div>
+				<?php endif; ?>
+
 				<div class="list-item__content-right">
 					<?=$this->embed('_shared/toolbar', ['toolbar_items' => $row['toolbar_items']])?>
 				</div>
