@@ -140,7 +140,7 @@ abstract class AbstractFields extends CP_Controller
             if (!is_numeric($condition_set_id)) {
                 $fieldConditionSet = ee('Model')->make('FieldConditionSet');
             } else {
-                $fieldConditionSet = ee('Model')->get('FieldConditionSet', $condition_set_id);
+                $fieldConditionSet = ee('Model')->get('FieldConditionSet', $condition_set_id)->first();
                 if (empty($fieldConditionSet)) {
                     $fieldConditionSet = ee('Model')->make('FieldConditionSet');
                 }
@@ -162,7 +162,7 @@ abstract class AbstractFields extends CP_Controller
                     if (!is_numeric($condition_id)) {
                         $fieldCondition = ee('Model')->make('FieldCondition');
                     } else {
-                        $fieldCondition = ee('Model')->get('FieldCondition', $condition_id);
+                        $fieldCondition = ee('Model')->get('FieldCondition', $condition_id)->first();
                         if (empty($fieldCondition)) {
                             $fieldCondition = ee('Model')->make('FieldCondition');
                         }
