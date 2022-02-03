@@ -5,6 +5,9 @@ const page = new MemberImport;
 
 context('Member Import', () => {
 
+	before(function(){
+		cy.task('db:seed');
+	})
 
 	beforeEach(function() {
 		let field_required = 'This field is required.'

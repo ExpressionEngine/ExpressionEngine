@@ -2003,7 +2003,7 @@ UNGA;
         $pw_exists = ($new_pw !== '' and $new_pwc !== '') ? true : false;
 
         if ($un_exists) {
-            $validationRules['username'] = 'unique|validUsername|notBanned';
+            $validationRules['username'] = 'uniqueUsername|validUsername|notBanned';
         }
 
         if ($pw_exists) {

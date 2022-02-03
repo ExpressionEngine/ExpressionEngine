@@ -17,21 +17,31 @@ use ExpressionEngine\Service\Validation\ValidationRule;
  */
 class ValidScreenName extends ValidationRule
 {
+    protected $last_error = '';
+
     public function validate($key, $screen_name)
     {
         if (preg_match('/[\{\}<>]/', $screen_name)) {
-            return 'disallowed_screen_chars';
+            $this->last_error = 'disallowed_screen_chars';
+            return false;
         }
 
         if (strlen($screen_name) > USERNAME_MAX_LENGTH) {
-            return 'screenname_too_long';
+            $this->last_error = 'screenname_too_long';
+            return false;
         }
 
         if (trim(preg_replace("/&nbsp;*/", '', $screen_name)) == '') {
-            return 'screen_name_taken';
+            $this->last_error = 'screen_name_taken';
+            return false;
         }
 
         return true;
+    }
+
+    public function getLanguageKey()
+    {
+        return $this->last_error;
     }
 }
 

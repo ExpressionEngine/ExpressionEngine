@@ -641,7 +641,7 @@ class Login extends CP_Controller
         $validationRules = [];
 
         if ($un_exists) {
-            $validationRules['username'] = 'unique|validUsername|notBanned';
+            $validationRules['username'] = 'uniqueUsername|validUsername|notBanned';
         }
 
         if ($pw_exists) {

@@ -22,10 +22,16 @@ class NotBanned extends ValidationRule
     public function validate($key, $value)
     {
         if (ee()->session->ban_check($key, $value)) {
-            return $key . '_taken';
+            $this->last_error = $key . '_taken';
+            return false;
         }
 
         return true;
+    }
+
+    public function getLanguageKey()
+    {
+        return $this->last_error;
     }
 }
 

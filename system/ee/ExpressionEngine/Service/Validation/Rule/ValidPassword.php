@@ -17,18 +17,23 @@ use ExpressionEngine\Service\Validation\ValidationRule;
  */
 class ValidPassword extends ValidationRule
 {
+    protected $all_values = array();
+    protected $last_error = '';
+
     public function validate($key, $password)
     {
         ee()->lang->loadfile('myaccount');
 
         $pw_length = ee()->config->item('pw_min_len');
         if (strlen($password) < $pw_length) {
-            return sprintf(lang('password_too_short'), $pw_length);
+            $this->last_error = sprintf(lang('password_too_short'), $pw_length);
+            return false;
         }
 
         // Is password max length correct?
         if (strlen($password) > PASSWORD_MAX_LENGTH) {
-            return 'password_too_long';
+            $this->last_error = 'password_too_long';
+            return false;
         }
 
         //  Make UN/PW lowercase for testing
@@ -37,7 +42,8 @@ class ValidPassword extends ValidationRule
         $nm_pass = strtr($lc_pass, 'elos', '3105');
 
         if ($lc_user == $lc_pass or $lc_user == strrev($lc_pass) or $lc_user == $nm_pass or $lc_user == strrev($nm_pass)) {
-            return 'password_based_on_username';
+            $this->last_error = 'password_based_on_username';
+            return false;
         }
 
         // Does password exist in dictionary?
@@ -48,7 +54,8 @@ class ValidPassword extends ValidationRule
                 $word_file = file($path);
                 foreach ($word_file as $word) {
                     if (trim(strtolower($word)) == $lc_pass) {
-                        return 'password_in_dictionary';
+                        $this->last_error = 'password_in_dictionary';
+                        return false;
                     }
                 }
             }
@@ -60,6 +67,11 @@ class ValidPassword extends ValidationRule
     public function setAllValues(array $values)
     {
         $this->all_values = $values;
+    }
+
+    public function getLanguageKey()
+    {
+        return $this->last_error;
     }
 }
 

@@ -411,6 +411,7 @@ class MemberImport extends Utilities
             show_error(lang('unauthorized_access'), 403);
         }
 
+        ee()->lang->loadfile('members');
         ee()->lang->loadfile('member_import');
 
         $validate = [
@@ -454,6 +455,7 @@ class MemberImport extends Utilities
         if (is_array($xml->children[0]->children)) {
             foreach ($xml->children as $member) {
                 if ($member->tag == "member") {
+                    $validationData = $validate;
                     foreach ($member->children as $tag) {
                         // Is the XML tag an allowed database field
                         if (isset($this->default_fields[$tag->tag])) {
@@ -469,7 +471,6 @@ class MemberImport extends Utilities
                         /*  username and email
                         /*  must be validated and unique
                         /* -------------------------------------*/
-                        $validationData = $validate;
 
                         switch ($tag->tag) {
                             case 'username':
@@ -539,11 +540,12 @@ class MemberImport extends Utilities
                     /*  Validate separately to display
                     /*  exact problem
                     /* -------------------------------------*/
-                    $validationRules = [
-                        'username' => 'required|unique|validUsername|notBanned',
-                        'screen_name' => 'validScreenName|notBanned',
-                        'email' => 'required|email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned',
-                    ];
+                    $validationRules = [];
+                    $validationRules['username'] = 'uniqueUsername|validUsername|notBanned';
+                    if ($screen_name) {
+                        $validationRules['screen_name'] = 'validScreenName|notBanned';
+                    }
+                    $validationRules['email'] = 'email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned';
                     $validationResult = ee('Validation')->make($validationRules)->validate($validationData);
 
                     if ($validationResult->isNotValid()) {
@@ -553,7 +555,6 @@ class MemberImport extends Utilities
                                 $error[$key] = $val . " (Username: '" . $username . "' - " . lang('within_user_record') . " '" . $username . "')";
                             }
                             $errors[] = $error;
-                            unset($this->validate->errors);
                         }
                         if ($validationResult->hasErrors('screen_name')) {
                             $error = [];
@@ -561,7 +562,6 @@ class MemberImport extends Utilities
                                 $error[$key] = $val . " (Screen Name: '" . $screen_name . "' - " . lang('within_user_record') . " '" . $username . "')";
                             }
                             $errors[] = $error;
-                            unset($this->validate->errors);
                         }
                         if ($validationResult->hasErrors('email')) {
                             $error = [];
@@ -569,7 +569,6 @@ class MemberImport extends Utilities
                                 $error[$key] = $val . " (Email: '" . $email . "' - " . lang('within_user_record') . " '" . $username . "')";
                             }
                             $errors[] = $error;
-                            unset($this->validate->errors);
                         }
                     }
 
