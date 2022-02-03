@@ -75,10 +75,14 @@ Conditional.Publish.prototype = {
             this._firstCloneSet();
         }
 
+        if (Object.keys(EE.conditionData).length) {
+            this._bindAddSetButton();
+        }
+
         this._bindDeleteSetButton();
         this._bindDeleteButton();
         this._bindAddButton();
-        this._bindAddSetButton();
+        
         this._checkHiddenEl();
 
         // Disable input elements in our blank template container so they
