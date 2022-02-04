@@ -7,7 +7,7 @@
                         <?php
                             $lc_class = str_replace(':', '', strtolower($button));
                             $id = 'tb-option-' . $lc_class;
-                            $file = PATH_THEMES . 'asset/img/rte-icons/'.$lc_class.'_icon.svg';
+                            $file = PATH_THEMES . 'asset/img/rte-icons/' . $lc_class . '_icon.svg';
                         ?>
                         <span id="<?php echo $id ?>" class="cke_toolbar tb-option tb-selected">
                             <span class="cke_toolgroup">
