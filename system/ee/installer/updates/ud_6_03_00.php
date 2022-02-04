@@ -155,6 +155,37 @@ class Updater
 
     private function addFieldHideColumns()
     {
+        if (!ee()->db->table_exists('channel_data_hidden_fields')) {
+            ee()->dbforge->add_field(
+                [
+                    'entry_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false
+                    ],
+                    'site_id' => [
+                        'type' => 'int',
+                        'constraint' => 4,
+                        'unsigned' => true,
+                        'null' => false,
+                        'default' => 1
+                    ],
+                    'channel_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false
+                    ],
+                ]
+            );
+            ee()->dbforge->add_key('entry_id', true);
+            ee()->dbforge->add_key('channel_id');
+            ee()->dbforge->add_key('site_id');
+            ee()->smartforge->create_table('channel_data_hidden_fields');
+        }
+        ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
+        
         $fields = ee('db')->select('field_id, legacy_field_data')
             ->from('channel_fields')
             ->get();
@@ -162,15 +193,17 @@ class Updater
             foreach($fields->result_array() as $row) {
                 if ($row['legacy_field_data'] == 'n') {
                     $table = 'channel_data_field_' . $row['field_id'];
+                    $after = 'field_ft_' . $row['field_id'];
                 } else {
-                    $table = 'channel_data';
+                    $table = 'channel_data_hidden_fields';
+                    $after = '';
                 }
-                $this->addFieldHideColumn($row['field_id'], $table);
+                $this->addFieldHideColumn($row['field_id'], $table, $after);
             }
         }
     }
 
-    private function addFieldHideColumn($field_id, $table, $prefix = '')
+    private function addFieldHideColumn($field_id, $table, $after = '', $prefix = '')
     {
         $field = $prefix . 'field_hide_' . $field_id;
         if (ee()->db->table_exists($table) && !ee()->db->field_exists($field, $table)) {
@@ -184,7 +217,7 @@ class Updater
                         'null' => false
                     ]
                 ],
-                $prefix . 'field_ft_' . $field_id
+                ($after != '' ? ($prefix . 'field_ft_' . $field_id) : '')
             );
         }
     }

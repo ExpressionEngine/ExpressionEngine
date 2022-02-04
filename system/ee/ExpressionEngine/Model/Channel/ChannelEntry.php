@@ -31,7 +31,7 @@ class ChannelEntry extends ContentModel
 {
     protected static $_primary_key = 'entry_id';
     protected static $_table_name = 'channel_titles';
-    protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
+    protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway', 'ChannelDataHiddenGateway');
 
     protected static $_hook_id = 'channel_entry';
 
@@ -773,8 +773,8 @@ class ChannelEntry extends ContentModel
 
             if ($field->getItem('field_is_conditional') === true) {
                 // Lets evaluate the condition sets
-                // if false, the field should be hidden
-                if (! $evaluator->evaluate($field)) {
+                // if true, the field should be hidden
+                if ($evaluator->evaluate($field)) {
                     $hidden = 'y';
                 }
             }

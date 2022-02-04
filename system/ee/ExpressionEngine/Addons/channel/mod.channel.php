@@ -2089,11 +2089,12 @@ class Channel
         $sql = " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
 						m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.role_id, m.member_id,
-						wd.*";
+						wd.*, exp_channel_data_hidden_fields.*";
 
         $from = " FROM exp_channel_titles		AS t
 				LEFT JOIN exp_channels 		AS w  ON t.channel_id = w.channel_id
 				LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id
+                LEFT JOIN exp_channel_data_hidden_fields	ON t.entry_id = wd.entry_id
 				LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id ";
 
         $mfieldCount = 0;
@@ -2135,8 +2136,9 @@ class Channel
             }
         }
 
-        //MySQL has limit of 61 joins, so we need to make sure to not hit it
-        $join_limit = 61 - 7 - $mfieldCount;
+        // MySQL has limit of 61 joins, so we need to make sure to not hit it
+        // minus number of join we have already, minus the number of joins we need for custom fields tables
+        $join_limit = 61 - 8 - $mfieldCount;
         $chunks = array_chunk($fields, $join_limit);
 
         $chunk = (array_shift($chunks)) ?: array();
