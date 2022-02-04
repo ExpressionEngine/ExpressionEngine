@@ -51,6 +51,11 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
+            
+            - name: Copy .env.php
+              run: |
+                rm -f .env.php
+                cp -f tests/cypress/support/config/.env.php .env.php
 
             # - name: Remove installer
             #   run: |
