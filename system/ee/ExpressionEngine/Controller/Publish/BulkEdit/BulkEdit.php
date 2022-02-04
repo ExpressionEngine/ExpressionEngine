@@ -137,7 +137,7 @@ class BulkEdit extends AbstractBulkEdit
         $entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
 
         if (! $entry_ids || $entries->count() == 0 || ! $this->hasPermissionToEditEntries($entries)) {
-            return show_error(lang('unauthorized_access'), 403);
+            show_error(lang('unauthorized_access'), 403);
         }
 
         // Categories need special handling to overwrite selections in specific
@@ -175,7 +175,7 @@ class BulkEdit extends AbstractBulkEdit
      *
      * @param Collection $entries Entries to assign categories to
      * @param Array $categories POST array of category selections
-     * @return String HTML markup of form
+     * @return void
      */
     protected function assignCategories($entries, $categories)
     {

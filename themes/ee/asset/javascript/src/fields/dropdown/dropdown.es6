@@ -87,8 +87,8 @@ class Dropdown extends React.Component {
     const selected = this.state.selected
 
     return (
-      <div className={"select" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
-        <div className={"select__button"} onClick={this.toggleOpen}>
+      <div className={"select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
+        <div className={"select__button js-dropdown-toggle"} onClick={this.toggleOpen}>
           <label className={'select__button-label' + (this.state.selected ? ' act' : '')}>
             {selected &&
               <span>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}<span dangerouslySetInnerHTML={{__html: selected.label}}></span></span>
@@ -103,7 +103,7 @@ class Dropdown extends React.Component {
           </label>
         </div>
 
-        <div className="select__dropdown">
+        <div className="select__dropdown dropdown">
           {this.props.initialCount > this.props.tooMany &&
             <div className="select__dropdown-search">
             <FieldTools>

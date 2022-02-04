@@ -426,7 +426,7 @@ class EE_Functions
         $location = $this->insert_action_ids($location);
         $location = ee()->uri->reformat($location);
 
-        if (count(ee()->session->flashdata)) {
+        if (isset(ee()->session) && count(ee()->session->flashdata)) {
             // Ajax requests don't redirect - serve the flashdata
 
             if (ee()->input->is_ajax_request()) {
@@ -496,6 +496,7 @@ class EE_Functions
             'secure' => true,
             'enctype' => '',
             'onsubmit' => '',
+            'data_attributes' => '',
             'target' => ''
         );
 
@@ -555,7 +556,13 @@ class EE_Functions
             $data['enctype'] = 'enctype="multipart/form-data" ';
         }
 
-        $form = '<form ' . $data['id'] . $data['class'] . $data['name'] . $data['target'] . 'method="post" action="' . $data['action'] . '" ' . $data['onsubmit'] . ' ' . $data['enctype'] . ">\n";
+        foreach ($data as $key => $val) {
+            if (strpos($key, 'data-') === 0) {
+                $data['data_attributes'] .= ee('Security/XSS')->clean($key) . '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '" ';
+            }
+        }
+
+        $form = '<form ' . $data['id'] . $data['class'] . $data['name'] . $data['target'] . $data['data_attributes'] . 'method="post" action="' . $data['action'] . '" ' . $data['onsubmit'] . ' ' . $data['enctype']. ">\n";
 
         if ($data['secure'] == true) {
             unset($data['hidden_fields']['XID']);

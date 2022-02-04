@@ -439,8 +439,8 @@ class Fields extends AbstractFieldsController
 
         $field->set(ee('Security/XSS')->clean($_POST));
 
-        if ($field->field_pre_populate) {
-            list($channel_id, $field_id) = explode('_', $_POST['field_pre_populate_id']);
+        if ($field->field_pre_populate && ee('Request')->post('field_pre_populate_id')) {
+            list($channel_id, $field_id) = explode('_', ee('Request')->post('field_pre_populate_id'));
 
             $field->field_pre_channel_id = $channel_id;
             $field->field_pre_field_id = $field_id;
@@ -543,6 +543,20 @@ class Fields extends AbstractFieldsController
                 ),
             ),
         );
+
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            $sections['pro_settings'][] = array(
+                'title' => 'enable_frontedit',
+                'desc' => 'enable_frontedit_field_desc',
+                'fields' => array(
+                    'enable_frontedit' => array(
+                        'type' => 'yes_no',
+                        'value' => $field->enable_frontedit
+                    )
+                )
+            );
+        }
 
         $field_options = $field->getSettingsForm();
         if (is_array($field_options) && ! empty($field_options)) {

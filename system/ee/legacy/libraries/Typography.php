@@ -2404,7 +2404,7 @@ while (--j >= 0)
         // Fill in protocol for protocol-relative URLs so that this method
         // always returns a valid URL in the eyes of FILTER_VALIDATE_URL
         if (strpos($url, '//') === 0) {
-            $scheme = empty($_SERVER['HTTPS']) ? 'http' : 'https';
+            $scheme = !ee('Request')->isEncrypted() ? 'http' : 'https';
             $url = $scheme . ':' . $url;
         }
 

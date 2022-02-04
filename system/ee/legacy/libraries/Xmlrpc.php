@@ -1266,6 +1266,9 @@ class XML_RPC_Values extends EE_Xmlrpc
 
     public function iso8601_encode($time, $utc = 0)
     {
+        if (version_compare(PHP_VERSION, '8.1', '>=')) {
+            return date("%Y%m%dT%H:%M:%S", $time);
+        }
         if ($utc == 1) {
             $t = strftime("%Y%m%dT%H:%M:%S", $time);
         } else {

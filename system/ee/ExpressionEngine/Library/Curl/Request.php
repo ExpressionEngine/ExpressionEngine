@@ -17,6 +17,8 @@ abstract class Request
 {
     protected $headers = array();
     protected $headersLowercase = array();
+    public $config;
+    public $callback;
 
     public function __construct($url, $data, $callback = null)
     {

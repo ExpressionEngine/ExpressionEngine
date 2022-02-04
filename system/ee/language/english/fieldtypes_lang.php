@@ -47,9 +47,9 @@ $lang = array(
 
     'rel_ft_include_future' => 'Future entries',
 
-    'rel_ft_limit' => 'Maximum entries',
+    'rel_ft_limit' => 'Maximum number of available entries',
 
-    'rel_ft_limit_desc' => 'Maximum number of entries to show in relationship field.<br><i>Leave blank to allow all entries.</i>',
+    'rel_ft_limit_desc' => 'Sets the number of entries displayed in the field\'s dropdown.<br><i>Leave blank to allow all entries.</i>',
 
     'rel_ft_order' => 'Order by',
 
@@ -71,6 +71,22 @@ $lang = array(
 
     'rel_ft_unrelated_only' => 'Unrelated only',
 
+    'rel_ft_display_entry_id' => 'Display Entry IDs?',
+
+    'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
+
+    'rel_ft_max' => 'Maximum number of related entries',
+
+    'rel_ft_max_desc' => 'Sets the maximum number of entries this field can be used to relate.',
+
+    'rel_ft_max_error' => 'You can select no more than %d entries.',
+
+    'rel_ft_min' => 'Minimum number of related entries',
+
+    'rel_ft_min_desc' => 'Sets the minimum number of entries this field should be used to relate.',
+
+    'rel_ft_min_error' => 'You need to select at least %d entries.',
+
     /* Duration */
     'duration_ft_hh' => 'hh',
 
@@ -89,6 +105,8 @@ $lang = array(
     'duration_ft_units' => 'Units',
 
     'duration_ft_units_desc' => 'Determines the length of time being described when a content author enters a whole number like “42”.',
+
+    'valid_duration' => 'This field must contain duration in %s (or %s)',
 
     /* File */
     'file_ft_allowed_dirs' => 'Allowed Directory',

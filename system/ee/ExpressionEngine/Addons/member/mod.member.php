@@ -524,6 +524,35 @@ class Member
     }
 
     /**
+     * MFA links, directly available
+     *
+     * @return string
+     */
+    public function mfa_links()
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return ee()->TMPL->no_results();
+        }
+
+        $data = [
+            'enable_mfa_link' => '',
+            'disable_mfa_link' => '',
+        ];
+
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y')) {
+            $return = ee()->TMPL->fetch_param('return', ee()->uri->uri_string);
+            if (ee()->session->userdata('mfa_enabled') == true) {
+                $data['disable_mfa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'disableMfa') . AMP . 'RET=' . $return;
+            }
+            if (ee()->session->userdata('mfa_enabled') == false) {
+                $data['enable_mfa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'enableMfa') . AMP . 'RET=' . $return;
+            }
+        }
+
+        return ee()->functions->insert_action_ids(ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $data));
+    }
+
+    /**
      * Member Profile Edit Page
      */
     public function edit_profile()
@@ -1767,37 +1796,37 @@ class Member
         $path = ee()->config->slash_item('emoticon_url');
 
         ob_start(); ?>
-		<script type="text/javascript">
-		<!--
+        <script type="text/javascript">
+        <!--
 
-		function add_smiley(smiley)
-		{
-			var el = opener.document.getElementById('submit_post').body;
+        function add_smiley(smiley)
+        {
+            var el = opener.document.getElementById('submit_post').body;
 
-			if ('selectionStart' in el) {
-				newStart = el.selectionStart + smiley.length;
+            if ('selectionStart' in el) {
+                newStart = el.selectionStart + smiley.length;
 
-				el.value = el.value.substr(0, el.selectionStart) +
-								smiley +
-								el.value.substr(el.selectionEnd, el.value.length);
-				el.setSelectionRange(newStart, newStart);
-			}
-			else if (opener.document.selection) {
-				el.focus();
-				opener.document.selection.createRange().text = smiley;
-			}
-			else {
-				el.value += " " + smiley + " ";
-			}
+                el.value = el.value.substr(0, el.selectionStart) +
+                                smiley +
+                                el.value.substr(el.selectionEnd, el.value.length);
+                el.setSelectionRange(newStart, newStart);
+            }
+            else if (opener.document.selection) {
+                el.focus();
+                opener.document.selection.createRange().text = smiley;
+            }
+            else {
+                el.value += " " + smiley + " ";
+            }
 
-			el.focus();
-			window.close();
-		}
+            el.focus();
+            window.close();
+        }
 
-		//-->
-		</script>
+        //-->
+        </script>
 
-		<?php
+        <?php
 
         $javascript = ob_get_contents();
         ob_end_clean();
@@ -2598,6 +2627,7 @@ class Member
         $member = ee('Model')
             ->get('Member', $member_id)
             ->with('PrimaryRole', 'Roles', 'RoleGroups')
+            ->all()
             ->first();
 
         if (!$member) {
@@ -2651,6 +2681,85 @@ class Member
     }
 
     /**
+     * AJAX validation endpoint
+     *
+     * @return JSON
+     */
+    public function validate()
+    {
+        if (! AJAX_REQUEST || ee('Request')->method() != 'POST') {
+            show_error(lang('unauthorized_access'), 403);
+        }
+        $result = [
+            'success' => true
+        ];
+        ee()->lang->load('login');
+        $fields = !empty(ee('Request')->get('fields')) ? explode('|', ee('Request')->get('fields')) : [];
+        if (empty($fields) || array_intersect(['all', 'username', 'password', 'email', 'screen_name'], $fields)) {
+            $member = ee()->session->getMember();
+            if (ee('Permission')->can('edit_members') && !empty(ee('Request')->post('member_id'))) {
+                $member = ee('Model')->get('Member', (int) ee('Request')->post('member_id'));
+            }
+            if (empty($member)) {
+                $member = ee('Model')->make('Member');
+            }
+            $member->set($_POST);
+
+            if (empty($fields) || in_array('all', $fields)) {
+                $validation = $member->validate();
+
+                if (!$validation->isValid()) {
+                    $result['success'] = false;
+                    $result['errors'] = $validation->getAllErrors();
+                }
+            } else {
+                foreach (['username', 'password', 'email', 'screen_name'] as $field) {
+                    if (in_array($field, $fields)) {
+                        $fn = 'validate' . ($field == 'screen_name' ? 'ScreenName' : ucfirst($field));
+                        if (($fieldValidation = $member->{$fn}($field, ee('Request')->post($field))) !== true) {
+                            $result['success'] = false;
+                            $result['errors'][$field] = lang($fieldValidation);
+                        }
+                    }
+                }
+            }
+        }
+
+        $password = ee('Request')->post('password');
+        if ((empty($fields) || array_intersect(['all', 'password', 'password_rank'], $fields)) && !empty($password)) {
+            $result['rank'] = ee('Member')->calculatePasswordComplexity($password);
+            if ($result['rank'] >= 80) {
+                $result['rank_text'] = lang('password_rank_very_strong');
+            } elseif ($result['rank'] >= 60) {
+                $result['rank_text'] = lang('password_rank_strong');
+            } elseif ($result['rank'] >= 40) {
+                $result['rank_text'] = lang('password_rank_good');
+            } else {
+                $result['rank_text'] = lang('password_rank_weak');
+            }
+        }
+        ee()->output->send_ajax_response($result);
+    }
+
+    /**
+     * Get URL to password validation endpoint
+     *
+     * @return String
+     */
+    public function validation_url()
+    {
+        $action_id = ee()->db->select('action_id')
+            ->where('class', 'Member')
+            ->where('method', 'validate')
+            ->get('actions');
+        $url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id');
+        if (!empty(ee()->TMPL->fetch_param('fields'))) {
+            $url .= '&fields=' . ee()->TMPL->fetch_param('fields');
+        }
+        return $url;
+    }
+
+    /**
      * Parse a custom member field
      *
      * @param	int		$field_id	Member field ID
@@ -2699,9 +2808,9 @@ class Member
         }
 
         $query = ee()->db->query("SELECT m.member_id, m.role_id, m.role_id AS group_id, m.username, m.screen_name, m.email, m.ip_address, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
-							r.name AS group_description FROM exp_members AS m, exp_roles AS r
-							WHERE r.role_id = m.role_id
-							AND m.member_id IN ('" . implode("', '", $ignored) . "')");
+                            r.name AS group_description FROM exp_members AS m, exp_roles AS r
+                            WHERE r.role_id = m.role_id
+                            AND m.member_id IN ('" . implode("', '", $ignored) . "')");
 
         if ($query->num_rows() == 0) {
             return ee()->TMPL->no_results();

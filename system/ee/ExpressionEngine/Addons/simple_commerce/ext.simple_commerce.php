@@ -13,6 +13,8 @@
  */
 class Simple_commerce_ext
 {
+    public $version;
+
     public function __construct()
     {
         $this->version = ee('Addon')->get('simple_commerce')->getVersion();

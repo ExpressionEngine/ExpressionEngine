@@ -8,7 +8,7 @@ const addon_manager = new AddonManager;
 
 context('Spam Module', () => {
 
-  beforeEach(function(){
+  before(function(){
     cy.task('db:seed')
   })
 
@@ -17,8 +17,11 @@ context('Spam Module', () => {
     it('can install from addon manager', () => {
       cy.auth();
       addon_manager.load()
-      const spam_row = addon_manager.get('wrap').find('a[data-post-url*="cp/addons/install/spam"]').click()
-
+      cy.intercept('https://updates.expressionengine.com/check').as('check')
+      cy.intercept('**/license/handleAccessResponse').as('license')
+      addon_manager.get('wrap').find('a[data-post-url*="cp/addons/install/spam"]').click()
+      cy.wait('@check')
+      cy.wait('@license')
       cy.hasNoErrors()
     })
   })
@@ -26,17 +29,20 @@ context('Spam Module', () => {
 
   context('Spam Trap Table', () => {
 
-    beforeEach(function() {
-      cy.auth();
-
+    before(function() {
       // preload the spam trap
-      cy.task('db:load', '../../support/spam/spam.sql')
+      cy.task('db:load', '../../support/spam/spam.sql');
+    })
 
+    beforeEach(function() {
+
+      cy.auth();
       page.load()
 
       //page.displayed?
       page.get('page_heading').contains('All SPAM')
       page.get('keyword_search').should('exist')
+
     })
 
     it('can search by phrases', () => {

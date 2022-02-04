@@ -314,7 +314,7 @@ $lang = array(
 
     'new_password_confirm_desc' => 'Retype desired password, to confirm.',
 
-    'new_password_desc' => 'Use lowercase and uppercase letters, numbers, and symbols for the strongest passwords.',
+    'new_password_desc' => 'Use lowercase and uppercase letters, numbers, and symbols for strong passwords.',
 
     'new_release_indicator' => 'New software release indicator',
 
@@ -342,7 +342,7 @@ $lang = array(
 
     'no_unlocked_member_groups' => 'You do not have the required permissions to add new members to any group.<br />Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.',
 
-    'not_secure_password' => 'Password must contain at least one uppercase character, one lowercase character and one number',
+    'not_secure_password' => 'The chosen password is not secure enough.',
 
     'notepad_blurb' => 'Use this form to store personal notes and information',
 
@@ -523,10 +523,6 @@ $lang = array(
 
     'upload_avatar' => 'Upload — .gif, .jpg, .png (max %skb)',
 
-    'url' => 'Personal website',
-
-    'url_desc' => 'URL location of your personal website',
-
     'user_ip_address' => 'IP Address',
 
     'username' => 'Username',
@@ -558,6 +554,8 @@ $lang = array(
     'year' => 'Year',
 
     'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
+
+    'mfa' => 'Multi-Factor Authentication',
 
 );
 

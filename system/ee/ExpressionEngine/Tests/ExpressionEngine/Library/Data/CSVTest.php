@@ -86,7 +86,8 @@ class CSVTest extends TestCase
 
         $tmp_dir = "/var/tmp";
         if (PHP_OS == "WINNT") {
-            $tmp_dir = "C:/tmp";
+            //$tmp_dir = "C:/tmp";
+            $tmp_dir = "C:/Users/runneradmin/AppData/Local/Temp";
         }
         $this->csv->save($tmp_dir . '/test.csv');
         $this->assertFileExists($tmp_dir . '/test.csv');

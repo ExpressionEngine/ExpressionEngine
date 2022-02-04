@@ -24,7 +24,7 @@ class PostRequest extends Request
             $config['CURLOPT_POSTFIELDS'] = http_build_query($data);
         }
 
-        return parent::__construct($url, $config, $callback);
+        parent::__construct($url, $config, $callback);
     }
 }
 

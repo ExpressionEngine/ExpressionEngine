@@ -51,7 +51,7 @@ class Cli
      * list of commands available from EE
      * @var array
      */
-    public $internalCommands = [
+    private $internalCommands = [
         'list' => Commands\CommandListCommands::class,
         'update' => Commands\CommandUpdate::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,
@@ -83,12 +83,21 @@ class Cli
      */
     protected $commandCalled;
 
+    /**
+     * config setting for if the CLI is enabled
+     * @var string
+     */
+    protected $cliEnabled;
+
     public function __construct()
     {
         // Load the language helper and the DB
         ee()->load->helper('language_helper');
         ee()->lang->loadfile('cli');
         ee()->load->database();
+
+        //  Is the CLI disabled in the settings?
+        $this->cliEnabled = ee()->config->item('cli_enabled') != false ? bool_config_item('cli_enabled') : true;
 
         // Initialize the object
         $factory = new CliFactory();
@@ -97,6 +106,11 @@ class Cli
         $this->output = $factory->newStdio();
         $this->input = $factory->newStdio();
         $this->argv = $this->command->argv->get();
+
+        // If the cli is enabled, we will fail here, before anything has really been done
+        if (!$this->cliEnabled) {
+            $this->fail('cli_error_cli_disabled');
+        }
 
         if (! isset($this->argv[1])) {
             $this->fail('cli_error_no_command_given');
@@ -250,16 +264,16 @@ class Cli
         $argument = isset($this->arguments[0]) ? $this->arguments[0] : null;
 
         // If the first argument is an option, we have nothing so return null
-        if (substr($argument, 0, 1) === '-') {
+        if (is_string($argument) && substr($argument, 0, 1) === '-') {
             $argument = null;
         }
 
-        if (empty(trim($argument)) && !is_null($question)) {
+        if (empty(trim((string) $argument)) && !is_null($question)) {
             $argument = $this->ask($question, $default);
         }
 
         // Name is a required field
-        if ($required && empty(trim($argument))) {
+        if ($required && empty(trim((string) $argument))) {
             $this->fail(lang('cli_error_is_required'));
         }
 

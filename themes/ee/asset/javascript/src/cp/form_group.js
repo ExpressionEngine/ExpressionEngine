@@ -106,9 +106,9 @@ function toggleSections(sections, show, key) {
 
 			// if we're showing this section, but the field is hidden
 			// from another toggle, then don't show it
-			if (group && group != key) {
-				hidden[group] = ! show;
-			}
+			// if (group && group != key) {
+			// 	hidden[group] = ! show;
+			// }
 
 			if (show && group && hidden[group] != undefined) {
 				toggleFields(field, hidden[group], key);
