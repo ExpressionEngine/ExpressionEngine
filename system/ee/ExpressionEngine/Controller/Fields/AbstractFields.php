@@ -149,9 +149,12 @@ abstract class AbstractFields extends CP_Controller
             $fieldConditionSet->order = $set_index;
             $fieldConditionSetValidation = $fieldConditionSet->validate();
             if (!$fieldConditionSetValidation->isValid()) {
-                $rules = $fieldConditionSetValidation->getFailed();
-                foreach ($rules as $piece => $rule) {
-                    $this->validationResult->addFailed($piece, $rule[0]);
+                $errors = $fieldConditionSetValidation->getFailed();
+                foreach ($errors as $piece => $rules) {
+                    foreach ($rules as $rule) {
+                        $errorName = 'condition_set[' . $condition_set_id . '][' . $piece . ']';
+                        $this->validationResult->addFailed($errorName, $rule);
+                    }
                 }
             }
             $conditionSets[$set_index] = $fieldConditionSet;
@@ -173,9 +176,12 @@ abstract class AbstractFields extends CP_Controller
                     $fieldCondition->order = $rule_index;
                     $fieldConditionValidation = $fieldCondition->validate();
                     if (!$fieldConditionValidation->isValid()) {
-                        $rules = $fieldConditionValidation->getFailed();
-                        foreach ($rules as $piece => $rule) {
-                            $this->validationResult->addFailed($piece, $rule[0]);
+                        $errors = $fieldConditionValidation->getFailed();
+                        foreach ($errors as $piece => $rules) {
+                            foreach ($rules as $rule) {
+                                $errorName = 'condition[' . $condition_set_id . '][' . $condition_id . '][' . $piece . ']';
+                                $this->validationResult->addFailed($errorName, $rule);
+                            }
                         }
                     }
 
