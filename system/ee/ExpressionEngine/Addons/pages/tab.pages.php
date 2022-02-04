@@ -333,8 +333,6 @@ class Pages_tab
 
                 $page = '/' . trim($page, '/');
 
-                //if we got here, and page URI is not unique, generate new one
-
                 $site_pages[$site_id]['uris'][$entry->entry_id] = $page;
                 $site_pages[$site_id]['templates'][$entry->entry_id] = preg_replace(
                     "#[^0-9]+$#i",
