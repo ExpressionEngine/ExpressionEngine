@@ -8,6 +8,12 @@
 
     if ($hiddenTemplate) {
         $ruleRowId = 'new_rule_row_' . $setId;
+
+        if ($setId) {
+            $conditionFieldVal['field_name'] = 'condition['. $setId .'][new_row_0][condition_field_id]';
+        } else {
+            $conditionFieldVal['field_name'] = 'condition[new_set_0][new_row_0][condition_field_id]';
+        }
     } else {
         $ruleRowId = 'rule_row_' . $setId;
 
