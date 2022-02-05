@@ -55,6 +55,8 @@ Bullet list below, e.g.
    - Fix #1195 improves `template_post_parse` hook when fired after sub or layout (i.e. partial) template parse completes
    - Fix WEBP Mime type detection
    - Fix channels being ignored on search module
+   - Fix scanned PDF files not being properly detected
+   - Fix Consent Module not respecting `disable_csrf_protection` config override
    - Refactor `exp:search:total_results` to be parsed as any template
 
 
