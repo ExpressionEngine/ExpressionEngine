@@ -25,7 +25,7 @@ class Request
     public function request_template()
     {
         if (in_array(ee()->uri->segment(1), ee()->uri->reserved) && false !== ee()->uri->segment(2)) {
-            $resource = ee()->uri->segment(2).'/'.ee()->uri->segment(3);
+            $resource = ee()->uri->segment(2) . '/' . ee()->uri->segment(3);
         } elseif (isset($_GET['css'])) {
             $resource = $_GET['css'];
             $this->type = 'css';
@@ -60,8 +60,8 @@ class Request
             ee()->db->from(['templates', 'template_groups']);
 
             ee()->db->where(
-                ee()->db->dbprefix('templates').'.group_id',
-                ee()->db->dbprefix('template_groups').'.group_id',
+                ee()->db->dbprefix('templates') . '.group_id',
+                ee()->db->dbprefix('template_groups') . '.group_id',
                 false
             );
             ee()->db->where('templates.template_name', $name);
@@ -89,15 +89,15 @@ class Request
              * /** -----------------------------------------*/
             if ('y' == ee()->config->item('save_tmpl_files')) {
                 ee()->load->helper('file');
-                $basepath = PATH_TMPL.(isset($site) ? $site : ee()->config->item('site_short_name')).'/';
-                $basepath .= $group.'.group/'.$row['template_name'].'.'.$this->type;
+                $basepath = PATH_TMPL . (isset($site) ? $site : ee()->config->item('site_short_name')) . '/';
+                $basepath .= $group . '.group/' . $row['template_name'] . '.' . $this->type;
 
                 $str = read_file($basepath);
                 $row['template_data'] = (false !== $str) ? $str : $row['template_data'];
                 $row['edit_date'] = (false !== $str) ? filemtime($basepath) : $row['edit_date'];
             }
 
-            $this->resource_cache[$resource] = str_replace(LD.'site_url'.RD, stripslashes(ee()->config->item('site_url')), $row['template_data']);
+            $this->resource_cache[$resource] = str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $row['template_data']);
         }
 
         $this->_send_resource($this->resource_cache[$resource], $row['edit_date']);
@@ -135,14 +135,14 @@ class Request
             }
 
             // All times GMT
-            $modified = gmdate('D, d M Y H:i:s', $modified).' GMT';
-            $expires = gmdate('D, d M Y H:i:s', time() + $max_age).' GMT';
+            $modified = gmdate('D, d M Y H:i:s', $modified) . ' GMT';
+            $expires = gmdate('D, d M Y H:i:s', time() + $max_age) . ' GMT';
 
             ee()->output->set_status_header(200);
             @header("Cache-Control: max-age={$max_age}, must-revalidate");
-            @header('Last-Modified: '.$modified);
-            @header('Expires: '.$expires);
-            @header('Content-Length: '.strlen($resource));
+            @header('Last-Modified: ' . $modified);
+            @header('Expires: ' . $expires);
+            @header('Content-Length: ' . strlen($resource));
         }
 
         if ('css' === $this->type) {
@@ -150,7 +150,7 @@ class Request
         } elseif ('js' === $this->type) {
             header('Content-type: text/javascript');
         } else {
-            header('Content-type: text/'.$this->type);
+            header('Content-type: text/' . $this->type);
         }
 
         exit($resource);

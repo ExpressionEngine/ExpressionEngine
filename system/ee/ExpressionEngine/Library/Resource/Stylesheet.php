@@ -35,7 +35,7 @@ class Stylesheet extends Request
      */
     private function _ee_channel_form_css()
     {
-        $files[] = PATH_THEMES.'cform/css/eecms-cform.min.css';
+        $files[] = PATH_THEMES . 'cform/css/eecms-cform.min.css';
 
         $out = '';
 
