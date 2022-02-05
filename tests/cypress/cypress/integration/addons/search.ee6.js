@@ -29,10 +29,11 @@ context('Search', () => {
     cy.get('#keywords').clear().type('WordPress')
     cy.get('.submit').first().click()
 
-    cy.get('#total-results__within-pair').should('not.exist')
-    cy.get('#total-results__within-pair--no-results').should('contain', 'None')
-    cy.get('#total-results__single-var').should('contain', '0')
-    cy.get('#total-results__single-var--zero').should('exist')
+	// TODO: enable after merge of #1674
+//     cy.get('#total-results__within-pair').should('not.exist')
+//     cy.get('#total-results__within-pair--no-results').should('contain', 'None')
+//     cy.get('#total-results__single-var').should('contain', '0')
+//     cy.get('#total-results__single-var--zero').should('exist')
   })
 
   it('searches everywhere', function(){
