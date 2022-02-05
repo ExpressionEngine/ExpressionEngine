@@ -24,7 +24,7 @@ context('File Manager / Upload File', () => {
   })
 
   beforeEach(function() {
-    cy.auth();
+	cy.authVisit('admin.php?/cp/files');
 
     page.load()
     cy.hasNoErrors()
@@ -85,7 +85,7 @@ context('File Manager / Upload File', () => {
     returnPage.get('alert').should('exist')
     returnPage.get('alert_success').should('exist')
     returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file README.md was uploaded successfully.")
+    returnPage.get('alert').contains("The file README was uploaded successfully.")
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("README.md")
   })
@@ -116,7 +116,7 @@ context('File Manager / Upload File', () => {
     returnPage.get('alert').should('exist')
     returnPage.get('alert_success').should('exist')
     returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file README.md was uploaded successfully.")
+    returnPage.get('alert').contains("The file README was uploaded successfully.")
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("README.md")
 
@@ -137,7 +137,7 @@ context('File Manager / Upload File', () => {
     returnPage.get('alert').should('exist')
     returnPage.get('alert_success').should('exist')
     returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file README.md was uploaded successfully.")
+    returnPage.get('alert').contains("The file README was uploaded successfully.")
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("README.md")
 
@@ -158,7 +158,7 @@ context('File Manager / Upload File', () => {
     returnPage.get('alert').should('exist')
     returnPage.get('alert_success').should('exist')
     returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file README.md was uploaded successfully.")
+    returnPage.get('alert').contains("The file README was uploaded successfully.")
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("README.md")
 
@@ -192,7 +192,7 @@ context('File Manager / Upload File', () => {
     returnPage.get('alert').should('exist')
     returnPage.get('alert_success').should('exist')
     returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file programming.gif was uploaded successfully.")
+    returnPage.get('alert').contains("The file programming was uploaded successfully.")
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("programming.gif")
 
