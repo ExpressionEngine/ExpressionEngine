@@ -3194,6 +3194,17 @@ class Channel
 
         $return_data = '';
 
+        $site_pages = config_item('site_pages');
+
+        foreach (ee()->TMPL->site_ids as $site_id) {
+            if ($site_id != ee()->config->item('site_id')) {
+                $pages = ee()->config->site_pages($site_id);
+                $site_pages[$site_id] = $pages[$site_id];
+            }
+        }
+
+        $site_id = ee()->config->item('site_id');
+
         if (ee()->TMPL->fetch_param('style') == '' or ee()->TMPL->fetch_param('style') == 'nested') {
             if ($result->num_rows() > 0 && $title_chunk != '') {
                 $i = 0;
@@ -3212,6 +3223,15 @@ class Channel
                     $chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $row['entry_date']));
 
                     $row['channel_url'] = parse_config_variables($row['channel_url']);
+
+                    if (isset($site_pages[$site_id]['uris'][$row['entry_id']])) {
+                        $row['page_uri'] = $site_pages[$site_id]['uris'][$row['entry_id']];
+                        $row['page_url'] = ee()->functions->create_page_url($site_pages[$site_id]['url'], $site_pages[$site_id]['uris'][$row['entry_id']]);
+                    } else {
+                        $row['page_uri'] = '';
+                        $row['page_url'] = '';
+                    }
+
                     $chunk = ee()->TMPL->parse_variables_row($chunk, $row);
 
                     $channel_array[$i . '_' . $row['cat_id']] = str_replace(LD . 'title' . RD, $row['title'], $chunk);
@@ -3381,6 +3401,15 @@ class Channel
                             $chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $trow['entry_date']));
 
                             $trow['channel_url'] = parse_config_variables($trow['channel_url']);
+
+                            if (isset($site_pages[$site_id]['uris'][$trow['entry_id']])) {
+                                $trow['page_uri'] = $site_pages[$site_id]['uris'][$trow['entry_id']];
+                                $trow['page_url'] = ee()->functions->create_page_url($site_pages[$site_id]['url'], $site_pages[$site_id]['uris'][$trow['entry_id']]);
+                            } else {
+                                $trow['page_uri'] = '';
+                                $trow['page_url'] = '';
+                            }
+
                             $chunk = ee()->TMPL->parse_variables_row($chunk, $trow);
 
                             $titles_parsed .= $chunk;
