@@ -17,6 +17,7 @@ Bullet list below, e.g.
    - Allow assign previously created field groups to importing channel sets
    - Added Sticky entry column to entries table
    - Add channel data to category archives
+   - Added `parse_files` parameter on Query Module
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
