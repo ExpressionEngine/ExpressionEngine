@@ -113,6 +113,10 @@ class MimeType
             $file_opening = file_get_contents($path, false, null, 0, 50);//get first 50 bytes off the file
             if (strpos($file_opening, 'RIFF') === 0 && strpos($file_opening, 'WEBPVP8') !== false) {
                 $mime = 'image/webp';
+                // PDF files start with "%PDF" (25 50 44 46) or " %PDF"
+                // @see https://en.wikipedia.org/wiki/Magic_number_%28programming%29#Examples
+            } else if (strpos($file_opening, '%PDF') !== false) {
+                $mime = 'application/pdf';
             }
         }
 
@@ -195,6 +199,21 @@ class MimeType
                 return false;
             }
             return true;
+        }
+
+        // If the reported mime-type is an icon, we won't do the next validation step because imagecreatefromstring does not support .ico files
+        if ($mime === 'image/vnd.microsoft.icon' || $mime == 'image/x-icon') {
+            try {
+                $file = fopen($path, 'r');
+                $first = fread($file, 4);
+                fclose($file);
+                return $first === "\x00\x00\x01\x00";
+            } catch (\Exception $e) {
+                if (DEBUG) {
+                    show_error($e->getMessage());
+                }
+                return false;
+            }
         }
 
         // If the reported mime-type is an image we'll do an extra validation
