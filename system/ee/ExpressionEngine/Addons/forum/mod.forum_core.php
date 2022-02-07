@@ -340,14 +340,24 @@ class Forum_Core extends Forum
         if ($query->num_rows() == 0) {
             $this->read_topics_exist = false;
             $read_topics = $this->_fetch_read_topics_cookie($new_id);
-
-            if (count($read_topics) > 0) {
-                $this->read_topics_exist = true;
-                ee()->db->query("INSERT INTO exp_forum_read_topics (member_id, board_id, topics, last_visit)
-							VALUES ('" . ee()->db->escape_str(ee()->session->userdata('member_id')) . "', '" . $this->fetch_pref('board_id') . "', '" . serialize($read_topics) . "', '" . ee()->localize->now . "')");
+            /*Malicious cookie clearing.
+            read_topics should be in the form of a topic id and a time int.
+            Value should also be recent in case someone is trying to put in incorrect time values (No future values allowed either)*/
+            $clean_read_topics = array();
+            foreach ($read_topics as $key => $val) {
+                if (is_int($val)) {
+                    $clean_read_topics[$key] = ee()->db->escape_str($val);
+                }
             }
 
-            return $read_topics;
+            if (count($clean_read_topics) > 0) {
+                $this->read_topics_exist = true;
+                ee()->db->query("INSERT INTO exp_forum_read_topics (member_id, board_id, topics, last_visit)
+							VALUES ('" . ee()->db->escape_str(ee()->session->userdata('member_id')) . "', '" . $this->fetch_pref('board_id') . "', '" . serialize($clean_read_topics) . "', '" . ee()->localize->now . "')");
+            }
+
+            return $clean_read_topics;
+
         }
 
         $this->read_topics_exist = true;
