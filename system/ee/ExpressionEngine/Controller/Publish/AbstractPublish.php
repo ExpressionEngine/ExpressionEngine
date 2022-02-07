@@ -67,14 +67,14 @@ abstract class AbstractPublish extends CP_Controller
         $autosave_interval_seconds = (ee()->config->item('autosave_interval_seconds') === false) ?
                                         60 : ee()->config->item('autosave_interval_seconds');
 
-        //	Create Foreign Character Conversion JS
+        //  Create Foreign Character Conversion JS
         $foreign_characters = ee()->config->loadFile('foreign_chars');
 
         /* -------------------------------------
         /*  'foreign_character_conversion_array' hook.
         /*  - Allows you to use your own foreign character conversion array
         /*  - Added 1.6.0
-        * 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+        *   - Note: in 2.0, you can edit the foreign_chars.php config file as well
         */
         if (isset(ee()->extensions->extensions['foreign_character_conversion_array'])) {
             $foreign_characters = ee()->extensions->call('foreign_character_conversion_array');
@@ -120,9 +120,9 @@ abstract class AbstractPublish extends CP_Controller
         ee('Category')->addCategoryJS();
 
         // -------------------------------------------
-        //	Publish Page Title Focus - makes the title field gain focus when the page is loaded
+        //  Publish Page Title Focus - makes the title field gain focus when the page is loaded
         //
-        //	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
+        //  Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
 
         ee()->javascript->set_global('publish.title_focus', false);
 
@@ -457,14 +457,19 @@ abstract class AbstractPublish extends CP_Controller
 
             return $result;
         } elseif (ee()->input->post('submit') == 'save' || (defined('CLONING_MODE') && CLONING_MODE === true)) {
-            $cloneAlert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
-                ? ee('CP/Alert')->makeStandard()
-                : ee('CP/Alert')->makeInline('entry-form-clone');
 
-            $cloneAlert->asWarning()
+            // If we just cloned an entry, we set the "status changed" warning banner
+            if ((defined('CLONING_MODE') && CLONING_MODE === true)) {
+                $cloneAlert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
+                    ? ee('CP/Alert')->makeStandard()
+                    : ee('CP/Alert')->makeInline('entry-form-clone');
+
+                $cloneAlert->asWarning()
                 ->canClose()
                 ->addToBody(sprintf(lang('status_changed_desc'), lang('closed')))
                 ->defer();
+            }
+
             if (ee()->input->get('return') != '') {
                 $redirect_url = urldecode(ee()->input->get('return'));
             } elseif (ee()->input->post('return') != '') {
