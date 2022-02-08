@@ -304,7 +304,7 @@ $lang = array(
 
     'enable_entry_cloning' => 'Enable entry cloning?',
 
-    'enable_entry_cloning_desc' => 'When enabled, entries can be duplicated using "Save as New Entry" option in saving options dropdown.',
+    'enable_entry_cloning_desc' => 'When enabled, entries can be duplicated using "Clone to New Entry" option in saving options dropdown.',
 
     'default_category' => 'Category',
 

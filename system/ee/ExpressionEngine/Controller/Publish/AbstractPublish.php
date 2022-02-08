@@ -461,7 +461,7 @@ abstract class AbstractPublish extends CP_Controller
             // If we just cloned an entry, we set the "status changed" warning banner
             if ((defined('CLONING_MODE') && CLONING_MODE === true)) {
                 $cloneAlert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
-                    ? ee('CP/Alert')->makeStandard()
+                    ? ee('CP/Alert')->makeStandard('entry-form-clone')
                     : ee('CP/Alert')->makeInline('entry-form-clone');
 
                 $cloneAlert->asWarning()
