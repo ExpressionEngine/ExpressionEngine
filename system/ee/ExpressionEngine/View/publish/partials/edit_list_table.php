@@ -3,7 +3,6 @@
         <?=form_open($form_url)?>
 
         <div class="panel-heading entry-pannel-heading"<?php if (ee()->uri->segment(3) == 'prolet') : ?> style="display: none;"<?php endif; ?>>
-          <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
           <div class="title-bar">
                 <h3 class="title-bar__title"><?=$head['title']?></h3>
           </div>
@@ -33,6 +32,11 @@
             </div>
         <?php endif ?>
         </div>
+
+        <div class="entry-pannel-notice-wrap">
+            <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+        </div>
+
 
         <div class="filter-search-bar" <?php if (ee()->uri->segment(3) == 'prolet') : ?> style="padding: 10px 10px;"<?php endif; ?>>
 
