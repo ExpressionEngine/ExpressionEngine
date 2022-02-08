@@ -26,6 +26,7 @@ class Request
     {
         if (in_array(ee()->uri->segment(1), ee()->uri->reserved) && false !== ee()->uri->segment(2)) {
             $resource = ee()->uri->segment(2) . '/' . ee()->uri->segment(3);
+            $this->type = ee()->uri->segment(1);
         } elseif (isset($_GET['css'])) {
             $resource = $_GET['css'];
             $this->type = 'css';

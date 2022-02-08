@@ -63,6 +63,9 @@ context('Design', () => {
 		it('loads script resource template from a different MSM site', function () {
 			cy.get("#forth").should('have.css', 'background-color', 'rgb(0, 0, 0)')
 		})
-	})
 
+		it('loads stylesheet using `/css/` on path', function () {
+			cy.get("#forth").should('have.css', 'color', 'rgb(255, 255, 255)')
+		})
+	})
 })
