@@ -5,6 +5,11 @@ import HitTracking from '../../elements/pages/settings/HitTracking';
 const page = new HitTracking
 
 context('Hit Tracking', () => {
+
+  before(function(){
+    cy.task('db:seed')
+  })
+  
   beforeEach(function(){
     cy.auth();
     page.load()
