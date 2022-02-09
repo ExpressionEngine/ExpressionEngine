@@ -5,8 +5,12 @@
     $setTemlatesId = isset($temlates) ? 0 : 1;
     $savedSetId = isset($conditionSetId) ? $conditionSetId : null;
     $conditions = isset($conditions) ? $conditions : [];
+    $conditionRowId = isset($conditionRowId) ? $conditionRowId : '';
 
-    if ($savedSetId) {
+    if ((strpos($savedSetId, 'new_') !== false)) {
+        $setBlockId = 'new_conditionset_block_' . $setTemlatesId;
+        $setId = $savedSetId;
+    } elseif ($savedSetId) {
         $setBlockId = 'conditionset_block_' . $savedSetId;
         $setId = $savedSetId;
     } else {
@@ -33,14 +37,15 @@
                 'conditionFieldVal' => $conditionFieldVal,
                 'hiddenTemplate' => true
             ]);?>
-            <?php 
+            <?php
             if (count($conditions)) {
                 foreach ($conditions['conditions'] as $conditionRow) {
                     $conditionFieldVal['value'] = $conditionRow['condition_field_id'];
                     $rowId = $conditionRow['condition_id'];
-                    $conditionFieldVal['field_name'] = 'condition['. $setId .']['. $rowId .'][condition_field_id]';
+                    $conditionFieldVal['field_name'] = 'condition[' . $setId . '][' . $rowId . '][condition_field_id]';
                     $evaluation_rule = $conditionRow['evaluation_rule'];
                     $value = $conditionRow['value'];
+                    $error = isset($conditionRow['errors']) ? $conditionRow['errors'] : false;
 
                     $this->embed('_shared/form/condition/condition-rule', [
                         'setId' => $setId,
@@ -48,6 +53,7 @@
                         'conditionFieldVal' => $conditionFieldVal,
                         'evaluation_rule' => $evaluation_rule,
                         'value' => $value,
+                        'error' => $error
                     ]);
                 }
             }

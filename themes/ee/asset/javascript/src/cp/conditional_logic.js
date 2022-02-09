@@ -75,21 +75,21 @@ Conditional.Publish.prototype = {
             this._firstCloneSet();
         }
 
-        if (Object.keys(EE.conditionData).length) {
+        if (Object.keys(EE.conditionData).length || this.original_set_count == 1) {
             this._bindAddSetButton();
         }
+
+        this._showHideDeleteBtns();
 
         this._bindDeleteSetButton();
         this._bindDeleteButton();
         this._bindAddButton();
-        
+
         this._checkHiddenEl();
 
         // Disable input elements in our blank template container so they
         // don't get submitted on form submission
         this.blankRow.find(':input').attr('disabled', 'disabled');
-
-        this._showHideDeleteBtns();
     },
 
     _getRowsInSet: function() {
@@ -131,9 +131,10 @@ Conditional.Publish.prototype = {
     },
 
     _showHideDeleteBtns: function() {
+        var that = this;
         var setsNotHidden = $('.field-conditionset-wrapper .conditionset-item:not(.hidden)');
 
-        if (Object.keys(EE.conditionData).length > 1) {
+        if (setsNotHidden.length > 1) {
             setsNotHidden.each(function() {
                 $(this).find('.remove-set').show();
             });
@@ -145,12 +146,8 @@ Conditional.Publish.prototype = {
             if (rowsNotHidden.length > 1) {
                 rowsNotHidden.each(function() {
                     var el = $(this);
-                var timer = setInterval(function() {
-                    if (el.find('.delete_rule button').prop('disabled')) {
-                        el.find('.delete_rule button').prop('disabled', false);
-                        clearInterval(timer);
-                    }
-                },50);
+                    el.find('.delete_rule button').prop('disabled', false);
+                    el.find('.delete_rule').show();
                 });
             } else {
                 rowsNotHidden.find('.delete_rule').hide();
@@ -204,6 +201,7 @@ Conditional.Publish.prototype = {
         }
 
         that._checkHiddenEl();
+        that._showHideDeleteBtns();
 
         // Bind the new row's inputs to AJAX form validation
         if (EE.cp && EE.cp.formValidation !== undefined) {
@@ -236,6 +234,13 @@ Conditional.Publish.prototype = {
 
             if (rowParent.find('.rule:not(.hidden)').length == 1) {
                 rowParent.find('.rule:not(.hidden)').find('[rel="remove_row"]').hide();
+            }
+
+            // Mark Conditional Row field as valid if all rows with invalid cells are cleared
+            if ($('div.invalid', that.root).length == 0 &&
+                EE.cp &&
+                EE.cp.formValidation !== undefined) {
+                EE.cp.formValidation.markFieldValid($('input, select, textarea', that.blankRow).eq(0));
             }
         });
     },
@@ -294,6 +299,7 @@ Conditional.Publish.prototype = {
 
         $('body').on('click', 'a.add-set', function(event) {
             event.preventDefault();
+            console.log('this', $(this));
             that._addSetBlock();
 
             if (that.original_set_count > 1) {
@@ -318,6 +324,17 @@ Conditional.Publish.prototype = {
 
             if (set_count.length == 1) {
                 $('.remove-set', set_count).hide();
+            }
+
+            // Mark Conditional Row field as valid if all rows with invalid cells are cleared
+            console.log('11', set_count);
+            console.log('22', $('div.invalid', set_count).length);
+            console.log('33', $('input, select, textarea', that.blankSet));
+
+            if ($('div.invalid', set_count).length == 0 &&
+                EE.cp &&
+                EE.cp.formValidation !== undefined) {
+                EE.cp.formValidation.markFieldValid($('input, select, textarea', that.blankSet).eq(0));
             }
         });
     },
