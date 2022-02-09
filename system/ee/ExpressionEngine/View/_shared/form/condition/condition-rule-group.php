@@ -16,8 +16,6 @@ foreach ($fieldsList as $fieldLabel) {
     $conditionFieldArr[$fieldLabel['field_id']] = $fieldLabel['field_label'];
 }
 
-// var_dump('errors', $errors);
-
 $conditionFieldDefault = [
     'choices' => ee('View/Helpers')->normalizedChoices($conditionFieldArr),
     'value' => '',
@@ -42,8 +40,6 @@ $matchFieldDefault = [
 ];
 
 ee()->javascript->set_global('conditionData', $data);
-
-// var_dump($data);
 ?>
 <div class="field-conditionset-wrapper">
     <?php $this->embed('ee:_shared/form/condition/condition-set', [
@@ -52,14 +48,54 @@ ee()->javascript->set_global('conditionData', $data);
         'temlates' => true
     ]); ?>
 
+    <?php if (!empty($errors)):
+        foreach ($errors->getFailed() as $fieldName => $item) {
+            $fl_array = preg_match_all("/\[(.*?)\]/", $fieldName, $found);
+            $setId = $found[1][0];
+            $rowId = $found[1][1];
+
+            if ($found[1][2] !== 'evaluation_rule') {
+                if (strpos($setId, 'new_') !== false) {
+                    $data[] = array(
+                        'match' => 'all',
+                        'conditions' => array(
+                            array(
+                                'condition_set_id' => $setId,
+                                'condition_id' => $rowId,
+                                'condition_field_id' => '',
+                                'evaluation_rule' => '',
+                                'value' => null,
+                                'errors' => true
+                            )
+                        )
+                    );
+                } else {
+                    $data[$setId]['conditions'][] = array(
+                        'condition_set_id' => $setId,
+                        'condition_id' => $rowId,
+                        'condition_field_id' => '',
+                        'evaluation_rule' => '',
+                        'value' => null,
+                        'errors' => true
+                    );
+                }
+            }
+        }
+    endif;?>
+
     <?php if (count($data)):
         foreach ($data as $conditionSetId => $conditions) {
+            $condSetId = $conditionSetId;
+            if ($conditionSetId == 0) {
+                $condSetId = $setId;
+            }
+
             $matchFieldDefault['value'] = $conditions['match'];
-            $matchFieldDefault['field_name'] = 'condition_set['. $conditionSetId .'][match]';
+            $matchFieldDefault['field_name'] = 'condition_set['. $condSetId .'][match]';
 
             $this->embed('ee:_shared/form/condition/condition-set', [
                 'matchVal' => $matchFieldDefault,
-                'conditionSetId' => $conditionSetId,
+                'conditionSetId' => $condSetId,
                 'conditionFieldVal' => $conditionFieldDefault,
                 'conditions' => $conditions
             ]);

@@ -100,10 +100,11 @@
 				position: absolute;
 				right: 0;
 				margin: 0;
-				top: 50%;
-				transform: translateY(-50%);
-				display: none;
+				top: 7px;
+				// transform: translateY(-50%);
+				display: block;
 				width: auto;
+				opacity: 0;
 
 				button {
 					padding: 0 !important;
@@ -114,7 +115,7 @@
 			}
 
 			&:hover {
-				.delete_rule { display: block;}
+				.delete_rule { opacity: 1;}
 			}
 
 			.short-name {

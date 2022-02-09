@@ -42,11 +42,10 @@ EE.cp.formValidation = {
 			that = this;
 
 		// These are the text input selectors we listen to for activity
-		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea, div.redactor-styles, div.ck-content';
+		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea, div.redactor-styles, div.ck-content, div.condition-rule-field-wrap';
 		this._buttonSelector = '.form-btns .button';
 
 		form.each(function(index, el) {
-
 			that._bindButtonStateChange($(el));
 			that._bindForms($(el));
 		});
@@ -57,7 +56,7 @@ EE.cp.formValidation = {
 	},
 
 	_checkRequiredFields: function() {
-		var invalidFields = $('td.invalid');
+		var invalidFields = $('td.invalid, div.invalid');
 
 		// check and removed `.invalid` from Fluid hidden templates block
 		invalidFields.each(function(index, el) {
@@ -249,8 +248,7 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	form	jQuery object of form
 	 */
 	_errorsExist: function(form) {
-
-		return ($('.fieldset-invalid:visible, td.invalid:visible', form).size() != 0);
+		return ($('.fieldset-invalid:visible, td.invalid:visible, div.invalid:visible', form).size() != 0);
 	},
 
 	/**
@@ -303,7 +301,7 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field
 	 * @param	{mixed}			message	Error message to show by invalid field
 	 */
-	markFieldInvalid: function(field, message) {
+	markFieldInvalid: function(field, markFieldInvalid) {
 		this._toggleErrorForFields(field, message);
 	},
 
@@ -329,7 +327,7 @@ EE.cp.formValidation = {
 			tab_has_own_button = (tab_container.size() > 0 && tab_container.find(this._buttonSelector).size() > 0),
 			// Finally, grab the button of the current form
 			button = (tab_has_own_button) ? tab_container.find(this._buttonSelector) : form.find(this._buttonSelector),
-			tab_button = $(tab_container).parents('.tab-wrap').find('button[rel="'+tab_rel+'"]'); //
+			tab_button = $(tab_container).parents('.tab-wrap').find('button[rel="'+tab_rel+'"]');
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places
@@ -344,6 +342,11 @@ EE.cp.formValidation = {
 		{
 			container = field.parents('td');
 			grid = true;
+		}
+		if (fieldset.find('.conditionset-item:not(.hidden)').length > 0)
+		{
+			grid = true;
+			container = field.parents('.condition-rule-field-wrap')
 		}
 
 		// Validation success, return the form to its original, submittable state
