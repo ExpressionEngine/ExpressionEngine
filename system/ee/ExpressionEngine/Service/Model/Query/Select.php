@@ -187,9 +187,7 @@ class Select extends Query
 
             foreach ($table_fields as $column) {
                 // remember the name so we can translate filters and order_bys
-                if (!isset($this->model_fields[$alias]["{$alias}__{$column}"])) {
-                    $this->model_fields[$alias]["{$alias}__{$column}"] = "{$table_alias}.{$column}";
-                }
+                $this->model_fields[$alias]["{$alias}__{$column}"] = "{$table_alias}.{$column}";
 
                 // but only select it if they did not specify fields to select
                 // or they specifically chose this one to be selected,
@@ -457,9 +455,7 @@ class Select extends Query
 
                 $query->select("{$table_alias}.{$column_prefix}field_id_{$field_id} as {$column_alias}", false);
                 $query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$primary_key} = {$this->model_fields[$table_prefix][$parent_key]}", 'LEFT');
-                if (!isset($this->model_fields[$table_prefix][$column_alias])) {
-                    $this->model_fields[$table_prefix][$column_alias] = $table_alias . ".{$column_prefix}field_id_{$field_id}";
-                }
+                $this->model_fields[$table_prefix][$column_alias] = $table_alias . ".{$column_prefix}field_id_{$field_id}";
             }
         }
     }
