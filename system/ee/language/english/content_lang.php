@@ -90,6 +90,8 @@ $lang = array(
 
     'create_entry_error' => 'Cannot Create Entry',
 
+    'copy_of' => 'Copy of',
+
     'create_entry_error_desc' => 'We were unable to create this entry, please review and fix errors below.',
 
     'create_entry_success' => 'Entry Created',

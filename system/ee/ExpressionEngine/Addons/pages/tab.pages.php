@@ -144,7 +144,7 @@ class Pages_tab
         $value = '/' . trim($values['pages_uri'], '/');
 
         while (in_array($value, $uris)) {
-            $value .= '_1';
+            $value = 'copy_' . $value;
         }
         $_POST['pages__pages_uri'] = $values['pages_uri'] = $value;
 

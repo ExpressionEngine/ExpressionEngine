@@ -375,7 +375,10 @@ abstract class AbstractPublish extends CP_Controller
         if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
             $entry->setId(null);
             while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
-                $_POST['url_title'] .= '_1';
+                $_POST['url_title'] = 'copy_' . $_POST['url_title'];
+            }
+            if ($_POST['title'] == $entry->title) {
+                $_POST['title'] = lang('copy_of') . ' ' . $_POST['title'];
             }
             $action = 'create';
             $entry->set($_POST);
