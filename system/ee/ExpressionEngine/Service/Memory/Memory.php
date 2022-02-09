@@ -38,7 +38,7 @@ class Memory
         //do not proceed if the file is not an image
         try {
             $info = getimagesize($file_path);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
 
@@ -79,7 +79,7 @@ class Memory
             $memory_ini_setting = '32M';
         }
 
-        list($memory_limit, $unit) = sscanf($memory_ini_setting, "%d %s");
+        list($memory_limit, $unit) = sscanf($memory_ini_setting, "%d%s");
 
         switch (strtolower((string) $unit)) {
             // no breaks so it's progressively multiplied as needed
