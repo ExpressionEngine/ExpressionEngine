@@ -301,7 +301,7 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field
 	 * @param	{mixed}			message	Error message to show by invalid field
 	 */
-	markFieldInvalid: function(field, markFieldInvalid) {
+	markFieldInvalid: function(field, message) {
 		this._toggleErrorForFields(field, message);
 	},
 
