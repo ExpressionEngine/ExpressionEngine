@@ -353,7 +353,7 @@ class CommandUpdate extends Cli
         defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/v5/');
 
         // Load versions of EE
-        $upgradeMap = UpgradeMap::$versionsSupported;
+        $upgradeMap = UpgradeMap::getVersionsSupported();
 
         $next_version = $this->currentVersion;
 
