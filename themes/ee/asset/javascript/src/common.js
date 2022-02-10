@@ -974,6 +974,24 @@ $(document).ready(function(){
 				$('#fieldset-rel_max input[name="rel_max"]').prop('disabled', false);
 			}
 
+			if($(this).attr('data-toggle-for') == 'field_is_conditional' && $(this).attr('data-state') == 'off') {
+				var invalidClass = $('#fieldset-condition_fields').find('.invalid');
+
+				if (invalidClass.length) {
+					invalidClass.each(function(){
+						$(this).find('.ee-form-error-message').remove();
+						$(this).removeClass('invalid');
+
+						// Mark entire Grid field as valid if all rows with invalid cells are cleared
+						if ($('#fieldset-condition_fields .invalid').length == 0 &&
+							EE.cp &&
+							EE.cp.formValidation !== undefined) {
+							EE.cp.formValidation.markFieldValid($('input, select, textarea', $('.conditionset-temlates-row')).eq(0));
+						}
+					});
+				}
+			}
+
 			e.preventDefault();
 		});
 
@@ -988,7 +1006,6 @@ $(document).ready(function(){
 				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_max').hide();
 			}
 		});
-
 
 		$('body').on('click', '.js-toggle-link', function(e) {
 			e.preventDefault()
