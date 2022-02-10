@@ -156,7 +156,8 @@ class CommandUpdate extends Cli
         defined('PATH_THEMES') || define('PATH_THEMES', SYSPATH . '../themes/');
         defined('APP_VER') || define('APP_VER', $this->currentVersion);
         defined('IS_CORE') || define('IS_CORE', false);
-        defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/v5/');
+        defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/latest/');
+        defined('EE_APPPATH') || define('EE_APPPATH', BASEPATH);
 
         $this->verbose = CLI_VERBOSE;
         $this->defaultToYes = $this->option('-y', false);
@@ -176,7 +177,7 @@ class CommandUpdate extends Cli
         $db_config_path = SYSPATH . '/user/config/database.php';
         if (is_file($db_config_path)) {
             require $db_config_path;
-            ee()->config->_update_dbconfig($db[$active_group]);
+            ee()->config->_update_dbconfig($db[$active_group], true);
         }
 
         // We alsoneed to check the avatar path
@@ -336,21 +337,29 @@ class CommandUpdate extends Cli
 
     protected function upgradeFromLocalVersion()
     {
+        if (file_exists(FCPATH . '../../.env.php') && (require FCPATH . '../../.env.php') == true) {
+            if (getenv('EE_INSTALL_MODE') !== 'TRUE') {
+                throw new \Exception("EE_INSTALL_MODE needs to be set to TRUE in .env.php to run update command");
+            }
+        }
+
         // We have to initialize differently for local files
         require_once SYSPATH . 'ee/installer/updater/ExpressionEngine/Updater/Service/Updater/SteppableTrait.php';
+        require_once SYSPATH . 'ee/installer/core/Installer_Config.php';
 
         $this->autoload(SYSPATH . 'ee/installer/updates/');
 
+        ee()->load->add_package_path(SYSPATH . 'ee/installer/');
         //ee()->load->library('session');
         ee()->load->library('smartforge');
         ee()->load->library('logger');
-        // ee()->load->library('update_notices');
+        ee()->load->library('update_notices');
         defined('USERNAME_MAX_LENGTH') || define('USERNAME_MAX_LENGTH', 75);
         defined('PASSWORD_MAX_LENGTH') || define('PASSWORD_MAX_LENGTH', 72);
         defined('URL_TITLE_MAX_LENGTH') || define('URL_TITLE_MAX_LENGTH', 200);
         defined('PATH_CACHE') || define('PATH_CACHE', SYSPATH . 'user/cache/');
         defined('PATH_TMPL') || define('PATH_TMPL', SYSPATH . 'user/templates/');
-        defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/v5/');
+        defined('DOC_URL') || define('DOC_URL', 'https://docs.expressionengine.com/latest/');
 
         // Load versions of EE
         $upgradeMap = UpgradeMap::getVersionsSupported();
@@ -427,8 +436,7 @@ class CommandUpdate extends Cli
         if (version_compare($this->currentVersion, '3.0.0', '<')) {
             if (! ee()->config->item('avatar_path')) {
                 $this->info('command_update_missing_avatar_path_message');
-                $guess = ee()->config->item('base_path') ?: rtrim(ee()->config->item('base_path'), '/') . '/images/avatars';
-                SYSPATH . '../images/avatars';
+                $guess = ee()->config->item('base_path') ? rtrim(ee()->config->item('base_path'), '/') . '/images/avatars' : SYSPATH . '../images/avatars';
                 $result = $this->confirm('Use ' . $guess . '?')
                         ? $guess
                         : $this->ask('command_update_enter_full_avatar_path');
