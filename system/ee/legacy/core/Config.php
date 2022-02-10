@@ -1053,12 +1053,18 @@ class EE_Config
             show_error(lang('unwritable_config_file'), 503);
         }
 
-        // Read the config file as PHP
-        require $this->config_path;
-
-        // Read the config data as a string
-        // Really no point in loading file_helper to do this one
-        $config_file = file_get_contents($this->config_path);
+        $fp = fopen($this->config_path, "r");
+        if (flock($fp, LOCK_SH)) {
+            // Read the config file as PHP
+            require $this->config_path;
+            // Read the config data as a string
+            // Really no point in loading file_helper to do this one
+            $config_file = file_get_contents($this->config_path);
+            flock($fp, LOCK_UN);
+        } else {
+            return false;
+        }
+        fclose($fp);
 
         // Trim it
         $config_file = trim($config_file);
@@ -1173,13 +1179,17 @@ class EE_Config
             }
         }
 
-        if (! $fp = fopen($this->config_path, FOPEN_WRITE_CREATE_DESTRUCTIVE)) {
+        // Check for exclusive file lock before truncating file and writing new contents
+        $fp = fopen($this->config_path, "r+");
+        if (flock($fp, LOCK_EX)) {
+            ftruncate($fp, 0);
+            fwrite($fp, $config_file, strlen($config_file));
+            fflush($fp);
+            flock($fp, LOCK_UN);
+        } else {
             return false;
         }
 
-        flock($fp, LOCK_EX);
-        fwrite($fp, $config_file, strlen($config_file));
-        flock($fp, LOCK_UN);
         fclose($fp);
 
         if (! empty($this->_config_path_errors)) {

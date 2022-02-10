@@ -379,6 +379,7 @@ class Updater
 
         $layouts = ee('Model')->get('ChannelLayout')
             ->with('Channel')
+            ->fields('field_layout', 'Channel.field_group')
             ->all();
 
         foreach ($layouts as $layout) {

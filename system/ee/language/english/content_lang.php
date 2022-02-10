@@ -84,7 +84,13 @@ $lang = array(
 
     'comments_status_updated_desc' => 'The following comments were set to %s',
 
+    'clone_entry_success' => 'Entry Created',
+
+    'clone_entry_success_desc' => 'This is your new cloned entry.',
+
     'create_entry_error' => 'Cannot Create Entry',
+
+    'copy_of' => 'Copy of',
 
     'create_entry_error_desc' => 'We were unable to create this entry, please review and fix errors below.',
 
@@ -708,6 +714,8 @@ $lang = array(
     'status' => 'Status',
 
     'status_changed' => 'Status Changed',
+
+    'status_changed_desc' => 'Entry status has been changed to <b>%s</b>',
 
     'tab_count_zero' => 'There needs to be at least one tab available to hold fields.',
 
