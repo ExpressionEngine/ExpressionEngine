@@ -25,6 +25,12 @@ jobs:
         steps:
           - name: Checkout code
             uses: actions/checkout@v2
+          
+          - name: Cache repository info
+            uses: actions/cache@v2
+            with:
+              path: .git
+              key: cache-ee-git-${{ github.sha }}
 
           - name: Find Pro reference
             uses: packettide/url-extractor-gh-action@main
@@ -130,6 +136,12 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
+            
+            - name: Restore cached git history
+              uses: actions/cache@v2
+              with:
+                path: .git
+                key: cache-ee-git-${{ github.sha }}
 
             - name: Directory Listing
               run: |
