@@ -81,6 +81,7 @@ if (isset($setting['fields']) && !empty($setting['fields'])) {
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; ?>
 <<?=$element?> <?=$fieldset_id?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+    <?php if ($element == 'fieldset' && isset($setting['title'])): ?><legend class="sr-only">"<?=lang($setting['title'])?>" <?=lang('fieldset')?></legend><?php endif; ?>
 	<div class="field-instruct <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?>">
 		<?php if (isset($setting['title'])): ?>
 		<label for="smth"><?=lang($setting['title'])?></label>

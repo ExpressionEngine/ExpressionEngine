@@ -86,6 +86,7 @@
 			<div class="fieldset-faux <?=$field_class?>">
 			<?php else: ?>
 			<fieldset class="<?=$field_class?>">
+				<legend class="sr-only">"<?=$field->getLabel()?>" <?=lang('fieldset')?></legend>
 			<?php endif; ?>
 				<div class="field-instruct">
 					<label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>

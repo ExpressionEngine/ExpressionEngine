@@ -531,6 +531,8 @@ $lang = array(
 
     'filters' => 'filters',
 
+    'fieldset' => 'field group',
+
     'form_validation_error' => 'There was a problem processing your submission, please check below and fix all errors.',
 
     'image' => 'Image',

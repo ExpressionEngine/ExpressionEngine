@@ -379,6 +379,8 @@ $lang = array(
 
     'fields' => 'Fields',
 
+    'fieldset' => 'field group',
+
     'add' => 'Add',
 
     'add_field' => 'Add Field',
@@ -460,6 +462,8 @@ $lang = array(
     'html_buttons_webpage_text' => 'Enter the title of the link',
 
     'html_glossary' => 'Glossary',
+
+    'icon' => 'Icon',
 
     'image' => 'Image',
 

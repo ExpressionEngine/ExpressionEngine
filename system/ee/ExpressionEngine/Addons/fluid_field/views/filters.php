@@ -2,7 +2,7 @@
 
 	<?php foreach ($fields as $field): ?>
 		<a href="#" class="button button--auto button--default button--small" data-field-name="<?=$field->getShortName()?>">
-			<img src="<?=$field->getIcon()?>" width="16" height="16" alt="<?=lang('add')?> <?=$field->getItem('field_label')?>" /><br />
+			<img src="<?=$field->getIcon()?>" width="16" height="16" alt="<?=lang('add')?> <?=$field->getItem('field_label')?> <?=lang('icon')?>" /><br />
 			<?=lang('add')?> <?=$field->getItem('field_label')?>
 		</a>
 	<?php endforeach; ?>
