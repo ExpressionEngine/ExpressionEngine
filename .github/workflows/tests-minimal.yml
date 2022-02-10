@@ -30,6 +30,12 @@ jobs:
         steps:
           - name: Checkout code
             uses: actions/checkout@v2
+          
+          - name: Cache repository info
+            uses: actions/cache@v2
+            with:
+              path: .git
+              key: cache-ee-git-${{ github.sha }}
 
           - name: Find Pro reference
             uses: packettide/url-extractor-gh-action@main
@@ -135,6 +141,12 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
+            
+            - name: Restore cached git history
+              uses: actions/cache@v2
+              with:
+                path: .git
+                key: cache-ee-git-${{ github.sha }}
 
             - name: Directory Listing
               run: |
@@ -193,22 +205,22 @@ jobs:
                 npm install -g maildev
                 maildev &
             
-            - name: Get Cypress Specs
-              run: |
-                echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
-              id: specs
+            # - name: Get Cypress Specs
+            #   run: |
+            #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
+            #   id: specs
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2
               with:
-                spec: ${{ steps.specs.outputs.SPECS }}
+                # spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress
                 config-file: cypress.json
-                #record: true
-                #parallel: true
-                #group: PHP${{ matrix.php }}
+                record: true
+                parallel: true
+                group: PHP${{ matrix.php }}
               env:
                 CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
