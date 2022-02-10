@@ -71,8 +71,8 @@ class Updater
             return true;
         }
 
-        ee()->load->library('progress');
-        ee()->progress->update_state("Creating Comment Subscription Table");
+        //ee()->load->library('progress');
+        //ee()->progress->update_state("Creating Comment Subscription Table");
 
         $fields = array(
             'subscription_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
@@ -95,7 +95,7 @@ class Updater
         @set_time_limit(0);
         ee()->db->save_queries = false;
 
-        ee()->progress->update_state('Moving Comment Notifications to Subscriptions');
+        //ee()->progress->update_state('Moving Comment Notifications to Subscriptions');
 
         $batch = 50;
         $offset = 0;
@@ -115,7 +115,7 @@ class Updater
 
         if (count($total) > 0) {
             for ($i = 0; $i < $total; $i = $i + $batch) {
-                ee()->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));
+                //ee()->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));
 
                 $data = array();
 
