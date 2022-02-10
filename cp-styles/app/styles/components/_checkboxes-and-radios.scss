@@ -62,6 +62,7 @@ $checkbox-size: 15px;
 
 	&:focus {
 		// @include focus-outline;
+		border-color: var(--ee-input-focus-border);
 	}
 
 	&:active:not(:disabled) {
@@ -138,6 +139,7 @@ $radio-size: 15px;
 
 	&:focus {
 		@include focus-outline;
+		border-color: var(--ee-input-focus-border);
 	}
 
 	&:active:not(:disabled) {
