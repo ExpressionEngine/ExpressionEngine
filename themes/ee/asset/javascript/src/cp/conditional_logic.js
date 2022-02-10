@@ -455,6 +455,7 @@ $(document).ready(function() {
                 if (val['type'] == null) {
                     parentRow.find('.condition-rule-value-wrap').children().hide();
                 } else {
+                    parentRow.find('.condition-rule-value-wrap').children().prop('disabled', false);
                     parentRow.find('.condition-rule-value-wrap').children().show();
                 }
             }
