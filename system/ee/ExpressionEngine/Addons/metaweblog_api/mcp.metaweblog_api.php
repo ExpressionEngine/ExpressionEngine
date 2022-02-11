@@ -192,9 +192,9 @@ class Metaweblog_api_mcp
             $base_url = ee('CP/URL')->make('addons/settings/metaweblog_api/create');
         } else {
             $create = false;
-            $base_url = ee('CP/URL')->make('addons/settings/metaweblog_api/modify/' . $id);
+            $base_url = ee('CP/URL')->make('addons/settings/metaweblog_api/modify/' . (int) $id);
 
-            $query = ee()->db->get_where('metaweblog_api', array('metaweblog_id' => $id));
+            $query = ee()->db->get_where('metaweblog_api', array('metaweblog_id' => (int) $id));
 
             if ($query->num_rows() == 0) {
                 ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
