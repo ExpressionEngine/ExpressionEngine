@@ -3,7 +3,7 @@
     $conditionFieldVal = $conditionFieldVal;
     $template = isset($temlates) ? true : false;
     $setTemlatesId = isset($temlates) ? 0 : 1;
-    $savedSetId = isset($conditionSetId) ? $conditionSetId : null;
+    $savedSetId = isset($conditionSetId) ? $conditionSetId : '';
     $conditions = isset($conditions) ? $conditions : [];
     $conditionRowId = isset($conditionRowId) ? $conditionRowId : '';
 

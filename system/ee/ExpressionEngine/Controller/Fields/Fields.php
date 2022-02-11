@@ -637,7 +637,7 @@ class Fields extends AbstractFieldsController
             }
         }
 
-        $siteFields = ee('Model')->get('ChannelField')->filter('site_id', 'IN', [0, ee()->config->item('site_id')])->all();
+        $siteFields = ee('Model')->get('ChannelField')->filter('site_id', 'IN', [0, ee()->config->item('site_id')])->filter('field_id', '!=', (int) $field->getId())->all();
         if ($siteFields) {
             foreach ($siteFields as $siteField) {
                 $evaluationRules = $siteField->getSupportedEvaluationRules();
