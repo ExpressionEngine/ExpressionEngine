@@ -568,7 +568,7 @@ break;
         $_POST['forum_notify_moderators_topics'] = 'n';
         $_POST['forum_notify_moderators_replies'] = 'n';
 
-        if (isset($_POST['notify_moderators'])) {
+        if (isset($_POST['notify_moderators']) && is_array($_POST['notify_moderators'])) {
             $_POST['forum_notify_moderators_topics'] = (in_array('forum_notify_moderators_topics', $_POST['notify_moderators'])) ? 'y' : 'n';
             $_POST['forum_notify_moderators_replies'] = (in_array('forum_notify_moderators_replies', $_POST['notify_moderators'])) ? 'y' : 'n';
             unset($_POST['notify_moderators']);
