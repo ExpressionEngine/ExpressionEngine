@@ -9,6 +9,14 @@
 
 $(document).ready(function(){
 
+	$('.js-dropdown-toggle, .select__dropdown-item').each(function() {
+		$(this).keyup(function(event) {
+			if (event.keyCode === 13) {
+				$(this).click();
+			}
+		});
+	});
+
 	// =============================================
 	// For backwards compatibility: adding $.browser
 	// from: https://github.com/jquery/jquery-migrate
