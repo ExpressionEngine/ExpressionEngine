@@ -1198,9 +1198,11 @@ class Channel
                 $options = [$channel];
             }
             $channel_ids = array();
-            foreach ($options as $channel_name) {
-                if (isset($channels[$channel_name])) {
-                    $channel_ids[] = $channels[$channel_name];
+            foreach ($options as $option) {
+                foreach ($channels as $channel_name => $channel_id) {
+                    if (strtolower($option) == strtolower($channel_name)) {
+                        $channel_ids[] = $channels[$channel_name];
+                    }
                 }
             }
 
