@@ -18,8 +18,8 @@ context('Request', () => {
 
   it('check XSS filter', function(){
     cy.visit('index.php/request/index?my-var=<script>alert(%27hello%27)</script>');
-    cy.get('#get span').invoke('text').should('eq', "[removed]alert('hello')[removed]")
-    cy.get('#get_post span').invoke('text').should('eq', "[removed]alert('hello')[removed]")
+    cy.get('#get span').invoke('text').should('eq', "[removed]alert⟨'hello'⟩[removed]")
+    cy.get('#get_post span').invoke('text').should('eq', "[removed]alert⟨'hello'⟩[removed]")
   })
 
   context('check all tags', function(){
