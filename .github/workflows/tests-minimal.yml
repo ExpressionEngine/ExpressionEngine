@@ -225,6 +225,7 @@ jobs:
                 CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v2
