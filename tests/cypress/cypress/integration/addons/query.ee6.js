@@ -34,7 +34,8 @@ context('Request', () => {
         cy.get('.query-results--parsed-files__field_id_3').first().invoke('text').should('eq', "/images/about/ee_banner_120_240.gif")
     })
     it('parse base variables', function(){
-        cy.get('.query-results--parsed-bases__3 .query-results--parsed-bases__url').first().invoke('text').should('eq', "http://localhost:8888/images/avatars/")
+		cy.get('.query-results--parsed-bases__3 .query-results--parsed-bases__url').first().invoke('text').should('contain', "http://localhost:8888/images/avatars/")
+		cy.get('.query-results--parsed-bases__3').first().should('have.class', 'odd')
     })
   })
 })
