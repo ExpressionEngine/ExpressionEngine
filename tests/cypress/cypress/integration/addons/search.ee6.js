@@ -24,16 +24,21 @@ context('Search', () => {
     cy.get('#total-results__single-var--zero').should('not.exist')
   })
 
+  it('search and get no results', function(){
+    cy.authVisit('index.php/search/simple_form');
+    cy.get('#two-templates-for-results [name="keywords"]').clear().type('WordPress')
+    cy.get('#two-templates-for-results').submit()
+
+    cy.get('#total-results__within-pair').should('not.exist')
+    cy.get('#total-results__within-pair--no-results').should('contain', 'None')
+    cy.get('#total-results__single-var').should('contain', '0')
+    cy.get('#total-results__single-var--zero').invoke('text').should('eq', '0')
+  })
+
   it('search and get no results (on same page)', function(){
     cy.authVisit('index.php/search/simple_form');
     cy.get('#keywords').clear().type('WordPress')
     cy.get('.submit').first().click()
-
-	// TODO: enable after merge of #1674
-//     cy.get('#total-results__within-pair').should('not.exist')
-//     cy.get('#total-results__within-pair--no-results').should('contain', 'None')
-//     cy.get('#total-results__single-var').should('contain', '0')
-//     cy.get('#total-results__single-var--zero').should('exist')
   })
 
   it('searches everywhere', function(){

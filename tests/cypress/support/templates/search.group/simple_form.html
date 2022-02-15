@@ -8,3 +8,16 @@
     <input type="submit" value="submit" class="submit">
 </p>
 {/exp:search:simple_form}
+
+
+{exp:search:simple_form result_page="search/index" no_result_page="search/no_result" form_id="two-templates-for-results"}
+<p>
+    <label for="keywords">Search:
+	    <br>
+	    <input type="text" name="keywords" value="" size="18" maxlength="100">
+    </label>
+</p>
+<p>
+    <button type="submit" class="submit">submit</button>
+</p>
+{/exp:search:simple_form}
