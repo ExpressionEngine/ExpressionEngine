@@ -1211,7 +1211,6 @@ class EE_Schema
 
         $Q[] = "CREATE TABLE `exp_field_condition_sets` (
 			`condition_set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-			`field_id` int(10) unsigned NOT NULL,
 			`match` varchar(20) NOT NULL DEFAULT 'all',
 			`order` int(10) unsigned NOT NULL DEFAULT 0,
 			PRIMARY KEY `condition_set_id` (`condition_set_id`)

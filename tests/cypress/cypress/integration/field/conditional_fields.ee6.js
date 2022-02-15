@@ -9,10 +9,10 @@ context('Conditional Fields', () => {
     before(function() {
         cy.task('db:seed')
 
-        cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
+        cy.eeConfig({ item: 'save_tmpl_files', value: 'y' });
         //copy templates
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
-        cy.authVisit('admin.php?/cp/design')
+        cy.authVisit('admin.php?/cp/fields')
     })
 
     after(function() {
@@ -20,16 +20,38 @@ context('Conditional Fields', () => {
         cy.task('filesystem:delete', '../../system/user/config/stopwords.php')
     })
 
-    it('legacy textarea field', () => {
-        cy.log('add conditional to field');
+    it.only('legacy textarea field', () => {
+        // Setup conditional on field
+        cy.get('.list-item').contains('{news_body}').closest('.list-item').click();
+        cy.get('#fieldset-field_is_conditional button').click();
 
-        cy.log('edit entry to conditionally hide the field');
+        cy.get('.condition-rule-field:visible .select__button').click();
+        cy.get('.dropdown--open .select__dropdown-item').contains('Extended text').click();
 
-        cy.log('field is hidden on entry page after save')
+        cy.get('.condition-rule-operator-wrap:visible .select__button').click();
+        cy.get('.dropdown--open .select__dropdown-item').contains('is not').click();
 
-        cy.log('field is not shown in the template')
+        cy.get('.condition-rule-value-wrap:visible input').type('test');
 
-        cy.log('field shows up if conditionals not met anymore')
+        cy.get('button[data-submit-text="Save"]:eq(0)').click();
+
+        // Create entry with conditionally hidden field
+        cy.get('.ee-sidebar__items-section').contains('Entries').trigger('mouseover');
+        cy.get('.dropdown__item').contains('News').closest('.dropdown__item').find('.fa-plus').click();
+        cy.get('.field-instruct').contains('Is Conditional: 1').should('not.contain', 'Conditionally Hidden: 1');
+
+        // Edit entry to conditionally hide the field
+        cy.get('input[name="title"]').type('Test');
+        cy.get('textarea[name="field_id_2"]').type('test', {force: true});
+        cy.get('button[data-submit-text="Save"]:eq(0)').click();
+
+        // Assert field is hidden on entry page after save
+
+        // Assert field is not shown in the template
+
+        // Edit entry to not conditionally hide the field
+
+        // Assert field shows up
     })
 
     it('file field', function() {
