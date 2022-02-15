@@ -61,6 +61,8 @@ class Query
 
                 $chunk = ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $row);
 
+                $chunk = ee()->TMPL->parse_switch($chunk, $count - 1);
+
                 if (strpos($chunk, '{base_') !== false) {
                     $chunk = isset($row['site_id'])
                         ? parse_config_variables(

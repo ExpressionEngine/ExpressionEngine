@@ -10,7 +10,7 @@
 		{exp:query
 			sql="SELECT entry_id , site_id , field_id_3 FROM exp_channel_data"
 		}
-			<tr class="query-results query-results__{count}">
+			<tr class="query-results query-results__{count} {switch='odd|even'}">
 				<th class="query-results__entry_id">{entry_id}</th>
 				<td class="query-results__site_id">{site_id}</td>
 				<td class="query-results__field_id_3">{field_id_3}</td>
@@ -33,7 +33,7 @@
 			sql="SELECT entry_id , site_id , field_id_3 FROM exp_channel_data"
 			parse_files="yes"
 		}
-			<tr class="query-results--parsed-files query-results--parsed-files__{count}">
+			<tr class="query-results--parsed-files query-results--parsed-files__{count} {switch='odd|even'}">
 				<th class="query-results--parsed-files__entry_id">{entry_id}</th>
 				<td class="query-results--parsed-files__site_id">{site_id}</td>
 				<td class="query-results--parsed-files__field_id_3">{field_id_3}</td>
@@ -56,7 +56,7 @@
 			sql="SELECT site_id, server_path , url FROM exp_upload_prefs"
 			parse_bases="yes"
 		}
-			<tr class="query-results--parsed-bases query-results--parsed-bases__{count}">
+			<tr class="query-results--parsed-bases query-results--parsed-bases__{count} {switch='odd|even'}">
 				<td class="query-results--parsed-bases__site_id">{site_id}</td>
 				<td class="query-results--parsed-bases__server_path">{server_path}</td>
 				<td class="query-results--parsed-bases__url">{url}</td>
