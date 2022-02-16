@@ -9,6 +9,7 @@
 
 $(document).ready(function(){
 
+	// code for opening and moving through the select dropdown menu when pressing Enter (keyCode 13)
 	$('.js-dropdown-toggle, .select__dropdown-item').each(function() {
 		$(this).keyup(function(event) {
 			if (event.keyCode === 13) {
