@@ -1222,6 +1222,11 @@ class EE_Schema
 			PRIMARY KEY `condition_set_id_field_id` (`condition_set_id`, `field_id`)
 		)";
 
+        $Q[] = "CREATE TABLE exp_channel_entry_hidden_fields (
+			`entry_id` int(10) unsigned NOT NULL,
+			`field_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY `entry_id_field_id` (`entry_id`, `field_id`)
+		)";
 
 
         // Files table
