@@ -28,7 +28,6 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'addConditionalFieldTables',
-                'addFieldHideColumns',
             ]
         );
 
@@ -139,6 +138,7 @@ class Updater
             ee()->dbforge->add_key(['condition_set_id', 'field_id']);
             ee()->smartforge->create_table('field_condition_sets_channel_fields');
         }
+
         if (! ee()->db->field_exists('field_is_conditional', 'channel_fields')) {
             ee()->smartforge->add_column(
                 'channel_fields',
@@ -151,41 +151,26 @@ class Updater
                 )
             );
         }
-    }
 
-    private function addFieldHideColumns()
-    {
-        $fields = ee('db')->select('field_id, legacy_field_data')
-            ->from('channel_fields')
-            ->get();
-        if ($fields->num_rows() > 0) {
-            foreach($fields->result_array() as $row) {
-                if ($row['legacy_field_data'] == 'n') {
-                    $table = 'channel_data_field_' . $row['field_id'];
-                } else {
-                    $table = 'channel_data';
-                }
-                $this->addFieldHideColumn($row['field_id'], $table);
-            }
-        }
-    }
-
-    private function addFieldHideColumn($field_id, $table, $prefix = '')
-    {
-        $field = $prefix . 'field_hide_' . $field_id;
-        if (ee()->db->table_exists($table) && !ee()->db->field_exists($field, $table)) {
-            ee()->smartforge->add_column(
-                $table,
+        if (!ee()->db->table_exists('channel_entry_hidden_fields')) {
+            ee()->dbforge->add_field(
                 [
-                    $field => [
-                        'type' => 'char',
-                        'constraint' => 1,
-                        'default' => 'n',
+                    'entry_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false
+                    ],
+                    'field_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
                         'null' => false
                     ]
-                ],
-                $prefix . 'field_ft_' . $field_id
+                ]
             );
+            ee()->dbforge->add_key(['entry_id', 'field_id']);
+            ee()->smartforge->create_table('channel_entry_hidden_fields');
         }
     }
 }

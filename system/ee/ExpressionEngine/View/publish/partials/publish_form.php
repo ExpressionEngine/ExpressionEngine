@@ -94,13 +94,6 @@
                     if (!empty($fieldInstructions)) : ?>
                     <em><?=$fieldInstructions?></em>
                     <?php endif; ?>
-
-                    <?php
-                        if (is_numeric($field->getId())) {
-                            echo "<em>Is Conditional: " . $field->isConditional() . " </em>";
-                            echo "<em>Conditionally Hidden: " . $field->isConditionallyHidden() . " </em>";
-                        }
-                    ?>
                 </div>
                 <div class="field-control">
                     <?php if ($field->get('field_id') == 'revisions'): ?>

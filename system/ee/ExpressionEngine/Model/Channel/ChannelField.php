@@ -68,7 +68,14 @@ class ChannelField extends FieldModel
             'pivot' => array(
                 'table' => 'field_condition_sets_channel_fields'
             )
-        )
+        ),
+        'ChannelEntriesHiding' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'ChannelEntry',
+            'pivot' => array(
+                'table' => 'channel_entry_hidden_fields'
+            )
+        ),
     );
 
     protected static $_validation_rules = array(

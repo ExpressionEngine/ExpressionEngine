@@ -108,6 +108,14 @@ class ChannelEntry extends ContentModel
         'Site' => array(
             'type' => 'belongsTo'
         ),
+        'HiddenFields' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'ChannelField',
+            'pivot' => array(
+                'table' => 'channel_entry_hidden_fields'
+            ),
+            'weak' => true
+        ),
     );
 
     protected static $_field_data = array(
@@ -748,6 +756,19 @@ class ChannelEntry extends ContentModel
         return $module_tabs;
     }
 
+    protected function setDataOnCustomFields(array $data = array())
+    {
+        $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        foreach ($currentlyHiddenFieldsIds as $hiddenFieldId) {
+            $name = 'field_id_' . $hiddenFieldId;
+            if ($this->hasCustomField($name)) {
+                $this->getCustomField($name)->setHidden('y');
+            }
+        }
+
+        parent::setDataOnCustomFields($data);
+    }
+
     /**
      * Evaluates all the conditional fields in a channel entry and sets the hidden flags
      *
@@ -755,8 +776,8 @@ class ChannelEntry extends ContentModel
      */
     public function evaluateConditionalFields()
     {
-        // Lets keep track of if any of the hidden values that changed
-        $changed = [];
+        $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        $hiddenFieldIds = [];
         $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
 
         foreach ($this->getCustomFields() as $field_name => $field) {
@@ -765,9 +786,6 @@ class ChannelEntry extends ContentModel
                 continue;
             }
 
-            // This is the hide column on the field
-            $fieldHidden = 'field_hide_' . $field->getId();
-
             // This is the default status for hidden fields
             $hidden = 'n';
 
@@ -775,19 +793,20 @@ class ChannelEntry extends ContentModel
                 // Lets evaluate the condition sets
                 // if false, the field should be hidden
                 if (! $evaluator->evaluate($field)) {
+                    $hiddenFieldIds[] = $field->getId();
                     $hidden = 'y';
                 }
             }
 
-            // Set hidden on the field, entry, and set the changed flag
-            if ($hidden !== $this->$fieldHidden) {
-                $field->setHidden($hidden);
-                $this->$fieldHidden = $hidden;
-                $changed[$fieldHidden] = $hidden;
-            }
+            $field->setHidden($hidden);
         }
 
-        return ['changed' => $changed];
+        if (!empty(array_diff($currentlyHiddenFieldsIds, $hiddenFieldIds)) || !empty(array_diff($hiddenFieldIds, $currentlyHiddenFieldsIds))) {
+            $hiddenFields = ee('Model')->get('ChannelField', $hiddenFieldIds)->all();
+            $this->getAssociation('HiddenFields')->set($hiddenFields);
+        }
+
+        return $hiddenFieldIds;
     }
 
     public function get__versioning_enabled()

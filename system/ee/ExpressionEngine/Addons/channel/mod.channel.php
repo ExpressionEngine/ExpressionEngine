@@ -42,6 +42,7 @@ class Channel
     public $enable = array();	// modified by various tags with disable= parameter
     public $absolute_results = null;		// absolute total results returned by the tag, useful when paginating
     public $display_by = '';
+    public $hidden_fields = []; //conditionally hidden fields for given entries
 
     // These are used with the nested category trees
 
@@ -2067,6 +2068,17 @@ class Channel
         $entries = array_unique($entries);
         $channel_ids = array_unique($channel_ids);
 
+        // find out which fields should be conditionally hidden
+        $hiddenFieldsQuery = ee('db')->select('entry_id, field_id')->from('channel_entry_hidden_fields')->where_in('entry_id', $entries)->get();
+        if ($hiddenFieldsQuery->num_rows() > 0) {
+            foreach ($hiddenFieldsQuery->result_array() as $hiddenFieldsRow) {
+                if (!isset($this->hidden_fields[$hiddenFieldsRow['entry_id']])) {
+                    $this->hidden_fields[$hiddenFieldsRow['entry_id']] = [];
+                }
+                $this->hidden_fields[$hiddenFieldsRow['entry_id']][] = $hiddenFieldsRow['field_id'];
+            }
+        }
+
         $this->sql .= $this->generateSQLForEntries($entries, $channel_ids);
 
         //cache the entry_id
@@ -2370,6 +2382,17 @@ class Channel
 
         if (! empty($this->chunks)) {
             $query_result = $this->getExtraData($query_result);
+        }
+
+        if (!empty($this->hidden_fields)) {
+            foreach ($query_result as $i => $row) {
+                if (isset($this->hidden_fields[$row['entry_id']])) {
+                    foreach ($this->hidden_fields[$row['entry_id']] as $hiddenFieldId) {
+                        $row['field_hide_' . $hiddenFieldId] = 'y';
+                    }
+                    $query_result[$i] = $row;
+                }
+            }
         }
 
         $query_result = $this->overrideWithPreviewData($query_result);
