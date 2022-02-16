@@ -24,6 +24,6 @@ class Contains extends AbstractEvaluationRule implements EvaluationRuleInterface
      */
     public function evaluate($fieldValue, $expectedValue)
     {
-        return str_contains(strtolower((string) $fieldValue), strtolower((string) $expectedValue));
+        return strpos(strtolower((string) $fieldValue), strtolower((string) $expectedValue)) !== false;
     }
 }
