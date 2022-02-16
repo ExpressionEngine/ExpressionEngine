@@ -14,7 +14,8 @@ namespace ExpressionEngine\Library\Resource;
 
 class Request
 {
-    protected $resource_cache = [];
+    const CACHE_NAMESPACE = 'Resource/';
+
     protected $type = '';
 
     /**
@@ -24,6 +25,9 @@ class Request
      */
     public function request_template()
     {
+        $template_data = '';
+        $edit_date = 0;
+
         if (in_array(ee()->uri->segment(1), ee()->uri->reserved) && false !== ee()->uri->segment(2)) {
             $resource = ee()->uri->segment(2) . '/' . ee()->uri->segment(3);
             $this->type = ee()->uri->segment(1);
@@ -43,65 +47,99 @@ class Request
             show_404();
         }
 
-        if (!isset($this->resource_cache[$resource])) {
-            $ex = explode('/', $resource);
+        $group_and_name = explode('/', $resource);
 
-            if (2 != count($ex)) {
-                show_404();
-            }
-
-            list($group, $name) = $ex;
-
-            if (false !== strpos($group, ':')) {
-                // if there's a site, let's get it and redefine $group
-                list($site, $group) = explode(':', $group, 2);
-            }
-
-            ee()->db->select('templates.template_data, templates.template_name,	templates.edit_date');
-            ee()->db->from(['templates', 'template_groups']);
-
-            ee()->db->where(
-                ee()->db->dbprefix('templates') . '.group_id',
-                ee()->db->dbprefix('template_groups') . '.group_id',
-                false
-            );
-            ee()->db->where('templates.template_name', $name);
-            ee()->db->where('template_groups.group_name', $group);
-            ee()->db->where('templates.template_type', $this->type);
-
-            if (isset($site)) {
-                ee()->db->join('sites', 'sites.site_id = templates.site_id');
-                ee()->db->where('sites.site_name', $site);
-            } else {
-                ee()->db->where('templates.site_id', ee()->config->item('site_id'));
-            }
-
-            $query = ee()->db->get();
-
-            if (0 == $query->num_rows()) {
-                var_dump('no rows');
-                show_404();
-            }
-
-            $row = $query->row_array();
-
-            /* -----------------------------------------
-             * /**  Retrieve template file if necessary
-             * /** -----------------------------------------*/
-            if ('y' == ee()->config->item('save_tmpl_files')) {
-                ee()->load->helper('file');
-                $basepath = PATH_TMPL . (isset($site) ? $site : ee()->config->item('site_short_name')) . '/';
-                $basepath .= $group . '.group/' . $row['template_name'] . '.' . $this->type;
-
-                $str = read_file($basepath);
-                $row['template_data'] = (false !== $str) ? $str : $row['template_data'];
-                $row['edit_date'] = (false !== $str) ? filemtime($basepath) : $row['edit_date'];
-            }
-
-            $this->resource_cache[$resource] = str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $row['template_data']);
+        if (2 != count($group_and_name)) {
+            show_404();
         }
 
-        $this->_send_resource($this->resource_cache[$resource], $row['edit_date']);
+        list($group, $name) = $group_and_name;
+
+        $name = $name ?: 'index';
+
+        ee()->load->driver('cache');
+
+        if (false !== strpos($group, ':')) {
+            // if there's a site, let's get it and redefine $group
+            list($site, $group) = explode(':', $group, 2);
+        }
+
+        $cached = isset($site)
+            // In case the call specifies a website, we are using MSM and
+            // sharing resources
+            ? ee()->cache->get(self::CACHE_NAMESPACE . md5($resource), \Cache::GLOBAL_SCOPE)
+            : ee()->cache->get(self::CACHE_NAMESPACE . md5($resource));
+
+        if (!$cached) {
+            $template = ee('Model')->get('Template')
+            ->filter('template_name', $name)
+            ->filter('template_type', $this->type)
+                ->with('TemplateGroup')->filter('TemplateGroup.group_name', $group);
+
+            $template = isset($site)
+                ? $template->with('Site')->filter('Site.site_name', $site)
+                : $template->filter('site_id', ee()->config->item('site_id'));
+
+            $template = $template
+                ->fields('template_data', 'template_name', 'edit_date')
+                ->all()
+                ->first();
+
+            if (!$template) {
+                show_404();
+            }
+
+            $template_data = $template->template_data;
+            $edit_date = $template->edit_date;
+        } else {
+            $template_data = $cached['template_data'];
+            $edit_date = $cached['edit_date'];
+        }
+
+        /* -----------------------------------------
+		* /**  Retrieve template file if necessary
+		* /** -----------------------------------------*/
+        if (bool_config_item('save_tmpl_files')) {
+            ee()->load->helper('file');
+            $filepath = PATH_TMPL . (isset($site) ? $site : ee()->config->item('site_short_name')) . '/';
+            $filepath .= $group . '.group/' . $name . '.' . $this->type;
+            $file_edit_date = filemtime($filepath);
+
+            if ($file_edit_date < $edit_date) {
+                $str = read_file($filepath);
+
+                if (false !== $str) {
+                    $template_data = $str;
+                    $edit_date = $file_edit_date;
+                }
+            }
+        }
+
+        if (isset($site)) {
+            // No TTL, cache lives on till cleared
+            ee()->cache->save(
+                self::CACHE_NAMESPACE . md5($resource),
+                array(
+                    'edit_date' => $edit_date,
+                    'template_data' => str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data)
+                ),
+                1,
+                \Cache::GLOBAL_SCOPE
+            );
+        } else {
+            // No TTL, cache lives on till cleared
+            ee()->cache->save(
+                self::CACHE_NAMESPACE . md5($resource),
+                array(
+                    'edit_date' => $edit_date,
+                    'template_data' => str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data)
+                ),
+                1,
+                \Cache::LOCAL_SCOPE
+            );
+        }
+
+        $this->_send_resource($template_data, $edit_date);
     }
 
     /**
@@ -111,10 +149,10 @@ class Request
      *
      * @param	string	resource contents
      * @param	int		Unix timestamp (GMT/UTC) of last modification
-     * @param mixed $resource
+     * @param mixed $data
      * @param mixed $modified
      */
-    protected function _send_resource($resource, $modified)
+    protected function _send_resource($data, $modified)
     {
         if ('y' == ee()->config->item('send_headers')) {
             $max_age = 604800;
@@ -143,7 +181,7 @@ class Request
             @header("Cache-Control: max-age={$max_age}, must-revalidate");
             @header('Last-Modified: ' . $modified);
             @header('Expires: ' . $expires);
-            @header('Content-Length: ' . strlen($resource));
+            @header('Content-Length: ' . strlen($data));
         }
 
         if ('css' === $this->type) {
@@ -154,7 +192,7 @@ class Request
             header('Content-type: text/' . $this->type);
         }
 
-        exit($resource);
+        exit($data);
     }
 }
 // END CLASS
