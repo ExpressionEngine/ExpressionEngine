@@ -49,6 +49,7 @@ class CommandUpdate extends Cli
         'no-bootstrap'         => 'command_update_option_no_bootstrap',
         'force-addon-upgrades' => 'command_update_option_force_addon_upgrades',
         'y'                    => 'command_update_option_y',
+        'skip-cleanup'         => 'command_update_option_skip_cleanup',
     ];
 
     protected $verbose;
@@ -416,8 +417,10 @@ class CommandUpdate extends Cli
                 ]);
         } while (version_compare($next_version, $end_version, '<'));
 
-        // Complete upgrades
-        UpgradeUtility::run();
+        if (!$this->option('--skip-cleanup', false)) {
+            // Complete upgrades
+            UpgradeUtility::run();
+        }
     }
 
     protected function upgradeFromDownloadedVersion()
