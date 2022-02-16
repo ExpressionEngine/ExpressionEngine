@@ -341,18 +341,6 @@ abstract class FieldModel extends Model
             );
         }
 
-        if (array_key_exists('FieldConditionSets', static::getMetaData('relationships'))) {
-            $hide_field_name = $this->getColumnPrefix() . 'field_hide_' . $this->getId();
-            if (! isset($columns[$hide_field_name])) {
-                $columns[$hide_field_name] = array(
-                    'type' => 'char',
-                    'constraint' => 1,
-                    'default' => 'n',
-                    'null' => false
-                );
-            }
-        }
-
         return $columns;
     }
 
