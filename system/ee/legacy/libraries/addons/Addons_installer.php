@@ -19,7 +19,9 @@ class Addons_installer
     public function __construct()
     {
         ee()->load->library('api');
-        ee()->load->library('addons');
+        if (!isset(ee()->addons)) {
+            ee()->load->library('addons');
+        }
         ee()->lang->loadfile('modules');
     }
 
