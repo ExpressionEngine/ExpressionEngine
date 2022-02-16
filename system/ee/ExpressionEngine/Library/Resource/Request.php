@@ -72,8 +72,8 @@ class Request
 
         if (!$cached) {
             $template = ee('Model')->get('Template')
-            ->filter('template_name', $name)
-            ->filter('template_type', $this->type)
+                ->filter('template_name', $name)
+                ->filter('template_type', $this->type)
                 ->with('TemplateGroup')->filter('TemplateGroup.group_name', $group);
 
             $template = isset($site)

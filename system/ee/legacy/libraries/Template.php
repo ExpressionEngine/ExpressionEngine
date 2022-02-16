@@ -3077,7 +3077,7 @@ class EE_Template
                     ->from('templates')
                     ->join('template_groups', 'template_groups.group_id = templates.group_id');
 
-                if (!ee()->config->item('multiple_sites_enabled') == 'y') {
+                if (strpos($str, ':') === false) {
                     ee()->db->where('templates.site_id', ee()->config->item('site_id'));
                 } else {
                     ee()->db->join('sites', 'sites.site_id = templates.site_id');
