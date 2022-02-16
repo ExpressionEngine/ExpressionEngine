@@ -63,7 +63,7 @@ class Query
 
                 $chunk = ee()->TMPL->parse_switch($chunk, $count - 1);
 
-                if (strpos($chunk, '{base_') !== false) {
+                if (strpos($chunk, LD . 'base_') !== false) {
                     $chunk = isset($row['site_id'])
                         ? parse_config_variables(
                             $chunk,
@@ -77,7 +77,7 @@ class Query
             $parsed = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $results);
         }
 
-        if (get_bool_from_string(ee()->TMPL->fetch_param('parse_files', config_item('parse_variables_query_results_by_default'))) && strpos($parsed, '{filedir_') !== false) {
+        if (get_bool_from_string(ee()->TMPL->fetch_param('parse_files', config_item('parse_variables_query_results_by_default'))) && strpos($parsed, LD . 'filedir_') !== false) {
             ee()->load->library('file_field');
             $parsed = ee()->file_field->parse_string($parsed);
         }
