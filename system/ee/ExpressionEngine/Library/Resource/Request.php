@@ -81,7 +81,7 @@ class Request
                 : $template->filter('site_id', ee()->config->item('site_id'));
 
             $template = $template
-                ->fields('template_data', 'template_name', 'edit_date')
+                ->fields('template_data', 'edit_date')
                 ->all()
                 ->first();
 
