@@ -11,17 +11,19 @@
 namespace ExpressionEngine\Service\ConditionalFields\EvaluationRules;
 
 /**
- * Matches Rule
+ * Not Contains Rule
  */
-class Matches extends Equal implements EvaluationRuleInterface
+class NotContains extends AbstractEvaluationRule implements EvaluationRuleInterface
 {
-    public function getConditionalFieldInputType()
+    /**
+     * Evaluate the rule
+     *
+     * @param mixed $fieldValue
+     * @param mixed $expectedValue
+     * @return bool whether the condition is met
+     */
+    public function evaluate($fieldValue, $expectedValue)
     {
-        return 'select';
-    }
-
-    public function getLanguageKey()
-    {
-        return 'equal';
+        return strpos(strtolower((string) $fieldValue), strtolower((string) $expectedValue)) === false;
     }
 }

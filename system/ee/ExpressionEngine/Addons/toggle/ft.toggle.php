@@ -50,16 +50,6 @@ class Toggle_ft extends EE_Fieldtype
     }
 
     /**
-     * The input type that should be used to get a value for conditions involving this fieldtype
-     *
-     * @return string
-     */
-    public function getConditionalFieldInputType()
-    {
-        return 'select';
-    }
-
-    /**
      * @see EE_Fieldtype::validate()
      */
     public function validate($data)

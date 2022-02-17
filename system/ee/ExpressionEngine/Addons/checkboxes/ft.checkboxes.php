@@ -42,7 +42,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
      *
      * @var array
      */
-    public $supportedEvaluationRules = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty'];
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'contains', 'notContains', 'isEmpty', 'isNotEmpty'];
 
     /**
      * Constructor
@@ -53,11 +53,6 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
     {
         parent::__construct();
         ee()->load->helper('custom_field');
-    }
-
-    public function getConditionalFieldInputType()
-    {
-        return 'select';
     }
 
     public function validate($data)

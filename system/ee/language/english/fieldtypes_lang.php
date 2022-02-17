@@ -294,6 +294,7 @@ $lang = array(
 
     /* Conditional Evaluation Rules */
     'contains' => 'contains',
+    'notContains' => 'does not contain',
     'equal' => 'is',
     'notEqual' => 'is not',
     'isEmpty' => 'is empty',

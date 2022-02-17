@@ -28,7 +28,7 @@ class Multi_select_ft extends OptionFieldtype
      *
      * @var array
      */
-    public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'contains', 'notContains'];
 
     /**
      * Constructor
@@ -39,16 +39,6 @@ class Multi_select_ft extends OptionFieldtype
     {
         parent::__construct();
         ee()->load->helper('custom_field');
-    }
-
-    /**
-     * The input type that should be used to get a value for conditions involving this fieldtype
-     *
-     * @return string
-     */
-    public function getConditionalFieldInputType()
-    {
-        return 'select';
     }
 
     public function validate($data)

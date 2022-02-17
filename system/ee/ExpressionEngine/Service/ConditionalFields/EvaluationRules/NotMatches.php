@@ -11,9 +11,9 @@
 namespace ExpressionEngine\Service\ConditionalFields\EvaluationRules;
 
 /**
- * Matches Rule
+ * NotMatches Rule
  */
-class Matches extends Equal implements EvaluationRuleInterface
+class NotMatches extends NotEqual implements EvaluationRuleInterface
 {
     public function getConditionalFieldInputType()
     {
@@ -22,6 +22,6 @@ class Matches extends Equal implements EvaluationRuleInterface
 
     public function getLanguageKey()
     {
-        return 'equal';
+        return 'notEqual';
     }
 }

@@ -30,17 +30,7 @@ class Select_ft extends OptionFieldtype
      *
      * @var array
      */
-    public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
-
-    /**
-     * The input type that should be used to get a value for conditions involving this fieldtype
-     *
-     * @return string
-     */
-    public function getConditionalFieldInputType()
-    {
-        return 'select';
-    }
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'contains', 'notContains'];
     
     public function validate($data)
     {
