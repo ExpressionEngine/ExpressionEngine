@@ -313,6 +313,10 @@ EE.cp.formValidation = {
 	 */
 	_toggleErrorForFields: function(field, message) {
 
+		if (message != 'success' && typeof(message.success) !== 'undefined' && message.success == 'success') {
+			message = 'success';
+		}
+		
 		var form = field.parents('form'),
 			container = field.parents('.field-control'),
 			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),

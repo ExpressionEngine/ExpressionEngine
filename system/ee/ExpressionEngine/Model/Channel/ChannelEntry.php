@@ -221,9 +221,6 @@ class ChannelEntry extends ContentModel
     {
         $result = parent::validate();
 
-        // Validate the conditional fields
-        $this->evaluateConditionalFields();
-
         // Some Tabs might call ee()->api_channel_fields
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
@@ -389,6 +386,8 @@ class ChannelEntry extends ContentModel
         if (empty($this->allow_comments)) {
             $this->allow_comments = $this->Channel->deft_comments;
         }
+        // Validate the conditional fields
+        $this->evaluateConditionalFields();
     }
 
     public function onAfterSave()
