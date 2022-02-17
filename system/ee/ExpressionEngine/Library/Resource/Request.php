@@ -154,7 +154,7 @@ class Request
      */
     protected function _send_resource($data, $modified)
     {
-        if ('y' == ee()->config->item('send_headers')) {
+        if (bool_config_item('send_headers')) {
             $max_age = 604800;
             $modified_since = ee()->input->server('HTTP_IF_MODIFIED_SINCE');
 
