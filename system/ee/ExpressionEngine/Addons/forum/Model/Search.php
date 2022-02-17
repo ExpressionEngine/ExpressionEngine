@@ -44,7 +44,7 @@ class Search extends Model
 
     protected static $_validation_rules = array(
         'search_date' => 'required',
-        'keywords' => 'required',
+        'keywords' => 'required|xss',
         'member_id' => 'required',
         'ip_address' => 'required|ipAddress',
         'topic_ids' => 'required',
