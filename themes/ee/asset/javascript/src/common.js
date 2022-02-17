@@ -1104,4 +1104,20 @@ $(document).ready(function(){
 		// Start observing changes
 		alertObserver.observe(document.body, { childList: true })
 
+
+		// Check the Entry page for existence and compliance with the conditions
+		// to show or hide fields depending on conditions
+
+		EE.cp.hide_show_enrties_fields = function(idArr) {
+			var hide_block = $('.hide-block');
+
+			$(hide_block).removeClass('hide-block');
+
+			$.each(idArr, function(index, id) {
+				$('[name="field_id_'+id+'"], [data-input-value="field_id_'+id+'"]').each(function(){
+					var mainParent = $(this).parents('.field-control').parent();
+					mainParent.addClass('hide-block');
+				})
+			});
+		}
 }); // close (document).ready

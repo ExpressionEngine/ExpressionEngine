@@ -314,9 +314,10 @@ EE.cp.formValidation = {
 	_toggleErrorForFields: function(field, message) {
 
 		if (message != 'success' && typeof(message.success) !== 'undefined' && message.success == 'success') {
+			hidden_fields = message.hidden_fields;
 			message = 'success';
 		}
-		
+
 		var form = field.parents('form'),
 			container = field.parents('.field-control'),
 			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),
@@ -410,6 +411,10 @@ EE.cp.formValidation = {
 						}
 					}
 				});
+			}
+
+			if (EE.publish.has_conditional_fields) {
+				EE.cp.hide_show_enrties_fields(hidden_fields);
 			}
 
 		// Validation error
