@@ -19,7 +19,7 @@ class TurnedOn extends AbstractEvaluationRule implements EvaluationRuleInterface
 {
     public function evaluate($fieldValue, $expectedValue)
     {
-        return $fieldValue==='y' || $fieldValue === true;
+        return $fieldValue==='y' || $fieldValue==='1' || $fieldValue === true;
     }
 
     public function getConditionalFieldInputType()

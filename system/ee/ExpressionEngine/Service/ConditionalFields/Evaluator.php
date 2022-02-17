@@ -21,7 +21,7 @@ class Evaluator
     {
         // Loop through the channel entry fields and set a simple field_id => field_value array
         foreach ($this->channelEntry->getCustomFields() as $field) {
-            $fields[$field->getId()] = $field->getData();
+            $fields[$field->getId()] = $field;
         }
 
         return $fields;
@@ -40,16 +40,16 @@ class Evaluator
 
     public function evaluateCondition(ConditionalFields\FieldCondition $condition)
     {
-        // Get the conditional field
-        $evaluationRule = ee('ConditionalFields')->make($condition->evaluation_rule);
-
         // If this field isnt set on the channel entry, then we fail the conditions
         if (!isset($this->channelFields[$condition->condition_field_id])) {
             return false;
         }
 
+        // Get the conditional field
+        $evaluationRule = ee('ConditionalFields')->make($condition->evaluation_rule, $this->channelFields[$condition->condition_field_id]->getType());
+
         // Now lets evaluate the condition_field value and the rule value
-        return $evaluationRule->evaluate($this->channelFields[$condition->condition_field_id], $condition->value);
+        return $evaluationRule->evaluate($this->channelFields[$condition->condition_field_id]->getData(), $condition->value);
     }
 
     public function evaluateConditionSet(ConditionalFields\FieldConditionSet $set)
