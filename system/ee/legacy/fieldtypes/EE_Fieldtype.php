@@ -1135,6 +1135,9 @@ abstract class EE_Fieldtype
      */
     public function renderTableCell($data, $field_id, $entry)
     {
+        if (is_null($data)) {
+            return '';
+        }
         $out = strip_tags($this->replace_tag($data));
         if (strlen($out) > 255) {
             $out = substr($out, 0, min(255, strpos($out, " ", 240))) . '&hellip;';

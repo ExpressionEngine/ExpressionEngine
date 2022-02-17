@@ -582,7 +582,7 @@ class EE_Typography
     public function parse_type($str, $prefs = '')
     {
         if ($str == '') {
-            return;
+            return $str;
         }
 
         // -------------------------------------------
