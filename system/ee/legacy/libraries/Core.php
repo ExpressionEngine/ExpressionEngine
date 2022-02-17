@@ -68,8 +68,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20220124');
-        define('APP_VER', '6.2.4');
+        define('APP_BUILD', '20220214');
+        define('APP_VER', '6.2.6');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -83,6 +83,7 @@ class EE_Core
         define('PASSWORD_MAX_LENGTH', 72);
         define('DOC_URL', 'https://docs.expressionengine.com/v6/');
         define('URL_TITLE_MAX_LENGTH', 200);
+        define('CLONING_MODE', (ee('Request') && ee('Request')->post('submit') == 'save_as_new_entry'));
 
         ee()->load->helper('language');
         ee()->load->helper('string');
