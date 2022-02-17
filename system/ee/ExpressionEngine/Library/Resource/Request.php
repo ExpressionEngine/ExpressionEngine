@@ -123,7 +123,7 @@ class Request
                     'edit_date' => $edit_date,
                     'template_data' => str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data)
                 ),
-                1,
+                0,
                 \Cache::GLOBAL_SCOPE
             );
         } else {
@@ -134,7 +134,7 @@ class Request
                     'edit_date' => $edit_date,
                     'template_data' => str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data)
                 ),
-                1,
+                0,
                 \Cache::LOCAL_SCOPE
             );
         }
