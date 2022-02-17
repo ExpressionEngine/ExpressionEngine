@@ -121,7 +121,8 @@ class Addon
 
             //always return true if the table does not exist
             //e.g. when running update from EE2 to EE6
-            if (version_compare(ee()->config->item('app_version'), '3.0.0', '<')) {
+            //some older version also don't use . as separator
+            if (version_compare(ee()->config->item('app_version'), '3.0.0', '<') || strpos(ee()->config->item('app_version'), '.') === false) {
                 return true;
             }
 
