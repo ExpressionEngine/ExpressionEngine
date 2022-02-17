@@ -440,7 +440,7 @@ class CommandUpdate extends Cli
             if (! ee()->config->item('avatar_path')) {
                 $this->info('command_update_missing_avatar_path_message');
                 $guess = ee()->config->item('base_path') ? rtrim(ee()->config->item('base_path'), '/') . '/images/avatars' : SYSPATH . '../images/avatars';
-                $result = $this->confirm('Use ' . $guess . '?')
+                $result = ($this->defaultToYes || $this->confirm('Use ' . $guess . '?'))
                         ? $guess
                         : $this->ask('command_update_enter_full_avatar_path');
 

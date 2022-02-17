@@ -149,7 +149,7 @@ it('turns system off if system was off before updating', () => {
 
     it('updates using mysql as the dbdriver', () => {
       cy.task('installer:replace_database_config', {file: database, options: {dbdriver: 'mysql'}}).then(() => {
-        test_cli_update()
+        test_update()
         test_templates()
       })
     })
