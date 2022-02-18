@@ -992,6 +992,11 @@ $(document).ready(function(){
 				}
 			}
 
+			if($(this).attr('data-toggle-for') == 'field_is_conditional' && $(this).attr('data-state') == 'on') {
+				$('.conditionset-item:not(.hidden)').find('.rule:not(.hidden) .condition-rule-field-wrap input').prop('disabled', false);
+				$('.conditionset-item:not(.hidden)').find('.match-react-element input').prop('disabled', false);
+			}
+
 			e.preventDefault();
 		});
 

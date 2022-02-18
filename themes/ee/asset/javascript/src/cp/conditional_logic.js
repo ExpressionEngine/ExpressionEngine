@@ -286,7 +286,7 @@ Conditional.Publish.prototype = {
 
         $(set).find('.condition-btn').trigger('click');
 
-        // // Bind the new row's inputs to AJAX form validation
+        // Bind the new row's inputs to AJAX form validation
         if (EE.cp && EE.cp.formValidation !== undefined) {
             EE.cp.formValidation.bindInputs(set);
         }
