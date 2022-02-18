@@ -51,7 +51,8 @@ class Updater
 
         if (! $notify_template) {
             $sites = ee('Model')->get('Site')->all();
-            require_once SYSPATH . 'ee/language/' . ee()->config->item('language') . '/email_data.php';
+            $lang = !empty(ee()->config->item('deft_lang')) ? ee()->config->item('deft_lang') : 'english';
+            require_once SYSPATH . 'ee/language/' . $lang . '/email_data.php';
 
             foreach ($sites as $site) {
                 $notify_template = ee('Model')->make('SpecialtyTemplate')
@@ -77,7 +78,8 @@ class Updater
 
         if (! $notify_template) {
             $sites = ee('Model')->get('Site')->all();
-            require_once SYSPATH . 'ee/language/' . ee()->config->item('language') . '/email_data.php';
+            $lang = !empty(ee()->config->item('deft_lang')) ? ee()->config->item('deft_lang') : 'english';
+            require_once SYSPATH . 'ee/language/' . $lang . '/email_data.php';
 
             foreach ($sites as $site) {
                 $notify_template = ee('Model')->make('SpecialtyTemplate')
