@@ -86,7 +86,7 @@
                 }
             ?>
             <?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid'): ?>
-            <div class="fieldset-faux <?=$field_class?>">
+            <div class="fieldset-faux <?=$field_class?>" data-field_id="<?=$field->getId()?>">
             <?php else: ?>
             <fieldset class="<?=$field_class?>" data-field_id="<?=$field->getId()?>">
             <?php endif; ?>
