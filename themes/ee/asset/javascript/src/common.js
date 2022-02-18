@@ -1114,9 +1114,8 @@ $(document).ready(function(){
 			$(hide_block).removeClass('hide-block');
 
 			$.each(idArr, function(index, id) {
-				$('[name="field_id_'+id+'"], [data-input-value="field_id_'+id+'"]').each(function(){
-					var mainParent = $(this).parents('.field-control').parent();
-					mainParent.addClass('hide-block');
+				$('[data-field_id="'+id+'"]').each(function(){
+					$(this).addClass('hide-block');
 				})
 			});
 		}
