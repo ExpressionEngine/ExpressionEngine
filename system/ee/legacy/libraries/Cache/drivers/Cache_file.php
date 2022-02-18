@@ -50,6 +50,10 @@ class EE_Cache_file extends CI_Driver
 
         $data = unserialize(file_get_contents($this->_cache_path . $key));
 
+        if (!is_array($data)) {
+            return false;
+        }
+
         if ($data['ttl'] > 0 && ee()->localize->now > $data['time'] + $data['ttl']) {
             unlink($this->_cache_path . $key);
 
