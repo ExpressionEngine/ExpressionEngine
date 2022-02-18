@@ -24,14 +24,21 @@
         }
 
         $operatorRuleArr = [];
-        $operaionFieldDefault = [];
+        $operatorFieldDefault = [];
+        $valueOptions = null;
+        $valueFieldDefault = [];
+        $valueType;
 
         if ($evaluation_rule) {
             foreach ($fieldsList[$conditionFieldVal['value']]['evaluationRules'] as $ruleName => $ruleInfo) {
                 $operatorRuleArr[$ruleName] = $ruleInfo['text'];
+
+                if ($evaluation_rule == $ruleName) {
+                    $valueType = $ruleInfo;
+                }
             }
 
-            $operaionFieldDefault = [
+            $operatorFieldDefault = [
                 'choices' => ee('View/Helpers')->normalizedChoices($operatorRuleArr),
                 'value' => $evaluation_rule,
                 'too_many' => 20,
@@ -39,6 +46,20 @@
                 'empty_text' => 'Select a Field',
                 'field_name' => 'condition['. $setId .']['. $rowId .'][evaluation_rule]',
                 'conditional_toggle' => 'operator',
+                'is_required' => false
+            ];
+        }
+
+        if ($valueType['type'] == 'select') {
+            $valueOptions = $fieldsList[$conditionFieldVal['value']]['evaluationValues'];
+
+            $valueFieldDefault = [
+                'choices' => ee('View/Helpers')->normalizedChoices($valueOptions),
+                'value' => $value,
+                'too_many' => 20,
+                'class' => 'condition-rule-value',
+                'empty_text' => 'Select a Field',
+                'field_name' => 'condition['. $setId .']['. $rowId .'][value]',
                 'is_required' => false
             ];
         }
@@ -51,7 +72,7 @@
     </div>
 
     <div class="condition-rule-operator-wrap" data-new-rule-row-id="<?=$ruleRowId?>">
-        <?php if ($hiddenTemplate || empty($operaionFieldDefault)) : ?>
+        <?php if ($hiddenTemplate || empty($operatorFieldDefault)) : ?>
             <select name="" id="" class="empty-select" disabled="disabled"></select>
 
             <div data-input-value="condition-rule-operator" class="condition-rule-operator" style="display: none;">
@@ -64,16 +85,20 @@
                 </div>
             </div>
         <?php else: 
-            echo $this->embed('_shared/form/fields/dropdown', $operaionFieldDefault);
+            echo $this->embed('_shared/form/fields/dropdown', $operatorFieldDefault);
         endif; ?>
     </div>
 
     <div class="condition-rule-value-wrap" data-new-rule-row-id="<?=$ruleRowId?>">
-        <input type="text"
-            <?php if (!$hiddenTemplate) : ?>value="<?=$value?>" name="condition[<?=$setId?>][<?=$rowId?>][value]"<?php endif; ?>
-            <?php if ((!$hiddenTemplate && trim($value) === '') && !is_null($value)) : ?>style="display: none;"<?php endif; ?>
-            <?php if (is_null($value)) : ?>disabled='disabled'<?php endif; ?>
-        >
+        <?php
+            if (!$hiddenTemplate && ($valueType['type'] == 'select')) :
+                $this->embed('_shared/form/fields/dropdown', $valueFieldDefault);
+            elseif (!$hiddenTemplate && !($valueType['type'] == null)) :
+        ?>
+        <input type="text" value="<?=$value?>" name="condition[<?=$setId?>][<?=$rowId?>][value]">
+        <?php else : ?>
+            <input type="text" disabled="disabled">
+        <?php endif; ?>
     </div>
 
     <div class="delete_rule">

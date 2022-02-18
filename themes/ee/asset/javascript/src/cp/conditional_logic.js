@@ -381,13 +381,13 @@ $(document).ready(function() {
         }
 
         var fieldName = element.label;
-        var parensRow = $(input).parents('.rule');
+        var parentRow = $(input).parents('.rule');
         var evaluationRules;
         var operator = {};
 
-        parensRow.find('.condition-rule-value-wrap input').removeAttr('disabled');
-        parensRow.find('.condition-rule-operator-wrap .condition-rule-operator').remove();
-        parensRow.find('.condition-rule-value-wrap input').remove();
+        parentRow.find('.condition-rule-value-wrap input').removeAttr('disabled');
+        parentRow.find('.condition-rule-operator-wrap .condition-rule-operator').remove();
+        parentRow.find('.condition-rule-value-wrap input').remove();
 
         $.each(EE.fieldsInfo, function(i, val) {
             if (fieldName == val['field_label']) {
@@ -403,8 +403,8 @@ $(document).ready(function() {
 
         var selectedItem = Object.keys(operator)[0];
 
-        var evaluation_rule_name = parensRow.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'evaluation_rule');
-        var value_name = parensRow.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'value');
+        var evaluation_rule_name = parentRow.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'evaluation_rule');
+        var value_name = parentRow.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'value');
 
         var options = {
             name: evaluation_rule_name,
@@ -421,42 +421,76 @@ $(document).ready(function() {
 
         var dataDropdownReact = btoa(JSON.stringify(options));
 
-        parensRow.find('.condition-rule-operator-wrap').append('<div data-input-value="'+evaluation_rule_name+'" class="condition-rule-operator" data-dropdown-react='+dataDropdownReact+'></div>');
-        parensRow.find('.condition-rule-value-wrap').append('<input type="text" name="'+value_name+'">');
+        parentRow.find('.condition-rule-operator-wrap').append('<div data-input-value="'+evaluation_rule_name+'" class="condition-rule-operator" data-dropdown-react='+dataDropdownReact+'></div>');
+        parentRow.find('.condition-rule-value-wrap').append('<input type="text" name="'+value_name+'">');
 
         Dropdown.renderFields();
-        parensRow.find('.condition-rule-operator-wrap .empty-select').hide();
-        parensRow.find('.condition-rule-operator-wrap .condition-rule-operator').show();
+        parentRow.find('.condition-rule-operator-wrap .empty-select').hide();
+        parentRow.find('.condition-rule-operator-wrap .condition-rule-operator').show();
 
-        EE.cp.show_hide_value_field(fieldType, selectedItem, parensRow);
+        EE.cp.show_hide_value_field(fieldType, selectedItem, parentRow);
     }
 
     EE.cp.check_operator_value = function(item, input) {
         var operatorVal = item.value;
-        var parensRow = $(input).parents('.rule');
-        var ruleLabel = parensRow.find('.condition-rule-field-wrap .select__dropdown-item--selected span:not(".short-name")').text();
+        var parentRow = $(input).parents('.rule');
+        var ruleLabel = parentRow.find('.condition-rule-field-wrap .select__dropdown-item--selected span:not(".short-name")').text();
 
         var rulefieldType = checkFieldType(ruleLabel);
 
-        EE.cp.show_hide_value_field(rulefieldType, operatorVal, parensRow);
+        EE.cp.show_hide_value_field(rulefieldType, operatorVal, parentRow);
     } 
 
     EE.cp.show_hide_value_field = function(firstSelectVal, secondSelectVal, parentRow) {
         var evaluationRules;
+        var evaluationValues;
+        var operator = {};
 
         $.each(EE.fieldsInfo, function(i, val) {
             if (firstSelectVal == val['field_type']) {
                 evaluationRules = val['evaluationRules'];
+                evaluationValues = val['evaluationValues'];
             }
         });
 
+        if (Object.keys(evaluationValues).length) {
+            $.each(evaluationValues, function(item, value){
+                operator[item] =  value;
+            });
+
+            var selectedItem = Object.keys(operator)[0];
+        }
+
         $.each(evaluationRules, function(el, val) {
+            var value_name = parentRow.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'value');
+
             if (secondSelectVal == el) {
                 if (val['type'] == null) {
-                    parentRow.find('.condition-rule-value-wrap').children().hide();
+                    parentRow.find('.condition-rule-value-wrap').children().remove();
+                } else if (val['type'] == 'select') {
+
+                    parentRow.find('.condition-rule-value-wrap').children().remove();
+
+                    var valueOptions = {
+                        name: value_name,
+                        items: operator,
+                        initialItems: operator,
+                        selected: selectedItem,
+                        disabled: false,
+                        tooMany: 20,
+                        limit: 100,
+                        groupToggle: null,
+                        emptyText: "Select a Field",
+                    };
+
+                    var dataDropdownReact = btoa(JSON.stringify(valueOptions));
+
+                    parentRow.find('.condition-rule-value-wrap').append('<div data-input-value="'+value_name+'" class="condition-rule-value" data-dropdown-react='+dataDropdownReact+'></div>');
+
+                    Dropdown.renderFields();
                 } else {
-                    parentRow.find('.condition-rule-value-wrap').children().prop('disabled', false);
-                    parentRow.find('.condition-rule-value-wrap').children().show();
+                    parentRow.find('.condition-rule-value-wrap').children().remove();
+                    parentRow.find('.condition-rule-value-wrap').append('<input type="text" name="'+value_name+'">');
                 }
             }
         })
