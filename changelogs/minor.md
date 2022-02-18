@@ -16,6 +16,7 @@ Bullet list below, e.g.
    - Added `:trim` variable modifier
    - Allow assign previously created field groups to importing channel sets
    - Added Sticky entry column to entries table
+   - Added fluid Columns to List Command in order to accommodate longer Command lengths
    - Add channel data to category archives
    - Added `parse_files` parameter on Query Module
    - Allow to use the same template on Search Module to results and no results
