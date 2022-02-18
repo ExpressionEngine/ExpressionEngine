@@ -413,7 +413,7 @@ EE.cp.formValidation = {
 				});
 			}
 
-			if (EE.publish.has_conditional_fields) {
+			if (EE.hasOwnProperty('publish') && EE.publish.hasOwnProperty('has_conditional_fields') && EE.publish.has_conditional_fields) {
 				EE.cp.hide_show_enrties_fields(hidden_fields);
 			}
 
