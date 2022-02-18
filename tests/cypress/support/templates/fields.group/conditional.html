@@ -1,0 +1,17 @@
+{exp:channel:entries channel="news"}
+<h1>{title}</h1>
+
+<div class="news_body">{news_body}</div>
+
+<div class="if_news_body">{if news_body}if news_body{if:else}if not news_body{/if}</div>
+
+<div class="news_image">{news_image}</div>
+
+<div class="if_news_image">{if news_image}if news_image{if:else}if not news_image{/if}</div>
+
+<div class="cf_grid">{cf_grid:table}</div>
+
+<div class="related_news">{related_news}{related_news:title}{/related_news}</div>
+
+
+{/exp:channel:entries}
