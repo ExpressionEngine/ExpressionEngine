@@ -81,11 +81,14 @@
                 if ($field->isCollapsed() && !isset($pro_class)) {
                     $field_class .= ' fieldset---closed';
                 }
+                if ($field->isConditional() && $field->isConditionallyHidden()) {
+                    $field_class .= ' hide-block';
+                }
             ?>
             <?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid'): ?>
-            <div class="fieldset-faux <?=$field_class?><?php if ($field->isConditional() && $field->isConditionallyHidden()) { echo 'hide-block'; } ?>">
+            <div class="fieldset-faux <?=$field_class?>">
             <?php else: ?>
-            <fieldset class="<?=$field_class?><?php if ($field->isConditional() && $field->isConditionallyHidden()) { echo 'hide-block'; } ?>">
+            <fieldset class="<?=$field_class?>" data-field_id="<?=$field->getId()?>">
             <?php endif; ?>
                 <div class="field-instruct">
                     <label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
