@@ -7,6 +7,7 @@ context('Test Member roles Web access ', () => {
 
 	before(function(){
 		cy.task('db:seed')
+		cy.eeConfig({item: 'is_system_on', value: 'y'})
 		cy.addRole('Test')
 		cy.addMembers('Test', 1)
 		cy.logout()
@@ -25,18 +26,8 @@ context('Test Member roles Web access ', () => {
 
 	it('Turns website offline --> Members cannot view Site but Super Aamin can', () =>{
 
-	   cy.authVisit('admin.php?/cp/members/profile/settings')
-
-	   cy.get('h1').contains('admin')//ensure admin logged in
-
-
-	   cy.get('.ee-sidebar').contains('Settings').click()
-
-
-		cy.get('.on > .slider').click();
-		cy.get('button').contains('Save Settings').click()
-
-		cy.visit('/')
+		cy.authVisit('/')
+		cy.get('body').should('not.contain', 'This site is currently offline')
 
 		cy.logout()
 
@@ -79,6 +70,8 @@ context('Test Member roles Web access ', () => {
 	   cy.get('.button').click();
 
 	   cy.visit('/',{failOnStatusCode: false})
+
+	   cy.get('body').should('not.contain', 'This site is currently offline')
 
 	})
 
