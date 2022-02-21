@@ -4,7 +4,7 @@
     $hiddenTemplate = isset($hiddenTemplate) ? true : false;
     $evaluation_rule = isset($evaluation_rule) ? $evaluation_rule : null;
     $value = isset($value) ? $value : null;
-    $rowId = isset($rowId) ? $rowId : null;
+    $rowId = isset($rowId) ? $rowId : '';
     $error = isset($error) ? $error : false;
 
     if ($hiddenTemplate) {
@@ -27,7 +27,7 @@
         $operatorFieldDefault = [];
         $valueOptions = null;
         $valueFieldDefault = [];
-        $valueType;
+        $valueType = ['type' => 'text'];
 
         if ($evaluation_rule) {
             foreach ($fieldsList[$conditionFieldVal['value']]['evaluationRules'] as $ruleName => $ruleInfo) {

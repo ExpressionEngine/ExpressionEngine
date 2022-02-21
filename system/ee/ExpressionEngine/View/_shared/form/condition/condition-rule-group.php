@@ -50,6 +50,9 @@ ee()->javascript->set_global('conditionData', $data);
 
     <?php if (!empty($errors)):
         foreach ($errors->getFailed() as $fieldName => $item) {
+            if (strpos($fieldName, 'condition') !== 0) {
+                continue;
+            }
             $fl_array = preg_match_all("/\[(.*?)\]/", $fieldName, $found);
             $setId = $found[1][0];
             $rowId = $found[1][1];
