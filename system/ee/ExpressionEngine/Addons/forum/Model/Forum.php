@@ -99,7 +99,8 @@ class Forum extends Model
     );
 
     protected static $_validation_rules = array(
-        'forum_name' => 'required',
+        'forum_name' => 'required|xss',
+        'forum_description' => 'xss',
         'forum_is_cat' => 'enum[y,n]',
         'forum_status' => 'enum[o,c,a]',
         'forum_last_post_type' => 'enum[p,a]',
