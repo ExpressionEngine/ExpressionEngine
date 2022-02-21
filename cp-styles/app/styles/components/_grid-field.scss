@@ -276,7 +276,7 @@
 	}
 }
 
-
+.live-preview__form-content .grid-field,
 .grid-field.overwidth {
 	.table-responsive {
 		overflow-x: hidden;
@@ -318,6 +318,10 @@
 
 					& > *:not(.grid-field__column-label) {
 						width: calc(100% - 120px);
+
+						@include m-desktop-down {
+							width: calc(100% - 80px);
+						}
 					}
 
 					.grid-field__column-label {
@@ -328,6 +332,10 @@
 						border-right: 1px solid var(--ee-table-border);
 						margin-right: 15px;
 						flex: 0 0 120px;
+
+						@include m-desktop-down {
+							flex: 0 0 80px;
+						}
 					}
 
 					.grid-field__column-tools {
@@ -344,6 +352,11 @@
 						}
 					}
 				}
+			}
+
+			tr.no-results {
+				border-bottom: none;
+				padding: 0;
 			}
 		}
 	}
