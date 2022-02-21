@@ -102,15 +102,13 @@ class EE_Relationships_parser
      * @return Relationship_Parser	The parser object with the parsed out
      *								hierarchy and all of the entry data.
      */
-    public function create(array $relationship_fields, array $entry_ids, $tagdata = null, array $grid_relationships = array(), $grid_field_id = null, $fluid_field_data_id = null)
+    public function create(array $relationship_fields, array $entry_ids, $tagdata = '', array $grid_relationships = array(), $grid_field_id = null, $fluid_field_data_id = null)
     {
         if (! empty($relationship_fields) && ! is_array(current($relationship_fields))) {
             $relationship_fields = array($relationship_fields);
         }
 
-        if (! isset($tagdata)) {
-            $tagdata = ee()->TMPL->tagdata;
-        }
+        $tagdata = ($tagdata) ?: ee()->TMPL->tagdata;
 
         $builder = new EE_relationship_tree_builder($relationship_fields, $grid_relationships, $grid_field_id, $fluid_field_data_id);
 
