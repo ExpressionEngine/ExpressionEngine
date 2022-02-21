@@ -10,19 +10,16 @@ context('Test Member roles Web access ', () => {
 		cy.eeConfig({item: 'is_system_on', value: 'n'})
 		cy.addRole('Test')
 		cy.addMembers('Test', 1)
-		cy.logout()
-	})
 
-	it('Let Test Role access CP', () => {
-
-	   cy.authVisit('admin.php?/cp/members/roles')
-
+		//Let Test Role access CP
+		cy.authVisit('admin.php?/cp/members/roles')
 	   cy.get('div[class="list-item__title"]').contains('Test').click()
-
 	   cy.get('button').contains('CP Access').click()
 	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
-	})
+	   cy.get('button').contains('Save').first().click()
 
+		cy.logout()
+	})
 
 	it('Turns website offline --> Members cannot view Site but Super Aamin can', () =>{
 
