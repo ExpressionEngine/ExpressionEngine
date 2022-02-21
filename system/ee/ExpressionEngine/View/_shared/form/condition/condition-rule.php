@@ -91,7 +91,7 @@
 
     <div class="condition-rule-value-wrap" data-new-rule-row-id="<?=$ruleRowId?>">
         <?php
-            if ($hiddenTemplate) :
+            if ($hiddenTemplate || $error) :
                 echo '<input type="text" disabled="disabled">';
             elseif (!$hiddenTemplate && ($valueType['type'] == 'select')) :
                 $this->embed('_shared/form/fields/dropdown', $valueFieldDefault);
