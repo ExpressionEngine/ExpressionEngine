@@ -218,7 +218,9 @@ class Search
         /**  No query results?
         /** ----------------------------------------*/
         if ($query_parts == false) {
-            if (isset($this->_meta['no_results_page']) and $this->_meta['no_results_page'] != '') {
+            // IF THE BOTH PAGES ARE THE SAME, we need to cache the results,
+            // because there's difference between an expired search and an empty search
+            if (!empty($this->_meta['no_result_page'])) {
                 $data = array(
                     'search_id' => $this->hash,
                     'search_date' => time(),
@@ -229,13 +231,14 @@ class Search
                     'per_page' => 0,
                     'query' => '',
                     'custom_fields' => '',
-                    'result_page' => '',
+                    'result_page' => $this->_meta['result_page'],
+                    'no_result_page' => $this->_meta['no_result_page'],
                     'site_id' => ee()->config->item('site_id')
                 );
 
                 ee()->db->query(ee()->db->insert_string('exp_search', $data));
 
-                return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='" . $this->_meta['no_results_page'] . "'")) . '/' . $this->hash . '/');
+                return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='" . $this->_meta['no_result_page'] . "'")) . '/' . $this->hash . '/');
             } else {
                 return ee()->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
             }
@@ -255,6 +258,7 @@ class Search
             'query' => serialize($query_parts),
             'custom_fields' => addslashes(serialize($this->fields)),
             'result_page' => $this->_meta['result_page'],
+            'no_result_page' => $this->_meta['no_result_page'],
             'site_id' => ee()->config->item('site_id')  // site search was made from
         );
 
@@ -297,7 +301,7 @@ class Search
             'show_expired' => ee()->TMPL->fetch_param('show_expired', ''),
             'show_future_entries' => ee()->TMPL->fetch_param('show_future_entries'),
             'result_page' => ee()->TMPL->fetch_param('result_page', 'search/results'),
-            'no_results_page' => ee()->TMPL->fetch_param('no_result_page', ''),
+            'no_result_page' => ee()->TMPL->fetch_param('no_result_page', ''),
             'site_ids' => $site_ids
         );
 
@@ -1103,12 +1107,21 @@ class Search
         // Fetch the cached search query
         $query = ee()->db->get_where('search', array('search_id' => $search_id));
 
-        if ($query->num_rows() == 0 or $query->row('total_results') == 0) {
-            // This should be impossible as we already know there are results
+        if ($query->num_rows() == 0) {
             return ee()->output->show_user_error(
                 'general',
                 array(lang('invalid_action'))
             );
+        } elseif ($query->row('total_results') == 0) {
+            // this works if we use the same template for results and no results
+            if ($query->row('result_page') === $query->row('no_result_page')) {
+                return ee()->TMPL->no_results();
+            } else {
+                return ee()->output->show_user_error(
+                    'general',
+                    array(lang('invalid_action'))
+                );
+            }
         }
 
         $fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields')));

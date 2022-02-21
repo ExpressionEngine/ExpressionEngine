@@ -239,6 +239,7 @@ $lang = array(
     'command_update_option_no_bootstrap'                        => 'Runs with no bootstrap',
     'command_update_option_force_addon_upgrades'                => 'Automatically runs all addon updaters at end of update (advanced)',
     'command_update_option_y'                                   => 'Skip all confirmations. Don\'t do this.',
+    'command_update_option_skip_cleanup'                        => 'Skip cleanup steps after update',
 
     // Lang entries for command update:prepare
     'command_update_prepare_description'                        => 'Prepare a site to be upgraded using these files',
