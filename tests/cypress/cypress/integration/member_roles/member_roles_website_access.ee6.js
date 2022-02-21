@@ -7,7 +7,7 @@ context('Test Member roles Web access ', () => {
 
 	before(function(){
 		cy.task('db:seed')
-		cy.eeConfig({item: 'is_system_on', value: 'y'})
+		cy.eeConfig({item: 'is_system_on', value: 'n'})
 		cy.addRole('Test')
 		cy.addMembers('Test', 1)
 		cy.logout()
