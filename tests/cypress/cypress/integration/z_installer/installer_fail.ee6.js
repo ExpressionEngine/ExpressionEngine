@@ -11,7 +11,7 @@ const page = new Installer
 const install_form = new Form
 const install_success = new Success
 
-context('Installer (should fail)', () => {
+context.skip('Installer (should fail)', () => {
   before(function() {
 
   })
