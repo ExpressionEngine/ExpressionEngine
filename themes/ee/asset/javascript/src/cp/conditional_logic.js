@@ -384,6 +384,7 @@ $(document).ready(function() {
         var parentRow = $(input).parents('.rule');
         var evaluationRules;
         var operator = {};
+        var selectedItem;
 
         parentRow.find('.condition-rule-value-wrap input').removeAttr('disabled');
         parentRow.find('.condition-rule-operator-wrap .condition-rule-operator').remove();
@@ -399,9 +400,11 @@ $(document).ready(function() {
 
         $.each(evaluationRules, function(item, value){
             operator[item] =  value['text'];
-        });
 
-        var selectedItem = Object.keys(operator)[0];
+            if (value['default']) {
+                selectedItem = item
+            }
+        });
 
         var evaluation_rule_name = parentRow.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'evaluation_rule');
         var value_name = parentRow.find('.condition-rule-field-wrap .condition-rule-field').attr('data-input-value').replace('condition_field_id', 'value');
