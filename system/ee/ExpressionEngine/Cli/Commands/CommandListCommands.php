@@ -82,7 +82,8 @@ class CommandListCommands extends Cli
             $availableHydratedClass = new $availableClass();
 
             // Get the command header
-            $header = (explode(':', $availableCommand))[0];
+            $commandSegments = explode(':', $availableCommand);
+            $header = $commandSegments[0];
 
             // If this is a new header, we print a new line and then print the command header
             if (!in_array($header, $headers)) {
