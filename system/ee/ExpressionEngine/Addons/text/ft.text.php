@@ -33,6 +33,8 @@ class Text_ft extends EE_Fieldtype
      */
     public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
 
+    public $defaultEvaluationRule = 'notEqual';
+
     public function validate($data)
     {
         ee()->load->library('form_validation');

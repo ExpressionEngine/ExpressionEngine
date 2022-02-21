@@ -283,6 +283,12 @@ class FieldFacade
             ];
         }
 
+        if (property_exists($ft, 'defaultEvaluationRule') && isset($supportedEvaluationRules[$ft->defaultEvaluationRule])) {
+            $supportedEvaluationRules[$ft->defaultEvaluationRule]['default'] = true;
+        } else {
+            $supportedEvaluationRules[$rulesList[0]]['default'] = true;
+        }
+
         return $supportedEvaluationRules;
     }
 

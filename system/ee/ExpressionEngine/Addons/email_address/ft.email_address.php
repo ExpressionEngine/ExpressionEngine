@@ -33,7 +33,9 @@ class Email_address_Ft extends EE_Fieldtype
      *
      * @var array
      */
-    public $supportedEvaluationRules = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty', 'contains'];
+    public $supportedEvaluationRules = ['equal', 'notEqual'];
+
+    public $defaultEvaluationRule = 'notEqual';
 
     /**
      * Validate Field

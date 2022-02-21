@@ -36,6 +36,8 @@ class Duration_Ft extends EE_Fieldtype
      */
     public $supportedEvaluationRules = ['equal', 'notEqual', 'lessThan', 'lessOrEqualThan', 'greaterThan', 'greaterOrEqualThan'];
 
+    public $defaultEvaluationRule = 'notEqual';
+
     /**
      * Validate Field
      *

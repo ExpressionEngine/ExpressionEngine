@@ -40,7 +40,8 @@ class Radio_ft extends OptionFieldtype
      *
      * @var array
      */
-    public $supportedEvaluationRules = ['matches', 'notMatches', 'contains', 'notContains'];
+    
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'isEmpty', 'isNotEmpty'];
 
     public function validate($data)
     {

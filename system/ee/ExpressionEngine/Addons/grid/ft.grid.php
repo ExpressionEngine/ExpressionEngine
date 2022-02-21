@@ -34,7 +34,10 @@ class Grid_ft extends EE_Fieldtype
      *
      * @var array
      */
-    public $supportedEvaluationRules = null;
+    //public $supportedEvaluationRules = null;
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     public function __construct()
     {

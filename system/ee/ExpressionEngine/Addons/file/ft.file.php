@@ -24,6 +24,10 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
 
     public $has_array_data = true;
 
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
+
     public $_dirs = array();
 
     /**

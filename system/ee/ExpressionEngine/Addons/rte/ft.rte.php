@@ -32,6 +32,8 @@ class Rte_ft extends EE_Fieldtype
      */
     public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
 
+    public $defaultEvaluationRule = 'notEqual';
+
     /**
      * Implements EntryManager\ColumnInterface
      */

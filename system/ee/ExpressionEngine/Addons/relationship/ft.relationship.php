@@ -33,7 +33,10 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
      *
      * @var mixed
      */
-    public $supportedEvaluationRules = null;
+    //public $supportedEvaluationRules = null;
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Validate Field

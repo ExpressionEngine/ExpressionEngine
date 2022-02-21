@@ -32,6 +32,8 @@ class Textarea_ft extends EE_Fieldtype
      */
     public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
 
+    public $defaultEvaluationRule = 'notEqual';
+
     public function validate($data)
     {
         return true;

@@ -33,6 +33,9 @@ class Url_Ft extends EE_Fieldtype
      * @var array
      */
     public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
+
+    public $defaultEvaluationRule = 'notEqual';
+
     /**
      * Validate Field
      *
