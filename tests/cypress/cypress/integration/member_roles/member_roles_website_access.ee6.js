@@ -33,7 +33,7 @@ context('Test Member roles Web access ', () => {
 	   cy.get('.ee-sidebar').contains('Settings').click()
 
 
-		cy.get('.on > .slider').click();
+		cy.get('#fieldset-is_system_on .on > .slider').click();
 		cy.get('button').contains('Save Settings').click()
 
 		cy.visit('/')
