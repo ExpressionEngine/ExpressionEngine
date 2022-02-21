@@ -212,9 +212,7 @@ jobs:
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress
-                config-file: cypress.json
-                spec: |
-                  cypress/integration/(!pro)/*.ee6.js
+                config-file: cypress.without-pro.json
                 record: true
                 parallel: true
                 group: PHP${{ matrix.php }}
