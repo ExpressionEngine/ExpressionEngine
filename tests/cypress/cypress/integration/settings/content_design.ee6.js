@@ -6,6 +6,10 @@ const page = new ContentDesign
 
 context('Content & Design Settings', () => {
 
+  before(function(){
+    cy.task('db:seed')
+  })
+  
   beforeEach(function() {
     cy.auth();
     page.load()

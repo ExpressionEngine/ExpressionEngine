@@ -50,8 +50,15 @@ class Query
             $results = array_slice($results, $pagination->offset, $pagination->per_page);
         }
 
-        $this->return_data = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, array_values($results));
+        $str = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, array_values($results));
 
+        if (ee()->TMPL->fetch_param('parse_files') === 'yes' && strpos($str, '{filedir_') !== false) {
+            ee()->load->library('file_field');
+            $str = ee()->file_field->parse_string($str);
+        }
+
+        $this->return_data = $str;
+        
         if ($pagination->paginate === true) {
             $this->return_data = $pagination->render($this->return_data);
         }

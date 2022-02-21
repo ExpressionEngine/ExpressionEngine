@@ -21,7 +21,7 @@ if (is_string($value)) {
 }
 $attrs = (isset($field['attrs'])) ? $field['attrs'] : '';
 if (isset($field['disabled']) && $field['disabled'] == true) {
-    $attrs = ' disabled="disabled"';
+    $attrs .= ' disabled="disabled"';
 }
 // This is to handle showing and hiding certain parts
 // of the form when a form element changes
