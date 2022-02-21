@@ -117,7 +117,7 @@ jobs:
               ls -latr build-tools/builds/ExpressionEngine
 
     cypress-minimal:
-        if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event.pull_request.draft == false
         needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
 
@@ -240,4 +240,3 @@ jobs:
               with:
                 name: error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
                 path: /home/runner/php_errors.log
-

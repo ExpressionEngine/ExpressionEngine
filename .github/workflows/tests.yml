@@ -4,10 +4,10 @@ on:
   push:
     branches:
       - 6.dev
-      - 6.2.0
-      - 6.3.0
-      - 6.4.0
-      - 6.5.0
+      - release/6.3.0
+      - release/6.4.0
+      - release/6.5.0
+      - feature/html-title-to-file-EECORE-1680
 
 jobs:
 
@@ -93,13 +93,22 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.1, 7.2, 7.4, 8.0]
-                os: [ubuntu-18.04]
+                php: [7.1, 7.2, 7.4, 8.0, 8.1]
+                os: [ubuntu-20.04]
                 containers: [0, 1, 2, 3]
                 include:
-                  - php: 8.1
-                    os: ubuntu-latest #is using mysql8
-                    containers: [0, 1, 2, 3]
+                  - php: 5.6
+                    os: ubuntu-18.04
+                    containers: 0
+                  - php: 5.6
+                    os: ubuntu-18.04
+                    containers: 1
+                  - php: 5.6
+                    os: ubuntu-18.04
+                    containers: 2
+                  - php: 5.6
+                    os: ubuntu-18.04
+                    containers: 3
 
         name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}
 
@@ -180,6 +189,7 @@ jobs:
             #   id: specs
 
             - name: Run Cypress Tests
+              if: matrix.php != '5.6'
               uses: cypress-io/github-action@v2
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
@@ -194,6 +204,125 @@ jobs:
                 CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Run Cypress Tests (PHP 5.6)
+              if: matrix.php == '5.6'
+              uses: cypress-io/github-action@v2
+              with:
+                browser: chrome
+                headless: true
+                working-directory: tests/cypress
+                config-file: cypress.json
+                spec: |
+                  cypress/integration/(!pro)/*.ee6.js
+                record: true
+                parallel: true
+                group: PHP${{ matrix.php }}
+              env:
+                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Archive screenshots
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: cypress-tests-PHP${{ matrix.php }}-${{ matrix.containers }}
+                path: tests/cypress/cypress/screenshots/
+
+            - name: Archive server errors
+              uses: actions/upload-artifact@v2
+              if: failure()
+              with:
+                name: error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
+                path: /home/runner/php_errors.log
+
+    cypress-php56:
+        needs: build-for-testing
+
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [5.6]
+                os: [ubuntu-18.04]
+                containers: [0, 1, 2, 3]
+
+        name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}
+
+        steps:
+
+            - name: Use cached EE build
+              uses: actions/cache@v2
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-build-${{ github.sha }}
+
+            - name: Move files to webroot
+              run: |
+                cp -R build-tools/builds/ExpressionEngine/* ./
+            
+            - name: Restore cached git history
+              uses: actions/cache@v2
+              with:
+                path: .git
+                key: cache-ee-git-${{ github.sha }}
+
+            - name: Copy config.php
+              run: |
+                rm -f system/user/config/config.php
+                cp -f tests/cypress/support/config/config.php system/user/config/config.php
+            
+            - name: Copy .env.php
+              run: |
+                rm -f .env.php
+                cp -f tests/cypress/support/config/.env.php .env.php
+
+            - name: Remove installer
+              run: |
+                mv system/ee/installer system/ee/_installer
+
+            - name: Setup Permissions
+              run: |
+                  sudo chmod 666 system/user/config/config.php
+                  sudo chmod 777 system/user/config
+                  sudo chmod -R 777 system/user/cache
+                  sudo chmod -R 777 system/user/templates
+                  sudo chmod -R 777 system/user/language
+                  sudo chmod -R 777 tests/cypress/support/tmp
+                  sudo chmod -R 777 tests/cypress/support/file-sync/uploads
+                  sudo chmod -R 777 images
+                  sudo chmod -R 777 themes/user
+                  sudo chmod -R 777 tests/cypress/cypress/screenshots
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
+                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+
+            - name: Configure MySQL
+              run: |
+                sudo systemctl start mysql
+                mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
+                mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
+
+            - name: Install PHP dependencies
+              working-directory: tests/cypress
+              run: composer install
+
+            - name: Start PHP Server
+              run: php tests/serve.php &
+            
+            - name: Start SMTP Server
+              run: |
+                npm install -g maildev
+                maildev &
+
+
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v2
