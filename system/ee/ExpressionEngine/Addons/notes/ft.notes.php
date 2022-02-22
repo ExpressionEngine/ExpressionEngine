@@ -15,6 +15,7 @@ class Notes_ft extends EE_Fieldtype
 
     public $default_settings = [
         'note_content' => '',
+        'field_hide_title' => true
     ];
 
     public function __construct()
@@ -129,7 +130,6 @@ class Notes_ft extends EE_Fieldtype
     {
         // Merge the rest of the settings with their defaults
         $all = array_merge($this->default_settings, $data);
-
         return array_intersect_key($all, $this->default_settings);
     }
 
