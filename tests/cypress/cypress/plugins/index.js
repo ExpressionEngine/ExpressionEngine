@@ -241,7 +241,10 @@ module.exports = (on, config) => {
     })
 
     on('task', {
-        'installer:replace_config': ({file, options}) => {
+        'installer:replace_config': ({file, options} = {}) => {
+            if (typeof(options)==='undefined') {
+                options = {database: db_defaults};
+            }
             installer.replace_config(file, options)
             installer.set_base_url(config.baseUrl)
             return true;
