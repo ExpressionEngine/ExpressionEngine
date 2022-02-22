@@ -74,6 +74,8 @@ abstract class AbstractFields extends CP_Controller
 
         $list = $sidebar->addHeader(lang('field_groups_uc'));
 
+        $list->withButton(lang('new'), ee('CP/URL')->make('fields/groups/create'));
+
         $list = $list->addFolderList('field_groups')
             ->withNoResultsText(sprintf(lang('no_found'), lang('field_groups')));
 
@@ -119,12 +121,6 @@ abstract class AbstractFields extends CP_Controller
                 $item->isSelected();
             }
         }
-
-        $sidebar->addActionBar()
-            ->withLeftButton(
-                lang('new'),
-                ee('CP/URL')->make('fields/groups/create')
-            );
 
         ee()->view->left_nav = $sidebar->render();
     }
