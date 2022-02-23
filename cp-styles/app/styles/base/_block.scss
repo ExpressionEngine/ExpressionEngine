@@ -161,3 +161,9 @@ ul, ol  {
     margin-bottom: 0 !important;
   }
 }
+
+.range-slider {
+	& > input+output {
+		top: 80%;
+	}
+}

@@ -1,23 +1,23 @@
 .range-slider {
-  --primary-color: #0366D6;
+  --primary-color: var(--ee-button-primary-bg);
 
   --value-offset-y: var(--ticks-gap);
-  --value-active-color: white;
+  --value-active-color: var(--ee-button-primary-color);
   --value-background: transparent;
   --value-background-hover: var(--primary-color);
-  --value-font: 700 12px/1 Arial;
+  --value-font: 700 14px/2 'Roboto';
 
   --fill-color: var(--primary-color);
-  --progress-background: #EEE;
+  --progress-background: var(--ee-input-toggle-bg);
   --progress-radius: 20px;
   --track-height: calc(var(--thumb-size)/2);
 
-  --min-max-font: 12px Arial;
+  --min-max-font: 12px 'Roboto';
   --min-max-opacity: .5;
   --min-max-x-offset: 10%; // 50% to center
 
   --thumb-size: 22px;
-  --thumb-color: white;
+  --thumb-color: var(--ee-button-primary-color);
   --thumb-shadow: 0 0 3px rgba(0,0,0,.4),
                   0 0 1px rgba(0,0,0,.5) inset,
                   0 0 0 99px var(--thumb-color) inset;
@@ -31,7 +31,7 @@
   --ticks-thickness: 1px;
   --ticks-height: 5px;
   --ticks-gap: var(--ticks-height, 0); // vertical space between the ticks and the progress bar
-  --ticks-color: silver;
+  --ticks-color: var(--ee-button-default-border);
 
   // ⚠️ BELOW VARIABLES SHOULD NOT BE CHANGED
   --step: 1;
