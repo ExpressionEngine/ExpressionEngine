@@ -204,6 +204,12 @@
     margin-bottom: 15px;
     color: color(text-secondary);
 
+    & > div {
+    	white-space: nowrap;
+    	overflow: hidden;
+    	text-overflow: ellipsis;
+    }
+
     p {
       white-space: nowrap;
       overflow: hidden;
