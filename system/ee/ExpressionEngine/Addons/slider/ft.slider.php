@@ -1,0 +1,211 @@
+<?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
+
+require_once SYSPATH . 'ee/ExpressionEngine/Addons/text/ft.text.php';
+
+/**
+ * Slider Fieldtype
+ */
+class Slider_ft extends Text_ft
+{
+    public $info = array(
+        'name' => 'Slider Input',
+        'version' => '1.0.0'
+    );
+
+    protected $default_field_content_type = 'number';
+
+    public $settings_form_field_name = 'slider';
+
+    /**
+     * Display the field
+     *
+     * @param [type] $data
+     * @return void
+     */
+    public function display_field($data)
+    {
+        $field = array(
+            'name' => $this->field_name,
+            'value' => $this->_format_number($data),
+            'min' => ($this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0,
+            'max' => ($this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100,
+            'step' => ($this->settings['field_step'] != '') ? $this->settings['field_step'] : 1,
+            'suffix' => $this->settings['field_suffix'],
+            'prefix' => $this->settings['field_prefix']
+        );
+
+        if (REQ == 'CP') {
+            return ee('View')->make('slider:single')->render($field);
+        }
+
+        return form_range($field);
+    }
+
+    public function replace_tag($data, $params = '', $tagdata = '')
+    {
+        $decimals = isset($params['decimal_place']) ? (int) $params['decimal_place'] : false;
+        $type = isset($this->settings['field_content_type']) && in_array($this->settings['field_content_type'], ['number', 'integer', 'decimal']) ? $this->settings['field_content_type'] : $this->default_field_content_type;
+
+        $data = $this->_format_number($data, $type, $decimals);
+
+        ee()->load->library('typography');
+
+        return ee()->typography->parse_type($data);
+    }
+
+    public function replace_min($data, $params = '', $tagdata = '')
+    {
+        return ($this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0;
+    }
+
+    public function replace_max($data, $params = '', $tagdata = '')
+    {
+        return ($this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100;
+    }
+
+    public function replace_prefix($data, $params = '', $tagdata = '')
+    {
+        return $this->settings['field_prefix'];
+    }
+
+    public function replace_suffix($data, $params = '', $tagdata = '')
+    {
+        return $this->settings['field_suffix'];
+    }
+
+    public function display_settings($data)
+    {
+        $settings = array(
+            array(
+                'title' => 'field_min_value',
+                'fields' => array(
+                    'field_min_value' => array(
+                        'type' => 'text',
+                        'value' => isset($data['field_min_value']) ? $data['field_min_value'] : 0
+                    )
+                )
+            ),
+            array(
+                'title' => 'field_max_value',
+                'fields' => array(
+                    'field_max_value' => array(
+                        'type' => 'text',
+                        'value' => isset($data['field_max_value']) ? $data['field_max_value'] : 100
+                    )
+                )
+            ),
+            array(
+                'title' => 'field_step',
+                'fields' => array(
+                    'field_step' => array(
+                        'type' => 'text',
+                        'value' => isset($data['field_step']) ? $data['field_step'] : 1
+                    )
+                )
+            ),
+            array(
+                'title' => 'field_prefix',
+                'fields' => array(
+                    'field_prefix' => array(
+                        'type' => 'text',
+                        'value' => isset($data['field_prefix']) ? $data['field_prefix'] : ''
+                    )
+                )
+            ),
+            array(
+                'title' => 'field_suffix',
+                'fields' => array(
+                    'field_suffix' => array(
+                        'type' => 'text',
+                        'value' => isset($data['field_suffix']) ? $data['field_suffix'] : ''
+                    )
+                )
+            ),
+        );
+
+        if ($this->settings_form_field_name == 'slider' && $this->content_type() != 'category' && $this->content_type() != 'member') {
+            $settings[] = array(
+                'title' => 'field_content_text',
+                'desc' => 'field_content_text_desc',
+                'fields' => array(
+                    'field_content_type' => array(
+                        'type' => 'radio',
+                        'choices' => $this->_get_content_options(),
+                        'value' => isset($data['field_content_type']) ? $data['field_content_type'] : 'numeric'
+                    )
+                )
+            );
+        }
+
+        if ($this->content_type() == 'grid') {
+            return array('field_options' => $settings);
+        }
+
+        return array('field_options_' . $this->settings_form_field_name => array(
+            'label' => 'field_options',
+            'group' => $this->settings_form_field_name,
+            'settings' => $settings
+        ));
+    }
+
+    /**
+     * Returns allowed content types for the text fieldtype
+     *
+     * @return	array
+     */
+    private function _get_content_options()
+    {
+        return array(
+            'numeric' => lang('type_numeric'),
+            'integer' => lang('type_integer'),
+            'decimal' => lang('type_decimal')
+        );
+    }
+
+    public function validate_settings($settings)
+    {
+        $validator = ee('Validation')->make(array(
+            'field_min_value' => 'integer|matchesContentType',
+            'field_max_value' => 'integer|matchesContentType',
+            'field_step' => 'numeric|matchesContentType'
+        ));
+
+        $validator->defineRule('matchesContentType', function ($key, $value) use ($settings) {
+            if ($settings['field_content_type'] == 'integer' && $this->settings_form_field_name == 'slider' && (int)$value != $value) {
+                return 'integer';
+            }
+            return true;
+        });
+
+        return $validator->validate($settings);
+    }
+
+    public function save_settings($data)
+    {
+        $defaults = array(
+            'field_min_value' => 0,
+            'field_max_value' => 100,
+            'field_step' => 1,
+            'field_prefix' => '',
+            'field_suffix' => '',
+            'datalist_items' => '',
+            'field_content_type' => $this->default_field_content_type,
+        );
+
+        $all = array_merge($defaults, $data);
+
+        return array_intersect_key($all, $defaults);
+    }
+}
+
+// END Text_Ft class
+
+// EOF
