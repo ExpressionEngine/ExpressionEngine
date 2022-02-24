@@ -50,7 +50,7 @@ class Poll extends Model
 
     protected static $_validation_rules = array(
         'topic_id' => 'required',
-        'poll_question' => 'required',
+        'poll_question' => 'required|xss',
         'poll_answers' => 'required',
         'poll_date' => 'required',
     );

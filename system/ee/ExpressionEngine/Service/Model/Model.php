@@ -193,6 +193,18 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     }
 
     /**
+     * Remove some variables to get cleaner var_dump
+     *
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $footprint = get_object_vars($this);
+        unset($footprint['_facade']);
+        return $footprint;
+    }
+
+    /**
      * Get the short name
      *
      * @return String short name
@@ -1009,7 +1021,9 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
      */
     private function catchDbExceptionOnModel($exception, $operation = 'update') {
         if (strpos($exception->getMessage(), "Incorrect string value: '\x") !== false) {
-            ee()->load->library('logger');
+            if (! isset(ee()->logger)) {
+                ee()->load->library('logger');
+            }
             ee()->logger->developer('Unable to ' . $operation . ' ' . $this->getName() . ' model. The data contains multibyte characters, however the database table does not support those.', true);
         }
         throw $exception;

@@ -96,7 +96,7 @@ class Board extends Model
     );
 
     protected static $_validation_rules = array(
-        'board_label' => 'required',
+        'board_label' => 'required|xss',
         'board_name' => 'required|unique|alphaDash',
         'board_enabled' => 'enum[y,n]',
         'board_forum_trigger' => 'required|unique[board_site_id]|alphaDash|validateForumTrigger[board_site_id]',
