@@ -57,6 +57,14 @@ class Url_Ft extends EE_Fieldtype
         if (! isset($parsed_url['host']) or ! isset($parsed_url['scheme'])) {
             // check for protocol relativity allowance before bailing
             if (
+                in_array('/', $this->get_setting('allowed_url_schemes'))
+                && strncasecmp($data, '/', 1) === 0
+                ) {
+                // I'll allow it!
+                return true;
+            }
+
+            if (
                 in_array('//', $this->get_setting('allowed_url_schemes'))
                 && strncasecmp($data, '//', 2) === 0
                 ) {
@@ -226,6 +234,7 @@ class Url_Ft extends EE_Fieldtype
         }
 
         $protocols += [
+            '/' => '/ (' . lang('url_ft_single_slash_protocol_relative_url') . ')',
             '//' => '// (' . lang('url_ft_protocol_relative_url') . ')',
             'ftp://' => 'ftp://',
             'mailto:' => 'mailto:',
