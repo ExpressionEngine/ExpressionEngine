@@ -16,7 +16,7 @@ require_once SYSPATH . 'ee/ExpressionEngine/Addons/text/ft.text.php';
 class Slider_ft extends Text_ft
 {
     public $info = array(
-        'name' => 'Slider Input',
+        'name' => 'Value Slider',
         'version' => '1.0.0'
     );
 
@@ -32,14 +32,23 @@ class Slider_ft extends Text_ft
      */
     public function display_field($data)
     {
+        //some fallback if we switched from double to single slider
+        if (strpos($data, '|') !== false) {
+            ee()->load->helper('custom_field');
+            $data = decode_multi_field($data);
+            if (isset($data[0])) {
+                $data = $data[0];
+            }
+        }
+
         $field = array(
             'name' => $this->field_name,
             'value' => $this->_format_number($data),
-            'min' => ($this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0,
-            'max' => ($this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100,
-            'step' => ($this->settings['field_step'] != '') ? $this->settings['field_step'] : 1,
-            'suffix' => $this->settings['field_suffix'],
-            'prefix' => $this->settings['field_prefix']
+            'min' => (isset($this->settings['field_min_value']) && $this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0,
+            'max' => (isset($this->settings['field_max_value']) && $this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100,
+            'step' => (isset($this->settings['field_step']) && $this->settings['field_step'] != '') ? $this->settings['field_step'] : 1,
+            'suffix' => isset($this->settings['field_suffix']) ? $this->settings['field_suffix'] : '',
+            'prefix' => isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : ''
         );
 
         if (REQ == 'CP') {
@@ -51,10 +60,27 @@ class Slider_ft extends Text_ft
 
     public function replace_tag($data, $params = '', $tagdata = '')
     {
+        //some fallback if we switched from double to single slider
+        if (strpos($data, '|') !== false) {
+            ee()->load->helper('custom_field');
+            $data = decode_multi_field($data);
+            if (isset($data[0])) {
+                $data = $data[0];
+            }
+        }
+
         $decimals = isset($params['decimal_place']) ? (int) $params['decimal_place'] : false;
         $type = isset($this->settings['field_content_type']) && in_array($this->settings['field_content_type'], ['number', 'integer', 'decimal']) ? $this->settings['field_content_type'] : $this->default_field_content_type;
 
         $data = $this->_format_number($data, $type, $decimals);
+
+        if (isset($params['prefix']) && $params['prefix'] == 'yes') {
+            $data = $this->settings['field_prefix'] . $data;
+        }
+
+        if (isset($params['suffix']) && $params['suffix'] == 'yes') {
+            $data = $this->settings['field_suffix'] . $data;
+        }
 
         ee()->load->library('typography');
 
@@ -81,15 +107,36 @@ class Slider_ft extends Text_ft
         return $this->settings['field_suffix'];
     }
 
-    public function display_settings($data)
+    private function _default_settings()
     {
+        return array(
+            'field_min_value' => 0,
+            'field_max_value' => 100,
+            'field_step' => 1,
+            'field_prefix' => '',
+            'field_suffix' => '',
+            'datalist_items' => '',
+            'field_content_type' => $this->default_field_content_type,
+        );
+    }
+
+    public function display_settings($data = [])
+    {
+        $defaults = $this->_default_settings();
+
+        foreach ($defaults as $key => $value) {
+            if (!isset($data[$key])) {
+                $data[$key] = $value;
+            }
+        }
+
         $settings = array(
             array(
                 'title' => 'field_min_value',
                 'fields' => array(
                     'field_min_value' => array(
                         'type' => 'text',
-                        'value' => isset($data['field_min_value']) ? $data['field_min_value'] : 0
+                        'value' => $data['field_min_value']
                     )
                 )
             ),
@@ -98,7 +145,7 @@ class Slider_ft extends Text_ft
                 'fields' => array(
                     'field_max_value' => array(
                         'type' => 'text',
-                        'value' => isset($data['field_max_value']) ? $data['field_max_value'] : 100
+                        'value' => $data['field_max_value']
                     )
                 )
             ),
@@ -107,7 +154,7 @@ class Slider_ft extends Text_ft
                 'fields' => array(
                     'field_step' => array(
                         'type' => 'text',
-                        'value' => isset($data['field_step']) ? $data['field_step'] : 1
+                        'value' => $data['field_step']
                     )
                 )
             ),
@@ -116,7 +163,7 @@ class Slider_ft extends Text_ft
                 'fields' => array(
                     'field_prefix' => array(
                         'type' => 'text',
-                        'value' => isset($data['field_prefix']) ? $data['field_prefix'] : ''
+                        'value' => $data['field_prefix']
                     )
                 )
             ),
@@ -125,7 +172,7 @@ class Slider_ft extends Text_ft
                 'fields' => array(
                     'field_suffix' => array(
                         'type' => 'text',
-                        'value' => isset($data['field_suffix']) ? $data['field_suffix'] : ''
+                        'value' => $data['field_suffix']
                     )
                 )
             ),
@@ -139,7 +186,7 @@ class Slider_ft extends Text_ft
                     'field_content_type' => array(
                         'type' => 'radio',
                         'choices' => $this->_get_content_options(),
-                        'value' => isset($data['field_content_type']) ? $data['field_content_type'] : 'numeric'
+                        'value' => $data['field_content_type']
                     )
                 )
             );
@@ -190,15 +237,7 @@ class Slider_ft extends Text_ft
 
     public function save_settings($data)
     {
-        $defaults = array(
-            'field_min_value' => 0,
-            'field_max_value' => 100,
-            'field_step' => 1,
-            'field_prefix' => '',
-            'field_suffix' => '',
-            'datalist_items' => '',
-            'field_content_type' => $this->default_field_content_type,
-        );
+        $defaults = $this->_default_settings();
 
         $all = array_merge($defaults, $data);
 

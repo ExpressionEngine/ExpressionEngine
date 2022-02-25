@@ -814,12 +814,6 @@ $lang = array(
 
     'field_max_value' => 'Maximum value',
 
-    'field_step' => 'Step',
-
-    'field_prefix' => 'Prefix',
-
-    'field_suffix' => 'Suffix',
-
     'field_show_fmt' => 'Allow override?',
 
     'field_show_fmt_desc' => 'When enabled, authors can override the default text formatting for this field from the publish form.',

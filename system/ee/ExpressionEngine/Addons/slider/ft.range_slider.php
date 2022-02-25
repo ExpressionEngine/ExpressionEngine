@@ -33,12 +33,12 @@ class Range_slider_ft extends Slider_ft
     public function display_field($data)
     {
         $field = array(
-            'name' => $this->field_name,
-            'min' => ($this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0,
-            'max' => ($this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100,
-            'step' => ($this->settings['field_step'] != '') ? $this->settings['field_step'] : 1,
-            'suffix' => $this->settings['field_suffix'],
-            'prefix' => $this->settings['field_prefix']
+            'name' => $this->field_name . '[]',
+            'min' => (isset($this->settings['field_min_value']) && $this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0,
+            'max' => (isset($this->settings['field_max_value']) && $this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100,
+            'step' => (isset($this->settings['field_step']) && $this->settings['field_step'] != '') ? $this->settings['field_step'] : 1,
+            'suffix' => isset($this->settings['field_suffix']) ? $this->settings['field_suffix'] : '',
+            'prefix' => isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : ''
         );
 
         ee()->load->helper('custom_field');
@@ -50,9 +50,10 @@ class Range_slider_ft extends Slider_ft
             return ee('View')->make('slider:pair')->render($field);
         }
 
-        return form_range($field);
+        return form_range(array_merge($field, ['value' => $field['from']])) . BR . form_range(array_merge($field, ['value' => $field['to']]));
     }
 
+    
     public function save($data)
     {
         if (is_array($data)) {
@@ -65,14 +66,35 @@ class Range_slider_ft extends Slider_ft
 
     public function replace_tag($data, $params = '', $tagdata = '')
     {
-        $decimals = isset($params['decimal_place']) ? (int) $params['decimal_place'] : false;
-        $type = isset($this->settings['field_content_type']) && in_array($this->settings['field_content_type'], ['number', 'integer', 'decimal']) ? $this->settings['field_content_type'] : $this->default_field_content_type;
+        ee()->load->helper('custom_field');
+        $data = decode_multi_field($data);
+        if (!isset($data[0])) {
+            $data[0] = (isset($this->settings['field_min_value']) && $this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0;
+        }
+        if (!isset($data[1])) {
+            $data[1] = (isset($this->settings['field_max_value']) && $this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100;
+        }
 
-        $data = $this->_format_number($data, $type, $decimals);
+        $vars = [
+            'from' => parent::replace_tag($data[0], $params),
+            'to' => parent::replace_tag($data[1], $params)
+        ];
 
-        ee()->load->library('typography');
+        if (!empty($tagdata)) {
+            return ee()->TMPL->parse_variables_row($tagdata, $vars);
+        }
 
-        return ee()->typography->parse_type($data);
+        return $vars['from'] . ' &mdash; ' . $vars['to'];
+    }
+
+    public function replace_from($data, $params = '', $tagdata = '')
+    {
+        return $this->replace_tag($data, $params, '{from}');
+    }
+
+    public function replace_to($data, $params = '', $tagdata = '')
+    {
+        return $this->replace_tag($data, $params, '{to}');
     }
 
 }
