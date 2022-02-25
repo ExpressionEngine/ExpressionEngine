@@ -266,7 +266,8 @@ $lang = array(
     'url_ft_invalid_url_scheme' => 'Your URL must begin with a valid scheme: %s',
 
     'url_ft_protocol_relative_url' => 'Protocol Relative URL',
-    'url_ft_single_slash_protocol_relative_url' => 'Relative URL',
+
+    'url_ft_single_slash_protocol_relative_url' => 'Root Relative URL',
 
     'url_ft_url_scheme_placeholder' => 'URL Scheme Placeholder',
 
