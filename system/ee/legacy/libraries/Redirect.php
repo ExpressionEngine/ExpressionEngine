@@ -20,6 +20,11 @@ if (! isset($_GET['URL'])) {
     exit();
 }
 
+// Should we allow front end redirects via the URL query string?
+if (REQ === 'PAGE' && !ee()->config->item('allow_url_redirects_from_site')) {
+    show_404();
+}
+
 if (strncmp($_GET['URL'], 'http', 4) != 0 && strpos($_GET['URL'], '://') === false && substr($_GET['URL'], 0, 1) != '/') {
     $_GET['URL'] = "http://" . $_GET['URL'];
 }
