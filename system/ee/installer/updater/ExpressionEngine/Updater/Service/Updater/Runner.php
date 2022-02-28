@@ -159,6 +159,9 @@ class Runner
             }
         }
 
+        require_once(SYSPATH . 'ee/installer/controllers/wizard.php')
+        system\ee\installer\
+
         ee('Filesystem')->deleteDir(SYSPATH . 'ee/installer');
 
         $this->setNextStep('selfDestruct');
