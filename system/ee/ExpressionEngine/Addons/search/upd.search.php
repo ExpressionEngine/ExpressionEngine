@@ -13,7 +13,7 @@
  */
 class Search_upd
 {
-    public $version = '2.3';
+    public $version = '2.3.0';
 
     /**
      * Module Installer
