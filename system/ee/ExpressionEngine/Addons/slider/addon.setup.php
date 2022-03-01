@@ -11,7 +11,7 @@ return array(
     'built_in' => true,
     'fieldtypes' => array(
         'slider' => array(
-            'name' => 'Slider',
+            'name' => 'Value Slider',
             'compatibility' => 'text'
         ),
         'range_slider' => array(

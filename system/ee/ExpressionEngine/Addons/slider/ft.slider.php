@@ -79,12 +79,10 @@ class Slider_ft extends Text_ft
         }
 
         if (isset($params['suffix']) && $params['suffix'] == 'yes') {
-            $data = $this->settings['field_suffix'] . $data;
+            $data = $data . $this->settings['field_suffix'];
         }
 
-        ee()->load->library('typography');
-
-        return ee()->typography->parse_type($data);
+        return $data;
     }
 
     public function replace_min($data, $params = '', $tagdata = '')
