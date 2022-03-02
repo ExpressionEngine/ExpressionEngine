@@ -713,6 +713,10 @@ JSC;
     {
         // These are single variable tags only, so no need for replace_tag
         if ($modifier) {
+            if ($modifier == 'frontedit') {
+                return $tagdata;
+            }
+
             $key = 'url:' . $modifier;
 
             if ($modifier == 'thumbs') {
