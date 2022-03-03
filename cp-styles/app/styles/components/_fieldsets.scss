@@ -394,13 +394,32 @@ fieldset {
 	#eye {
 		cursor: pointer;
 		position: absolute;
-		right: 15px;
+		right: 25px;
 		top: 46px;
 	}
 	.field-control {
 		.eye,
 		#eye {
 			top: 12px;
+			right: 5px;
+		}
+	}
+}
+
+@media not all and (min-resolution:.001dpcm) { 
+	@supports (-webkit-appearance:none) {
+		fieldset {
+			.eye,
+			#eye {
+				right: 35px;
+			}
+
+			.field-control {
+				.eye,
+				#eye {
+					right: 35px;
+				}
+			}
 		}
 	}
 }

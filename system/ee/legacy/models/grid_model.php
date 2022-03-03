@@ -850,10 +850,14 @@ class Grid_model extends CI_Model
             }
             // Existing rows
             elseif (strpos($row_id, 'row_id_') !== false) {
-                $columns['row_id'] = str_replace('row_id_', '', $row_id);
-                $row_ids[] = $columns['row_id'];
-
-                $updated_rows[] = $columns;
+                if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                    $columns['entry_id'] = $entry_id;
+                    $new_rows[] = $columns;
+                } else {
+                    $columns['row_id'] = str_replace('row_id_', '', $row_id);
+                    $row_ids[] = $columns['row_id'];
+                    $updated_rows[] = $columns;
+                }
             }
 
             $order++;

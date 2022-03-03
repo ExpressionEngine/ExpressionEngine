@@ -462,13 +462,14 @@ class Updater
         ee()->update_notices->setVersion('4.0');
 
         ee()->remove('template');
-        require_once(APPPATH . 'libraries/Template.php');
+        require_once(SYSPATH . 'ee/installer/libraries/Template.php');
         ee()->set('template', new \Installer_Template());
 
         $installer_config = ee()->config;
         ee()->remove('config');
         ee()->set('config', new \MSM_Config());
 
+        ee()->load->model('template_model');
         $templates = ee()->template_model->fetch_last_edit(array(), true);
 
         $temp_warnings = array();
@@ -544,7 +545,8 @@ class Updater
             }
         }
 
-        ee()->config->remove_config_item(array('save_tmpl_files'));
+        $installer_config = new \Installer_Config();
+        $installer_config->remove_config_item(array('save_tmpl_files'));
 
         if ($update_config && $save_as_file == false) {
             // Add config override

@@ -119,6 +119,13 @@ class Addon
 
             $installed_plugins = self::$installed_plugins;
 
+            //always return true if the table does not exist
+            //e.g. when running update from EE2 to EE6
+            //some older version also don't use . as separator
+            if (version_compare(ee()->config->item('app_version'), '3.0.0', '<') || strpos(ee()->config->item('app_version'), '.') === false) {
+                return true;
+            }
+
             if (is_null($installed_plugins)) {
                 $installed_plugins = array_map('array_pop', ee()->db
                     ->select('plugin_package')

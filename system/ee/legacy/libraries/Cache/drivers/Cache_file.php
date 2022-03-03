@@ -50,7 +50,7 @@ class EE_Cache_file extends CI_Driver
 
         $data = unserialize(file_get_contents($this->_cache_path . $key));
 
-        if (empty($data)) {
+        if (!is_array($data)) {
             return false;
         }
 

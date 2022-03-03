@@ -521,6 +521,7 @@ class EE_Schema
 			channel_notify char(1) NOT NULL default 'n',
 			channel_notify_emails varchar(255) NULL DEFAULT NULL,
 			sticky_enabled char(1) NOT NULL default 'n',
+			enable_entry_cloning char(1) NOT NULL default 'y',
 			comment_url varchar(80) NULL DEFAULT NULL,
 			comment_system_enabled char(1) NOT NULL default 'y',
 			comment_require_membership char(1) NOT NULL default 'n',
