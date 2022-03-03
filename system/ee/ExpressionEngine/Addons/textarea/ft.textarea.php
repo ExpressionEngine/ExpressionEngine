@@ -25,14 +25,7 @@ class Textarea_ft extends EE_Fieldtype
 
     public $size = 'large';
 
-    /**
-     * A list of operators that this field type supports
-     *
-     * @var array
-     */
-    public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
-
-    public $defaultEvaluationRule = 'notEqual';
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     public function validate($data)
     {

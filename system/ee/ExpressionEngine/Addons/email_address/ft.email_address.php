@@ -28,14 +28,7 @@ class Email_address_Ft extends EE_Fieldtype
 
     public $size = 'small';
 
-    /**
-     * A list of operators that this field type supports
-     *
-     * @var array
-     */
-    public $supportedEvaluationRules = ['equal', 'notEqual'];
-
-    public $defaultEvaluationRule = 'notEqual';
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Validate Field

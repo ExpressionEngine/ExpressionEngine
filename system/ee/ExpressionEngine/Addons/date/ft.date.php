@@ -22,9 +22,9 @@ class Date_ft extends EE_Fieldtype
 
     public $size = 'small';
 
-    public $supportedEvaluationRules = ['equal', 'notEqual'];
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
 
-    public $defaultEvaluationRule = 'notEqual';
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Parses the date input, first with the configured date format (as used

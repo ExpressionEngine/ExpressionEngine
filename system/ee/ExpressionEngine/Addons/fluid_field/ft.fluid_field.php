@@ -28,10 +28,7 @@ class Fluid_field_ft extends EE_Fieldtype
      *
      * @var array
      */
-    //public $supportedEvaluationRules = null;
-    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
-
-    public $defaultEvaluationRule = 'isNotEmpty';
+    public $supportedEvaluationRules = null;
 
     /**
      * Fetch the fieldtype's name and version from its addon.setup.php file.

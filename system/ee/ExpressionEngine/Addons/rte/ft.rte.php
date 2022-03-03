@@ -25,14 +25,7 @@ class Rte_ft extends EE_Fieldtype
         'version' => '2.1.0'
     ];
 
-    /**
-     * A list of operators that this field type supports
-     *
-     * @var array
-     */
-    public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
-
-    public $defaultEvaluationRule = 'notEqual';
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Implements EntryManager\ColumnInterface

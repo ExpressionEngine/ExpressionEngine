@@ -268,9 +268,12 @@ class FieldFacade
         $supportedEvaluationRules = [];
         $ft = $this->getNativeField();
 
-        $defaultEvaluationRules = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty', 'contains'];
         if (!property_exists($ft, 'supportedEvaluationRules')) {
-            $rulesList = $defaultEvaluationRules;
+            if (property_exists($ft, 'has_array_data') && $ft->has_array_data === true) {
+                $rulesList = ['isEmpty', 'isNotEmpty'];
+            } else {
+                $rulesList = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty', 'contains'];
+            }
         } elseif (!empty($ft->supportedEvaluationRules)) {
             $rulesList = $ft->supportedEvaluationRules;
         }

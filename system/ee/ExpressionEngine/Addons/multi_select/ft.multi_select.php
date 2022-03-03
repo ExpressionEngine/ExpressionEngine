@@ -28,7 +28,9 @@ class Multi_select_ft extends OptionFieldtype
      *
      * @var array
      */
-    public $supportedEvaluationRules = ['matches', 'notMatches', 'isEmpty', 'isNotEmpty'];
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'contains', 'notContains', 'isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'matches';
 
     /**
      * Constructor

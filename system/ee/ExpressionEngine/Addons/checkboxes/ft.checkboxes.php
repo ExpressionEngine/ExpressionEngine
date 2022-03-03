@@ -44,6 +44,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
      */
     public $supportedEvaluationRules = ['matches', 'notMatches', 'contains', 'notContains', 'isEmpty', 'isNotEmpty'];
 
+    public $defaultEvaluationRule = 'matches';
+
     /**
      * Constructor
      *

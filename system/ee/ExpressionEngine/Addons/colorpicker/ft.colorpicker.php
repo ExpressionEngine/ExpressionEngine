@@ -17,7 +17,7 @@ class Colorpicker_ft extends EE_Fieldtype
 
     public $size = 'small';
 
-    public $supportedEvaluationRules = ['equal', 'notEqual'];
+    public $supportedEvaluationRules = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty'];
 
     public $defaultEvaluationRule = 'notEqual';
 

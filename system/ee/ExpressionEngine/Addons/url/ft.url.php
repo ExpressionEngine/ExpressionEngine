@@ -27,14 +27,7 @@ class Url_Ft extends EE_Fieldtype
      */
     public $has_array_data = false;
 
-    /**
-     * A list of operators that this field type supports
-     *
-     * @var array
-     */
-    public $supportedEvaluationRules = ['equal', 'notEqual', 'contains'];
-
-    public $defaultEvaluationRule = 'notEqual';
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Validate Field
