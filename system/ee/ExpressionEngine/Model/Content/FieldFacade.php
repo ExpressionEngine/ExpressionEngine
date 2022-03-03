@@ -267,7 +267,6 @@ class FieldFacade
         $rulesList = [];
         $supportedEvaluationRules = [];
         $ft = $this->getNativeField();
-
         if (!property_exists($ft, 'supportedEvaluationRules')) {
             if (property_exists($ft, 'has_array_data') && $ft->has_array_data === true) {
                 $rulesList = ['isEmpty', 'isNotEmpty'];
@@ -288,7 +287,7 @@ class FieldFacade
 
         if (property_exists($ft, 'defaultEvaluationRule') && isset($supportedEvaluationRules[$ft->defaultEvaluationRule])) {
             $supportedEvaluationRules[$ft->defaultEvaluationRule]['default'] = true;
-        } else {
+        } elseif (!empty($rulesList)) {
             $supportedEvaluationRules[$rulesList[0]]['default'] = true;
         }
 
