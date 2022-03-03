@@ -6,7 +6,6 @@ const { _, $ } = Cypress
 const uploadDirectory = '../../images/about/'
 
 context('Conditional Fields', () => {
-
     before(function() {
         cy.task('db:seed')
 
@@ -96,7 +95,6 @@ context('Conditional Fields', () => {
         cy.authVisit('admin.php?/cp/fields')
         cy.get('.list-item').contains('{news_image}').closest('.list-item').click();
         cy.get('#fieldset-field_is_conditional button').click();
-
         cy.get('.condition-rule-field:visible .select__button').click();
         cy.get('.dropdown--open .select__dropdown-item').contains('Body').click();
 
@@ -121,6 +119,7 @@ context('Conditional Fields', () => {
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         cy.log('Assert field is not shown on entry page after save');
+
         cy.url().then(edit_url => {
             cy.get('input[name="field_id_3"]').parent('.field-control').find('div[data-file-field-react]').should('not.be.visible');
 
@@ -139,7 +138,6 @@ context('Conditional Fields', () => {
             cy.get('tr[data-id="1"]').click()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
             cy.get('input[name="field_id_3"]').parent('.field-control').should('be.visible');
-
             // Assert field shows up
             cy.visit('index.php/fields/conditional/cf-image-test')
             cy.hasNoErrors()
@@ -158,7 +156,6 @@ context('Conditional Fields', () => {
         cy.get('.fields-grid-setup a[rel="add_new"]:visible').click();
         cy.get('input[name="grid[cols][new_1][col_label]"]').type('Column');
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
-
     })
 
     it('can be used in a relationship field', function() {
@@ -244,7 +241,6 @@ context('Conditional Fields', () => {
 
         // Assert field is not shown on entry page after save
         cy.get('input[name="field_id_3"]').parent('.field-control').find('div[data-file-field-react]').should('be.visible');
-
     })
 
     context('different combinations of rules', function() {
@@ -261,13 +257,13 @@ context('Conditional Fields', () => {
                     // cy.get('.delete_rule:visible').click({multiple: true});
                 }
             });
-
-
         })
+
         it('evaluates multiple condition sets', function() {
             // Setup conditional on field
             cy.authVisit('admin.php?/cp/fields')
             cy.hasNoErrors()
+
             cy.get('.list-item').contains('{news_body}').closest('.list-item').click();
             cy.get('#fieldset-field_is_conditional button').click();
 
@@ -297,8 +293,8 @@ context('Conditional Fields', () => {
 
             cy.log('Edit entry to conditionally hide the field');
             cy.hasNoErrors()
-            cy.get('input[name="title"]').type('CF textarea test');
-            cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until contion matches
+            cy.get('input[name="title"]').type('CF multiple conditions test').blur();
+            cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until condition matches
             cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
             cy.intercept('**/publish/**').as('validation')
             cy.get('textarea[name="field_id_2"]').type('shown').blur();
@@ -312,7 +308,7 @@ context('Conditional Fields', () => {
             cy.url().then(edit_url => {
                 cy.get('textarea[name="field_id_1"]').should('be.visible');
 
-                cy.visit('index.php/fields/conditional/cf-textarea-test')
+                cy.visit('index.php/fields/conditional/cf-multiple-conditions-test')
                 cy.hasNoErrors()
                 cy.get('.news_body').should('contain', 'some text')
                 cy.get('.if_news_body').should('contain', 'if news_body')
@@ -327,7 +323,7 @@ context('Conditional Fields', () => {
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
-                cy.visit('index.php/fields/conditional/cf-textarea-test')
+                cy.visit('index.php/fields/conditional/cf-multiple-conditions-test')
                 cy.hasNoErrors()
                 cy.get('.news_body').should('not.contain', 'some text')
                 cy.get('.if_news_body').should('contain', 'if not news_body')
@@ -375,7 +371,7 @@ context('Conditional Fields', () => {
 
             cy.log('Edit entry to conditionally hide the field');
             cy.hasNoErrors()
-            cy.get('input[name="title"]').type('CF textarea test');
+            cy.get('input[name="title"]').type('CF textarea multi any test').blur();
             cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until contion matches
             cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
             cy.intercept('**/publish/**').as('validation')
@@ -390,7 +386,7 @@ context('Conditional Fields', () => {
             cy.url().then(edit_url => {
                 cy.get('textarea[name="field_id_1"]').should('be.visible');
 
-                cy.visit('index.php/fields/conditional/cf-textarea-test')
+                cy.visit('index.php/fields/conditional/cf-textarea-multi-any-test')
                 cy.hasNoErrors()
                 cy.get('.news_body').should('contain', 'some text')
                 cy.get('.if_news_body').should('contain', 'if news_body')
@@ -405,7 +401,7 @@ context('Conditional Fields', () => {
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
-                cy.visit('index.php/fields/conditional/cf-textarea-test')
+                cy.visit('index.php/fields/conditional/cf-textarea-multi-any-test')
                 cy.hasNoErrors()
                 cy.get('.news_body').should('not.contain', 'some text')
                 cy.get('.if_news_body').should('contain', 'if not news_body')
@@ -420,10 +416,25 @@ context('Conditional Fields', () => {
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
-                cy.visit('index.php/fields/conditional/cf-textarea-test')
+                cy.visit('index.php/fields/conditional/cf-textarea-multi-any-test')
                 cy.hasNoErrors()
                 cy.get('.news_body').should('not.contain', 'some text')
                 cy.get('.if_news_body').should('contain', 'if not news_body')
+
+                // Edit entry to not match the other condition for showing the field
+                cy.authVisit(edit_url);
+                cy.hasNoErrors()
+                cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
+                cy.get('textarea[name="field_id_2"]').clear().type('show').blur()
+                cy.wait('@validation')
+                cy.get('textarea[name="field_id_1"]').should('be.visible')
+                cy.get('button[data-submit-text="Save"]:eq(0)').click();
+
+                // Assert field is not shown in the template
+                cy.visit('index.php/fields/conditional/cf-textarea-multi-any-test')
+                cy.hasNoErrors()
+                cy.get('.news_body').should('contain', 'some text')
+                cy.get('.if_news_body').should('contain', 'if news_body')
 
                 //revert to show all fields
                 cy.authVisit(edit_url);
@@ -465,7 +476,7 @@ context('Conditional Fields', () => {
 
             cy.log('Edit entry to conditionally hide the field');
             cy.hasNoErrors()
-            cy.get('input[name="title"]').type('CF textarea test');
+            cy.get('input[name="title"]').type('CF textarea multi all test').blur();
             cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until contion matches
             cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
             cy.intercept('**/publish/**').as('validation')
@@ -480,7 +491,7 @@ context('Conditional Fields', () => {
             cy.url().then(edit_url => {
                 cy.get('textarea[name="field_id_1"]').should('be.visible');
 
-                cy.visit('index.php/fields/conditional/cf-textarea-test')
+                cy.visit('index.php/fields/conditional/cf-textarea-multi-all-test')
                 cy.hasNoErrors()
                 cy.get('.news_body').should('contain', 'some text')
                 cy.get('.if_news_body').should('contain', 'if news_body')
@@ -495,7 +506,7 @@ context('Conditional Fields', () => {
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
-                cy.visit('index.php/fields/conditional/cf-textarea-test')
+                cy.visit('index.php/fields/conditional/cf-textarea-multi-all-test')
                 cy.hasNoErrors()
                 cy.get('.news_body').should('not.contain', 'some text')
                 cy.get('.if_news_body').should('contain', 'if not news_body')
@@ -510,10 +521,57 @@ context('Conditional Fields', () => {
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
-                cy.visit('index.php/fields/conditional/cf-textarea-test')
+                cy.visit('index.php/fields/conditional/cf-textarea-multi-all-test')
                 cy.hasNoErrors()
                 cy.get('.news_body').should('not.contain', 'some text')
                 cy.get('.if_news_body').should('contain', 'if not news_body')
+
+                // Edit entry to not conditionally hide the field
+                cy.authVisit(edit_url);
+                cy.hasNoErrors()
+                cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
+                // In this instance we need "show" and "this field" to be present, so this still wont work
+                cy.get('textarea[name="field_id_2"]').clear().type('show').blur()
+                cy.wait('@validation')
+                cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+                cy.get('button[data-submit-text="Save"]:eq(0)').click();
+
+                // Assert field is not shown in the template
+                cy.visit('index.php/fields/conditional/cf-textarea-multi-all-test')
+                cy.hasNoErrors()
+                cy.get('.news_body').should('not.contain', 'some text')
+                cy.get('.if_news_body').should('contain', 'if not news_body')
+
+                // Edit entry to not conditionally hide the field
+                cy.authVisit(edit_url);
+                cy.hasNoErrors()
+                cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
+                // In this instance we need "show" and "this field" to be present, so this still wont work
+                cy.get('textarea[name="field_id_2"]').clear().type('this field').blur()
+                cy.wait('@validation')
+                cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+                cy.get('button[data-submit-text="Save"]:eq(0)').click();
+
+                // Assert field is not shown in the template
+                cy.visit('index.php/fields/conditional/cf-textarea-multi-all-test')
+                cy.hasNoErrors()
+                cy.get('.news_body').should('not.contain', 'some text')
+                cy.get('.if_news_body').should('contain', 'if not news_body')
+
+                // Edit entry to not match the other condition for showing the field
+                cy.authVisit(edit_url);
+                cy.hasNoErrors()
+                cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
+                cy.get('textarea[name="field_id_2"]').clear().type('this field extra text, and we want to show').blur()
+                cy.wait('@validation')
+                cy.get('textarea[name="field_id_1"]').should('be.visible')
+                cy.get('button[data-submit-text="Save"]:eq(0)').click();
+
+                // Assert field is not shown in the template
+                cy.visit('index.php/fields/conditional/cf-textarea-multi-all-test')
+                cy.hasNoErrors()
+                cy.get('.news_body').should('contain', 'some text')
+                cy.get('.if_news_body').should('contain', 'if news_body')
 
                 //revert to show all fields
                 cy.authVisit(edit_url);
@@ -523,5 +581,4 @@ context('Conditional Fields', () => {
             })
         })
     })
-
 })
