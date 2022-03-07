@@ -97,6 +97,15 @@ class Categories extends AbstractCategoriesController
             'can_delete_categories' => ee('Permission')->can('delete_categories')
         );
 
+        $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
+        if ($data['can_edit_categories'] === true && ! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_edit)) {
+            $data['can_edit_categories'] = false;
+        }
+        $can_delete = explode('|', rtrim((string) $cat_group->can_delete_categories, '|'));
+        if ($data['can_delete_categories'] === true && ! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_delete)) {
+            $data['can_delete_categories'] = false;
+        }
+
         ee()->view->cp_breadcrumbs = array(
             '' => lang('categories'),
             //'' => $cat_group->group_name
@@ -193,9 +202,13 @@ class Categories extends AbstractCategoriesController
             if (! empty($cat_ids)) {
                 $cats = ee('Model')->get('Category')
                     ->filter('cat_id', 'IN', $cat_ids);
-
+                
                 // Grab the group ID for the possible AJAX return below
-                $group_id = ee('Model')->get('Category', $cat_ids[0])->first()->CategoryGroup->getId();
+                $cat_group = ee('Model')->get('Category', $cat_ids[0])->first()->CategoryGroup;
+                $can_delete = explode('|', rtrim((string) $cat_group->can_delete_categories, '|'));
+                if (! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_delete)) {
+                    show_error(lang('unauthorized_access'), 403);
+                }
 
                 $cats->delete();
 
@@ -287,12 +300,10 @@ class Categories extends AbstractCategoriesController
 
         //  Check discrete privileges when editig (we have no discrete create
         //  permissions)
-        if (AJAX_REQUEST) {
-            $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
+        $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
 
-            if (! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_edit)) {
-                show_error(lang('unauthorized_access'), 403);
-            }
+        if (! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_edit)) {
+            show_error(lang('unauthorized_access'), 403);
         }
 
         if (is_null($category_id)) {
