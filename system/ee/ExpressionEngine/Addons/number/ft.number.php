@@ -65,9 +65,7 @@ class Number_ft extends Text_ft
 
         $data = $this->_format_number($data, $type, $decimals);
 
-        ee()->load->library('typography');
-
-        return ee()->typography->parse_type($data);
+        return $data;
     }
 
     public function display_settings($data)
