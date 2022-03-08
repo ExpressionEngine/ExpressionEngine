@@ -26,9 +26,8 @@ context('Conditional Fields', () => {
 
     it('can be used in a textarea field', () => {
         // Setup conditional on field
-        cy.authVisit('admin.php?/cp/fields')
-        cy.hasNoErrors()
-        cy.get('.list-item').contains('{news_body}').closest('.list-item').click();
+        visitCPEditField('{news_body}')
+
         cy.get('#fieldset-field_is_conditional button').click();
 
         cy.get('.condition-rule-field:visible .select__button').click();
@@ -48,14 +47,23 @@ context('Conditional Fields', () => {
         cy.log('Edit entry to conditionally hide the field');
         cy.hasNoErrors()
         cy.get('input[name="title"]').type('CF textarea test');
-        cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until contion matches
-        cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
-        cy.intercept('**/publish/**').as('validation')
-        cy.get('textarea[name="field_id_2"]').type('show').blur();
 
-        cy.wait('@validation')
+        // initially hidden until condition matches, but this condition matches from the start
+        // condition: Extended text != "hide"
         cy.get('textarea[name="field_id_1"]').should('be.visible')
         cy.get('textarea[name="field_id_1"]').type('some text');
+        cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
+        cy.intercept('**/publish/**').as('validation')
+        cy.get('textarea[name="field_id_2"]').type('hide').blur();
+        cy.wait('@validation')
+
+        // After typing "hide" field 1 should not be visible
+        cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+
+        // After typing "unhide" field 1 should be visible
+        cy.get('textarea[name="field_id_2"]').type('unhide').blur();
+
+        // Now lets make it visible again
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         cy.log('Assert field is shown on entry page after save');
@@ -92,8 +100,8 @@ context('Conditional Fields', () => {
 
     it('can be used in a file field', function() {
         // Setup conditional on field
-        cy.authVisit('admin.php?/cp/fields')
-        cy.get('.list-item').contains('{news_image}').closest('.list-item').click();
+        visitCPEditField('{news_image}');
+
         cy.get('#fieldset-field_is_conditional button').click();
         cy.get('.condition-rule-field:visible .select__button').click();
         cy.get('.dropdown--open .select__dropdown-item').contains('Body').click();
@@ -160,8 +168,8 @@ context('Conditional Fields', () => {
 
     it('can be used in a relationship field', function() {
         // Setup conditional on field
-        cy.authVisit('admin.php?/cp/fields')
-        cy.get('.list-item').contains('{related_news}').closest('.list-item').click();
+        visitCPEditField('{related_news}');
+
         cy.get('#fieldset-field_is_conditional button').click();
 
         cy.get('.condition-rule-field:visible .select__button').click();
@@ -246,9 +254,8 @@ context('Conditional Fields', () => {
     context('different combinations of rules', function() {
         beforeEach(function() {
             // Setup conditional on field
-            cy.authVisit('admin.php?/cp/fields')
-            cy.hasNoErrors()
-            cy.get('.list-item').contains('{news_body}').closest('.list-item').click();
+            visitCPEditField('{news_body}');
+
             // Reset conditions if they were previously set
             cy.get('body').then((body) => {
                 if (body.find('#fieldset-field_is_conditional button[data-state="on"]').length > 0) {
@@ -261,10 +268,8 @@ context('Conditional Fields', () => {
 
         it('evaluates multiple condition sets', function() {
             // Setup conditional on field
-            cy.authVisit('admin.php?/cp/fields')
-            cy.hasNoErrors()
+            visitCPEditField('{news_body}');
 
-            cy.get('.list-item').contains('{news_body}').closest('.list-item').click();
             cy.get('#fieldset-field_is_conditional button').click();
 
             cy.get('.condition-rule-field:visible .select__button').click();
@@ -293,7 +298,7 @@ context('Conditional Fields', () => {
 
             cy.log('Edit entry to conditionally hide the field');
             cy.hasNoErrors()
-            cy.get('input[name="title"]').type('CF multiple conditions test').blur();
+            cy.get('input[name="title"]').type('CF multiple conditions test');
             cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until condition matches
             cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
             cy.intercept('**/publish/**').as('validation')
@@ -338,9 +343,8 @@ context('Conditional Fields', () => {
 
         it('evaluates a set with ANY conditions being met', function() {
             // Setup conditional on field
-            cy.authVisit('admin.php?/cp/fields')
-            cy.hasNoErrors()
-            cy.get('.list-item').contains('{news_body}').closest('.list-item').click();
+            visitCPEditField('{news_body}');
+
             cy.get('#fieldset-field_is_conditional button').click();
 
             cy.get('.field-conditionset:visible .condition-match-field').click();
@@ -371,8 +375,8 @@ context('Conditional Fields', () => {
 
             cy.log('Edit entry to conditionally hide the field');
             cy.hasNoErrors()
-            cy.get('input[name="title"]').type('CF textarea multi any test').blur();
-            cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until contion matches
+            cy.get('input[name="title"]').type('CF textarea multi any test');
+            cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until condition matches
             cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
             cy.intercept('**/publish/**').as('validation')
             cy.get('textarea[name="field_id_2"]').type('shown').blur();
@@ -446,9 +450,8 @@ context('Conditional Fields', () => {
 
         it('evaluates a set with ALL conditions being met', function() {
             // Setup conditional on field
-            cy.authVisit('admin.php?/cp/fields')
-            cy.hasNoErrors()
-            cy.get('.list-item').contains('{news_body}').closest('.list-item').click();
+            visitCPEditField('{news_body}');
+
             cy.get('#fieldset-field_is_conditional button').click();
 
             cy.get('.condition-rule-field:visible .select__button').click();
@@ -476,8 +479,8 @@ context('Conditional Fields', () => {
 
             cy.log('Edit entry to conditionally hide the field');
             cy.hasNoErrors()
-            cy.get('input[name="title"]').type('CF textarea multi all test').blur();
-            cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until contion matches
+            cy.get('input[name="title"]').type('CF textarea multi all test');
+            cy.get('textarea[name="field_id_1"]').should('not.be.visible') // initially hidden until condition matches
             cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
             cy.intercept('**/publish/**').as('validation')
             cy.get('textarea[name="field_id_2"]').type('show this field').blur();
@@ -582,3 +585,12 @@ context('Conditional Fields', () => {
         })
     })
 })
+
+
+// Edit a field in the cp
+function visitCPEditField(field){
+    // Setup conditional on field
+    cy.authVisit('admin.php?/cp/fields');
+    cy.hasNoErrors();
+    cy.get('.list-item').contains(field).closest('.list-item').click();
+}
