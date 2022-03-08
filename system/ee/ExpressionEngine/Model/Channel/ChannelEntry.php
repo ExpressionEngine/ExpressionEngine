@@ -768,7 +768,7 @@ class ChannelEntry extends ContentModel
 
     protected function setDataOnCustomFields(array $data = array())
     {
-        $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        $currentlyHiddenFieldsIds = $this->isNew() ? $this->evaluateConditionalFields() : $this->HiddenFields->pluck('field_id');
         foreach ($currentlyHiddenFieldsIds as $hiddenFieldId) {
             $name = 'field_id_' . $hiddenFieldId;
             if ($this->hasCustomField($name)) {
