@@ -2391,6 +2391,7 @@ class Channel
                         $row['field_hide_' . $hiddenFieldId] = 'y';
                     }
                     $query_result[$i] = $row;
+                    ee()->TMPL->log_item("Conditionally hidden fields for entry ID " . $row['entry_id'] . ": " . implode(", ", $this->hidden_fields[$row['entry_id']]));
                 }
             }
         }
