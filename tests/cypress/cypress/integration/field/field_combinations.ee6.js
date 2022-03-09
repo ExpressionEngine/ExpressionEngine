@@ -10,9 +10,9 @@ const page = new CreateField;
 const main = new MainField;
 const group = new CreateGroup;
 
-var options = [/*"Checkboxes", "Color Picker", "Date","Duration","Email Address","File","File Grid","Fluid", "Relationships","Rich Text Editor", "Select Dropdown","Textarea","Toggle","URL", */"Value Slider", "Range Slider"];
+var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","File","File Grid","Fluid", "Relationships","Rich Text Editor", "Select Dropdown","Textarea","Toggle","URL", "Value Slider", "Range Slider"];
 
-var GroupName = [/*"Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL", */"ValueSlider", "RangeSlider"];
+var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL", "ValueSlider", "RangeSlider"];
 
 //grid is tested in a seperate test
 context('Create combinations of field', () => {
@@ -211,7 +211,7 @@ context('Create combinations of field', () => {
 
 	})
 
-	it.skip('Tests Rich Text Editor', ()=> {
+	it('Tests Rich Text Editor', ()=> {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('.ck-content').type('This is paragraph{enter}')
