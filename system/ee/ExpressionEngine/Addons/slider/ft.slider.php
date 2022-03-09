@@ -20,7 +20,7 @@ class Slider_ft extends Text_ft
         'version' => '1.0.0'
     );
 
-    protected $default_field_content_type = 'number';
+    protected $default_field_content_type = 'numeric';
 
     public $settings_form_field_name = 'slider';
 
@@ -43,7 +43,7 @@ class Slider_ft extends Text_ft
 
         $field = array(
             'name' => $this->field_name,
-            'value' => $this->_format_number($data),
+            'value' => !is_null($data) ? $this->_format_number($data) : $this->settings['field_min_value'],
             'min' => (isset($this->settings['field_min_value']) && $this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0,
             'max' => (isset($this->settings['field_max_value']) && $this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100,
             'step' => (isset($this->settings['field_step']) && $this->settings['field_step'] != '') ? $this->settings['field_step'] : 1,
