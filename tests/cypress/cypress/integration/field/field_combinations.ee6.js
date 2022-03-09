@@ -211,7 +211,7 @@ context('Create combinations of field', () => {
 
 	})
 
-	it('Tests Rich Text Editor', ()=> {
+	it.skip('Tests Rich Text Editor', ()=> {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('.ck-content').type('This is paragraph{enter}')
