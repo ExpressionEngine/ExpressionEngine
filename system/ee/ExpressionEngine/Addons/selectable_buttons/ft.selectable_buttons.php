@@ -90,7 +90,7 @@ class Selectable_buttons_ft extends Multi_select_ft
             'selectable_buttons',
             $data,
             'selectable_buttons_options',
-            lang('options_field_desc') . lang('buttons_options_desc')
+            lang('options_field_desc') . lang('selectable_buttons_options_desc')
         );
 
         array_unshift($settings, array(
