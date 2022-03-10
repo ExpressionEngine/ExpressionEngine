@@ -110,6 +110,7 @@ class ChannelField extends FieldModel
     protected $field_content_type;
     protected $field_settings;
     protected $legacy_field_data;
+    protected $enable_frontedit;
 
     public function getStructure()
     {
