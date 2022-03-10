@@ -10,7 +10,7 @@ return array(
     'settings_exist' => false,
     'built_in' => true,
     'fieldtypes' => array(
-        'multi_select' => array(
+        'selectable_buttons' => array(
             'compatibility' => 'list'
         )
     )
