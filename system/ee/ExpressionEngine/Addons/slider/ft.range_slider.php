@@ -24,6 +24,19 @@ class Range_slider_ft extends Slider_ft
 
     public $settings_form_field_name = 'range_slider';
 
+    public $has_array_data = true;
+
+    public $entry_manager_compatible = true;
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
+
     /**
      * Display the field
      *
@@ -95,6 +108,14 @@ class Range_slider_ft extends Slider_ft
     public function replace_to($data, $params = '', $tagdata = '')
     {
         return $this->replace_tag($data, $params, '{to}');
+    }
+
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        if (is_null($data) || $data === '') {
+            return '';
+        }
+        return html_entity_decode($this->replace_tag($data));
     }
 
 }

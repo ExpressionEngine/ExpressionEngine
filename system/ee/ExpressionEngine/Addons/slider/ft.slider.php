@@ -209,6 +209,7 @@ class Slider_ft extends Text_ft
     private function _get_content_options()
     {
         return array(
+            'all' => lang('all'),
             'numeric' => lang('type_numeric'),
             'integer' => lang('type_integer'),
             'decimal' => lang('type_decimal')
@@ -218,8 +219,8 @@ class Slider_ft extends Text_ft
     public function validate_settings($settings)
     {
         $validator = ee('Validation')->make(array(
-            'field_min_value' => 'integer|matchesContentType',
-            'field_max_value' => 'integer|matchesContentType',
+            'field_min_value' => 'numeric|matchesContentType|whenNotEmpty[field_max_value]|lessThan[' . $settings['field_max_value'] . ']',
+            'field_max_value' => 'numeric|matchesContentType|whenNotEmpty[field_min_value]|greaterThan[' . $settings['field_min_value'] . ']',
             'field_step' => 'numeric|matchesContentType'
         ));
 
