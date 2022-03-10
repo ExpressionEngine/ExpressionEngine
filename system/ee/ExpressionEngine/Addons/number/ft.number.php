@@ -68,6 +68,40 @@ class Number_ft extends Text_ft
         return $data;
     }
 
+    public function validate($data)
+    {
+        if (is_null($data) || $data === '') {
+            return true;
+        }
+
+        $validationRules = [];
+        if (!is_null($this->settings['field_min_value']) && $this->settings['field_min_value'] !== '') {
+            $validationRules[] = 'greaterOrEqualThan[' . $this->settings['field_min_value'] . ']';
+        }
+        if (!is_null($this->settings['field_max_value']) && $this->settings['field_max_value'] !== '') {
+            $validationRules[] = 'lessOrEqualThan[' . $this->settings['field_max_value'] . ']';
+        }
+        if ($this->settings['field_content_type'] == 'integer') {
+            $validationRules[] = 'matchesContentType';
+        }
+
+        if (empty($validationRules)) {
+            return true;
+        }
+
+        $validator = ee('Validation')->make(array('value' => implode('|', $validationRules)));
+        if (in_array('matchesContentType', $validationRules)) {
+            $validator->defineRule('matchesContentType', array($this, 'matchesContentTypeRule'));
+        }
+        $validationResult = $validator->validate(array('value' => $data));
+        if (! $validationResult->isValid()) {
+            $error = $validationResult->getErrors('value');
+            return array_shift($error);
+        }
+
+        return true;
+    }
+
     public function display_settings($data)
     {
         $settings = array(
@@ -157,14 +191,18 @@ class Number_ft extends Text_ft
             'field_step' => 'numeric|matchesContentType'
         ));
 
-        $validator->defineRule('matchesContentType', function ($key, $value) use ($settings) {
-            if ($settings['field_content_type'] == 'integer' && (int)$value != $value) {
-                return 'integer';
-            }
-            return true;
-        });
+        if ($settings['field_content_type'] == 'integer') {
+            $validator->defineRule('matchesContentType', array($this, 'matchesContentTypeRule'));
+        }
 
         return $validator->validate($settings);
+    }
+
+    public function matchesContentTypeRule($key, $value, $params, $rule) {
+        if ((int)$value != $value) {
+            return 'integer';
+        }
+        return true;
     }
 
     public function save_settings($data)
