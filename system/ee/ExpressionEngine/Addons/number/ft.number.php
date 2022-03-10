@@ -152,8 +152,8 @@ class Number_ft extends Text_ft
     public function validate_settings($settings)
     {
         $validator = ee('Validation')->make(array(
-            'field_min_value' => 'numeric|matchesContentType',
-            'field_max_value' => 'numeric|matchesContentType',
+            'field_min_value' => 'numeric|matchesContentType|whenNotEmpty[field_max_value]|lessThan[' . $settings['field_max_value'] . ']',
+            'field_max_value' => 'numeric|matchesContentType|whenNotEmpty[field_min_value]|greaterThan[' . $settings['field_min_value'] . ']',
             'field_step' => 'numeric|matchesContentType'
         ));
 
