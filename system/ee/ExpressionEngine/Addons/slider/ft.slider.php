@@ -25,6 +25,15 @@ class Slider_ft extends Text_ft
     public $settings_form_field_name = 'slider';
 
     /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = ['lessThan', 'lessOrEqualThan', 'equal', 'greaterThan', 'greaterOrEqualThan', 'isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
+
+    /**
      * Display the field
      *
      * @param [type] $data
