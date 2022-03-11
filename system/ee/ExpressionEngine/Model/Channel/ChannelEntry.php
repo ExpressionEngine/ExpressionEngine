@@ -780,9 +780,38 @@ class ChannelEntry extends ContentModel
     }
 
     /**
+     * Evaluates all the conditional fields in a channel entry
+     *
+     * @return  boolean   returns true if the current hidden status of conditional fields are not correct
+     */
+    public function conditionalFieldsOutdated()
+    {
+        $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        $hiddenFieldIds = [];
+        $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
+
+        foreach ($this->getCustomFields() as $field) {
+            // If the ID isnt numeric, we can skip it since its something like title
+            if (! is_numeric($field->getId())) {
+                continue;
+            }
+
+            if ($field->getItem('field_is_conditional') === true) {
+                // Lets evaluate the condition sets
+                // if false, the field should be hidden
+                if (! $evaluator->evaluate($field)) {
+                    $hiddenFieldIds[] = $field->getId();
+                }
+            }
+        }
+
+        return (!empty(array_diff($currentlyHiddenFieldsIds, $hiddenFieldIds)) || !empty(array_diff($hiddenFieldIds, $currentlyHiddenFieldsIds)));
+    }
+
+    /**
      * Evaluates all the conditional fields in a channel entry and sets the hidden flags
      *
-     * @return  array   List of only the fields whose hidden flag changed
+     * @return  array   List of all hidden fields
      */
     public function evaluateConditionalFields()
     {
