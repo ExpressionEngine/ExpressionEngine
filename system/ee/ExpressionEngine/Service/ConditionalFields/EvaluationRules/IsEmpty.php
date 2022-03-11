@@ -17,7 +17,7 @@ class IsEmpty extends AbstractEvaluationRule implements EvaluationRuleInterface
 {
     public function evaluate($fieldValue, $expectedValue)
     {
-        return is_null($fieldValue) || $fieldValue !== '';
+        return is_null($fieldValue) || $fieldValue === '';
     }
 
     public function getConditionalFieldInputType()

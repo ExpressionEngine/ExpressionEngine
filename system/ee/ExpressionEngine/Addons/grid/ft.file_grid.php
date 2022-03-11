@@ -20,9 +20,7 @@ class file_grid_ft extends Grid_ft
 
     public $size = 'large';
 
-    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
-
-    public $defaultEvaluationRule = 'isNotEmpty';
+    public $supportedEvaluationRules = null;
 
     public $settings_form_field_name = 'file_grid';
 
