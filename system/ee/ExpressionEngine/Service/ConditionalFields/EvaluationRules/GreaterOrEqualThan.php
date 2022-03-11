@@ -15,8 +15,8 @@ namespace ExpressionEngine\Service\ConditionalFields\EvaluationRules;
  */
 class GreaterOrEqualThan extends AbstractEvaluationRule implements EvaluationRuleInterface
 {
-    public function evaluate($fieldValue, $expectedValue)
+    public function evaluate($fieldValue, $expectedValue, $fieldSettings)
     {
-        return $fieldValue >= $fieldValue;
+        return $fieldValue >= $expectedValue;
     }
 }

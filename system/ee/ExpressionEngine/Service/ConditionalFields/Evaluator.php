@@ -49,7 +49,7 @@ class Evaluator
         $evaluationRule = ee('ConditionalFields')->make($condition->evaluation_rule, $this->channelFields[$condition->condition_field_id]->getType());
 
         // Now lets evaluate the condition_field value and the rule value
-        return $evaluationRule->evaluate($this->channelFields[$condition->condition_field_id]->getData(), $condition->value);
+        return $evaluationRule->evaluate($this->channelFields[$condition->condition_field_id]->getData(), $condition->value, $this->channelFields[$condition->condition_field_id]->getSettings());
     }
 
     public function evaluateConditionSet(ConditionalFields\FieldConditionSet $set)

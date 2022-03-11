@@ -22,7 +22,7 @@ class NotContains extends AbstractEvaluationRule implements EvaluationRuleInterf
      * @param mixed $expectedValue
      * @return bool whether the condition is met
      */
-    public function evaluate($fieldValue, $expectedValue)
+    public function evaluate($fieldValue, $expectedValue, $fieldSettings)
     {
         if (is_array($fieldValue)) {
             $fieldValue = implode("\n", $fieldValue);

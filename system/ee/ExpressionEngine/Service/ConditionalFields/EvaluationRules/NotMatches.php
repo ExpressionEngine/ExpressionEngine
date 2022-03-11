@@ -22,7 +22,7 @@ class NotMatches extends AbstractEvaluationRule implements EvaluationRuleInterfa
      * @param mixed $expectedValue
      * @return bool whether the condition is met
      */
-    public function evaluate($fieldValue, $expectedValue)
+    public function evaluate($fieldValue, $expectedValue, $fieldSettings)
     {
         if (is_array($fieldValue) && count($fieldValue) == 1) {
             $fieldValue = array_shift($fieldValue);

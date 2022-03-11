@@ -103,6 +103,11 @@ class FieldFacade
         return $this->hidden;
     }
 
+    public function getSettings()
+    {
+        return isset($this->metadata['field_settings']) ? $this->metadata['field_settings'] : [];
+    }
+
     protected function ensurePopulatedDefaults()
     {
         if ($this->populated) {

@@ -15,7 +15,7 @@ namespace ExpressionEngine\Service\ConditionalFields\EvaluationRules;
  */
 class IsNotEmpty extends AbstractEvaluationRule implements EvaluationRuleInterface
 {
-    public function evaluate($fieldValue, $expectedValue)
+    public function evaluate($fieldValue, $expectedValue, $fieldSettings)
     {
         return !is_null($fieldValue) && $fieldValue !== '';
     }

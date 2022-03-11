@@ -17,7 +17,7 @@ use ExpressionEngine\Service\ConditionalFields\EvaluationRules\EvaluationRuleInt
  */
 class TurnedOn extends AbstractEvaluationRule implements EvaluationRuleInterface
 {
-    public function evaluate($fieldValue, $expectedValue)
+    public function evaluate($fieldValue, $expectedValue, $fieldSettings)
     {
         return $fieldValue==='y' || $fieldValue==='1' || $fieldValue === true;
     }
