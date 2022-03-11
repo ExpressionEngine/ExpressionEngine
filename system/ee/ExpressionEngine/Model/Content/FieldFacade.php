@@ -103,6 +103,11 @@ class FieldFacade
         return $this->hidden;
     }
 
+    public function getSettings()
+    {
+        return isset($this->metadata['field_settings']) ? $this->metadata['field_settings'] : [];
+    }
+
     protected function ensurePopulatedDefaults()
     {
         if ($this->populated) {
@@ -271,7 +276,7 @@ class FieldFacade
             if (property_exists($ft, 'has_array_data') && $ft->has_array_data === true) {
                 $rulesList = ['isEmpty', 'isNotEmpty'];
             } else {
-                $rulesList = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty', 'contains'];
+                $rulesList = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty', 'contains', 'notContains'];
             }
         } elseif (!empty($ft->supportedEvaluationRules)) {
             $rulesList = $ft->supportedEvaluationRules;

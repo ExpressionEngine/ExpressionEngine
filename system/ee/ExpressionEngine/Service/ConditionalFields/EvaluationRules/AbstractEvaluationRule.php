@@ -23,7 +23,7 @@ abstract class AbstractEvaluationRule implements EvaluationRuleInterface
      * @param mixed $expectedValue
      * @return bool whether the condition is met
      */
-    abstract public function evaluate($fieldValue, $expectedValue);
+    abstract public function evaluate($fieldValue, $expectedValue, $fieldSettings);
 
     /**
      * Get the language key used as label for the rule

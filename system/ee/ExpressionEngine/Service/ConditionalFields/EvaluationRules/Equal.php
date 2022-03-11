@@ -22,7 +22,7 @@ class Equal extends AbstractEvaluationRule implements EvaluationRuleInterface
      * @param mixed $expectedValue
      * @return bool whether the condition is met
      */
-    public function evaluate($fieldValue, $expectedValue)
+    public function evaluate($fieldValue, $expectedValue, $fieldSettings)
     {
         return $fieldValue === $expectedValue;
     }

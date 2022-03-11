@@ -17,7 +17,7 @@ use ExpressionEngine\Service\ConditionalFields\EvaluationRules\EvaluationRuleInt
  */
 class TurnedOff extends AbstractEvaluationRule implements EvaluationRuleInterface
 {
-    public function evaluate($fieldValue, $expectedValue)
+    public function evaluate($fieldValue, $expectedValue, $fieldSettings)
     {
         return is_null($fieldValue) || $fieldValue==='n' || $fieldValue===0 || $fieldValue === false;
     }

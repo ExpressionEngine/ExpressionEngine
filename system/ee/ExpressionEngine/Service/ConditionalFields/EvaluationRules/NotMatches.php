@@ -13,8 +13,23 @@ namespace ExpressionEngine\Service\ConditionalFields\EvaluationRules;
 /**
  * NotMatches Rule
  */
-class NotMatches extends NotEqual implements EvaluationRuleInterface
+class NotMatches extends AbstractEvaluationRule implements EvaluationRuleInterface
 {
+    /**
+     * Evaluate the rule
+     *
+     * @param mixed $fieldValue
+     * @param mixed $expectedValue
+     * @return bool whether the condition is met
+     */
+    public function evaluate($fieldValue, $expectedValue, $fieldSettings)
+    {
+        if (is_array($fieldValue) && count($fieldValue) == 1) {
+            $fieldValue = array_shift($fieldValue);
+        }
+        return $fieldValue !== $expectedValue;
+    }
+
     public function getConditionalFieldInputType()
     {
         return 'select';

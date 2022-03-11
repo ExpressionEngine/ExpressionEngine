@@ -48,9 +48,14 @@ context('Conditional Fields', () => {
         cy.hasNoErrors()
         cy.get('input[name="title"]').type('CF textarea test');
 
+        cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
+        cy.intercept('**/publish/**').as('validation')
+        cy.get('textarea[name="field_id_2"]').type('show').blur();
+
         // initially hidden until condition matches, but this condition matches from the start
         // condition: Extended text != "hide"
         cy.get('textarea[name="field_id_1"]').should('be.visible')
+
         cy.get('textarea[name="field_id_1"]').type('some text');
         cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
         cy.intercept('**/publish/**').as('validation')
@@ -64,6 +69,9 @@ context('Conditional Fields', () => {
         cy.get('textarea[name="field_id_2"]').type('unhide').blur();
 
         // Now lets make it visible again
+
+        cy.get('textarea[name="field_id_1"]').clear().type('some text');
+
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         cy.log('Assert field is shown on entry page after save');
@@ -585,7 +593,6 @@ context('Conditional Fields', () => {
         })
     })
 })
-
 
 // Edit a field in the cp
 function visitCPEditField(field){

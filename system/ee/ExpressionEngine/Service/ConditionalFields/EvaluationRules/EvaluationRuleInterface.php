@@ -24,7 +24,7 @@ interface EvaluationRuleInterface
      * @param mixed $expectedValue
      * @return bool whether the condition is met
      */
-    public function evaluate($fieldValue, $expectedValue);
+    public function evaluate($fieldValue, $expectedValue, $fieldSettings);
 
     /**
      * Get the language key used as label for the rule
