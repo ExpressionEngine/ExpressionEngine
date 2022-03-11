@@ -22,7 +22,10 @@ if (! isset($_GET['URL'])) {
 
 // Should we allow front end redirects via the URL query string?
 if (REQ === 'PAGE' && !ee()->config->item('allow_url_redirects_from_site')) {
-    show_404();
+    // Check if they don't have an active CP session
+    if ((!isset(ee()->session->userdata['access_cp']) || !ee()->session->userdata['access_cp']) && !ee()->config->item('allow_url_redirects_from_site_without_cp_session')) {
+        show_404();
+    }
 }
 
 if (strncmp($_GET['URL'], 'http', 4) != 0 && strpos($_GET['URL'], '://') === false && substr($_GET['URL'], 0, 1) != '/') {
