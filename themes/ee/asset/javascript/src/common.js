@@ -1112,16 +1112,17 @@ $(document).ready(function(){
 
 		// Check the Entry page for existence and compliance with the conditions
 		// to show or hide fields depending on conditions
+        if(window.EE) {
+            EE.cp.hide_show_entries_fields = function(idArr) {
+                var hide_block = $('.hide-block');
 
-		EE.cp.hide_show_enrties_fields = function(idArr) {
-			var hide_block = $('.hide-block');
+                $(hide_block).removeClass('hide-block');
 
-			$(hide_block).removeClass('hide-block');
-
-			$.each(idArr, function(index, id) {
-				$('[data-field_id="'+id+'"]').each(function(){
-					$(this).addClass('hide-block');
-				})
-			});
-		}
+                $.each(idArr, function(index, id) {
+                    $('[data-field_id="'+id+'"]').each(function(){
+                        $(this).addClass('hide-block');
+                    })
+                });
+            }
+        }
 }); // close (document).ready

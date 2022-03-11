@@ -48,14 +48,13 @@ context('Conditional Fields', () => {
         cy.log('Edit entry to conditionally hide the field');
         cy.hasNoErrors()
         cy.get('input[name="title"]').type('CF textarea test');
-        cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until contion matches
         cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
         cy.intercept('**/publish/**').as('validation')
         cy.get('textarea[name="field_id_2"]').type('show').blur();
 
         cy.wait('@validation')
         cy.get('textarea[name="field_id_1"]').should('be.visible')
-        cy.get('textarea[name="field_id_1"]').type('some text');
+        cy.get('textarea[name="field_id_1"]').clear().type('some text');
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         cy.log('Assert field is shown on entry page after save');
