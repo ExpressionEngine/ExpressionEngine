@@ -329,7 +329,7 @@ class Member_memberlist extends Member
             // Normalizing cp available sorts
             $order_by = ($order_by == 'username') ? 'screen_name' : $order_by;
             $order_by = ($order_by == 'dates') ? 'join_date' : $order_by;
-            $order_by = ($order_by == 'member_group') ? 'role_id' : $order_by;
+            $order_by = ($order_by == 'member_group' || $order_by == 'role') ? 'role_id' : $order_by;
         }
 
         if (($row_count = (int) ee()->input->post('row_count')) === 0) {
