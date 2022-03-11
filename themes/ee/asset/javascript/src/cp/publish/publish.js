@@ -294,11 +294,16 @@ $(document).ready(function () {
 		// Get the percentage x position of the mouse
 		var xPos = e.clientX / $(document).width() * 100;
 		// Prevent each side from getting too small
-		xPos = Math.min(Math.max(xPos, 10), 98)
+		xPos = Math.min(Math.max(xPos, 10), 98);
 
 		// Set each sides width
 		$('.live-preview__form').css('flex-basis', xPos + '%')
 		$('.live-preview__preview').css('flex-basis', (100 - xPos) + '%')
+
+		const left = document.getElementById('left');
+		const right = document.getElementById('right');
+		left.style.width = xPos + '%';
+		right.style.width = (100 - xPos) + '%';
 	}
 
 	$(".live-preview__divider").on('mousedown', function(e) { handleDrag(e, 'mouse', onHandleDrag) });
