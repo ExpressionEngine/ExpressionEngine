@@ -232,6 +232,20 @@ $lang = array(
 
     'enable_versioning' => 'Enable Entry Versioning',
 
+    'field_conditions_sync_existing_entries' => 'Existing entries',
+
+    'field_conditions_sync_desc' => '<b>%d</b> entries',
+
+    'field_conditions_syncing_conditional_logic' => 'Syncing Conditional Logic',
+
+    'field_conditions_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'field_conditions_sync_in_progress_message' => 'Do not navigate away from this screen while syncing is in progress.',
+
+    'btn_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'btn_sync_conditional_logic_working' => 'Syncing conditional logic...',
+
     'field' => 'Field',
 
     'fields_assign_to_group' => 'Assign one or more fields to this group.',

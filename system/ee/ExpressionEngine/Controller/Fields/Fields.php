@@ -405,13 +405,24 @@ class Fields extends AbstractFieldsController
                     ->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
                     ->defer();
 
+                $changed = true;
+
                 if (ee('Request')->post('submit') == 'save_and_new') {
-                    ee()->functions->redirect(ee('CP/URL')->make('fields/create'));
+                    $redirectUrl = ee('CP/URL')->make('fields/create');
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
-                    ee()->functions->redirect(ee('CP/URL')->make('fields'));
+                    $redirectUrl = ee('CP/URL')->make('fields');
                 } else {
-                    ee()->functions->redirect(ee('CP/URL')->make('fields/edit/' . $field->getId()));
+                    $redirectUrl = ee('CP/URL')->make('fields/edit/' . $field->getId());
                 }
+
+                if ($changed) {
+                    ee()->functions->redirect(
+                        ee('CP/URL')->make('fields/syncConditions/' . $field->getId())
+                        ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                    );
+                }
+
+                ee()->functions->redirect($redirectUrl);
             } else {
                 $errors = $this->validationResult;
 
@@ -467,6 +478,134 @@ class Fields extends AbstractFieldsController
         ee()->cp->render('settings/form', $vars);
     }
 
+    public function evaluateConditions()
+    {
+        if (! ee('Permission')->can('edit_channel_fields') || empty($_POST)) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $channel_id = (int) ee()->input->post('channel_id');
+        $limit = (int) ee()->input->post('limit');
+        $offset = (int) ee()->input->post('offset');
+
+        // Get all channel entries with post data
+        $entries = ee('Model')->get('ChannelEntry')
+            ->filter('channel_id', $channel_id)
+            ->limit($limit)
+            ->offset($offset)
+            ->all();
+
+        foreach ($entries as $entry) {
+            // Check to see if the conditional fields are outdated before saving
+            if ($entry->conditionalFieldsOutdated()) {
+                // Conditional fields are outdated, so we evaluate the conditions and save
+                $entry->evaluateConditionalFields();
+                $entry->save();
+            }
+        }
+
+        return json_encode([
+            'message_type' => 'success',
+            'entries' => $entries->pluck('entry_id'),
+            'entries_proccessed' => $entries->count()
+        ]);
+    }
+
+    public function syncConditions($field_id = null)
+    {
+        if (! ee('Permission')->can('edit_channel_fields')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $field = ee('Model')->get('ChannelField', $field_id)->first();
+
+        if (! $field) {
+            show_404();
+        }
+
+        $field_groups = $field->ChannelFieldGroups;
+        $active_groups = $field_groups->pluck('group_id');
+        $this->generateSidebar($active_groups);
+
+        $channelEntryCount = 0;
+        $groupedChannelEntryCounts = [];
+
+        foreach ($field->getAllChannels() as $channel) {
+            $count = $channel->Entries->count();
+            $channelEntryCount += $count;
+            $groupedChannelEntryCounts[] = [
+                'channel_id' => $channel->getId(),
+                'entry_count' => $count
+            ];
+        }
+
+        ksort($groupedChannelEntryCounts);
+
+        $vars['sections'] = array(
+            array(
+                array(
+                    'title' => 'field_conditions_sync_existing_entries',
+                    'desc' => sprintf(lang('field_conditions_sync_desc'), $channelEntryCount),
+                    'fields' => array(
+                        'progress' => array(
+                            'type' => 'html',
+                            'content' => ee()->load->view('_shared/progress_bar', array('percent' => 0), true)
+                        ),
+                        'message' => array(
+                            'type' => 'html',
+                            'content' => ee()->load->view('_shared/message', array(
+                                'cp_messages' => [
+                                    'field-instruct' => '<em>'.lang('field_conditions_sync_in_progress_message').'</em>'
+                                ]), true)
+                        )
+                    )
+                )
+            )
+        );
+
+        $base_url = ee('CP/URL')->make('fields/syncConditions/' . $field_id);
+        $field_url = ee('CP/URL')->make('fields/edit/' . $field_id);
+
+        $return = ee()->input->get('return') ? base64_decode(ee()->input->get('return')) : $field_url->compile();
+
+        if ($channelEntryCount === 0) {
+            ee()->functions->redirect($return);
+        }
+
+        ee()->cp->add_js_script('file', 'cp/fields/synchronize');
+
+        // Globals needed for JS script
+        ee()->javascript->set_global(array(
+            'fieldManager' => array(
+                'field_id' => $field_id,
+                'channel_entry_count' => $channelEntryCount,
+                'groupedChannelEntryCounts' => $groupedChannelEntryCounts,
+
+                'sync_baseurl' => $base_url->compile(),
+                'sync_returnurl' => $return,
+                'sync_endpoint' => ee('CP/URL')->make('fields/evaluateConditions')->compile(),
+            )
+        ));
+
+        ee()->view->base_url = $base_url;
+        ee()->view->cp_page_title = lang('field_conditions_syncing_conditional_logic');
+        ee()->view->cp_page_title_alt = lang('field_conditions_syncing_conditional_logic');
+        ee()->view->save_btn_text = 'btn_sync_conditional_logic';
+        ee()->view->save_btn_text_working = 'btn_sync_conditional_logic_working';
+
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('fields')->compile() => lang('fields'),
+            '' => lang('field_conditions_sync_conditional_logic')
+        );
+
+        // // Errors are given through a POST to this same page
+        // $errors = ee()->input->post('errors');
+        // if (! empty($errors)) {
+        //     ee()->view->set_message('warn', lang('directory_sync_warning'), json_decode($errors));
+        // }
+
+        ee()->cp->render('settings/form', $vars);
+    }
     private function setWithPost(ChannelField $field)
     {
         $field->field_list_items = ($field->field_list_items) ?: '';
