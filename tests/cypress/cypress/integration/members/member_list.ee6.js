@@ -5,6 +5,11 @@ import Members from '../../elements/pages/members/Members';
 const page = new Members
 
 context('Member List', () => {
+
+  before(function(){
+    cy.task('db:seed')
+  })
+  
   beforeEach(function() {
     cy.auth();
 

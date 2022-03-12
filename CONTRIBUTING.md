@@ -134,9 +134,9 @@ Integration testing helps maintain the quality of the application and prevents u
 
 To run the tests locally, you would need to ensure you have NPM and Cypress installed and then follow some steps as outlined below.
 
-1. Back up your existing database and `system/user/config.php` file.
+1. Back up your existing database and `system/user/config/config.php` file.
 
-2. Copy `tests/cypress/support/config/config.php` over to `system/user/config.php`. Update your configuration in file if necessary (we recommend using clean database for the tests).
+2. Copy `tests/cypress/support/config/config.php` over to `system/user/config/config.php`. Update your configuration in file if necessary (we recommend using clean database for the tests).
 
 3. Copy `tests/cypress/cypress.env.example.json` to `tests/cypress/cypress.env.json`. Update the configuration in file if necessary.
 

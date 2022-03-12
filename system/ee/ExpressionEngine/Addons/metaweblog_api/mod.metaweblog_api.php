@@ -678,7 +678,7 @@ class Metaweblog_api
             $sql = "SELECT	exp_categories.cat_id, exp_categories.cat_name
 					FROM	exp_category_posts, exp_categories
 					WHERE	exp_category_posts.cat_id = exp_categories.cat_id
-					AND		exp_category_posts.entry_id = '" . $row->entry_id . "'
+					AND		exp_category_posts.entry_id = '" . ee()->db->escape_str($row->entry_id) . "'
 					ORDER BY cat_id";
 
             $results = ee()->db->query($sql);
@@ -828,7 +828,7 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_channel'));
         }
 
-        if (! ee('Permission')->isSuperAdmin() && ! in_array($query->row('channel_id'), $this->userdata['assigned_channels'])) {
+        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists($query->row('channel_id'), $this->userdata['assigned_channels'])) {
             return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
         }
 
@@ -882,7 +882,7 @@ class Metaweblog_api
         /** ---------------------------------------
         /**  Details from Parameters
         /** ---------------------------------------*/
-        $entry_id = $parameters['0'];
+        $entry_id = ee()->db->escape_str($parameters['0']);
 
         /** ---------------------------------------
         /**  Retrieve Entry Information
@@ -984,7 +984,7 @@ class Metaweblog_api
         /** -------------------------------------------------
         /**  Find Assigned Channels
         /** -------------------------------------------------*/
-        $assigned_channels = ee()->session->getMember()->getAssignedChannels()->getDictionary('channel_id', 'channel_title');
+        $assigned_channels = ee()->session->getMember()->getAssignedChannels()->getDictionary('channel_id', 'channel_title'); 
 
         if (empty($assigned_channels)) {
             return false; // Nowhere to Post!!
@@ -1016,7 +1016,7 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
         }
 
-        if (! ee('Permission')->isSuperAdmin() && ! in_array($parameters['0'], $this->userdata['assigned_channels'])) {
+        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists($parameters['0'], $this->userdata['assigned_channels'])) {
             return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
         }
 
@@ -1027,7 +1027,7 @@ class Metaweblog_api
         $sql = "SELECT exp_categories.cat_id, exp_categories.cat_name, exp_categories.cat_description
 				FROM	exp_categories, exp_channels
 				WHERE  FIND_IN_SET(exp_categories.group_id, REPLACE(exp_channels.cat_group, '|', ','))
-				AND exp_channels.channel_id = '{$this->channel_id}'";
+				AND exp_channels.channel_id = '" . ee()->db->escape_str($this->channel_id) . "'";
 
         $query = ee()->db->query($sql);
 
@@ -1065,7 +1065,7 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
         }
 
-        if (! ee('Permission')->isSuperAdmin() && ! in_array($parameters['0'], $this->userdata['assigned_channels'])) {
+        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists($parameters['0'], $this->userdata['assigned_channels'])) {
             return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
         }
 
@@ -1076,7 +1076,7 @@ class Metaweblog_api
         $sql = "SELECT exp_categories.cat_id, exp_categories.cat_name
 				FROM	exp_categories, exp_channels
 				WHERE  FIND_IN_SET(exp_categories.group_id, REPLACE(exp_channels.cat_group, '|', ','))
-				AND exp_channels.channel_id = '{$this->channel_id}'";
+				AND exp_channels.channel_id = '" . ee()->db->escape_str($this->channel_id) . "'";
 
         $query = ee()->db->query($sql);
 
@@ -1125,7 +1125,7 @@ class Metaweblog_api
             $this->assign_parents = (ee()->config->item('auto_assign_cat_parents') == 'n') ? false : true;
         }
 
-        if (! in_array($channel->channel_id, $this->userdata['assigned_channels']) && ! ee('Permission')->isSuperAdmin()) {
+        if (! array_key_exists($channel->channel_id, $this->userdata['assigned_channels']) && ! ee('Permission')->isSuperAdmin()) {
             return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
         }
 
@@ -1156,7 +1156,7 @@ class Metaweblog_api
         $sql = "SELECT exp_categories.cat_id, exp_categories.cat_name, exp_categories.parent_id, exp_categories.group_id
 				FROM	exp_categories, exp_channels
 				WHERE  FIND_IN_SET(exp_categories.group_id, REPLACE(exp_channels.cat_group, '|', ','))
-				AND exp_channels.channel_id = '{$this->channel_id}'";
+				AND exp_channels.channel_id = '" . ee()->db->escape_str($this->channel_id) . "'";
 
         $query = ee()->db->query($sql);
 
@@ -1250,7 +1250,7 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
         }
 
-        if (! ee('Permission')->isSuperAdmin() && ! in_array($parameters['0'], $this->userdata['assigned_channels'])) {
+        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists($parameters['0'], $this->userdata['assigned_channels'])) {
             return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
         }
 
@@ -1387,7 +1387,7 @@ class Metaweblog_api
         }
 
         ee()->db->select('channel_id, channel_title, channel_url');
-        ee()->db->where_in('channel_id', $this->userdata['assigned_channels']);
+        ee()->db->where_in('channel_id', array_keys($this->userdata['assigned_channels']));
 
         $query = ee()->db->get('channels');
 

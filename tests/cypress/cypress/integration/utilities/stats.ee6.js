@@ -5,12 +5,10 @@ const page = new Stats;
 
 context('Statistics', () => {
 
-	  //Template
-	  // it('', () =>{
-
-
-	  // })
-
+    before(function(){
+        cy.task('db:seed')
+    })
+    
 	  beforeEach(function() {
 	    cy.authVisit(page.url);
 	    page.get('heading').contains("Manage Statistics")

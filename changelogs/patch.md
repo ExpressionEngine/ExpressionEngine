@@ -5,7 +5,6 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
-   - Fix `search_no_stopwords` unclear message
    - Added <new feature>
    - Changed how the Toggle field renders in a column in the Entry Manager
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
@@ -59,7 +58,6 @@ Bullet list below, e.g.
    - Fix scanned PDF files not being properly detected
    - Fix Consent Module not respecting `disable_csrf_protection` config override
    - Fix uploaded files not using the original filename as title fallback, but the normalized version
-
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

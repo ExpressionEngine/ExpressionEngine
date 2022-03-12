@@ -1021,7 +1021,9 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
      */
     private function catchDbExceptionOnModel($exception, $operation = 'update') {
         if (strpos($exception->getMessage(), "Incorrect string value: '\x") !== false) {
-            ee()->load->library('logger');
+            if (! isset(ee()->logger)) {
+                ee()->load->library('logger');
+            }
             ee()->logger->developer('Unable to ' . $operation . ' ' . $this->getName() . ' model. The data contains multibyte characters, however the database table does not support those.', true);
         }
         throw $exception;

@@ -1132,7 +1132,7 @@ class Channel
         $timestamp = ee()->localize->now;
 
         if (ee()->TMPL->fetch_param('show_future_entries') != 'yes') {
-            $sql .= " AND t.entry_date < " . $timestamp . " ";
+            $sql .= " AND t.entry_date <= " . $timestamp . " ";
         }
 
         if (ee()->TMPL->fetch_param('show_expired') == 'only') {
