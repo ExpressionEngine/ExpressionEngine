@@ -9,15 +9,23 @@
     "requestTimeout": 20000,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
-    "testFiles": "@(settings|addons)/*.ee6.js",
+    "failOnStatusCode": false,
+    "redirectionLimit": 200,
+    "testFiles": "!(pro)/**.ee6.js",
+    "retries": 1,
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",
         "DB_HOST": "localhost",
         "DB_USER": "root",
         "DB_PASSWORD": "root",
+        "DB_PORT": "3306",
         "DB_DATABASE": "ee-test",
         "DB_DUMP": "database_6.0.0.sql",
-        "TEMP_DIR": "/tmp"
+        "TEMP_DIR": "/tmp",
+        "MAILDEV_PROTOCOL": "http",
+        "MAILDEV_HOST": "127.0.0.1",
+        "MAILDEV_SMTP_PORT": "1025",
+        "MAILDEV_API_PORT": "1080"
     }
 }

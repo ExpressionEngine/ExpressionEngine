@@ -318,6 +318,10 @@ class Consent
      */
     private function validateGetCsrf()
     {
+        if (ee('Config')->getFile()->getBoolean('disable_csrf_protection')) {
+            return;
+        }
+
         $token = ee()->input->get('token');
 
         if ($token != CSRF_TOKEN) {

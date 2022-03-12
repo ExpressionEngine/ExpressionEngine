@@ -518,7 +518,7 @@ class XSS
          * For example: eval('some code')
          * Becomes:     eval&#40;'some code'&#41;
          */
-        $str = preg_replace('#(alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si', "\\1\\2&#40;\\3&#41;", $str);
+        $str = preg_replace('#(console.log|alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si', "\\1\\2&#9001;\\3&#9002;", $str);
 
         // Final clean up
         // This adds a bit of extra precaution in case

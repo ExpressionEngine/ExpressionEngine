@@ -108,8 +108,8 @@ class Topic extends Model
     protected static $_validation_rules = array(
         'forum_id' => 'required',
         'ip_address' => 'required|ipAddress',
-        'title' => 'required',
-        'body' => 'required',
+        'title' => 'required|xss',
+        'body' => 'required|xss',
         'status' => 'enum[o,c]',
         'sticky' => 'enum[y,n]',
         'poll' => 'enum[y,n]',

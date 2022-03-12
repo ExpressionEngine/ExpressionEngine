@@ -30,6 +30,7 @@ class Channel extends StructureModel
         'channel_auto_link_urls' => 'boolString',
         'channel_notify' => 'boolString',
         'sticky_enabled' => 'boolString',
+        'enable_entry_cloning' => 'boolString',
         'comment_system_enabled' => 'boolString',
         'comment_require_membership' => 'boolString',
         'comment_moderate' => 'boolString',
@@ -121,6 +122,7 @@ class Channel extends StructureModel
         'channel_auto_link_urls' => 'enum[y,n]',
         'channel_notify' => 'enum[y,n]',
         'sticky_enabled' => 'enum[y,n]',
+        'enable_entry_cloning' => 'enum[y,n]',
         'comment_system_enabled' => 'enum[y,n]',
         'comment_require_membership' => 'enum[y,n]',
         'comment_moderate' => 'enum[y,n]',
@@ -185,6 +187,7 @@ class Channel extends StructureModel
     protected $channel_notify_emails;
     protected $comment_url;
     protected $sticky_enabled = false;
+    protected $enable_entry_cloning = true;
     protected $comment_system_enabled = true;
     protected $comment_require_membership = false;
     protected $comment_moderate = false;

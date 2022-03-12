@@ -32,15 +32,15 @@ class Installer_Template
     {
         // We're gonna need this to be already loaded.
         ee()->remove('functions');
-        require_once(APPPATH . 'libraries/Functions.php');
+        require_once(SYSPATH . 'ee/installer/libraries/Functions.php');
         ee()->set('functions', new Installer_Functions());
 
         ee()->remove('extensions');
-        require_once(APPPATH . 'libraries/Extensions.php');
+        require_once(SYSPATH . 'ee/installer/libraries/Extensions.php');
         ee()->set('extensions', new Installer_Extensions());
 
         ee()->remove('addons');
-        require_once(APPPATH . 'libraries/Addons.php');
+        require_once(SYSPATH . 'ee/installer/libraries/Addons.php');
         ee()->set('addons', new Installer_Addons());
     }
 

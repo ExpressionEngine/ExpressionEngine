@@ -93,7 +93,7 @@ class Members
                     return array('redirect', array($edit_image));
                 }
 
-                $member->set(array('avatar_filename' => ''));
+                $member->set(array('avatar_filename' => '', 'avatar_width' => null, 'avatar_height' => null));
                 $member->save();
 
                 if (strncmp($member->avatar_filename, 'default/', 8) !== 0) {
@@ -276,6 +276,7 @@ class Members
         $config['max_width'] = $max_width;
         $config['max_height'] = $max_height;
         $config['overwrite'] = true;
+        $config['auto_resize'] = true;
 
         if (ee()->config->item('xss_clean_uploads') == 'n') {
             $config['xss_clean'] = false;
