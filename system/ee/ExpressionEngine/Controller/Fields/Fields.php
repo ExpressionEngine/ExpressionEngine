@@ -251,12 +251,22 @@ class Fields extends AbstractFieldsController
 
                 if (ee('Request')->post('submit') == 'save_and_new') {
                     $return = (empty($group_id)) ? '' : '/' . $group_id;
-                    ee()->functions->redirect(ee('CP/URL')->make('fields/create' . $return));
+                    $redirectUrl = ee('CP/URL')->make('fields/create' . $return);
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
-                    ee()->functions->redirect(ee('CP/URL')->make('fields'));
+                    $redirectUrl = ee('CP/URL')->make('fields');
                 } else {
-                    ee()->functions->redirect(ee('CP/URL')->make('fields/edit/' . $field->getId()));
+                    $redirectUrl = ee('CP/URL')->make('fields/edit/' . $field->getId());
                 }
+
+                // If the new field is conditional, we need to sync channel entries
+                if (ee('Request')->post('field_is_conditional') == 'y') {
+                    ee()->functions->redirect(
+                        ee('CP/URL')->make('fields/syncConditions/' . $field->getId())
+                        ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                    );
+                }
+
+                ee()->functions->redirect($redirectUrl);
             } else {
                 $errors = $this->validationResult;
 
@@ -640,12 +650,13 @@ class Fields extends AbstractFieldsController
         }
 
         foreach (array_keys($conditionSetsAfter) as $key) {
-            if (!$this->checkSimilar($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
+            if (!$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
                 return false;
             }
         }
+
         foreach (array_keys($conditionSetsBefore) as $key) {
-            if (!$this->checkSimilar($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
+            if (!$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
                 return false;
             }
         }
