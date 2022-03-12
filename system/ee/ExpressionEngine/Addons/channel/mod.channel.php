@@ -417,7 +417,9 @@ class Channel
                 return;
             }
 
-            $sql .= implode(',', array_unique(array_filter($categories))) . ')';
+            $sql .= empty($categories)
+                ? implode(',', array_unique(array_filter($categories))) . ')'
+                : '0)';
 
             $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
