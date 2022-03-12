@@ -113,7 +113,7 @@ class Upload
         );
 
         $cat_groups = ee('Model')->get('CategoryGroup')
-            ->filter('group_id', 'IN', explode('|', $file->UploadDestination->cat_group))
+            ->filter('group_id', 'IN', explode('|', (string) $file->UploadDestination->cat_group))
             ->all();
 
         if (count($cat_groups) == 0) {
@@ -246,6 +246,9 @@ class Upload
         }
 
         if (! $dir->exists()) {
+            if (AJAX_REQUEST) {
+                show_error(lang('invalid_upload_destination'), 404);
+            }
             $upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
             ee('CP/Alert')->makeStandard()
                 ->asIssue()

@@ -21,7 +21,7 @@ if (is_string($value)) {
 }
 $attrs = (isset($field['attrs'])) ? $field['attrs'] : '';
 if (isset($field['disabled']) && $field['disabled'] == true) {
-    $attrs = ' disabled="disabled"';
+    $attrs .= ' disabled="disabled"';
 }
 // This is to handle showing and hiding certain parts
 // of the form when a form element changes
@@ -70,7 +70,9 @@ case 'text':
 case 'short-text': ?>
     <label class="flex-input <?=$class?>">
         <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
-        <span class="label-txt"><?=lang($field['label'])?></span>
+        <?php if (isset($field['label'])):?>
+            <span class="label-txt"><?=lang($field['label'])?></span>
+        <?php endif;?>
     </label>
 <?php break;
 case 'number':
@@ -88,7 +90,7 @@ case 'file': ?>
     <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>">
 <?php break;
 case 'password': ?>
-    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>">
+    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' || $field_name=='password_confirm' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>">
 <?php break;
 case 'hidden': ?>
     <input type="hidden" name="<?=$field_name?>" value="<?=$value?>">

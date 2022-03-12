@@ -80,6 +80,7 @@ class ChannelField extends FieldModel
         'field_show_fmt' => 'enum[y,n]',
         'field_order' => 'integer',
         'legacy_field_data' => 'enum[y,n]',
+        'enable_frontedit' => 'enum[y,n]',
     );
 
     protected static $_events = array(
@@ -110,7 +111,7 @@ class ChannelField extends FieldModel
     protected $field_content_type;
     protected $field_settings;
     protected $legacy_field_data;
-    protected $enable_frontedit;
+    protected $enable_frontedit = 'y';
 
     public function getStructure()
     {

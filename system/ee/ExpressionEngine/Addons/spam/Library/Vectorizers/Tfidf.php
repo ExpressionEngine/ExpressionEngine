@@ -11,18 +11,22 @@
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
 use ExpressionEngine\Addons\Spam\Library\Document;
-use ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\Spam\Library\Vectorizer;
 
 /**
  * Spam Module Tfidf Vectorizer
  */
 class Tfidf implements Vectorizer
 {
+    public $tokenizer;
+    public $clean;
     public $documents = array();
     public $vocabulary = array();
     public $idf_lookup = array();
     public $corpus = "";
     public $limit = 1000;
+    public $stop_words;
+    public $document_count;
 
     /**
      * Get our corpus ready. First we strip out all common words specified in our stop word list,

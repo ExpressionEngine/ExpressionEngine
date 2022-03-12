@@ -30,6 +30,7 @@ class Channel extends StructureModel
         'channel_auto_link_urls' => 'boolString',
         'channel_notify' => 'boolString',
         'sticky_enabled' => 'boolString',
+        'enable_entry_cloning' => 'boolString',
         'comment_system_enabled' => 'boolString',
         'comment_require_membership' => 'boolString',
         'comment_moderate' => 'boolString',
@@ -121,6 +122,7 @@ class Channel extends StructureModel
         'channel_auto_link_urls' => 'enum[y,n]',
         'channel_notify' => 'enum[y,n]',
         'sticky_enabled' => 'enum[y,n]',
+        'enable_entry_cloning' => 'enum[y,n]',
         'comment_system_enabled' => 'enum[y,n]',
         'comment_require_membership' => 'enum[y,n]',
         'comment_moderate' => 'enum[y,n]',
@@ -185,6 +187,7 @@ class Channel extends StructureModel
     protected $channel_notify_emails;
     protected $comment_url;
     protected $sticky_enabled = false;
+    protected $enable_entry_cloning = true;
     protected $comment_system_enabled = true;
     protected $comment_require_membership = false;
     protected $comment_moderate = false;
@@ -328,7 +331,7 @@ class Channel extends StructureModel
 
                     break;
                 case 'deft_category':
-                    if (! isset($this->cat_group) or count(array_diff(explode('|', $this->cat_group), explode('|', $channel->cat_group))) == 0) {
+                    if (! isset($this->cat_group) or count(array_diff(explode('|',(string) $this->cat_group), explode('|', (string) $channel->cat_group))) == 0) {
                         $this->setRawProperty($property, $channel->{$property});
                     }
 
@@ -402,7 +405,7 @@ class Channel extends StructureModel
     {
         $cat_groups = array();
 
-        foreach (explode('|', $this->cat_group) as $group_id) {
+        foreach (explode('|', (string) $this->cat_group) as $group_id) {
             $cat_groups['categories[cat_group_id_' . $group_id . ']'] = true;
         }
 
@@ -528,7 +531,7 @@ class Channel extends StructureModel
 
     public function getCategoryGroups()
     {
-        $groups = explode('|', $this->cat_group);
+        $groups = explode('|', (string) $this->cat_group);
 
         return $this->getModelFacade()->get('CategoryGroup', $groups)->all();
     }

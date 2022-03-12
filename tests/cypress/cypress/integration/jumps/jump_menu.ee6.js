@@ -18,7 +18,7 @@ context('Jump Menu', () => {
 	}
 
 	before(function() {
-        //cy.task('db:seed')
+        cy.task('db:seed')
     })
 
     beforeEach(function() {
@@ -58,14 +58,6 @@ context('Jump Menu', () => {
 			page.get('jump_menu').contains("Information Pages")
 			page.get('jump_menu').contains("News")
 			closeJumpMenu();
-		})
-
-		it('view entries list', function() {
-			cy.route("POST", "**/jumps/**").as("ajax");
-			page.get('jump_menu').contains("View Entries").click()
-			cy.wait("@ajax");
-			page.get('jump_menu').contains("Information Pages").click()
-			page.get('page_heading').contains("All Information Pages entries")
 		})
 
 		it('edit entry', function() {

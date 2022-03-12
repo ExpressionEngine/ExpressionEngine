@@ -494,7 +494,7 @@ class Grid_parser
             // Finally, do the replacement
             $grid_row = str_replace(
                 $match[0],
-                $replace_data,
+                (string) $replace_data,
                 $grid_row
             );
         }

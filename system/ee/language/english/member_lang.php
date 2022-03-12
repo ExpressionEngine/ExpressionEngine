@@ -156,6 +156,10 @@ $lang = array(
 
     'mbr_admin_will_activate' => 'A site administrator will activate your account and notify you when it is ready for use.',
 
+    'mbr_cannot_activate_role_not_exists' => 'Unable to activate your account. The member role does not exist.',
+
+    'mbr_cannot_activate_role_is_locked' => 'Unable to activate your account. The member role is locked.',
+
     'mbr_aim_console' => 'AOL IM',
 
     'mbr_all_member_groups' => 'All Member Groups',
@@ -353,6 +357,10 @@ $lang = array(
     'mbr_registration_completed' => 'Your registration has been successfully completed.',
 
     'mbr_registration_not_allowed' => 'New membership accounts are not accepted at this time.',
+
+    'mbr_cannot_register_role_not_exists' => 'Unable to complete registration. The member role does not exist.',
+
+    'mbr_cannot_register_role_is_locked' => 'Unable to complete registration. The member role is locked.',
 
     'mbr_required' => 'Indicates required fields',
 

@@ -115,7 +115,9 @@ class Api_channel_fields extends Api
      */
     public function _fetch_fts($method)
     {
-        ee()->load->library('addons');
+        if (!isset(ee()->addons)) {
+            ee()->load->library('addons');
+        }
         $fts = ee()->addons->$method('fieldtypes');
 
         foreach ($fts as $key => $data) {
@@ -222,7 +224,9 @@ class Api_channel_fields extends Api
             $file = 'ft.' . $field_type . '.php';
             $paths = array(PATH_ADDONS . $field_type . '/');
 
-            ee()->load->library('addons');
+            if (!isset(ee()->addons)) {
+                ee()->load->library('addons');
+            }
 
             $fts = ee()->addons->get_files('fieldtypes');
 
@@ -682,7 +686,7 @@ class Api_channel_fields extends Api
     {
         $tab_modules = $this->get_modules();
 
-        $set = false;
+        $set = [];
 
         if ($tab_modules == false) {
             return false;
@@ -872,7 +876,7 @@ class Api_channel_fields extends Api
 
         // Do we have modules in play
         ee()->load->model('addons_model');
-        $custom_field_modules = false;
+        $custom_field_modules = [];
 
         $mquery = ee()->addons_model->get_installed_modules(false, true);
 

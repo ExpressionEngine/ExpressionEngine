@@ -70,6 +70,7 @@ class EE_Schema
 			auth_timeout int(10) unsigned DEFAULT '0' NOT NULL,
 			last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			can_debug char(1) NOT NULL DEFAULT 'n',
+			mfa_flag ENUM('skip','show','required') NOT NULL DEFAULT 'skip',
 			PRIMARY KEY `session_id` (`session_id`),
 			KEY `member_id` (`member_id`),
 			KEY `last_activity_idx` (`last_activity`)
@@ -280,12 +281,14 @@ class EE_Schema
         $Q[] = "CREATE TABLE exp_members (
 			member_id int(10) unsigned NOT NULL auto_increment,
 			role_id int(10) NOT NULL default '0',
+			pending_role_id int(10) NOT NULL default '0',
 			username varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			screen_name varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			password varchar(128) NOT NULL DEFAULT '',
 			salt varchar(128) NOT NULL DEFAULT '',
 			unique_id varchar(40) NOT NULL,
 			crypt_key varchar(40) NULL DEFAULT NULL,
+			backup_mfa_code varchar(128) NULL DEFAULT NULL,
 			authcode varchar(10) NULL DEFAULT NULL,
 			email varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			signature text NULL,
@@ -343,6 +346,7 @@ class EE_Schema
 			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
 			dismissed_pro_banner char(1) NOT NULL DEFAULT 'n',
+			enable_mfa char(1) NOT NULL default 'n',
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `role_id` (`role_id`),
 			KEY `unique_id` (`unique_id`),
@@ -354,6 +358,7 @@ class EE_Schema
 			`name` varchar(100) NOT NULL,
 			`short_name` varchar(50) NOT NULL,
 			`description` text,
+			`total_members` mediumint(8) unsigned NOT NULL DEFAULT '0',
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY (`role_id`)
 		)";
@@ -408,6 +413,7 @@ class EE_Schema
 			`cp_homepage` varchar(20) DEFAULT NULL,
 			`cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
 			`cp_homepage_custom` varchar(100) DEFAULT NULL,
+			`require_mfa` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY (`id`),
 			KEY `role_id_site_id` (`role_id`, `site_id`)
 		)";
@@ -515,6 +521,7 @@ class EE_Schema
 			channel_notify char(1) NOT NULL default 'n',
 			channel_notify_emails varchar(255) NULL DEFAULT NULL,
 			sticky_enabled char(1) NOT NULL default 'n',
+			enable_entry_cloning char(1) NOT NULL default 'y',
 			comment_url varchar(80) NULL DEFAULT NULL,
 			comment_system_enabled char(1) NOT NULL default 'y',
 			comment_require_membership char(1) NOT NULL default 'n',
@@ -679,6 +686,7 @@ class EE_Schema
 			field_content_type varchar(20) NOT NULL default 'any',
 			field_settings text NULL,
 			legacy_field_data char(1) NOT NULL default 'n',
+			enable_frontedit char(1) NOT NULL default 'y',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `field_type` (`field_type`),
 			KEY `site_id` (`site_id`)
@@ -1468,6 +1476,7 @@ class EE_Schema
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('offline_template', 'system', " . time() . ", '', '" . addslashes(offline_template()) . "')";
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('message_template', 'system', " . time() . ", '', '" . addslashes(message_template()) . "')";
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('post_install_message_template', 'system', " . time() . ", '', '" . addslashes(post_install_message_template()) . "')";
+		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('mfa_template', 'system', " . time() . ", '', '" . addslashes(mfa_message_template()) . "')";
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_reg', 'email', 'members', " . time() . ", '" . addslashes(trim(admin_notify_reg_title())) . "', '" . addslashes(admin_notify_reg()) . "')";
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_entry', 'email', 'content', " . time() . ", '" . addslashes(trim(admin_notify_entry_title())) . "', '" . addslashes(admin_notify_entry()) . "')";
         $Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_comment', 'email', 'comments', " . time() . ", '" . addslashes(trim(admin_notify_comment_title())) . "', '" . addslashes(admin_notify_comment()) . "')";

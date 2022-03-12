@@ -20,9 +20,9 @@ class Channel_form_session extends EE_Session
     /**
      * SC_Session
      *
-     * @access	public
-     * @param	mixed $config
-     * @return	void
+     * @access public
+     * @param mixed $config
+     * @return void
      */
     public function __construct($config)
     {
@@ -52,10 +52,10 @@ class Channel_form_session extends EE_Session
     /**
      * userdata
      *
-     * @param	mixed $str
-     * @return	void
+     * @param mixed $str
+     * @return void
      */
-    public function userdata($str)
+    public function userdata($str, $default = false)
     {
         if ($str == 'member_id' && $this->logged_out_member_id) {
             return $this->logged_out_member_id;

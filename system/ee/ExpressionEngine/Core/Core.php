@@ -30,6 +30,8 @@ abstract class Core
      */
     protected $running = false;
 
+    protected $legacy;
+
     /**
      * Boot the application
      */
@@ -296,7 +298,7 @@ abstract class Core
      */
     public function setTimeLimit($t)
     {
-        if (function_exists("set_time_limit")) {
+        if (function_exists("set_time_limit") == true && php_sapi_name() !== 'cli') {
             @set_time_limit($t);
         }
     }

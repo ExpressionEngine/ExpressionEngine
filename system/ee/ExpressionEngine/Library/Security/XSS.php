@@ -17,6 +17,15 @@ class XSS
 {
     protected $_xss_hash = '';
 
+    private $_cache_evil_attributes_regex_string = '';
+
+    /**
+     * The replacement-string for not allowed strings.
+     *
+     * @var string
+     */
+    private $_replacement = '';
+
     /* never allowed, string replacement */
     protected $_never_allowed_str = array(
         'document.cookie' => '[removed]',
@@ -63,6 +72,245 @@ class XSS
     );
 
     /**
+     * https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet#Event_Handlers
+     *
+     * @var string[]
+     */
+    private $_evil_attributes_regex = [
+        'style',
+        'xmlns:xdp',
+        'formaction',
+        'form',
+        'xlink:href',
+        'seekSegmentTime',
+        'FSCommand',
+    ];
+
+    /**
+     * List of never allowed strings, afterwards.
+     *
+     * @var string[]
+     */
+    private $_never_allowed_on_events_afterwards = [
+        'onAbort',
+        'onActivate',
+        'onAttribute',
+        'onAfterPrint',
+        'onAfterScriptExecute',
+        'onAfterUpdate',
+        'onAnimationCancel',
+        'onAnimationEnd',
+        'onAnimationIteration',
+        'onAnimationStart',
+        'onAriaRequest',
+        'onAutoComplete',
+        'onAutoCompleteError',
+        'onAuxClick',
+        'onBeforeActivate',
+        'onBeforeCopy',
+        'onBeforeCut',
+        'onBeforeDeactivate',
+        'onBeforeEditFocus',
+        'onBeforePaste',
+        'onBeforePrint',
+        'onBeforeScriptExecute',
+        'onBeforeUnload',
+        'onBeforeUpdate',
+        'onBegin',
+        'onBlur',
+        'onBounce',
+        'onCancel',
+        'onCanPlay',
+        'onCanPlayThrough',
+        'onCellChange',
+        'onChange',
+        'onClick',
+        'onClose',
+        'onCommand',
+        'onCompassNeedsCalibration',
+        'onContextMenu',
+        'onControlSelect',
+        'onCopy',
+        'onCueChange',
+        'onCut',
+        'onDataAvailable',
+        'onDataSetChanged',
+        'onDataSetComplete',
+        'onDblClick',
+        'onDeactivate',
+        'onDeviceLight',
+        'onDeviceMotion',
+        'onDeviceOrientation',
+        'onDeviceProximity',
+        'onDrag',
+        'onDragDrop',
+        'onDragEnd',
+        'onDragEnter',
+        'onDragLeave',
+        'onDragOver',
+        'onDragStart',
+        'onDrop',
+        'onDurationChange',
+        'onEmptied',
+        'onEnd',
+        'onEnded',
+        'onError',
+        'onErrorUpdate',
+        'onExit',
+        'onFilterChange',
+        'onFinish',
+        'onFocus',
+        'onFocusIn',
+        'onFocusOut',
+        'onFormChange',
+        'onFormInput',
+        'onFullScreenChange',
+        'onFullScreenError',
+        'onGotPointerCapture',
+        'onHashChange',
+        'onHelp',
+        'onInput',
+        'onInvalid',
+        'onKeyDown',
+        'onKeyPress',
+        'onKeyUp',
+        'onLanguageChange',
+        'onLayoutComplete',
+        'onLoad',
+        'onLoadedData',
+        'onLoadedMetaData',
+        'onLoadStart',
+        'onLoseCapture',
+        'onLostPointerCapture',
+        'onMediaComplete',
+        'onMediaError',
+        'onMessage',
+        'onMouseDown',
+        'onMouseEnter',
+        'onMouseLeave',
+        'onMouseMove',
+        'onMouseOut',
+        'onMouseOver',
+        'onMouseUp',
+        'onMouseWheel',
+        'onMove',
+        'onMoveEnd',
+        'onMoveStart',
+        'onMozFullScreenChange',
+        'onMozFullScreenError',
+        'onMozPointerLockChange',
+        'onMozPointerLockError',
+        'onMsContentZoom',
+        'onMsFullScreenChange',
+        'onMsFullScreenError',
+        'onMsGestureChange',
+        'onMsGestureDoubleTap',
+        'onMsGestureEnd',
+        'onMsGestureHold',
+        'onMsGestureStart',
+        'onMsGestureTap',
+        'onMsGotPointerCapture',
+        'onMsInertiaStart',
+        'onMsLostPointerCapture',
+        'onMsManipulationStateChanged',
+        'onMsPointerCancel',
+        'onMsPointerDown',
+        'onMsPointerEnter',
+        'onMsPointerLeave',
+        'onMsPointerMove',
+        'onMsPointerOut',
+        'onMsPointerOver',
+        'onMsPointerUp',
+        'onMsSiteModeJumpListItemRemoved',
+        'onMsThumbnailClick',
+        'onOffline',
+        'onOnline',
+        'onOutOfSync',
+        'onPage',
+        'onPageHide',
+        'onPageShow',
+        'onPaste',
+        'onPause',
+        'onPlay',
+        'onPlaying',
+        'onPointerCancel',
+        'onPointerDown',
+        'onPointerEnter',
+        'onPointerLeave',
+        'onPointerLockChange',
+        'onPointerLockError',
+        'onPointerMove',
+        'onPointerOut',
+        'onPointerOver',
+        'onPointerUp',
+        'onPopState',
+        'onProgress',
+        'onPropertyChange',
+        'onqt_error',
+        'onRateChange',
+        'onReadyStateChange',
+        'onReceived',
+        'onRepeat',
+        'onReset',
+        'onResize',
+        'onResizeEnd',
+        'onResizeStart',
+        'onResume',
+        'onReverse',
+        'onRowDelete',
+        'onRowEnter',
+        'onRowExit',
+        'onRowInserted',
+        'onRowsDelete',
+        'onRowsEnter',
+        'onRowsExit',
+        'onRowsInserted',
+        'onScroll',
+        'onSearch',
+        'onSeek',
+        'onSeeked',
+        'onSeeking',
+        'onSelect',
+        'onSelectionChange',
+        'onSelectStart',
+        'onStalled',
+        'onStorage',
+        'onStorageCommit',
+        'onStart',
+        'onStop',
+        'onShow',
+        'onSyncRestored',
+        'onSubmit',
+        'onSuspend',
+        'onSynchRestored',
+        'onTimeError',
+        'onTimeUpdate',
+        'onTimer',
+        'onTrackChange',
+        'onTransitionEnd',
+        'onToggle',
+        'onTouchCancel',
+        'onTouchEnd',
+        'onTouchLeave',
+        'onTouchMove',
+        'onTouchStart',
+        'onTransitionCancel',
+        'onTransitionEnd',
+        'onUnload',
+        'onURLFlip',
+        'onUserProximity',
+        'onVolumeChange',
+        'onWaiting',
+        'onWebKitAnimationEnd',
+        'onWebKitAnimationIteration',
+        'onWebKitAnimationStart',
+        'onWebKitFullScreenChange',
+        'onWebKitFullScreenError',
+        'onWebKitTransitionEnd',
+        'onWheel',
+    ];
+
+    /**
      * XSS Clean
      *
      * Sanitizes data so that Cross Site Scripting Hacks can be
@@ -83,18 +331,18 @@ class XSS
      * vulnerabilities along with a few other hacks I've
      * harvested from examining vulnerabilities in other programs:
      *
-     * @param	string|array[string]	$str	The string to be cleaned or an
-     * 		array of strings to be cleaned.  This needs to contain enough of the
-     * 		context to allow it to properly be cleaned, but shouldn't be the whole
-     * 		final output.  For example, if the data to be cleaned is going to wind
-     * 		up in the href attribute of a link (<a> tag) then the string needs to
-     * 		include the full anchor tag.  If attributes of the tag contain dangerous
-     * 		javascript, the whole attribute will be removed.
-     * @param	boolean	$is_image	If the data is an image file it requires some special
-     * 		processing to preserve the meta data.
-     * @return	string	The string cleaned of dangerous code.  If an attribute contains dangerous
-     * 		code it will be removed entirely.  Certain HTML tags will be encoded (html and body
-     * 		among them).
+     * @param   string|array[string]    $str    The string to be cleaned or an
+     *      array of strings to be cleaned.  This needs to contain enough of the
+     *      context to allow it to properly be cleaned, but shouldn't be the whole
+     *      final output.  For example, if the data to be cleaned is going to wind
+     *      up in the href attribute of a link (<a> tag) then the string needs to
+     *      include the full anchor tag.  If attributes of the tag contain dangerous
+     *      javascript, the whole attribute will be removed.
+     * @param   boolean $is_image   If the data is an image file it requires some special
+     *      processing to preserve the meta data.
+     * @return  string  The string cleaned of dangerous code.  If an attribute contains dangerous
+     *      code it will be removed entirely.  Certain HTML tags will be encoded (html and body
+     *      among them).
      */
     public function clean($str, $is_image = false)
     {
@@ -267,10 +515,10 @@ class XSS
          * code, it simply converts the parenthesis to entities
          * rendering the code un-executable.
          *
-         * For example:	eval('some code')
-         * Becomes:		eval&#40;'some code'&#41;
+         * For example: eval('some code')
+         * Becomes:     eval&#40;'some code'&#41;
          */
-        $str = preg_replace('#(alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si', "\\1\\2&#40;\\3&#41;", $str);
+        $str = preg_replace('#(console.log|alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si', "\\1\\2&#9001;\\3&#9002;", $str);
 
         // Final clean up
         // This adds a bit of extra precaution in case
@@ -297,7 +545,7 @@ class XSS
     /**
      * Random Hash for protecting URLs
      *
-     * @return	string
+     * @return  string
      */
     public function xss_hash()
     {
@@ -391,8 +639,8 @@ class XSS
      * Callback function for xss_clean() to remove whitespace from
      * things like j a v a s c r i p t
      *
-     * @param	type
-     * @return	type
+     * @param   type
+     * @return  type
      */
     protected function _compact_exploded_words($matches)
     {
@@ -403,12 +651,12 @@ class XSS
      * Remove Evil HTML Attributes (like evenhandlers and style)
      *
      * It removes the evil attribute and either:
-     * 	- Everything up until a space
-     *		For example, everything between the pipes:
-     *		<a |style=document.write('hello');alert('world');| class=link>
-     * 	- Everything inside the quotes
-     *		For example, everything between the pipes:
-     *		<a |style="document.write('hello'); alert('world');"| class="link">
+     *  - Everything up until a space
+     *      For example, everything between the pipes:
+     *      <a |style=document.write('hello');alert('world');| class=link>
+     *  - Everything inside the quotes
+     *      For example, everything between the pipes:
+     *      <a |style="document.write('hello'); alert('world');"| class="link">
      *
      * @param string $str The string to check
      * @param boolean $is_image TRUE if this is an image
@@ -425,6 +673,27 @@ class XSS
              * including namespacing, so we have to allow this for images.
              */
             unset($evil_attributes[array_search('xmlns', $evil_attributes)]);
+            unset($this->_evil_attributes_regex[array_search('xmlns:xdp', $this->_evil_attributes_regex)]);
+        }
+
+        // replace style-attribute, first (if needed)
+        if (
+            \stripos($str, 'style') !== false
+            &&
+            \in_array('style', $this->_evil_attributes_regex, true)
+        ) {
+            do {
+                $count = $temp_count = 0;
+
+                $str = (string) \preg_replace(
+                    '/(<[^>]+)(?<!\p{L})(style\s*=\s*"(?:[^"]*?)"|style\s*=\s*\'(?:[^\']*?)\')/iu',
+                    '$1' . '[removed]',
+                    $str,
+                    -1,
+                    $temp_count
+                );
+                $count += $temp_count;
+            } while ($count);
         }
 
         do {
@@ -433,7 +702,6 @@ class XSS
 
             // find occurrences of illegal attribute strings without quotes
             preg_match_all('/(\W' . implode('|', $evil_attributes) . ')\s*=\s*([^\s>]*)/is', $str, $matches, PREG_SET_ORDER);
-
             foreach ($matches as $attr) {
                 $attribs[] = trim(preg_quote($attr[0], '/'));
             }
@@ -451,7 +719,59 @@ class XSS
             }
         } while ($count);
 
-        return $str;
+        if (!$this->_cache_evil_attributes_regex_string) {
+            $this->_cache_evil_attributes_regex_string = \implode('|', $this->_evil_attributes_regex);
+            $this->_cache_evil_attributes_regex_string .= '|' . \implode('\w*|', $this->_never_allowed_on_events_afterwards);
+        }
+
+        do {
+            $count = $temp_count = 0;
+
+            // find occurrences of illegal attribute strings with and without quotes (" and ' are octal quotes)
+            $regex = '/(.*)((?:<[^>]+)(?<!\p{L}))(?:' . $this->_cache_evil_attributes_regex_string . ')(?:\s*=\s*)(?:\'(?:.*?)\'|"(?:.*?)")(.*)/ius';
+            $strTmp = \preg_replace(
+                $regex,
+                '$1$2' . $this->_replacement . '$3$4',
+                $str,
+                -1,
+                $temp_count
+            );
+            if ($strTmp === null) {
+                $regex = '/(?:' . $this->_cache_evil_attributes_regex_string . ')(?:\s*=\s*)(?:\'(?:.*?)\'|"(?:.*?)")/ius';
+                $strTmp = \preg_replace(
+                    $regex,
+                    $this->_replacement,
+                    $str,
+                    -1,
+                    $temp_count
+                );
+            }
+            $str = (string) $strTmp;
+            $count += $temp_count;
+
+            $regex =  '/(.*?)(<[^>]+)(?<!\p{L})(?:' . $this->_cache_evil_attributes_regex_string . ')\s*=\s*(?:[^\s>]*)/ius';
+            $strTmp = \preg_replace(
+                $regex,
+                '$1$2' . $this->_replacement . '$3',
+                $str,
+                -1,
+                $temp_count
+            );
+            if ($strTmp === null) {
+                $regex =  '/(?<!\p{L})(?:' . $this->_cache_evil_attributes_regex_string . ')\s*=\s*(?:[^\s>]*)(.*?)/ius';
+                $strTmp = \preg_replace(
+                    $regex,
+                    '$1$2' . $this->_replacement . '$3',
+                    $str,
+                    -1,
+                    $temp_count
+                );
+            }
+            $str = (string)$strTmp;
+            $count += $temp_count;
+        } while ($count);
+
+        return (string) $str;
     }
 
     /**
@@ -459,8 +779,8 @@ class XSS
      *
      * Callback function for xss_clean() to remove naughty HTML elements
      *
-     * @param	array
-     * @return	string
+     * @param   array
+     * @return  string
      */
     protected function _sanitize_naughty_html($matches)
     {
@@ -485,8 +805,8 @@ class XSS
      * and prevents PREG_BACKTRACK_LIMIT_ERROR from being triggered in
      * PHP 5.2+ on link-heavy strings
      *
-     * @param	array
-     * @return	string
+     * @param   array
+     * @return  string
      */
     protected function _js_link_removal($match)
     {
@@ -503,8 +823,8 @@ class XSS
      * and prevents PREG_BACKTRACK_LIMIT_ERROR from being triggered in
      * PHP 5.2+ on image tag heavy strings
      *
-     * @param	array
-     * @return	string
+     * @param   array
+     * @return  string
      */
     protected function _js_img_removal($match)
     {
@@ -518,8 +838,8 @@ class XSS
      *
      * Used as a callback for XSS Clean
      *
-     * @param	array
-     * @return	string
+     * @param   array
+     * @return  string
      */
     protected function _convert_attribute($match)
     {
@@ -531,8 +851,8 @@ class XSS
      *
      * Filters tag attributes for consistency and safety
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     protected function _filter_attributes($str)
     {
@@ -552,8 +872,8 @@ class XSS
      *
      * Used as a callback for XSS Clean
      *
-     * @param	array
-     * @return	string
+     * @param   array
+     * @return  string
      */
     protected function _decode_entity($match)
     {
@@ -565,8 +885,8 @@ class XSS
      *
      * Called by xss_clean()
      *
-     * @param 	string
-     * @return 	string
+     * @param   string
+     * @return  string
      */
     protected function _validate_entities($str)
     {
@@ -608,8 +928,8 @@ class XSS
      *
      * A utility function for xss_clean()
      *
-     * @param 	string
-     * @return 	string
+     * @param   string
+     * @return  string
      */
     protected function _do_never_allowed($str)
     {

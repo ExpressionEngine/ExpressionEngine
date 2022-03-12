@@ -2,14 +2,41 @@
     <div class="tbl-ctrls">
         <?=form_open($form_url)?>
 
-        <div class="panel-heading"<?php if (ee()->uri->segment(3) == 'prolet') : ?> style="display: none;"<?php endif; ?>>
-          <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-          <?php if (isset($cp_heading)) : ?>
+        <div class="panel-heading entry-pannel-heading"<?php if (ee()->uri->segment(3) == 'prolet') : ?> style="display: none;"<?php endif; ?>>
           <div class="title-bar">
-              <h3 class="title-bar__title"><?=$cp_heading?></h3>
+                <h3 class="title-bar__title"><?=$head['title']?></h3>
           </div>
-          <?php endif; ?>
+
+        <?php if (isset($head['action_button'])): ?>
+            <div class="button-wrap">
+            <?php if (isset($head['action_button']['choices'])): ?>
+                <button type="button" class="button button--primary js-dropdown-toggle has-sub" data-dropdown-pos="bottom-end"><?=$head['action_button']['text']?></button>
+                <div class="dropdown">
+                    <?php if (count($head['action_button']['choices']) > 8): ?>
+                        <div class="dropdown__search">
+                            <div class="search-input">
+                                <input type="text" value="" class="search-input__input input--small" data-fuzzy-filter="true" placeholder="<?=$head['action_button']['filter_placeholder']?>">
+                            </div>
+                        </div>
+                    <?php endif ?>
+
+                    <div class="dropdown__scroll">
+                    <?php foreach ($head['action_button']['choices'] as $link => $text): ?>
+                        <a href="<?=$link?>" class="dropdown__link"><?=$text?></a>
+                    <?php endforeach ?>
+                    </div>
+                </div>
+            <?php else: ?>
+                <a class="button button--primary" href="<?=$head['action_button']['href']?>"><?=$head['action_button']['text']?></a>
+            <?php endif ?>
+            </div>
+        <?php endif ?>
         </div>
+
+        <div class="entry-pannel-notice-wrap">
+            <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+        </div>
+
 
         <div class="filter-search-bar" <?php if (ee()->uri->segment(3) == 'prolet') : ?> style="padding: 10px 10px;"<?php endif; ?>>
 

@@ -751,7 +751,7 @@ if (! function_exists('form_prep')) {
         $hash = md5($field_name . $str);
 
         if (! isset($prepped_fields[$hash])) {
-            $str = htmlspecialchars($str, ENT_QUOTES);
+            $str = htmlspecialchars((string) $str, ENT_QUOTES);
             $hash = md5($field_name . $str);
             $prepped_fields[$hash] = true;
         }

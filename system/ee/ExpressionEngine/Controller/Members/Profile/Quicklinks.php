@@ -20,6 +20,8 @@ use ExpressionEngine\Library\CP\Table;
 class Quicklinks extends Settings
 {
     private $base_url = 'members/profile/quicklinks';
+    private $index_url;
+    public $quicklinks;
 
     public function __construct()
     {
@@ -196,7 +198,7 @@ class Quicklinks extends Settings
      * saveQuicklinks compiles the links and saves them for the current member
      *
      * @access private
-     * @return void
+     * @return bool
      */
     private function saveQuicklinks()
     {
@@ -225,7 +227,7 @@ class Quicklinks extends Settings
      * @access private
      * @return void
      */
-    private function form($vars, $values = array(), $id)
+    private function form($vars, $values = array(), $id = null)
     {
         $name = isset($values['name']) ? $values['name'] : '';
         $url = isset($values['url']) ? $values['url'] : '';
@@ -270,7 +272,7 @@ class Quicklinks extends Settings
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
                     ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
                 } else {
-                    ee()->functions->redirect(ee('CP/URL')->make($this->index_url . '/edit/' . $id, $this->query_string));
+                    ee()->functions->redirect(ee('CP/URL')->make($this->index_url . '/edit/' . (int) $id, $this->query_string));
                 }
             }
         } elseif (ee()->form_validation->errors_exist()) {
