@@ -199,7 +199,7 @@ class Number_ft extends Text_ft
             'field_max_value' => 'numeric|whenNotEmpty[field_min_value]|greaterThan[' . $settings['field_min_value'] . ']',
             'field_step' => 'numeric'
         );
-        if ($this->settings['field_content_type'] == 'integer') {
+        if ($settings['field_content_type'] == 'integer') {
             foreach ($validationRules as $key => $value) {
                 $validationRules[$key] = 'matchesContentType|' . $value;
             }
