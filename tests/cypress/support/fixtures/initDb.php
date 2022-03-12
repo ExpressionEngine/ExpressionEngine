@@ -395,8 +395,7 @@ function install_modules()
         'file',
         'filepicker',
         'relationship',
-        'search',
-        'notes'
+        'search'
     ];
 
     ee()->load->library('addons');
