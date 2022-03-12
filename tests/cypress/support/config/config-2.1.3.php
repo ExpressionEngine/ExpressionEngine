@@ -18,7 +18,7 @@ $config['install_lock'] = "";
 $config['license_number'] = '1123-5813-2134-5589';
 $config['debug'] = '1';
 $config['cp_url'] = '/admin.php';
-$config['theme_folder_url'] = 'http://localhost:8888/themes/';
+$config['theme_folder_url'] = "{$config['base_url']}themes";
 $config['doc_url'] = 'http://expressionengine.com/user_guide/';
 $config['is_system_on'] = 'y';
 $config['site_label'] = 'ExpressionEngine 2.1.3';
@@ -38,7 +38,7 @@ $config['cookie_prefix'] = '';
 |	http://example.com/
 |
 */
-$config['base_url']	= '';
+$config['base_url']    = '';
 
 /*
 |--------------------------------------------------------------------------
@@ -68,7 +68,7 @@ $config['index_page'] = 'index.php';
 | 'ORIG_PATH_INFO'	Uses the ORIG_PATH_INFO
 |
 */
-$config['uri_protocol']	= 'AUTO';
+$config['uri_protocol']    = 'AUTO';
 
 /*
 |--------------------------------------------------------------------------
@@ -93,7 +93,7 @@ $config['url_suffix'] = '';
 | than english.
 |
 */
-$config['language']	= 'english';
+$config['language']    = 'english';
 
 /*
 |--------------------------------------------------------------------------

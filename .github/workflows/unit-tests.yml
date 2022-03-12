@@ -8,6 +8,10 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 6.dev
+      - 6.2.0
+      - 6.3.0
+      - 6.4.0
+      - 6.5.0
 
 jobs:
 
@@ -28,8 +32,8 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.3, 7.4, 8.0]
-                os: [ubuntu-18.04]
+                php: [7.3, 7.4, 8.0, 8.1]
+                os: [ubuntu-latest]
                 include:
                   - php: 8.0
                     os: windows-latest

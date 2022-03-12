@@ -62,7 +62,7 @@ $current_page = ee()->uri->segment(2);
 			<div class="ee-main">
 		
 		<?php if (!isset($hide_topbar) || $hide_topbar != true) : ?>
-        <div class="ee-main-header">
+        <div class="ee-main-header <?php if (!empty($head['class']) ): echo $head['class']; endif ?>">
 
           <a href="" class="sidebar-toggle<?php if (isset($collapsed_nav) && $collapsed_nav == '1') : ?> sidebar-toggle__collapsed<?php endif; ?>" title="Toggle Sidebar"><i class="fas fa-angle-<?php if (isset($collapsed_nav) && $collapsed_nav == '1') : ?>right<?php else : ?>left<?php endif; ?>"></i></a>
 

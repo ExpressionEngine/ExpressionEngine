@@ -99,7 +99,7 @@ class Jumps extends CP_Controller
 
     /**
      * Send the invalid request error response, passing any error messages we accrued along the way.
-     * @return json   ajax compatible error string
+     * @return void   ajax compatible error string
      */
     private function invalidRequest()
     {
@@ -108,7 +108,7 @@ class Jumps extends CP_Controller
 
     /**
      * Send the invalid method error response, passing any error messages we accrued along the way.
-     * @return json   ajax compatible error string
+     * @return void   ajax compatible error string
      */
     private function invalidMethod()
     {

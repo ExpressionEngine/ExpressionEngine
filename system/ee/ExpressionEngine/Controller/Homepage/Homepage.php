@@ -84,7 +84,7 @@ class Homepage extends CP_Controller
 
                 ee()->session->benjaminButtonFlashdata();
 
-                $this->functions->redirect($member_home_url);
+                ee()->functions->redirect($member_home_url);
             }
         }
     }

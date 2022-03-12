@@ -1,8 +1,5 @@
 /// <reference types="Cypress" />
 
-import { LoremIpsum } from "lorem-ipsum";
-const lorem = new LoremIpsum();
-
 import Publish from '../../elements/pages/publish/Publish';
 import ForumTab from '../../elements/pages/publish/ForumTab';
 import FileModal from '../../elements/pages/publish/FileModal';
@@ -221,152 +218,6 @@ context('Publish Page - Create', () => {
 
       })
 
-      function add_content(index, skew = 0) {
-
-        fluid_field.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
-          const field_type = data;
-          const field = fluid_field.get('items').eq(index).find('.fluid__item-field')
-
-          switch (field_type) {
-            case 'date':
-              field.find('input[type=text][rel=date-picker]').type((9 + skew).toString() + '/14/2017 2:56 PM')
-              page.get('title').click() // Dismiss the date picker
-              break;
-            case 'checkboxes':
-              field.find('input[type=checkbox]').eq(0 + skew).check();
-              break;
-            case 'email_address':
-              field.find('input').clear().type('rspec-' + skew.toString() + '@example.com')
-              break;
-            case 'url':
-              field.find('input').clear().type('http://www.example.com/page/' + skew.toString())
-              break;
-            case 'file':
-              field.find('button:contains("Choose Existing")').click()
-              cy.wait(500)
-              fluid_field.get('items').eq(index).find('button:contains("Choose Existing")').next('.dropdown').find('a:contains("About")').click()
-              //page.get('modal').should('be.visible')
-              file_modal.get('files').should('be.visible')
-              //page.file_modal.wait_for_files
-              cy.wait(500)
-              file_modal.get('files').eq(0 + skew).click()
-              cy.wait(500)
-              page.get('modal').should('not.exist')
-              //page.wait_until_modal_invisible
-              break;
-            case 'relationship':
-              let rel_link = field.find('.js-dropdown-toggle:contains("Relate Entry")')
-              rel_link.click()
-              rel_link.next('.dropdown.dropdown--open').find('.dropdown__link:visible').eq(0 + skew).click();
-              page.get('title').click()
-              break;
-            case 'rte':
-              field.find('.ck-content').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (2 + skew))));
-              break;
-            case 'multi_select':
-              field.find('input[type=checkbox]').eq(0 + skew).check()
-              break;
-            case 'radio':
-              field.find('input[type=radio]').eq(1 + skew).check()
-              break;
-            case 'select':
-              field.find('div[data-dropdown-react]').click()
-              let choice = 'Corndog'
-              if (skew == 1) { choice = 'Burrito' }
-              cy.wait(100)
-              fluid_field.get('items').eq(index).find('.fluid__item-field div[data-dropdown-react] .select__dropdown-items span:contains("'+choice+'")').click({force:true})
-              break;
-            case 'grid':
-              field.find('a[rel="add_row"]').first().click()
-              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(0).clear().type('Lorem' + skew.toString())
-              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(1).clear().type('ipsum' + skew.toString())
-              break;
-            case 'textarea':
-              field.find('textarea').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (3 + skew))));
-              break;
-            case 'toggle':
-              field.find('.toggle-btn').click()
-              break;
-            case 'text':
-              field.find('input').clear().type('Lorem ipsum dolor sit amet' + skew.toString())
-              break;
-          }
-        })
-      }
-
-      function check_content(index, skew = 0)
-      {
-
-        fluid_field.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
-          const field_type = data;
-          let field = fluid_field.get('items').eq(index).find('.fluid__item-field')
-
-          switch (field_type) {
-            case 'date':
-              field.find('input[type=text][rel=date-picker]').invoke('val').then((text) => {
-                expect(text).equal((9 + skew).toString() + '/14/2017 2:56 PM')
-              })
-              break;
-            case 'checkboxes':
-              field.find('input[type=checkbox]').eq(0 + skew).should('be.checked')
-              break;
-            case 'email_address':
-              field.find('input').invoke('val').then((text) => {
-                expect(text).equal('rspec-' + skew.toString() + '@example.com')
-              })
-              break;
-            case 'url':
-              field.find('input').invoke('val').then((text) => {
-                expect(text).equal('http://www.example.com/page/' + skew.toString())
-              })
-              break;
-            case 'file':
-              field.contains('staff_jane')
-              break;
-            case 'relationship':
-              let expected_val = 'About the Label';
-              if (skew==1) {
-                expected_val = 'Band Title';
-              }
-              field.contains(expected_val)
-              break;
-            case 'rte':
-              field.find('textarea').contains('Lorem ipsum')// {:visible => false}
-              break;
-            case 'multi_select':
-              field.find('input[type=checkbox]').eq(0 + skew).should('be.checked')
-              break;
-            case 'radio':
-              field.find('input[type=radio]').eq(1 + skew).should('be.checked')
-              break;
-            case 'select':
-              let choice = 'Corndog'
-              if (skew == 1) { choice = 'Burrito' }
-              field.find('div[data-dropdown-react]').contains(choice)
-              break;
-            case 'grid':
-              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(0).invoke('val').then((text) => {
-                expect(text).equal('Lorem' + skew.toString())
-              })
-              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(1).invoke('val').then((text) => {
-                expect(text).equal('ipsum' + skew.toString())
-              })
-              break;
-            case 'textarea':
-              field.find('textarea').contains('Lorem ipsum')
-              break;
-            case 'toggle':
-              field.find('.toggle-btn').click()
-              break;
-            case 'text':
-              field.find('input').invoke('val').then((text) => {
-                expect(text).equal('Lorem ipsum dolor sit amet' + skew.toString())
-              })
-              break;
-          }
-        })
-      }
-
       it('adds a field', () => {
 
         available_fields.forEach(function(field, index) {
@@ -383,7 +234,7 @@ context('Publish Page - Create', () => {
         cy.log('Make sure the fields stuck around after save')
         available_fields.forEach(function(field, index) {
           fluid_field.get('items').eq(index).find('label').contains(field)
-          add_content(index)
+          fluid_field.add_content(index)
         })
 
         page.get('save').click()
@@ -393,7 +244,7 @@ context('Publish Page - Create', () => {
         page.get('alert').contains('Entry Updated')
 
         available_fields.forEach(function(field, index) {
-          check_content(index)
+          fluid_field.check_content(index)
         })
       })
 
@@ -402,14 +253,14 @@ context('Publish Page - Create', () => {
 
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
-          add_content(index)
+          fluid_field.add_content(index)
 
           fluid_field.get('items').eq(index).find('label').contains(field)
         })
 
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
-          add_content((index + number_of_fields), 1)
+          fluid_field.add_content((index + number_of_fields), 1)
 
           fluid_field.get('items').eq(index + number_of_fields).find('label').contains(field)
         })
@@ -420,10 +271,10 @@ context('Publish Page - Create', () => {
         // Make sure the fields stuck around after save
         available_fields.forEach(function(field, index) {
           fluid_field.get('items').eq(index).find('label').contains(field)
-          check_content(index)
+          fluid_field.check_content(index)
 
           fluid_field.get('items').eq(index + number_of_fields).find('label').contains(field)
-          check_content((index + number_of_fields), 1)
+          fluid_field.check_content((index + number_of_fields), 1)
         })
       })
 
@@ -435,7 +286,7 @@ context('Publish Page - Create', () => {
         // First: without saving
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
-          add_content(index)
+          fluid_field.add_content(index)
 
           fluid_field.get('items').eq(index).find('label').contains(field)
         })
@@ -453,7 +304,7 @@ context('Publish Page - Create', () => {
         // Second: after saving
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
-          add_content(index)
+          fluid_field.add_content(index)
 
           fluid_field.get('items').eq(index).find('label').contains(field)
         })
@@ -478,7 +329,7 @@ context('Publish Page - Create', () => {
       it('keeps data when the entry is invalid', () => {
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
-          add_content(index)
+          fluid_field.add_content(index)
 
           fluid_field.get('items').eq(index).find('label').contains(field)
         })
@@ -488,13 +339,12 @@ context('Publish Page - Create', () => {
         page.get('save').click()
 
         available_fields.forEach(function(field, index) {
-          check_content(index)
+          fluid_field.check_content(index)
         })
       })
 
 
     })
-
 
 
 

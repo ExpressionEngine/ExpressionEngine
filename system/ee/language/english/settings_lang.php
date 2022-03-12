@@ -674,7 +674,7 @@ $lang = array(
     /* Security & Privacy */
     'allow_dictionary_pw' => 'Allow dictionary words in passwords?',
 
-    'allow_dictionary_pw_desc' => 'When enabled, members will be able to use common dictionary words in their password. <code>requires dictionary file to be installed to enforce.</code>',
+    'allow_dictionary_pw_desc' => 'When enabled, members will be able to use common dictionary words in their password. <code>Requires dictionary file to be installed to enforce.</code> <a href="' . DOC_URL . 'control-panel/settings/security-privacy.html#dictionary-file">Learn more</a>.',
 
     'allow_multi_logins' => 'Allow multiple sessions?',
 
@@ -732,6 +732,8 @@ $lang = array(
 
     'name_of_dictionary_file_desc' => 'Name of your <code>dictionary</code> file in your config folder.',
 
+    'invalid_name_of_dictionary_file' => 'Dictionary file with this name does not exist',
+
     'password_lockout' => 'Enable password lock out?',
 
     'password_lockout_desc' => 'When enabled, members will be locked out of the system after failed log in attempts.',
@@ -743,6 +745,8 @@ $lang = array(
     'pw_min_len' => 'Minimum password length',
 
     'pw_min_len_desc' => 'Minimum number of characters required for new members\' passwords.',
+
+    'pw_min_len_does_not_match_policy' => 'The minimum number of password characters cannot be less than %d for selected password security policy.',
 
     'require_cookie_consent' => 'Require user consent to set cookies?',
 
@@ -756,9 +760,17 @@ $lang = array(
 
     'require_ip_for_posting_desc' => 'When enabled, members will be unable to post without a valid user agent and <abbr title="Internet Protocol">IP</abbr> address.',
 
-    'require_secure_passwords' => 'Require secure passwords?',
+    'password_security_policy' => 'Password security policy',
 
-    'require_secure_passwords_desc' => 'When enabled, members will be required to choose passwords containing at least one uppercase, one lowercase, and one numeric character.',
+    'password_security_policy_desc' => 'Choose the level of password security that your site members are required to maintain. <a href="' . DOC_URL. 'control-panel/settings/security-privacy.html#password-security-policy" target="_blank">Read more</a> about the options.',
+
+    'password_security_none' => 'None',
+
+    'password_security_basic' => 'Basic',
+
+    'password_security_good' => 'Good',
+
+    'password_security_strong' => 'Strong',
 
     's_session' => 'Session ID only',
 
@@ -769,6 +781,10 @@ $lang = array(
     'share_analytics' => 'Share analytics with the ExpressionEngine Development Team?',
 
     'share_analytics_desc' => 'ExpressionEngine asks users to help improve ExpressionEngine by occasionally <a href="%s">providing analytics, diagnostic, and usage information</a>.',
+
+    'cli_enabled' => 'Enable the Command Line Interface',
+
+    'cli_enabled_shorthand' => 'Enable the CLI',
 
     'un_min_len' => 'Minimum username length',
 
@@ -853,7 +869,7 @@ $lang = array(
 
     'anonymize_consent_logs' => 'Anonymize Consent Audit Logs',
 
-    'anonymize_consent_logs_desc' => 'Selected fields will be anonimized in Consent Audit logs',
+    'anonymize_consent_logs_desc' => 'Selected fields will be anonymized in Consent Audit logs',
 
 );
 

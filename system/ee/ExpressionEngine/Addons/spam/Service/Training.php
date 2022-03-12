@@ -16,6 +16,8 @@ namespace ExpressionEngine\Addons\Spam\Service;
 class Training
 {
     public $stop_words_path = 'spam/training/stopwords.txt';
+    public $kernel;
+    private $shm_id;
 
     /**
      * __construct

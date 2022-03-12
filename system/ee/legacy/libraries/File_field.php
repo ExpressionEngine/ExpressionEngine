@@ -210,7 +210,7 @@ class File_field
             $title = $file->title;
         } else {
             $title = $data;
-            if (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+            if (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
                 $title = str_replace($matches[0], '', $data);
             }
         }
@@ -249,7 +249,7 @@ class File_field
         $file = null;
 
         // If the file field is in the "{filedir_n}image.jpg" format
-        if (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+        if (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);
@@ -472,7 +472,7 @@ class File_field
 
         foreach ($data as $field_data) {
             // If the file field is in the "{filedir_n}image.jpg" format
-            if (preg_match('/^{filedir_(\d+)}/', $field_data, $matches)) {
+            if (preg_match('/^{filedir_(\d+)}/', (string) $field_data, $matches)) {
                 $dir_ids[] = $matches[1];
                 $file_names[] = str_replace($matches[0], '', $field_data);
             }
@@ -613,7 +613,7 @@ class File_field
     public function parse_field($data)
     {
         // If the file field is in the "{filedir_n}image.jpg" format
-        if (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+        if (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);
@@ -731,7 +731,7 @@ class File_field
             : '/{filedir_(\d+)}/';
 
         // Find each instance of {filedir_n}
-        if (preg_match_all($pattern, $data, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all($pattern, (string) $data, $matches, PREG_SET_ORDER)) {
             ee()->load->model('file_upload_preferences_model');
             $file_dirs = ee()->file_upload_preferences_model->get_paths();
 
