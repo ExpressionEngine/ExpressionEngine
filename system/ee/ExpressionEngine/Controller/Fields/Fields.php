@@ -372,6 +372,9 @@ class Fields extends AbstractFieldsController
 
             if ($this->validationResult->isValid()) {
                 $field->save();
+                // Build an array representing our conditions that we can compare
+                $conditionalsBefore = $this->getConditionArray($field->FieldConditionSets);
+
                 if (ee('Request')->post('field_is_conditional') == 'y') {
                     $assignedConditionalSetIds = [];
                     foreach ($conditionSets as $i => $conditionSet) {
@@ -391,6 +394,11 @@ class Fields extends AbstractFieldsController
                     $field->FieldConditionSets->delete();
                 }
 
+                // Build an array representing our conditions that we can compare
+                $conditionalsAfter = $this->getConditionArray($conditionSets);
+
+                $conditionalEntriesRequireSync = ! $this->conditionsAreSame($conditionalsBefore, $conditionalsAfter);
+
                 if (ee()->input->post('update_formatting') == 'y') {
                     ee()->db->where('field_ft_' . $field->field_id . ' IS NOT NULL', null, false);
                     ee()->db->update(
@@ -405,8 +413,6 @@ class Fields extends AbstractFieldsController
                     ->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
                     ->defer();
 
-                $changed = true;
-
                 if (ee('Request')->post('submit') == 'save_and_new') {
                     $redirectUrl = ee('CP/URL')->make('fields/create');
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
@@ -415,7 +421,7 @@ class Fields extends AbstractFieldsController
                     $redirectUrl = ee('CP/URL')->make('fields/edit/' . $field->getId());
                 }
 
-                if ($changed) {
+                if ($conditionalEntriesRequireSync) {
                     ee()->functions->redirect(
                         ee('CP/URL')->make('fields/syncConditions/' . $field->getId())
                         ->setQueryStringVariable('return', base64_encode($redirectUrl))
@@ -606,6 +612,46 @@ class Fields extends AbstractFieldsController
 
         ee()->cp->render('settings/form', $vars);
     }
+
+    // This builds a simple array we can compare so we know if a condition has changed
+    private function getConditionArray($conditionSets)
+    {
+        $comparable = [];
+        foreach ($conditionSets as $conditionSet) {
+            $conditions = [];
+
+            foreach ($conditionSet->FieldConditions as $condition) {
+                $conditions[] = [
+                    'condition_field_id' => (int) $condition->condition_field_id,
+                    'evaluation_rule' => $condition->evaluation_rule,
+                    'value' => $condition->value,
+                ];
+            }
+
+            $comparable[] = [$conditionSet->match => $conditions];
+        }
+        return $comparable;
+    }
+
+    public function conditionsAreSame($conditionSetsBefore, $conditionSetsAfter)
+    {
+        if (!is_array($conditionSetsAfter) || !is_array($conditionSetsBefore)) {
+            return $conditionSetsBefore === $conditionSetsAfter;
+        }
+
+        foreach (array_keys($conditionSetsAfter) as $key) {
+            if (!$this->checkSimilar($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
+                return false;
+            }
+        }
+        foreach (array_keys($conditionSetsBefore) as $key) {
+            if (!$this->checkSimilar($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private function setWithPost(ChannelField $field)
     {
         $field->field_list_items = ($field->field_list_items) ?: '';
