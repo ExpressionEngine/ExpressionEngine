@@ -13,6 +13,7 @@ $longopts = array(
 	"email:",
 	"number:",
 	"help",
+    "batch",
 );
 
 $options = getopt('h', $longopts);
@@ -27,6 +28,7 @@ Usage: {$command} [options]
 	--screen-name   <string> The screen_name to use
 	--email         <string> The email to use
 	--number        <string> Number of members to create
+    --batch                  Use batch insert instead of model save
 EOF;
 	exit();
 }
@@ -36,11 +38,14 @@ $group_id = isset($options['group-id']) && is_numeric($options['group-id']) ? (i
 $username = isset($options['username']) ? $options['username'] : 'johndoe';
 $screen_name = isset($options['screen-name']) ? $options['screen-name'] : 'John Doe';
 $email = isset($options['email']) ? $options['email'] : 'john@nomail.com';
-
+$batch = isset($options['batch']) ? true : false;
 //get the total of existing members
 $existing = ee('Model')->get('Member')->count();
 $start = $existing + 1;
 $total = $start + $number;
+$rows = [];
+
+echo "$start to $total";
 
 for ($n = $start; $n < $total; $n++) {
 	$member = ee('Model')->make('Member');
@@ -52,7 +57,55 @@ for ($n = $start; $n < $total; $n++) {
 	$member->language = 'english';
 	$member->timezone = 'America/New_York';
 	$member->email = $n . $email;
-	$member->save();
-	unset($member);
+
+    if($batch) {
+        $member->onBeforeInsert();
+        $member = array_merge($member->toArray(), [
+            'accept_messages' => 'y',
+            'accept_admin_email' => 'y',
+            'accept_user_email' => 'y',
+            'dismissed_pro_banner' => 'n',
+            'display_signatures' => 'y',
+            'enable_mfa' => 'n',
+            'in_authorlist' => 'n',
+            'ip_address' => 0,
+            'join_date' => 0,
+            'last_activity' => 0,
+            'last_bulletin_date' => 0,
+            'last_comment_date' => 0,
+            'last_email_date' => 0,
+            'last_entry_date' => 0,
+            'last_forum_post_date' => 0,
+            'last_view_bulletins' => 0,
+            'last_visit' => 0,
+            'notepad_size' => '18',
+            'notify_by_default' => 'y',
+            'notify_of_pm' => 'y',
+            'parse_smileys' => 'y',
+            'pending_role_id' => 0,
+            'pmember_id' => 0,
+            'private_messages' => 0,
+            'show_sidebar' => 'n',
+            'smart_notifications' => 'y',
+            'template_size' => '28',
+            'total_comments' => 0,
+            'total_entries' => 0,
+            'total_forum_posts' => 0,
+            'total_forum_topics' => 0,
+        ]);
+        unset($member['group_id']);
+        $rows[] = $member;
+    }else{
+	    $member->save();
+	    unset($member);
+    }
 	//echo $member->getId() . "\n";
 }
+
+if($batch && !empty($rows)) {
+    ee()->db->insert_batch('members', $rows);
+    ee()->db->insert_batch('member_data', array_map(function($id) {
+        return ['member_id' => $id];
+    }, range($start, $total-1)));
+}
+

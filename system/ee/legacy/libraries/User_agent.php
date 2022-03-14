@@ -45,6 +45,9 @@ class EE_User_agent
      */
     public function __construct()
     {
+        ee()->load->library('logger');
+        ee()->logger->developer('User_agent library has been deprecated', true, 604800);
+
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
             $this->agent = trim($_SERVER['HTTP_USER_AGENT']);
         }

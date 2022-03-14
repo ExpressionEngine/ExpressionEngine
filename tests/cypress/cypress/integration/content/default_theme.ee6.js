@@ -75,7 +75,15 @@ context('Install with default theme', () => {
     cy.task('installer:disable')
     cy.task('installer:revert_config').then(()=>{
         cy.task('installer:replace_config', {
-          file: 'support/config/config.php'
+            file: 'support/config/config.php', 
+            options: {
+                database: {
+                    hostname: Cypress.env("DB_HOST"),
+                    database: Cypress.env("DB_DATABASE"),
+                    username: Cypress.env("DB_USER"),
+                    password: Cypress.env("DB_PASSWORD")
+                },
+            },
         })
     })
   })

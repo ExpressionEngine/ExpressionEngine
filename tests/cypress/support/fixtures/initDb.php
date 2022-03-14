@@ -8,7 +8,7 @@ require('bootstrap.php');
 $command = array_shift($argv);
 
 $longopts = array(
-	"help",
+    "help",
   "version:",
   "username:",
   "password:",
@@ -22,12 +22,11 @@ $longopts = array(
 
 $options = getopt('h', $longopts);
 
-if (isset($options['h']) || isset($options['help']))
-{
-  print <<<EOF
+if (isset($options['h']) || isset($options['help'])) {
+    print <<<EOF
 Install initial database structure
 Usage: {$command} [options]
-	--help                   This help message
+    --help                   This help message
     --version                EE Version
     --username               Admin username
     --password               Admin password
@@ -38,7 +37,7 @@ Usage: {$command} [options]
     --db_password            DB password
     --db_database            DB name
 EOF;
-	exit();
+    exit();
 }
 
 // Load the DB schema
@@ -398,7 +397,7 @@ function install_modules()
         'relationship',
         'search'
     ];
-    
+
     ee()->load->library('addons');
     ee()->addons->install_modules($required_modules);
 
