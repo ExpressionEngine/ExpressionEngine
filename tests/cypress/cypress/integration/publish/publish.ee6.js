@@ -1,8 +1,5 @@
 /// <reference types="Cypress" />
 
-import { LoremIpsum } from "lorem-ipsum";
-const lorem = new LoremIpsum();
-
 import Publish from '../../elements/pages/publish/Publish';
 import ForumTab from '../../elements/pages/publish/ForumTab';
 import FileModal from '../../elements/pages/publish/FileModal';
@@ -394,7 +391,7 @@ context('Publish Page - Create', () => {
         cy.log('Make sure the fields stuck around after save')
         available_fields.forEach(function(field, index) {
           fluid_field.get('items').eq(index).find('label').contains(field)
-          add_content(index)
+          fluid_field.add_content(index)
         })
 
         page.get('save').click()
@@ -404,7 +401,7 @@ context('Publish Page - Create', () => {
         page.get('alert').contains('Entry Updated')
 
         available_fields.forEach(function(field, index) {
-          check_content(index)
+          fluid_field.check_content(index)
         })
       })
 
@@ -413,14 +410,14 @@ context('Publish Page - Create', () => {
 
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
-          add_content(index)
+          fluid_field.add_content(index)
 
           fluid_field.get('items').eq(index).find('label').contains(field)
         })
 
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
-          add_content((index + number_of_fields), 1)
+          fluid_field.add_content((index + number_of_fields), 1)
 
           fluid_field.get('items').eq(index + number_of_fields).find('label').contains(field)
         })
@@ -431,10 +428,10 @@ context('Publish Page - Create', () => {
         // Make sure the fields stuck around after save
         available_fields.forEach(function(field, index) {
           fluid_field.get('items').eq(index).find('label').contains(field)
-          check_content(index)
+          fluid_field.check_content(index)
 
           fluid_field.get('items').eq(index + number_of_fields).find('label').contains(field)
-          check_content((index + number_of_fields), 1)
+          fluid_field.check_content((index + number_of_fields), 1)
         })
       })
 
@@ -446,7 +443,7 @@ context('Publish Page - Create', () => {
         // First: without saving
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
-          add_content(index)
+          fluid_field.add_content(index)
 
           fluid_field.get('items').eq(index).find('label').contains(field)
         })
@@ -464,7 +461,7 @@ context('Publish Page - Create', () => {
         // Second: after saving
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
-          add_content(index)
+          fluid_field.add_content(index)
 
           fluid_field.get('items').eq(index).find('label').contains(field)
         })
@@ -489,7 +486,7 @@ context('Publish Page - Create', () => {
       it('keeps data when the entry is invalid', () => {
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
-          add_content(index)
+          fluid_field.add_content(index)
 
           fluid_field.get('items').eq(index).find('label').contains(field)
         })
@@ -499,7 +496,7 @@ context('Publish Page - Create', () => {
         page.get('save').click()
 
         available_fields.forEach(function(field, index) {
-          check_content(index)
+          fluid_field.check_content(index)
         })
       })
 
@@ -566,7 +563,6 @@ context('Publish Page - Create', () => {
         })
       })
     })
-
 
 
 

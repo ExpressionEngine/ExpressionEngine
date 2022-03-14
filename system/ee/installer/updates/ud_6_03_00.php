@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator (
             [
                 'installButtonsFieldtype',
+                'installNumberFieldtype',
             ]
         );
 
@@ -48,6 +49,23 @@ class Updater
             'fieldtypes',
             array(
                 'name' => 'selectable_buttons',
+                'version' => '1.0.0',
+                'settings' => base64_encode(serialize(array())),
+                'has_global_settings' => 'n'
+            )
+        );
+    }
+
+    private function installNumberFieldtype()
+    {
+        if (ee()->db->where('name', 'number')->get('fieldtypes')->num_rows() > 0) {
+            return;
+        }
+
+        ee()->db->insert(
+            'fieldtypes',
+            array(
+                'name' => 'number',
                 'version' => '1.0.0',
                 'settings' => base64_encode(serialize(array())),
                 'has_global_settings' => 'n'

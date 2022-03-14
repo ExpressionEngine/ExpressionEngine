@@ -784,6 +784,8 @@ $lang = array(
 
     'cli_enabled' => 'Enable the Command Line Interface',
 
+    'cli_enabled_shorthand' => 'Enable the CLI',
+
     'un_min_len' => 'Minimum username length',
 
     'un_min_len_desc' => 'Minimum number of characters required for new members\' usernames.',

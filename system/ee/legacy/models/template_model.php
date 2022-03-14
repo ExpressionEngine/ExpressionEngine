@@ -266,8 +266,9 @@ class Template_model extends CI_Model
             return false;
         }
 
-        $this->load->library('extensions');
-        $this->load->library('api');
+        if (!isset(ee()->legacy_api)) {
+            $this->load->library('api');
+        }
         $this->legacy_api->instantiate('template_structure');
 
         // add a site short name folder, in case MSM uses the same template path, and repeat

@@ -27,7 +27,6 @@ context('Operate the site with many members', () => {
       cy.visit('admin.php?/cp/channels/edit/1')
       cy.get('button:contains("Settings")').click()
       cy.get('[data-input-value="default_author"] .search-input__input').type('200')
-      cy.wait(2000)
       cy.get('[data-input-value="default_author"] .field-inputs [value="200"]').check()
       cy.get('body').type('{ctrl}', {release: false}).type('s')
   
@@ -40,7 +39,6 @@ context('Operate the site with many members', () => {
       cy.visit('admin.php?/cp/publish/edit/entry/1')
       cy.get('button:contains("Options")').click()
       cy.get('[data-input-value="author_id"] .search-input__input').type('200')
-      cy.wait(2000)
       cy.get('[data-input-value="author_id"] .field-inputs [value="200"]').check()
       cy.get('body').type('{ctrl}', {release: false}).type('s')
   
@@ -54,9 +52,10 @@ context('Operate the site with many members', () => {
 
 
     before(function(){
+      cy.task('db:seed')
       cy.eeConfig({item: 'ignore_member_stats', value: 'y'}).then(() => {
-          for (let step = 0; step < 99; step++) {
-              cy.createMembers({n: 500})
+          for (let step = 0; step < 25; step++) {
+              cy.createMembers({n: 2000})
           }
       })
     })
@@ -92,7 +91,6 @@ context('Operate the site with many members', () => {
     it('no warnings if override is not set', () => {
       cy.eeConfig({item: 'ignore_member_stats', value: 'n'}).then(() => {
 
-        cy.wait(5000)
         cy.visit('admin.php?/cp/utilities/communicate');
         cy.screenshot({capture: 'fullPage'});
         cy.get('.app-notice:visible').its('length').should('eq', 1)
@@ -104,7 +102,6 @@ context('Operate the site with many members', () => {
 
         cy.eeConfig({item: 'ignore_member_stats', value: 'y'}).then(() => {
 
-          cy.wait(5000)
           cy.visit('admin.php?/cp/utilities/communicate');
           cy.get('.app-notice:visible').its('length').should('eq', 2)
           cy.hasNoErrors()
