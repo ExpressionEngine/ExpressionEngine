@@ -236,6 +236,10 @@
     img {
       max-width: 200px;
       max-height: 200px;
+
+      @include m-tablet-down {
+      	max-width: 100%;
+      }
     }
   }
 }
