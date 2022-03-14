@@ -9,9 +9,4 @@ return [
     'namespace' => 'ExpressionEngine\Addons\Notes',
     'settings_exist' => false,
     'built_in' => true,
-    'fieldtypes' => array(
-        'notes' => array(
-            'compatibility' => 'text'
-        )
-    )
 ];
