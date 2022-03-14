@@ -205,13 +205,29 @@ jobs:
                 npm install -g maildev
                 maildev &
             
-            # - name: Get Cypress Specs
-            #   run: |
-            #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
-            #   id: specs
+            - name: Get Cypress Specs
+              if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
+              env:
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+              run: |
+                echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
+              id: specs
+
+            - name: Run Cypress Tests (without dashboard)
+              uses: cypress-io/github-action@v2
+              if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
+              with:
+                spec: ${{ steps.specs.outputs.SPECS }}
+                browser: chrome
+                headless: true
+                working-directory: tests/cypress
+                config-file: cypress.json
+              env:
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2
+              if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
