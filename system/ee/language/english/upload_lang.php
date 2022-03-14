@@ -16,7 +16,7 @@ $lang = array(
 
     'upload_invalid_file' => 'File not allowed.',
 
-    'upload_invalid_filesize' => 'The file you are attempting to upload is larger than the permitted size.',
+    'upload_invalid_filesize' => 'The file you are attempting to upload is larger than the permitted size of %d kb.',
 
     'upload_no_file_selected' => 'You did not select a file to upload.',
 

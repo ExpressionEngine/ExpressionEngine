@@ -10,9 +10,9 @@ const page = new CreateField;
 const main = new MainField;
 const group = new CreateGroup;
 
-var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","File","File Grid","Fluid", "Relationships","Rich Text Editor", "Select Dropdown","Textarea","Toggle","URL"];
+var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","File","File Grid","Fluid", "Relationships","Rich Text Editor", "Select Dropdown","Textarea","Toggle","URL", "Number"];
 
-var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL"];
+var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL", "Number"];
 
 //grid is tested in a seperate test
 context('Create combinations of field', () => {
@@ -327,6 +327,76 @@ context('Create combinations of field', () => {
 
 
 	})
+
+	context('Number Input', function() {
+
+		it('edit number input', () => {
+			cy.visit('admin.php?/cp/fields')
+			cy.get('.list-item__content').contains('AA Number Test').first().click()
+
+			cy.get('[name=field_content_type]:visible[value="integer"]').eq(0).click()
+			cy.get('[name=field_step]:visible').clear().type('0.5')
+			cy.get('[name=datalist_items]:visible').clear().type('0{enter}5')
+
+			page.hasError(cy.get('[name=field_step]:visible'), page.messages.validation.integer)
+
+			cy.get('[name=field_step]:visible').clear().type('2')
+			cy.get('[name=field_min_value]:visible').clear().type('-10')
+			cy.get('[name=field_max_value]:visible').clear().type('10')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+			page.hasAlert('success')
+			page.get('alert').contains("Field Updated")
+
+			cy.get('[name=field_content_type]:visible[value="integer"]').should('be.checked')
+			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '-10')
+			cy.get('[name=field_max_value]:visible').invoke('val').should('eq', '10')
+			cy.get('[name=field_step]:visible').invoke('val').should('eq', '2')
+			cy.get('[name=datalist_items]:visible').invoke('val').should('eq', "0\n5")
+			
+		})
+
+		it('Number input in entry' , () => {
+			cy.visit('admin.php?/cp/publish/edit')
+			cy.get('div').contains('AA Test Entry').eq(0).click()
+	
+			cy.get('input[type=number]').clear().type('183')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('[type="number"]').then(($input) => {
+				expect($input[0].validationMessage).to.eq('Value must be less than or equal to 10.')
+			})
+
+			cy.get('input[type=number]').clear().type('-20')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('[type="number"]').then(($input) => {
+				expect($input[0].validationMessage).to.eq('Value must be greater than or equal to -10.')
+			})
+
+			cy.intercept('/admin.php?/cp/publish/edit/entry/*').as('validation')
+			cy.get('input[type=number]').clear().type('0.6').blur()
+			cy.wait('@validation')
+			page.hasError(cy.get('[type=number]'), page.messages.validation.integer)
+			
+			cy.get('input[type=number]').clear().type('-4').blur()
+			cy.wait('@validation')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+	
+			cy.visit('admin.php?/cp/design')
+			cy.get('a').contains('aaNumber').eq(0).click()
+			cy.get('a').contains('index').click()
+			cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{aa_number_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+			
+	
+			cy.visit('index.php/aaNumber')
+			cy.get('body').contains('-4')
+	
+	
+		})
+	})
+
+	
 
 
 

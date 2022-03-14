@@ -19,8 +19,6 @@ class Updater
 
     public function do_update()
     {
-        ee()->load->library('layout');
-
         $layouts = ee()->db->get('layout_publish');
 
         if ($layouts->num_rows() === 0) {

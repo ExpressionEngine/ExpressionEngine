@@ -44,7 +44,6 @@ class Updater
     private function install_required_fieldtypes()
     {
         ee()->load->library('addons/addons_installer');
-        ee()->load->library('extensions');
 
         $installed_fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
 
