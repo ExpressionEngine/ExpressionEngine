@@ -1581,12 +1581,6 @@ GRID_FALLBACK;
         //load the just created entry into memory
         $this->fetch_entry($new_id);
 
-        foreach ($this->field_errors as $field => $error) {
-            if (isset($id_to_name_map[$field])) {
-                $this->field_errors[$id_to_name_map[$field]] = $error;
-            }
-        }
-
         // Reset their group_id back to 0
         $this->_member_group_override(true);
 
@@ -1613,6 +1607,13 @@ GRID_FALLBACK;
         }
 
         if (! $this->json && ($this->errors || $this->field_errors) && $this->error_handling == 'inline') {
+            
+            foreach ($this->field_errors as $field => $error) {
+                if (isset($id_to_name_map[$field])) {
+                    $this->field_errors[$id_to_name_map[$field]] = $error;
+                }
+            }
+            
             $this->entry->set($_POST);
 
             $this->form_error = true;
