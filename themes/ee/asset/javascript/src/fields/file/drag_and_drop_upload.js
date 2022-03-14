@@ -1,22 +1,26 @@
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } Object.defineProperty(subClass, "prototype", { value: Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }), writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -27,17 +31,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
-var DragAndDropUpload =
-/*#__PURE__*/
-function (_React$Component) {
+var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
   _inherits(DragAndDropUpload, _React$Component);
+
+  var _super = _createSuper(DragAndDropUpload);
 
   function DragAndDropUpload(props) {
     var _this;
 
     _classCallCheck(this, DragAndDropUpload);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(DragAndDropUpload).call(this, props));
+    _this = _super.call(this, props);
 
     _defineProperty(_assertThisInitialized(_this), "handleDroppedFiles", function (droppedFiles) {
       _this.setState({
@@ -273,19 +277,19 @@ function (_React$Component) {
             }
           } // Unexpected error, probably post_max_size is too low
           else if (xhr.readyState == 4 && xhr.status != 200) {
-              file.error = EE.lang.file_dnd_unexpected_error;
+            file.error = EE.lang.file_dnd_unexpected_error;
 
-              try {
-                var response = JSON.parse(xhr.responseText);
+            try {
+              var response = JSON.parse(xhr.responseText);
 
-                if (typeof response.error != 'undefined') {
-                  file.error = response.error;
-                }
-              } catch (err) {}
+              if (typeof response.error != 'undefined') {
+                file.error = response.error;
+              }
+            } catch (err) {}
 
-              console.error(xhr);
-              reject(file);
-            }
+            console.error(xhr);
+            reject(file);
+          }
 
           _this3.setState({
             files: _this3.state.files
@@ -366,9 +370,9 @@ function (_React$Component) {
         subheading = EE.lang.file_dnd_choose_directory_before_uploading;
       }
 
-      return React.createElement(React.Fragment, null, React.createElement("div", {
+      return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
         className: "file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')
-      }, React.createElement("div", {
+      }, /*#__PURE__*/React.createElement("div", {
         style: {
           display: this.state.files.length == 0 ? 'block' : 'none'
         },
@@ -376,11 +380,11 @@ function (_React$Component) {
         ref: function ref(dropZone) {
           return _this5.assignDropZoneRef(dropZone);
         }
-      }, this.state.files.length == 0 && React.createElement(React.Fragment, null, React.createElement("div", {
+      }, this.state.files.length == 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
         className: "file-field__dropzone-title"
-      }, heading), React.createElement("div", {
+      }, heading), /*#__PURE__*/React.createElement("div", {
         "class": "file-field__dropzone-button"
-      }, subheading, this.state.directory == 'all' && ':', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
+      }, subheading, this.state.directory == 'all' && ':', this.state.directory != 'all' && /*#__PURE__*/React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.files.length == 0 && this.props.allowedDirectory == 'all' && /*#__PURE__*/React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: this.state.directory == 'all',
         center: true,
@@ -392,11 +396,11 @@ function (_React$Component) {
           return _this5.setDirectory(directory);
         },
         buttonClass: "button--default button--small"
-      })), React.createElement("div", {
+      })), /*#__PURE__*/React.createElement("div", {
         "class": "file-field__dropzone-icon"
-      }, React.createElement("i", {
+      }, /*#__PURE__*/React.createElement("i", {
         "class": "fas fa-cloud-upload-alt"
-      })))), this.state.files.length > 0 && React.createElement(FileUploadProgressTable, {
+      })))), this.state.files.length > 0 && /*#__PURE__*/React.createElement(FileUploadProgressTable, {
         files: this.state.files,
         onFileErrorDismiss: function onFileErrorDismiss(e, file) {
           e.preventDefault();
@@ -406,11 +410,11 @@ function (_React$Component) {
         onResolveConflict: function onResolveConflict(file, response) {
           return _this5.resolveConflict(file, response);
         }
-      })), React.createElement("div", {
+      })), /*#__PURE__*/React.createElement("div", {
         className: "file-field__buttons"
-      }, this.props.showActionButtons && this.props.allowedDirectory != 'all' && React.createElement(React.Fragment, null, React.createElement("div", {
+      }, this.props.showActionButtons && this.props.allowedDirectory != 'all' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
         className: "button-segment"
-      }, React.createElement("a", {
+      }, /*#__PURE__*/React.createElement("a", {
         href: "#",
         className: "button button--default button--small m-link",
         rel: "modal-file",
@@ -419,7 +423,7 @@ function (_React$Component) {
 
           _this5.chooseExisting(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_choose_existing), React.createElement("a", {
+      }, EE.lang.file_dnd_choose_existing), /*#__PURE__*/React.createElement("a", {
         href: "#",
         className: "button button--default button--small m-link",
         rel: "modal-file",
@@ -428,9 +432,9 @@ function (_React$Component) {
 
           _this5.uploadNew(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_upload_new))), this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement("div", {
+      }, EE.lang.file_dnd_upload_new))), this.props.showActionButtons && this.props.allowedDirectory == 'all' && /*#__PURE__*/React.createElement("div", {
         className: "button-segment"
-      }, React.createElement(DropDownButton, {
+      }, /*#__PURE__*/React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: true,
         keepSelectedState: false,
@@ -443,7 +447,7 @@ function (_React$Component) {
         rel: "modal-file",
         itemClass: "m-link",
         buttonClass: "button--default button--small"
-      }), React.createElement(DropDownButton, {
+      }), /*#__PURE__*/React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_upload_new,
         action: true,
         keepSelectedState: false,
