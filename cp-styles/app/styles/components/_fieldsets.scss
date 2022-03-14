@@ -77,7 +77,7 @@ fieldset {
 	}
 
     label + em {
-        margin-top: -($s-s / 2);
+        margin-top: - math.div($s-s, 2);
     }
 
     em {
@@ -356,13 +356,16 @@ td.invalid {
 .rank-wrap {
   position: absolute;
   right: 45px;
-  top: 7px;
+  top: 8px;
   background: var(--ee-button-default-bg);
   text-transform: uppercase;
 
 	.status-tag {
 		background: none;
 		text-transform: uppercase;
+		max-height: 24px;
+		line-height: 24px;
+		padding: 0 8px;
 		
 		&.strong {
 		  border-color: var(--ee-success);
@@ -387,13 +390,32 @@ fieldset {
 	#eye {
 		cursor: pointer;
 		position: absolute;
-		right: 15px;
+		right: 25px;
 		top: 46px;
 	}
 	.field-control {
 		.eye,
 		#eye {
 			top: 12px;
+			right: 5px;
+		}
+	}
+}
+
+@media not all and (min-resolution:.001dpcm) { 
+	@supports (-webkit-appearance:none) {
+		fieldset {
+			.eye,
+			#eye {
+				right: 35px;
+			}
+
+			.field-control {
+				.eye,
+				#eye {
+					right: 35px;
+				}
+			}
 		}
 	}
 }

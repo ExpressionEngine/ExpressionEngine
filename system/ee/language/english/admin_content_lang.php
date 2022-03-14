@@ -613,6 +613,10 @@ $lang = array(
 
     'custom_field_empty' => 'The following field is required:',
 
+    'datalist_items' => 'Data List items',
+
+    'datalist_items_desc' => 'Values that will be shown as recommended options',
+
     'delete_field' => 'Delete Field',
 
     'delete_field_confirmation' => 'Are you sure you want to permanently delete this Channel Field?',
@@ -805,6 +809,12 @@ $lang = array(
     'field_fmt' => 'Text formatting',
 
     'field_max_length' => 'Maximum characters',
+
+    'field_min_value' => 'Minimum value',
+
+    'field_max_value' => 'Maximum value',
+
+    'field_step' => 'Step',
 
     'field_show_fmt' => 'Allow override?',
 

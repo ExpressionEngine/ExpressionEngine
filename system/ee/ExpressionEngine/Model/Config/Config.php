@@ -47,7 +47,7 @@ class Config extends Model
     {
         // exception for email_newline, which uses backslashes, and is not a path variable
         if ($this->key != 'email_newline') {
-            $value = str_replace('\\', '/', $value);
+            $value = str_replace('\\', '/', (string) $value);
         }
 
         $this->setRawProperty('value', $value);

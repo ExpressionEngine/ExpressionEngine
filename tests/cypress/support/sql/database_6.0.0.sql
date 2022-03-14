@@ -577,7 +577,8 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(15, 'toggle', '1.0.0', 'YTowOnt9', 'n'),
 	(16, 'fluid_field', '1.0.0', 'YTowOnt9', 'n'),
 	(17, 'colorpicker', '1.0.0', 'YTowOnt9', 'n'),
-	(18, 'duration', '2.0.0', 'YTowOnt9', 'n');
+	(18, 'duration', '2.0.0', 'YTowOnt9', 'n'),
+  (19, 'number', '1.0.0', 'YTowOnt9', 'n');
 /*!40000 ALTER TABLE `exp_fieldtypes` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_field_groups: ~2 rows (approximately)
@@ -866,43 +867,11 @@ INSERT INTO `exp_rte_toolsets` (`toolset_id`, `toolset_name`, `toolset_type`, `s
 	(4, 'Redactor Full', 'redactor', 'YTo1OntzOjQ6InR5cGUiO3M6ODoiY2tlZGl0b3IiO3M6NzoidG9vbGJhciI7YToyOntzOjc6ImJ1dHRvbnMiO2E6MTY6e2k6MDtzOjQ6Imh0bWwiO2k6MTtzOjY6ImZvcm1hdCI7aToyO3M6NDoiYm9sZCI7aTozO3M6NjoiaXRhbGljIjtpOjQ7czo3OiJkZWxldGVkIjtpOjU7czo5OiJ1bmRlcmxpbmUiO2k6NjtzOjQ6InJlZG8iO2k6NztzOjQ6InVuZG8iO2k6ODtzOjI6Im9sIjtpOjk7czoyOiJ1bCI7aToxMDtzOjY6ImluZGVudCI7aToxMTtzOjc6Im91dGRlbnQiO2k6MTI7czozOiJzdXAiO2k6MTM7czozOiJzdWIiO2k6MTQ7czo0OiJsaW5rIjtpOjE1O3M6NDoibGluZSI7fXM6NzoicGx1Z2lucyI7YToxMzp7aTowO3M6OToiYWxpZ25tZW50IjtpOjE7czoxNjoicnRlX2RlZmluZWRsaW5rcyI7aToyO3M6MTE6ImZpbGVicm93c2VyIjtpOjM7czo1OiJwYWdlcyI7aTo0O3M6MTE6ImlubGluZXN0eWxlIjtpOjU7czo3OiJsaW1pdGVyIjtpOjY7czo3OiJjb3VudGVyIjtpOjc7czoxMDoicHJvcGVydGllcyI7aTo4O3M6MTI6InNwZWNpYWxjaGFycyI7aTo5O3M6NToidGFibGUiO2k6MTA7czo1OiJ2aWRlbyI7aToxMTtzOjY6IndpZGdldCI7aToxMjtzOjEwOiJmdWxsc2NyZWVuIjt9fXM6NjoiaGVpZ2h0IjtzOjM6IjIwMCI7czoxMDoidXBsb2FkX2RpciI7czozOiJhbGwiO3M6MTA6Im1lZGlhRW1iZWQiO2E6MTp7czoxNDoicHJldmlld3NJbkRhdGEiO2I6MTt9fQ==');
 /*!40000 ALTER TABLE `exp_rte_toolsets` ENABLE KEYS */;
 
--- Dumping structure for table ee-test.exp_search
-DROP TABLE IF EXISTS `exp_search`;
-CREATE TABLE IF NOT EXISTS `exp_search` (
-  `search_id` varchar(32) NOT NULL,
-  `site_id` int(4) NOT NULL DEFAULT 1,
-  `search_date` int(10) NOT NULL,
-  `keywords` varchar(60) NOT NULL,
-  `member_id` int(10) unsigned NOT NULL,
-  `ip_address` varchar(45) NOT NULL,
-  `total_results` int(6) NOT NULL,
-  `per_page` tinyint(3) unsigned NOT NULL,
-  `query` mediumtext DEFAULT NULL,
-  `custom_fields` mediumtext DEFAULT NULL,
-  `result_page` varchar(70) NOT NULL,
-  PRIMARY KEY (`search_id`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table ee-test.exp_search: ~0 rows (approximately)
 DELETE FROM `exp_search`;
 /*!40000 ALTER TABLE `exp_search` DISABLE KEYS */;
 /*!40000 ALTER TABLE `exp_search` ENABLE KEYS */;
-
--- Dumping structure for table ee-test.exp_search_log
-DROP TABLE IF EXISTS `exp_search_log`;
-CREATE TABLE IF NOT EXISTS `exp_search_log` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT 1,
-  `member_id` int(10) unsigned NOT NULL,
-  `screen_name` varchar(50) NOT NULL,
-  `ip_address` varchar(45) NOT NULL DEFAULT '0',
-  `search_date` int(10) NOT NULL,
-  `search_type` varchar(32) NOT NULL,
-  `search_terms` varchar(200) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table ee-test.exp_search_log: ~0 rows (approximately)
 DELETE FROM `exp_search_log`;

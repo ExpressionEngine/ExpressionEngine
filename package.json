@@ -7,7 +7,7 @@
     "watch:js": "gulp watchJs",
     "build:old-js": "babel themes/ee/asset/javascript/src/ -x \".es6\" --out-dir themes/ee/asset/javascript/src/",
     "watch:old-js": "npm run build:old-js -- --watch",
-    "build:css": "brunch build --production && cd \"cp-styles\" && (cp build/common.min.css ../themes/ee/cp/css/common.min.css || copy build\\common.min.css ..\\themes\\ee\\cp\\css\\common.min.css) && (cp build/eecms-debug.min.css ../themes/ee/debug/css/eecms-debug.min.css || copy build\\eecms-debug.min.css ..\\themes\\ee\\debug\\css\\eecms-debug.min.css) && (cp -a build/webfonts/. ../themes/ee/webfonts/ || copy build\\webfonts ..\\themes\\ee\\webfonts)",
+    "build:css": "brunch build && cd \"cp-styles\" && (cp build/common.min.css ../themes/ee/cp/css/common.min.css || copy build\\common.min.css ..\\themes\\ee\\cp\\css\\common.min.css) && (cp build/eecms-debug.min.css ../themes/ee/debug/css/eecms-debug.min.css || copy build\\eecms-debug.min.css ..\\themes\\ee\\debug\\css\\eecms-debug.min.css) && (cp -a build/webfonts/. ../themes/ee/webfonts/ || copy build\\webfonts ..\\themes\\ee\\webfonts)",
     "watch:css": "brunch watch --server"
   },
   "devDependencies": {
