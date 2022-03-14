@@ -163,7 +163,24 @@ ul, ol  {
 }
 
 .range-slider {
-	& > input+output {
-		top: 80%;
+	margin-top: 30px;
+
+	& > input {
+
+		& + output {
+			top: -100%;
+			padding: 3px 9px;
+		}
+
+		&:hover {
+			& + output {
+				box-shadow: none;
+				top: 15px;
+			}
+		}
+
+		&:active {
+			--thumb-color: inherit;
+		}
 	}
 }

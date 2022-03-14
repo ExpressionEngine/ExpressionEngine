@@ -5,33 +5,32 @@
   --value-active-color: var(--ee-button-primary-color);
   --value-background: transparent;
   --value-background-hover: var(--primary-color);
-  --value-font: 700 14px/2 'Roboto';
+  --value-font: 700 14px/2 Roboto;
 
   --fill-color: var(--primary-color);
   --progress-background: var(--ee-input-toggle-bg);
   --progress-radius: 20px;
-  --track-height: calc(var(--thumb-size)/2);
+  --track-height: calc(var(--thumb-size) / 3);
 
-  --min-max-font: 12px 'Roboto';
+  --min-max-font: 12px Roboto;
   --min-max-opacity: .5;
   --min-max-x-offset: 10%; // 50% to center
 
   --thumb-size: 22px;
   --thumb-color: var(--ee-button-primary-color);
-  --thumb-shadow: 0 0 3px rgba(0,0,0,.4),
-                  0 0 1px rgba(0,0,0,.5) inset,
-                  0 0 0 99px var(--thumb-color) inset;
+  --thumb-shadow: 0 0 0 7px var(--primary-color) inset, 0 0 0 99px white inset;
 
-  --thumb-shadow-active: 0 0 0 calc(var(--thumb-size)/4) inset var(--thumb-color),
-                         0 0 0 99px var(--primary-color) inset,
-                         0 0 3px rgba(0,0,0,.4);
+  --thumb-shadow-active: 0 0 0 13px var(--primary-color) inset;
 
-  --thumb-shadow-hover: var(--thumb-shadow);
+  --thumb-shadow-hover: 0 0 0 9px var(--primary-color) inset, 0 0 0 99px white inset;
 
   --ticks-thickness: 1px;
   --ticks-height: 5px;
   --ticks-gap: var(--ticks-height, 0); // vertical space between the ticks and the progress bar
   --ticks-color: var(--ee-button-default-border);
+
+  --progress-shadow: none;
+  --progress-flll-shadow: none;
 
   // ⚠️ BELOW VARIABLES SHOULD NOT BE CHANGED
   --step: 1;
@@ -39,7 +38,7 @@
   --maxTicksAllowed: 30;
   --too-many-ticks: Min(1, Max(var(--ticks-count) - var(--maxTicksAllowed), 0));
   --x-step: Max( var(--step), var(--too-many-ticks) * (var(--max) - var(--min)) ); // manipulate the number of steps if too many ticks exist, so there would only be 2
-  // --tickInterval: 100/((var(--max) - var(--min)) / var(--step)) * var(--tickEvery, 1);
+  --tickInterval: 100/((var(--max) - var(--min)) / var(--step)) * var(--tickEvery, 1);
   --tickIntervalPerc_1: Calc( (var(--max) - var(--min)) / var(--x-step) );
   --tickIntervalPerc: calc(  (100% - var(--thumb-size))/var(--tickIntervalPerc_1) * var(--tickEvery, 1)  );
 
@@ -267,7 +266,7 @@
       background: var(--value-background);
       border-radius: 10px;
       padding: 2px 4px;
-      left: var(--pos);
+      left: calc(var(--pos) - 3%);
       transform: translate(var(--x-offset), calc(150% * var(--flip) - (var(--y-offset, 0px) + var(--value-offset-y)) * var(--flip)));
       transition: all .12s ease-out, left 0s;
 
