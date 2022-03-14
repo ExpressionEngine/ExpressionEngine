@@ -1,18 +1,20 @@
 import CreateField from '../../elements/pages/field/CreateField';
 import MainField from '../../elements/pages/field/MainField';
 import CreateGroup from '../../elements/pages/field/CreateGroup';
+import ChannelLayoutForm from '../../elements/pages/channel/ChannelLayoutForm';
 
 import Checkbox from '../../elements/pages/specificFields/Checkboxes';
 
 const checkboxes = new Checkbox;
 
+const channelLayout = new ChannelLayoutForm;
 const page = new CreateField;
 const main = new MainField;
 const group = new CreateGroup;
 
-var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","File","File Grid","Fluid", "Relationships","Rich Text Editor", "Select Dropdown","Textarea","Toggle","URL"];
+var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","File","File Grid","Fluid", "Notes", "Relationships","Rich Text Editor", "Select Dropdown","Textarea","Toggle","URL", "Number", "Selectable Buttons"];
 
-var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL"];
+var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Notes", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL", "Number", "SelectableButtons"];
 
 //grid is tested in a seperate test
 context('Create combinations of field', () => {
@@ -22,34 +24,34 @@ context('Create combinations of field', () => {
 
 		cy.auth()
 
-  		cy.log('verifies fields page exists')
-	  	cy.visit('admin.php?/cp/fields')
-	  	cy.get('.main-nav__title > h1').contains('Field')
-	  	cy.get('.main-nav__toolbar > .button').contains('New Field')
-	  	cy.get('.filter-bar').should('exist')
-	  	cy.get('.filter-bar').should('exist')
+		cy.log('verifies fields page exists')
+		cy.visit('admin.php?/cp/fields')
+		cy.get('.main-nav__title > h1').contains('Field')
+		cy.get('.main-nav__toolbar > .button').contains('New Field')
+		cy.get('.filter-bar').should('exist')
+		cy.get('.filter-bar').should('exist')
 
 		cy.log('Creates a bunch of fields')
 		for(let i = 0; i < options.length; i++){
-	  		addField(options[i])
-	  	}
+			addField(options[i])
+		}
 
 		cy.log('Creates a bunch of Template Groups')
 		for(let j = 0 ; j < GroupName.length; j++){
-	  		addGroup(GroupName[j])
-	  	}
+			addGroup(GroupName[j])
+		}
 
 		cy.log('Creates a Channel to work in')
 		cy.visit('admin.php?/cp/channels/create')
 		cy.get("input[name = 'channel_title']").type('AATestChannel')
-	  	cy.get('button').contains('Fields').click()
+		cy.get('button').contains('Fields').click()
 
 		for(let k = 0 ; k < options.length; k++){
-	  		addToChannel(options[k])
-	  	}
+			addToChannel(options[k])
+		}
 
-	  	cy.get('button').contains('Save').eq(0).click()
-	  	cy.get('p').contains('The channel AATestChannel has been created')
+		cy.get('button').contains('Save').eq(0).click()
+		cy.get('p').contains('The channel AATestChannel has been created')
 
 
 		cy.log('Creates a Entry to work in')
@@ -57,17 +59,73 @@ context('Create combinations of field', () => {
 		cy.get('button').contains('New').first().click()
 		cy.get('.ee-main a').contains('AATestChannel').first().click()
 
-	  	cy.get('input[name="title"]').type('AA Test Entry')
+		cy.get('input[name="title"]').type('AA Test Entry')
 
 
-	  	group.get('Save').eq(0).click()
-	  	cy.get('p').contains('The entry AA Test Entry has been created')
+		group.get('Save').eq(0).click()
+		cy.get('p').contains('The entry AA Test Entry has been created')
 	})
 
 	beforeEach(function() {
 		cy.auth()
 	})
 
+	describe('Test Notes fieldtype', function() {
+		it('saves note to fieldtype settings', () => {
+			// Define note text
+			var noteText = '**Note to editor:** Lorem *italics* dolor sit amet, `code goes here` adipiscing elit.'
+
+			// Type note text into field settings and save it
+			cy.visit('admin.php?/cp/fields')
+			cy.get('div').contains('AA Notes Test').click()
+			cy.get('div').contains('Note Content')
+			cy.get('#fieldset-note_content > div.field-control > textarea').first()
+				.type(noteText)
+			cy.get('button').contains('Save').eq(0).click()
+
+			// Assert the text was saved to field settings
+			cy.get('#fieldset-note_content > div.field-control > textarea').first()
+				.should('contain.text', noteText)
+		})
+
+		it('renders markdown in publish edit screen', () => {
+			// Visit channel entry edit page
+			cy.visit('admin.php?/cp/publish/edit')
+			cy.get('div').contains('AA Test Entry').eq(0).click()
+
+			// Assert the markdown was rendered
+			cy.get('div.note-fieldtype__content').within(() => {
+				cy.get('strong').should('contain.text', 'Note to editor:')
+				cy.get('em').should('contain.text', 'italics')
+				cy.get('code').should('contain.text', 'code goes here')
+			})
+		})
+
+		it('can be moved in publish layout', () => {
+			// Create a publish layout
+			cy.visit('admin.php?/cp/channels')
+			cy.get('div.list-item__content-right > div > div > a.layout-set.button.button--default').first().click()
+			cy.get('a.button').contains('New Layout').first().click()
+			cy.get("input[name = 'layout_name']").type('AATestPublishLayout')
+
+			// Move the field to the top of the available fields
+			channelLayout.get('fields').filter(':visible').eq(0).then(function(target) {
+				channelLayout.get('fields').filter(':contains("AA Notes Test")').first().find('.ui-sortable-handle').dragTo(target)
+			})
+
+			// Save the publish layout
+			cy.get('button').contains('Save').first().click()
+		})
+
+		it('has moved to top of field list on entry edit page', () => {
+			// Open the entry
+			cy.visit('admin.php?/cp/publish/edit')
+			cy.get('div').contains('AA Test Entry').eq(0).click()
+
+			// Assert that the field is at the top of the fields list
+			cy.get('div.tab.t-0 > fieldset:nth-child(1) div.field-control div').first().should('have.class','note-fieldtype')
+		})
+	})
 	it('Tests Checkboxes', () => {
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Checkboxes Test').click()
@@ -95,19 +153,19 @@ context('Create combinations of field', () => {
 
 		cy.get('.CodeMirror-scroll').type('<h1> Hi </h1>{exp:channel:entries channel="AATestChannel"}<h2> {title} </h2>{aa_checkboxes_test}{item}<br>{/aa_checkboxes_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
 		cy.get('button').contains('Save').eq(0).click()
-	    cy.visit('index.php/aaCheckboxes')
-	    cy.get('body').contains('1')
-	    cy.get('body').contains('2')
-	    cy.get('body').contains('Hi')
+		cy.visit('index.php/aaCheckboxes')
+		cy.get('body').contains('1')
+		cy.get('body').contains('2')
+		cy.get('body').contains('Hi')
 
-	    cy.visit('admin.php?/cp/publish/edit')
+		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('[data-id="1"] > .checkbox-label > input').click()
 		cy.get('button').contains('Save').eq(0).click()
 		cy.visit('index.php/aaCheckboxes')
-	    cy.get('body').should('not.contain','1')
-	    cy.get('body').contains('2')
-	    cy.get('body').contains('Hi')
+		cy.get('body').should('not.contain','1')
+		cy.get('body').contains('2')
+		cy.get('body').contains('Hi')
 	})
 
 	it('Tests Date', () => {
@@ -124,10 +182,10 @@ context('Create combinations of field', () => {
 
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<h1> how the Americans write it </h1> {aa_date_test format="%F %d %Y"}<h1> how the Brits write it </h1> {aa_date_test format="%d %F %Y"}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
 		cy.get('button').contains('Save').eq(0).click()
-	    cy.visit('index.php/aaDate')
+		cy.visit('index.php/aaDate')
 
-	    cy.get('body').contains('June 17 2020')
-	    cy.get('body').contains('17 June 2020')
+		cy.get('body').contains('June 17 2020')
+		cy.get('body').contains('17 June 2020')
 	})
 
 	it('Tests Duration', () => {
@@ -143,9 +201,9 @@ context('Create combinations of field', () => {
 
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<h1> {title} </h1> <br>Lap 1: {aa_duration_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
 		cy.get('button').contains('Save').eq(0).click()
-	    cy.visit('index.php/aaDuration')
+		cy.visit('index.php/aaDuration')
 
-	    cy.get('body').contains('Lap 1: 1:13:00')
+		cy.get('body').contains('Lap 1: 1:13:00')
 	})
 
 	it('Tests Email Address', () =>{
@@ -165,7 +223,7 @@ context('Create combinations of field', () => {
 
 		 cy.visit('index.php/aaEmailAddress')
 
-	    cy.get('body').contains('This is xqcs email: xqc@gmail.com')
+		cy.get('body').contains('This is xqcs email: xqc@gmail.com')
 
 	})
 
@@ -324,12 +382,143 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('Visit us').click()
 
 		cy.url().should('contain', 'index.php/aaURL')
-
-
 	})
 
+	context('Number Input', function() {
+
+		it('edit number input', () => {
+			cy.visit('admin.php?/cp/fields')
+			cy.get('.list-item__content').contains('AA Number Test').first().click()
+
+			cy.get('[name=field_content_type]:visible[value="integer"]').eq(0).click()
+			cy.get('[name=field_step]:visible').clear().type('0.5')
+			cy.get('[name=datalist_items]:visible').clear().type('0{enter}5')
+
+			page.hasError(cy.get('[name=field_step]:visible'), page.messages.validation.integer)
+
+			cy.get('[name=field_step]:visible').clear().type('2')
+			cy.get('[name=field_min_value]:visible').clear().type('-10')
+			cy.get('[name=field_max_value]:visible').clear().type('10')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+			page.hasAlert('success')
+			page.get('alert').contains("Field Updated")
+
+			cy.get('[name=field_content_type]:visible[value="integer"]').should('be.checked')
+			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '-10')
+			cy.get('[name=field_max_value]:visible').invoke('val').should('eq', '10')
+			cy.get('[name=field_step]:visible').invoke('val').should('eq', '2')
+			cy.get('[name=datalist_items]:visible').invoke('val').should('eq', "0\n5")
+			
+		})
+
+		it('Number input in entry' , () => {
+			cy.visit('admin.php?/cp/publish/edit')
+			cy.get('div').contains('AA Test Entry').eq(0).click()
+	
+			cy.get('input[type=number]').clear().type('183')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('[type="number"]').then(($input) => {
+				expect($input[0].validationMessage).to.eq('Value must be less than or equal to 10.')
+			})
+
+			cy.get('input[type=number]').clear().type('-20')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('[type="number"]').then(($input) => {
+				expect($input[0].validationMessage).to.eq('Value must be greater than or equal to -10.')
+			})
+
+			cy.intercept('/admin.php?/cp/publish/edit/entry/*').as('validation')
+			cy.get('input[type=number]').clear().type('0.6').blur()
+			cy.wait('@validation')
+			page.hasError(cy.get('[type=number]'), page.messages.validation.integer)
+			
+			cy.get('input[type=number]').clear().type('-4').blur()
+			cy.wait('@validation')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+	
+			cy.visit('admin.php?/cp/design')
+			cy.get('a').contains('aaNumber').eq(0).click()
+			cy.get('a').contains('index').click()
+			cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{aa_number_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+			
+	
+			cy.visit('index.php/aaNumber')
+			cy.get('body').contains('-4')
+	
+	
+		})
+	})
+
+	
 
 
+
+	it('Test Buttons' , () => {
+		cy.visit('admin.php?/cp/design')
+		cy.get('a').contains('aaSelectableButtons').eq(0).click()
+		cy.get('a').contains('index').click()
+		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<h2> {title} </h2>{aa_selectable_buttons_test}{item:value}<br>{/aa_selectable_buttons_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
+		cy.get('button').contains('Save').eq(0).click()
+		
+		cy.visit('admin.php?/cp/fields')
+		cy.get('div').contains('AA Selectable Buttons Test').click()
+		cy.get('div').contains('Value/Label Pairs').click()
+		cy.get('a').contains('Add New').click()
+		cy.get('input[name = "value_label_pairs[rows][new_row_1][value]"]').type('uno')
+		cy.get('input[name = "value_label_pairs[rows][new_row_1][label]"]').type('one')
+		cy.get('a').contains('Add A Row').click()
+		cy.get('input[name = "value_label_pairs[rows][new_row_2][value]"]').type('dos')
+		cy.get('input[name = "value_label_pairs[rows][new_row_2][label]"]').type('two')
+		cy.get('a').contains('Add A Row').click()
+		cy.get('input[name = "value_label_pairs[rows][new_row_3][value]"]').type('tres')
+		cy.get('input[name = "value_label_pairs[rows][new_row_3][label]"]').type('three')
+		cy.get('a').contains('Add A Row').click()
+		cy.get('input[name = "value_label_pairs[rows][new_row_4][value]"]').type('quatro')
+		cy.get('input[name = "value_label_pairs[rows][new_row_4][label]"]').type('four')
+		cy.get('a').contains('Add A Row').click()
+		cy.get('input[name = "value_label_pairs[rows][new_row_5][value]"]').type('cinco')
+		cy.get('input[name = "value_label_pairs[rows][new_row_5][label]"]').type('five')
+		cy.get('button').contains('Save').eq(0).click()
+
+		cy.visit('admin.php?/cp/publish/edit')
+		cy.get('div').contains('AA Test Entry').eq(0).click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('not.have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').should('have.class', 'active')
+		cy.get('.button--primary').contains('Save').eq(0).click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('not.have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').should('have.class', 'active')
+
+		cy.visit('index.php/aaSelectableButtons')
+		cy.get('body').should('not.contain', 'tres')
+		cy.get('body').should('contain', 'quatro')
+
+		cy.visit('admin.php?/cp/fields')
+		cy.get('div').contains('AA Selectable Buttons Test').click()
+		cy.get('[name="field_pre_populate"][value="v"]').should('be.checked')
+		cy.get('[data-toggle-for="allow_multiple"]').click()
+		cy.get('.button--primary').contains('Save').eq(0).click()
+
+		cy.visit('admin.php?/cp/publish/edit')
+		cy.get('div').contains('AA Test Entry').eq(0).click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
+		cy.get('.button--primary').contains('Save').eq(0).click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
+		
+		cy.visit('index.php/aaSelectableButtons')
+		cy.get('body').should('contain', 'tres')
+		cy.get('body').should('contain', 'cinco')
+	})
 
 
 
@@ -354,11 +543,11 @@ function addGroup(name){
 function addField(name){
 	cy.visit('admin.php?/cp/fields/create')
 	cy.get('[data-input-value=field_type] .select__button').click()
-  	page.get('Type_Options').contains(name).click()
-  	let title = 'AA ' + name + ' Test'
-  	page.get('Name').type(title)
+	page.get('Type_Options').contains(name).click()
+	let title = 'AA ' + name + ' Test'
+	page.get('Name').type(title)
 
-  	cy.hasNoErrors()
-  	page.get('Save').eq(0).click()
-  	cy.get('p').contains('has been created')
+	cy.hasNoErrors()
+	page.get('Save').eq(0).click()
+	cy.get('p').contains('has been created')
 }

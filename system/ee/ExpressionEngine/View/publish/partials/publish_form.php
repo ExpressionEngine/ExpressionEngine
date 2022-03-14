@@ -105,12 +105,14 @@
 			<fieldset class="<?=$field_class?>">
 			<?php endif; ?>
 				<div class="field-instruct">
-					<label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
-					<?php
-                    $fieldInstructions = $field->getInstructions();
-                    if (!empty($fieldInstructions)) : ?>
-					<em><?=$fieldInstructions?></em>
-					<?php endif; ?>
+                    <?php if (! $field->titleIsHidden()):?>
+                        <label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
+                        <?php
+                        $fieldInstructions = $field->getInstructions();
+                        if (!empty($fieldInstructions)) :?>
+                        <em><?=$fieldInstructions?></em>
+                        <?php endif;?>
+                    <?php endif;?>
 				</div>
 				<div class="field-control">
 					<?php if ($field->get('field_id') == 'revisions'): ?>

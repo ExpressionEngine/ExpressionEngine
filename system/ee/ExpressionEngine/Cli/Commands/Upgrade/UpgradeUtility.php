@@ -17,7 +17,7 @@ class UpgradeUtility
     public static function run()
     {
         // self::install_modules();
-        self::remove_installer_directory();
+        self::rename_installer();
     }
 
     protected static function install_modules()
@@ -42,14 +42,20 @@ class UpgradeUtility
         $consent->installConsentRequests();
     }
 
-    protected static function remove_installer_directory()
+    protected static function rename_installer()
     {
         $filesystem = new Filesystem();
 
         $installerPath = SYSPATH . 'ee/installer';
 
-        if ($filesystem->isDir($installerPath)) {
-            $filesystem->deleteDir($installerPath);
-        }
+        // Generate the new path by suffixing a dotless version number
+        $new_path = str_replace(
+            'installer',
+            'installer_' . APP_VER . '_' . uniqid(),
+            $installerPath
+        );
+
+        // Move the directory
+        return $filesystem->rename($installerPath, $new_path);
     }
 }

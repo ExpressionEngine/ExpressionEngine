@@ -12,6 +12,12 @@ $lang = array(
 
     'remove_file' => 'Remove File',
 
+    'ft_allow_multi' => 'Allow multiple selections?',
+
+    'ft_allow_multi_desc' => 'When enabled, authors will be allowed to select multiple items.',
+
+    'ft_multiselect_not_allowed' => 'Selecting multiple options is not allowed for this field',
+
     /* Relationships */
     'any_author' => 'Any author',
 
@@ -292,6 +298,9 @@ $lang = array(
     'colorpicker_swatches_populate_values' => 'Values',
     'colorpicker_swatches_populate_manually' => 'Populate the swatches manually',
 
+    /* Notes */
+    'notes_note_content' => 'Note Content',
+    'notes_note_content_desc' => 'This content will appear as a note on the publish form. Markdown formatting is supported.',
 );
 
 // EOF

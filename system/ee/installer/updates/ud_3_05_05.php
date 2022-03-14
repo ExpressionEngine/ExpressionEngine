@@ -49,7 +49,7 @@ class Updater
      */
     private function normalizeFieldLayoutData()
     {
-        $layouts = ee('Model')->get('ChannelLayout')->all();
+        $layouts = ee('Model')->get('ChannelLayout')->fields('field_layout')->all();
 
         foreach ($layouts as $layout) {
             $field_layout = $layout->field_layout;

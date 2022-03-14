@@ -13,6 +13,24 @@ context('Search', () => {
     cy.authVisit('admin.php?/cp/design')
   })
 
+  it('search and get results', function(){
+    cy.authVisit('index.php/search/simple_form');
+    cy.get('#keywords').clear().type('ExpressionEngine')
+    cy.get('.submit').first().click()
+    cy.get('h3:contains(Results)').should('exist')
+    cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
+    cy.get('body').should('not.contain', 'Welcome to the Example Site!')
+  })
+
+  it('search and get no results (on same page)', function(){
+    cy.authVisit('index.php/search/simple_form');
+    cy.get('#keywords').clear().type('WordPress')
+    cy.get('.submit').first().click()
+    cy.get('h3:contains(Results)').should('not.exist')
+    cy.get('body').should('not.contain', 'Getting to Know ExpressionEngine')
+    cy.get('body').should('contain', 'Nothing found')
+  })
+
   it('searches everywhere', function(){
     cy.authVisit('admin.php?/cp/design/manager/search');
     cy.get('a:contains(simple_form)').click()
@@ -27,6 +45,7 @@ context('Search', () => {
     cy.get('body').should('contain', 'Welcome to the Example Site!')
     cy.hasNoErrors()
   })
+
 
   context('search using channel parameter', () => {
     it('restrict to channel', function(){

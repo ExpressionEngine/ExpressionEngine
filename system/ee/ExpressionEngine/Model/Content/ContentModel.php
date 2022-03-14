@@ -503,6 +503,28 @@ abstract class ContentModel extends VariableColumnModel
                 ->delete($tables);
         }
     }
+
+    /**
+     * Mark a property or the entire entity as dirty.
+     *
+     * @param String $name Property name [optional]
+     */
+    public function markAsDirty($name = null)
+    {
+        if (!empty($name)) {
+            if (! $this->hasBackup($name) && $this->hasCustomField($name)) {
+                $this->setBackup($name, $this->getRawProperty($name));
+            }
+        } else {
+            foreach ($this->getCustomFieldNames() as $field) {
+                $this->setBackup($field, $this->getRawProperty($field));
+            }
+        }
+
+        parent::markAsDirty($name);
+
+        return $this;
+    }
 }
 
 // EOF
