@@ -12,6 +12,12 @@ $lang = array(
 
     'remove_file' => 'Remove File',
 
+    'ft_allow_multi' => 'Allow multiple selections?',
+
+    'ft_allow_multi_desc' => 'When enabled, authors will be allowed to select multiple items.',
+
+    'ft_multiselect_not_allowed' => 'Selecting multiple options is not allowed for this field',
+
     /* Relationships */
     'any_author' => 'Any author',
 

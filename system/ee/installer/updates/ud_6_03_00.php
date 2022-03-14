@@ -25,8 +25,10 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator(
+        $steps = new \ProgressIterator (
             [
+                'installButtonsFieldtype',
+                'installNumberFieldtype',
                 'installNotesFieldtype',
             ]
         );
@@ -51,6 +53,40 @@ class Updater
                 )
             );
         }
+    }
+
+    private function installButtonsFieldtype()
+    {
+        if (ee()->db->where('name', 'selectable_buttons')->get('fieldtypes')->num_rows() > 0) {
+            return;
+        }
+
+        ee()->db->insert(
+            'fieldtypes',
+            array(
+                'name' => 'selectable_buttons',
+                'version' => '1.0.0',
+                'settings' => base64_encode(serialize(array())),
+                'has_global_settings' => 'n'
+            )
+        );
+    }
+
+    private function installNumberFieldtype()
+    {
+        if (ee()->db->where('name', 'number')->get('fieldtypes')->num_rows() > 0) {
+            return;
+        }
+
+        ee()->db->insert(
+            'fieldtypes',
+            array(
+                'name' => 'number',
+                'version' => '1.0.0',
+                'settings' => base64_encode(serialize(array())),
+                'has_global_settings' => 'n'
+            )
+        );
     }
 }
 
