@@ -236,7 +236,7 @@ Cypress.Commands.add("createMembers", ({ n }) => {
 
     let command = [
         `cd support/fixtures && php member.php`,
-        `--number ${n}`
+        `--number ${n} --batch`
     ].join(' ')
 
     cy.exec(command)
