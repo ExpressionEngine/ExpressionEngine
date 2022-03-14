@@ -446,6 +446,7 @@ class EE_Relationship_data_parser
 
                 if (strpos($value, 'not ') === 0) {
                     $not = true;
+                    $value = substr($value, 4);
                 }
 
                 $value = trim($value, " |\t\n\r");
