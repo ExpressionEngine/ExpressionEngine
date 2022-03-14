@@ -34,9 +34,9 @@
 				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 			</div>
 		</div>
-		
+
 		<?=ee('CP/Alert')->getAllInlines(isset($pro_class) ? 'error' : null)?>
-		<?php foreach ($layout->getTabs() as $index => $tab): 
+		<?php foreach ($layout->getTabs() as $index => $tab):
 			if (ee('Request')->get('field_id') != '') {
 				$tabIsHidden = true;
 				foreach ($tab->getFields() as $field) {
@@ -49,7 +49,7 @@
 					continue;
 				}
 			}
-			
+
 			if (! $tab->isVisible()) {
                 continue;
             } ?>
@@ -88,12 +88,14 @@
 			<fieldset class="<?=$field_class?>">
 			<?php endif; ?>
 				<div class="field-instruct">
-					<label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
-					<?php
-                    $fieldInstructions = $field->getInstructions();
-                    if (!empty($fieldInstructions)) : ?>
-					<em><?=$fieldInstructions?></em>
-					<?php endif; ?>
+                    <?php if (! $field->titleIsHidden()):?>
+                        <label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
+                        <?php
+                        $fieldInstructions = $field->getInstructions();
+                        if (!empty($fieldInstructions)) :?>
+                        <em><?=$fieldInstructions?></em>
+                        <?php endif;?>
+                    <?php endif;?>
 				</div>
 				<div class="field-control">
 					<?php if ($field->get('field_id') == 'revisions'): ?>

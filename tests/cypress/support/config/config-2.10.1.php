@@ -14,12 +14,12 @@
 $config['base_url'] = 'http://localhost:8888/';
 $config['site_url'] = $config['base_url'];
 
-$config['app_version'] = '2.20.0';
+$config['app_version'] = '2.10.1';
 $config['license_contact'] = 'team@ellislab.com';
 $config['license_number'] = '1123-5813-2134-5589';
 $config['debug'] = '2';
 $config['cp_url'] = '/admin.php';
-$config['theme_folder_url'] = 'http://localhost:8888/themes/';
+$config['theme_folder_url'] = "{$config['base_url']}themes";
 $config['doc_url'] = 'https://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
@@ -48,7 +48,7 @@ $config['website_session_type'] = 'c';
 | 'ORIG_PATH_INFO'	Uses the ORIG_PATH_INFO
 |
 */
-$config['uri_protocol']	= 'AUTO';
+$config['uri_protocol']    = 'AUTO';
 
 /*
 |--------------------------------------------------------------------------

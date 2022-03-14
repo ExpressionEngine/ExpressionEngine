@@ -39,6 +39,7 @@ class EE_Upload
     public $xss_clean = false;
     public $temp_prefix = "temp_file_";
     public $client_name = '';
+    public $auto_resize = false;
 
     protected $use_temp_dir = false;
     protected $raw_upload = false;
@@ -235,7 +236,8 @@ class EE_Upload
 
         // Is the file size within the allowed maximum?
         if (! $this->is_allowed_filesize()) {
-            $this->set_error('upload_invalid_filesize');
+            ee()->lang->load('upload');
+            $this->set_error(sprintf(lang('upload_invalid_filesize'), $this->max_size));
 
             return false;
         }
@@ -243,9 +245,19 @@ class EE_Upload
         // Are the image dimensions within the allowed size?
         // Note: This can fail if the server has an open_basdir restriction.
         if (! $this->is_allowed_dimensions()) {
-            $this->set_error('upload_invalid_dimensions');
 
-            return false;
+            //try to resize, if configured
+            if ($this->auto_resize) {
+                ee()->load->library('filemanager');
+                $auto_resize = ee()->filemanager->max_hw_check($this->file_temp, ['max_width' => $this->max_width, 'max_height' => $this->max_height]);
+                if ($auto_resize === false) {
+                    $this->set_error('upload_invalid_dimensions');
+                    return false;
+                }
+            } else {
+                $this->set_error('upload_invalid_dimensions');
+                return false;
+            }
         }
 
         // Truncate the file name if it's too long
@@ -925,7 +937,8 @@ class EE_Upload
             'remove_spaces' => true,
             'xss_clean' => false,
             'temp_prefix' => "temp_file_",
-            'client_name' => ''
+            'client_name' => '',
+            'auto_resize' => false
         );
 
         foreach ($defaults as $key => $val) {
@@ -985,24 +998,17 @@ class EE_Upload
      */
     protected function increase_memory_limit($size)
     {
-        if (function_exists('memory_get_usage') && memory_get_usage() && ini_get('memory_limit') != '') {
-            $current = (int) ini_get('memory_limit') * 1024 * 1024;
+        $current = ee('Memory')->getMemoryLimitBytes();
 
-            // Because 1G is a thing
-            if (strtolower(substr(ini_get('memory_limit'), -1)) == 'g') {
-                $current *= 1024;
-            }
+        // There was a bug/behavioural change in PHP 5.2, where numbers over
+        // one million get output into scientific notation.  number_format()
+        // ensures this number is an integer
+        // http://bugs.php.net/bug.php?id=43053
 
-            // There was a bug/behavioural change in PHP 5.2, where numbers over
-            // one million get output into scientific notation.  number_format()
-            // ensures this number is an integer
-            // http://bugs.php.net/bug.php?id=43053
+        $new_memory = number_format(ceil($size + $current), 0, '.', '');
 
-            $new_memory = number_format(ceil($size + $current), 0, '.', '');
-
-            // When an integer is used, the value is measured in bytes.
-            ini_set('memory_limit', $new_memory);
-        }
+        // When an integer is used, the value is measured in bytes.
+        ini_set('memory_limit', $new_memory);
     }
 
     /**
