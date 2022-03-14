@@ -1582,10 +1582,6 @@ GRID_FALLBACK;
         //load the just created entry into memory
         $this->fetch_entry($new_id);
 
-        if ($captcha_required && $this->error_handling == 'inline') {
-            $this->field_errors = array_merge($this->field_errors, array('captcha_word' => (ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required'))));
-        }
-
         foreach ($this->field_errors as $field => $error) {
             if (isset($id_to_name_map[$field])) {
                 $this->field_errors[$id_to_name_map[$field]] = $error;
