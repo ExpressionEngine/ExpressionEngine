@@ -55,7 +55,7 @@ context('Relationship field - Edit', () => {
 			cy.get('.not_open').should('contain', 'Band Title')
 
 			cy.log('check parent tags')
-			cy.visit('index.php/relationships/reverse')
+			cy.visit('index.php/relationships/reverse/index')
 			cy.get('.all').should('contain', 'Getting to Know ExpressionEngine')
 			cy.get('.not_open').should('not.contain', 'Getting to Know ExpressionEngine')
 			cy.get('.not_all').should('not.contain', 'Getting to Know ExpressionEngine')
