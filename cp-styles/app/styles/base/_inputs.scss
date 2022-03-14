@@ -81,6 +81,11 @@ input[type='url'] {
   }
 }
 
+input[list]::-webkit-calendar-picker-indicator {
+  display: none;
+  opacity: 0;
+}
+
 // Use of icons within inputs
 .field-control {
   &.with-icon-start {
