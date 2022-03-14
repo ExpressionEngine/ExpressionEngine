@@ -16,7 +16,7 @@ $toggle-peg-size: $toggle-height - ($toggle-peg-padding * 2);
 	// margin-bottom: 10px;
 
 	transition: all 100ms ease;
-	border-radius: ($toggle-height / 2);
+	border-radius: math.div($toggle-height, 2);
 	background: color(input-toggle-bg);
 	text-decoration: none;
 	border: none;
@@ -126,4 +126,3 @@ $toggle-peg-size: $toggle-height - ($toggle-peg-padding * 2);
 // 		opacity: 0.6;
 // 	}
 // }
-

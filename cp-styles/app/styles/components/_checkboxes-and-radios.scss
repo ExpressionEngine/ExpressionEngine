@@ -36,7 +36,7 @@ $checkbox-size: 15px;
 		@extend %fa-icon;
 		@extend .fas;
 		@extend .fa-fw;
-		font-size: $checkbox-size / 1.6;
+		font-size: math.div($checkbox-size, 1.6);
 
 		margin: 0 !important;
 		color: #fff !important;
@@ -323,7 +323,7 @@ ul.field-nested ul {
 
 	li {
 		label {
-			border-left: 2px solid color(border);
+			border-left: 2px solid color(border-dark);
       padding-left: $s-s;
 		}
 
@@ -350,6 +350,52 @@ ul.field-nested ul {
 }
 
 // LEGACY 6.0
+.button-group-flyout-right {
+	float: right;
+}
+	
 .field-nested li {
 	padding: 0;
+
+
+	.checkbox-label__text-editable {
+		&:before {
+			position: absolute;
+		  display: block;
+		  content: '';
+		  width: 10px;
+		  height: 100%;
+		  background: inherit;
+		  top: 0;
+		  left: -10px;
+			border-bottom-left-radius: 5px;
+  		border-top-left-radius: 5px;
+		}
+
+		.flyout-edit-icon {
+		  padding: 5px 15px;
+		  font-size: 0.8rem;
+		  line-height: 1.5;
+		  border-radius: 4px;
+		  float: right;
+		}
+	}
+
+	.checkbox-label:hover {
+		.checkbox-label__text-editable {
+			background: var(--ee-bg-0);
+			border-top-right-radius: 5px;
+			border-bottom-right-radius: 5px;
+  		border-top-left-radius: 0;
+  		border-bottom-left-radius: 0;
+		}
+	}
+
+	&.nestable-item {
+		& > ul.field-nested {
+			.checkbox-label__text-editable:before {
+				border-radius: 0;
+			}
+		}
+	}
 }
