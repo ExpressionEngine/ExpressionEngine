@@ -55,6 +55,7 @@ $toggle-peg-size: $toggle-height - ($toggle-peg-padding * 2);
 
 	&:focus {
 		@include focus-outline;
+		border: 1px solid  var(--ee-input-focus-border);
 	}
 }
 
