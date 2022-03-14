@@ -134,6 +134,11 @@ html.color-theme-in-transition *:after {
   --ee-panel-border: #dfe0ef;
   --ee-shadow-modal: rgba(69, 68, 85, 0.2);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.1);
+  --ee-note-fieldtype-bg: #f7f7fb;
+  --ee-note-fieldtype-color: #8f90b0;
+  --ee-note-fieldtype-icon-bg: #ecedf5;
+  --ee-note-fieldtype-icon-color: #8f90b0;
+  --ee-note-fieldtype-blockquote-border: #ecedf5;
   --ee-mark-bg: #fffbf1;
   --ee-form-section-title-border: #dfe0ef;
   --ee-key-border: #dfe0ef;
@@ -279,6 +284,11 @@ html.color-theme-in-transition *:after {
   --ee-panel-border: #383838;
   --ee-shadow-modal: rgba(0, 0, 0, 0.5);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.5);
+  --ee-note-fieldtype-bg: #121212;
+  --ee-note-fieldtype-color: #6b6b6b;
+  --ee-note-fieldtype-icon-bg: #000000;
+  --ee-note-fieldtype-icon-color: #6b6b6b;
+  --ee-note-fieldtype-blockquote-border: #1f1f1f;
   --ee-mark-bg: #583d00;
   --ee-form-section-title-border: #383838;
   --ee-key-border: #383838;
@@ -424,6 +434,11 @@ body[data-theme=dark] .inverted-theme {
   --ee-panel-border: #dfe0ef;
   --ee-shadow-modal: rgba(69, 68, 85, 0.2);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.1);
+  --ee-note-fieldtype-bg: #f7f7fb;
+  --ee-note-fieldtype-color: #8f90b0;
+  --ee-note-fieldtype-icon-bg: #ecedf5;
+  --ee-note-fieldtype-icon-color: #8f90b0;
+  --ee-note-fieldtype-blockquote-border: #ecedf5;
   --ee-mark-bg: #fffbf1;
   --ee-form-section-title-border: #dfe0ef;
   --ee-key-border: #dfe0ef;
@@ -569,6 +584,11 @@ body[data-theme=light] .inverted-theme {
   --ee-panel-border: #383838;
   --ee-shadow-modal: rgba(0, 0, 0, 0.5);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.5);
+  --ee-note-fieldtype-bg: #121212;
+  --ee-note-fieldtype-color: #6b6b6b;
+  --ee-note-fieldtype-icon-bg: #000000;
+  --ee-note-fieldtype-icon-color: #6b6b6b;
+  --ee-note-fieldtype-blockquote-border: #1f1f1f;
   --ee-mark-bg: #583d00;
   --ee-form-section-title-border: #383838;
   --ee-key-border: #383838;
@@ -714,6 +734,11 @@ body[data-theme=pink] {
   --ee-panel-border: #f2e0e4;
   --ee-shadow-modal: rgba(69, 68, 85, 0.2);
   --ee-shadow-dropdown: rgba(23, 27, 40, 0.1);
+  --ee-note-fieldtype-bg: #fcf9fa;
+  --ee-note-fieldtype-color: #b98a95;
+  --ee-note-fieldtype-icon-bg: #f8eef0;
+  --ee-note-fieldtype-icon-color: #b98a95;
+  --ee-note-fieldtype-blockquote-border: #f8eef0;
   --ee-mark-bg: #fffbf1;
   --ee-form-section-title-border: #f2e0e4;
   --ee-key-border: #f2e0e4;
@@ -16431,6 +16456,81 @@ fieldset .field-control #eye {
     }
   }
 }
+.note-fieldtype {
+  color: var(--ee-note-fieldtype-color);
+  background-color: var(--ee-note-fieldtype-bg);
+  border-radius: 5px;
+  padding: 14px 20px 16px 55px;
+  margin-bottom: -5px;
+  position: relative;
+  overflow: hidden;
+}
+.note-fieldtype .note-fieldtype__icon {
+  display: block;
+  background-color: var(--ee-note-fieldtype-icon-bg);
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 35px;
+}
+.note-fieldtype .note-fieldtype__icon i, .note-fieldtype .note-fieldtype__icon fas {
+  margin: 0;
+  margin-left: 11px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ee-note-fieldtype-icon-color);
+  opacity: 0.6;
+}
+.note-fieldtype .note-fieldtype__content {
+  font-size: 90%;
+}
+.note-fieldtype h1, .note-fieldtype h2, .note-fieldtype h3 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+.note-fieldtype h4, .note-fieldtype h5, .note-fieldtype h6 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.note-fieldtype h6 {
+  font-size: 1.1em;
+}
+.note-fieldtype p {
+  margin-bottom: 15px;
+}
+.note-fieldtype p:last-child {
+  margin-bottom: 0px;
+}
+.note-fieldtype blockquote {
+  padding: 10px 20px;
+  margin: 0 0 20px;
+  border-left: 5px solid var(--ee-note-fieldtype-blockquote-border);
+}
+.note-fieldtype pre {
+  white-space: normal;
+  margin-bottom: 15px;
+}
+.note-fieldtype dl, .note-fieldtype ul, .note-fieldtype ol {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+.note-fieldtype dt {
+  font-weight: 600;
+}
+
+.form-standard .note-fieldtype h2:not(.title-bar__title) {
+  border-bottom: none;
+  color: inherit;
+  font-size: 1.55em;
+  margin: 0;
+  margin-bottom: 10px;
+  padding: 0;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .file-field {
   width: 100%;
 }

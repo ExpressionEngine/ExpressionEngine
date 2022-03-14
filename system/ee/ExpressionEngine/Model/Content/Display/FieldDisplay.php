@@ -99,6 +99,12 @@ class FieldDisplay
     {
         return $this->collapsed;
     }
+
+    public function titleIsHidden()
+    {
+        return (bool) $this->getSetting('field_hide_title');
+    }
+
     public function hide()
     {
         $this->visible = false;

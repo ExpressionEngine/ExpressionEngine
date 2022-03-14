@@ -141,6 +141,11 @@ html.color-theme-in-transition *:after {
   --ee-panel-border: #dfe0ef;
   --ee-shadow-modal: rgba(69, 68, 85, 0.2);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.1);
+  --ee-note-fieldtype-bg: #f7f7fb;
+  --ee-note-fieldtype-color: #8f90b0;
+  --ee-note-fieldtype-icon-bg: #ecedf5;
+  --ee-note-fieldtype-icon-color: #8f90b0;
+  --ee-note-fieldtype-blockquote-border: #ecedf5;
   --ee-mark-bg: #fffbf1;
   --ee-form-section-title-border: #dfe0ef;
   --ee-key-border: #dfe0ef;
@@ -286,6 +291,11 @@ html.color-theme-in-transition *:after {
   --ee-panel-border: #383838;
   --ee-shadow-modal: rgba(0, 0, 0, 0.5);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.5);
+  --ee-note-fieldtype-bg: #121212;
+  --ee-note-fieldtype-color: #6b6b6b;
+  --ee-note-fieldtype-icon-bg: #000000;
+  --ee-note-fieldtype-icon-color: #6b6b6b;
+  --ee-note-fieldtype-blockquote-border: #1f1f1f;
   --ee-mark-bg: #583d00;
   --ee-form-section-title-border: #383838;
   --ee-key-border: #383838;
@@ -431,6 +441,11 @@ body[data-theme=dark] .inverted-theme {
   --ee-panel-border: #dfe0ef;
   --ee-shadow-modal: rgba(69, 68, 85, 0.2);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.1);
+  --ee-note-fieldtype-bg: #f7f7fb;
+  --ee-note-fieldtype-color: #8f90b0;
+  --ee-note-fieldtype-icon-bg: #ecedf5;
+  --ee-note-fieldtype-icon-color: #8f90b0;
+  --ee-note-fieldtype-blockquote-border: #ecedf5;
   --ee-mark-bg: #fffbf1;
   --ee-form-section-title-border: #dfe0ef;
   --ee-key-border: #dfe0ef;
@@ -576,6 +591,11 @@ body[data-theme=light] .inverted-theme {
   --ee-panel-border: #383838;
   --ee-shadow-modal: rgba(0, 0, 0, 0.5);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.5);
+  --ee-note-fieldtype-bg: #121212;
+  --ee-note-fieldtype-color: #6b6b6b;
+  --ee-note-fieldtype-icon-bg: #000000;
+  --ee-note-fieldtype-icon-color: #6b6b6b;
+  --ee-note-fieldtype-blockquote-border: #1f1f1f;
   --ee-mark-bg: #583d00;
   --ee-form-section-title-border: #383838;
   --ee-key-border: #383838;

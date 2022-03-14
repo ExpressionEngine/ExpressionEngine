@@ -29,6 +29,7 @@ class Updater
             [
                 'installButtonsFieldtype',
                 'installNumberFieldtype',
+                'installNotesFieldtype',
             ]
         );
 
@@ -37,6 +38,21 @@ class Updater
         }
 
         return true;
+    }
+
+    private function installNotesFieldtype()
+    {
+        if (ee()->db->where('name', 'notes')->get('fieldtypes')->num_rows() == 0) {
+            ee()->db->insert(
+                'fieldtypes',
+                array(
+                    'name' => 'notes',
+                    'version' => '1.0.0',
+                    'settings' => base64_encode(serialize(array())),
+                    'has_global_settings' => 'n'
+                )
+            );
+        }
     }
 
     private function installButtonsFieldtype()
