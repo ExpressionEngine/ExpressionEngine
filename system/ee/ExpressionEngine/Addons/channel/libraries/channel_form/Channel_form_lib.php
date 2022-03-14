@@ -1639,6 +1639,13 @@ GRID_FALLBACK;
         }
 
         if ($this->json) {
+            
+            foreach ($this->field_errors as $field => $error) {
+                if (isset($id_to_name_map[$field])) {
+                    $this->field_errors[$id_to_name_map[$field]] = $error;
+                }
+            }
+            
             return ee()->output->send_ajax_response(
                 array(
                     'success' => (empty($this->errors) && empty($this->field_errors)) ? 1 : 0,
