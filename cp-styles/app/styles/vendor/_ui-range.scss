@@ -266,7 +266,7 @@
       background: var(--value-background);
       border-radius: 10px;
       padding: 2px 4px;
-      left: calc(var(--pos) - 3%);
+      left: var(--pos);
       transform: translate(var(--x-offset), calc(150% * var(--flip) - (var(--y-offset, 0px) + var(--value-offset-y)) * var(--flip)));
       transition: all .12s ease-out, left 0s;
 
