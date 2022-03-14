@@ -9509,6 +9509,7 @@ tr.selected td {
 
 .button-group {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .button-group .button + .button, .button-group .pagination__link + .button, .button-group .button + .pagination__link, .button-group .pagination__link + .pagination__link, .button-group .no-results a + .button, .button-group .no-results a + .pagination__link, .no-results .button-group a + .button, .no-results .button-group a + .pagination__link,

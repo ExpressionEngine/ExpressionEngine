@@ -573,7 +573,7 @@ class Fields extends AbstractFieldsController
             if (! $field->isNew() &&
                 in_array(
                     $fieldtype->name,
-                    array('checkboxes', 'multi_select', 'radio', 'select')
+                    array('checkboxes', 'multi_select', 'radio', 'select', 'buttons')
                 )) {
                 $dummy_field = clone $field;
             } else {
