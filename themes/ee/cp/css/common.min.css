@@ -16740,6 +16740,11 @@ fieldset .field-control #eye {
   max-width: 200px;
   max-height: 200px;
 }
+@media (max-width: 767px) {
+  .fields-upload-chosen .fields-upload-chosen-file img {
+    max-width: 100%;
+  }
+}
 
 .installer-page .wrap {
   margin: auto;
@@ -17138,6 +17143,30 @@ fieldset .field-control #eye {
   font-size: 0.9em;
   background: var(--ee-bg-0);
   border-right: 1px solid var(--ee-table-border);
+}
+.grid-field__table tr td {
+  min-width: 400px;
+  max-width: 600px;
+}
+@media (max-width: 767px) {
+  .grid-field__table tr td {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+.grid-field__table tr td.grid-field__column--tools {
+  min-width: 80px;
+  max-width: 100px;
+}
+@media (max-width: 767px) {
+  .grid-field__table tr td.grid-multi-relate {
+    position: relative;
+  }
+  .grid-field__table tr td.grid-multi-relate .dropdown--open, .grid-field__table tr td.grid-multi-relate .select__dropdown {
+    top: calc(100% + 4px) !important;
+    transform: none !important;
+  }
 }
 .grid-field__table tr.ui-sortable-helper {
   box-shadow: var(--ee-shadow-dropdown);
