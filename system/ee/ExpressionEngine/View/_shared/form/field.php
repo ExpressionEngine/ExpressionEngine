@@ -86,6 +86,17 @@ case 'slider':
         </div>
     <?php endif ?>
 <?php break;
+case 'number':
+    if ($class): ?>
+        <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
+    <?php endif ?>
+
+            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+
+    <?php if (!empty($class)): ?>
+        </div>
+    <?php endif ?>
+<?php break;
 case 'file': ?>
     <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>">
 <?php break;

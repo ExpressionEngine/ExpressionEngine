@@ -9,6 +9,23 @@
 
 $(document).ready(function(){
 
+	// the code is responsible for preventing the page scrolling when press on 
+	// the dropdown list using the spacebar (code 32)
+	window.addEventListener('keydown', (e) => {
+		if (e.keyCode === 32 && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) { 
+		  e.preventDefault();
+		}
+	});
+
+	// code for opening and moving through the select dropdown menu when pressing Enter (keyCode 13) or Spacebar (keyCode 32)
+	$('.js-dropdown-toggle, .select__dropdown-item').each(function() {
+		$(this).keyup(function(event) {
+			if (event.keyCode === 13 || event.keyCode === 32) {
+				$(this).click();
+			}
+		});
+	});
+
 	// =============================================
 	// For backwards compatibility: adding $.browser
 	// from: https://github.com/jquery/jquery-migrate
