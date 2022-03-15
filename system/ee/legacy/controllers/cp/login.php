@@ -108,8 +108,6 @@ class Login extends CP_Controller
                     $session->mfa_flag = 'skip';
                     $session->save();
                 }
-                //sync the session
-                ee()->session->fetch_member_data();
                 $this->functions->redirect($return_path);
             }
         }

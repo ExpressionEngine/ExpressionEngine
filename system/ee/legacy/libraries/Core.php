@@ -68,8 +68,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20220228');
-        define('APP_VER', '6.2.7');
+        define('APP_BUILD', '20211021');
+        define('APP_VER', '6.3.0');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -300,7 +300,6 @@ class EE_Core
         ee()->load->library('remember');
         ee()->load->library('localize');
         ee()->load->library('session');
-        ee()->load->library('user_agent');
 
         // Get timezone to set as PHP timezone
         $timezone = ee()->session->userdata('timezone', ee()->config->item('default_site_timezone'));

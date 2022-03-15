@@ -51,6 +51,14 @@ $ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 	overflow-y: auto;
 	padding: $s-m;
 	padding-top: 0;
+
+  .panel-heading__publish {
+    display: none;
+  }
+
+  .panel-body__publish {
+    padding: 0px;
+  }
 }
 
 .live-preview__form-header {
@@ -84,7 +92,7 @@ $ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 	background: color(bg-15);
 	cursor: col-resize;
 	transition: transform $speed $ease, opacity $speed $ease;
-	transition-delay: $speed / 2;
+	transition-delay: math.div($speed, 2);
 }
 
 .live-preview__preview {
