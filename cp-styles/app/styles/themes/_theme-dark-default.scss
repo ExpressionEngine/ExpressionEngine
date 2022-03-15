@@ -204,6 +204,13 @@ $dark-theme: (
   shadow-modal: rgba($gray-blank, 0.5),
   shadow-dropdown: rgba($gray-blank, 0.5),
 
+  // Fieldtypes
+  note-fieldtype-bg: $gray-0,
+  note-fieldtype-color: $text-secondary,
+  note-fieldtype-icon-bg: $gray-blank,
+  note-fieldtype-icon-color: $text-secondary,
+  note-fieldtype-blockquote-border: $gray-5,
+
   // Other Colors
   mark-bg: darken($brand-warning, 35%),
   form-section-title-border: $gray-20,

@@ -1,4 +1,4 @@
-
+@use 'sass:math';
 
 // Abstracts - global variables, mixins, and functions
 // -------------------------------------------------------------------
@@ -68,6 +68,7 @@
 @import 'components/_toggle';
 @import 'components/_checkboxes-and-radios';
 @import 'components/fieldsets';
+@import 'components/_note-field';
 @import 'components/_file-field';
 @import 'components/_installer';
 @import 'components/_list';

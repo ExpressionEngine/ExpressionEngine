@@ -813,7 +813,10 @@ class Channels extends AbstractChannelsController
 
         $author_list = $this->authorList();
         if (!empty($channel_form->default_author) && !isset($author_list[$channel_form->default_author])) {
-            $author_list[$channel_form->default_author] = ee('Model')->get('Member', $channel_form->default_author)->first()->getMemberName();
+            $defaultAuthor = ee('Model')->get('Member', $channel_form->default_author)->first();
+            if (!empty($defaultAuthor)) {
+                $author_list[$channel_form->default_author] = $defaultAuthor->getMemberName();
+            }
         }
 
         $sections = array(

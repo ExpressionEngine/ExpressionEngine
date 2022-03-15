@@ -11,7 +11,7 @@
 	<img src="<?=$avatar_url?>" alt="<?=$comment->Author->screen_name?>" class="avatar-icon">
 	<?php endif; ?>
 	<div class="author-details">
-		<?php if ($can_operate_member): ?>
+		<?php if (isset($can_operate_member) && $can_operate_member): ?>
 			<a href="<?=ee('CP/URL')->make('members/profile', ['id' => $comment->author_id])?>"><?=$comment->name?></a><br>
 		<?php else: ?>
 			<?=$comment->name?><br>
