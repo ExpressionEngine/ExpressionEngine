@@ -206,6 +206,8 @@ class Groups extends AbstractFieldsController
         }
 
         ee()->view->cp_page_title = lang('edit_field_group');
+        
+        ee()->cp->add_js_script('file', array('cp/conditional_logic'));
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('fields')->compile() => lang('fields'),

@@ -71,7 +71,7 @@ Conditional.Publish.prototype = {
         this.original_row_count = this._getRowsInSet().length;
         this.original_set_count = this._getSets().length;
 
-        if (!Object.keys(EE.conditionData).length) {
+        if (!Object.keys(EE.conditionData).length || !Object.keys(JSON.parse(EE.conditionData)).length) {
             this._firstCloneSet();
         }
 
@@ -361,7 +361,20 @@ function initRules () {
 
 
 $(document).ready(function() {
-    initRules();
+    if (EE.conditionData) {
+        initRules();
+    }
+
+    $('body').on('click', '.js-modal-link--side', function() {
+        var timer = setInterval(function () {
+            
+            if ( $('[rel="modal-form"] .panel #fieldset-condition_fields').length ) {
+                $('[rel="modal-form"] .panel #fieldset-condition_fields').hide();
+                initRules();
+                clearInterval(timer);
+            }
+        }, 20);
+    });
 
     function checkFieldType(fieldName) {
         var fieldType;
@@ -390,6 +403,7 @@ $(document).ready(function() {
         parentRow.find('.condition-rule-operator-wrap .condition-rule-operator').remove();
         parentRow.find('.condition-rule-value-wrap input').remove();
 
+        console.log('EE.fieldsInfo', EE.fieldsInfo);
         $.each(EE.fieldsInfo, function(i, val) {
             if (fieldName == val['field_label']) {
                 evaluationRules = val['evaluationRules'];
