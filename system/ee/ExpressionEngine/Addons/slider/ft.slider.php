@@ -52,13 +52,19 @@ class Slider_ft extends Text_ft
 
         $field = array(
             'name' => $this->field_name,
-            'value' => !is_null($data) ? $this->_format_number($data) : $this->settings['field_min_value'],
+            'value' => !is_null($data) ? $data : $this->settings['field_min_value'],
             'min' => (isset($this->settings['field_min_value']) && $this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0,
             'max' => (isset($this->settings['field_max_value']) && $this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100,
             'step' => (isset($this->settings['field_step']) && $this->settings['field_step'] != '') ? $this->settings['field_step'] : 1,
             'suffix' => isset($this->settings['field_suffix']) ? $this->settings['field_suffix'] : '',
             'prefix' => isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : ''
         );
+
+        if ($field['value'] < $field['min']) {
+            $field['value'] = $field['min'];
+        } elseif ($field['value'] > $field['max']) {
+            $field['value'] = $field['max'];
+        }
 
         if (REQ == 'CP') {
             return ee('View')->make('slider:single')->render($field);

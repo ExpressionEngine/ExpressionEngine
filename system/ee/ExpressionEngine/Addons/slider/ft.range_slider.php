@@ -59,6 +59,18 @@ class Range_slider_ft extends Slider_ft
         $field['from'] = (isset($data[0])) ? $data[0] : $field['min'];
         $field['to'] = (isset($data[1])) ? $data[1] : $field['max'];
 
+        if ($field['from'] < $field['min']) {
+            $field['from'] = $field['min'];
+        } elseif ($field['from'] > $field['max']) {
+            $field['from'] = $field['max'];
+        }
+
+        if ($field['to'] < $field['min']) {
+            $field['to'] = $field['min'];
+        } elseif ($field['to'] > $field['max']) {
+            $field['to'] = $field['max'];
+        }
+
         if (REQ == 'CP') {
             return ee('View')->make('slider:pair')->render($field);
         }
