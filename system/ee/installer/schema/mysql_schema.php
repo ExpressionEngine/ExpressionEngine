@@ -50,6 +50,7 @@ class EE_Schema
 			`site_label` varchar(100) NOT NULL default '',
 			`site_name` varchar(50) NOT NULL default '',
 			`site_description` text NULL,
+			`site_color` varchar(6) NOT NULL default '',
 			`site_bootstrap_checksums` TEXT NOT NULL ,
 			`site_pages` MEDIUMTEXT NOT NULL ,
 			PRIMARY KEY `site_id` (`site_id`),

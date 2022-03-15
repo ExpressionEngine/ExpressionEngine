@@ -25,8 +25,9 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator (
+        $steps = new \ProgressIterator(
             [
+                'addSiteColorColumn',
                 'installButtonsFieldtype',
                 'installNumberFieldtype',
                 'installNotesFieldtype',
@@ -37,6 +38,24 @@ class Updater
             $this->$v();
         }
 
+        return true;
+    }
+
+    private function addSiteColorColumn()
+    {
+        if (! ee()->db->field_exists('site_color', 'sites')) {
+            ee()->smartforge->add_column(
+                'sites',
+                array(
+                    'site_color' => array(
+                        'type' => 'varchar',
+                        'constraint' => 6,
+                        'default' => '',
+                        'null' => false
+                    )
+                )
+            );
+        }
         return true;
     }
 
