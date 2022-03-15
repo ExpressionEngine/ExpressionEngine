@@ -9,6 +9,23 @@
 
 $(document).ready(function(){
 
+	// the code is responsible for preventing the page scrolling when press on 
+	// the dropdown list using the spacebar (code 32)
+	window.addEventListener('keydown', (e) => {
+		if (e.keyCode === 32 && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) { 
+		  e.preventDefault();
+		}
+	});
+
+	// code for opening and moving through the select dropdown menu when pressing Enter (keyCode 13) or Spacebar (keyCode 32)
+	$('.js-dropdown-toggle, .select__dropdown-item').each(function() {
+		$(this).keyup(function(event) {
+			if (event.keyCode === 13 || event.keyCode === 32) {
+				$(this).click();
+			}
+		});
+	});
+
 	// =============================================
 	// For backwards compatibility: adding $.browser
 	// from: https://github.com/jquery/jquery-migrate
@@ -969,8 +986,26 @@ $(document).ready(function(){
 
 			if ($(input).data('groupToggle')) EE.cp.form_group_toggle(input)
 
+			if($(input).data('groupToggle')) {
+				$('#fieldset-rel_min input[name="rel_min"]').prop('disabled', false);
+				$('#fieldset-rel_max input[name="rel_max"]').prop('disabled', false);
+			}
+
 			e.preventDefault();
 		});
+
+		$('#fieldset-relationship_allow_multiple button.toggle-btn').each(function(){
+			if( $('#fieldset-relationship_allow_multiple button.toggle-btn').data('state') == 'on' ) {
+				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_min').show();
+				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_max').show();
+			}
+
+			if( $('#fieldset-relationship_allow_multiple button.toggle-btn').data('state') == 'off' ){
+				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_min').hide();
+				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_max').hide();
+			}
+		});
+
 
 		$('body').on('click', '.js-toggle-link', function(e) {
 			e.preventDefault()

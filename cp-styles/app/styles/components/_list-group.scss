@@ -203,6 +203,18 @@
 .list-item__secondary {
 	color: color(text-secondary);
 	font-size: 0.9em;
+  position: absolute;
+  top: 34px;
+  left: 15px;
+}
+
+.list-item__content .list-item__secondary {
+  position: inherit;
+  visibility: hidden;
+}
+
+.list-group .list-item__secondary {
+	visibility: visible;
 }
 
 .list-item__body {
@@ -214,7 +226,7 @@
 	display: flex;
 	align-items: center;
 	padding: $sq-inset-s;
-	padding-right: $sq-s / 2;
+	padding-right: math.div($sq-s, 2);
 	color: color(text-secondary);
 	cursor: move;
 
@@ -225,7 +237,7 @@
 	}
 
 	& + .list-item__content {
-		padding-left: $sq-s / 2;
+		padding-left: math.div($sq-s, 2);
 	}
 }
 

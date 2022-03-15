@@ -8,6 +8,7 @@ context('System Templates', () => {
 
     before(function() {
         cy.task('db:seed')
+        cy.task('installer:replace_config')
         cy.uninstallTheme('member')
         cy.uninstallTheme('forum')
     })
@@ -22,9 +23,11 @@ context('System Templates', () => {
         })
 
         it('displays', function() {
-            page.get('templates').its('length').should('eq', 2)
-            page.get('templates').eq(0).find('td:first-child').contains('Site Offline')
-            page.get('templates').eq(1).find('td:first-child').contains('User Messages')
+            page.get('templates').its('length').should('eq', 4)
+            page.get('templates').contains('Site Offline')
+            page.get('templates').contains('User Messages')
+            page.get('templates').contains('Post-install Message')
+            page.get('templates').contains('Multi-Factor Authentication Template')
         })
 
         
@@ -36,7 +39,7 @@ context('System Templates', () => {
         })
 
         it('displays', function() {
-            page.get('templates').its('length').should('eq', 15)
+            page.get('templates').its('length').should('eq', 18)
         })
 
        

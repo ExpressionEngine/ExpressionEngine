@@ -5,7 +5,13 @@ import UsernamePassword from '../../elements/pages/members/profile/UsernamePassw
 const page = new UsernamePassword
 
 context('Profile - Username and Password', () => {
+
+  before(function(){
+    cy.task('db:seed')
+  })
+
   beforeEach(function() {
+    cy.eeConfig({ item: 'password_security_policy', value: 'none' })
     cy.auth();
 
     page.load()

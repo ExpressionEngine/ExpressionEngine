@@ -465,7 +465,7 @@ class SimplePie_Enclosure
             }
         }
 
-        return null;
+        return '';
     }
 
     /**

@@ -266,6 +266,8 @@ $lang = array(
 
     'clear_versioning_data' => 'Delete all existing revision data in this channel?',
 
+    'update_versioning' => 'Update this setting for all entries?',
+
     'closed' => 'Closed',
 
     'comment_convert_image_urls_desc' => 'When enabled, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s comments.',
@@ -299,6 +301,10 @@ $lang = array(
     'enable_sticky' => 'Enable Sticky entries?',
 
     'enable_sticky_desc' => 'When enabled, entries can be marked as sticky and have preference in sorted listings.',
+
+    'enable_entry_cloning' => 'Enable entry cloning?',
+
+    'enable_entry_cloning_desc' => 'When enabled, entries can be duplicated using "Clone to New Entry" option in saving options dropdown.',
 
     'default_category' => 'Category',
 

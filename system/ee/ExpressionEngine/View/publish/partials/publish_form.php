@@ -1,9 +1,24 @@
 <div class="panel">
-  <div class="panel-body">
 <div class="form-standard" data-publish>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
+	<?php if (!isset($pro_class)) : ?>
+	<div class="panel-heading panel-heading__publish">
+		<div class="title-bar title-bar--large">
+			<h3 class="title-bar__title"><?=$head['title']?></h3>
+		</div>
+	</div>
+	<?php endif; ?>
+
+	<div class="panel-body panel-body__publish">
+
 	<div class="tab-wrap">
+
+		<?php if (!isset($pro_class)) : ?>
+		<div class="title-bar__extra-tools title-bar__extra-tools-publish tab-bar__right-buttons">
+			<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
+		</div>
+		<?php endif; ?>
 		<div class="tab-bar tab-bar--sticky<?php if (isset($pro_class)) : ?> hidden<?php endif; ?>">
 			<?php if (!isset($pro_class)) : ?>
 			<div class="tab-bar__tabs">
@@ -30,13 +45,15 @@
 			</div>
 			<?php endif; ?>
 
+			<?php if (isset($pro_class)) : ?>
 			<div class="tab-bar__right-buttons">
 				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 			</div>
+			<?php endif; ?>
 		</div>
-		
+
 		<?=ee('CP/Alert')->getAllInlines(isset($pro_class) ? 'error' : null)?>
-		<?php foreach ($layout->getTabs() as $index => $tab): 
+		<?php foreach ($layout->getTabs() as $index => $tab):
 			if (ee('Request')->get('field_id') != '') {
 				$tabIsHidden = true;
 				foreach ($tab->getFields() as $field) {
@@ -49,7 +66,7 @@
 					continue;
 				}
 			}
-			
+
 			if (! $tab->isVisible()) {
                 continue;
             } ?>
@@ -88,12 +105,14 @@
 			<fieldset class="<?=$field_class?>">
 			<?php endif; ?>
 				<div class="field-instruct">
-					<label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
-					<?php
-                    $fieldInstructions = $field->getInstructions();
-                    if (!empty($fieldInstructions)) : ?>
-					<em><?=$fieldInstructions?></em>
-					<?php endif; ?>
+                    <?php if (! $field->titleIsHidden()):?>
+                        <label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
+                        <?php
+                        $fieldInstructions = $field->getInstructions();
+                        if (!empty($fieldInstructions)) :?>
+                        <em><?=$fieldInstructions?></em>
+                        <?php endif;?>
+                    <?php endif;?>
 				</div>
 				<div class="field-control">
 					<?php if ($field->get('field_id') == 'revisions'): ?>
@@ -118,7 +137,7 @@
 			<fieldset>
 				<div class="field-instruct<?=$field_class?>">
 					<label><span class="ico sub-arrow js-toggle-field"></span><?=lang('autosaved_versions')?></label>
-					<em><?=lang('autosaved_versions')?></em>
+					<em><?=lang('autosaved_versions_desc')?></em>
 				</div>
 				<div class="field-control">
 					<?=$autosaves?>
@@ -128,8 +147,8 @@
 		<?php endif; ?>
   </div>
 
-	</form>
 </div>
+	</form>
 </div>
 </div>
 <?=ee('CP/Alert')->getStandard()?>

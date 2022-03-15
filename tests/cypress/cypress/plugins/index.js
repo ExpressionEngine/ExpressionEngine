@@ -17,6 +17,7 @@ module.exports = (on, config) => {
     const Database = require('./database.js');
     const db = new Database({
         host: config.env.DB_HOST,
+        port: config.env.DB_PORT,
         user: config.env.DB_USER,
         password: config.env.DB_PASSWORD,
         database: config.env.DB_DATABASE
@@ -36,10 +37,15 @@ module.exports = (on, config) => {
     const Installer = require('./installer.js');
     const installer = new Installer;
 
+    const Updater = require('./updater.js');
+    const updater = new Updater;
+
     const baseUrl = config.env.CYPRESS_BASE_URL || null;
     if (baseUrl) {
         config.baseUrl = baseUrl;
     }
+
+    const child_process = require('child_process');
 
     on('task', {
         'db:clear': () => {
@@ -49,8 +55,47 @@ module.exports = (on, config) => {
 
     on('task', {
         'db:seed': () => {
+            var tempSeed = 'seed.sql';
             fs.delete('../../system/user/cache/default_site/');
-            return db.seed(config.env.DB_DUMP)
+
+            if(fs.exists(db.sqlPath(tempSeed))) {
+                return db.seed(tempSeed);
+            }
+
+            var renameInstaller = false;
+            if (!fs.exists('../../system/ee/installer')) {
+                renameInstaller = true;
+                fs.rename('../../system/ee/_installer', '../../system/ee/installer');
+            }
+            return db.truncate().then(()=>{
+                var properties = JSON.parse(fs.read('../../build-tools/build.json'))
+                let command = `cd support/fixtures && php initDb.php --version ${properties.tag} --url ${config.baseUrl} --username ${config.env.USER_EMAIL} --password ${config.env.USER_PASSWORD} --db_host ${config.env.DB_HOST} --db_user ${config.env.DB_USER} --db_database ${config.env.DB_DATABASE} --db_password ${config.env.DB_PASSWORD}`;
+
+                //console.log(command);
+                try {
+                    var a = child_process.execSync(command).toString();
+                    //console.log(a);
+                } catch (error) {
+                    console.log('------')
+                    console.log(error.status);  // 0 : successful exit, but here in exception it has to be greater than 0
+                    console.log(error.message); // Holds the message you typically want.
+                    console.log(error.stderr.toString());  // Holds the stderr output. Use `.toString()`.
+                    console.log(error.stdout.toString());  // Holds the stdout output. Use `.toString()`.
+                    console.log('------')
+                }
+
+                if (renameInstaller || fs.exists('../../system/ee/installer')) {
+                    fs.rename('../../system/ee/installer', '../../system/ee/_installer');
+                }
+
+                // Load content from dump
+                return db.load(config.env.DB_DUMP).then(() => {;
+                    // Store database changes to skip initDb step in subsequent test runs
+                    return db.dump(tempSeed);
+                });
+
+                // return db.load(config.env.DB_DUMP)
+            })
         }
     })
 
@@ -190,7 +235,16 @@ module.exports = (on, config) => {
     })
 
     on('task', {
-        'installer:replace_config': ({file, options}) => {
+        'installer:test': () => {
+            return 'testing';
+        }
+    })
+
+    on('task', {
+        'installer:replace_config': ({file, options} = {}) => {
+            if (typeof(options)==='undefined') {
+                options = {database: db_defaults};
+            }
             installer.replace_config(file, options)
             installer.set_base_url(config.baseUrl)
             return true;
@@ -239,6 +293,21 @@ module.exports = (on, config) => {
         }
     })
 
+    on('task', {
+        'updater:backup_files': () => {
+            return updater.backup_files()
+        }
+    })
+
+    on('task', {
+        'updater:restore_files': () => {
+            return updater.restore_files()
+        }
+    })
+
+    on("task", {
+        generateOTP: require("cypress-otp")
+    });
 
 
     on('before:browser:launch', (browser, launchOptions) => {

@@ -310,3 +310,24 @@
 		}
 	}
 }
+
+.entry-pannel-heading {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	flex: 1 1;
+
+	.title-bar {
+		flex: 1 1;
+		margin-right: auto;
+		padding-right: 10px;
+	}
+}
+
+.entry-pannel-notice-wrap {
+	padding: 0 25px;
+
+	.app-notice {
+		margin-top: 20px;
+	}
+}

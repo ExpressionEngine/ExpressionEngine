@@ -1,0 +1,7 @@
+{
+    "require-dev": {
+        "phpcompatibility/php-compatibility": "*",
+        "phpstan/phpstan": "*"
+    },
+    "prefer-stable" : true
+}

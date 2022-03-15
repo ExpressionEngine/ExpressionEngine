@@ -54,6 +54,18 @@ abstract class Relation
     }
 
     /**
+     * Remove some variables to get cleaner var_dump
+     *
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $footprint = get_object_vars($this);
+        unset($footprint['datastore']);
+        return $footprint;
+    }
+
+    /**
      *
      */
     abstract public function createAssociation();

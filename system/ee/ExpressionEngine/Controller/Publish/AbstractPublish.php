@@ -67,14 +67,14 @@ abstract class AbstractPublish extends CP_Controller
         $autosave_interval_seconds = (ee()->config->item('autosave_interval_seconds') === false) ?
                                         60 : ee()->config->item('autosave_interval_seconds');
 
-        //	Create Foreign Character Conversion JS
+        //  Create Foreign Character Conversion JS
         $foreign_characters = ee()->config->loadFile('foreign_chars');
 
         /* -------------------------------------
         /*  'foreign_character_conversion_array' hook.
         /*  - Allows you to use your own foreign character conversion array
         /*  - Added 1.6.0
-        * 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+        *   - Note: in 2.0, you can edit the foreign_chars.php config file as well
         */
         if (isset(ee()->extensions->extensions['foreign_character_conversion_array'])) {
             $foreign_characters = ee()->extensions->call('foreign_character_conversion_array');
@@ -120,9 +120,9 @@ abstract class AbstractPublish extends CP_Controller
         ee('Category')->addCategoryJS();
 
         // -------------------------------------------
-        //	Publish Page Title Focus - makes the title field gain focus when the page is loaded
+        //  Publish Page Title Focus - makes the title field gain focus when the page is loaded
         //
-        //	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
+        //  Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
 
         ee()->javascript->set_global('publish.title_focus', false);
 
@@ -372,7 +372,20 @@ abstract class AbstractPublish extends CP_Controller
             }
         }
 
-        $entry->set($_POST);
+        if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
+            $entry->setId(null);
+            while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
+                $_POST['url_title'] = 'copy_' . $_POST['url_title'];
+            }
+            if ($_POST['title'] == $entry->title) {
+                $_POST['title'] = lang('copy_of') . ' ' . $_POST['title'];
+            }
+            $action = 'create';
+            $entry->set($_POST);
+            $entry->markAsDirty();
+        } else {
+            $entry->set($_POST);
+        }
 
         $result = $entry->validate();
 
@@ -395,6 +408,21 @@ abstract class AbstractPublish extends CP_Controller
     {
         $action = ($entry->isNew()) ? 'create' : 'edit';
         $entry->edit_date = ee()->localize->now;
+        if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
+            $action = 'clone';
+            $entry->markAsDirty();
+            $entry->set([
+                'status' => 'closed',
+                'recent_comment_date' => null,
+                'comment_total' => 0,
+                'forum_topic_id' => null,
+                'view_count_one' => 0,
+                'view_count_two' => 0,
+                'view_count_three' => 0,
+                'view_count_four' => 0,
+                'entry_date' => ee()->localize->now,
+            ]);
+        }
         $entry->save();
 
         ee()->session->set_flashdata('entry_id', $entry->entry_id);
@@ -431,7 +459,20 @@ abstract class AbstractPublish extends CP_Controller
             }
 
             return $result;
-        } elseif (ee()->input->post('submit') == 'save') {
+        } elseif (ee()->input->post('submit') == 'save' || (defined('CLONING_MODE') && CLONING_MODE === true)) {
+
+            // If we just cloned an entry, we set the "status changed" warning banner
+            if ((defined('CLONING_MODE') && CLONING_MODE === true)) {
+                $cloneAlert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
+                    ? ee('CP/Alert')->makeStandard('entry-form-clone')
+                    : ee('CP/Alert')->makeInline('entry-form-clone');
+
+                $cloneAlert->asWarning()
+                ->canClose()
+                ->addToBody(sprintf(lang('status_changed_desc'), lang('closed')))
+                ->defer();
+            }
+
             if (ee()->input->get('return') != '') {
                 $redirect_url = urldecode(ee()->input->get('return'));
             } elseif (ee()->input->post('return') != '') {
@@ -519,6 +560,17 @@ abstract class AbstractPublish extends CP_Controller
             'attrs' => 'disabled="disabled"'
         ];
 
+        if (!$entry->isNew() && $this->entryCloningEnabled($entry)) {
+            $buttons[] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_as_new_entry',
+                'text' => 'save_as_new_entry',
+                'working' => 'btn_saving',
+                'attrs' => 'disabled="disabled"'
+            ];
+        }
+
         // get rid of Save & New button if we've reached the max entries for this channel
         if ($entry->Channel->maxEntriesLimitReached()) {
             unset($buttons[1]);
@@ -546,6 +598,18 @@ abstract class AbstractPublish extends CP_Controller
         }
 
         return $buttons;
+    }
+
+    protected function entryCloningEnabled(ChannelEntry $entry)
+    {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            if (ee()->config->item('enable_entry_cloning') === false || ee()->config->item('enable_entry_cloning') === 'y') {
+                if ($entry->Channel->enable_entry_cloning) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     protected function createLivePreviewModal(ChannelEntry $entry)
@@ -592,6 +656,9 @@ abstract class AbstractPublish extends CP_Controller
                 }
                 if (ee()->input->get('return') != '') {
                     $preview_url .= AMP . 'return=' . rawurlencode(base64_encode(urldecode(ee()->input->get('return', true))));
+                }
+                if (ee()->input->get('prefer_system_preview') == 'y') {
+                    $preview_url .= AMP . 'prefer_system_preview=y';
                 }
                 //cross-domain live previews are only possible if $_SERVER['HTTP_HOST'] is set
                 if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {

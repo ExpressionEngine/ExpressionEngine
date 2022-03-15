@@ -1630,7 +1630,7 @@ class Member_settings extends Member
             ->all();
 
         foreach ($roles as $role) {
-            $group_opts .= "<option value='{$role->getId()}'>{$role->name()}</option>";
+            $group_opts .= "<option value='{$role->getId()}'>{$role->name}</option>";
         }
 
         $template = $this->_var_swap(
@@ -1661,8 +1661,8 @@ class Member_settings extends Member
         /** -------------------------------------
         /**  Parse the $_POST data
         /** -------------------------------------*/
-        if ($_POST['screen_name'] == '' &&
-            $_POST['email'] == ''
+        if (ee('Request')->post('screen_name') == '' &&
+            ee('Request')->post('email') == ''
             ) {
             ee()->functions->redirect($redirect_url);
             exit;
@@ -1671,13 +1671,18 @@ class Member_settings extends Member
         $search_query = array();
 
         foreach ($_POST as $key => $val) {
+            // Don't search for site_id because it isn't on the members table
+            if ($key == 'site_id') {
+                continue;
+            }
+
             if ($key == 'group_id') {
                 if ($val != 'any') {
-                    $search_query[] = " role_id ='" . ee()->db->escape_str($_POST['group_id']) . "'";
+                    $search_query[] = " role_id ='" . ee()->db->escape_str((int) $_POST['group_id']) . "'";
                 }
-            } else {
+            } else if (in_array($key, ['screen_name', 'email'])) {
                 if ($val != '') {
-                    $search_query[] = $key . " LIKE '%" . ee()->db->escape_like_str($val) . "%'";
+                    $search_query[] = ee()->db->escape_str($key) . " LIKE '%" . ee()->db->escape_like_str(ee('Security/XSS')->clean($val)) . "%'";
                 }
             }
         }
@@ -1690,7 +1695,7 @@ class Member_settings extends Member
         $Q = implode(" AND ", $search_query);
 
         $sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_roles
-				WHERE exp_members.role_id = exp_roles.role_id '
+				WHERE exp_members.role_id = exp_roles.role_id
 				AND " . $Q;
 
         $query = ee()->db->query($sql);

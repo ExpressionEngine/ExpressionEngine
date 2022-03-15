@@ -518,12 +518,15 @@ class EE_TreeNode
  */
 class EE_TreeIterator extends RecursiveArrayIterator
 {
+    protected $ref;
+
     /**
      * Override RecursiveArrayIterator's child detection method.
      * We really don't want to count object properties as children.
      *
      * @return boolean
      */
+    #[\ReturnTypeWillChange]
     public function hasChildren()
     {
         return ! $this->current()->is_leaf();
@@ -536,6 +539,7 @@ class EE_TreeIterator extends RecursiveArrayIterator
      *
      * @return Object<EE_TreeIterator>
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         $children = $this->current()->children();
@@ -573,6 +577,7 @@ class EE_BreadthFirstIterator implements OuterIterator
      *
      * @return iterator entry of the current inner iterator
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->_iterator->current();
@@ -583,6 +588,7 @@ class EE_BreadthFirstIterator implements OuterIterator
      *
      * @return iterator key of the current inner iterator
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->_iterator->key();
@@ -596,6 +602,7 @@ class EE_BreadthFirstIterator implements OuterIterator
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         if ($this->_iterator->hasChildren()) {
@@ -613,6 +620,7 @@ class EE_BreadthFirstIterator implements OuterIterator
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->_level = 0;
@@ -631,6 +639,7 @@ class EE_BreadthFirstIterator implements OuterIterator
      *
      * @return boolean iterator is valid
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         if ($this->_iterator->valid()) {
@@ -657,6 +666,7 @@ class EE_BreadthFirstIterator implements OuterIterator
      *
      * @return <RecursiveIterator> current sub iterator
      */
+    #[\ReturnTypeWillChange]
     public function getInnerIterator()
     {
         return $this->_iterator();

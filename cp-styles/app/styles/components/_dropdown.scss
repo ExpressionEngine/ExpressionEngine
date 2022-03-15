@@ -11,6 +11,8 @@
 	z-index: 200;
 	max-width: 600px;
 	min-width: 160px;
+	max-height: 90vh;
+	overflow-y: auto;
 
 	display: none;
 }
@@ -123,6 +125,12 @@
 	color: color(text-secondary);
 	text-transform: uppercase;
   font-size: 80%;
+}
+
+.dropdown__link-entryId {
+	color: var(--ee-text-secondary);
+	font-size: 80%;
+	margin-left: 3px;
 }
 
 .dropdown__link-right {
