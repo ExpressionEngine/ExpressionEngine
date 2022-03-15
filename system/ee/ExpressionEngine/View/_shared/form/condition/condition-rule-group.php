@@ -39,12 +39,16 @@ $matchFieldDefault = [
     'field_name' => 'condition_set[new_set_0][match]',
 ];
 
+ee()->javascript->set_global('conditionData', $data);
+
+// If this is loaded by an AJAX Request we need to add only a subset of 
+// variables to the global EE javascript object.
 if (AJAX_REQUEST) {
-    echo "<script>EE.conditionData = \"" . json_encode($data) . "\"</script>";
-} else {
-    ee()->javascript->set_global('conditionData', $data);
+    $keepGlobalVars = ['conditionData','fieldsInfo'];
+    ee()->javascript->global_vars = array_intersect_key(ee()->javascript->global_vars, array_flip($keepGlobalVars));
+    echo ee()->javascript->get_global();
 }
-// ee()->javascript->set_global('conditionData', $data);
+
 ?>
 <div class="field-conditionset-wrapper">
     <?php $this->embed('ee:_shared/form/condition/condition-set', [

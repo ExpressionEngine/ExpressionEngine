@@ -849,7 +849,9 @@ class Fields extends AbstractFieldsController
                 }
             }
         }
-
+        
+        ee()->javascript->set_global('fieldsInfo', $fieldsWithEvaluationRules);
+        
         $ruleGroupsField = array(
             'title' => '',
             'desc' => '',
@@ -869,8 +871,6 @@ class Fields extends AbstractFieldsController
         );
 
         array_push($sections[0], $ruleGroupsField);
-
-        ee()->javascript->set_global('fieldsInfo', $fieldsWithEvaluationRules);
 
         ee()->javascript->output('$(document).ready(function () {
             EE.cp.fieldToggleDisable();
