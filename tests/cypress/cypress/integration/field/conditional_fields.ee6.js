@@ -57,16 +57,16 @@ context('Conditional Fields', () => {
         cy.get('textarea[name="field_id_1"]').should('be.visible')
 
         cy.get('textarea[name="field_id_1"]').type('some text');
-        cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
+
         cy.intercept('**/publish/**').as('validation')
-        cy.get('textarea[name="field_id_2"]').type('hide').blur();
+        cy.get('textarea[name="field_id_2"]').clear().type('hide').blur();
         cy.wait('@validation')
 
         // After typing "hide" field 1 should not be visible
         cy.get('textarea[name="field_id_1"]').should('not.be.visible')
 
         // After typing "unhide" field 1 should be visible
-        cy.get('textarea[name="field_id_2"]').type('unhide').blur();
+        cy.get('textarea[name="field_id_2"]').clear().type('unhide').blur();
 
         // Now lets make it visible again
 
