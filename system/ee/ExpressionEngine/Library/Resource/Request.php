@@ -57,7 +57,7 @@ class Request
             show_404();
         }
 
-        $group_and_name = explode('/', $resource);
+        $group_and_name = array_map('trim', explode('/', $resource));
 
         if (2 != count($group_and_name)) {
             show_404();
@@ -71,7 +71,7 @@ class Request
 
         if (false !== strpos($group, ':')) {
             // if there's a site, let's get it and redefine $group
-            list($site, $group) = explode(':', $group, 2);
+            list($site, $group) = array_map('trim', explode(':', $group, 2));
         }
 
         $cache_path = $this->_cache_path($resource);
