@@ -128,11 +128,14 @@ class Request
             ee()->logger->developer('To fetch templates from database is usually faster than from file cache driver.');
         }
 
+        // Replace {site_url} in template before caching
+        $template_data = str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data);
+
         ee()->cache->save(
             $cache_path,
             array(
                 'edit_date' => $edit_date,
-                'template_data' => str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data)
+                'template_data' => $template_data
             ),
             // No TTL, cache lives on till cleared
             0,
