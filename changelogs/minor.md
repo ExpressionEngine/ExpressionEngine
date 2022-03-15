@@ -18,6 +18,7 @@ Bullet list below, e.g.
    - Added Sticky entry column to entries table
    - Added fluid Columns to List Command in order to accommodate longer Command lengths
    - Add channel data to category archives
+   - Update Typed Columns/timestamp to accept date text (strtotime()) as valid input
    - Added `parse_files` parameter on Query Module
    - Allow to use the same template on Search Module to results and no results
    - Added `{script='group/template'}` tag

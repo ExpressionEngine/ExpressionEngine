@@ -117,11 +117,7 @@ abstract class AbstractCategories extends CP_Controller
             }
         }
 
-        $sidebar->addActionBar()
-            ->withLeftButton(
-                lang('new'),
-                ee('CP/URL')->make('categories/groups/create')
-            );
+        $header->withButton(lang('new'), ee('CP/URL')->make('categories/groups/create'));
     }
 }
 

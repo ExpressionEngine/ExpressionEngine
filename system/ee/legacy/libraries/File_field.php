@@ -85,7 +85,7 @@ class File_field
         }
 
         // Create the hidden fields for the file and directory
-        $vars['hidden'] = form_hidden($field_name . '_hidden_file', $vars['filename']);
+        $vars['hidden'] = form_hidden($field_name . '_hidden_file', rawurldecode($vars['filename']));
         $vars['hidden'] .= form_hidden($field_name . '_hidden_dir', $vars['upload_location_id']);
 
         // Create a standard file upload field and dropdown for folks

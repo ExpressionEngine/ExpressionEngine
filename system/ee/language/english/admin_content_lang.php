@@ -30,6 +30,10 @@ $lang = array(
 
     'be_careful' => 'BE CAREFUL!',
 
+    'selectable_buttons_options' => 'Buttons options',
+
+    'selectable_buttons_options_desc' => '<em><i>Each item in the textarea will be included as selectable button in the publish form.</i>',
+
     'can_edit_status' => 'Can access status',
 
     'category' => 'Category',
@@ -277,6 +281,8 @@ $lang = array(
     'formatting_no_available' => 'Text formatting is not available for your chosen field type',
 
     'global_sort_order' => 'Master Sort Order',
+
+    'grid_buttons_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included as selectable buttons in the publish form.',
 
     'grid_checkbox_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single checkbox and label pair in the publish form.',
 
@@ -813,8 +819,6 @@ $lang = array(
     'field_min_value' => 'Minimum value',
 
     'field_max_value' => 'Maximum value',
-
-    'field_step' => 'Step',
 
     'field_show_fmt' => 'Allow override?',
 

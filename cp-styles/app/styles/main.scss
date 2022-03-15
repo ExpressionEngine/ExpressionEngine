@@ -32,6 +32,8 @@
 
 @import 'vendor/_markItUp';
 
+@import 'vendor/_ui-range';
+
 
 // Base - unclassified HTML elements
 // -------------------------------------------------------------------
@@ -68,6 +70,7 @@
 @import 'components/_toggle';
 @import 'components/_checkboxes-and-radios';
 @import 'components/fieldsets';
+@import 'components/_note-field';
 @import 'components/_file-field';
 @import 'components/_installer';
 @import 'components/_list';

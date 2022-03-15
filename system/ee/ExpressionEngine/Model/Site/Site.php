@@ -110,6 +110,7 @@ class Site extends Model
     protected static $_validation_rules = array(
         'site_name' => 'required|validateShortName|unique',
         'site_label' => 'required',
+        'site_color' => 'hexColor'
     );
 
     protected static $_events = array(
@@ -123,6 +124,7 @@ class Site extends Model
     protected $site_label;
     protected $site_name;
     protected $site_description;
+    protected $site_color;
     protected $site_bootstrap_checksums;
     protected $site_pages;
 
