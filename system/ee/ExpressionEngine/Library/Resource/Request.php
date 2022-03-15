@@ -14,9 +14,9 @@ namespace ExpressionEngine\Library\Resource;
 
 class Request
 {
-    const CACHE_NAMESPACE = 'resource_cache/';
+    public const CACHE_NAMESPACE = 'resource_cache/';
 
-    const TYPES = array('css', 'js');
+    public const TYPES = array('css', 'js');
 
     protected $type = '';
     protected $cache_scope = '';
@@ -169,8 +169,8 @@ class Request
     /**
      * Sends RESOURCE with cache headers
      *
-     * @param	string	resource contents
-     * @param	int		Unix timestamp (GMT/UTC) of last modification
+     * @param   string  resource contents
+     * @param   int     Unix timestamp (GMT/UTC) of last modification
      */
     protected function _send_resource($data, $modified)
     {
