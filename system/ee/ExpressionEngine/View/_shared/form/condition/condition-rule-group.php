@@ -44,9 +44,7 @@ ee()->javascript->set_global('conditionData', $data);
 // If this is loaded by an AJAX Request we need to add only a subset of 
 // variables to the global EE javascript object.
 if (AJAX_REQUEST) {
-    $keepGlobalVars = ['conditionData','fieldsInfo'];
-    ee()->javascript->global_vars = array_intersect_key(ee()->javascript->global_vars, array_flip($keepGlobalVars));
-    echo ee()->javascript->get_global();
+    echo ee()->javascript->get_global(['conditionData', 'fieldsInfo']);
 }
 
 ?>
