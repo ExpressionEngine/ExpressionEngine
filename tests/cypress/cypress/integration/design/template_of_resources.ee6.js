@@ -23,7 +23,7 @@ context('Design', () => {
 		})
 
 		//copy templates
-		cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
+		cy.task('filesystem:copy', { from: 'support/templates/default_site/*', to: '../../system/user/templates/' }).then(() => {
 			cy.authVisit('admin.php?/cp/design')
 		})
 
