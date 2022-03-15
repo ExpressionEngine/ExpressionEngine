@@ -71,7 +71,7 @@ Conditional.Publish.prototype = {
         this.original_row_count = this._getRowsInSet().length;
         this.original_set_count = this._getSets().length;
 
-        if (!Object.keys(EE.conditionData).length || !Object.keys(JSON.parse(EE.conditionData)).length) {
+        if (!Object.keys(EE.conditionData).length || (typeof EE.conditionData == 'string' && !Object.keys(JSON.parse(EE.conditionData)).length)) {
             this._firstCloneSet();
         }
 
