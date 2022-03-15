@@ -521,105 +521,106 @@ context('Create combinations of field', () => {
 	})
 
 
-})
+	context("Slider", () => {
 
-context("Slider", () => {
-
-	it('Test Slider' , () => {
-		cy.visit('admin.php?/cp/fields')
-		cy.get('div').contains('AA Value Slider').click()
-		cy.get('[name=field_min_value]:visible').clear().type('10');
-		cy.get('[name=field_max_value]:visible').clear().type('50');
-		cy.get('[name=field_step]:visible').clear().type('5');
-		cy.get('[name=field_prefix]:visible').clear().type('$')
-		cy.get('body').type('{ctrl}', {release: false}).type('s')
-		
-		cy.visit('admin.php?/cp/publish/edit')
-		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('.range-slider').not('.flat').find('input[type=range]').eq(0).as('range').invoke('val', 25).trigger('change')
-		cy.get('body').type('{ctrl}', {release: false}).type('s')
-
-		cy.get('.range-slider').not('.flat').find('input[type=range]').eq(0).as('range').invoke('val').should('eq', '25')
-		cy.get('@range').invoke('val', 23).trigger('change')
-		cy.get('@range').invoke('val').should('eq', '25')
-
-		cy.visit('admin.php?/cp/design')
-		cy.get('a').contains('aaValueSlider').eq(0).click()
-		cy.get('a').contains('index').click()
-		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{aa_value_slider_test:prefix}{aa_value_slider_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('button').contains('Save').eq(0).click()
-		cy.visit('index.php/aaValueSlider')
-		cy.get('body').should('contain', '$25')
+		it('Test Slider' , () => {
+			cy.visit('admin.php?/cp/fields')
+			cy.get('div').contains('AA Value Slider').click()
+			cy.get('[name=field_min_value]:visible').clear().type('10');
+			cy.get('[name=field_max_value]:visible').clear().type('50');
+			cy.get('[name=field_step]:visible').clear().type('5');
+			cy.get('[name=field_prefix]:visible').clear().type('$')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			
+			cy.visit('admin.php?/cp/publish/edit')
+			cy.get('div').contains('AA Test Entry').eq(0).click()
+			cy.get('.range-slider').not('.flat').find('input[type=range]').eq(0).as('range').invoke('val', 25).trigger('change')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+	
+			cy.get('.range-slider').not('.flat').find('input[type=range]').eq(0).as('range').invoke('val').should('eq', '25')
+			cy.get('@range').invoke('val', 23).trigger('change')
+			cy.get('@range').invoke('val').should('eq', '25')
+	
+			cy.visit('admin.php?/cp/design')
+			cy.get('a').contains('aaValueSlider').eq(0).click()
+			cy.get('a').contains('index').click()
+			cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{aa_value_slider_test:prefix}{aa_value_slider_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
+			cy.get('button').contains('Save').eq(0).click()
+			cy.visit('index.php/aaValueSlider')
+			cy.get('body').should('contain', '$25')
+		})
+	
+		it('Test Range Slider' , () => {
+			cy.visit('admin.php?/cp/fields')
+			cy.get('div').contains('AA Range Slider').click()
+			cy.get('[name=field_min_value]:visible').clear().type('10');
+			cy.get('[name=field_max_value]:visible').clear().type('50');
+			cy.get('[name=field_step]:visible').clear().type('5');
+			cy.get('[name=field_suffix]:visible').clear().type('%')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			
+			cy.visit('admin.php?/cp/publish/edit')
+			cy.get('div').contains('AA Test Entry').eq(0).click()
+			cy.get('.range-slider.flat').find('input[type=range]').eq(0).as('range1').invoke('val', 25).trigger('change', {force: true})
+			cy.get('.range-slider.flat').find('input[type=range]').eq(1).as('range2').invoke('val', 35).trigger('change', {force: true})
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+	
+			cy.get('.range-slider.flat').find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
+			cy.get('.range-slider.flat').find('input[type=range]').eq(1).as('range2').invoke('val').should('eq', '35')
+			cy.get('@range1').invoke('val', 23).trigger('change', {force: true})
+			cy.get('@range1').invoke('val').should('eq', '25')
+	
+			cy.visit('admin.php?/cp/design')
+			cy.get('a').contains('aaRangeSlider').eq(0).click()
+			cy.get('a').contains('index').click()
+			cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{aa_range_slider_test suffix="yes"}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
+			cy.get('button').contains('Save').eq(0).click()
+			cy.visit('index.php/aaRangeSlider')
+			cy.get('body').should('contain', '25% — 35%')
+	
+		})
+	
+		it('Switch between slider types', () => {
+			cy.visit('admin.php?/cp/fields')
+			cy.get('div').contains('AA Value Slider').click()
+			cy.get('[data-input-value=field_type] .select__button').click()
+			page.get('Type_Options').contains('Range Slider').click()
+			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');
+			cy.get('[name=field_max_value]:visible').invoke('val').should('eq', '50');
+			cy.get('[name=field_step]:visible').invoke('val').should('eq', '5');
+			cy.get('[name=field_prefix]:visible').invoke('val').should('eq', '$')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+	
+			cy.visit('admin.php?/cp/publish/edit')
+			cy.get('div').contains('AA Test Entry').eq(0).click()
+			cy.get('.range-slider').eq(0).find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
+			cy.get('.range-slider').eq(0).find('input[type=range]').eq(1).as('range2').invoke('val').should('eq', '50')
+	
+			cy.visit('index.php/aaValueSlider')
+			cy.get('body').should('contain', '$25 — 50')
+	
+			//------------------------------------
+			cy.visit('admin.php?/cp/fields')
+			cy.get('div').contains('AA Range Slider').click()
+			cy.get('[data-input-value=field_type] .select__button').click()
+			page.get('Type_Options').contains('Value Slider').click()
+			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');
+			cy.get('[name=field_max_value]:visible').invoke('val').should('eq', '50');
+			cy.get('[name=field_step]:visible').invoke('val').should('eq', '5');
+			cy.get('[name=field_suffix]:visible').invoke('val').should('eq', '%')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+	
+			cy.visit('admin.php?/cp/publish/edit')
+			cy.get('div').contains('AA Test Entry').eq(0).click()
+			cy.get('.range-slider').eq(1).find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
+			cy.get('.range-slider').eq(1).find('input[type=range]').eq(1).should('not.exist')
+	
+			cy.visit('index.php/aaRangeSlider')
+			cy.get('body').should('contain', '25%')
+		})
+	
 	})
-
-	it('Test Range Slider' , () => {
-		cy.visit('admin.php?/cp/fields')
-		cy.get('div').contains('AA Range Slider').click()
-		cy.get('[name=field_min_value]:visible').clear().type('10');
-		cy.get('[name=field_max_value]:visible').clear().type('50');
-		cy.get('[name=field_step]:visible').clear().type('5');
-		cy.get('[name=field_suffix]:visible').clear().type('%')
-		cy.get('body').type('{ctrl}', {release: false}).type('s')
-		
-		cy.visit('admin.php?/cp/publish/edit')
-		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('.range-slider.flat').find('input[type=range]').eq(0).as('range1').invoke('val', 25).trigger('change', {force: true})
-		cy.get('.range-slider.flat').find('input[type=range]').eq(1).as('range2').invoke('val', 35).trigger('change', {force: true})
-		cy.get('body').type('{ctrl}', {release: false}).type('s')
-
-		cy.get('.range-slider.flat').find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
-		cy.get('.range-slider.flat').find('input[type=range]').eq(1).as('range2').invoke('val').should('eq', '35')
-		cy.get('@range1').invoke('val', 23).trigger('change', {force: true})
-		cy.get('@range1').invoke('val').should('eq', '25')
-
-		cy.visit('admin.php?/cp/design')
-		cy.get('a').contains('aaRangeSlider').eq(0).click()
-		cy.get('a').contains('index').click()
-		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{aa_range_slider_test suffix="yes"}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('button').contains('Save').eq(0).click()
-		cy.visit('index.php/aaRangeSlider')
-		cy.get('body').should('contain', '25% — 35%')
-
-	})
-
-	it('Switch between slider types', () => {
-		cy.visit('admin.php?/cp/fields')
-		cy.get('div').contains('AA Value Slider').click()
-		cy.get('[data-input-value=field_type] .select__button').click()
-		page.get('Type_Options').contains('Range Slider').click()
-		cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');
-		cy.get('[name=field_max_value]:visible').invoke('val').should('eq', '50');
-		cy.get('[name=field_step]:visible').invoke('val').should('eq', '5');
-		cy.get('[name=field_prefix]:visible').invoke('val').should('eq', '$')
-		cy.get('body').type('{ctrl}', {release: false}).type('s')
-
-		cy.visit('admin.php?/cp/publish/edit')
-		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('.range-slider').eq(0).find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
-		cy.get('.range-slider').eq(0).find('input[type=range]').eq(1).as('range2').invoke('val').should('eq', '50')
-
-		cy.visit('index.php/aaValueSlider')
-		cy.get('body').should('contain', '$25 — 50')
-
-		//------------------------------------
-		cy.visit('admin.php?/cp/fields')
-		cy.get('div').contains('AA Range Slider').click()
-		cy.get('[data-input-value=field_type] .select__button').click()
-		page.get('Type_Options').contains('Value Slider').click()
-		cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');
-		cy.get('[name=field_max_value]:visible').invoke('val').should('eq', '50');
-		cy.get('[name=field_step]:visible').invoke('val').should('eq', '5');
-		cy.get('[name=field_suffix]:visible').invoke('val').should('eq', '%')
-		cy.get('body').type('{ctrl}', {release: false}).type('s')
-
-		cy.visit('admin.php?/cp/publish/edit')
-		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('.range-slider').eq(1).find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
-		cy.get('.range-slider').eq(1).find('input[type=range]').eq(1).should('not.exist')
-
-		cy.visit('index.php/aaRangeSlider')
-		cy.get('body').should('contain', '25%')
-	})
+	
 
 })
 
