@@ -1,9 +1,24 @@
 <div class="panel">
-  <div class="panel-body">
 <div class="form-standard" data-publish>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
+	<?php if (!isset($pro_class)) : ?>
+	<div class="panel-heading panel-heading__publish">
+		<div class="title-bar title-bar--large">
+			<h3 class="title-bar__title"><?=$head['title']?></h3>
+		</div>
+	</div>
+	<?php endif; ?>
+
+	<div class="panel-body panel-body__publish">
+
 	<div class="tab-wrap">
+
+		<?php if (!isset($pro_class)) : ?>
+		<div class="title-bar__extra-tools title-bar__extra-tools-publish tab-bar__right-buttons">
+			<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
+		</div>
+		<?php endif; ?>
 		<div class="tab-bar tab-bar--sticky<?php if (isset($pro_class)) : ?> hidden<?php endif; ?>">
 			<?php if (!isset($pro_class)) : ?>
 			<div class="tab-bar__tabs">
@@ -30,9 +45,11 @@
 			</div>
 			<?php endif; ?>
 
+			<?php if (isset($pro_class)) : ?>
 			<div class="tab-bar__right-buttons">
 				<div class="form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 			</div>
+			<?php endif; ?>
 		</div>
 
 		<?=ee('CP/Alert')->getAllInlines(isset($pro_class) ? 'error' : null)?>
@@ -130,8 +147,8 @@
 		<?php endif; ?>
   </div>
 
-	</form>
 </div>
+	</form>
 </div>
 </div>
 <?=ee('CP/Alert')->getStandard()?>
