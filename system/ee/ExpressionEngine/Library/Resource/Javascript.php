@@ -11,7 +11,7 @@
 
 namespace ExpressionEngine\Library\Resource;
 
-class JavaScript extends Request
+class Javascript extends Request
 {
     /**
      * Request JS Template
