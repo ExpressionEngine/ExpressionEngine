@@ -1733,7 +1733,7 @@ class EE_Schema
         }
 
         // Default field types
-        $default_fts = array('select', 'text', 'number', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url', 'colorpicker', 'selectable_buttons', 'notes');
+        $default_fts = array('select', 'text', 'number', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'slider', 'range_slider', 'toggle', 'url', 'colorpicker', 'selectable_buttons', 'notes');
 
         foreach ($default_fts as $name) {
             $addon_setup_path = SYSPATH . '/ee/ExpressionEngine/Addons/' . $name . '/addon.setup.php';

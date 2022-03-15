@@ -20,8 +20,6 @@ class Text_ft extends EE_Fieldtype
         'version' => '1.0.0'
     );
 
-    public $field_content_types;
-
     // Parser Flag (preparse pairs?)
     public $has_array_data = false;
 
@@ -148,7 +146,7 @@ class Text_ft extends EE_Fieldtype
                 $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('directory' => 'all'));
 
                 ee()->cp->add_js_script(array(
-                    'file' => array('fields/textarea/textarea'),
+                    'file' => array('fields/textarea/cp'),
                     'plugin' => array('ee_txtarea')
                 ));
             }

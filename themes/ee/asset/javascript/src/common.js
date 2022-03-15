@@ -927,6 +927,22 @@ $(document).ready(function(){
 	// ===================
 	// input range sliders
 	// ===================
+		$('.range-slider input[type="range"]').each(function(index, el){
+			if (index === ($('.range-slider input[type="range"]').length - 1)) {
+				var secondOutput = $(this).next();
+				var secondOutputWidth = secondOutput.outerWidth();
+				var minVal = $(this).attr('min');
+				var maxVal = $(this).attr('max');
+				var startPoint = ($(this).attr('value') - minVal)/(maxVal - minVal) * 100;
+				secondOutput.css('left', 'calc('+startPoint+'% - '+secondOutputWidth+'px)');
+
+				$(this).on('input',function(){
+					var newVal = $(this).val();
+					var value = (newVal - minVal)/(maxVal - minVal) * 100;
+					$(this).next().css('left', 'calc('+value+'% - '+$(this).next().outerWidth()+'px)');
+				})
+			}
+		});
 
 		// listen for input on a range input
 		$('input[type="range"]').on('input',function(){

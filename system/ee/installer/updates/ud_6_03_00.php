@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
+                'installSliderFieldtypes',
                 'addSiteColorColumn',
                 'installButtonsFieldtype',
                 'installNumberFieldtype',
@@ -39,6 +40,33 @@ class Updater
         }
 
         return true;
+    }
+
+    private function installSliderFieldtypes()
+    {
+        if (ee()->db->where('name', 'slider')->get('fieldtypes')->num_rows() == 0) {
+            ee()->db->insert(
+                'fieldtypes',
+                array(
+                    'name' => 'slider',
+                    'version' => '1.0.0',
+                    'settings' => base64_encode(serialize(array())),
+                    'has_global_settings' => 'n'
+                )
+            );
+        }
+
+        if (ee()->db->where('name', 'range_slider')->get('fieldtypes')->num_rows() == 0) {
+            ee()->db->insert(
+                'fieldtypes',
+                array(
+                    'name' => 'range_slider',
+                    'version' => '1.0.0',
+                    'settings' => base64_encode(serialize(array())),
+                    'has_global_settings' => 'n'
+                )
+            );
+        }
     }
 
     private function addSiteColorColumn()

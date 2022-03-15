@@ -298,6 +298,13 @@ $lang = array(
     'colorpicker_swatches_populate_values' => 'Values',
     'colorpicker_swatches_populate_manually' => 'Populate the swatches manually',
 
+    /* Slider */
+    'field_step' => 'Step',
+
+    'field_prefix' => 'Prefix',
+
+    'field_suffix' => 'Suffix',
+
     /* Notes */
     'notes_note_content' => 'Note Content',
     'notes_note_content_desc' => 'This content will appear as a note on the publish form. Markdown formatting is supported.',
