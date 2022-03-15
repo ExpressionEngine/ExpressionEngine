@@ -1084,6 +1084,10 @@ class EE_Config
         // Cycle through the newconfig array and swap out the data
         $to_be_added = array();
         $divineAll = $this->divineAll();
+        if (REQ == 'CLI' && version_compare(ee()->config->item('app_version'), '6.0.0', '<')) {
+            //hack for CLI updater to write to config file on early steps
+            $divineAll = [];
+        }
         if (is_array($new_values)) {
             foreach ($new_values as $key => $val) {
                 if (is_array($val)) {
@@ -1192,7 +1196,7 @@ class EE_Config
 
         fclose($fp);
 
-        if (! empty($this->_config_path_errors)) {
+        if (!empty($this->_config_path_errors)) {
             return $this->_config_path_errors;
         }
 
@@ -1210,7 +1214,7 @@ class EE_Config
      * @param array $dbconfig Items to add to the database configuration
      * @return boolean TRUE if successful
      */
-    public function _update_dbconfig($dbconfig = array())
+    public function _update_dbconfig($dbconfig = array(), $force_all_params = false)
     {
         $database_config = ee('Database')->getConfig();
 
@@ -1242,9 +1246,11 @@ class EE_Config
         // Remove default properties
         $defaults = $db_config->getDefaults();
 
-        foreach ($defaults as $property => $value) {
-            if (isset($group_config[$property]) && $group_config[$property] == $value) {
-                unset($group_config[$property]);
+        if ($force_all_params === false) {
+            foreach ($defaults as $property => $value) {
+                if (isset($group_config[$property]) && $group_config[$property] == $value) {
+                    unset($group_config[$property]);
+                }
             }
         }
 
@@ -1643,7 +1649,6 @@ class EE_Config
                     $details = array('name' => $name, 'value' => ee()->form_validation->set_value($name, $value), 'id' => $name);
 
                     break;
-
             }
 
             $vars['fields'][$name] = array('type' => $options[0], 'value' => $details, 'subtext' => $sub, 'selected' => $selected);
