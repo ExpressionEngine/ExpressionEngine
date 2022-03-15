@@ -401,8 +401,9 @@ class Edit extends AbstractPublishController
         $livePreviewReady = $this->createLivePreviewModal($entry);
 
         $vars = array(
-            'header' => [
+            'head' => [
                 'title' => lang('edit_entry'),
+                'class' => 'entries'
             ],
             'form_url' => $base_url,
             'form_attributes' => $form_attributes,

@@ -14358,16 +14358,41 @@ input[type=button].btn-block {
 }
 .title-bar__extra-tools .button, .title-bar__extra-tools .pagination__link, .title-bar__extra-tools .no-results a, .no-results .title-bar__extra-tools a,
 .title-bar__extra-tools .field-no-results a,
-.field-no-results .title-bar__extra-tools a, .title-bar__extra-tools .select-popup, .title-bar__extra-tools select, .title-bar__extra-tools .select__button, .title-bar__extra-tools .filter-bar__button, .title-bar__extra-tools .markItUpHeader ul a, .markItUpHeader ul .title-bar__extra-tools a {
+.field-no-results .title-bar__extra-tools a, .title-bar__extra-tools .select-popup, .title-bar__extra-tools select, .title-bar__extra-tools .select__button, .title-bar__extra-tools .filter-bar__button, .title-bar__extra-tools .markItUpHeader ul a, .markItUpHeader ul .title-bar__extra-tools a,
+.title-bar__extra-tools .button-group {
   margin-left: 10px;
 }
 .title-bar__extra-tools .button:first-child, .title-bar__extra-tools .pagination__link:first-child, .title-bar__extra-tools .no-results a:first-child, .no-results .title-bar__extra-tools a:first-child,
 .title-bar__extra-tools .field-no-results a:first-child,
-.field-no-results .title-bar__extra-tools a:first-child, .title-bar__extra-tools .select-popup:first-child, .title-bar__extra-tools select:first-child, .title-bar__extra-tools .select__button:first-child, .title-bar__extra-tools .filter-bar__button:first-child, .title-bar__extra-tools .markItUpHeader ul a:first-child, .markItUpHeader ul .title-bar__extra-tools a:first-child {
+.field-no-results .title-bar__extra-tools a:first-child, .title-bar__extra-tools .select-popup:first-child, .title-bar__extra-tools select:first-child, .title-bar__extra-tools .select__button:first-child, .title-bar__extra-tools .filter-bar__button:first-child, .title-bar__extra-tools .markItUpHeader ul a:first-child, .markItUpHeader ul .title-bar__extra-tools a:first-child,
+.title-bar__extra-tools .button-group:first-child {
   margin-left: 0px;
 }
 .title-bar__extra-tools .button-group {
   margin-left: 5px;
+}
+.title-bar__extra-tools.title-bar__extra-tools-publish {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 8px;
+  margin-top: -60px;
+  margin-bottom: 0px;
+  z-index: 6;
+  float: right;
+}
+@media (max-width: 767px) {
+  .title-bar__extra-tools.title-bar__extra-tools-publish {
+    position: inherit;
+    top: inherit;
+    margin-top: 0;
+    margin-bottom: 0;
+    z-index: inherit;
+    float: none;
+    text-align: right;
+  }
+}
+.title-bar__extra-tools.title-bar__extra-tools-publish .form-btns {
+  display: inline-flex;
 }
 
 .filter-bar {
@@ -14889,6 +14914,8 @@ input[type=button].btn-block {
   z-index: 200;
   max-width: 600px;
   min-width: 160px;
+  max-height: 90vh;
+  overflow-y: auto;
   display: none;
 }
 
@@ -18519,6 +18546,12 @@ body[data-theme=dark] .select-popup {
   clear: both;
 }
 
+@media (min-width: 768px) {
+  .panel-body.panel-body__publish {
+    padding-top: 2px;
+  }
+}
+
 .panel-heading {
   padding: 20px 25px;
   position: relative;
@@ -19964,6 +19997,12 @@ table .field-no-results {
   padding: 20px;
   padding-top: 0;
 }
+.live-preview__form-content .panel-heading__publish {
+  display: none;
+}
+.live-preview__form-content .panel-body__publish {
+  padding: 0px;
+}
 
 .live-preview__form-header {
   position: sticky;
@@ -20730,6 +20769,18 @@ table .field-no-results {
 .tab-bar__right-buttons .field-no-results .form-btns > a,
 .field-no-results .tab-bar__right-buttons .form-btns > a, .tab-bar__right-buttons .form-btns > .pagination__link,
 .tab-bar__right-buttons .form-btns > .button-group {
+  margin-left: 5px;
+}
+@media (max-width: 767px) {
+  .tab-bar__right-buttons.title-bar__extra-tools-publish .form-btns {
+    display: block;
+  }
+}
+
+.panel-heading .title-bar__extra-tools > .button, .panel-heading .markItUpHeader ul .title-bar__extra-tools > a, .markItUpHeader ul .panel-heading .title-bar__extra-tools > a, .panel-heading .title-bar__extra-tools > .filter-bar__button, .panel-heading .title-bar__extra-tools > .select__button, .panel-heading .title-bar__extra-tools > .select-popup, .panel-heading .title-bar__extra-tools > select, .panel-heading .no-results .title-bar__extra-tools > a, .no-results .panel-heading .title-bar__extra-tools > a,
+.panel-heading .field-no-results .title-bar__extra-tools > a,
+.field-no-results .panel-heading .title-bar__extra-tools > a, .panel-heading .title-bar__extra-tools > .pagination__link,
+.panel-heading .title-bar__extra-tools > .button-group {
   margin-left: 5px;
 }
 
