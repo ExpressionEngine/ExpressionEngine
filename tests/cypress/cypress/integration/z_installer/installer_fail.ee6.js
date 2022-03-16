@@ -11,7 +11,7 @@ const page = new Installer
 const install_form = new Form
 const install_success = new Success
 
-context.skip('Installer (should fail)', () => {
+context('Installer (should fail)', () => {
   before(function() {
 
   })
@@ -51,7 +51,7 @@ context.skip('Installer (should fail)', () => {
 
   after(function(){
     cy.task('installer:disable')
-    cy.task('installer:revert_config')
+    cy.task('installer:replace_config')
   })
 
   context('when using invalid database credentials', () => {

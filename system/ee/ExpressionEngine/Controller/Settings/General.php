@@ -157,7 +157,7 @@ class General extends Settings
                         'include_seconds' => array('type' => 'yes_no')
                     )
                 ),
-            )
+            ),
         );
 
         $base_url = ee('CP/URL', 'settings/general');
