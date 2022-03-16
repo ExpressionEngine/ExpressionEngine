@@ -323,8 +323,9 @@ class EE_Form_validation
      */
     public function valid_username($str, $type)
     {
-        ee()->load->library('logger');
-        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+        //deprecated, but will not throw deprecation error until 6.4
+        //ee()->load->library('logger');
+        //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
 
         if (! $type) {
             $type = 'update';
@@ -397,8 +398,9 @@ class EE_Form_validation
      */
     public function valid_screen_name($str)
     {
-        ee()->load->library('logger');
-        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+        //deprecated, but will not throw deprecation error until 6.4
+        //ee()->load->library('logger');
+        //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
 
         $data = [
             'screen_name' => $str
@@ -432,8 +434,9 @@ class EE_Form_validation
      */
     public function valid_password($str, $username_field)
     {
-        ee()->load->library('logger');
-        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+        //deprecated, but will not throw deprecation error until 6.4
+        //ee()->load->library('logger');
+        //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
 
         if (! $username_field) {
             $username_field = 'username';
@@ -503,8 +506,9 @@ class EE_Form_validation
      */
     public function valid_user_email($str, $type)
     {
-        ee()->load->library('logger');
-        ee()->logger->deprecated('6.3', "ee('Validation')->validate()");
+        //deprecated, but will not throw deprecation error until 6.4
+        //ee()->load->library('logger');
+        //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
 
         if (! $type) {
             $type = 'update';
@@ -947,8 +951,9 @@ class EE_Form_validation
      */
     public function _lookup_dictionary_word($target)
     {
-        ee()->load->library('logger');
-        ee()->logger->deprecated('6.3');
+        //deprecated, but will not throw deprecation error until 6.4
+        //ee()->load->library('logger');
+        //ee()->logger->deprecated('6.4');
 
         if (ee()->config->item('allow_dictionary_pw') == 'y') {
             return false;
