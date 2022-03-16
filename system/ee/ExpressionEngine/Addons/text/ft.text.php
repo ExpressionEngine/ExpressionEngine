@@ -20,6 +20,8 @@ class Text_ft extends EE_Fieldtype
         'version' => '1.0.0'
     );
 
+    public $field_content_types;
+
     // Parser Flag (preparse pairs?)
     public $has_array_data = false;
 
@@ -33,7 +35,7 @@ class Text_ft extends EE_Fieldtype
             return true;
         }
 
-        if (! isset($this->field_content_types)) {
+        if (! isset($this->field_content_types) || is_null($this->field_content_types)) {
             ee()->load->model('field_model');
             $this->field_content_types = ee()->field_model->get_field_content_types();
         }
@@ -84,7 +86,7 @@ class Text_ft extends EE_Fieldtype
      */
     public function save($data)
     {
-        if (! isset($this->field_content_types)) {
+        if (! isset($this->field_content_types) || is_null($this->field_content_types)) {
             ee()->load->model('field_model');
             $this->field_content_types = ee()->field_model->get_field_content_types();
         }
