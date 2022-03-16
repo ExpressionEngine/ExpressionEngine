@@ -233,7 +233,7 @@ class Tag
 
         foreach ($meta as $name => $value) {
             $tag = LD . $name . RD;
-            $tagdata = str_replace($tag, $value, $tagdata);
+            $tagdata = str_replace($tag, (string) $value, $tagdata);
         }
 
         return $tagdata;

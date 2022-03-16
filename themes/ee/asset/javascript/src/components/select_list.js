@@ -1,28 +1,24 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } Object.defineProperty(subClass, "prototype", { value: Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }), writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -34,17 +30,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-var SelectList = /*#__PURE__*/function (_React$Component) {
+var SelectList =
+/*#__PURE__*/
+function (_React$Component) {
   _inherits(SelectList, _React$Component);
-
-  var _super = _createSuper(SelectList);
 
   function SelectList(props) {
     var _this;
 
     _classCallCheck(this, SelectList);
 
-    _this = _super.call(this, props); // In the rare case we need to force a full-rerender of the component, we'll
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(SelectList).call(this, props)); // In the rare case we need to force a full-rerender of the component, we'll
     // increment this variable which is set as a key on the root element,
     // telling React to destroy it and start anew
 
@@ -298,8 +294,8 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
     }
   }, {
     key: "getOrderedSelection",
-    value: // Orders the selection array based on the items' order in the list
-    function getOrderedSelection(selected) {
+    // Orders the selection array based on the items' order in the list
+    value: function getOrderedSelection(selected) {
       var _this6 = this;
 
       orderedSelection = [];
@@ -357,11 +353,11 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
     }
   }, {
     key: "getFullItem",
-    value: // You may have an item without complete metadata (component, parents, etc.),
+    // You may have an item without complete metadata (component, parents, etc.),
     // this can happen with initial selections passed into the component. This function
     // will try to find the corresponding item in what we have available and return it.
     // It may not be available though if this list is AJAX-filtered.
-    function getFullItem(item) {
+    value: function getFullItem(item) {
       var itemsHash = this.getItemsHash(this.props.initialItems);
 
       if (itemsHash[item.value] !== undefined) {
@@ -380,20 +376,20 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       var values = props.selected.length ? props.selected.map(function (item) {
         return item.value;
       }) : [];
-      return /*#__PURE__*/React.createElement("div", {
+      return React.createElement("div", {
         className: props.tooMany ? ' lots-of-checkboxes' : '',
         ref: function ref(container) {
           _this8.container = container;
         },
         key: this.version
-      }, props.tooMany && /*#__PURE__*/React.createElement("div", {
+      }, props.tooMany && React.createElement("div", {
         "class": "lots-of-checkboxes__search"
-      }, /*#__PURE__*/React.createElement("div", {
+      }, React.createElement("div", {
         "class": "lots-of-checkboxes__search-inner"
-      }, props.tooMany && /*#__PURE__*/React.createElement("div", {
+      }, props.tooMany && React.createElement("div", {
         "class": "lots-of-checkboxes__search-input"
-      }, /*#__PURE__*/React.createElement(FilterBar, null, props.filters && props.filters.map(function (filter) {
-        return /*#__PURE__*/React.createElement(FilterSelect, {
+      }, React.createElement(FilterBar, null, props.filters && props.filters.map(function (filter) {
+        return React.createElement(FilterSelect, {
           key: filter.name,
           name: filter.name,
           keepSelectedState: true,
@@ -404,24 +400,24 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             return _this8.filterChange(filter.name, value);
           }
         });
-      }), /*#__PURE__*/React.createElement(FilterSearch, {
+      }), React.createElement(FilterSearch, {
         onSearch: function onSearch(e) {
           return _this8.filterChange('search', e.target.value);
         }
-      }))), shouldShowToggleAll && props.tooMany && /*#__PURE__*/React.createElement(FilterToggleAll, {
+      }))), shouldShowToggleAll && props.tooMany && React.createElement(FilterToggleAll, {
         checkAll: props.toggleAll,
         onToggleAll: function onToggleAll(check) {
           return _this8.handleToggleAll(check);
         }
-      }))), /*#__PURE__*/React.createElement(FieldInputs, {
+      }))), React.createElement(FieldInputs, {
         nested: props.nested,
         tooMany: props.tooMany
-      }, !props.loading && props.items.length == 0 && /*#__PURE__*/React.createElement(NoResults, {
+      }, !props.loading && props.items.length == 0 && React.createElement(NoResults, {
         text: props.noResults
-      }), props.loading && /*#__PURE__*/React.createElement(Loading, {
+      }), props.loading && React.createElement(Loading, {
         text: EE.lang.loading
       }), !props.loading && props.items.map(function (item, index) {
-        return /*#__PURE__*/React.createElement(SelectItem, {
+        return React.createElement(SelectItem, {
           key: item.value ? item.value : item.section,
           item: item,
           name: props.name,
@@ -439,11 +435,11 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           },
           groupToggle: props.groupToggle
         });
-      })), !props.multi && props.tooMany && props.selected[0] && /*#__PURE__*/React.createElement(SelectedItem, {
+      })), !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, {
         item: this.getFullItem(props.selected[0]),
         clearSelection: this.clearSelection,
         selectionRemovable: props.selectionRemovable
-      }), !props.jsonify && props.selectable && props.selected.length == 0 && /*#__PURE__*/React.createElement("input", {
+      }), !props.jsonify && props.selectable && props.selected.length == 0 && React.createElement("input", {
         type: "hidden",
         name: props.multi ? props.name + '[]' : props.name,
         value: "",
@@ -451,7 +447,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           _this8.input = input;
         }
       }), !props.jsonify && props.selectable && props.selected.map(function (item) {
-        return /*#__PURE__*/React.createElement("input", {
+        return React.createElement("input", {
           type: "hidden",
           key: item.value,
           name: props.multi ? props.name + '[]' : props.name,
@@ -460,7 +456,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             _this8.input = input;
           }
         });
-      }), props.jsonify && props.selectable && /*#__PURE__*/React.createElement("input", {
+      }), props.jsonify && props.selectable && React.createElement("input", {
         type: "hidden",
         name: props.name,
         value: JSON.stringify(values),
@@ -542,25 +538,25 @@ function FieldInputs(props) {
   var divClass = props.tooMany ? ' lots-of-checkboxes__items--too-many' : '';
 
   if (props.nested) {
-    return /*#__PURE__*/React.createElement("ul", {
+    return React.createElement("ul", {
       className: 'field-inputs lots-of-checkboxes__items field-nested' + divClass
     }, props.children);
   }
 
-  return /*#__PURE__*/React.createElement("div", {
+  return React.createElement("div", {
     className: 'field-inputs lots-of-checkboxes__items' + divClass
   }, props.children);
 }
 
-var SelectItem = /*#__PURE__*/function (_React$Component2) {
+var SelectItem =
+/*#__PURE__*/
+function (_React$Component2) {
   _inherits(SelectItem, _React$Component2);
-
-  var _super2 = _createSuper(SelectItem);
 
   function SelectItem() {
     _classCallCheck(this, SelectItem);
 
-    return _super2.apply(this, arguments);
+    return _possibleConstructorReturn(this, _getPrototypeOf(SelectItem).apply(this, arguments));
   }
 
   _createClass(SelectItem, [{
@@ -579,16 +575,16 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       var disabled = props.disabledChoices && props.disabledChoices.includes(props.item.value);
 
       if (props.item.section) {
-        return /*#__PURE__*/React.createElement("div", {
+        return React.createElement("div", {
           className: "field-group-head",
           key: props.item.section
         }, props.item.section);
       }
 
-      var listItem = /*#__PURE__*/React.createElement("label", {
+      var listItem = React.createElement("label", {
         className: 'checkbox-label',
         "data-id": props.reorderable && !props.nested ? props.item.value : null
-      }, props.selectable && /*#__PURE__*/React.createElement("input", {
+      }, props.selectable && React.createElement("input", {
         type: props.multi ? "checkbox" : "radio",
         value: props.item.value,
         onChange: function onChange(e) {
@@ -597,42 +593,49 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         checked: checked ? 'checked' : '',
         "data-group-toggle": props.groupToggle ? JSON.stringify(props.groupToggle) : '[]',
         disabled: disabled ? 'disabled' : ''
-      }), /*#__PURE__*/React.createElement("div", {
-        className: "checkbox-label__text"
-      }, props.reorderable && /*#__PURE__*/React.createElement("span", {
+      }), React.createElement("div", {
+        className: props.editable ? "checkbox-label__text checkbox-label__text-editable" : "checkbox-label__text"
+      }, props.reorderable && React.createElement("span", {
         className: "icon-reorder icon-left"
-      }), props.editable && /*#__PURE__*/React.createElement("a", {
+      }), props.editable && React.createElement("a", {
         href: "#",
         "class": "flyout-edit",
         dangerouslySetInnerHTML: {
           __html: label
         }
-      }), !props.editable && /*#__PURE__*/React.createElement("div", {
+      }), !props.editable && React.createElement("div", {
         dangerouslySetInnerHTML: {
           __html: label
         }
-      }), " ", props.item.instructions && /*#__PURE__*/React.createElement("span", {
+      }), " ", props.item.instructions && React.createElement("span", {
         className: "meta-info"
-      }, props.item.instructions), props.removable && /*#__PURE__*/React.createElement("a", {
+      }, props.item.instructions), React.createElement("div", {
+        "class": "button-group button-group-xsmall button-group-flyout-right"
+      }, props.editable && React.createElement("a", {
         href: "",
-        className: "button button--small default float-right",
+        className: "button button--default flyout-edit flyout-edit-icon"
+      }, React.createElement("i", {
+        "class": "fas fa-pencil-alt"
+      })), props.removable && React.createElement("a", {
+        href: "",
+        className: "button button--default js-button-delete",
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
-      }, /*#__PURE__*/React.createElement("span", {
+      }, React.createElement("span", {
         "class": "sr-only"
-      }, "Remove button"), /*#__PURE__*/React.createElement("i", {
+      }, "Remove button"), React.createElement("i", {
         "class": "fas fa-fw fa-trash-alt"
-      }))));
+      })))));
 
       if (props.nested) {
-        return /*#__PURE__*/React.createElement("li", {
+        return React.createElement("li", {
           className: "nestable-item",
           "data-id": props.item.value
-        }, listItem, props.item.children && /*#__PURE__*/React.createElement("ul", {
+        }, listItem, props.item.children && React.createElement("ul", {
           className: "field-nested"
         }, props.item.children.map(function (item, index) {
-          return /*#__PURE__*/React.createElement(SelectItem, _extends({}, props, {
+          return React.createElement(SelectItem, _extends({}, props, {
             key: item.value,
             item: item,
             handleRemove: function handleRemove(e, item) {
@@ -649,15 +652,15 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
   return SelectItem;
 }(React.Component);
 
-var SelectedItem = /*#__PURE__*/function (_React$Component3) {
+var SelectedItem =
+/*#__PURE__*/
+function (_React$Component3) {
   _inherits(SelectedItem, _React$Component3);
-
-  var _super3 = _createSuper(SelectedItem);
 
   function SelectedItem() {
     _classCallCheck(this, SelectedItem);
 
-    return _super3.apply(this, arguments);
+    return _possibleConstructorReturn(this, _getPrototypeOf(SelectedItem).apply(this, arguments));
   }
 
   _createClass(SelectedItem, [{
@@ -665,15 +668,15 @@ var SelectedItem = /*#__PURE__*/function (_React$Component3) {
     value: function render() {
       var props = this.props;
       var label = props.item.label;
-      return /*#__PURE__*/React.createElement("div", {
+      return React.createElement("div", {
         className: "lots-of-checkboxes__selection"
-      }, /*#__PURE__*/React.createElement("i", {
+      }, React.createElement("i", {
         className: "fas fa-check-circle"
-      }), " ", label, props.selectionRemovable && /*#__PURE__*/React.createElement("a", {
+      }), " ", label, props.selectionRemovable && React.createElement("a", {
         className: "button button--default float-right",
         href: "",
         onClick: props.clearSelection
-      }, /*#__PURE__*/React.createElement("i", {
+      }, React.createElement("i", {
         "class": "fas fa-trash-alt"
       })));
     }

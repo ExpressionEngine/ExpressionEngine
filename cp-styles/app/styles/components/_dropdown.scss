@@ -11,6 +11,8 @@
 	z-index: 200;
 	max-width: 600px;
 	min-width: 160px;
+	max-height: 90vh;
+	overflow-y: auto;
 
 	display: none;
 }

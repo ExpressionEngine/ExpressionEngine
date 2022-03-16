@@ -5,6 +5,11 @@ import Members from '../../elements/pages/members/Members';
 const page = new Members
 
 context('Member List', () => {
+
+  before(function(){
+    cy.task('db:seed')
+  })
+  
   beforeEach(function() {
     cy.auth();
 
@@ -51,4 +56,60 @@ context('Member List', () => {
       page.get('modal').find('.checklist li').should('have.length', 1)
     })
   })
+})
+
+context.only('Member List frontend', () => {
+  before(function() {
+    cy.task('db:seed')
+    cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
+    cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
+    cy.authVisit('admin.php?/cp/design')
+    cy.logout()
+  })
+
+  beforeEach(function() {
+    
+  })
+
+  it('can access memberlist', () => {
+    cy.visit('index.php/members/memberlist', {failOnStatusCode: false});
+    cy.hasNoErrors()
+    cy.get('body').should('contain', 'You are not allowed to view member profiles')
+
+    cy.authVisit('admin.php?/cp/members/roles/edit/3');
+    cy.get('button:contains("Website Access")').click()
+    cy.get('[data-toggle-for="can_view_profiles"]').click()
+    cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+    cy.visit('index.php/members/memberlist');
+    cy.get('h1').should('contain', 'Member Listing')
+    cy.get('tbody tr').its('length').should('eq', 4)
+    cy.get('.result').should('not.contain', '{')
+  })
+
+  it('respects the options', () => {
+
+    cy.visit('index.php/members/memberlist');
+    cy.get('[name=role_id]').select("Members")
+    cy.get('.submit').click();
+
+    cy.get('tbody tr').its('length').should('eq', 2)
+    cy.get('tbody tr').should('not.contain', 'Super Admin')
+  })
+
+  it('the paths are correct', () => {
+
+    cy.visit('index.php/members/memberlist');
+    cy.get('[name=role_id]').select("Super Admin")
+    cy.get('[name=sort_order]').select('Ascending')
+    cy.get('.submit').click();
+
+    cy.get('tbody tr').its('length').should('eq', 2)
+    cy.get('tbody tr').eq(1).find('img').should('exist')
+    cy.get('tbody tr').eq(1).find('img').invoke('attr', 'src').then((src) => {
+      expect(src).to.contain('procotopus.png')
+    })
+    cy.get('tbody tr').should('not.contain', 'Member')
+  })
+
 })

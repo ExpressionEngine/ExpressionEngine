@@ -695,14 +695,7 @@ class EE_Output
         }
 
         if (ee()->config->item('send_headers') == 'y') {
-            ee()->load->library('user_agent', array(), 'user_agent');
-
-            // many browsers do not consistently like this content type
-            if (is_array($msg) && in_array(ee()->user_agent->browser(), array('Safari', 'Chrome', 'Firefox'))) {
-                @header('Content-Type: application/json; charset=UTF-8');
-            } else {
-                @header('Content-Type: text/html; charset=UTF-8');
-            }
+            header("Content-Type: application/json; charset=" . ee()->config->item('charset'));
         }
 
         exit(json_encode($msg));

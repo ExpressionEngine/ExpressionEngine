@@ -226,7 +226,7 @@
 	display: flex;
 	align-items: center;
 	padding: $sq-inset-s;
-	padding-right: $sq-s / 2;
+	padding-right: math.div($sq-s, 2);
 	color: color(text-secondary);
 	cursor: move;
 
@@ -237,7 +237,7 @@
 	}
 
 	& + .list-item__content {
-		padding-left: $sq-s / 2;
+		padding-left: math.div($sq-s, 2);
 	}
 }
 

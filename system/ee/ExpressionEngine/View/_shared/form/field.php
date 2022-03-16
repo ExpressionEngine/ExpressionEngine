@@ -21,7 +21,7 @@ if (is_string($value)) {
 }
 $attrs = (isset($field['attrs'])) ? $field['attrs'] : '';
 if (isset($field['disabled']) && $field['disabled'] == true) {
-    $attrs = ' disabled="disabled"';
+    $attrs .= ' disabled="disabled"';
 }
 // This is to handle showing and hiding certain parts
 // of the form when a form element changes
@@ -67,10 +67,35 @@ case 'text':
 <?php break;
     // no break
 case 'short-text': ?>
-	<label class="flex-input <?=$class?>">
-		<input aria-label="<?=$field_name?> field" type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
-		<span class="label-txt"><?=lang($field['label'])?></span>
-	</label>
+    <label class="flex-input <?=$class?>">
+        <input aria-label="<?=$field_name?> field" type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+        <?php if (isset($field['label'])):?>
+            <span class="label-txt"><?=lang($field['label'])?></span>
+        <?php endif;?>
+    </label>
+    <?php break;
+case 'slider':
+    if ($class): ?>
+        <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
+    <?php endif ?>
+
+            <input type="range" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+
+    <?php if (!empty($class)): ?>
+        </div>
+    <?php endif ?>
+<?php break;
+case 'number':
+    if ($class): ?>
+        <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
+    <?php endif ?>
+
+            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+
+    <?php if (!empty($class)): ?>
+        </div>
+    <?php endif ?>
+
 <?php break;
 case 'file': ?>
 	<input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>" aria-label="<?=$field_name?> field">

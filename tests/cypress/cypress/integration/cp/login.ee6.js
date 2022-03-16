@@ -2,6 +2,10 @@
 
 context('Login Page', () => {
 
+    before(function(){
+        cy.task('db:seed')
+    })
+
     beforeEach(() => {
         cy.visit('admin.php');
     })

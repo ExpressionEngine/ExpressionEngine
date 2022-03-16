@@ -25,7 +25,7 @@ context('Publish Page - Edit', () => {
       cy.visit('admin.php?/cp/publish/edit/entry/1')
       cy.get('input[name=title]').clear().type('Auto Saved Title');
       cy.wait(65000);// 60 sec before the ajax + 5 sec to finish
-      cy.get('.main-nav__title h1 span').contains('Auto Saved');
+      cy.get('.panel-heading .title-bar h3 span').contains('Auto Saved');
 
       cy.visit('admin.php?/cp/publish/edit')
       cy.get('tbody tr:last-child').should('have.class', 'auto-saved')
