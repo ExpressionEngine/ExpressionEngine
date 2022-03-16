@@ -403,7 +403,6 @@ $(document).ready(function() {
         parentRow.find('.condition-rule-operator-wrap .condition-rule-operator').remove();
         parentRow.find('.condition-rule-value-wrap input').remove();
 
-        console.log('EE.fieldsInfo', EE.fieldsInfo);
         $.each(EE.fieldsInfo, function(i, val) {
             if (fieldName == val['field_label']) {
                 evaluationRules = val['evaluationRules'];
