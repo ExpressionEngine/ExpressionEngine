@@ -28,6 +28,11 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'addConditionalFieldTables',
+                'installSliderFieldtypes',
+                'addSiteColorColumn',
+                'installButtonsFieldtype',
+                'installNumberFieldtype',
+                'installNotesFieldtype',
             ]
         );
 
@@ -172,6 +177,100 @@ class Updater
             ee()->dbforge->add_key(['entry_id', 'field_id']);
             ee()->smartforge->create_table('channel_entry_hidden_fields');
         }
+    }
+
+    private function installSliderFieldtypes()
+    {
+        if (ee()->db->where('name', 'slider')->get('fieldtypes')->num_rows() == 0) {
+            ee()->db->insert(
+                'fieldtypes',
+                array(
+                    'name' => 'slider',
+                    'version' => '1.0.0',
+                    'settings' => base64_encode(serialize(array())),
+                    'has_global_settings' => 'n'
+                )
+            );
+        }
+
+        if (ee()->db->where('name', 'range_slider')->get('fieldtypes')->num_rows() == 0) {
+            ee()->db->insert(
+                'fieldtypes',
+                array(
+                    'name' => 'range_slider',
+                    'version' => '1.0.0',
+                    'settings' => base64_encode(serialize(array())),
+                    'has_global_settings' => 'n'
+                )
+            );
+        }
+    }
+
+    private function addSiteColorColumn()
+    {
+        if (! ee()->db->field_exists('site_color', 'sites')) {
+            ee()->smartforge->add_column(
+                'sites',
+                array(
+                    'site_color' => array(
+                        'type' => 'varchar',
+                        'constraint' => 6,
+                        'default' => '',
+                        'null' => false
+                    )
+                )
+            );
+        }
+        return true;
+    }
+
+    private function installNotesFieldtype()
+    {
+        if (ee()->db->where('name', 'notes')->get('fieldtypes')->num_rows() == 0) {
+            ee()->db->insert(
+                'fieldtypes',
+                array(
+                    'name' => 'notes',
+                    'version' => '1.0.0',
+                    'settings' => base64_encode(serialize(array())),
+                    'has_global_settings' => 'n'
+                )
+            );
+        }
+    }
+
+    private function installButtonsFieldtype()
+    {
+        if (ee()->db->where('name', 'selectable_buttons')->get('fieldtypes')->num_rows() > 0) {
+            return;
+        }
+
+        ee()->db->insert(
+            'fieldtypes',
+            array(
+                'name' => 'selectable_buttons',
+                'version' => '1.0.0',
+                'settings' => base64_encode(serialize(array())),
+                'has_global_settings' => 'n'
+            )
+        );
+    }
+
+    private function installNumberFieldtype()
+    {
+        if (ee()->db->where('name', 'number')->get('fieldtypes')->num_rows() > 0) {
+            return;
+        }
+
+        ee()->db->insert(
+            'fieldtypes',
+            array(
+                'name' => 'number',
+                'version' => '1.0.0',
+                'settings' => base64_encode(serialize(array())),
+                'has_global_settings' => 'n'
+            )
+        );
     }
 }
 

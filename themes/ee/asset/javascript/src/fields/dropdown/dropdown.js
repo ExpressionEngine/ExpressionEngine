@@ -115,7 +115,8 @@ function (_React$Component) {
         className: "select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')
       }, React.createElement("div", {
         className: "select__button js-dropdown-toggle",
-        onClick: this.toggleOpen
+        onClick: this.toggleOpen,
+        tabIndex: "0"
       }, React.createElement("label", {
         className: 'select__button-label' + (this.state.selected ? ' act' : '')
       }, selected && React.createElement("span", null, selected.sectionLabel ? selected.sectionLabel + ' / ' : '', React.createElement("span", {
@@ -197,7 +198,8 @@ function DropdownItem(props) {
 
   return React.createElement("div", {
     onClick: props.onClick,
-    className: 'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')
+    className: 'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : ''),
+    tabIndex: "0"
   }, React.createElement("span", {
     dangerouslySetInnerHTML: {
       __html: item.label

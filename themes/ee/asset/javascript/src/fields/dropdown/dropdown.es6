@@ -96,7 +96,7 @@ class Dropdown extends React.Component {
 
     return (
       <div className={"select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
-        <div className={"select__button js-dropdown-toggle"} onClick={this.toggleOpen}>
+        <div className={"select__button js-dropdown-toggle"} onClick={this.toggleOpen} tabIndex="0">
           <label className={'select__button-label' + (this.state.selected ? ' act' : '')}>
             {selected &&
               <span>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}
@@ -161,7 +161,7 @@ function DropdownItem (props) {
   }
 
   return (
-    <div onClick={props.onClick} className={'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')}>
+    <div onClick={props.onClick} className={'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')} tabIndex="0">
       <span dangerouslySetInnerHTML={{__html: item.label}}></span>{item.instructions && <i>{item.instructions}</i>}
       {props.name == 'condition-rule-field' && <span className="short-name">{`{${item.value}}`}</span>}
     </div>

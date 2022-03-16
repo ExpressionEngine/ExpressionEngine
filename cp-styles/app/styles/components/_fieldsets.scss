@@ -81,7 +81,7 @@ fieldset {
 	}
 
     label + em {
-        margin-top: -($s-s / 2);
+        margin-top: - math.div($s-s, 2);
     }
 
     em {

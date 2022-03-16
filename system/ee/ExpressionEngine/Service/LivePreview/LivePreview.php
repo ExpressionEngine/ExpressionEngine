@@ -120,6 +120,23 @@ class LivePreview
 
         $template_id = null;
 
+        if (! empty($_POST['pages__pages_uri'])
+                && ! empty($_POST['pages__pages_template_id'])) {
+            //pages data passed with POST
+            $values = [
+                'pages_uri' => $_POST['pages__pages_uri'],
+                'pages_template_id' => $_POST['pages__pages_template_id'],
+            ];
+
+            $page_tab = new \Pages_tab();
+            $site_pages = $page_tab->prepareSitePagesData($entry, $values);
+
+            ee()->config->set_item('site_pages', $site_pages);
+            $entry->Site->site_pages = $site_pages;
+
+            $template_id = $_POST['pages__pages_template_id'];
+        }
+
         if (!empty($preview_url)) {
             //preview/return url directly specified
             $site_index = str_ireplace(['http:', 'https:'], '', ee()->functions->fetch_site_index());
@@ -133,22 +150,7 @@ class LivePreview
         }
 
         if (empty($preview_url) || $prefer_system_preview === true) {
-            if (! empty($_POST['pages__pages_uri'])
-                && ! empty($_POST['pages__pages_template_id'])) {
-                //pages data passed with POST
-                $values = [
-                    'pages_uri' => $_POST['pages__pages_uri'],
-                    'pages_template_id' => $_POST['pages__pages_template_id'],
-                ];
-
-                $page_tab = new \Pages_tab();
-                $site_pages = $page_tab->prepareSitePagesData($entry, $values);
-
-                ee()->config->set_item('site_pages', $site_pages);
-                $entry->Site->site_pages = $site_pages;
-
-                $template_id = $_POST['pages__pages_template_id'];
-            } elseif ($entry->hasPageURI()) {
+            if ($entry->hasPageURI()) {
                 //pre-existing page URI
                 $uri = $entry->getPageURI();
                 ee()->uri->page_query_string = $entry->entry_id;

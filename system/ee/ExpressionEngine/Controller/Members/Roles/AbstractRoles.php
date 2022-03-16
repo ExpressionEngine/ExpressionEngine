@@ -68,9 +68,9 @@ abstract class AbstractRoles extends CP_Controller
         }
 
         if (ee('Permission')->isSuperAdmin()) {
-            $list = $sidebar->addHeader(lang('role_groups'));
+            $header = $sidebar->addHeader(lang('role_groups'));
 
-            $list = $list->addFolderList('role_groups')
+            $list = $header->addFolderList('role_groups')
                 ->withNoResultsText(sprintf(lang('no_found'), lang('role_groups')));
 
             if (ee('Permission')->can('delete_roles')) {
@@ -115,11 +115,7 @@ abstract class AbstractRoles extends CP_Controller
                 }
             }
 
-            $sidebar->addActionBar()
-                ->withLeftButton(
-                    lang('new'),
-                    ee('CP/URL')->make('members/roles/groups/create')
-                );
+            $header->withButton(lang('new'), ee('CP/URL')->make('members/roles/groups/create'));
         }
 
         ee()->view->left_nav = $sidebar->render();
