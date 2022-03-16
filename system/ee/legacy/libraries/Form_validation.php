@@ -799,7 +799,6 @@ class EE_Form_validation
         }
 
         // --------------------------------------------------------------------
-
         // Cycle through each rule and run it
         foreach ($rules as $rule) {
             $_in_array = false;
@@ -864,23 +863,39 @@ class EE_Form_validation
                     continue;
                 }
             } else {
-                if (! method_exists($this, $rule)) {
-                    // If our own wrapper function doesn't exist we see if a native PHP function does.
-                    // Users can use any native PHP function call that has one param.
-                    if (function_exists($rule)) {
-                        $result = $rule($postdata);
 
-                        if ($_in_array == true) {
-                            $this->_field_data[$row['field']]['postdata'][$cycles] = (is_bool($result)) ? $postdata : $result;
-                        } else {
-                            $this->_field_data[$row['field']]['postdata'] = (is_bool($result)) ? $postdata : $result;
+                if (method_exists($this, $rule)) {
+                    //this is the rule defined by this very lib
+                    $result = $this->$rule($postdata, $param);
+                } else {
+                    //is this valid stand-alone validation rule?
+                    $rule_class = 'ExpressionEngine\\Service\\Validation\\Rule\\' . implode('', array_map('ucfirst', explode('_', $rule)));
+                    if (class_exists($rule_class)) {
+                        $validator = ee('Validation')->make(array(
+                            $row['field'] => $rule
+                        ));
+                        $validation = $validator->validate($_POST);
+                        $result = $validation->isValid();
+                        if ($result == false) {
+                            $error = $validation->getErrors($row['field']);
+                            $this->set_message($rule, array_shift($error));
                         }
+                    } else {
+                        // If our own wrapper function doesn't exist we see if a native PHP function does.
+                        // Users can use any native PHP function call that has one param.
+                        if (function_exists($rule)) {
+                            $result = $rule($postdata);
+
+                            if ($_in_array == true) {
+                                $this->_field_data[$row['field']]['postdata'][$cycles] = (is_bool($result)) ? $postdata : $result;
+                            } else {
+                                $this->_field_data[$row['field']]['postdata'] = (is_bool($result)) ? $postdata : $result;
+                            }
+                        }
+
+                        continue;
                     }
-
-                    continue;
                 }
-
-                $result = $this->$rule($postdata, $param);
 
                 if ($_in_array == true) {
                     $this->_field_data[$row['field']]['postdata'][$cycles] = (is_bool($result)) ? $postdata : $result;
