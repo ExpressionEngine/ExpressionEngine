@@ -276,10 +276,12 @@ class EE_Core
             'rte', 'search', 'simple_commerce', 'spam', 'stats'
         );
 
-        // Is this a stylesheet request?  If so, we're done.
-        if (isset($_GET['css']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) {
-            ee()->load->library('stylesheet');
-            ee()->stylesheet->request_css_template();
+        // Is this a asset request?  If so, we're done.
+        if (
+            isset($_GET['css']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'css')
+            || isset($_GET['js']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'js')
+        ) {
+            ee('Resource')->request_template();
             exit;
         }
 
