@@ -18,7 +18,7 @@ class Request
 
     public const TYPES = array('css', 'js');
 
-    protected $type = '';
+    protected $type = 'plain';
     protected $cache_scope = '';
 
     public function __construct()
@@ -175,18 +175,22 @@ class Request
      * @param   string  resource contents
      * @param   int     Unix timestamp (GMT/UTC) of last modification
      */
-    protected function _send_resource($data, $modified)
+    protected function _send_resource($data, $modified, $type = '')
     {
+        if (!in_array($type, self::TYPES)) {
+            $type = $this->type;
+        }
+
         ee()->output->send_cache_headers($modified, 604800, null);
 
         @header('Content-Length: ' . strlen($data));
 
-        if ('css' === $this->type) {
+        if ('css' === $type) {
             @header('Content-type: text/css');
-        } elseif ('js' === $this->type) {
+        } elseif ('js' === $type) {
             @header('Content-type: text/javascript');
         } else {
-            @header('Content-type: text/' . $this->type);
+            @header('Content-type: text/' . $type);
         }
 
         exit($data);

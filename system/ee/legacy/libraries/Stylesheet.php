@@ -29,6 +29,21 @@ class EE_Stylesheet extends Stylesheet
     {
         return $this->request_template();
     }
+
+    /**
+     * Send CSS
+     *
+     * Sends CSS with cache headers
+     *
+     * @access	public
+     * @param	string	stylesheet contents
+     * @param	int		Unix timestamp (GMT/UTC) of last modification
+     * @return	void
+     */
+    public function _send_css($stylesheet, $modified)
+    {
+        return $this->_send_resource($stylesheet, $modified, 'css');
+    }
 }
 // END CLASS
 
