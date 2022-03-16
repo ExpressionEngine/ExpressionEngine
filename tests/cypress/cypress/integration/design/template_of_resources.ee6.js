@@ -9,7 +9,10 @@ context('Design', () => {
 		cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
 		cy.eeConfig({ item: 'multiple_sites_enabled', value: 'y' })
 
-		cy.auth();
+		//copy templates
+		cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
+			cy.authVisit('admin.php?/cp/design')
+		})
 
 		const siteManager = new SiteManager;
 		siteManager.load();
@@ -22,26 +25,21 @@ context('Design', () => {
 			short_name: 'second_site'
 		})
 
-		//copy templates
-		cy.task('filesystem:copy', { from: 'support/templates/default_site/*', to: '../../system/user/templates/' }).then(() => {
-			cy.authVisit('admin.php?/cp/design')
-		})
-
 		siteManager.get('global_menu').click()
-
 		siteManager.get('dropdown').find('a[href*="cp/msm/switch_to/2"]').click()
-
-		cy.hasNoErrors()
-		// visit the list of templates on Second site to make sure they load
 		cy.authVisit('admin.php?/cp/design')
 
-		cy.visit('index.php/resources/index')
+		cy.hasNoErrors()
+
+		siteManager.get('global_menu').click()
+		siteManager.get('dropdown').find('a[href*="cp/msm/switch_to/1"]').click()
 	})
 
 	after(function () {
 	})
 
 	beforeEach(function () {
+		cy.visit('index.php/resources/index')
 	})
 
 	afterEach(function () {
