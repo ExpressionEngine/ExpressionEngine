@@ -593,7 +593,6 @@ class Fields extends AbstractFieldsController
         // Globals needed for JS script
         ee()->javascript->set_global(array(
             'fieldManager' => array(
-                'field_id' => $field_id,
                 'channel_entry_count' => $channelEntryCount,
                 'groupedChannelEntryCounts' => $groupedChannelEntryCounts,
 
@@ -613,12 +612,6 @@ class Fields extends AbstractFieldsController
             ee('CP/URL')->make('fields')->compile() => lang('fields'),
             '' => lang('field_conditions_sync_conditional_logic')
         );
-
-        // // Errors are given through a POST to this same page
-        // $errors = ee()->input->post('errors');
-        // if (! empty($errors)) {
-        //     ee()->view->set_message('warn', lang('directory_sync_warning'), json_decode($errors));
-        // }
 
         ee()->cp->render('settings/form', $vars);
     }
