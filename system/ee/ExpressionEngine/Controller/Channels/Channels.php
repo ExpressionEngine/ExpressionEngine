@@ -450,9 +450,9 @@ class Channels extends AbstractChannelsController
         );
 
         $base_url = ee('CP/URL')->make('channels/syncConditions/' . $channel_id);
-        $field_url = ee('CP/URL')->make('channels/edit/' . $channel_id);
+        $channel_url = ee('CP/URL')->make('channels/edit/' . $channel_id);
 
-        $return = ee()->input->get('return') ? base64_decode(ee()->input->get('return')) : $field_url->compile();
+        $return = ee()->input->get('return') ? base64_decode(ee()->input->get('return')) : $channel_url->compile();
 
         if ($channelEntryCount === 0) {
             ee()->functions->redirect($return);
