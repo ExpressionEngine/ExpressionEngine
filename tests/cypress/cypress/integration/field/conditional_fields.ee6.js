@@ -164,14 +164,53 @@ context('Conditional Fields', () => {
 
     it('can be used in a grid field', function() {
         // Create grid field
-        cy.authVisit('admin.php?/cp/fields')
-        cy.get('.button--primary').contains('New Field').click();
+        cy.authVisit('admin.php?/cp/fields/create/1')
         cy.get('#fieldset-field_type .select__button').click();
         cy.get('.dropdown--open .select__dropdown-item').contains(/^Grid$/).click({ force: true });
         cy.get('input[name="field_label"]').type('CF Grid');
-        cy.get('.fields-grid-setup a[rel="add_new"]:visible').click();
-        cy.get('input[name="grid[cols][new_1][col_label]"]').type('Column');
+        cy.get('input[name="grid[cols][new_0][col_label]"]:visible').type('Column').blur();
+
+        cy.get('#fieldset-field_is_conditional button').click();
+        cy.get('.condition-rule-field:visible .select__button').click();
+        cy.get('.dropdown--open .select__dropdown-item').contains('Body').click();
+        cy.get('.condition-rule-operator-wrap:visible .select__button').click();
+        cy.get('.dropdown--open .select__dropdown-item').contains('is not').click({force: true});
+        cy.get('.condition-rule-value-wrap:visible input').type('hide');
+
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
+
+        cy.log('Edit entry to conditionally hide the field');
+        cy.get('.ee-sidebar__items-section').contains('Entries').trigger('mouseover');
+        cy.get('.dropdown__item').contains('News').closest('.dropdown__item').find('.fa-plus').click();
+        cy.hasNoErrors()
+        cy.get('input[name="title"]').type('CF Grid test');
+        cy.intercept('**/publish/**').as('validation')
+        cy.get('.grid-field__table a[rel=add_row]').click()
+        cy.get('.grid-field__table td[data-new-row-id="new_row_1"] input[type=text]').type('grid column, row 1')
+        cy.get('button[data-submit-text="Save"]:eq(0)').click();
+
+        cy.url().then(edit_url => {
+
+            cy.visit('index.php/fields/conditional/cf-grid-test')
+            cy.hasNoErrors()
+            cy.get('.cf_grid').should('not.be.empty')
+            cy.get('.cf_grid_table').should('not.be.empty')
+            cy.get('.if_cf_grid').should('contain', 'if cf_grid')
+            cy.get('.if_cf_grid_rows').should('contain', 'if cf_grid')
+
+            cy.visit(edit_url);
+            cy.get('textarea[name="field_id_1"]').clear().type('hide').blur();
+            cy.wait('@validation')
+            cy.get('.grid-field__table').should('not.be.visible')
+            cy.get('button[data-submit-text="Save"]:eq(0)').click();
+
+            cy.visit('index.php/fields/conditional/cf-grid-test')
+            cy.hasNoErrors()
+            cy.get('.cf_grid').should('be.empty')
+            cy.get('.cf_grid_table').should('be.empty')
+            cy.get('.if_cf_grid_rows').should('contain', 'if not cf_grid')
+        })
+
     })
 
     it('can be used in a relationship field', function() {

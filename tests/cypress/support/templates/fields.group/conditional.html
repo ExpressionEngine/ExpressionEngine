@@ -9,7 +9,13 @@
 
 <div class="if_news_image">{if news_image}if news_image{if:else}if not news_image{/if}</div>
 
-<div class="cf_grid">{cf_grid:table}</div>
+<div class="cf_grid">{cf_grid}{cf_grid:column}{/cf_grid}</div>
+
+<div class="cf_grid_table">{cf_grid:table}</div>
+
+<div class="if_cf_grid">{if cf_grid}if cf_grid{if:else}if not cf_grid{/if}</div>
+
+<div class="if_cf_grid_rows">{if cf_grid:total_rows > 0}if cf_grid{if:else}if not cf_grid{/if}</div>
 
 <div class="related_news">{related_news}{related_news:title}{/related_news}</div>
 

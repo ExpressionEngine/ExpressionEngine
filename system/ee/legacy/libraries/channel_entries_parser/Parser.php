@@ -512,10 +512,6 @@ class EE_Channel_data_parser
             $cond[$value] = (empty($row[$value])) ? '' : $row[$value];
         }
 
-        foreach ($channel->mfields as $key => $value) {
-            $cond[$key] = (! array_key_exists('m_field_id_' . $value[0], $row)) ? '' : $row['m_field_id_' . $value[0]];
-        }
-
         // custom field conditionals
         if (isset($channel->cfields[$row['site_id']])) {
             foreach ($channel->cfields[$row['site_id']] as $key => $value) {
@@ -539,7 +535,10 @@ class EE_Channel_data_parser
                                 'content_type' => 'channel'
                             )));
                             $data = ee()->api_channel_fields->apply('pre_process', array($cond[$key]));
-                            if (ee()->api_channel_fields->check_method_exists('replace_' . $modifier)) {
+                            //if the field is conditionally hidden, do not parse
+                            if (isset($channel->hidden_fields[$row['entry_id']]) && in_array($value, $channel->hidden_fields[$row['entry_id']])) {
+                                $result = null;
+                            } else if (ee()->api_channel_fields->check_method_exists('replace_' . $modifier)) {
                                 $result = ee()->api_channel_fields->apply('replace_' . $modifier, array($data, array(), false));
                             } else {
                                 $result = false;

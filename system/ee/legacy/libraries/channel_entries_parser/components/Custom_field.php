@@ -74,6 +74,12 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
             $entry = '';
             $field_id = $cfields[$field['field_name']];
 
+            //if the field is conditionally hidden, do not parse
+            if (isset($obj->channel()->hidden_fields[$data['entry_id']]) && in_array($field_id, $obj->channel()->hidden_fields[$data['entry_id']])) {
+                $tagdata = str_replace(LD . $tag . RD, '', $tagdata);
+                return $tagdata;
+            }
+
             if ((isset($data['field_id_' . $field_id]) && $data['field_id_' . $field_id] !== '') or
                 array_key_exists($field['field_name'], $gfields) or // is a Grid single
                 array_key_exists($field['field_name'], $ffields)) { // is a Fluid single
