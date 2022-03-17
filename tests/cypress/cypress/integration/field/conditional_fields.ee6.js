@@ -213,7 +213,7 @@ context('Conditional Fields', () => {
 
     })
 
-    it('can be used in a relationship field', function() {
+    it.only('can be used in a relationship field', function() {
         // Setup conditional on field
         visitCPEditField('{related_news}');
 
@@ -247,7 +247,7 @@ context('Conditional Fields', () => {
         // Relate the first entry
         cy.wait('@validation')
         cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('div[data-relationship-react] .js-dropdown-toggle').click()
-        cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('.dropdown__link:eq(0)').click();
+        cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('.dropdown__link').contains('Getting to Know ExpressionEngine').click();
 
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
