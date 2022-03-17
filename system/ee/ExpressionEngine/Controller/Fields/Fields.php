@@ -332,10 +332,10 @@ class Fields extends AbstractFieldsController
         ]);
 
         ee()->javascript->output('
-			$("input[name=field_label]").bind("keyup keydown", function() {
-				$(this).ee_url_title("input[name=field_name]", true);
-			});
-		');
+            $("input[name=field_label]").bind("keyup keydown", function() {
+                $(this).ee_url_title("input[name=field_name]", true);
+            });
+        ');
 
         $breadcrumbs = array(
             ee('CP/URL')->make('fields')->compile() => lang('fields')
@@ -845,9 +845,9 @@ class Fields extends AbstractFieldsController
                 }
             }
         }
-        
+
         ee()->javascript->set_global('fieldsInfo', $fieldsWithEvaluationRules);
-        
+
         $ruleGroupsField = array(
             'title' => '',
             'desc' => '',
