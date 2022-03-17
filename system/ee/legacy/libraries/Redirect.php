@@ -21,11 +21,9 @@ if (! isset($_GET['URL'])) {
 }
 
 // Should we allow front end redirects via the URL query string?
-if (REQ === 'PAGE' && !ee()->config->item('allow_url_redirects_from_site')) {
+if (REQ === 'PAGE' && !bool_config_item('allow_url_redirects_from_site')) {
     // Check if they don't have an active CP session
-    if ((!isset(ee()->session->access_cp) || (isset(ee()->session->access_cp) && !ee()->session->access_cp))
-        && !ee()->config->item('allow_url_redirects_from_site_without_cp_session')
-    ) {
+    if (!isset(ee()->session->access_cp) || ee()->session->access_cp == false) {
         show_404();
     }
 }
