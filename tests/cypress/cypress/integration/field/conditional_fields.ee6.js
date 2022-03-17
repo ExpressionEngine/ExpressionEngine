@@ -237,14 +237,38 @@ context('Conditional Fields', () => {
         cy.get('input[name="title"]').type('CF relationship test');
         cy.get('textarea[name="field_id_1"]').type('hide', { force: true });
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
-
+        
+        cy.intercept('**/publish/**').as('validation')
         cy.log('Assert field is shown on entry page after save');
         cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('div[data-relationship-react]').should('not.be.visible');
         // Edit entry to not conditionally hide the field
-        cy.get('textarea[name="field_id_1"]').clear({ force: true }).type('show', { force: true });
+        cy.get('textarea[name="field_id_1"]').clear({ force: true }).type('show', { force: true }).blur();
+        
+        // Relate the first entry
+        cy.wait('@validation')
+        cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('div[data-relationship-react] .js-dropdown-toggle').click()
+        cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('.dropdown__link:eq(0)').click();
+
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         // Assert field is not shown in the template
+
+        cy.url().then(edit_url => {
+
+            cy.visit('index.php/fields/conditional/cf-relationship-test')
+            cy.hasNoErrors()
+            cy.get('.related_news').should('not.be.empty')
+            
+            cy.visit(edit_url);
+            cy.get('textarea[name="field_id_1"]').clear().type('hide').blur();
+            cy.wait('@validation')
+            cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('div[data-relationship-react]').should('not.be.visible')
+            cy.get('button[data-submit-text="Save"]:eq(0)').click();
+
+            cy.visit('index.php/fields/conditional/cf-relationship-test')
+            cy.hasNoErrors()
+            cy.get('.related_news').should('be.empty')
+        })
 
 
 
