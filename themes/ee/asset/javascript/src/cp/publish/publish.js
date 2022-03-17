@@ -109,7 +109,7 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						var publishHeading = $('.main-nav__title h1');
+						var publishHeading = $('.panel-heading .title-bar h3');
 						publishHeading.find('.app-badge').remove();
 
 						if (result.error) {

@@ -373,6 +373,8 @@ class Msm extends CP_Controller
      */
     private function getForm($site)
     {
+        ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker', 'cp/msm/sites'));
+
         $sections = array(array());
 
         $name = array(
@@ -432,6 +434,33 @@ class Msm extends CP_Controller
         );
         $sections[0][] = $description;
 
+        $sections[0] = array_merge($sections[0], array(
+            array(
+                'title' => 'site_color',
+                'desc' => 'site_color_desc',
+                'fields' => array(
+                    'custom_site_color' => array(
+                        'type' => 'yes_no',
+                        'group_toggle' => array(
+                            'y' => 'rel_color',
+                        ),
+                        'value' => !empty($site->site_color)
+                    )
+                )
+            ),
+            array(
+                'title' => 'pick_color',
+                'group' => 'rel_color',
+                'fields' => array(
+                    'site_color' => array(
+                        'type' => 'text',
+                        'attrs' => 'class="color-picker"',
+                        'value' => $site->site_color ?: '5D63F1'
+                    )
+                )
+            ),
+        ));
+
         return $sections;
     }
 
@@ -457,7 +486,25 @@ class Msm extends CP_Controller
             ee()->config->update_site_prefs(['is_site_on' => ee()->input->post('is_site_on')], [$site->site_id]);
         }
 
+        if (ee('Request')->post('custom_site_color') == 'n') {
+            $site->site_color = '';
+        } else {
+            $site->site_color = ltrim(ee('Request')->post('site_color'), '#');
+        }
         $result = $site->validate();
+        if (ee('Request')->post('custom_site_color') == 'y') {
+            $validator = ee('Validation')->make();
+            $validator->setRules(array(
+                'site_color' => 'required'
+            ));
+            $extraValidation = $validator->validate($_POST);
+            if ($extraValidation->failed()) {
+                $rules = $extraValidation->getFailed();
+                foreach ($rules as $field => $rule) {
+                    $result->addFailed($field, $rule[0]);
+                }
+            }
+        }
 
         if ($response = $this->ajaxValidation($result)) {
             ee()->output->send_ajax_response($response);

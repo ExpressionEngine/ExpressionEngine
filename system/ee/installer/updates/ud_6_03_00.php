@@ -25,8 +25,10 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator (
+        $steps = new \ProgressIterator(
             [
+                'installSliderFieldtypes',
+                'addSiteColorColumn',
                 'installButtonsFieldtype',
                 'installNumberFieldtype',
                 'installNotesFieldtype',
@@ -37,6 +39,51 @@ class Updater
             $this->$v();
         }
 
+        return true;
+    }
+
+    private function installSliderFieldtypes()
+    {
+        if (ee()->db->where('name', 'slider')->get('fieldtypes')->num_rows() == 0) {
+            ee()->db->insert(
+                'fieldtypes',
+                array(
+                    'name' => 'slider',
+                    'version' => '1.0.0',
+                    'settings' => base64_encode(serialize(array())),
+                    'has_global_settings' => 'n'
+                )
+            );
+        }
+
+        if (ee()->db->where('name', 'range_slider')->get('fieldtypes')->num_rows() == 0) {
+            ee()->db->insert(
+                'fieldtypes',
+                array(
+                    'name' => 'range_slider',
+                    'version' => '1.0.0',
+                    'settings' => base64_encode(serialize(array())),
+                    'has_global_settings' => 'n'
+                )
+            );
+        }
+    }
+
+    private function addSiteColorColumn()
+    {
+        if (! ee()->db->field_exists('site_color', 'sites')) {
+            ee()->smartforge->add_column(
+                'sites',
+                array(
+                    'site_color' => array(
+                        'type' => 'varchar',
+                        'constraint' => 6,
+                        'default' => '',
+                        'null' => false
+                    )
+                )
+            );
+        }
         return true;
     }
 

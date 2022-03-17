@@ -21,6 +21,8 @@ Bullet list below, e.g.
    - Update Typed Columns/timestamp to accept date text (strtotime()) as valid input
    - Added `parse_files` parameter on Query Module
    - Allow to use the same template on Search Module to results and no results
+   - Added `{script='group/template'}` tag
+   - Added site option to `{stylesheet='site:group/template'}` tag
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

@@ -53,7 +53,7 @@ class Updater
 
     private function addMissingNotificationTemplates()
     {
-        $sites = ee('Model')->get('Site')->all();
+        $sites = ee('Model')->get('Site')->fields('site_id')->all();
 
         $email_templates = ee('Model')->get('SpecialtyTemplate')
             ->filter('template_name', 'email_changed_notification')
