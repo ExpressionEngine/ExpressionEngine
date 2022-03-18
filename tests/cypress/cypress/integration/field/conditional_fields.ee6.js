@@ -248,6 +248,7 @@ context('Conditional Fields', () => {
         cy.wait('@validation')
         cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('div[data-relationship-react] .js-dropdown-toggle').click()
         cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('.dropdown__link').contains('Getting to Know ExpressionEngine').click();
+        cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('.dropdown__link').contains('Welcome to the Example Site!').click();
 
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
@@ -259,6 +260,9 @@ context('Conditional Fields', () => {
             cy.hasNoErrors()
             cy.get('.related_news').should('not.be.empty')
             cy.get('.if_related_news').should('contain', 'if related_news')
+
+            //cy.visit('index.php/relationships/reverse')
+            //cy.get('.all p').should('contain', 'CF relationship test')
             
             cy.visit(edit_url);
             cy.get('textarea[name="field_id_1"]').clear().type('hide').blur();
@@ -270,6 +274,9 @@ context('Conditional Fields', () => {
             cy.hasNoErrors()
             cy.get('.related_news').should('be.empty')
             cy.get('.if_related_news').should('contain', 'if not related_news')
+
+            //cy.visit('index.php/relationships/reverse')
+            //cy.get('.all p').should('not.exist')
         })
     })
 
