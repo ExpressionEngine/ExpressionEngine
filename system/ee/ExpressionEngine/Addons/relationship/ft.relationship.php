@@ -509,6 +509,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         }
 
         return ee('View')->make('relationship:publish')->render([
+            'deferred' =>  isset($this->settings['deferred_loading']) ? $this->settings['deferred_loading'] : false,
             'field_name' => $field_name,
             'choices' => $choices,
             'selected' => $selected,
@@ -744,6 +745,16 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                         'value' => ($values['display_entry_id']) ? 'y' : 'n'
                     )
                 )
+            ),
+            array(
+                'title' => 'rel_ft_deferred',
+                'desc' => 'rel_ft_deferred_desc',
+                'fields' => array(
+                    'relationship_deferred_loading' => array(
+                        'type' => 'yes_no',
+                        'value' => ($values['deferred_loading']) ? 'y' : 'n'
+                    )
+                )
             )
         );
 
@@ -812,6 +823,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'order_field' => 'title',
             'order_dir' => 'asc',
             'display_entry_id' => false,
+            'deferred_loading' => false,
             'allow_multiple' => 'y',
             'rel_min' => 0,
             'rel_max' => ''
@@ -828,8 +840,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         // any default values that are not the empty ones
         $default_values = array(
+            'allow_multiple' => true,
+            'deferred_loading' => false,
             'display_entry_id' => false,
-            'allow_multiple' => true
         );
 
         $form = $util->form($field_empty_values, $prefix);

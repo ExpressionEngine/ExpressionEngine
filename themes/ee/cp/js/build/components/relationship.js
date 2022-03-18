@@ -473,10 +473,22 @@ function (_React$Component) {
   }], [{
     key: "renderFields",
     value: function renderFields(context) {
-      $('div[data-relationship-react]', context).each(function () {
+      $('div[data-relationship-react]:not(.react-deferred-loading)', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('relationshipReact')));
         props.name = $(this).data('inputValue');
         ReactDOM.render(React.createElement(Relationship, props, null), this);
+      });
+      $('.react-deferred-loading--relationship', context).each(function () {
+        var $wrapper = $(this);
+        var $button = $wrapper.find('.js-dropdown-toggle');
+
+        $button.on('click', function () {
+          $('div[data-relationship-react]', $wrapper).each(function () {
+            var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+            props.name = $(this).data('inputValue');
+            ReactDOM.render(React.createElement(Relationship, props, null), this);
+          });
+        });
       });
     }
   }]);
