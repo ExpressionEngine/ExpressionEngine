@@ -213,6 +213,10 @@ Conditional.Publish.prototype = {
 
     _bindAddButton: function() {
         var that = this;
+
+        // Remove any existing click listeners the body has registered for this element
+        // this is necessary for AJAX modals that may be opened and closed many times
+        $('body').off('click', '.condition-btn');
         $('body').on('click', '.condition-btn', function(event) {
             var cloneElementParent = $(this).parents('.field-conditionset');
             event.preventDefault();
@@ -346,7 +350,10 @@ Conditional.Publish.prototype = {
 
             var newTimer = setInterval(function() {
                 if ($(parentSet).find('.condition-btn').length) {
-                    $(parentSet).find('.condition-btn').trigger('click');
+                    // Only trigger adding a new condition if the set has no visible rules
+                    if($(parentSet).find('.rules .rule:not(.hidden)').length == 0) {
+                        $(parentSet).find('.condition-btn').trigger('click');
+                    }
                     clearInterval(newTimer);
                 }
             },20);
