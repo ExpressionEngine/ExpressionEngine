@@ -213,7 +213,7 @@ context('Conditional Fields', () => {
 
     })
 
-    it.only('can be used in a relationship field', function() {
+    it('can be used in a relationship field', function() {
         // Setup conditional on field
         visitCPEditField('{related_news}');
 
@@ -258,6 +258,7 @@ context('Conditional Fields', () => {
             cy.visit('index.php/fields/conditional/cf-relationship-test')
             cy.hasNoErrors()
             cy.get('.related_news').should('not.be.empty')
+            cy.get('.if_related_news').should('contain', 'if related_news')
             
             cy.visit(edit_url);
             cy.get('textarea[name="field_id_1"]').clear().type('hide').blur();
@@ -268,14 +269,8 @@ context('Conditional Fields', () => {
             cy.visit('index.php/fields/conditional/cf-relationship-test')
             cy.hasNoErrors()
             cy.get('.related_news').should('be.empty')
+            cy.get('.if_related_news').should('contain', 'if not related_news')
         })
-
-
-
-        // Assert field is not shown on entry page after save
-        cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('div[data-relationship-react]').should('be.visible');
-
-        // Assert field shows up
     })
 
     it('can be used in a fluid field', function() {
