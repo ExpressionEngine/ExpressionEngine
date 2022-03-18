@@ -299,22 +299,40 @@ context('Conditional Fields', () => {
         cy.get('.dropdown__item').contains('News').closest('.dropdown__item').find('.fa-plus').click();
 
         cy.log('Edit entry to conditionally hide the field');
+        cy.intercept('**/publish/**').as('validation')
         cy.get('input[name="title"]').type('CF fluid test');
-        cy.get('textarea[name="field_id_1"]').type('hide', { force: true });
+        cy.get('.fluid').should('not.be.visible');
+        cy.get('textarea[name="field_id_1"]').type('hide', { force: true }).blur();
+        cy.wait('@validation')
+        cy.get('.fluid').should('not.be.visible');
+        cy.get('textarea[name="field_id_1"]').clear().type('show', { force: true }).blur();
+        cy.wait('@validation')
+        cy.get('.fluid').should('be.visible');
+        cy.get('.fluid__footer [data-field-name="news_body"]').click()
+        cy.get('.fluid textarea:visible').type('fluid field content')
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
-        cy.log('Assert field is shown on entry page after save');
-        cy.get('input[name="field_id_3"]').parent('.field-control').find('div[data-file-field-react]').should('not.be.visible');
-        // Edit entry to not conditionally hide the field
-        cy.get('textarea[name="field_id_1"]').clear({ force: true }).type('show', { force: true });
-        cy.get('button[data-submit-text="Save"]:eq(0)').click();
+        cy.url().then(edit_url => {
 
-        // Assert field is not shown in the template
+            cy.log('Assert field is shown on entry page after save');
+            cy.get('.fluid').should('be.visible')
 
+            cy.visit('index.php/fields/conditional/cf-fluid-test')
+            cy.hasNoErrors()
+            cy.get('.fluid').should('not.be.empty')
+            cy.get('.if_fluid').should('contain', 'if cf_fluid')
+            
+            cy.visit(edit_url);
+            cy.get('textarea[name="field_id_1"]').clear().type('hide').blur();
+            cy.wait('@validation')
+            cy.get('.fluid').should('not.be.visible')
+            cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
-
-        // Assert field is not shown on entry page after save
-        cy.get('input[name="field_id_3"]').parent('.field-control').find('div[data-file-field-react]').should('be.visible');
+            cy.visit('index.php/fields/conditional/cf-fluid-test')
+            cy.hasNoErrors()
+            cy.get('.fluid').should('be.empty')
+            cy.get('.if_fluid').should('contain', 'if not cf_fluid')
+        })
     })
 
     context('different combinations of rules', function() {

@@ -21,5 +21,9 @@
 
 <div class="if_related_news">{if related_news}if related_news{if:else}if not related_news{/if}</div>
 
+<div class="fluid">{cf_fluid}{cf_fluid:news_body}{content}{/cf_fluid:news_body}{/cf_fluid}</div>
+
+<div class="if_fluid">{if cf_fluid}if cf_fluid{if:else}if not cf_fluid{/if}</div>
+
 
 {/exp:channel:entries}
