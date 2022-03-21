@@ -2242,6 +2242,12 @@ class Channel
             }
 
             $data = ee('LivePreview')->getEntryData();
+            $this->hidden_fields[$data['entry_id']] = [];
+            foreach ($data as $field => $fieldValue) {
+                if (strpos($field, 'field_hide_') === 0) {
+                    $this->hidden_fields[$data['entry_id']][] = substr($field, 11);
+                }
+            }
 
             foreach ($result_array as $i => $row) {
                 if ($row['entry_id'] == $data['entry_id']) {
