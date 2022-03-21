@@ -111,6 +111,7 @@ class LivePreview
         if (!empty($hiddenFields)) {
             foreach ($hiddenFields as $hiddenFieldId) {
                 $data['field_hide_' . $hiddenFieldId] = 'y';
+                $data['field_id_' . $hiddenFieldId] = null;
             }
         }
 
