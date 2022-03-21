@@ -4,7 +4,7 @@
 
     <?php if (IS_PRO) : ?>
     <div class="dropdown app-pro-validation" data-dropdown="app-pro-validation-dropdown">
-      <h2>ExpressionEngine Pro</h2>
+      <h5>ExpressionEngine Pro</h5>
       <p class="pro-message"> <?=lang('your_license_is')?> <em class="license-status-text-<?=ee()->view->pro_license_status?>"><?=lang('license_' . ee()->view->pro_license_status)?></em></p>
 
       <div class="app-pro-validation-actions">
@@ -71,10 +71,10 @@
                         <?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name' => 'one_click_major_update_confirm'])?>
                             <input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
                             <fieldset>
-                                <legend class="sr-only">Update major version</legend>
+                                <legend class="sr-only"><?=lang('update_version')?></legend>
                                 <label><?=lang('one_click_major_update_instructions')?></label>
                                 <div class="field-control">
-                                    <label for="upgrade-confirm-password" class="sr-only">upgrade password</label>
+                                    <label for="upgrade-confirm-password" class="sr-only"><?=lang('upgrade_password')?></label>
                                     <input type="password" name="password" value="" id="upgrade-confirm-password">
                                 </div>
                             </fieldset>
@@ -136,7 +136,7 @@
                 </div>
                 <div class="jump-menu__input" id="jumpMenu2" style="display:none;">
                     <span id="jumpEntry1Selection" class="action-tag"></span>
-                    <label for="jumpEntry2" class="sr-only">Search For input</label>
+                    <label for="jumpEntry2" class="sr-only"><?=lang('search_for')?></label>
                     <input type="text" id="jumpEntry2" class="jump-to" placeholder="Search For..">
                 </div>
                 <div class="jump-menu__items" id="jumpMenuResults1"></div>

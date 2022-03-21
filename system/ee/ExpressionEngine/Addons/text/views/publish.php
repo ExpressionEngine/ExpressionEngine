@@ -7,7 +7,7 @@ $show_file_selector = (isset($settings['field_show_file_selector']) && $settings
 if ($show_fmt or $show_file_selector): ?>
 <div class="format-options">
     <div class="d-flex align-items-center">
-    <?php $ariaLabel = 'aria-label="format options for '.$settings['field_label'].'"';?>
+    <?php $ariaLabel = 'aria-label="format options for ' . $settings['field_label'] . '"';?>
     <?php if ($show_file_selector): ?>
         <div class="button-toolbar toolbar">
             <div class="button-group button-group-xsmall">

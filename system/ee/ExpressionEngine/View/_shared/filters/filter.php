@@ -10,7 +10,7 @@
 		<?php if ($has_custom_value || $has_list_filter): ?>
 			<div class="dropdown__search">
 				<div class="search-input">
-					<label for="filterSearchInput" class="sr-only">Filter search input</label>
+					<label for="filterSearchInput" class="sr-only"><?=lang('search_filter')?></label>
 				<input
 					type="text"
 					name="<?=$name?>"
@@ -33,6 +33,6 @@
 		</div>
 	</div>
 	<?php if ($value && isset($url_without_filter)): ?>
-		<a class="filter-clear" href="<?=$url_without_filter?>"><span class="sr-only">filter clear button</span><i class="fas fa-times"></i></a>
+		<a class="filter-clear" href="<?=$url_without_filter?>"><span class="sr-only"><?=lang('clear_filter')?></span><i class="fas fa-times"></i></a>
 	<?php endif; ?>
 </div>

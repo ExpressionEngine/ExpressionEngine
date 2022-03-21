@@ -38,14 +38,14 @@
                 if ($reorder_header): ?>
 					<th class="reorder-col"><span class="ico reorder fas fa-bars"></span></th>
 				<?php elseif ($reorder): ?>
-					<th class="first reorder-col"><span class="sr-only">reorder column</span></th>
+					<th class="first reorder-col"><span class="sr-only"><?=lang('reorder_column')?></span></th>
 				<?php endif ?>
 				<?php foreach ($columns as $settings):
                     $attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
                     $label = $settings['label']; ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="app-listing__header text--center">
-							<span class="sr-only">checkbox column to select existing items</span>
+							<span class="sr-only"><?=lang('checkbox_column')?></span>
 							<?php if (! empty($data) or $checkbox_header): // Hide checkbox if no data?>
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
@@ -163,7 +163,7 @@
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 								<td class="app-listing__cell app-listing__cell--input text--center">
 									<fieldset>
-										<legend class="sr-only">Select item <?=form_prep($column['value'])?></legend>
+										<legend class="sr-only"><?=lang('select_item')?> <?=form_prep($column['value'])?></legend>
 										<label class="sr-only" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
 										<input
 											id="<?=$table_id . '-' . $i . '-' . $row_id?>"
@@ -299,7 +299,7 @@ else: ?>
 				<?php endforeach ?>
 
 				<?php if (!empty($data)): ?>
-					<th class="grid-field__column-remove"><span class="sr-only">column for buttons move and remove row</span></th>
+					<th class="grid-field__column-remove"><span class="sr-only"><?=lang('move_remove_column')?></span></th>
 				<?php endif ?>
 		</thead>
 	<?php endif ?>
@@ -413,12 +413,12 @@ else: ?>
 							<div class="grid-field__column-tools">
 								<?php if ($reorder): ?>
 								<button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
-									<span class="sr-only">button for moving rows</span>
+									<span class="sr-only"><?=lang('move_row')?></span>
 									<span class="grid-field__column-tool"><i class="fas fa-fw fa-arrows-alt"></i></span>
 								</button>
 								<?php endif ?>
 								<button type="button" rel="remove_row" class="button button--small button--default">
-									<span class="sr-only">button for remove rows</span>
+									<span class="sr-only"><?=lang('remove_row')?></span>
 									<span class="grid-field__column-tool danger-link"><i class="fas fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></span>
 								</button>
 							</div>

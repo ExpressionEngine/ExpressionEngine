@@ -15180,7 +15180,7 @@ input[type=button].btn-block {
   background-color: var(--ee-bg-0);
   overflow: hidden;
 }
-.app-pro-validation h2 {
+.app-pro-validation h2, .app-pro-validation h5 {
   font-size: 15px;
 }
 .app-pro-validation .pro-message {

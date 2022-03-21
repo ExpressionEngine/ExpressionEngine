@@ -6,12 +6,12 @@
 		<?php endif; ?>
 	</button>
 	<?php if ($value): ?>
-		<a class="filter-clear" href="<?=$url_without_filter?>"><span class="sr-only">filter clear button</span><i class="fas fa-times"></i></a>
+		<a class="filter-clear" href="<?=$url_without_filter?>"><span class="sr-only"><?=lang('clear_filter')?></span><i class="fas fa-times"></i></a>
 	<?php endif; ?>
 	<div class="dropdown">
 		<div class="dropdown__search">
 			<div class="search-input">
-				<label id="dateSearchInput" class='sr-only'>Date search input</label>
+				<label id="dateSearchInput" class='sr-only'><?=lang('date_input')?></label>
 			<input
 				type="text"
 				name="<?=$name?>"

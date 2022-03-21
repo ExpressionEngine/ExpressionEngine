@@ -1,5 +1,5 @@
 <fieldset class="bulk-action-bar hidden">
-	<legend class="sr-only">Bulk action list</legend>
+	<legend class="sr-only"><?=lang('bulk_action_list')?></legend>
 	<select name="bulk_action" class="select-popup button--small" aria-label="bulk action select">
 		<?php foreach ($options as $option): ?>
 		<option

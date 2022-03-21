@@ -48,6 +48,8 @@ $lang = array(
 
     'menu_manager' => 'Menu Manager',
 
+    'search_for' => 'Search For input',
+
     /* Control Panel */
     'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
 
@@ -80,6 +82,8 @@ $lang = array(
     'click_to_edit' => 'Click to Edit',
 
     'close_modal' => 'Close modal',
+
+    'close_banner' => 'Close banner button',
 
     'consult_user_guide' => 'Consult User Guide',
 
@@ -286,6 +290,8 @@ $lang = array(
 
     'check_all' => 'Check All',
 
+    'checkbox_column' => 'Checkbox column to select existing items',
+
     'clear_all' => 'Clear All',
 
     'create' => 'Create',
@@ -301,6 +307,8 @@ $lang = array(
     'ee_wiki' => 'EE Wiki',
 
     'entry' => 'Entry',
+
+    'homepage' => 'Homepage',
 
     'limit_by' => 'limit by',
 
@@ -330,6 +338,8 @@ $lang = array(
 
     'results' => 'results',
 
+    'reorder_column' => 'Reorder column',
+
     'select_row' => 'Select Row',
 
     'select_all' => 'Select All',
@@ -341,6 +351,8 @@ $lang = array(
     'search_in_filter' => 'search in',
 
     'search_titles_only' => 'Search Titles Only',
+
+    'select_item' => 'Select item',
 
     'columns_filter' => 'Columns',
 
@@ -391,6 +403,28 @@ $lang = array(
     'viewtype_thumb' => 'Thumbnails',
 
     'viewtype_hybrid' => 'Hybrid',
+
+    'move_remove_column' => 'Column for buttons move and remove row',
+
+    'move_row' => 'Button for moving rows',
+
+    'remove_row' => 'Button for remove rows',
+
+    'clear_filter' => 'Filter clear button',
+
+    'search_filter' => 'Filter search input',
+
+    'date_input' => 'Date search input',
+
+    'search_entry' => 'Search entries',
+
+    'search_keyword' => 'Keyword search input',
+
+    'bulk_action_list' => 'Bulk action list',
+
+    'save_with_options' => 'Save with options',
+
+    'toggle_button' => 'toggle button',
 
     /* Sites and Channels */
     'avatar_path' => 'Avatar Path',
@@ -483,6 +517,8 @@ $lang = array(
     '404_does_not_exist_desc' => 'Sorry, we could not find the item you are trying to access in the system.',
 
     /* Common */
+    'add_icon' => 'Add icon',
+
     'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',
 
     'auto_br' => 'Auto line break',
@@ -583,6 +619,8 @@ $lang = array(
 
     'remove' => 'Remove',
 
+    'remove_icon' => 'Remove icon',
+
     'rev_author' => 'Author',
 
     'rev_date' => 'Date',
@@ -602,6 +640,8 @@ $lang = array(
     'success' => 'Success',
 
     'type' => 'Type',
+
+    'tools_icon' => 'Tools icon',
 
     'url' => 'URL',
 
@@ -681,6 +721,10 @@ $lang = array(
     'log_into' => 'Log into %s',
 
     'up_to_date' => 'Up to date!',
+
+    'update_version' => 'Update major version',
+
+    'upgrade_password' => 'Upgrade password',
 
     'version' => 'Version',
 

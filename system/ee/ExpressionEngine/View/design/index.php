@@ -52,7 +52,7 @@
 	<div class="modal">
 		<div class="col-group">
 			<div class="col w-16">
-				<a class="m-close" href="#"><span class="sr-only">Close button</span></a>
+				<a class="m-close" href="#"><span class="sr-only"><?=lang('close_modal')?></span></a>
 				<div class="box">
 				</div>
 			</div>

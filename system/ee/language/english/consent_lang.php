@@ -1,6 +1,7 @@
 <?php
 
 $lang = [
+    'close_button' => 'Close button',
 
     'consent_module_name' => 'Consent',
 
