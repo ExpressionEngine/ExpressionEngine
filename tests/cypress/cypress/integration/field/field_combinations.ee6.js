@@ -114,7 +114,7 @@ context('Create combinations of field', () => {
 			})
 
 			// Save the publish layout
-			cy.get('button').contains('Save').first().click()
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
 		})
 
 		it('has moved to top of field list on entry edit page', () => {
@@ -490,7 +490,7 @@ context('Create combinations of field', () => {
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').click()
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('not.have.class', 'active')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').should('have.class', 'active')
-		cy.get('.button--primary').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('not.have.class', 'active')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').should('have.class', 'active')
 
@@ -502,7 +502,7 @@ context('Create combinations of field', () => {
 		cy.get('div').contains('AA Selectable Buttons Test').click()
 		cy.get('[name="field_pre_populate"][value="v"]').should('be.checked')
 		cy.get('[data-toggle-for="allow_multiple"]').click()
-		cy.get('.button--primary').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
@@ -511,7 +511,7 @@ context('Create combinations of field', () => {
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').click()
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
-		cy.get('.button--primary').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
 		
