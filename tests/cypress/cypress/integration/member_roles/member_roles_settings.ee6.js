@@ -28,7 +28,7 @@ context('Test Member roles Settings ', () => {
 
 	   cy.visit('admin.php?/cp/members/roles')
 
-	   cy.get('div[class="list-item__title"]').contains('SettingManager').click()
+	   cy.get('div[class="list-item__title"]').contains('SettingManager').parent().click()
 
 	   cy.get('button').contains('CP Access').click()
 	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
@@ -38,7 +38,7 @@ context('Test Member roles Settings ', () => {
 		cy.get('#fieldset-can_access_security_settings .toggle-btn').click();
 		cy.get('#fieldset-can_manage_consents .toggle-btn').click();//turn everything on to start with
 
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 	})
 
 	it('Can see the Settings now but nothing else',() => {
@@ -142,7 +142,7 @@ context('Test Member roles Settings ', () => {
 	   cy.get('div[class="list-item__title"]').contains('SettingManager').click()
 	   cy.get('button').contains('CP Access').click()
 		cy.get('#fieldset-can_manage_consents .toggle-btn').click();//turn off  access
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.logout()
 

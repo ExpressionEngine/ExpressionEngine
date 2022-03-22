@@ -36,7 +36,7 @@ context('Test Member roles Utilities ', () => {
 
 		cy.get('#fieldset-can_access_logs .toggle-btn').click(); //access slog
 
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 	})
 
 	it('Can get to Logs now', () => {
@@ -73,7 +73,7 @@ context('Test Member roles Utilities ', () => {
 
 		cy.get('#fieldset-can_access_logs .toggle-btn').click(); //turn off slog
 
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.logout()
 

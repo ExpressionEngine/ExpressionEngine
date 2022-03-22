@@ -179,7 +179,7 @@ context('Template Manager', () => {
             form.get('php_parse_stage').should('not.exist')
             form.get('hit_counter').clear().type('10')
 
-            cy.get('button').contains('Save').first().click()
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
 
             cy.get('button').contains('Settings').first().click()
 
@@ -203,7 +203,7 @@ context('Template Manager', () => {
                 form.get('allow_php').click()
                 form.get('php_parse_stage').check('i')
 
-                cy.get('button').contains('Save').first().click()
+                cy.get('body').type('{ctrl}', {release: false}).type('s')
 
                 cy.get('button').contains('Settings').first().click()
 

@@ -142,7 +142,7 @@ context('Channel Layouts: Create/Edit', () => {
         page.get('tabs').eq(-1).contains(new_tab_name)
 
         cy.get('input[name="layout_name"]').clear().type('Default')
-        cy.get('button').contains('Save').first().click()
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.wait(300) //AJ
         cy.hasNoErrors()
 

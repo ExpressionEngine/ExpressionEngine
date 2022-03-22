@@ -65,7 +65,7 @@ context('Test Member roles Channels ', () => {
 
 
 
-   cy.get('button').contains('Save').click()
+   cy.get('body').type('{ctrl}', {release: false}).type('s')
  })
 
  it('Ensure Channel Manager can add and view channels', () => {

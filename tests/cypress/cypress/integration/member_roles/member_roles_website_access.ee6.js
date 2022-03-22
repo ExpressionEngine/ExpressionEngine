@@ -16,7 +16,7 @@ context('Test Member roles Web access ', () => {
 	   cy.get('div[class="list-item__title"]').contains('Test').click()
 	   cy.get('button').contains('CP Access').click()
 	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
-	   cy.get('button').contains('Save').first().click()
+	   cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.logout()
 	})
@@ -57,7 +57,7 @@ context('Test Member roles Web access ', () => {
 	   cy.get('button').contains('Website Access').click()
 
 		cy.get('#fieldset-website_access .checkbox-label:nth-child(2) > input').click(); //Turn offline access on for members
-		cy.get('button').contains('Save').click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		logout()
 

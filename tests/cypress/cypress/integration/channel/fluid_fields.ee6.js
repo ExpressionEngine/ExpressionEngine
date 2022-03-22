@@ -72,7 +72,7 @@ context('Fluid Fields', () => {
 
         page.get('fields').find("[value='1']").click()
 
-        cy.get('button').contains('Save').first().click()
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
 
         page.get('fields').find("[value='1']").should('be.checked')
         page.get('fields').find("[value='2']").should('be.checked')

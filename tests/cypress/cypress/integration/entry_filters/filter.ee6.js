@@ -11,18 +11,18 @@ context('Entry filtering', () => {
 			//it('Creates Channels to work with', () => {
 				cy.visit('admin.php?/cp/channels/create')
 				cy.get("input[name = 'channel_title']").type('Channel')
-				  cy.get('button').contains('Save').eq(0).click()
+				  cy.get('body').type('{ctrl}', {release: false}).type('s')
 				  cy.get('p').contains('The channel Channel has been created')
 
 				  cy.visit('admin.php?/cp/channels/create')
 				cy.get("input[name = 'channel_title']").type('Contact')
-				  cy.get('button').contains('Save').eq(0).click()
+				  cy.get('body').type('{ctrl}', {release: false}).type('s')
 				  cy.get('p').contains('The channel Contact has been created')
 
 
 				  cy.visit('admin.php?/cp/channels/create')
 				cy.get("input[name = 'channel_title']").type('Discover')
-				  cy.get('button').contains('Save').eq(0).click()
+				  cy.get('body').type('{ctrl}', {release: false}).type('s')
 				  cy.get('p').contains('The channel Discover has been created')
 
 
@@ -32,7 +32,7 @@ context('Entry filtering', () => {
 		  	cy.wait(500)
 		  	cy.get('a.dropdown__link').filter(':visible').contains('Channel').click({force:true})
 		  	cy.get('input[name="title"]').type('Channel Entry')
-		  	cy.get('button').contains('Save').eq(0).click()
+		  	cy.get('body').type('{ctrl}', {release: false}).type('s')
 		  	cy.get('p').contains('The entry Channel Entry has been created')
 
 		  	cy.visit('admin.php?/cp/publish/edit')
@@ -40,7 +40,7 @@ context('Entry filtering', () => {
 		  	cy.wait(500)
 		  	cy.get('a.dropdown__link').contains('Contact').click({force:true})
 		  	cy.get('input[name="title"]').type('Contact Entry')
-		  	cy.get('button').contains('Save').eq(0).click()
+		  	cy.get('body').type('{ctrl}', {release: false}).type('s')
 		  	cy.get('p').contains('The entry Contact Entry has been created')
 
 
@@ -49,7 +49,7 @@ context('Entry filtering', () => {
 		  	cy.wait(500)
 		  	cy.get('a.dropdown__link').contains('Discover').click({force:true})
 		  	cy.get('input[name="title"]').type('Discover Entry')
-		  	cy.get('button').contains('Save').eq(0).click()
+		  	cy.get('body').type('{ctrl}', {release: false}).type('s')
 		  	cy.get('p').contains('The entry Discover Entry has been created')
 
 
@@ -59,7 +59,7 @@ context('Entry filtering', () => {
 			cy.get('button').contains('Options').click()
 			cy.get('label[class= "select__button-label act"]').click()
 			cy.get('span').contains('Closed').click()
-			cy.get('button').contains('Save').eq(0).click()
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
 			cy.get('p').contains('The entry Channel Entry has been updated')
 
 			cy.visit('admin.php?/cp/members/create')
@@ -71,7 +71,7 @@ context('Entry filtering', () => {
 			cy.get('button').contains('Roles').click()
 
 			cy.get('input[type="radio"][name="role_id"][value="1"]').click()//make a super admin2
-			cy.get('button').contains('Save').click()
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 			cy.visit('admin.php?/cp/members/profile/settings')
 			cy.get('.main-nav__account-icon > img').click()
@@ -89,7 +89,7 @@ context('Entry filtering', () => {
 			cy.wait(500)
 			cy.get('a.dropdown__link').filter(':visible').contains('Channel').click({force:true})
 			cy.get('input[name="title"]').type('Another Entry in Channel')
-			cy.get('button').contains('Save').eq(0).click()
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
 			cy.get('p').contains('has been created')
 
 		})
@@ -285,19 +285,19 @@ context('Entry filtering', () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('a').contains('New Field').click()
 			cy.get('input[name="field_label"]').type('Simple Text')
-			cy.get('button').contains('Save').click()
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
 			cy.get('p').contains('has been created')
 
 			cy.visit('admin.php?/cp/channels')
 			cy.get('div').contains('Discover').click()
 			cy.get('button').contains('Fields').click()
 			cy.get('div').contains('Simple Text').click()
-			cy.get('button').contains('Save').click()
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('a').contains('Discover Entry').click()
 			cy.get('input[maxlength="256"]').type('The Quick Brown fox...')
-			cy.get('button').contains('Save').click()
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 			cy.visit('admin.php?/cp/publish/edit')
 

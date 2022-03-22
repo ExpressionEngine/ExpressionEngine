@@ -28,7 +28,7 @@ context('Test Member roles Utilities ', () => {
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(5) input').click();
 
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click();
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.logout()
 	})

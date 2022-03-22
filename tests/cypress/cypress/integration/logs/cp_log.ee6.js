@@ -56,7 +56,7 @@ context('CP Log', () => {
      cy.get('div[class="list-item__title"]').contains('johndoe').click()
      cy.get('button').contains('CP Access').click()
      cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
-     cy.get('button').contains('Save').first().click()
+     cy.get('body').type('{ctrl}', {release: false}).type('s')
   })
 
   it('can remove everything', () =>{

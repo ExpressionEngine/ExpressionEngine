@@ -22,7 +22,7 @@ context('Test Templates roles ', () => {
 		cy.get('#fieldset-can_access_design .toggle-btn').click();
 		cy.get('#fieldset-can_admin_design .toggle-btn').click();
 
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.logout()
 	})
@@ -74,7 +74,7 @@ context('Test Templates roles ', () => {
 	cy.get('#fieldset-template_group_permissions .checkbox-label:nth-child(2) > input').click();
 	cy.get('#fieldset-template_group_permissions .checkbox-label:nth-child(3) > input').click();
  //turn off security & privacy
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.logout()
 
@@ -125,7 +125,7 @@ context('Test Templates roles ', () => {
 		cy.get('#fieldset-template_partials .checkbox-label:nth-child(2) > input').click();
 		cy.get('#fieldset-template_partials .checkbox-label:nth-child(3) > input').click();
 
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.logout()
 
@@ -171,7 +171,7 @@ context('Test Templates roles ', () => {
 		cy.get('#fieldset-template_variables .checkbox-label:nth-child(3) > input').click();
 
 
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.logout()
 

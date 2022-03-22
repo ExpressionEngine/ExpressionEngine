@@ -153,7 +153,7 @@ context('Templates', () => {
             editPage.get('require_all_variables').click()
 
             //editPage.get('save_button').first().click()
-            cy.get('button').contains('Save').first().click()
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
 
             cy.hasNoErrors()
 
@@ -177,7 +177,7 @@ context('Templates', () => {
         })
 
         it('stays on the edit page with the "save" button', function() {
-            cy.get('button').contains('Save').first().click()
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
 
             cy.hasNoErrors()
 
@@ -224,7 +224,7 @@ context('Templates', () => {
                     editPage.get('settings_tab').click()
                     editPage.get('allow_php').should('not.exist')
 
-                    cy.get('button').contains('Save').first().click()
+                    cy.get('body').type('{ctrl}', {release: false}).type('s')
 
                     //reverting should keep the setting 
                     cy.eeConfig({ item: 'allow_php', value: 'y' }).then((conf) => {
