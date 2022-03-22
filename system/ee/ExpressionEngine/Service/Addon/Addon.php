@@ -379,6 +379,11 @@ class Addon
         return $this->getFullyQualified($class);
     }
 
+    public function getEvaluationRuleClass($rule)
+    {
+        return $this->getFullyQualified("EvaluationRules\\" . ucfirst($rule));
+    }
+
     /**
      * Has a README.md file?
      *

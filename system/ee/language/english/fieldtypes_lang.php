@@ -12,6 +12,12 @@ $lang = array(
 
     'remove_file' => 'Remove File',
 
+    'ft_allow_multi' => 'Allow multiple selections?',
+
+    'ft_allow_multi_desc' => 'When enabled, authors will be allowed to select multiple items.',
+
+    'ft_multiselect_not_allowed' => 'Selecting multiple options is not allowed for this field',
+
     /* Relationships */
     'any_author' => 'Any author',
 
@@ -292,6 +298,31 @@ $lang = array(
     'colorpicker_swatches_populate_values' => 'Values',
     'colorpicker_swatches_populate_manually' => 'Populate the swatches manually',
 
+    /* Conditional Evaluation Rules */
+    'contains' => 'contains',
+    'notContains' => 'does not contain',
+    'equal' => 'is',
+    'notEqual' => 'is not',
+    'isEmpty' => 'is empty',
+    'isNotEmpty' => 'has any value',
+    'greaterThan' => 'greater than',
+    'greaterOrEqualThan' => 'greater than or equal to',
+    'lessThan' => 'less than',
+    'lessOrEqualThan' => 'less than or equal to',
+
+    'turnedOn' => 'is turned on',
+    'turnedOff' => 'is turned off',
+
+    /* Slider */
+    'field_step' => 'Step',
+
+    'field_prefix' => 'Prefix',
+
+    'field_suffix' => 'Suffix',
+
+    /* Notes */
+    'notes_note_content' => 'Note Content',
+    'notes_note_content_desc' => 'This content will appear as a note on the publish form. Markdown formatting is supported.',
 );
 
 // EOF

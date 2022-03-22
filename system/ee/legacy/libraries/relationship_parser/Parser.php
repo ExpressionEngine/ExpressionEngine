@@ -69,6 +69,10 @@ class EE_Relationship_data_parser
     {
         $node = $this->_tree;
         $this->_channel = $channel;
+        $all_cfields = [];
+        foreach ($this->_channel->cfields as $site_id => $cfields) {
+            $all_cfields = array_merge($all_cfields, $cfields);
+        }
 
         // push the root node down right away
         if (! $node->is_root()) {
@@ -77,9 +81,14 @@ class EE_Relationship_data_parser
 
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
-
         foreach ($node->children() as $child) {
-            $tagdata = $this->parse_node($child, $entry_id, $tagdata);
+            $field_id = isset($all_cfields[$child->field_name()]) ? $all_cfields[$child->field_name()] : null;
+            //if the field is conditionally hidden, do not parse
+            if (!is_null($field_id) && !ee('LivePreview')->hasEntryData() && isset($this->_channel->hidden_fields[$entry_id]) && in_array($field_id, $this->_channel->hidden_fields[$entry_id])) {
+                $tagdata = $this->clear_node_tagdata($child, $tagdata);
+            } else {
+                $tagdata = $this->parse_node($child, $entry_id, $tagdata);
+            }
         }
 
         return $tagdata;

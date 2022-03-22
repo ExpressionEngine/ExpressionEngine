@@ -527,6 +527,14 @@ abstract class OptionFieldtype extends EE_Fieldtype
 
         return $chunk;
     }
+
+    /**
+     * Conditional Fields
+     */
+    public function getPossibleValuesForEvaluation()
+    {
+        return $this->_get_field_options([]);
+    }
 }
 
 // EOF

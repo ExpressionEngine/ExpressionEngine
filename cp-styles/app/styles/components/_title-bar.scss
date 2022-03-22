@@ -80,7 +80,8 @@
     }
   }
 
-  .button {
+  .button,
+  .button-group {
     margin-left: 10px;
 
     &:first-child {
@@ -90,6 +91,28 @@
 
   .button-group {
     margin-left: 5px;
+  }
+
+  &.title-bar__extra-tools-publish {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 8px;
+    margin-top: -60px;
+    margin-bottom: 0px;
+    z-index: 6;
+    float: right;
+
+    @include m-tablet-down {
+      position: inherit;
+      top: inherit;
+      margin-top: 0;
+      margin-bottom: 0;
+      z-index: inherit;
+      float: none;
+      text-align: right;
+    }
+
+    .form-btns { display: inline-flex;}
   }
 }
 

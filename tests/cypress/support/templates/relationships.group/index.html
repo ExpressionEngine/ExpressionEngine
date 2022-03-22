@@ -1,0 +1,25 @@
+<html>
+    <body>
+        <div class="open">
+            {exp:channel:entries entry_id="1"} 
+                {related_news} 
+                    <p>{related_news:title}</p>
+                {/related_news}
+            {/exp:channel:entries}
+        </div>
+        <div class="all">
+            {exp:channel:entries entry_id="1"} 
+                {related_news status="open|Featured"} 
+                    <p>{related_news:title}</p>
+                {/related_news}
+            {/exp:channel:entries}
+        </div>
+        <div class="not_open">
+            {exp:channel:entries entry_id="1"} 
+                {related_news status="not open"} 
+                    <p>{related_news:title}</p>
+                {/related_news}
+            {/exp:channel:entries}
+        </div>
+    </body>
+</html>

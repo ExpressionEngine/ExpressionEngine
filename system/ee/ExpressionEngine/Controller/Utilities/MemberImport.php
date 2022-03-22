@@ -411,18 +411,20 @@ class MemberImport extends Utilities
             show_error(lang('unauthorized_access'), 403);
         }
 
+        ee()->lang->loadfile('members');
         ee()->lang->loadfile('member_import');
-        ee()->load->library('validate');
 
-        $this->validate->member_id = '';
-        $this->validate->val_type = 'new';
-        $this->validate->fetch_lang = true;
-        $this->validate->require_cpw = false;
-        $this->validate->enable_log = false;
-        $this->validate->cur_username = '';
-        $this->validate->cur_screen_name = '';
-        $this->validate->cur_password = '';
-        $this->validate->cur_email = '';
+        $validate = [
+            'member_id' => '',
+            'val_type' => 'new',
+            'fetch_lang' => true,
+            'require_cpw' => false,
+            'enable_log' => false,
+            'cur_username' => '',
+            'cur_screen_name' => '',
+            'cur_password' => '',
+            'cur_email' => ''
+        ];
 
         $i = 0;
 
@@ -453,6 +455,7 @@ class MemberImport extends Utilities
         if (is_array($xml->children[0]->children)) {
             foreach ($xml->children as $member) {
                 if ($member->tag == "member") {
+                    $validationData = $validate;
                     foreach ($member->children as $tag) {
                         // Is the XML tag an allowed database field
                         if (isset($this->default_fields[$tag->tag])) {
@@ -471,7 +474,7 @@ class MemberImport extends Utilities
 
                         switch ($tag->tag) {
                             case 'username':
-                                $this->validate->username = $tag->value;
+                                $validationData['username'] = $tag->value;
                                 if (! in_array($tag->value, $u)) {
                                     $u[] = $tag->value;
                                 } else {
@@ -480,7 +483,7 @@ class MemberImport extends Utilities
 
                                 break;
                             case 'screen_name':
-                                $this->validate->screen_name = $tag->value;
+                                $validationData['screen_name'] = $tag->value;
                                 $s[] = $tag->value;
 
                                 break;
@@ -491,7 +494,7 @@ class MemberImport extends Utilities
                                 } else {
                                     $errors[] = array(lang('duplicate_email') . $value);
                                 }
-                                $this->validate->email = $value;
+                                $validationData['email'] = $value;
 
                                 break;
                             case 'member_id':
@@ -512,7 +515,7 @@ class MemberImport extends Utilities
                                 // We require a type attribute here, as outlined in the docs.
                                 // This is a quick error check to ensure its present.
                                 if (! @$tag->attributes['type']) {
-                                    show_error(str_replace('%x', $this->validate->username, lang('missing_password_type')));
+                                    show_error(str_replace('%x', $validationData['username'], lang('missing_password_type')));
                                 }
 
                                 $this->members[$i][$tag->tag] = $tag->value;
@@ -537,35 +540,36 @@ class MemberImport extends Utilities
                     /*  Validate separately to display
                     /*  exact problem
                     /* -------------------------------------*/
-
-                    $this->validate->validate_username();
-
-                    if (! empty($this->validate->errors)) {
-                        foreach ($this->validate->errors as $key => $val) {
-                            $this->validate->errors[$key] = $val . " (Username: '" . $username . "' - " . lang('within_user_record') . " '" . $username . "')";
-                        }
-                        $errors[] = $this->validate->errors;
-                        unset($this->validate->errors);
+                    $validationRules = [];
+                    $validationRules['username'] = 'uniqueUsername|validUsername|notBanned';
+                    if ($screen_name) {
+                        $validationRules['screen_name'] = 'validScreenName|notBanned';
                     }
+                    $validationRules['email'] = 'email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned';
+                    $validationResult = ee('Validation')->make($validationRules)->validate($validationData);
 
-                    $this->validate->validate_screen_name();
-
-                    if (! empty($this->validate->errors)) {
-                        foreach ($this->validate->errors as $key => $val) {
-                            $this->validate->errors[$key] = $val . " (Screen Name: '" . $screen_name . "' - " . lang('within_user_record') . " '" . $username . "')";
+                    if ($validationResult->isNotValid()) {
+                        if ($validationResult->hasErrors('username')) {
+                            $error = [];
+                            foreach ($validationResult->getErrors('username') as $key => $val) {
+                                $error[$key] = $val . " (Username: '" . $username . "' - " . lang('within_user_record') . " '" . $username . "')";
+                            }
+                            $errors[] = $error;
                         }
-                        $errors[] = $this->validate->errors;
-                        unset($this->validate->errors);
-                    }
-
-                    $this->validate->validate_email();
-
-                    if (! empty($this->validate->errors)) {
-                        foreach ($this->validate->errors as $key => $val) {
-                            $this->validate->errors[$key] = $val . " (Email: '" . $email . "' - " . lang('within_user_record') . " '" . $username . "')";
+                        if ($validationResult->hasErrors('screen_name')) {
+                            $error = [];
+                            foreach ($validationResult->getErrors('screen_name') as $key => $val) {
+                                $error[$key] = $val . " (Screen Name: '" . $screen_name . "' - " . lang('within_user_record') . " '" . $username . "')";
+                            }
+                            $errors[] = $error;
                         }
-                        $errors[] = $this->validate->errors;
-                        unset($this->validate->errors);
+                        if ($validationResult->hasErrors('email')) {
+                            $error = [];
+                            foreach ($validationResult->getErrors('email') as $key => $val) {
+                                $error[$key] = $val . " (Email: '" . $email . "' - " . lang('within_user_record') . " '" . $username . "')";
+                            }
+                            $errors[] = $error;
+                        }
                     }
 
                     /** -------------------------------------

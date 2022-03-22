@@ -15,6 +15,7 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
  */
 class Textarea_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Textarea',
         'version' => '1.0.0'
@@ -23,6 +24,8 @@ class Textarea_ft extends EE_Fieldtype
     public $has_array_data = false;
 
     public $size = 'large';
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     public function validate($data)
     {
