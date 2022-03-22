@@ -208,14 +208,28 @@ class Fields extends AbstractFieldsController
 
         if (! empty($_POST)) {
             $field = $this->setWithPost($field);
-            $result = $field->validate();
+            $this->validationResult = $field->validate();
 
-            if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result)) {
+            if (ee('Request')->post('field_is_conditional') == 'y') {
+                list($conditionSets, $conditions) = $this->prepareFieldConditions();
+            }
+
+            if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($this->validationResult)) {
                 return $response;
             }
 
-            if ($result->isValid()) {
+            if ($this->validationResult->isValid()) {
                 $field->save();
+                if (ee('Request')->post('field_is_conditional') == 'y') {
+                    foreach ($conditionSets as $i => $conditionSet) {
+                        $conditionSet->ChannelFields->getAssociation()->set($field);
+                        $conditionSet->save();
+                        foreach ($conditions[$i] as $condition) {
+                            $condition->condition_set_id = $conditionSet->getId();
+                            $condition->save();
+                        }
+                    }
+                }
 
                 if ($group_id) {
                     $field_group = ee('Model')->get('ChannelFieldGroup', $group_id)->first();
@@ -237,14 +251,24 @@ class Fields extends AbstractFieldsController
 
                 if (ee('Request')->post('submit') == 'save_and_new') {
                     $return = (empty($group_id)) ? '' : '/' . $group_id;
-                    ee()->functions->redirect(ee('CP/URL')->make('fields/create' . $return));
+                    $redirectUrl = ee('CP/URL')->make('fields/create' . $return);
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
-                    ee()->functions->redirect(ee('CP/URL')->make('fields'));
+                    $redirectUrl = ee('CP/URL')->make('fields');
                 } else {
-                    ee()->functions->redirect(ee('CP/URL')->make('fields/edit/' . $field->getId()));
+                    $redirectUrl = ee('CP/URL')->make('fields/edit/' . $field->getId());
                 }
+
+                // If the new field is conditional, we need to sync channel entries
+                if (ee('Request')->post('field_is_conditional') == 'y') {
+                    ee()->functions->redirect(
+                        ee('CP/URL')->make('fields/syncConditions/' . $field->getId())
+                        ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                    );
+                }
+
+                ee()->functions->redirect($redirectUrl);
             } else {
-                $errors = $result;
+                $errors = $this->validationResult;
 
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
@@ -308,10 +332,10 @@ class Fields extends AbstractFieldsController
         ]);
 
         ee()->javascript->output('
-			$("input[name=field_label]").bind("keyup keydown", function() {
-				$(this).ee_url_title("input[name=field_name]", true);
-			});
-		');
+            $("input[name=field_label]").bind("keyup keydown", function() {
+                $(this).ee_url_title("input[name=field_name]", true);
+            });
+        ');
 
         $breadcrumbs = array(
             ee('CP/URL')->make('fields')->compile() => lang('fields')
@@ -346,14 +370,44 @@ class Fields extends AbstractFieldsController
 
         if (! empty($_POST)) {
             $field = $this->setWithPost($field);
-            $result = $field->validate();
+            $this->validationResult = $field->validate();
 
-            if ($response = $this->ajaxValidation($result)) {
+            if (ee('Request')->post('field_is_conditional') == 'y') {
+                list($conditionSets, $conditions) = $this->prepareFieldConditions();
+            }
+
+            if ($response = $this->ajaxValidation($this->validationResult)) {
                 return $response;
             }
 
-            if ($result->isValid()) {
+            if ($this->validationResult->isValid()) {
                 $field->save();
+                // Build an array representing our conditions that we can compare
+                $conditionalsBefore = $this->getConditionArray($field->FieldConditionSets);
+
+                if (ee('Request')->post('field_is_conditional') == 'y') {
+                    $assignedConditionalSetIds = [];
+                    foreach ($conditionSets as $i => $conditionSet) {
+                        $assignedConditionIds = [];
+                        $conditionSet->ChannelFields->getAssociation()->set($field);
+                        $conditionSet->save();
+                        foreach ($conditions[$i] as $condition) {
+                            $condition->condition_set_id = $conditionSet->getId();
+                            $condition->save();
+                            $assignedConditionIds[] = $condition->getId();
+                        }
+                        $conditionSet->FieldConditions->filter('condition_id', 'NOT IN', $assignedConditionIds)->delete();
+                        $assignedConditionalSetIds[] = $conditionSet->getId();
+                    }
+                    $field->FieldConditionSets->filter('condition_set_id', 'NOT IN', $assignedConditionalSetIds)->delete();
+                } else {
+                    $field->FieldConditionSets->delete();
+                }
+
+                // Build an array representing our conditions that we can compare
+                $conditionalsAfter = $this->getConditionArray($conditionSets);
+
+                $conditionalEntriesRequireSync = ! $this->conditionsAreSame($conditionalsBefore, $conditionalsAfter);
 
                 if (ee()->input->post('update_formatting') == 'y') {
                     ee()->db->where('field_ft_' . $field->field_id . ' IS NOT NULL', null, false);
@@ -370,14 +424,23 @@ class Fields extends AbstractFieldsController
                     ->defer();
 
                 if (ee('Request')->post('submit') == 'save_and_new') {
-                    ee()->functions->redirect(ee('CP/URL')->make('fields/create'));
+                    $redirectUrl = ee('CP/URL')->make('fields/create');
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
-                    ee()->functions->redirect(ee('CP/URL')->make('fields'));
+                    $redirectUrl = ee('CP/URL')->make('fields');
                 } else {
-                    ee()->functions->redirect(ee('CP/URL')->make('fields/edit/' . $field->getId()));
+                    $redirectUrl = ee('CP/URL')->make('fields/edit/' . $field->getId());
                 }
+
+                if ($conditionalEntriesRequireSync) {
+                    ee()->functions->redirect(
+                        ee('CP/URL')->make('fields/syncConditions/' . $field->getId())
+                        ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                    );
+                }
+
+                ee()->functions->redirect($redirectUrl);
             } else {
-                $errors = $result;
+                $errors = $this->validationResult;
 
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
@@ -429,6 +492,168 @@ class Fields extends AbstractFieldsController
         );
 
         ee()->cp->render('settings/form', $vars);
+    }
+
+    public function evaluateConditions()
+    {
+        if (! ee('Permission')->can('edit_channel_fields') || empty($_POST)) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $channel_id = (int) ee()->input->post('channel_id');
+        $limit = (int) ee()->input->post('limit');
+        $offset = (int) ee()->input->post('offset');
+
+        // Get all channel entries with post data
+        $entries = ee('Model')->get('ChannelEntry')
+            ->filter('channel_id', $channel_id)
+            ->limit($limit)
+            ->offset($offset)
+            ->all();
+
+        foreach ($entries as $entry) {
+            // Check to see if the conditional fields are outdated before saving
+            if ($entry->conditionalFieldsOutdated()) {
+                // Conditional fields are outdated, so we evaluate the conditions and save
+                $entry->evaluateConditionalFields();
+                $entry->save();
+            }
+        }
+
+        return json_encode([
+            'message_type' => 'success',
+            'entries' => $entries->pluck('entry_id'),
+            'entries_proccessed' => $entries->count()
+        ]);
+    }
+
+    public function syncConditions($field_id = null)
+    {
+        if (! ee('Permission')->can('edit_channel_fields')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $field = ee('Model')->get('ChannelField', $field_id)->first();
+
+        if (! $field) {
+            show_404();
+        }
+
+        $field_groups = $field->ChannelFieldGroups;
+        $active_groups = $field_groups->pluck('group_id');
+        $this->generateSidebar($active_groups);
+
+        $channelEntryCount = 0;
+        $groupedChannelEntryCounts = [];
+
+        foreach ($field->getAllChannels() as $channel) {
+            $count = $channel->Entries->count();
+            $channelEntryCount += $count;
+            $groupedChannelEntryCounts[] = [
+                'channel_id' => $channel->getId(),
+                'entry_count' => $count
+            ];
+        }
+
+        ksort($groupedChannelEntryCounts);
+
+        $vars['sections'] = array(
+            array(
+                array(
+                    'title' => 'field_conditions_sync_existing_entries',
+                    'desc' => sprintf(lang('field_conditions_sync_desc'), $channelEntryCount),
+                    'fields' => array(
+                        'progress' => array(
+                            'type' => 'html',
+                            'content' => ee()->load->view('_shared/progress_bar', array('percent' => 0), true)
+                        ),
+                        'message' => array(
+                            'type' => 'html',
+                            'content' => ee()->load->view('_shared/message', array(
+                                'cp_messages' => [
+                                    'field-instruct' => '<em>'.lang('field_conditions_sync_in_progress_message').'</em>'
+                                ]), true)
+                        )
+                    )
+                )
+            )
+        );
+
+        $base_url = ee('CP/URL')->make('fields/syncConditions/' . $field_id);
+        $field_url = ee('CP/URL')->make('fields/edit/' . $field_id);
+
+        $return = ee()->input->get('return') ? base64_decode(ee()->input->get('return')) : $field_url->compile();
+
+        if ($channelEntryCount === 0) {
+            ee()->functions->redirect($return);
+        }
+
+        ee()->cp->add_js_script('file', 'cp/fields/synchronize');
+
+        // Globals needed for JS script
+        ee()->javascript->set_global(array(
+            'fieldManager' => array(
+                'channel_entry_count' => $channelEntryCount,
+                'groupedChannelEntryCounts' => $groupedChannelEntryCounts,
+
+                'sync_baseurl' => $base_url->compile(),
+                'sync_returnurl' => $return,
+                'sync_endpoint' => ee('CP/URL')->make('fields/evaluateConditions')->compile(),
+            )
+        ));
+
+        ee()->view->base_url = $base_url;
+        ee()->view->cp_page_title = lang('field_conditions_syncing_conditional_logic');
+        ee()->view->cp_page_title_alt = lang('field_conditions_syncing_conditional_logic');
+        ee()->view->save_btn_text = 'btn_sync_conditional_logic';
+        ee()->view->save_btn_text_working = 'btn_sync_conditional_logic_working';
+
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('fields')->compile() => lang('fields'),
+            '' => lang('field_conditions_sync_conditional_logic')
+        );
+
+        ee()->cp->render('settings/form', $vars);
+    }
+
+    // This builds a simple array we can compare so we know if a condition has changed
+    private function getConditionArray($conditionSets)
+    {
+        $comparable = [];
+        foreach ($conditionSets as $conditionSet) {
+            $conditions = [];
+
+            foreach ($conditionSet->FieldConditions as $condition) {
+                $conditions[] = [
+                    'condition_field_id' => (int) $condition->condition_field_id,
+                    'evaluation_rule' => $condition->evaluation_rule,
+                    'value' => $condition->value,
+                ];
+            }
+
+            $comparable[] = [$conditionSet->match => $conditions];
+        }
+        return $comparable;
+    }
+
+    public function conditionsAreSame($conditionSetsBefore, $conditionSetsAfter)
+    {
+        if (!is_array($conditionSetsAfter) || !is_array($conditionSetsBefore)) {
+            return $conditionSetsBefore === $conditionSetsAfter;
+        }
+
+        foreach (array_keys($conditionSetsAfter) as $key) {
+            if (!$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
+                return false;
+            }
+        }
+
+        foreach (array_keys($conditionSetsBefore) as $key) {
+            if (!$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private function setWithPost(ChannelField $field)
@@ -541,6 +766,19 @@ class Fields extends AbstractFieldsController
                         )
                     )
                 ),
+                array(
+                    'title' => 'make_conditional',
+                    'desc' => 'make_conditional_desc',
+                    'fields' => array(
+                        'field_is_conditional' => array(
+                            'type' => 'yes_no',
+                            'value' => $field->field_is_conditional,
+                            'group_toggle' => array(
+                                'y' => 'rule_groups',
+                            )
+                        )
+                    )
+                ),
             ),
         );
 
@@ -563,11 +801,8 @@ class Fields extends AbstractFieldsController
             $sections = array_merge($sections, $field_options);
         }
 
+        $fieldsWithEvaluationRules = [];
         foreach ($fieldtypes as $fieldtype) {
-            if ($fieldtype->name == $field->field_type) {
-                continue;
-            }
-
             // If editing an option field, populate the dummy fieldtype with the
             // same settings to make switching between the different types easy
             if (! $field->isNew()) {
@@ -576,16 +811,61 @@ class Fields extends AbstractFieldsController
                 $dummy_field = ee('Model')->make('ChannelField');
             }
             $dummy_field->field_type = $fieldtype->name;
-            $field_options = $dummy_field->getSettingsForm();
 
+            if ($fieldtype->name == $field->field_type) {
+                continue;
+            }
+
+            $field_options = $dummy_field->getSettingsForm();
             if (is_array($field_options) && ! empty($field_options)) {
                 $sections = array_merge($sections, $field_options);
             }
         }
 
+        $siteFields = ee('Model')->get('ChannelField')->filter('site_id', 'IN', [0, ee()->config->item('site_id')])->filter('field_id', '!=', (int) $field->getId())->all();
+        if ($siteFields) {
+            foreach ($siteFields as $siteField) {
+                $evaluationRules = $siteField->getSupportedEvaluationRules();
+                if (!empty($evaluationRules)) {
+                    $fieldsWithEvaluationRules[$siteField->field_id] = [
+                        'field_id' => $siteField->field_id,
+                        'field_label' => $siteField->field_label,
+                        'field_name' => $siteField->field_name,
+                        'field_type' => $siteField->field_type,
+                        'evaluationRules' => $evaluationRules,
+                        'evaluationValues' => $siteField->getPossibleValuesForEvaluation()
+                    ];
+                }
+            }
+        }
+
+        ee()->javascript->set_global('fieldsInfo', $fieldsWithEvaluationRules);
+
+        $ruleGroupsField = array(
+            'title' => '',
+            'desc' => '',
+            'group' => 'rule_groups',
+            'fields' => array(
+                'condition_fields' => array(
+                    'type' => 'html',
+                    'margin_left' => true,
+                    'margin_top' => true,
+                    'content' => ee('View')->make('ee:_shared/form/condition/condition-rule-group')->render([
+                        'fieldsList' => $fieldsWithEvaluationRules,
+                        'fieldConditionSets' => $field->isNew() ? null : $field->FieldConditionSets,
+                        'errors' => $this->validationResult
+                    ])
+                ),
+            ),
+        );
+
+        array_push($sections[0], $ruleGroupsField);
+
         ee()->javascript->output('$(document).ready(function () {
-			EE.cp.fieldToggleDisable();
-		});');
+            EE.cp.fieldToggleDisable();
+        });');
+
+        ee()->cp->add_js_script('file', array('cp/conditional_logic'));
 
         return $sections;
     }

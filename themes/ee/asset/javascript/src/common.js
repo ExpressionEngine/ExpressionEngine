@@ -1007,6 +1007,29 @@ $(document).ready(function(){
 				$('#fieldset-rel_max input[name="rel_max"]').prop('disabled', false);
 			}
 
+			if($(this).attr('data-toggle-for') == 'field_is_conditional' && $(this).attr('data-state') == 'off') {
+				var invalidClass = $('#fieldset-condition_fields').find('.invalid');
+
+				if (invalidClass.length) {
+					invalidClass.each(function(){
+						$(this).find('.ee-form-error-message').remove();
+						$(this).removeClass('invalid');
+
+						// Mark entire Grid field as valid if all rows with invalid cells are cleared
+						if ($('#fieldset-condition_fields .invalid').length == 0 &&
+							EE.cp &&
+							EE.cp.formValidation !== undefined) {
+							EE.cp.formValidation.markFieldValid($('input, select, textarea', $('.conditionset-temlates-row')).eq(0));
+						}
+					});
+				}
+			}
+
+			if($(this).attr('data-toggle-for') == 'field_is_conditional' && $(this).attr('data-state') == 'on') {
+				$('.conditionset-item:not(.hidden)').find('.rule:not(.hidden) .condition-rule-field-wrap input').prop('disabled', false);
+				$('.conditionset-item:not(.hidden)').find('.match-react-element input').prop('disabled', false);
+			}
+
 			e.preventDefault();
 		});
 
@@ -1021,7 +1044,6 @@ $(document).ready(function(){
 				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_max').hide();
 			}
 		});
-
 
 		$('body').on('click', '.js-toggle-link', function(e) {
 			e.preventDefault()
@@ -1120,4 +1142,20 @@ $(document).ready(function(){
 		// Start observing changes
 		alertObserver.observe(document.body, { childList: true })
 
+
+		// Check the Entry page for existence and compliance with the conditions
+		// to show or hide fields depending on conditions
+        if(window.EE) {
+            EE.cp.hide_show_entries_fields = function(idArr) {
+                var hide_block = $('.hide-block');
+
+                $(hide_block).removeClass('hide-block');
+
+                $.each(idArr, function(index, id) {
+                    $('[data-field_id="'+id+'"]').each(function(){
+                        $(this).addClass('hide-block').removeClass('fieldset-invalid');
+                    })
+                });
+            }
+        }
 }); // close (document).ready

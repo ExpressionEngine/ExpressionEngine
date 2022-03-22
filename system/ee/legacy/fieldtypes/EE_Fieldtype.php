@@ -382,6 +382,7 @@ abstract class EE_Fieldtype
         $boolean_fields = array(
             'field_disabled',
             'field_is_hidden',
+            'field_is_conditional',
             'field_pre_populate',
             'field_required',
             'field_search',
@@ -1134,6 +1135,9 @@ abstract class EE_Fieldtype
      */
     public function renderTableCell($data, $field_id, $entry)
     {
+        if (is_null($data)) {
+            return '';
+        }
         $out = strip_tags($this->replace_tag($data));
         if (strlen($out) > 255) {
             $out = substr($out, 0, min(255, strpos($out, " ", 240))) . '&hellip;';
@@ -1163,6 +1167,14 @@ abstract class EE_Fieldtype
     public function getEntryManagerColumnSortField()
     {
         return '';
+    }
+
+    /**
+     * Conditional Fields
+     */
+    public function getPossibleValuesForEvaluation()
+    {
+        return [];
     }
 }
 // END EE_Fieldtype class

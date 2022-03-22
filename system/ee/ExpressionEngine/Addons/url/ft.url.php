@@ -13,6 +13,7 @@
  */
 class Url_Ft extends EE_Fieldtype
 {
+
     /**
      * @var array $info Legacy Fieldtype info array
      */
@@ -25,6 +26,8 @@ class Url_Ft extends EE_Fieldtype
      * @var bool $has_array_data Whether or not this Fieldtype is setup to parse as a tag pair
      */
     public $has_array_data = false;
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Validate Field

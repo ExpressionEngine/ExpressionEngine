@@ -38,8 +38,8 @@ abstract class ContentModel extends VariableColumnModel
     /**
      * A link back to the owning Structure object.
      *
-     * @return	Structure	A link back to the Structure object that defines
-     *						this Content's structure.
+     * @return  Structure   A link back to the Structure object that defines
+     *                      this Content's structure.
      */
     abstract public function getStructure();
 
@@ -268,7 +268,7 @@ abstract class ContentModel extends VariableColumnModel
                 $rules[$name] .= '|';
             }
 
-            if ($facade->isRequired()) {
+            if ($facade->isRequired() && get_bool_from_string($facade->getHidden()) === false) {
                 $rules[$name] .= 'required|';
             }
 

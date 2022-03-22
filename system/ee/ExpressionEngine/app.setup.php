@@ -17,6 +17,7 @@ use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
 use ExpressionEngine\Service\Channel;
 use ExpressionEngine\Service\ChannelSet;
+use ExpressionEngine\Service\ConditionalFields;
 use ExpressionEngine\Service\Config;
 use ExpressionEngine\Service\Consent;
 use ExpressionEngine\Service\Cookie;
@@ -56,6 +57,7 @@ use ExpressionEngine\Service\Generator\CommandGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
+use ExpressionEngine\Model\Channel\ChannelEntry;
 
 // TODO should put the version in here at some point ...
 $setup = [
@@ -397,6 +399,9 @@ $setup = [
             );
         },
 
+        'ConditionalFieldEvaluator' => function ($ee, ChannelEntry $channelEntry) {
+            return new ConditionalFields\Evaluator($channelEntry);
+        },
     ),
 
     'services.singletons' => array(
@@ -461,6 +466,10 @@ $setup = [
             $view = $ee->make('View');
 
             return new Sidebar\Navigation\NavigationSidebar($view);
+        },
+
+        'ConditionalFields' => function ($ee) {
+            return new ConditionalFields\Factory();
         },
 
         'Config' => function ($ee) {
@@ -616,6 +625,10 @@ $setup = [
         'ChannelFormSettings' => 'Model\Channel\ChannelFormSettings',
         'ChannelLayout' => 'Model\Channel\ChannelLayout',
         'FieldData' => 'Model\Content\FieldData',
+
+        // ..\ConditionalFields
+        'FieldConditionSet' => 'Model\ConditionalFields\FieldConditionSet',
+        'FieldCondition' => 'Model\ConditionalFields\FieldCondition',
 
         // ..\Comment
         'Comment' => 'Model\Comment\Comment',
