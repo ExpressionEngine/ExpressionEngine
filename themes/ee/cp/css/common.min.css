@@ -17689,7 +17689,6 @@ fieldset .field-control #eye {
   position: absolute;
   z-index: 100;
   top: 100%;
-  margin-top: 5px;
   left: 0px;
   display: none;
 }
