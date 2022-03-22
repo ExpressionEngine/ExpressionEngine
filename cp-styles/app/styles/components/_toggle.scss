@@ -1,7 +1,7 @@
 
 $toggle-height: 26px;
 $toggle-width: 48px;
-$toggle-peg-padding: 3px;
+$toggle-peg-padding: 2px;
 $toggle-peg-size: $toggle-height - ($toggle-peg-padding * 2);
 
 // LEGACY 6.0
@@ -19,15 +19,15 @@ $toggle-peg-size: $toggle-height - ($toggle-peg-padding * 2);
 	border-radius: math.div($toggle-height, 2);
 	background: color(input-toggle-bg);
 	text-decoration: none;
-	border: none;
+	border: 1px solid transparent;
 
 	.slider {
 		position: absolute;
 		display: block;
 		left: $toggle-peg-padding;
 		top: $toggle-peg-padding;
-		width: $toggle-peg-size;
-		height: $toggle-peg-size;
+		width: calc($toggle-peg-size - 2px);
+		height: calc($toggle-peg-size - 2px);
 
 		transition: all 200ms ease;
 		box-shadow: 0 2px 5px color(input-toggle-shadow);
@@ -57,6 +57,13 @@ $toggle-peg-size: $toggle-height - ($toggle-peg-padding * 2);
 		@include focus-outline;
 		border: 1px solid  var(--ee-input-focus-border);
 	}
+}
+
+.toggle-btn.off:focus .slider {
+  width: calc($toggle-peg-size - 4px);
+  height: calc($toggle-peg-size - 4px);
+  left: calc($toggle-peg-padding + 1px);
+  top: calc($toggle-peg-padding + 1px);
 }
 
 
