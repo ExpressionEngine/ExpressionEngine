@@ -40,6 +40,7 @@ jobs:
 
       - name: Rebuild CSS and JS
         run: |
+          npm install
           npm run build:css --production
           build:js
           build:old-js
