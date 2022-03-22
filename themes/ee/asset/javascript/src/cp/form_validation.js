@@ -393,6 +393,10 @@ EE.cp.formValidation = {
 				tab_button.removeClass('invalid'); 
 			}
 
+			if (EE.hasOwnProperty('publish') && EE.publish.hasOwnProperty('has_conditional_fields') && EE.publish.has_conditional_fields) {
+				EE.cp.hide_show_entries_fields(hidden_fields);
+			}
+
 			// Re-enable submit button only if all errors are gone
 			if ( ! this._errorsExist(form) || ( ! this._errorsExist(tab_container) && tab_has_own_button))
 			{
@@ -411,10 +415,6 @@ EE.cp.formValidation = {
 						}
 					}
 				});
-			}
-
-			if (EE.hasOwnProperty('publish') && EE.publish.hasOwnProperty('has_conditional_fields') && EE.publish.has_conditional_fields) {
-				EE.cp.hide_show_entries_fields(hidden_fields);
 			}
 
 		// Validation error

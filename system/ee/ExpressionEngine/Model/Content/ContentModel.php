@@ -268,7 +268,7 @@ abstract class ContentModel extends VariableColumnModel
                 $rules[$name] .= '|';
             }
 
-            if ($facade->isRequired()) {
+            if ($facade->isRequired() && get_bool_from_string($facade->getHidden()) === false) {
                 $rules[$name] .= 'required|';
             }
 
@@ -409,10 +409,6 @@ abstract class ContentModel extends VariableColumnModel
 
         if (isset($format)) {
             $facade->setFormat($format);
-        }
-
-        if (isset($hidden)) {
-            $facade->setHidden($hidden);
         }
 
         $this->_field_facades[$name] = $facade;

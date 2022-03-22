@@ -396,13 +396,15 @@ abstract class AbstractPublish extends CP_Controller
             $entry->set($_POST);
         }
 
+        $hidden_fields = $entry->evaluateConditionalFields();
+
         $result = $entry->validate();
 
         if ($response = $this->ajaxValidation($result)) {
             if (isset($response[0]) && $response[0] == 'success') {
                 $response = [
                     'success' => 'success',
-                    'hidden_fields' => $entry->evaluateConditionalFields()
+                    'hidden_fields' => $hidden_fields
                 ];
             }
             

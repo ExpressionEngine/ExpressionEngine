@@ -769,11 +769,23 @@ class ChannelEntry extends ContentModel
     protected function setDataOnCustomFields(array $data = array())
     {
         $currentlyHiddenFieldsIds = $this->isNew() ? $this->evaluateConditionalFields() : $this->HiddenFields->pluck('field_id');
+        $currentlyHiddenFieldsNames = [];
         foreach ($currentlyHiddenFieldsIds as $hiddenFieldId) {
-            $name = 'field_id_' . $hiddenFieldId;
-            if ($this->hasCustomField($name)) {
-                $this->getCustomField($name)->setHidden('y');
+            $currentlyHiddenFieldsNames[] = 'field_id_' . $hiddenFieldId;
+        }
+
+        foreach ($data as $name => $value) {
+            if (strpos($name, 'field_ft_') === 0) {
+                $name = str_replace('field_ft_', 'field_id_', $name);
             }
+            if ($this->hasCustomField($name)) {
+                if (in_array($name, $currentlyHiddenFieldsNames)) {
+                    $this->getCustomField($name)->setHidden('y');
+                } else {
+                    $this->getCustomField($name)->setHidden('n');
+                }
+            }
+            
         }
 
         parent::setDataOnCustomFields($data);

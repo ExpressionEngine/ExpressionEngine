@@ -1153,7 +1153,7 @@ $(document).ready(function(){
 
                 $.each(idArr, function(index, id) {
                     $('[data-field_id="'+id+'"]').each(function(){
-                        $(this).addClass('hide-block');
+                        $(this).addClass('hide-block').removeClass('fieldset-invalid');
                     })
                 });
             }

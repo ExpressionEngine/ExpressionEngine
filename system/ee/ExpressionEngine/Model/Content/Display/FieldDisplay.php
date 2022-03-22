@@ -19,14 +19,12 @@ class FieldDisplay
     protected $collapsed = false;
     protected $visible = true;
     protected $conditional = false;
-    protected $conditionally_hidden = false;
 
     public function __construct($field)
     {
         $this->field = $field;
         $this->collapsed = (bool) $field->getItem('field_is_hidden');
         $this->conditional = $field->getItem('field_is_conditional');
-        $this->conditionally_hidden = $this->field->getHidden();
     }
 
     public function get($key)
@@ -135,7 +133,7 @@ class FieldDisplay
 
     public function isConditionallyHidden()
     {
-        return get_bool_from_string($this->conditionally_hidden);
+        return get_bool_from_string($this->field->getHidden());
     }
 
     public function getSetting($item)
