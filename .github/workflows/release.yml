@@ -52,8 +52,8 @@ jobs:
         run: |
           npm install
           npm run build:css --production
-          build:js
-          build:old-js
+          npm run build:js
+          npm run build:old-js
 
       - name: Run build process
         working-directory: build-tools
