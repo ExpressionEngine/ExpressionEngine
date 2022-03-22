@@ -848,8 +848,6 @@ class Fields extends AbstractFieldsController
             'fields' => array(
                 'condition_fields' => array(
                     'type' => 'html',
-                    'margin_left' => true,
-                    'margin_top' => true,
                     'content' => ee('View')->make('ee:_shared/form/condition/condition-rule-group')->render([
                         'fieldsList' => $fieldsWithEvaluationRules,
                         'fieldConditionSets' => $field->isNew() ? null : $field->FieldConditionSets,

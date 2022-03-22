@@ -1,8 +1,12 @@
 .rule-blank-row { display: none !important;}
 
+#fieldset-condition_fields .field-instruct {
+  display: none;
+}
+
 .field-conditionset-wrapper {
 	a.add-set {
-		display: inline-block;
+		display: none;
 		margin-top: 10px;
 		font-size: 0.9em;
 	}
@@ -10,6 +14,13 @@
 	.conditionset-item {
 		margin-bottom: 10px;
 		position: relative;
+
+    &:last-child {
+
+      a.add-set {
+        display: inline-block;
+      }
+    }
 	}
 
 	a.remove-set {
@@ -33,7 +44,7 @@
 		font-size: 1em;
 
 		.condition-match-field {
-			margin: 0 10px;
+			margin: 0 5px 0 10px;
 		}
 	}
 
@@ -49,7 +60,7 @@
 				margin-bottom: 30px;
 
 				&:after {
-					position: absolute;	
+					position: absolute;
 					display: block;
 					content: '';
 					width: calc(100% - 20px);
@@ -109,7 +120,7 @@
 				button {
 					padding: 0 !important;
 					border: none;
-					font-size: 1.2rem;
+					font-size: 1.0rem;
 					background: none;
 				}
 			}
@@ -124,6 +135,10 @@
 				font-size: 0.9em;
 				color: var(--ee-text-secondary);
 			}
+
+      .select__button-label:after {
+        top: 5px;
+      }
 		}
 	}
 

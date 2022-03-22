@@ -15929,13 +15929,13 @@ input[type=button].btn-block {
   border-radius: 13px;
   background: var(--ee-input-toggle-bg);
   text-decoration: none;
-  border: none;
+  border: 1px solid transparent;
 }
 .toggle-btn .slider {
   position: absolute;
   display: block;
-  left: 3px;
-  top: 3px;
+  left: 2px;
+  top: 2px;
   width: 20px;
   height: 20px;
   transition: all 200ms ease;
@@ -15960,6 +15960,13 @@ input[type=button].btn-block {
 .toggle-btn:focus {
   outline: none;
   border: 1px solid var(--ee-input-focus-border);
+}
+
+.toggle-btn.off:focus .slider {
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
 }
 
 .toggle-tools {
@@ -20664,14 +20671,21 @@ table .field-no-results {
   display: none !important;
 }
 
+#fieldset-condition_fields .field-instruct {
+  display: none;
+}
+
 .field-conditionset-wrapper a.add-set {
-  display: inline-block;
+  display: none;
   margin-top: 10px;
   font-size: 0.9em;
 }
 .field-conditionset-wrapper .conditionset-item {
   margin-bottom: 10px;
   position: relative;
+}
+.field-conditionset-wrapper .conditionset-item:last-child a.add-set {
+  display: inline-block;
 }
 .field-conditionset-wrapper a.remove-set {
   position: absolute;
@@ -20693,7 +20707,7 @@ table .field-no-results {
   font-size: 1em;
 }
 .field-conditionset h4 .condition-match-field {
-  margin: 0 10px;
+  margin: 0 5px 0 10px;
 }
 .field-conditionset .rules .rule {
   display: flex;
@@ -20762,7 +20776,7 @@ table .field-no-results {
 .field-conditionset .rules .rule .delete_rule button {
   padding: 0 !important;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1rem;
   background: none;
 }
 .field-conditionset .rules .rule:hover .delete_rule {
@@ -20773,6 +20787,9 @@ table .field-no-results {
   margin-left: 5px;
   font-size: 0.9em;
   color: var(--ee-text-secondary);
+}
+.field-conditionset .rules .rule .select__button-label:after {
+  top: 5px;
 }
 .field-conditionset .condition-rule-field-wrap {
   position: relative;
