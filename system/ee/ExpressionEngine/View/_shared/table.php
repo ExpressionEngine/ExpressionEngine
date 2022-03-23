@@ -339,7 +339,7 @@ else: ?>
                                 $column_desc = lang($columns[$key]['desc']);
                             }
 
-                            $column_label = "<div class=\"grid-field__column-label\">
+                            $column_label = "<div class=\"grid-field__column-label\"  role=\"rowheader\">
 								<div class=\"field-instruct\">
 									<label>$column_name</label>";
                             if (!empty($column_desc)) {
