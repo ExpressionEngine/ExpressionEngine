@@ -172,6 +172,14 @@ class EE_Channel_data_parser
 
         // If custom fields are enabled, notify them of the data we're about to send
         if (! empty($channel->cfields)) {
+            foreach ($entries as $row_id => $row) {
+                $custom_fields = (isset($channel->cfields[$row['site_id']])) ? $channel->cfields[$row['site_id']] : array();
+                foreach ($custom_fields as $field_name => $field_id) {
+                    if (isset($row['field_id_' . $field_id]) && isset($row['field_hide_' . $field_id]) && $row['field_hide_' . $field_id] == 'y') {
+                        $entries[$row_id]['field_id_' . $field_id] = null;
+                    }
+                }
+            }
             $this->_send_custom_field_data_to_fieldtypes($entries);
         }
 
@@ -345,7 +353,7 @@ class EE_Channel_data_parser
      * potentially a single query to gather needed data instead of a query for
      * each row.
      *
-     * @param string $entries_data
+     * @param array $entries_data
      * @return void
      */
     protected function _send_custom_field_data_to_fieldtypes($entries_data)
@@ -504,10 +512,6 @@ class EE_Channel_data_parser
             $cond[$value] = (empty($row[$value])) ? '' : $row[$value];
         }
 
-        foreach ($channel->mfields as $key => $value) {
-            $cond[$key] = (! array_key_exists('m_field_id_' . $value[0], $row)) ? '' : $row['m_field_id_' . $value[0]];
-        }
-
         // custom field conditionals
         if (isset($channel->cfields[$row['site_id']])) {
             foreach ($channel->cfields[$row['site_id']] as $key => $value) {
@@ -531,7 +535,10 @@ class EE_Channel_data_parser
                                 'content_type' => 'channel'
                             )));
                             $data = ee()->api_channel_fields->apply('pre_process', array($cond[$key]));
-                            if (ee()->api_channel_fields->check_method_exists('replace_' . $modifier)) {
+                            //if the field is conditionally hidden, do not parse
+                            if (isset($channel->hidden_fields[$row['entry_id']]) && in_array($value, $channel->hidden_fields[$row['entry_id']])) {
+                                $result = null;
+                            } else if (ee()->api_channel_fields->check_method_exists('replace_' . $modifier)) {
                                 $result = ee()->api_channel_fields->apply('replace_' . $modifier, array($data, array(), false));
                             } else {
                                 $result = false;

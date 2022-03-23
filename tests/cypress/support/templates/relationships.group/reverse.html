@@ -1,0 +1,25 @@
+<html>
+    <body>
+        <div class="all">
+            {exp:channel:entries entry_id="2"} 
+                {parents} 
+                    <p>{parents:title}</p>
+                {/parents}
+            {/exp:channel:entries}
+        </div>
+        <div class="not_open">
+            {exp:channel:entries entry_id="2"} 
+                {parents status="not open"} 
+                    <p>{parents:title}</p>
+                {/parents}
+            {/exp:channel:entries}
+        </div>
+        <div class="not_all">
+            {exp:channel:entries entry_id="2"} 
+                {parents status="not open|Featured"} 
+                    <p>{parents:title}</p>
+                {/parents}
+            {/exp:channel:entries}
+        </div>
+    </body>
+</html>

@@ -1,0 +1,178 @@
+.rule-blank-row { display: none !important;}
+
+#fieldset-condition_fields .field-instruct {
+  display: none;
+}
+
+.field-conditionset-wrapper {
+	a.add-set {
+		display: none;
+		margin-top: 10px;
+		font-size: 0.9em;
+	}
+
+	.conditionset-item {
+		margin-bottom: 10px;
+		position: relative;
+
+    &:last-child {
+
+      a.add-set {
+        display: inline-block;
+      }
+    }
+	}
+
+	a.remove-set {
+		position: absolute;
+		top: 10px;
+		right: 15px;
+		display: none;
+	}
+}
+
+.field-conditionset {
+	background: var(--ee-bg-0);
+	border-radius: 5px;
+	padding: 20px;
+
+	h4 {
+		display: flex;
+		align-items: center;
+		margin-bottom: 20px;
+		font-weight: 400;
+		font-size: 1em;
+
+		.condition-match-field {
+			margin: 0 5px 0 10px;
+		}
+	}
+
+	.rules {
+		.rule {
+			display: flex;
+			margin-bottom: 10px;
+			padding-right: 20px;
+			position: relative;
+
+			@include m-custom-down(1200px) {
+				flex-wrap: wrap;
+				margin-bottom: 30px;
+
+				&:after {
+					position: absolute;
+					display: block;
+					content: '';
+					width: calc(100% - 20px);
+					height: 2px;
+					left: 0;
+					bottom: -15px;
+					background: var(--ee-tab-bar-border);
+				}
+
+				&:last-child {
+					margin-bottom: 10px;
+
+					&:after { display: none;}
+				}
+			}
+
+			.select__dropdown {
+				min-width: 32%;
+			}
+
+			& > div {
+				flex: 0 0 32%;
+				margin-right: 10px;
+				width: 32%;
+
+				@include m-custom-down(1200px) {
+					flex-basis: 100%;
+					width: 100%;
+					margin-right: 0;
+					margin-bottom: 10px;
+
+					&.condition-rule-value-wrap {
+						margin-bottom: 0;
+					}
+				}
+			}
+
+			select,
+			input[type="text"],
+			.select__button,
+			.select__button-label {
+				width: 100%;
+				display: block;
+				text-align: left;
+			}
+
+			.delete_rule {
+				position: absolute;
+				right: 0;
+				margin: 0;
+				top: 7px;
+				// transform: translateY(-50%);
+				display: block;
+				width: auto;
+				opacity: 0;
+
+				button {
+					padding: 0 !important;
+					border: none;
+					font-size: 1.0rem;
+					background: none;
+				}
+			}
+
+			&:hover {
+				.delete_rule { opacity: 1;}
+			}
+
+			.short-name {
+				display: inline-block;
+				margin-left: 5px;
+				font-size: 0.9em;
+				color: var(--ee-text-secondary);
+			}
+
+      .select__button-label:after {
+        top: 5px;
+      }
+		}
+	}
+
+	.condition-rule-field-wrap {
+		position: relative;
+
+		.select__button-label {
+			text-overflow: unset;
+
+			& > span {
+				overflow: hidden;
+				display: flex;
+				align-items: center;
+			}
+		}
+
+		.short-name {
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+
+		.tooltiptext {
+			width: auto;
+			color: var(--ee-button-default-color);
+			text-align: left;
+			padding: 0 5px;
+			position: absolute;
+			background: var(--ee-bg-dropdown-hover);
+			font-size: 0.8em;
+			border-radius: 5px;
+			border: 1px solid var(--ee-input-border);
+			line-height: 22px;
+			display: none;
+			z-index: 1200;
+		}
+	}
+}

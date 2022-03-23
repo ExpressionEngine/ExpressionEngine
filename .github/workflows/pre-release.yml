@@ -38,6 +38,13 @@ jobs:
         working-directory: build-tools
         run: npm install
 
+      - name: Rebuild CSS and JS
+        run: |
+          npm install
+          npm run build:css --production
+          npm run build:js
+          npm run build:old-js
+
       - name: Get version
         id: build_json
         working-directory: build-tools

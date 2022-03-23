@@ -165,7 +165,7 @@ class Csrf
             $this->session_token = $this->backend->fetch_token();
         }
 
-        if (! $this->token_is_valid_format($this->session_token)) {
+        if (! $this->token_is_valid_format($this->session_token) && !bool_config_item('disable_csrf_protection')) {
             $this->session_token = $this->refresh_token();
         }
 

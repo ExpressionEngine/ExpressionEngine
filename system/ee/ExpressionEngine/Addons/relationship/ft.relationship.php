@@ -16,6 +16,7 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 {
+
     public $info = array(
         'name' => 'Relationships',
         'version' => '1.0.0'
@@ -26,6 +27,13 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
     private $_table = 'relationships';
 
     private $errors;
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var mixed
+     */
+    public $supportedEvaluationRules = null;
 
     /**
      * Validate Field

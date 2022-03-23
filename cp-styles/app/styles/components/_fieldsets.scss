@@ -41,6 +41,8 @@ fieldset.tbl-search{
 
 .fieldset-faux {
 	margin-bottom: $s-m;
+
+	&.hide-block { display: none;}
 }
 
 fieldset {
@@ -56,6 +58,8 @@ fieldset {
 	&.last {
 		margin-bottom: 0;;
 	}
+
+	&.hide-block { display: none;}
 }
 
 .field-instruct {
@@ -78,7 +82,7 @@ fieldset {
 	}
 
     label + em {
-        margin-top: -($s-s / 2);
+        margin-top: - math.div($s-s, 2);
     }
 
     em {

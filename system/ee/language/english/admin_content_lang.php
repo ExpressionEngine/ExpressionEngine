@@ -30,6 +30,10 @@ $lang = array(
 
     'be_careful' => 'BE CAREFUL!',
 
+    'selectable_buttons_options' => 'Buttons options',
+
+    'selectable_buttons_options_desc' => '<em><i>Each item in the textarea will be included as selectable button in the publish form.</i>',
+
     'can_edit_status' => 'Can access status',
 
     'category' => 'Category',
@@ -232,6 +236,20 @@ $lang = array(
 
     'enable_versioning' => 'Enable Entry Versioning',
 
+    'field_conditions_sync_existing_entries' => 'Existing entries',
+
+    'field_conditions_sync_desc' => '<b>%d</b> entries',
+
+    'field_conditions_syncing_conditional_logic' => 'Syncing Conditional Logic',
+
+    'field_conditions_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'field_conditions_sync_in_progress_message' => 'Do not navigate away from this screen while syncing is in progress.',
+
+    'btn_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'btn_sync_conditional_logic_working' => 'Syncing conditional logic...',
+
     'field' => 'Field',
 
     'fields_assign_to_group' => 'Assign one or more fields to this group.',
@@ -277,6 +295,8 @@ $lang = array(
     'formatting_no_available' => 'Text formatting is not available for your chosen field type',
 
     'global_sort_order' => 'Master Sort Order',
+
+    'grid_buttons_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included as selectable buttons in the publish form.',
 
     'grid_checkbox_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single checkbox and label pair in the publish form.',
 
@@ -340,6 +360,10 @@ $lang = array(
 
     'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi-select in the publish form.</i>',
 
+    'make_conditional' => 'Make conditional?',
+
+    'make_conditional_desc' => 'Only display this field when conditions of other field(s) are met',
+
     'new_category' => 'New Category',
 
     'new_channel' => 'New Channel',
@@ -392,7 +416,7 @@ $lang = array(
 
     'removed_fields_from_fluid_field' => 'The following fields were removed from the Fluid Field <b>%s</b> and their data was deleted: %s',
 
-    'require_field_desc' => 'When enabled, this field will be required to submit the publish form.',
+    'require_field_desc' => 'When enabled (and not conditionally hidden), this field will be required to submit the publish form.',
 
     'reserved_word' => 'The field name you have chosen is a reserved word and cannot be used. Please see the user guide for more information.',
 
@@ -613,6 +637,10 @@ $lang = array(
 
     'custom_field_empty' => 'The following field is required:',
 
+    'datalist_items' => 'Data List items',
+
+    'datalist_items_desc' => 'Values that will be shown as recommended options',
+
     'delete_field' => 'Delete Field',
 
     'delete_field_confirmation' => 'Are you sure you want to permanently delete this Channel Field?',
@@ -805,6 +833,10 @@ $lang = array(
     'field_fmt' => 'Text formatting',
 
     'field_max_length' => 'Maximum characters',
+
+    'field_min_value' => 'Minimum value',
+
+    'field_max_value' => 'Maximum value',
 
     'field_show_fmt' => 'Allow override?',
 

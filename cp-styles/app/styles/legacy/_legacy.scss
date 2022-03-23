@@ -132,6 +132,23 @@
   .form-btns > .button-group {
     margin-left: 5px;
   }
+
+  &.title-bar__extra-tools-publish {
+
+    .form-btns {
+
+      @include m-tablet-down {
+        display: block;
+      }
+    }
+  }
+}
+
+.panel-heading {
+  .title-bar__extra-tools > .button,
+  .title-bar__extra-tools > .button-group {
+    margin-left: 5px;
+  }
 }
 
 .form-standard {

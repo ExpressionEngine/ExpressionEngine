@@ -77,7 +77,7 @@ class ParseNode extends EE_TreeNode
      * @param	mixed	a default to return if the parameter is not set
      * @return 	mixed	parameter value || default
      */
-    public function param($key, $default = null)
+    public function param($key, $default = '')
     {
         return isset($this->data['params'][$key]) ? $this->data['params'][$key] : $default;
     }

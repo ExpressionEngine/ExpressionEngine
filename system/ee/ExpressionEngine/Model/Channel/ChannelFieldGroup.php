@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Model\Channel;
 
 use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Channel Field Group Model
@@ -77,6 +78,17 @@ class ChannelFieldGroup extends Model
                 $layout->synchronize();
             }
         }
+    }
+
+    public function getAllChannels()
+    {
+        $channels = [];
+
+        foreach ($this->Channels as $channel) {
+            $channels[$channel->getId()] = $channel;
+        }
+
+        return new Collection($channels);
     }
 }
 
