@@ -300,15 +300,6 @@ class Addons_installer
                     foreach (ee()->addons->_packages[$addon][$type] as $fieldtype_name => $fieldtype_settings) {
                         $installed = ee()->addons_model->fieldtype_installed($fieldtype_name);
 
-                        //don't perform action if it's not necessary, ie it's already installed or uninstalled
-                        if (($action === 'install' && ! $installed) || ($action === 'uninstall' && $installed)) {
-                            ee()->load->add_package_path($fieldtype_settings['path'], false);
-
-                            $this->$method($fieldtype_name);
-
-                            ee()->load->remove_package_path($fieldtype_settings['path']);
-                        }
-
                         // Remove associated Channel fields and Grid columns
                         if ($action === 'uninstall' && $installed) {
                             ee('Model')->get('ChannelField')
@@ -319,6 +310,15 @@ class Addons_installer
                                 ee()->load->model('grid_model');
                                 ee()->grid_model->delete_columns_of_type($fieldtype_name);
                             }
+                        }
+
+                        //don't perform action if it's not necessary, ie it's already installed or uninstalled
+                        if (($action === 'install' && ! $installed) || ($action === 'uninstall' && $installed)) {
+                            ee()->load->add_package_path($fieldtype_settings['path'], false);
+
+                            $this->$method($fieldtype_name);
+
+                            ee()->load->remove_package_path($fieldtype_settings['path']);
                         }
                     }
                 } else {
