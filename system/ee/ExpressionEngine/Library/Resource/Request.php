@@ -14,9 +14,9 @@ namespace ExpressionEngine\Library\Resource;
 
 class Request
 {
-    public const CACHE_NAMESPACE = 'resource_cache/';
+    const CACHE_NAMESPACE = 'resource_cache/';
 
-    public const TYPES = array('css', 'js');
+    const TYPES = array('css', 'js');
 
     protected $type = 'plain';
     protected $cache_scope = '';

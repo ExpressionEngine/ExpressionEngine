@@ -156,8 +156,9 @@ abstract class AbstractFields extends CP_Controller
             $conditionSets[$set_index] = $fieldConditionSet;
 
             $rule_index = 0;
-            if (!empty(ee('Request')->post('condition')) && isset(ee('Request')->post('condition')[$condition_set_id])) {
-                foreach (ee('Request')->post('condition')[$condition_set_id] as $condition_id => $condition_data) {
+            $postedConditions = ee('Request')->post('condition');
+            if (!empty($postedConditions) && isset($postedConditions[$condition_set_id])) {
+                foreach ($postedConditions[$condition_set_id] as $condition_id => $condition_data) {
                     if (!is_numeric($condition_id)) {
                         $fieldCondition = ee('Model')->make('FieldCondition');
                     } else {
