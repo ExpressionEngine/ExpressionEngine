@@ -8,11 +8,16 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Addons\Duration\Traits\DurationTrait;
+
 /**
  * Duration Fieldtype
  */
 class Duration_Ft extends EE_Fieldtype
 {
+
+    use DurationTrait;
+
     /**
      * @var array $info Legacy Fieldtype info array
      */
@@ -27,6 +32,15 @@ class Duration_Ft extends EE_Fieldtype
     public $has_array_data = false;
 
     public $size = 'small';
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty', 'durationLessThan', 'durationLessOrEqualThan', 'equal', 'notEqual', 'durationGreaterOrEqualThan', 'durationGreaterThan'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Validate Field
@@ -51,7 +65,7 @@ class Duration_Ft extends EE_Fieldtype
         }
 
         if (strpos($data, ':')) {
-            $data = $this->convertFromColonNotation($data);
+            $data = $this->convertFromColonNotation($data, $this->settings['units']);
         }
 
         if (! is_numeric($data)) {
@@ -115,7 +129,7 @@ class Duration_Ft extends EE_Fieldtype
     public function replace_tag($data, $params = array(), $tagdata = false)
     {
         if (strpos($data, ':')) {
-            $data = $this->convertFromColonNotation($data);
+            $data = $this->convertFromColonNotation($data, $this->settings['units']);
         } else {
             $data = $this->applyMultiplier($data);
         }
@@ -231,42 +245,6 @@ class Duration_Ft extends EE_Fieldtype
             'minutes' => lang('duration_ft_minutes'),
             'hours' => lang('duration_ft_hours'),
         ];
-    }
-
-    /**
-     * Convert from ##:##:## notation
-     * @param  string $duration Duration, in ##:##:## notation
-     * @return int Duration, in terms of the field's units
-     */
-    private function convertFromColonNotation($duration)
-    {
-        $parts = explode(':', $duration);
-
-        switch (count($parts)) {
-            // hh:mm:ss
-            case 3:
-                $seconds = ($parts[0] * 3600) + ($parts[1] * 60) + $parts[2];
-
-                break;
-            // mm:ss
-            case 2:
-                $seconds = ($parts[0] * 60) + $parts[1];
-
-                // if they input ##:## with a "minutes" field, the implied format is hh:mm rather than mm:ss
-                if ($this->settings['units'] == 'minutes') {
-                    $seconds = $seconds * 60;
-                }
-
-                break;
-            // ss
-            case 1:
-            default:
-                $seconds = $parts[0];
-
-                break;
-        }
-
-        return $seconds;
     }
 
     /**

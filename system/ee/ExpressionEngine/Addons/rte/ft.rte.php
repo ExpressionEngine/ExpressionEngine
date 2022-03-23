@@ -13,6 +13,7 @@ use ExpressionEngine\Addons\Rte\RteHelper;
 
 class Rte_ft extends EE_Fieldtype
 {
+
     public $has_array_data = true;
 
     public $entry_manager_compatible = true;
@@ -23,6 +24,8 @@ class Rte_ft extends EE_Fieldtype
         'name' => 'Rich Text Editor',
         'version' => '2.1.0'
     ];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Implements EntryManager\ColumnInterface

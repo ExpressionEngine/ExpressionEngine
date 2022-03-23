@@ -15935,13 +15935,13 @@ input[type=button].btn-block {
   border-radius: 13px;
   background: var(--ee-input-toggle-bg);
   text-decoration: none;
-  border: none;
+  border: 1px solid transparent;
 }
 .toggle-btn .slider {
   position: absolute;
   display: block;
-  left: 3px;
-  top: 3px;
+  left: 2px;
+  top: 2px;
   width: 20px;
   height: 20px;
   transition: all 200ms ease;
@@ -15966,6 +15966,13 @@ input[type=button].btn-block {
 .toggle-btn:focus {
   outline: none;
   border: 1px solid var(--ee-input-focus-border);
+}
+
+.toggle-btn.off:focus .slider {
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
 }
 
 .toggle-tools {
@@ -16426,6 +16433,9 @@ fieldset.tbl-search.right {
 .fieldset-faux {
   margin-bottom: 20px;
 }
+.fieldset-faux.hide-block {
+  display: none;
+}
 
 fieldset {
   margin: 0;
@@ -16435,6 +16445,9 @@ fieldset {
 }
 fieldset.last {
   margin-bottom: 0;
+}
+fieldset.hide-block {
+  display: none;
 }
 
 .field-instruct {
@@ -17682,7 +17695,6 @@ fieldset .field-control #eye {
   position: absolute;
   z-index: 100;
   top: 100%;
-  margin-top: 5px;
   left: 0px;
   display: none;
 }
@@ -20661,6 +20673,160 @@ table .field-no-results {
   }
 }
 */
+.rule-blank-row {
+  display: none !important;
+}
+
+#fieldset-condition_fields .field-instruct {
+  display: none;
+}
+
+.field-conditionset-wrapper a.add-set {
+  display: none;
+  margin-top: 10px;
+  font-size: 0.9em;
+}
+.field-conditionset-wrapper .conditionset-item {
+  margin-bottom: 10px;
+  position: relative;
+}
+.field-conditionset-wrapper .conditionset-item:last-child a.add-set {
+  display: inline-block;
+}
+.field-conditionset-wrapper a.remove-set {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  display: none;
+}
+
+.field-conditionset {
+  background: var(--ee-bg-0);
+  border-radius: 5px;
+  padding: 20px;
+}
+.field-conditionset h4 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  font-weight: 400;
+  font-size: 1em;
+}
+.field-conditionset h4 .condition-match-field {
+  margin: 0 5px 0 10px;
+}
+.field-conditionset .rules .rule {
+  display: flex;
+  margin-bottom: 10px;
+  padding-right: 20px;
+  position: relative;
+}
+@media (max-width: 1200px) {
+  .field-conditionset .rules .rule {
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+  .field-conditionset .rules .rule:after {
+    position: absolute;
+    display: block;
+    content: "";
+    width: calc(100% - 20px);
+    height: 2px;
+    left: 0;
+    bottom: -15px;
+    background: var(--ee-tab-bar-border);
+  }
+  .field-conditionset .rules .rule:last-child {
+    margin-bottom: 10px;
+  }
+  .field-conditionset .rules .rule:last-child:after {
+    display: none;
+  }
+}
+.field-conditionset .rules .rule .select__dropdown {
+  min-width: 32%;
+}
+.field-conditionset .rules .rule > div {
+  flex: 0 0 32%;
+  margin-right: 10px;
+  width: 32%;
+}
+@media (max-width: 1200px) {
+  .field-conditionset .rules .rule > div {
+    flex-basis: 100%;
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+  .field-conditionset .rules .rule > div.condition-rule-value-wrap {
+    margin-bottom: 0;
+  }
+}
+.field-conditionset .rules .rule select,
+.field-conditionset .rules .rule input[type=text],
+.field-conditionset .rules .rule .select__button,
+.field-conditionset .rules .rule .select__button-label {
+  width: 100%;
+  display: block;
+  text-align: left;
+}
+.field-conditionset .rules .rule .delete_rule {
+  position: absolute;
+  right: 0;
+  margin: 0;
+  top: 7px;
+  display: block;
+  width: auto;
+  opacity: 0;
+}
+.field-conditionset .rules .rule .delete_rule button {
+  padding: 0 !important;
+  border: none;
+  font-size: 1rem;
+  background: none;
+}
+.field-conditionset .rules .rule:hover .delete_rule {
+  opacity: 1;
+}
+.field-conditionset .rules .rule .short-name {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 0.9em;
+  color: var(--ee-text-secondary);
+}
+.field-conditionset .rules .rule .select__button-label:after {
+  top: 5px;
+}
+.field-conditionset .condition-rule-field-wrap {
+  position: relative;
+}
+.field-conditionset .condition-rule-field-wrap .select__button-label {
+  text-overflow: unset;
+}
+.field-conditionset .condition-rule-field-wrap .select__button-label > span {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.field-conditionset .condition-rule-field-wrap .short-name {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.field-conditionset .condition-rule-field-wrap .tooltiptext {
+  width: auto;
+  color: var(--ee-button-default-color);
+  text-align: left;
+  padding: 0 5px;
+  position: absolute;
+  background: var(--ee-bg-dropdown-hover);
+  font-size: 0.8em;
+  border-radius: 5px;
+  border: 1px solid var(--ee-input-border);
+  line-height: 22px;
+  display: none;
+  z-index: 1200;
+}
+
 /*
 .tbl-search input:not([type="button"]) {
 	box-shadow: none !important;

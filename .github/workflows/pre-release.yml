@@ -40,9 +40,10 @@ jobs:
 
       - name: Rebuild CSS and JS
         run: |
+          npm install
           npm run build:css --production
-          build:js
-          build:old-js
+          npm run build:js
+          npm run build:old-js
 
       - name: Get version
         id: build_json

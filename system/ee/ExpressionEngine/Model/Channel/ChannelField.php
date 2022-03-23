@@ -32,6 +32,7 @@ class ChannelField extends FieldModel
         'field_required' => 'boolString',
         'field_search' => 'boolString',
         'field_is_hidden' => 'boolString',
+        'field_is_conditional' => 'boolString',
         'field_show_fmt' => 'boolString',
         'field_order' => 'int',
         'field_settings' => 'base64Serialized',
@@ -61,6 +62,20 @@ class ChannelField extends FieldModel
             'to_key' => 'search_excerpt',
             'weak' => true
         ),
+        'FieldConditionSets' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'FieldConditionSet',
+            'pivot' => array(
+                'table' => 'field_condition_sets_channel_fields'
+            )
+        ),
+        'ChannelEntriesHiding' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'ChannelEntry',
+            'pivot' => array(
+                'table' => 'channel_entry_hidden_fields'
+            )
+        ),
     );
 
     protected static $_validation_rules = array(
@@ -77,6 +92,7 @@ class ChannelField extends FieldModel
         'field_required' => 'enum[y,n]',
         'field_search' => 'enum[y,n]',
         'field_is_hidden' => 'enum[y,n]',
+        'field_is_conditional' => 'enum[y,n]',
         'field_show_fmt' => 'enum[y,n]',
         'field_order' => 'integer',
         'legacy_field_data' => 'enum[y,n]',
@@ -105,6 +121,7 @@ class ChannelField extends FieldModel
     protected $field_text_direction;
     protected $field_search;
     protected $field_is_hidden;
+    protected $field_is_conditional;
     protected $field_fmt;
     protected $field_show_fmt;
     protected $field_order;
@@ -175,11 +192,23 @@ class ChannelField extends FieldModel
     {
         $this->removeFromLayouts();
         $this->removeFromFluidFields();
+        $this->removeOrphanFieldConditionSets();
 
         foreach ($this->SearchExcerpts as $channel) {
             $channel->search_excerpt = null;
             $channel->save();
         }
+    }
+
+    /**
+     * Removes condition sets that are not assigned anywhere else
+     * At this point, the record in pivot table has already been removed, so we need to loop through all of those
+     *
+     * @return void
+     */
+    private function removeOrphanFieldConditionSets()
+    {
+        ee('Model')->get('FieldConditionSet')->with('ChannelFields')->filter('ChannelFields.field_id', null)->delete();
     }
 
     public function getAllChannels()

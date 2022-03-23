@@ -14,7 +14,7 @@ use ExpressionEngine\Service\Validation\ValidationRule;
 use ExpressionEngine\Service\Validation\Rule\Email;
 
 /**
- * EmailUnique Validation Rule
+ * UniqueEmail Validation Rule
  */
 class UniqueEmail extends ValidationRule
 {

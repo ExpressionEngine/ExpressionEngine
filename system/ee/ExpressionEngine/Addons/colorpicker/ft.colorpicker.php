@@ -17,6 +17,10 @@ class Colorpicker_ft extends EE_Fieldtype
 
     public $size = 'small';
 
+    public $supportedEvaluationRules = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'notEqual';
+
     public $default_settings = [
         'allowed_colors' => 'any',
         // The default color to use on invalid field input

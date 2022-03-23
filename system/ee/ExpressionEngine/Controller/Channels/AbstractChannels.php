@@ -103,6 +103,9 @@ abstract class AbstractChannels extends CP_Controller
         ee()->cp->add_js_script(array(
             'file' => array('cp/channel/menu'),
         ));
+
+        ee()->cp->add_js_script('file', array('cp/conditional_logic'));
+
     }
 
     /**

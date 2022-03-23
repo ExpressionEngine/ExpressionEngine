@@ -15,6 +15,7 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
  */
 class Text_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Text Input',
         'version' => '1.0.0'
@@ -25,6 +26,7 @@ class Text_ft extends EE_Fieldtype
     // Parser Flag (preparse pairs?)
     public $has_array_data = false;
 
+    public $defaultEvaluationRule = 'isNotEmpty';
     protected $default_field_content_type = 'all';
 
     public function validate($data)

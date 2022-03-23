@@ -106,6 +106,15 @@ class LivePreview
             $data['categories'] = $_POST['categories'];
         }
 
+        //perform conditional fields calculations
+        $hiddenFields = $entry->evaluateConditionalFields();
+        if (!empty($hiddenFields)) {
+            foreach ($hiddenFields as $hiddenFieldId) {
+                $data['field_hide_' . $hiddenFieldId] = 'y';
+                $data['field_id_' . $hiddenFieldId] = null;
+            }
+        }
+
         ee('LivePreview')->setEntryData($data);
 
         ee()->load->library('template', null, 'TMPL');

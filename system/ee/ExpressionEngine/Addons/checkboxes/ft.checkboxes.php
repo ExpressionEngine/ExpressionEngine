@@ -17,6 +17,7 @@ require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
  */
 class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 {
+
     public $info = array(
         'name' => 'Checkboxes',
         'version' => '1.0.0'
@@ -35,6 +36,15 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         'field_pre_field_id' => '',
         'field_pre_channel_id' => ''
     );
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'contains', 'notContains', 'isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'matches';
 
     /**
      * Constructor
