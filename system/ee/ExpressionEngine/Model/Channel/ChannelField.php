@@ -76,6 +76,12 @@ class ChannelField extends FieldModel
                 'table' => 'channel_entry_hidden_fields'
             )
         ),
+        'UsesFieldConditions' => array(
+            'type' => 'hasMany',
+            'model' => 'ee:FieldCondition',
+            'from_key' => 'field_id',
+            'to_key' => 'condition_field_id',
+        )
     );
 
     protected static $_validation_rules = array(
