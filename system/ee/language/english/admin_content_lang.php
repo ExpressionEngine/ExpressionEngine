@@ -364,6 +364,10 @@ $lang = array(
 
     'make_conditional_desc' => 'Only display this field when conditions of other field(s) are met',
 
+    'is_conditional' => 'Conditionals',
+
+    'is_conditional_desc' => 'This field is being used as conditional for the field(s) listed below.',
+
     'new_category' => 'New Category',
 
     'new_channel' => 'New Channel',

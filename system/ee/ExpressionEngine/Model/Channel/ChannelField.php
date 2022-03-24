@@ -78,9 +78,9 @@ class ChannelField extends FieldModel
         ),
         'UsesFieldConditions' => array(
             'type' => 'hasMany',
-            'model' => 'ee:FieldCondition',
+            'model' => 'FieldCondition',
             'from_key' => 'field_id',
-            'to_key' => 'condition_field_id',
+            'to_key' => 'condition_field_id'
         )
     );
 

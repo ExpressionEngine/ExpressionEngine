@@ -878,6 +878,37 @@ class Fields extends AbstractFieldsController
 
         array_push($sections[0], $ruleGroupsField);
 
+        $relatedConditionalFields = [];
+        if (!is_null($field->UsesFieldConditions)) {
+            foreach ($field->UsesFieldConditions as $relatedFieldConditions) {
+                if (!is_null($relatedFieldConditions->FieldConditionSet)) {
+                    if (!is_null($relatedFieldConditions->FieldConditionSet->ChannelFields)) {
+                        foreach ($relatedFieldConditions->FieldConditionSet->ChannelFields as $relatedChannelField) {
+                            $relatedConditionalFields[$relatedChannelField->getId()] = [
+                                'id' => $relatedChannelField->getId(),
+                                'label' => $relatedChannelField->field_label,
+                                'extra' => '{' . $relatedChannelField->field_name . '}',
+                                'href' => ee('CP/URL')->make('fields/edit/' . $relatedChannelField->getId())->compile(),
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!empty($relatedConditionalFields)) {
+            $sections[0][] = array(
+                'title' => 'is_conditional',
+                'desc' => 'is_conditional_desc',
+                'fields' => array(
+                    'is_conditional' => array(
+                        'type' => 'html',
+                        'content' => ee('View')->make('ee:_shared/table-list')->render(['data' => $relatedConditionalFields, 'disable_action' => true])
+                    )
+                )
+            );
+        }
+
         ee()->javascript->output('$(document).ready(function () {
             EE.cp.fieldToggleDisable();
         });');
