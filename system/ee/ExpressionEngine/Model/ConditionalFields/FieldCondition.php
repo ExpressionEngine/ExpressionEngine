@@ -40,13 +40,9 @@ class FieldCondition extends Model
         ),
         'UsesConditionField' => array(
             'type' => 'belongsTo',
-            'model' => 'ee:ChannelField',
+            'model' => 'ChannelField',
             'from_key' => 'condition_field_id',
-            'to_key' => 'field_id',
-            'inverse' => array(
-                'name' => 'UsesFieldConditions',
-                'type' => 'hasMany'
-            )
+            'to_key' => 'field_id'
         )
     );
 }
