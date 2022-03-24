@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Model\Model;
  */
 class FieldCondition extends Model
 {
-
     protected static $_primary_key = 'condition_id';
     protected static $_table_name = 'field_conditions';
 
@@ -43,10 +42,6 @@ class FieldCondition extends Model
             'model' => 'ee:ChannelField',
             'from_key' => 'condition_field_id',
             'to_key' => 'field_id',
-            'inverse' => array(
-                'name' => 'UsesFieldConditions',
-                'type' => 'hasMany'
-            )
         )
     );
 }
