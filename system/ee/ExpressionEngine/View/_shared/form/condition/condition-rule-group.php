@@ -13,7 +13,7 @@ if (!empty($fieldConditionSets)) {
 $conditionFieldArr = [];
 
 foreach ($fieldsList as $fieldLabel) {
-    $conditionFieldArr[$fieldLabel['field_id']] = $fieldLabel['field_label'].'<span class="short-name">{'.$fieldLabel['field_name'].'}</span>';
+    $conditionFieldArr[$fieldLabel['field_id']] = $fieldLabel['field_label'] . '<span class="short-name">{' . $fieldLabel['field_name'] . '}</span>';
 }
 
 $conditionFieldDefault = [
