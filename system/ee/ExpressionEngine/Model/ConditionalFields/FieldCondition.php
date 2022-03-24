@@ -45,4 +45,17 @@ class FieldCondition extends Model
             'to_key' => 'field_id'
         )
     );
+
+    protected static $_events = array(
+        'afterDelete'
+    );
+
+    public function onAfterDelete()
+    {
+        //if this is the only condition in set, remove the set
+        $check = ee('db')->where('condition_set_id', $this->condition_set_id)->count_all_results('field_conditions');
+        if ($check == 0) {
+            ee('Model')->get('FieldConditionSet', $this->condition_set_id)->delete();
+        }
+    }
 }
