@@ -17,7 +17,6 @@ use ExpressionEngine\Service\Model\Model;
  */
 class FieldCondition extends Model
 {
-
     protected static $_primary_key = 'condition_id';
     protected static $_table_name = 'field_conditions';
 
