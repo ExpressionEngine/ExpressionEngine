@@ -400,7 +400,7 @@ $(document).ready(function() {
             return;
         }
 
-        var fieldName = element.label;
+        var fieldName = element.label.replace(/<.*/g, "");
         var parentRow = $(input).parents('.rule');
         var evaluationRules;
         var operator = {};
@@ -457,7 +457,9 @@ $(document).ready(function() {
     EE.cp.check_operator_value = function(item, input) {
         var operatorVal = item.value;
         var parentRow = $(input).parents('.rule');
-        var ruleLabel = parentRow.find('.condition-rule-field-wrap .select__dropdown-item--selected span:not(".short-name")').text();
+        var ruleLabel = parentRow.find('.condition-rule-field-wrap .select__dropdown-item--selected span:not(.short-name)').text();
+
+        ruleLabel = ruleLabel.replace(/{.*/g, "");
 
         var rulefieldType = checkFieldType(ruleLabel);
 
