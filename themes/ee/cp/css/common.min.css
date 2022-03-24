@@ -20781,11 +20781,15 @@ table .field-no-results {
 .field-conditionset .rules .rule:hover .delete_rule {
   opacity: 1;
 }
+.field-conditionset .rules .rule .select__dropdown-item > span {
+  white-space: nowrap;
+}
 .field-conditionset .rules .rule .short-name {
   display: inline-block;
   margin-left: 5px;
   font-size: 0.9em;
   color: var(--ee-text-secondary);
+  vertical-align: bottom;
 }
 .field-conditionset .rules .rule .select__button-label:after {
   top: 5px;

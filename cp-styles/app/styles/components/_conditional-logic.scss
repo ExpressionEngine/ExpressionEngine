@@ -129,11 +129,16 @@
 				.delete_rule { opacity: 1;}
 			}
 
+			.select__dropdown-item > span {
+				white-space: nowrap;
+			}
+
 			.short-name {
 				display: inline-block;
 				margin-left: 5px;
 				font-size: 0.9em;
 				color: var(--ee-text-secondary);
+				vertical-align: bottom;
 			}
 
       .select__button-label:after {
