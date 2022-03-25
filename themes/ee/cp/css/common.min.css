@@ -21273,6 +21273,7 @@ ul.field-reorder-drop,
 .status-wrap .st-disable,
 .status-wrap .st-status {
   text-transform: capitalize;
+  margin-right: 10px;
 }
 
 .status-tag, .st-spam,
