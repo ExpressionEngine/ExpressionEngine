@@ -174,7 +174,7 @@ ul, ol  {
 		&:hover {
 			& + output {
 				box-shadow: none;
-				top: 15px;
+				--y-offset: 0px;
 			}
 		}
 

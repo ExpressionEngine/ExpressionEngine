@@ -8888,7 +8888,7 @@ ul ul, ul ol, ol ul, ol ol {
 }
 .range-slider > input:hover + output {
   box-shadow: none;
-  top: 15px;
+  --y-offset: 0px;
 }
 .range-slider > input:active {
   --thumb-color: inherit;
