@@ -16502,6 +16502,7 @@ fieldset.hide-block {
   color: var(--ee-error);
   content: "\f071";
   top: -1px;
+  margin-left: 3px;
 }
 .fieldset-invalid > label > .field-control > em {
   color: var(--ee-error);
