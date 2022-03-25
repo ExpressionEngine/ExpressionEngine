@@ -8881,10 +8881,9 @@ ul ul, ul ol, ol ul, ol ol {
 }
 
 .range-slider {
-  margin-top: 30px;
+  margin-top: 50px;
 }
 .range-slider > input + output {
-  top: -100%;
   padding: 3px 9px;
 }
 .range-slider > input:hover + output {
@@ -8893,9 +8892,6 @@ ul ul, ul ol, ol ul, ol ol {
 }
 .range-slider > input:active {
   --thumb-color: inherit;
-}
-.range-slider > input:nth-of-type(2):hover + output {
-  transform: translate(0px, -150%);
 }
 
 label {
