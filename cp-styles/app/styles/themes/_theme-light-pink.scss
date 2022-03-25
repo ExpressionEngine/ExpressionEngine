@@ -146,6 +146,12 @@ $pink-theme: (
   button-action-hover-bg: darken($brand-success, 10%),
   button-action-hover-border: darken($brand-success, 10%),
 
+  button-warning-color: #ffffff,
+	button-warning-bg: $brand-warning,
+  button-warning-border: $brand-warning,
+	button-warning-hover-bg: darken($brand-warning, 10%),
+  button-warning-hover-border: darken($brand-warning, 10%),
+
 	button-danger-color: #ffffff,
 	button-danger-bg: $brand-danger,
   button-danger-border: $brand-danger,
