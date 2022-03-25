@@ -47,6 +47,7 @@ var Conditional = window.Conditional = {
 Conditional.Publish = function(field, settings) {
     this.root = $(field);
     this.mainParentContainer = this.root.parents('#fieldset-condition_fields');
+    if (this.mainParentContainer.length == 0) return;
     this.blankSet = $('.conditionset-temlates-row', this.mainParentContainer);
     this.activeSet = this.root.not(this.blankSet);
     this.setParent = $('#fieldset-condition_fields').find('.field-conditionset-wrapper');
@@ -371,17 +372,6 @@ $(document).ready(function() {
     if (EE.conditionData) {
         initRules();
     }
-
-    $('body').on('click', '.js-modal-link--side', function() {
-        var timer = setInterval(function () {
-            
-            if ( $('[rel="modal-form"] .panel #fieldset-condition_fields').length ) {
-                $('[rel="modal-form"] .panel #fieldset-condition_fields').hide();
-                initRules();
-                clearInterval(timer);
-            }
-        }, 20);
-    });
 
     function checkFieldType(fieldName) {
         var fieldType;
