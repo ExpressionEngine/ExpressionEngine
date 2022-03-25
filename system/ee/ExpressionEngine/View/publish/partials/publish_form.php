@@ -145,7 +145,9 @@
                     <em><?=lang('autosaved_versions_desc')?></em>
                 </div>
                 <div class="field-control">
+                  <div class="panel">
                     <?=$autosaves?>
+                  </div>
                 </div>
             </fieldset>
         </div>
