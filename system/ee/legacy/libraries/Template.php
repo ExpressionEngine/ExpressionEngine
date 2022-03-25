@@ -3335,6 +3335,10 @@ class EE_Template
         $data['logged_in'] = (ee()->session->userdata['member_id'] != 0);
         $data['logged_out'] = (ee()->session->userdata['member_id'] == 0);
 
+        // Give user the ability to condition {lang_dir} variable, to make his own multi-langual theme customizations.
+        $data['lang'] = ee()->lang->code(ee()->config->item('deft_lang'));
+        $data['lang_dir'] = ee()->lang->direction(ee()->config->item('deft_lang'));
+
         // current time
         $data['current_time'] = ee()->localize->now;
 

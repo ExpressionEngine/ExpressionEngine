@@ -22,9 +22,15 @@
 @import 'vendor/fontawesome/scss/_solid';
 @import 'vendor/fontawesome/scss/_brands';
 
+/*rtl:begin:ignore*/
 @import 'vendor/_codemirror';
+/*rtl:end:ignore*/
+/*rtl:begin:ignore*/
 @import 'vendor/_codemirror-custom';
+/*rtl:end:ignore*/
+/*rtl:begin:ignore*/
 @import 'vendor/_codemirror-theme';
+/*rtl:end:ignore*/
 
 @import 'vendor/_hljs-theme';
 

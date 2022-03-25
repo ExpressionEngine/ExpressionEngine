@@ -24,7 +24,7 @@
 			<div class="field-instruct">
 				<label for="password"><?=lang('password')?> &ndash; <a href="<?=ee('CP/URL')->make('/login/forgotten_password_form')?>"><?=lang('remind_me')?></a></label>
 			</div>
-			<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off', 'tabindex' => 2))?>
+			<?=form_password(array('dir' => ee()->lang->direction(), 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off', 'tabindex' => 2))?>
 		</fieldset>
 		<?php if ($cp_session_type == 'c'):?>
 		<fieldset>

@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use function PHPSTORM_META\map;
+
 /**
  * Core Language
  */
@@ -230,6 +232,19 @@ class EE_Lang
         'Chuang' => 'za',
         'Zulu' => 'zu'
     ];
+
+    public $rtl_languages = [
+        "Arabic",
+        "Aramaic",
+        "Azeri",
+        "Dhivehi",
+        "Maldivian",
+        "Hebrew",
+        "Kurdish", // Sorani
+        "Persian", // Farsi
+        "Urdu"
+    ];
+
     public $language = array();
     public $addon_language = array();
     public $is_loaded = array();
@@ -469,6 +484,24 @@ class EE_Lang
         }
 
         return 'en';
+    }
+
+    /**
+     * Get language direction
+     * 
+     * @return String direction for given language name in English or current user language
+     */
+    public function direction($language_name = null) {
+        if (empty($language_name)) {
+            $language_name = ee()->session->get_language();
+        }
+        $language_name = ucwords($language_name);
+
+        if (in_array($language_name, $this->rtl_languages)) {
+            return 'rtl';
+        }
+
+        return 'ltr';
     }
 }
 // END CLASS

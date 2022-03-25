@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="<?=ee()->lang->code()?>" dir="ltr">
+<html lang="<?=ee()->lang->code()?>" dir="<?=ee()->lang->direction()?>">
 	<head>
 		<?=ee()->view->head_title($cp_page_title)?>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -7,7 +7,12 @@
 		<?php if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee()->config->item('favicon')) : ?>
 		<link rel="icon" type="image/x-icon" href="<?=ee()->config->item('favicon')?>" />
 		<?php endif; ?>
+		
+		<?php if(ee()->lang->direction() == 'rtl'):?>
+		<?=ee()->view->head_link('css/common.rtl.min.css'); ?>
+		<?php else:?>
 		<?=ee()->view->head_link('css/common.min.css'); ?>
+		<?php endif?>
 	</head>
 	<body data-ee-version="<?=APP_VER?>">
 		<section role="main" class="login-container">

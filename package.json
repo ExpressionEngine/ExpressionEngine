@@ -8,7 +8,9 @@
     "build:old-js": "babel themes/ee/asset/javascript/src/ -x \".es6\" --out-dir themes/ee/asset/javascript/src/",
     "watch:old-js": "npm run build:old-js -- --watch",
     "build:css": "brunch build && cd \"cp-styles\" && (cp build/common.min.css ../themes/ee/cp/css/common.min.css || copy build\\common.min.css ..\\themes\\ee\\cp\\css\\common.min.css) && (cp build/eecms-debug.min.css ../themes/ee/debug/css/eecms-debug.min.css || copy build\\eecms-debug.min.css ..\\themes\\ee\\debug\\css\\eecms-debug.min.css) && (cp -a build/webfonts/. ../themes/ee/webfonts/ || copy build\\webfonts ..\\themes\\ee\\webfonts)",
-    "watch:css": "brunch watch --server"
+    "watch:css": "brunch watch --server",
+    "rtl:css": "cd \"cp-styles\" && (rtlcss build/common.min.css build/common.rtl.min.css) && (cp build/common.rtl.min.css ../themes/ee/cp/css/common.rtl.min.css || copy build/common.rtl.min.css ..\\themes\\ee\\cp\\css\\common.rtl.min.css)",
+    "rtl:demo-css": "rtlcss themes/user/site/default/asset/style/default.min.css themes/user/site/default/asset/style/default.rtl.min.css"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.5",
@@ -19,25 +21,25 @@
     "@types/jquery": "^3.3.31",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
-    "del": "^5.1.0",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
-    "gulp-concat": "^2.6.1",
-    "gulp-uglify": "^1.4.0",
-    "gulp-rename": "^2.0.0",
-    "gulp-clean-css": "^4.3.0",
-    "gulp-typescript": "^5.0.1",
-    "gulp-sourcemaps": "^3.0.0",
-    "typescript": "^3.7.3",
     "auto-reload-brunch": "^2",
     "babel-brunch": "^7",
     "babel-preset-env": "^1.7.0",
     "brunch": "^2.10.17",
     "clean-css-brunch": "^2.10.0",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-typescript": "^5.0.1",
+    "gulp-uglify": "^1.4.0",
     "less-brunch": "^2.10.0",
+    "rtlcss": "^3.5.0",
     "sass-brunch": "^3.0.1",
+    "typescript": "^3.7.3",
     "typescript-brunch": "^2.3.0",
     "uglify-js-brunch": "^2"
-  },
-  "dependencies": {}
+  }
 }
