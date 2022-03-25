@@ -52,10 +52,7 @@
 }
 
 .title-bar__extra-tools {
-	// margin-left: $s-s;
-	// margin-bottom: 10px;
-  display: flex;
-  flex: 1;
+	display: flex;
   justify-content: flex-end;
 
   @include m-tablet-down {
