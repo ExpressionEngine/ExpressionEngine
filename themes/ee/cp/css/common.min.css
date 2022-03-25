@@ -21291,15 +21291,13 @@ ul.field-reorder-drop,
 .st-disable,
 .st-status {
   display: inline-block;
-  padding: 3px 8px 2px;
+  padding: 3px 8px;
   color: var(--ee-text-secondary);
   background-color: var(--ee-bg-10);
   border: 1px solid transparent;
-  font-size: 75%;
-  font-weight: 500;
+  font-size: 85%;
   text-transform: none;
-  letter-spacing: 1px;
-  border-radius: 3px;
+  border-radius: 1000px;
 }
 
 .status-tag--big {
