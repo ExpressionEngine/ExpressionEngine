@@ -989,11 +989,11 @@ $(document).ready(function(){
 			if ($(this).hasClass('off')){
 				$(this).removeClass('off');
 				$(this).addClass('on');
-				$(input).val(yes_no ? 'y' : 1);
+				$(input).val(yes_no ? 'y' : 1).trigger('change');
 			} else {
 				$(this).removeClass('on');
 				$(this).addClass('off');
-				$(input).val(yes_no ? 'n' : 0);
+				$(input).val(yes_no ? 'n' : 0).trigger('change');
 			}
 
 			$(this).attr('alt', onOff);
