@@ -14325,7 +14325,6 @@ input[type=button].btn-block {
 
 .title-bar__extra-tools {
   display: flex;
-  flex: 1;
   justify-content: flex-end;
 }
 @media (max-width: 767px) {
