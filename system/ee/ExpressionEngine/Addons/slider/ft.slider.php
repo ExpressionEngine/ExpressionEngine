@@ -29,9 +29,9 @@ class Slider_ft extends Text_ft
      *
      * @var array
      */
-    public $supportedEvaluationRules = ['lessThan', 'lessOrEqualThan', 'equal', 'greaterThan', 'greaterOrEqualThan', 'isEmpty', 'isNotEmpty'];
+    public $supportedEvaluationRules = ['lessThan', 'lessOrEqualThan', 'equal', 'greaterThan', 'greaterOrEqualThan'];
 
-    public $defaultEvaluationRule = 'isNotEmpty';
+    public $defaultEvaluationRule = 'equal';
 
     /**
      * Display the field
@@ -42,7 +42,7 @@ class Slider_ft extends Text_ft
     public function display_field($data)
     {
         //some fallback if we switched from double to single slider
-        if (strpos($data, '|') !== false) {
+        if (!is_null($data) && strpos($data, '|') !== false) {
             ee()->load->helper('custom_field');
             $data = decode_multi_field($data);
             if (isset($data[0])) {

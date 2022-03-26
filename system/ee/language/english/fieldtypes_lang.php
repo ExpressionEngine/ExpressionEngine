@@ -313,6 +313,9 @@ $lang = array(
     'turnedOn' => 'is turned on',
     'turnedOff' => 'is turned off',
 
+    'includes' => 'includes',
+    'notIncludes' => 'does not include',
+
     /* Slider */
     'field_step' => 'Step',
 
