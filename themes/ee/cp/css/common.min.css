@@ -14935,13 +14935,11 @@ input[type=button].btn-block {
   display: block;
   cursor: pointer;
 }
-@-moz-document url-prefix() {
-  .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item.in-use .filter-clear i {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+.filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item.in-use .filter-clear i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .button, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .pagination__link, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .no-results a, .no-results .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item a,
 .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .field-no-results a,
