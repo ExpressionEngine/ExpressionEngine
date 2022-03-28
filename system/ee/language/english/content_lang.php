@@ -781,6 +781,8 @@ $lang = array(
 
     'version_preview' => 'Revision Number %s',
 
+    'version_no' => 'Revision #%d',
+
     'versioning_enabled' => 'Enable entry revisions?',
 
     'versioning_enabled_desc' => 'When enabled, you can store up to %d revisions of this entry.',
