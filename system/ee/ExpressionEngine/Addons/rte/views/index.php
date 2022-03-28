@@ -3,30 +3,34 @@
 </div>
 <br />
 <div class="snap table-list-wrap">
-	<div class="tbl-ctrls">
-		<?=form_open(ee('CP/URL')->make('addons/settings/rte/update_toolsets'))?>
-			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/rte/edit_toolset')?>"><?=lang('create_new')?></a>
-			</fieldset>
-			<h1><?=lang('available_tool_sets')?></h1>
+	<div class="panel">
+		<div class="tbl-ctrls">
+			<?=form_open(ee('CP/URL')->make('addons/settings/rte/update_toolsets'))?>
+				<div class="panel-heading">
+					<fieldset class="tbl-search right">
+						<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/rte/edit_toolset')?>"><?=lang('create_new')?></a>
+					</fieldset>
+					<h1><?=lang('available_tool_sets')?></h1>
+				</div>
 
-			<?php $this->embed('ee:_shared/table', $table); ?>
+				<?php $this->embed('ee:_shared/table', $table); ?>
 
-			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-			    'options' => [
-			        [
-			            'value' => "",
-			            'text' => '-- ' . lang('with_selected') . ' --'
-			        ],
-			        [
-			            'value' => "remove",
-			            'text' => lang('delete'),
-			            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
-			        ]
-			    ],
-			    'modal' => true
-			]); ?>
-		<?=form_close();?>
+				<?php $this->embed('ee:_shared/form/bulk-action-bar', [
+				    'options' => [
+				        [
+				            'value' => "",
+				            'text' => '-- ' . lang('with_selected') . ' --'
+				        ],
+				        [
+				            'value' => "remove",
+				            'text' => lang('delete'),
+				            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
+				        ]
+				    ],
+				    'modal' => true
+				]); ?>
+			<?=form_close();?>
+		</div>
 	</div>
 </div>
 
