@@ -445,6 +445,7 @@ class Edit extends AbstractPublishController
         if ($version_id) {
             $version = $entry->Versions->filter('version_id', $version_id)->first();
             $version_data = $version->version_data;
+            $vars['version'] = $version->toArray();
             $entry->set($version_data);
         }
 
