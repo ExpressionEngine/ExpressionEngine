@@ -340,7 +340,7 @@ else: ?>
                             }
 
                             $column_label = "<div class=\"grid-field__column-label\"  role=\"rowheader\">
-								<div class=\"field-instruct\">
+								<div class=\"grid-field__column-label__instraction\">
 									<label>$column_name</label>";
                             if (!empty($column_desc)) {
                                 $column_label .= "

@@ -17537,6 +17537,12 @@ fieldset .field-control #eye {
 .grid-field__column-label {
   display: none;
 }
+.grid-field__column-label label {
+  display: block;
+  color: var(--ee-text-normal);
+  margin-bottom: 5px;
+  font-weight: 500;
+}
 
 .grid-field__column-remove {
   width: 1%;
@@ -17671,6 +17677,7 @@ fieldset .field-control #eye {
   width: 100%;
   max-width: 100%;
   display: flex;
+  flex-wrap: wrap;
   border-bottom: 1px solid var(--ee-table-border);
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:last-child,
@@ -17679,13 +17686,17 @@ fieldset .field-control #eye {
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label),
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label) {
-  width: calc(100% - 120px);
+  width: calc(100% - 135px);
 }
 @media (max-width: 1023px) {
   .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label),
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label) {
-    width: calc(100% - 80px);
+    width: calc(100% - 95px);
   }
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .ee-form-error-message,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .ee-form-error-message {
+  margin-left: auto;
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-label,
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-label {

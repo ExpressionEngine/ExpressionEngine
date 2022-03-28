@@ -427,6 +427,12 @@ EE.cp.formValidation = {
 			// Specify the Grid cell the error is in
 			if (grid) {
 				container.addClass('invalid');
+
+				fieldset.each(function(i, el){
+					if (!$(el).parents('td.invalid').length && $(el).parent('.grid-field__column-label').length) {
+						$(el).removeClass('fieldset-invalid');
+					}
+				});
 			}
 
 			// We'll get HTML back from the validator, create an element

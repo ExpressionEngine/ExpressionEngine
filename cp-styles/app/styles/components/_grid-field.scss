@@ -170,6 +170,13 @@
 
 .grid-field__column-label {
 	display: none;
+
+	label {
+		display: block;
+		color: var(--ee-text-normal);
+		margin-bottom: 5px;
+		font-weight: 500;
+	}
 }
 
 .grid-field__column-remove {
@@ -341,6 +348,7 @@
 					width: 100%;
 					max-width: 100%;
 					display: flex;
+					flex-wrap: wrap;
 					border-bottom: 1px solid var(--ee-table-border);
 
 					&:last-child {
@@ -348,11 +356,15 @@
 					}
 
 					& > *:not(.grid-field__column-label) {
-						width: calc(100% - 120px);
+						width: calc(100% - 135px);
 
 						@include m-desktop-down {
-							width: calc(100% - 80px);
+							width: calc(100% - 95px);
 						}
+					}
+
+					.ee-form-error-message {
+						margin-left: auto;
 					}
 
 					.grid-field__column-label {
