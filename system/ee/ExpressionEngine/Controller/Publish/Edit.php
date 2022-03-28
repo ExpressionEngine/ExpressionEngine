@@ -447,15 +447,7 @@ class Edit extends AbstractPublishController
             if (!is_null($version)) {
                 $version_data = $version->version_data;
                 $vars['version'] = $version->toArray();
-                $i = $entry->Versions->count();
-                $vars['version']['number'] = $i + 1;
-                foreach ($entry->Versions->sortBy('version_date')->reverse() as $listedVersion) {
-                    if ($listedVersion->version_id == $version_id) {
-                        $vars['version']['number'] = $i;
-                        break;
-                    }
-                    $i--;
-                }
+                $vars['version']['number'] = $entry->Versions->filter('version_date', '<=', $version->version_date)->count();
                 $entry->set($version_data);
             }
         }
