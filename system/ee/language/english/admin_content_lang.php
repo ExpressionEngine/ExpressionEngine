@@ -272,9 +272,9 @@ $lang = array(
 
     'field_options' => 'Field Options',
 
-    'field_populate_from_channel' => 'Populate the menu from another channel field',
+    'field_populate_from_channel' => 'Populate from another channel field',
 
-    'field_populate_manually' => 'Populate the menu manually',
+    'field_populate_manually' => 'Populate manually',
 
     'field_tools' => 'Field tools',
 
