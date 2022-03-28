@@ -102,6 +102,11 @@ html.color-theme-in-transition *:after {
   --ee-button-action-border: #00C571;
   --ee-button-action-hover-bg: #009254;
   --ee-button-action-hover-border: #009254;
+  --ee-button-warning-color: #ffffff;
+  --ee-button-warning-bg: #FFB40B;
+  --ee-button-warning-border: #FFB40B;
+  --ee-button-warning-hover-bg: #d79500;
+  --ee-button-warning-hover-border: #d79500;
   --ee-button-danger-color: #ffffff;
   --ee-button-danger-bg: #FA5252;
   --ee-button-danger-border: #FA5252;
@@ -252,6 +257,11 @@ html.color-theme-in-transition *:after {
   --ee-button-action-border: #00C571;
   --ee-button-action-hover-bg: #00df80;
   --ee-button-action-hover-border: #00df80;
+  --ee-button-warning-color: #dedede;
+  --ee-button-warning-bg: #FFB40B;
+  --ee-button-warning-border: #FFB40B;
+  --ee-button-warning-hover-bg: #ffbc25;
+  --ee-button-warning-hover-border: #ffbc25;
   --ee-button-danger-color: #dedede;
   --ee-button-danger-bg: #FA5252;
   --ee-button-danger-border: #FA5252;
@@ -402,6 +412,11 @@ body[data-theme=dark] .inverted-theme {
   --ee-button-action-border: #00C571;
   --ee-button-action-hover-bg: #009254;
   --ee-button-action-hover-border: #009254;
+  --ee-button-warning-color: #ffffff;
+  --ee-button-warning-bg: #FFB40B;
+  --ee-button-warning-border: #FFB40B;
+  --ee-button-warning-hover-bg: #d79500;
+  --ee-button-warning-hover-border: #d79500;
   --ee-button-danger-color: #ffffff;
   --ee-button-danger-bg: #FA5252;
   --ee-button-danger-border: #FA5252;
@@ -552,6 +567,11 @@ body[data-theme=light] .inverted-theme {
   --ee-button-action-border: #00C571;
   --ee-button-action-hover-bg: #00df80;
   --ee-button-action-hover-border: #00df80;
+  --ee-button-warning-color: #dedede;
+  --ee-button-warning-bg: #FFB40B;
+  --ee-button-warning-border: #FFB40B;
+  --ee-button-warning-hover-bg: #ffbc25;
+  --ee-button-warning-hover-border: #ffbc25;
   --ee-button-danger-color: #dedede;
   --ee-button-danger-bg: #FA5252;
   --ee-button-danger-border: #FA5252;
