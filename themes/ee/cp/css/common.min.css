@@ -14934,6 +14934,11 @@ input[type=button].btn-block {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+@-moz-document url-prefix() {
+  .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item.in-use .filter-clear i {
+    padding-bottom: 1px;
+  }
+}
 .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .button, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .pagination__link, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .no-results a, .no-results .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item a,
 .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .field-no-results a,
 .field-no-results .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item a, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .select-popup, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item select, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .select__button, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .license-status-badge, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .markItUpHeader ul a, .markItUpHeader ul .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item a, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .filter-bar__button {
