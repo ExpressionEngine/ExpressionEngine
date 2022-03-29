@@ -228,6 +228,7 @@ $dark-theme: (
   lots-of-checkboxes-border: $gray-20,
   layout-item-border: $gray-20,
   fluid-item-border: $gray-20,
+  slider-value-bg: darken($brand-primary, 35%),
 
   // EE Update Indicators
   ee-update: $brand-primary,
