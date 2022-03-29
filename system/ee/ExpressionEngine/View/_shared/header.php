@@ -23,6 +23,12 @@
 				--ee-sidebar-title-bg-hover: #<?=ee()->config->item('site_color')?>;
 				--ee-sidebar-text-faded: #FFFFFF;
 			}
+			.ee-sidebar__title, .ee-sidebar__items-bottom, .ee-sidebar__title:hover {
+				background-color: #<?=ee()->config->item('site_color')?>;
+			}
+			.ee-sidebar__title-down-arrow, .ee-sidebar__items .ee-sidebar__version {
+				color: #FFFFFF;
+			}
 		</style>
 		<?php endif; ?>
 

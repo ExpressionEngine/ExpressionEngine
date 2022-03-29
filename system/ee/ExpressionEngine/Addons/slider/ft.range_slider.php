@@ -33,9 +33,9 @@ class Range_slider_ft extends Slider_ft
      *
      * @var array
      */
-    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
+    public $supportedEvaluationRules = ['rangeIncludes', 'rangeNotIncludes'];
 
-    public $defaultEvaluationRule = 'isNotEmpty';
+    public $defaultEvaluationRule = 'rangeIncludes';
 
     /**
      * Display the field

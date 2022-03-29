@@ -98,6 +98,14 @@ EE.cp.ModalForm = {
 
 		EE.cp.formValidation.init(this.modalContentsContainer.find('form'))
 
+		if ($('.conditionset-item').length > 0) {
+			// hide block if toggle is off
+			if ($('#fieldset-field_is_conditional button.toggle-btn').hasClass('off')) {
+				$('#fieldset-condition_fields').hide();
+			}
+			new Conditional.Publish($('.conditionset-item'));
+		}
+
 		$('form', this.modal).on('submit', function() {
 
 			$.post(this.action, $(this).serialize(), function(result) {

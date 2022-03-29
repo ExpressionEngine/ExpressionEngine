@@ -113,8 +113,8 @@ class Dropdown extends React.Component {
             />
           </label>
 
-          {selected && this.props.name == 'condition-rule-field' && 
-            <span className="tooltiptext">{`${selected.label} {${selected.value}}`}</span>
+          {selected && this.props.name.includes('[condition_field_id]') && 
+            <span className="tooltiptext">{`${selected.label.replace(/<.*/g, "")} {${selected.label.match(/(?<=\{).+?(?=\})/g)}}`}</span>
           }
         </div>
 
