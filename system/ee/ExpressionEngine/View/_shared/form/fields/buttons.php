@@ -18,7 +18,8 @@ $allow_multi = $multi ? 'multiple' : '';
 ?>
 
 <div class="button-group <?=$class?> <?=$allow_multi?>">
-<?php 
+    <input type="hidden" name="<?=str_replace('[]', '', $field_name)?>" />
+    <?php 
     if (!$multi && is_array($value)) {
         $value = end($value);
     }
