@@ -20308,6 +20308,9 @@ table .field-no-results {
   max-width: 100vw;
   display: none;
 }
+.live-preview-container ~ .modal-wrap {
+  z-index: 251;
+}
 
 .live-preview {
   display: flex;
