@@ -62,7 +62,7 @@ context.only('Member List frontend', () => {
   before(function() {
     cy.task('db:seed')
     cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
-    cy.task('filesystem:copy', { from: 'support/templates/default_site/*', to: '../../system/user/templates/' })
+    cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' })
     cy.authVisit('admin.php?/cp/design')
     cy.logout()
   })
