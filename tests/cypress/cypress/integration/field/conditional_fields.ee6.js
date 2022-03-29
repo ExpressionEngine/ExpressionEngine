@@ -11,7 +11,7 @@ context('Conditional Fields', () => {
 
         cy.eeConfig({ item: 'save_tmpl_files', value: 'y' });
         //copy templates
-        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
+        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' })
         cy.authVisit('admin.php?/cp/design')
 
         cy.task('filesystem:delete', Cypress.env("TEMP_DIR") + '/about')
