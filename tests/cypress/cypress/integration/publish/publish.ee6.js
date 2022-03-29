@@ -19,7 +19,7 @@ context('Publish Page - Create', () => {
       cy.task('db:seed')
       cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
       cy.createEntries({})
-      cy.task('filesystem:copy', { from: 'support/templates/default_site/*', to: '../../system/user/templates/default_site/' }).then(() => {
+      cy.task('filesystem:copy', { from: 'support/templates/default_site/*', to: '../../system/user/templates/' }).then(() => {
         cy.visit('admin.php?/cp/design')
       })
     })
