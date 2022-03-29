@@ -15,7 +15,7 @@ context('Cookie Consents', () => {
         cy.eeConfig({ item: 'require_cookie_consent', value: 'y' })
         cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
         //copy templates
-		cy.task('filesystem:copy', { from: 'support/templates/default_site/*', to: '../../system/user/templates/' }).then(() => {
+		cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.eeConfig({item: 'save_tmpl_files'}) .then((config) => {
                 expect(config.trim()).to.be.equal('y')
             })
