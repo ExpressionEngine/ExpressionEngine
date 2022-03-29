@@ -26,7 +26,7 @@ abstract class Core
     protected $booted = false;
 
     /**
-     * @var bool Application instance
+     * @var \ExpressionEngine\Core\Application Application instance
      */
     protected $application = null;
 
@@ -313,7 +313,7 @@ abstract class Core
      */
     public function loadApplicationCore()
     {
-        if ($this->application) {
+        if (!is_null($this->application)) {
             return $this->application;
         }
 
