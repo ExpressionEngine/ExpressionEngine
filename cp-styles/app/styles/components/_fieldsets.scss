@@ -167,6 +167,7 @@ fieldset {
 				color: color(error);
 				content: fa-content($fa-var-exclamation-triangle);
 				top: -1px;
+        margin-left: 3px;
 			}
 		}
 	}
@@ -371,7 +372,7 @@ td.invalid {
 		max-height: 24px;
 		line-height: 24px;
 		padding: 0 8px;
-		
+
 		&.strong {
 		  border-color: var(--ee-success);
 		  color: var(--ee-success);
@@ -407,7 +408,7 @@ fieldset {
 	}
 }
 
-@media not all and (min-resolution:.001dpcm) { 
+@media not all and (min-resolution:.001dpcm) {
 	@supports (-webkit-appearance:none) {
 		fieldset {
 			.eye,

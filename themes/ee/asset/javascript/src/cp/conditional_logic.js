@@ -47,6 +47,7 @@ var Conditional = window.Conditional = {
 Conditional.Publish = function(field, settings) {
     this.root = $(field);
     this.mainParentContainer = this.root.parents('#fieldset-condition_fields');
+    if (this.mainParentContainer.length == 0) return;
     this.blankSet = $('.conditionset-temlates-row', this.mainParentContainer);
     this.activeSet = this.root.not(this.blankSet);
     this.setParent = $('#fieldset-condition_fields').find('.field-conditionset-wrapper');
@@ -372,17 +373,6 @@ $(document).ready(function() {
         initRules();
     }
 
-    $('body').on('click', '.js-modal-link--side', function() {
-        var timer = setInterval(function () {
-            
-            if ( $('[rel="modal-form"] .panel #fieldset-condition_fields').length ) {
-                $('[rel="modal-form"] .panel #fieldset-condition_fields').hide();
-                initRules();
-                clearInterval(timer);
-            }
-        }, 20);
-    });
-
     function checkFieldType(fieldName) {
         var fieldType;
 
@@ -400,7 +390,7 @@ $(document).ready(function() {
             return;
         }
 
-        var fieldName = element.label;
+        var fieldName = element.label.replace(/<.*/g, "");
         var parentRow = $(input).parents('.rule');
         var evaluationRules;
         var operator = {};
@@ -457,7 +447,9 @@ $(document).ready(function() {
     EE.cp.check_operator_value = function(item, input) {
         var operatorVal = item.value;
         var parentRow = $(input).parents('.rule');
-        var ruleLabel = parentRow.find('.condition-rule-field-wrap .select__dropdown-item--selected span:not(".short-name")').text();
+        var ruleLabel = parentRow.find('.condition-rule-field-wrap .select__dropdown-item--selected span:not(.short-name)').text();
+
+        ruleLabel = ruleLabel.replace(/{.*/g, "");
 
         var rulefieldType = checkFieldType(ruleLabel);
 
@@ -519,7 +511,7 @@ $(document).ready(function() {
         })
     }
 
-    $('body').on('mousemove', '.condition-rule-field-wrap .button-segment', function(e) {
+    $('body').on('mousemove', '.condition-rule-field-wrap .js-dropdown-toggle', function(e) {
         var X = e.offsetX;
         var Y = e.offsetY;
         var top = Y + 20 + 'px';
@@ -533,7 +525,7 @@ $(document).ready(function() {
         }
     });
 
-    $('body').on('mouseout', '.condition-rule-field-wrap .button-segment', function(e) {
+    $('body').on('mouseout', '.condition-rule-field-wrap .js-dropdown-toggle', function(e) {
         if ($(this).find('.tooltiptext').length) {
             $(this).find('.tooltiptext').css({display: "none"});
         }

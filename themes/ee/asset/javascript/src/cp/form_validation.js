@@ -95,7 +95,7 @@ EE.cp.formValidation = {
 			}, 0);
 		});
 
-		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], select', function() {
+		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], input[type=range], select', function() {
 
 			var element = $(this);
 

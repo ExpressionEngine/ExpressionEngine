@@ -18,9 +18,6 @@
 
   tr {
   	td {
-  		min-width: 400px;
-  		max-width: 600px;
-
   		@include m-tablet-down {
   			min-width: 0 !important;
   			width: 100% !important;
@@ -34,8 +31,7 @@
   		}
 
   		&.grid-field__column--tools {
-  			min-width: 80px;
-  			max-width: 100px;
+
   		}
 
   		&.grid-multi-relate {

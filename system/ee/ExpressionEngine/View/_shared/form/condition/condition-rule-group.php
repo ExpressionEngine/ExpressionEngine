@@ -13,7 +13,7 @@ if (!empty($fieldConditionSets)) {
 $conditionFieldArr = [];
 
 foreach ($fieldsList as $fieldLabel) {
-    $conditionFieldArr[$fieldLabel['field_id']] = $fieldLabel['field_label'];
+    $conditionFieldArr[$fieldLabel['field_id']] = $fieldLabel['field_label'] . '<span class="short-name">{' . $fieldLabel['field_name'] . '}</span>';
 }
 
 $conditionFieldDefault = [
@@ -103,12 +103,14 @@ if (AJAX_REQUEST) {
             $matchFieldDefault['value'] = $conditions['match'];
             $matchFieldDefault['field_name'] = 'condition_set['. $condSetId .'][match]';
 
-            $this->embed('ee:_shared/form/condition/condition-set', [
-                'matchVal' => $matchFieldDefault,
-                'conditionSetId' => $condSetId,
-                'conditionFieldVal' => $conditionFieldDefault,
-                'conditions' => $conditions
-            ]);
+            if (!is_null($conditions['conditions'])) {
+                $this->embed('ee:_shared/form/condition/condition-set', [
+                    'matchVal' => $matchFieldDefault,
+                    'conditionSetId' => $condSetId,
+                    'conditionFieldVal' => $conditionFieldDefault,
+                    'conditions' => $conditions
+                ]);
+            }
         }
     endif;?>
 </div>
