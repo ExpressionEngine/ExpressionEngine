@@ -17787,20 +17787,12 @@ fieldset .field-control #eye {
   background: var(--ee-bg-0);
   border-right: 1px solid var(--ee-table-border);
 }
-.grid-field__table tr td {
-  min-width: 400px;
-  max-width: 600px;
-}
 @media (max-width: 767px) {
   .grid-field__table tr td {
     min-width: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
   }
-}
-.grid-field__table tr td.grid-field__column--tools {
-  min-width: 80px;
-  max-width: 100px;
 }
 @media (max-width: 767px) {
   .grid-field__table tr td.grid-multi-relate {
@@ -20339,7 +20331,8 @@ table .field-no-results {
   position: relative;
   display: flex;
   flex-direction: column;
-  flex-basis: 40%;
+  flex-basis: 50%;
+  width: 50%;
   padding-top: 0;
   background: var(--ee-bg-blank);
   transition: transform 600ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 600ms cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -20387,7 +20380,8 @@ table .field-no-results {
 }
 
 .live-preview__preview {
-  flex-basis: 60%;
+  flex-basis: 50%;
+  width: 50%;
   background: #fff;
   transition: transform 600ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 600ms cubic-bezier(0.165, 0.84, 0.44, 1);
 }
@@ -22392,7 +22386,7 @@ body[data-theme="dark"] {
   padding: 10px;
   position: absolute;
   width: 270px;
-  z-index: 205;
+  z-index: 260;
   border-radius: 5px;
 }
 .date-picker-wrap h3 {
