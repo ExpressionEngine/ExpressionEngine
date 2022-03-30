@@ -18,6 +18,8 @@ class Notes_ft extends EE_Fieldtype
         'field_hide_title' => true
     ];
 
+    public $supportedEvaluationRules = null;
+
     public function __construct()
     {
         $addon = ee('Addon')->get('notes');

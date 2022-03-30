@@ -227,6 +227,7 @@ $light-theme: (
   lots-of-checkboxes-border: $gray-10,
   layout-item-border: $gray-10,
   fluid-item-border: $gray-10,
+  slider-value-bg: lighten($brand-primary, 30%),
 
   // EE Update Indicators
   ee-update: $brand-primary,
