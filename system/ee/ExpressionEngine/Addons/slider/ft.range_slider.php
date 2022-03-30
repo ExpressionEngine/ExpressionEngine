@@ -83,6 +83,7 @@ class Range_slider_ft extends Slider_ft
     {
         if (is_array($data)) {
             ee()->load->helper('custom_field');
+            sort($data);
             $data = encode_multi_field($data);
         }
 

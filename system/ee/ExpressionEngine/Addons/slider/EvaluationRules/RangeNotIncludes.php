@@ -22,6 +22,7 @@ class RangeNotIncludes extends AbstractEvaluationRule implements EvaluationRuleI
         if (!is_array($fieldValue)) {
             return true;
         }
+        sort($fieldValue);
         return !($expectedValue >= $fieldValue[0] && $expectedValue <= $fieldValue[1]);
     }
 
