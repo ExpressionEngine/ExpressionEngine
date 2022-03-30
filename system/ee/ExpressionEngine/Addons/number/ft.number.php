@@ -86,14 +86,16 @@ class Number_ft extends Text_ft
         $validationRules = [];
         if (!is_null($this->settings['field_min_value']) && $this->settings['field_min_value'] !== '') {
             $validationRules[] = 'greaterOrEqualThan[' . $this->settings['field_min_value'] . ']';
-        }else{
+        } else {
             $validationRules[] = 'greaterOrEqualThan[' . PHP_INT_MIN . ']';
         }
+
         if (!is_null($this->settings['field_max_value']) && $this->settings['field_max_value'] !== '') {
             $validationRules[] = 'lessOrEqualThan[' . $this->settings['field_max_value'] . ']';
-        }else{
+        } else {
             $validationRules[] = 'lessOrEqualThan[' . PHP_INT_MAX . ']';
         }
+
         if ($this->settings['field_content_type'] == 'integer') {
             $validationRules[] = 'matchesContentType';
         }
