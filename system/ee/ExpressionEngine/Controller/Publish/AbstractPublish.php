@@ -407,7 +407,7 @@ abstract class AbstractPublish extends CP_Controller
                     'hidden_fields' => $hidden_fields
                 ];
             }
-            
+
             ee()->output->send_ajax_response($response);
         }
 

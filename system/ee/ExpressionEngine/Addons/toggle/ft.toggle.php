@@ -13,7 +13,6 @@
  */
 class Toggle_ft extends EE_Fieldtype
 {
-
     public $info = array(
         'name' => 'Toggle',
         'version' => '1.0.0'

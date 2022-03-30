@@ -785,7 +785,6 @@ class ChannelEntry extends ContentModel
                     $this->getCustomField($name)->setHidden('n');
                 }
             }
-            
         }
 
         parent::setDataOnCustomFields($data);

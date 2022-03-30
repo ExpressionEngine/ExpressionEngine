@@ -9,6 +9,7 @@
  */
 
 namespace ExpressionEngine\Addons\ToggleField\EvaluationRules;
+
 use ExpressionEngine\Service\ConditionalFields\EvaluationRules\AbstractEvaluationRule;
 use ExpressionEngine\Service\ConditionalFields\EvaluationRules\EvaluationRuleInterface;
 
@@ -22,7 +23,7 @@ class TurnedOff extends AbstractEvaluationRule implements EvaluationRuleInterfac
         if (is_null($fieldValue)) {
             $fieldValue = $fieldSettings['field_default_value'];
         }
-        return $fieldValue === 'n' || $fieldValue === 0 || $fieldValue === false;
+        return $fieldValue === 'n' || $fieldValue === 0 || $fieldValue === '0' || $fieldValue === false;
     }
 
     public function getConditionalFieldInputType()
