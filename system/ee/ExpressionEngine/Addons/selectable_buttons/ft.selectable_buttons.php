@@ -111,13 +111,6 @@ class Selectable_buttons_ft extends Multi_select_ft
      */
     public function replace_label($data, $params = array(), $tagdata = false)
     {
-        $pairs = $this->get_setting('value_label_pairs');
-        if (isset($pairs[$data])) {
-            $data = $pairs[$data];
-        }
-
-        $data = $this->processTypograpghy($data);
-
         return $this->replace_tag($data, $params, $tagdata);
     }
 
