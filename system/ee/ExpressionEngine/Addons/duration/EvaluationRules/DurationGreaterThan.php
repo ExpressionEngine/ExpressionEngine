@@ -22,12 +22,32 @@ class DurationGreaterThan extends EvaluationRules\GreaterThan implements Evaluat
 
     public function evaluate($fieldValue, $expectedValue, $fieldSettings)
     {
+        $useSeconds = false;
+        $multiplicator = 1;
+        if (strpos($fieldValue, ':') || strpos($expectedValue, ':')) {
+            $useSeconds = true;
+            switch ($fieldSettings['units']) {
+                case 'minutes':
+                    $multiplicator = 60;
+                    break;
+                case 'hours':
+                    $multiplicator = 60 * 60;
+                    break;
+                default:
+                    break;
+            }
+        }
         if (strpos($fieldValue, ':')) {
             $fieldValue = $this->convertFromColonNotation($fieldValue, $fieldSettings['units']);
+        } elseif ($useSeconds) {
+            $fieldValue = $fieldValue * $multiplicator;
         }
         if (strpos($expectedValue, ':')) {
             $expectedValue = $this->convertFromColonNotation($expectedValue, $fieldSettings['units']);
+        } elseif ($useSeconds) {
+            $expectedValue = $expectedValue * $multiplicator;
         }
+
         return parent::evaluate($fieldValue, $expectedValue, $fieldSettings);
     }
 
