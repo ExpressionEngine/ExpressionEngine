@@ -22,12 +22,9 @@ class DurationLessThan extends EvaluationRules\LessThan implements EvaluationRul
 
     public function evaluate($fieldValue, $expectedValue, $fieldSettings)
     {
-        if (strpos($fieldValue, ':')) {
-            $fieldValue = $this->convertFromColonNotation($fieldValue, $fieldSettings['units']);
-        }
-        if (strpos($expectedValue, ':')) {
-            $expectedValue = $this->convertFromColonNotation($expectedValue, $fieldSettings['units']);
-        }
+        $fieldValue = $this->convertDurationToSeconds($fieldValue, $fieldSettings['units']);
+        $expectedValue = $this->convertDurationToSeconds($expectedValue, $fieldSettings['units']);
+
         return parent::evaluate($fieldValue, $expectedValue, $fieldSettings);
     }
 
