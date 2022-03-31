@@ -15,7 +15,8 @@ class Notes_ft extends EE_Fieldtype
 
     public $default_settings = [
         'note_content' => '',
-        'field_hide_title' => true
+        'field_hide_title' => true,
+        'field_hide_publish_layout_collapse' => true,
     ];
 
     public $supportedEvaluationRules = null;
