@@ -22,7 +22,7 @@ class TurnedOn extends AbstractEvaluationRule implements EvaluationRuleInterface
         if (is_null($fieldValue)) {
             $fieldValue = $fieldSettings['field_default_value'];
         }
-        return $fieldValue === 'y' || $fieldValue === '1' || $fieldValue === true;
+        return get_bool_from_string($fieldValue);
     }
 
     public function getConditionalFieldInputType()
