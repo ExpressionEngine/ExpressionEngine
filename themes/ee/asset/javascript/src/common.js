@@ -24,7 +24,14 @@ $(document).ready(function(){
 			if ($(focused).attr('rel') == 'date-picker') {
 				$('.date-picker-wrap .date-picker-prev').focus();
 			}
-			
+
+			console.log('focused', focused);
+
+			if(!$(focused).parents('[data-relationship-react] .dropdown').length) {
+				$('[data-relationship-react] .dropdown').removeClass('dropdown--open');
+				$('[data-relationship-react] .js-dropdown-toggle').removeClass('dropdown--open');
+			}
+
 			$('#jumpEntry1').focusout(function(){
 				$('#jump-menu').hide();
 			});
@@ -38,7 +45,9 @@ $(document).ready(function(){
 				$('.js-close-live-preview').focus();
 			}
 
-			if ((el.keyCode === 32 || el.keyCode === 13) && ($(focused).is(':checkbox') || $(focused).find('input[type="checkbox"]').length) ) {
+			var trueCond = $(focused).is(':checkbox') || $(focused).find('input[type="checkbox"]').length || $(focused).hasClass('app-listing__row');
+
+			if ((el.keyCode === 32 || el.keyCode === 13) && trueCond ) {
 				$(focused).click();
 			}
 	});
@@ -667,6 +676,7 @@ $(document).ready(function(){
 			// reveal the modal
 			if ($(this).hasClass('modal-wrap')) {
 				$(this).fadeIn('slow');
+				$(this).find('.m-close').focus();
 			} else {
 				$(this).removeClass('app-modal---closed')
 					.addClass('app-modal---open');

@@ -139,7 +139,7 @@
                     }
                     $i++;
                     ?>
-					<tr<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+					<tr<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?> tabindex="0">
 						<?php if ($reorder): ?>
 							<td class="reorder-col"><span class="ico reorder fas fa-bars"></span></td>
 						<?php endif ?>
