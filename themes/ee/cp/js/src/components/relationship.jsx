@@ -350,7 +350,7 @@ class Relationship extends React.Component {
                                     <div className="dropdown">
                                         {props.channels.map((channel) => {
                                             return (
-                                                <a href className="dropdown__link" onClick={() => this.openPublishFormForChannel(channel)}>{channel.title}</a>
+                                                <a href className="dropdown__link" onClick={() => this.openPublishFormForChannel(channel)} onKeyPress={() => this.openPublishFormForChannel(channel)} tabIndex="0">{channel.title}</a>
                                             )
                                         })}
                                     </div>

@@ -8919,6 +8919,9 @@ ul ul, ul ol, ol ul, ol ol {
 .range-slider > input:active {
   --thumb-color: inherit;
 }
+.range-slider > input:focus + output {
+  outline: 1px dashed var(--ee-button-primary-bg);
+}
 
 label {
   display: inline-block;
@@ -14530,6 +14533,9 @@ input[type=button].btn-block {
 .ee-main-header .main-header__account .main-header__account-icon img {
   width: 42px;
   height: 42px;
+}
+.ee-main-header .main-header__account .main-header__account-icon:focus {
+  outline: 1px dashed var(--ee-link-hover);
 }
 
 .file-card-wrapper {

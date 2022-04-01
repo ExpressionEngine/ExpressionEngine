@@ -18,6 +18,32 @@ $(document).ready(function(){
 		}
 	});
 
+	$(document).on('keyup', function(el){
+			var focused = document.activeElement;
+
+			if ($(focused).attr('rel') == 'date-picker') {
+				$('.date-picker-wrap .date-picker-prev').focus();
+			}
+			
+			$('#jumpEntry1').focusout(function(){
+				$('#jump-menu').hide();
+			});
+
+			if( !$(focused).parents('.main-header__account').length ) {
+				$('.main-header__account .main-nav__account-icon').removeClass('dropdown-open');
+				$('.main-header__account .account-menu').removeClass('dropdown--open');
+			}
+
+			if($('.live-preview-container').css('display') == 'block') {
+				$('.js-close-live-preview').focus();
+			}
+
+			if ((el.keyCode === 32 || el.keyCode === 13) && ($(focused).is(':checkbox') || $(focused).find('input[type="checkbox"]').length) ) {
+				$(focused).click();
+			}
+	});
+
+
 	// =============================================
 	// For backwards compatibility: adding $.browser
 	// from: https://github.com/jquery/jquery-migrate

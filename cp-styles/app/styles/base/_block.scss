@@ -181,5 +181,9 @@ ul, ol  {
 		&:active {
 			--thumb-color: inherit;
 		}
+
+		&:focus + output {
+			outline: 1px dashed var(--ee-button-primary-bg);
+		}
 	}
 }

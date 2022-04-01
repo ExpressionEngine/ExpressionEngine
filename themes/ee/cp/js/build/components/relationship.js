@@ -449,7 +449,11 @@ function (_React$Component) {
           className: "dropdown__link",
           onClick: function onClick() {
             return _this5.openPublishFormForChannel(channel);
-          }
+          },
+          onKeyPress: function onKeyPress() {
+            return _this5.openPublishFormForChannel(channel);
+          },
+          tabIndex: "0"
         }, channel.title);
       })))))), React.createElement("div", {
         className: "dropdown__scroll dropdown__scroll--small"
