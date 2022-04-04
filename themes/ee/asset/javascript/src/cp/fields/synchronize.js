@@ -71,7 +71,7 @@ EE.fieldManager.sync = function() {
 
 	// We're done!
 	if(EE.fieldManager.entriesTodo.length === 0) {
-		EE.fieldManager.finish_sync();
+		return EE.fieldManager.finish_sync();
 	}
 
 	var data = EE.fieldManager.entriesTodo.pop();
