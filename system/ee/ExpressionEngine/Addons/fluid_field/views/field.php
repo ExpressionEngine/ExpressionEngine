@@ -40,7 +40,7 @@
 
       <div class="field-instruct">
 				<label>
-					<i class="icon--reorder reorder"></i>
+					<i class="icon--reorder reorder" tabindex="0"></i>
 					<?=$field->getItem('field_label')?> <?php if ($show_field_type): ?><span class="faded">(<?=$field->getType()?>)</span><?php endif ?>
 				</label>
 				<em><?=$field->getItem('field_instructions')?></em>

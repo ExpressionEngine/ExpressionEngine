@@ -62,6 +62,23 @@ $(document).ready(function(){
 				});
 			}
 
+			if($(focused).hasClass('reorder')){
+				$(focused).bind('keydown', function(event) {
+					var currentItem = $(this).parents('.fluid__item--reorderable');
+					var prevItem = currentItem.prev().not('.hidden');
+					var nextItem = currentItem.next().not('.hidden');
+
+					if(event.which == 38 && prevItem.length) {
+							currentItem.insertBefore(prevItem);
+					}
+					if(event.which == 40 && nextItem.length) {
+						currentItem.insertAfter(nextItem);
+					}
+					
+					$(this).focus();
+				});
+			}
+
 			var trueCond = $(focused).is(':checkbox') || $(focused).find('input[type="checkbox"]').length || $(focused).hasClass('app-listing__row');
 
 			if ((el.keyCode === 32 || el.keyCode === 13) && trueCond ) {
