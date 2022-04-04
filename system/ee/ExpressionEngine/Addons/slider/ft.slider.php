@@ -52,10 +52,10 @@ class Slider_ft extends Text_ft
 
         $field = array(
             'name' => $this->field_name,
-            'value' => !is_null($data) ? $data : $this->settings['field_min_value'],
-            'min' => (isset($this->settings['field_min_value']) && $this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0,
-            'max' => (isset($this->settings['field_max_value']) && $this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100,
-            'step' => (isset($this->settings['field_step']) && $this->settings['field_step'] != '') ? $this->settings['field_step'] : 1,
+            'value' => is_numeric($data) ? $data : $this->settings['field_min_value'],
+            'min' => (isset($this->settings['field_min_value']) && is_numeric($this->settings['field_min_value'])) ? $this->settings['field_min_value'] : 0,
+            'max' => (isset($this->settings['field_max_value']) && is_numeric($this->settings['field_max_value'])) ? $this->settings['field_max_value'] : 100,
+            'step' => (isset($this->settings['field_step']) && is_numeric($this->settings['field_step'])) ? $this->settings['field_step'] : 1,
             'suffix' => isset($this->settings['field_suffix']) ? $this->settings['field_suffix'] : '',
             'prefix' => isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : ''
         );
@@ -102,12 +102,12 @@ class Slider_ft extends Text_ft
 
     public function replace_min($data, $params = '', $tagdata = '')
     {
-        return ($this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0;
+        return (is_numeric($this->settings['field_min_value'])) ? $this->settings['field_min_value'] : 0;
     }
 
     public function replace_max($data, $params = '', $tagdata = '')
     {
-        return ($this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100;
+        return (is_numeric($this->settings['field_max_value'])) ? $this->settings['field_max_value'] : 100;
     }
 
     public function replace_prefix($data, $params = '', $tagdata = '')

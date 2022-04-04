@@ -372,6 +372,7 @@ class Fields extends AbstractFieldsController
             $field = $this->setWithPost($field);
             $this->validationResult = $field->validate();
 
+            $conditionSets = [];
             if (ee('Request')->post('field_is_conditional') == 'y') {
                 list($conditionSets, $conditions) = $this->prepareFieldConditions();
             }
@@ -397,9 +398,14 @@ class Fields extends AbstractFieldsController
                             $assignedConditionIds[] = $condition->getId();
                         }
                         $conditionSet->FieldConditions->filter('condition_id', 'NOT IN', $assignedConditionIds)->delete();
-                        $assignedConditionalSetIds[] = $conditionSet->getId();
+                        $assignedConditionalSetIds[$i] = $conditionSet->getId();
                     }
                     $field->FieldConditionSets->filter('condition_set_id', 'NOT IN', $assignedConditionalSetIds)->delete();
+                    foreach (array_keys($conditionSets) as $i) {
+                        if (!isset($assignedConditionalSetIds[$i])) {
+                            unset($conditionSets[$i]);
+                        }
+                    }
                 } else {
                     $field->FieldConditionSets->delete();
                 }
@@ -662,13 +668,13 @@ class Fields extends AbstractFieldsController
         }
 
         foreach (array_keys($conditionSetsAfter) as $key) {
-            if (!$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
+            if (!isset($conditionSetsBefore[$key]) || !$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
                 return false;
             }
         }
 
         foreach (array_keys($conditionSetsBefore) as $key) {
-            if (!$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
+            if (!isset($conditionSetsAfter[$key]) || !$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
                 return false;
             }
         }

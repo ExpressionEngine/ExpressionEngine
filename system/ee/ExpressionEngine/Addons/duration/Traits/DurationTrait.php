@@ -56,6 +56,9 @@ trait DurationTrait
      */
     private function applyMultiplier($number, $units = 'minutes')
     {
+        if (!is_numeric($number)) {
+            return 0;
+        }
         switch ($units) {
             case 'hours':
                 $multiplier = 3600;
