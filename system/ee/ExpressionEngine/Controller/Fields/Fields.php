@@ -398,9 +398,14 @@ class Fields extends AbstractFieldsController
                             $assignedConditionIds[] = $condition->getId();
                         }
                         $conditionSet->FieldConditions->filter('condition_id', 'NOT IN', $assignedConditionIds)->delete();
-                        $assignedConditionalSetIds[] = $conditionSet->getId();
+                        $assignedConditionalSetIds[$i] = $conditionSet->getId();
                     }
                     $field->FieldConditionSets->filter('condition_set_id', 'NOT IN', $assignedConditionalSetIds)->delete();
+                    foreach (array_keys($conditionSets) as $i) {
+                        if (!isset($assignedConditionalSetIds[$i])) {
+                            unset($conditionSets[$i]);
+                        }
+                    }
                 } else {
                     $field->FieldConditionSets->delete();
                 }
