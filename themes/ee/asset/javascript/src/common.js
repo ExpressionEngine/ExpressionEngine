@@ -45,16 +45,17 @@ $(document).ready(function(){
 				$('.js-close-live-preview').focus();
 			}
 
+			// move grid rows by keyboard
 			if($(focused).hasClass('js-grid-reorder-handle')){
 				$(focused).bind('keydown', function(event) {
 					var currentItem = $(this).parents('tr');
 					var prevItem = currentItem.prev().not('.hidden');
 					var nextItem = currentItem.next().not('.hidden');
 
-					if(event.which == 38 && prevItem.length) {
+					if(event.which == 38 && prevItem.length) { //event.which == 38 - move up
 							currentItem.insertBefore(prevItem);
 					}
-					if(event.which == 40 && nextItem.length) {
+					if(event.which == 40 && nextItem.length) { //event.which == 40 - move down
 						currentItem.insertAfter(nextItem);
 					}
 					
@@ -62,6 +63,7 @@ $(document).ready(function(){
 				});
 			}
 
+			// move fluid rows by keyboard
 			if($(focused).hasClass('reorder')){
 				$(focused).bind('keydown', function(event) {
 					var currentItem = $(this).parents('.fluid__item--reorderable');
