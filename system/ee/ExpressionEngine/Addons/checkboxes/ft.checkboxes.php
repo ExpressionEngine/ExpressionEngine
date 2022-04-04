@@ -74,7 +74,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
             $unknown = array_filter(array_diff($selected, array_keys($field_options)));
 
             if (count($unknown) > 0) {
-                return 'Invalid Selection';
+                return ee()->lang->line('invalid_selection');
             }
         }
 

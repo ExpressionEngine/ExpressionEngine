@@ -56,10 +56,10 @@ class Multi_select_ft extends OptionFieldtype
                 $selected = array($selected);
             }
 
-            $unknown = array_diff($selected, array_keys($field_options));
+            $unknown = array_filter(array_diff($selected, array_keys($field_options)));
 
             if (count($unknown) > 0) {
-                return 'Invalid Selection';
+                return ee()->lang->line('invalid_selection');
             }
         }
 
