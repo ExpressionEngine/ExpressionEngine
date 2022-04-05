@@ -8916,6 +8916,12 @@ ul ul, ul ol, ol ul, ol ol {
   margin-top: 50px;
   margin-bottom: 20px;
 }
+.range-slider:before {
+  content: attr(data-min);
+}
+.range-slider:after {
+  content: attr(data-max);
+}
 .range-slider > input + output {
   padding: 2px 11px;
 }
