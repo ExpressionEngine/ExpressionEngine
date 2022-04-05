@@ -1136,4 +1136,18 @@ $(document).ready(function(){
                 });
             }
         }
+
+        if ($('.range-slider').length) {
+
+        	$('.range-slider').each(function() {
+	        	var minValue = $(this).find('input[type="range"]').attr('min');
+	        	var maxValue = $(this).find('input[type="range"]').attr('max');
+
+	        	$(this).attr('data-min', minValue);
+	        	$(this).attr('data-max', maxValue);
+
+	        	console.log('minValue', minValue);
+	        	console.log('maxValue', maxValue);
+        	});
+        }
 }); // close (document).ready
