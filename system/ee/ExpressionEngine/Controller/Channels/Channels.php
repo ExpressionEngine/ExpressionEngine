@@ -675,12 +675,27 @@ class Channels extends AbstractChannelsController
      */
     public function renderFieldsField($channel = null)
     {
+        $selected = ee('Request')->post('custom_fields') ?: [];
+        if ($channel) {
+            $selected = $channel->CustomFields->pluck('field_id');
+        }
+
         $fields = ee('Model')->get('ChannelField')
-            ->fields('field_label', 'field_name')
+            ->fields('field_id', 'field_label', 'field_name')
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->order('field_label')
             ->all();
 
+        $selected_field_options = [];
+        foreach ($fields as $field) {
+            if (in_array($field->getId(), $selected)) {
+                $selected_field_options[] = [
+                    'label' => $field->field_label,
+                    'value' => $field->getId(),
+                    'instructions' => LD . $field->field_name . RD
+                ];
+            }
+        }
         $custom_field_options = $fields->map(function ($field) {
             return [
                 'label' => $field->field_label,
@@ -689,11 +704,7 @@ class Channels extends AbstractChannelsController
             ];
         });
 
-        $selected = ee('Request')->post('custom_fields') ?: [];
-
-        if ($channel) {
-            $selected = $channel->CustomFields->pluck('field_id');
-        }
+        $custom_field_options = array_merge($selected_field_options, $custom_field_options);
 
         $no_results = [
             'text' => sprintf(lang('no_found'), lang('fields'))
