@@ -1145,9 +1145,6 @@ $(document).ready(function(){
 
 	        	$(this).attr('data-min', minValue);
 	        	$(this).attr('data-max', maxValue);
-
-	        	console.log('minValue', minValue);
-	        	console.log('maxValue', maxValue);
         	});
         }
 }); // close (document).ready
