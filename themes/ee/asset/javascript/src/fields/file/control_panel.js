@@ -47,6 +47,8 @@
 
 			// Hide the "missing file" error
 			input.siblings('em').remove();
+
+			name.parent().find('.file-field-filepicker').focus();
 		},
 
 		setup: function(container) {
