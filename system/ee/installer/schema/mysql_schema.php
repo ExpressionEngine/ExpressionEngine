@@ -344,7 +344,7 @@ class EE_Schema
 			show_sidebar char(1) NOT NULL default 'n',
 			pmember_id int(10) NOT NULL default '0',
 			cp_homepage varchar(20) NULL DEFAULT NULL,
-			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
+			cp_homepage_channel text NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
 			dismissed_pro_banner char(1) NOT NULL DEFAULT 'n',
 			enable_mfa char(1) NOT NULL default 'n',
