@@ -386,21 +386,31 @@ class Fields extends AbstractFieldsController
                 // Build an array representing our conditions that we can compare
                 $conditionalsBefore = $this->getConditionArray($field->FieldConditionSets);
 
+                // If request is conditional we need to save those conditionals and sets
                 if (ee('Request')->post('field_is_conditional') == 'y') {
                     $assignedConditionalSetIds = [];
+                    // Loop through all conditional sets, created from POST data
                     foreach ($conditionSets as $i => $conditionSet) {
+                        // Associate the condition set with the field
                         $assignedConditionIds = [];
                         $conditionSet->ChannelFields->getAssociation()->set($field);
                         $conditionSet->save();
+
+                        // Loop through conditions and attach them to the condition sets
                         foreach ($conditions[$i] as $condition) {
                             $condition->condition_set_id = $conditionSet->getId();
                             $condition->save();
                             $assignedConditionIds[] = $condition->getId();
                         }
+
+                        // If a condition was removed lets delete it in the DB
                         $conditionSet->FieldConditions->filter('condition_id', 'NOT IN', $assignedConditionIds)->delete();
                         $assignedConditionalSetIds[$i] = $conditionSet->getId();
                     }
+                    // If a condition set was removed, lets delete it
                     $field->FieldConditionSets->filter('condition_set_id', 'NOT IN', $assignedConditionalSetIds)->delete();
+
+                    // Remove condition sets that were removed
                     foreach (array_keys($conditionSets) as $i) {
                         if (!isset($assignedConditionalSetIds[$i])) {
                             unset($conditionSets[$i]);
@@ -410,8 +420,11 @@ class Fields extends AbstractFieldsController
                     $field->FieldConditionSets->delete();
                 }
 
+                // After saving all that, lets get the field again
+                $fieldAfterSave = ee('Model')->get('ChannelField', $id)->first();
+
                 // Build an array representing our conditions that we can compare
-                $conditionalsAfter = $this->getConditionArray($conditionSets);
+                $conditionalsAfter = $this->getConditionArray($fieldAfterSave->FieldConditionSets);
 
                 $conditionalEntriesRequireSync = ! $this->conditionsAreSame($conditionalsBefore, $conditionalsAfter);
 
