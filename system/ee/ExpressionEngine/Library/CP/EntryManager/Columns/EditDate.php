@@ -11,12 +11,12 @@
 namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
 /**
- * Expiration Date Column
+ * Edit Date Column
  */
-class ExpirationDate extends DateColumn
+class EditDate extends DateColumn
 {
     public function getTableColumnLabel()
     {
-        return 'expiration_date';
+        return 'edit_date';
     }
 }

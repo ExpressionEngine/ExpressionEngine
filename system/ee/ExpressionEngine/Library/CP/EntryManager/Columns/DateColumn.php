@@ -10,13 +10,23 @@
 
 namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
+use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
+
 /**
  * Entry Date Column
  */
-class EntryDate extends DateColumn
+abstract class DateColumn extends Column
 {
-    public function getTableColumnLabel()
+    public function getTableColumnConfig()
     {
-        return 'column_entry_date';
+        return [
+            'encode' => false
+        ];
+    }
+
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $data = $entry->{$this->identifier};
+        return $data ? ee()->localize->human_time(is_int($data) ? $data : $data->format('U')) : '';
     }
 }
