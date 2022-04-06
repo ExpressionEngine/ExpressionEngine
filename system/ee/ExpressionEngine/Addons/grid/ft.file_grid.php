@@ -169,7 +169,7 @@ class file_grid_ft extends Grid_ft
                 'col_name' => 'file',
                 'col_instructions' => '',
                 'col_required' => 'n',
-                'col_search' => 'n',
+                'col_search' => 'y',
                 'col_width' => '',
                 'col_settings' => [
                     'field_content_type' => 'image',
