@@ -135,6 +135,10 @@
 		color: color(accent);
 		border-bottom: 2px solid color(accent);
 		margin-bottom: -2px;
+
+    .tab-bar__tab-notification.tab-notification-generic {
+      color: color(accent);
+    }
 	}
 
 	&.invalid, &.invalid:hover {

@@ -197,7 +197,7 @@ html.color-theme-in-transition *:after {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #5D63F1;
   --ee-notification: #fa5252;
-  --ee-notification-generic: #eaebfd;
+  --ee-notification-generic: #05073b;
   --ee-text-primary: #dedede;
   --ee-text-normal: #dedede;
   --ee-text-secondary: #6b6b6b;
@@ -511,7 +511,7 @@ body[data-theme=light] .inverted-theme {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #5D63F1;
   --ee-notification: #fa5252;
-  --ee-notification-generic: #eaebfd;
+  --ee-notification-generic: #05073b;
   --ee-text-primary: #dedede;
   --ee-text-normal: #dedede;
   --ee-text-secondary: #6b6b6b;
@@ -15111,6 +15111,9 @@ input[type=button].btn-block {
   border-bottom: 2px solid var(--ee-accent);
   margin-bottom: -2px;
 }
+.tab-bar__tab.active .tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-accent);
+}
 .tab-bar__tab.invalid, .tab-bar__tab.invalid:hover {
   color: var(--ee-error);
   border-color: var(--ee-error);
@@ -18264,6 +18267,9 @@ body[data-theme=dark] .select-popup {
   color: var(--ee-accent);
   border-bottom: 2px solid var(--ee-accent);
   margin-bottom: -2px;
+}
+.ee-debugger .tab-bar__tab.active .tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-accent);
 }
 .ee-debugger .tab-bar__tab.invalid, .ee-debugger .tab-bar__tab.invalid:hover {
   color: var(--ee-error);

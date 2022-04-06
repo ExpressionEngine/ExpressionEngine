@@ -74,7 +74,7 @@ $dark-theme: (
 	danger: $brand-danger,
 	keyboard-focus: $brand-primary,
 	notification: #fa5252,
-  notification-generic: lighten($brand-primary, 30%),
+  notification-generic: darken($brand-primary, 53%),
 
   // Text
   text-primary: $text-primary,
