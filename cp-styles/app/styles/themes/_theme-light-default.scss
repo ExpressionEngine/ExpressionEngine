@@ -73,6 +73,7 @@ $light-theme: (
 	danger: $brand-danger,
 	keyboard-focus: lighten($brand-primary, 20%),
 	notification: #fa5252,
+  notification-generic: lighten($brand-primary, 30%),
 
   // Text
   text-primary: $text-primary,

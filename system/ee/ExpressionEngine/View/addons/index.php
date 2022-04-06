@@ -7,7 +7,7 @@
 
 <div class="tab-bar">
 	<div class="tab-bar__tabs">
-		<button type="button" class="tab-bar__tab active js-tab-button" rel="t-0"><?=lang('installed')?></button>
+		<button type="button" class="tab-bar__tab active js-tab-button" rel="t-0"><?=lang('installed')?> <span class="tab-bar__tab-notification tab-notification-generic">12</span></button>
 		<button type="button" class="tab-bar__tab js-tab-button" rel="t-2">
 			<?=lang('updates')?>
 

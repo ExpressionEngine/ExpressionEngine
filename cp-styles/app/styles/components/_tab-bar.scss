@@ -150,20 +150,26 @@
 }
 
 .tab-bar__tab-notification {
-	$bubble-size: 16px;
+	$bubble-size: 22px;
 
 	position: relative;
 	display: inline-block;
-	width: $bubble-size;
-	height: $bubble-size;
-	line-height: $bubble-size;
+	min-width: $bubble-size;
+	min-height: $bubble-size;
+	line-height: 16px;
 	top: -2px;
 
-	border-radius: 50%;
+	border-radius: $border-radius-full;
 	text-align: center;
-	font-size: 11px;
+	font-size: 12px;
 	color: #fff;
 	background: color(notification);
+  padding: 3px 5px;
+
+  &.tab-notification-generic {
+    color: color(text-secondary);
+    background-color: color(notification-generic);
+  }
 }
 
 

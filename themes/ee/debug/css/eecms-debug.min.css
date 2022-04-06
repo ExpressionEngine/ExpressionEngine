@@ -47,6 +47,7 @@ html.color-theme-in-transition *:after {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #bbbdf9;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #0d0d19;
   --ee-text-normal: #0d0d19;
   --ee-text-secondary: #8f90b0;
@@ -203,6 +204,7 @@ html.color-theme-in-transition *:after {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #5D63F1;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #dedede;
   --ee-text-normal: #dedede;
   --ee-text-secondary: #6b6b6b;
@@ -359,6 +361,7 @@ body[data-theme=dark] .inverted-theme {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #bbbdf9;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #0d0d19;
   --ee-text-normal: #0d0d19;
   --ee-text-secondary: #8f90b0;
@@ -515,6 +518,7 @@ body[data-theme=light] .inverted-theme {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #5D63F1;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #dedede;
   --ee-text-normal: #dedede;
   --ee-text-secondary: #6b6b6b;
@@ -6873,15 +6877,20 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
 .ee-debugger .tab-bar__tab-notification {
   position: relative;
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  min-width: 22px;
+  min-height: 22px;
   line-height: 16px;
   top: -2px;
-  border-radius: 50%;
+  border-radius: 1000px;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   color: #fff;
   background: var(--ee-notification);
+  padding: 3px 5px;
+}
+.ee-debugger .tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-text-secondary);
+  background-color: var(--ee-notification-generic);
 }
 .ee-debugger .tab {
   display: none;
