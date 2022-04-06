@@ -120,7 +120,8 @@ class Filemanager
         //! Reformatting filenames according to seo rules
         $filename = $this->latinize($filename);
         $filename = strtolower($filename);
-        $filename = preg_replace('/(\.|_|-)+/', '-', $filename);
+        $filename = preg_replace("/[^a-z0-9]/", "-", $filename);
+        $filename = preg_replace('/-+/', '-', $filename);
         $filename = trim($filename, '-');
         $ext = strtolower($ext);
 
