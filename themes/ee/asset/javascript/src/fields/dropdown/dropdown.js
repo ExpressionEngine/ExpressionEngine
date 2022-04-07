@@ -135,7 +135,7 @@ function (_React$Component) {
         "data-group-toggle": this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'
       })), selected && this.props.name.includes('[condition_field_id]') && React.createElement("span", {
         className: "tooltiptext"
-      }, "".concat(selected.label.replace(/<.*/g, ""), " {").concat(selected.label.match(/(?<=\{).+?(?=\})/g), "}"))), React.createElement("div", {
+      }, "".concat(selected.label.replace(/<.*/g, ""), " ").concat(selected.label.match(/(?:\{).+?(?:\})/g)))), React.createElement("div", {
         className: "select__dropdown dropdown"
       }, this.props.initialCount > this.props.tooMany && React.createElement("div", {
         className: "select__dropdown-search"

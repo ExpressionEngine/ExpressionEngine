@@ -164,7 +164,15 @@ ul, ol  {
 
 .range-slider {
 	margin-top: 50px;
-  margin-bottom: 20px;
+	margin-bottom: 20px;
+
+	&:before {
+		content: attr(data-min);
+	}
+
+	&:after {
+		content: attr(data-max);
+	}
 
 	& > input {
 

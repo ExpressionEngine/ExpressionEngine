@@ -1088,7 +1088,9 @@ $(document).ready(function(){
 				if (mutation.addedNodes && mutation.addedNodes.length > 0) {
 
 					var hasClass = [].some.call(mutation.addedNodes, function(el) {
-						return el.classList.contains('app-notice')
+						if(el.classList) {
+							return el.classList.contains('app-notice');
+						}
 					})
 
 					if (hasClass) {
@@ -1133,5 +1135,16 @@ $(document).ready(function(){
                     })
                 });
             }
+        }
+
+        if ($('.range-slider').length) {
+
+        	$('.range-slider').each(function() {
+	        	var minValue = $(this).find('input[type="range"]').attr('min');
+	        	var maxValue = $(this).find('input[type="range"]').attr('max');
+
+	        	$(this).attr('data-min', minValue);
+	        	$(this).attr('data-max', maxValue);
+        	});
         }
 }); // close (document).ready
