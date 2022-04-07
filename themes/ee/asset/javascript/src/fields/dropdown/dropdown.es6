@@ -42,12 +42,6 @@ class Dropdown extends React.Component {
       open: false
     })
 
-    if (selected.value == 'notes') {
-      EE.cp.hide_fields_notes();
-    } else {
-      EE.cp.show_fields_notes();
-    }
-
     if (this.props.groupToggle) {
       EE.cp.form_group_toggle(this.input)
     }
