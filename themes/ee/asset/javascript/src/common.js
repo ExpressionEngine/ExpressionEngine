@@ -1147,11 +1147,4 @@ $(document).ready(function(){
 	        	$(this).attr('data-max', maxValue);
         	});
         }
-
-    EE.cp.show_fields_notes = function() {
-			$('#fieldset-field_instructions').show();
-			$('#fieldset-field_required').show();
-			$('#fieldset-enable_frontedit').show();
-			$('#fieldset-enable_frontedit').prev('h2').show();
-		}
 }); // close (document).ready

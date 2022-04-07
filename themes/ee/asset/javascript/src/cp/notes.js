@@ -9,16 +9,20 @@
 
 (function($) {
 	$(document).ready(function() {
-		EE.cp.hide_fields_notes = function() {
-			$('#fieldset-field_instructions').hide();
-			$('#fieldset-field_required').hide();
-			$('#fieldset-enable_frontedit').hide();
-			$('#fieldset-enable_frontedit').prev('h2').hide();
-		}
-
-		if ($('#fieldset-field_type input[name=field_type]').length && $('#fieldset-field_type input[name=field_type]').val() == 'notes') {
-			EE.cp.hide_fields_notes()
-		}
+		$("input[name='field_type']").change(function() {
+			if ($(this).val() == "notes") {
+				$('#fieldset-field_instructions').hide();
+				$('#fieldset-field_required').hide();
+				$('#fieldset-enable_frontedit').hide();
+				$('#fieldset-enable_frontedit').prev('h2').hide();
+			} else {
+				$('#fieldset-field_instructions').show();
+				$('#fieldset-field_required').show();
+				$('#fieldset-enable_frontedit').show();
+				$('#fieldset-enable_frontedit').prev('h2').show();
+			}
+		});
+		$("input[name='field_type']").trigger("change");
 	});
 
 })(jQuery);
