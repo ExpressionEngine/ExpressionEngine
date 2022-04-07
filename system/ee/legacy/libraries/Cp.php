@@ -407,7 +407,7 @@ class Cp
             $notices[] = sprintf(
                 lang('missing_encryption_key'),
                 'session_crypt_key',
-                DOC_URL . 'troubleshooting/error_messages/missing_encryption_keys.html'
+                DOC_URL . 'troubleshooting/error-messages.html#missing-encryption-keys'
             );
         }
 
@@ -415,7 +415,7 @@ class Cp
             $notices[] = sprintf(
                 lang('missing_encryption_key'),
                 'encryption_key',
-                DOC_URL . 'troubleshooting/error_messages/missing_encryption_keys.html'
+                DOC_URL . 'troubleshooting/error-messages.html#missing-encryption-keys'
             );
         }
 
@@ -527,7 +527,7 @@ class Cp
                 ->withTitle(lang('cp_message_warn'))
                 ->addToBody(sprintf(
                     lang('new_version_error'),
-                    ee()->cp->masked_url(DOC_URL . 'troubleshooting/error_messages/unexpected_error_occurred_attempting_to_download_the_current_expressionengine_version_number.html')
+                    ee()->cp->masked_url(DOC_URL . 'troubleshooting/error-messages.html#cannot-fetch-current-expressionengine-version')
                 ))
                 ->now();
         }
