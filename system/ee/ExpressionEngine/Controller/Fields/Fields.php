@@ -522,6 +522,7 @@ class Fields extends AbstractFieldsController
         $channel_id = (int) ee()->input->post('channel_id');
         $limit = (int) ee()->input->post('limit');
         $offset = (int) ee()->input->post('offset');
+        $status = ee()->input->post('status');
 
         // Get all channel entries with post data
         $entries = ee('Model')->get('ChannelEntry')
@@ -537,6 +538,15 @@ class Fields extends AbstractFieldsController
                 $entry->evaluateConditionalFields();
                 $entry->save();
             }
+        }
+
+        // If the sync was successful, show success banner
+        if ($status && $status === 'complete') {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asSuccess()
+                ->withTitle(lang('field_conditions_sync_success'))
+                ->addToBody(lang('field_conditions_sync_success_desc'))
+                ->defer();
         }
 
         return json_encode([
