@@ -362,7 +362,7 @@ $lang = array(
 
     'make_conditional' => 'Make conditional?',
 
-    'make_conditional_desc' => 'Only display this field when conditions of other field(s) are met',
+    'make_conditional_desc' => 'Only display this field when either of sets of conditions of other field(s) are met',
 
     'is_conditional' => 'Conditionals',
 

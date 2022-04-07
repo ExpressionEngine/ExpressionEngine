@@ -92,11 +92,11 @@ class Evaluator
         }
 
         foreach ($entity->getConditionSets() as $set) {
-            if (!$this->evaluateConditionSet($set)) {
-                return false;
+            if ($this->evaluateConditionSet($set)) {
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 }
