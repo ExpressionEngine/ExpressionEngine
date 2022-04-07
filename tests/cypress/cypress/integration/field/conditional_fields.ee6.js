@@ -367,8 +367,8 @@ context('Conditional Fields', () => {
             cy.get('.dropdown--open .select__dropdown-item').contains('Extended text').click();
 
             cy.get('.condition-rule-operator-wrap:visible .select__button').click();
-            cy.get('.dropdown--open .select__dropdown-item').contains('is not').click();
-            cy.get('.condition-rule-value-wrap:visible input').type('hide');
+            cy.get('.dropdown--open .select__dropdown-item').contains('contains').click();
+            cy.get('.condition-rule-value-wrap:visible input').type('first');
 
             // Add a new set
             cy.get('#fieldset-condition_fields .add-set:visible:eq(0)').click();
@@ -377,8 +377,8 @@ context('Conditional Fields', () => {
             cy.get('#new_conditionset_block_2 .dropdown--open .select__dropdown-item').contains('Extended text').click();
 
             cy.get('#new_conditionset_block_2 .condition-rule-operator-wrap:visible .select__button').click();
-            cy.get('#new_conditionset_block_2 .dropdown--open .select__dropdown-item').contains('is').click();
-            cy.get('#new_conditionset_block_2 .condition-rule-value-wrap:visible input').type('shown');
+            cy.get('#new_conditionset_block_2 .dropdown--open .select__dropdown-item').contains('contains').click();
+            cy.get('#new_conditionset_block_2 .condition-rule-value-wrap:visible input').type('second');
 
 
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
@@ -393,11 +393,11 @@ context('Conditional Fields', () => {
             cy.get('textarea[name="field_id_1"]').should('not.be.visible') //initially hidden until condition matches
             cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
             cy.intercept('**/publish/**').as('validation')
-            cy.get('textarea[name="field_id_2"]').type('shown').blur();
+            cy.get('textarea[name="field_id_2"]').type('first text').blur();
 
             cy.wait('@validation')
             cy.get('textarea[name="field_id_1"]').should('be.visible')
-            cy.get('textarea[name="field_id_1"]').type('some text');
+            cy.get('textarea[name="field_id_1"]').type('some content');
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             cy.log('Assert field is shown on entry page after save');
@@ -406,14 +406,14 @@ context('Conditional Fields', () => {
 
                 cy.visit('index.php/fields/conditional/cf-multiple-conditions-test')
                 cy.hasNoErrors()
-                cy.get('.news_body').should('contain', 'some text')
+                cy.get('.news_body').should('contain', 'some content')
                 cy.get('.if_news_body').should('contain', 'if news_body')
 
                 // Edit entry to not conditionally hide the field
                 cy.authVisit(edit_url);
                 cy.hasNoErrors()
                 cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
-                cy.get('textarea[name="field_id_2"]').clear().type('hide').blur()
+                cy.get('textarea[name="field_id_2"]').clear().type('another text').blur()
                 cy.wait('@validation')
                 cy.get('textarea[name="field_id_1"]').should('not.be.visible')
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
@@ -421,13 +421,22 @@ context('Conditional Fields', () => {
                 // Assert field is not shown in the template
                 cy.visit('index.php/fields/conditional/cf-multiple-conditions-test')
                 cy.hasNoErrors()
-                cy.get('.news_body').should('not.contain', 'some text')
+                cy.get('.news_body').should('not.contain', 'some content')
                 cy.get('.if_news_body').should('contain', 'if not news_body')
+
+                // Hide the field again using second set
+                cy.authVisit(edit_url);
+                cy.hasNoErrors()
+                cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
+                cy.get('textarea[name="field_id_2"]').clear().type('second text').blur()
+                cy.wait('@validation')
+                cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+                cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 //revert to show all fields
                 cy.authVisit(edit_url);
                 cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
-                cy.get('textarea[name="field_id_2"]').clear().type('hide')
+                cy.get('textarea[name="field_id_2"]').clear()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
             })
         })
