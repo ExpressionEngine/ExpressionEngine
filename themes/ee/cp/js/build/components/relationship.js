@@ -481,7 +481,6 @@ function (_React$Component) {
       $('.react-deferred-loading--relationship', context).each(function () {
         var $wrapper = $(this);
         var $button = $wrapper.find('.js-dropdown-toggle');
-
         $button.on('click', function () {
           $('div[data-relationship-react]', $wrapper).each(function () {
             var props = JSON.parse(window.atob($(this).data('relationshipReact')));
@@ -490,6 +489,15 @@ function (_React$Component) {
           });
         });
       });
+
+      if ($('.react-deferred-loading--relationship ul.list-group').length) {
+        var $wrapper = $('.react-deferred-loading--relationship ul.list-group').parents('.react-deferred-loading');
+        $($wrapper, context).each(function () {
+          var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+          props.name = $(this).data('inputValue');
+          ReactDOM.render(React.createElement(Relationship, props, null), this);
+        });
+      }
     }
   }]);
 

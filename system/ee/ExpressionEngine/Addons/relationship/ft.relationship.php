@@ -787,6 +787,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         // Boolstring conversion
         $save['allow_multiple'] = get_bool_from_string($save['allow_multiple']);
         $save['display_entry_id'] = get_bool_from_string($save['display_entry_id']);
+        $save['deferred_loading'] = get_bool_from_string($save['deferred_loading']);
 
         foreach ($save as $field => $value) {
             if (is_array($value) && count($value)) {

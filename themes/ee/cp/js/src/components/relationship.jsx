@@ -45,6 +45,16 @@ class Relationship extends React.Component {
                 });
             });
         });
+
+        if ( $('.react-deferred-loading--relationship ul.list-group').length ) {
+             var $wrapper = $('.react-deferred-loading--relationship ul.list-group').parents('.react-deferred-loading');
+             
+            $($wrapper, context).each(function () {
+                var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+                props.name = $(this).data('inputValue');
+                ReactDOM.render(React.createElement(Relationship, props, null), this);
+            });
+        }
     }
 
     componentDidMount() {
