@@ -64,7 +64,8 @@ class Colorpicker_ft extends EE_Fieldtype
 
         // Enforce that the color is one of the swatches or default color when in the swatches mode
         if ($this->get_setting('allowed_colors') == 'swatches') {
-            if (! in_array($value, $this->getSwatches())
+            $swatches = array_map('strtoupper', $this->getSwatches());
+            if (! in_array(strtoupper($value), $swatches)
                 and $this->get_setting('colorpicker_default_color') !== $value) {
                 ee()->lang->loadfile('fieldtypes');
 
