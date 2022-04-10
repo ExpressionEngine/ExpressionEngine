@@ -20,7 +20,7 @@ $component = [
     'rel_max' => $rel_max,
 ];
 
-$placeholder = '<label class="field-loading">' . lang('loading') .'<span></span></label>';
+$placeholder = '<label class="field-loading">' . lang('loading') . '<span></span></label>';
 
 if ($deferred) {
     echo '<div class="react-deferred-loading--relationship">';
