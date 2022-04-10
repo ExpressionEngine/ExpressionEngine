@@ -509,7 +509,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         }
 
         return ee('View')->make('relationship:publish')->render([
-            'deferred' =>  isset($this->settings['deferred_loading']) ? $this->settings['deferred_loading'] : false,
+            'deferred' => isset($this->settings['deferred_loading']) ? $this->settings['deferred_loading'] : false,
             'field_name' => $field_name,
             'choices' => $choices,
             'selected' => $selected,
