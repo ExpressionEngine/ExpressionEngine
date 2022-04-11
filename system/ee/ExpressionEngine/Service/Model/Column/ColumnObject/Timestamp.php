@@ -33,7 +33,24 @@ class Timestamp extends SerializedType
      */
     public static function serialize($data)
     {
-        return is_object($data) ? $data->getTimestamp() : intval($data);
+        if (is_object($data)) {
+        // is it a datatime object?
+            return $data->getTimestamp();
+        }
+        elseif (is_int($data)) {
+        // is it an integer value (i.e. unixtime value)?
+            return $data;
+        }
+        elseif (((string) (int) $data === $data)
+        // is it a timestamp as a string (see https://stackoverflow.com/a/2524761/6475781)?
+                && ($data <= PHP_INT_MAX)
+                && ($data >= ~PHP_INT_MAX)) {
+            return intval($data);
+        } else {
+        // is it a descriptive date string of some kind? 
+        // strtotime fails to 'false' so if string does not contain date info this will cause function to fail to false
+            return strtotime($data);
+        }
     }
 }
 

@@ -7,6 +7,7 @@
  * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
 require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
@@ -14,12 +15,22 @@ require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
  */
 class Multi_select_ft extends OptionFieldtype
 {
+
     public $info = array(
         'name' => 'Multi Select',
         'version' => '1.0.0'
     );
 
     public $has_array_data = true;
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'contains', 'notContains', 'isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'matches';
 
     /**
      * Constructor

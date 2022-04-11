@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '6.2.7'; // The version being installed
+    public $version = '6.3.0'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -735,7 +735,7 @@ class Wizard extends CI_Controller
             array(
                 'field' => 'username',
                 'label' => 'lang:username',
-                'rules' => 'required|valid_username'
+                'rules' => 'required|unique|validUsername'
             ),
             array(
                 'field' => 'install_default_theme',
@@ -745,12 +745,12 @@ class Wizard extends CI_Controller
             array(
                 'field' => 'password',
                 'label' => 'lang:password',
-                'rules' => 'required|valid_password[username]'
+                'rules' => 'required|validPassword|passwordMatchesSecurityPolicy'
             ),
             array(
                 'field' => 'email_address',
                 'label' => 'lang:email_address',
-                'rules' => 'required|valid_email'
+                'rules' => 'required|email|max_length[' . USERNAME_MAX_LENGTH . ']'
             ),
             array(
                 'field' => 'license_agreement',

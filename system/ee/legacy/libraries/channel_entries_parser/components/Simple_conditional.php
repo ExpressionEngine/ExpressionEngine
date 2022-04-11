@@ -62,6 +62,12 @@ class EE_Channel_simple_conditional_parser implements EE_Channel_parser_componen
             foreach ($val as $item) {
                 // Basic fields
 
+                //if the field is conditionally hidden, do not parse
+                if (isset($obj->channel()->hidden_fields[$data['entry_id']]) && isset($cfields[$data['site_id']][$item]) && in_array($cfields[$data['site_id']][$item], $obj->channel()->hidden_fields[$data['entry_id']])) {
+                    $tagdata = str_replace(LD . $prefix . $key . RD, '', $tagdata);
+                    continue;
+                }
+
                 if (isset($data[$item]) and $data[$item] != "") {
                     $tagdata = str_replace(LD . $prefix . $key . RD, $data[$item], $tagdata);
 

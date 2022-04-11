@@ -681,20 +681,24 @@ class EE_Javascript
      * Prepares and returns the HTML+JS for injecting variables into the EE
      * namespace.
      *
+     * @param  null|array A list of keys for global variables that should be included
      * @return string The HTML markup containing our JS.
      */
-    public function get_global()
+    public function get_global($keys = null)
     {
         $compiled = '';
+        $variables = (empty($keys)) ? $this->global_vars : array_intersect_key($this->global_vars, array_flip($keys));
+        $encodedVariables = json_encode($variables);
+
         if (REQ == 'CP') {
             $compiled = '
         document.documentElement.className += "js";';
         }
         $compiled .= '
         if (typeof EE == "undefined" || ! EE) {
-            var EE = ' . json_encode($this->global_vars) . ';
+            var EE = ' . $encodedVariables . ';
         } else {
-            EE = Object.assign(EE, ' . json_encode($this->global_vars) . ');
+            EE = Object.assign(EE, ' . $encodedVariables . ');
         }
 
         if (typeof console === "undefined" || ! console.log) {

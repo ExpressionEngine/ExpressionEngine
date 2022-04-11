@@ -9,7 +9,7 @@ context('Request', () => {
   before(function(){
     cy.task('db:seed')
     cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
-    cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
+	  cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' })
     cy.auth();
     addon_manager.load()
     addon_manager.get('first_party_addons').find('.add-on-card:contains("Request") a').click()

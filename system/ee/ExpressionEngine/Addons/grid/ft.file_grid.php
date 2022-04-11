@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
-require_once PATH_ADDONS . 'grid/ft.grid.php';
+ require_once PATH_ADDONS . 'grid/ft.grid.php';
 
 /**
  * File Grid Fieldtype
@@ -19,6 +19,8 @@ class file_grid_ft extends Grid_ft
     ];
 
     public $size = 'large';
+
+    public $supportedEvaluationRules = null;
 
     public $settings_form_field_name = 'file_grid';
 

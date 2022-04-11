@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Model\Template;
 
+use ExpressionEngine\Core\Request;
+use ExpressionEngine\Library\Resource\Request as ResourceRequest;
 use ExpressionEngine\Service\Model\FileSyncedModel;
 
 /**
@@ -272,7 +274,7 @@ class Template extends FileSyncedModel
      */
     public function validateTemplateName($key, $value, $params, $rule)
     {
-        $reserved_names = array('act', 'css');
+        $reserved_names = array('act', 'css', 'js');
 
         if (in_array($value, $reserved_names)) {
             return 'reserved_name';
@@ -292,6 +294,10 @@ class Template extends FileSyncedModel
     {
         parent::onAfterSave();
         ee()->functions->clear_caching('all');
+
+        if (in_array($this->template_type, ResourceRequest::TYPES)) {
+            ee('Resource')->clear_cache($this->getPath());
+        }
     }
 
     /**
