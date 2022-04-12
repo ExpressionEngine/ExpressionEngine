@@ -13,7 +13,7 @@ context('Categories', () => {
         cy.task('filesystem:delete', '../../system/user/config/stopwords.php')
 
         //copy templates
-		cy.task('filesystem:copy', { from: 'support/templates/default_site/*', to: '../../system/user/templates/default_site/' })
+		cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' })
 
         cy.authVisit('admin.php?/cp/design')
     })

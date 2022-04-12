@@ -203,7 +203,7 @@ class Communicate extends Utilities
                     ->addToBody(lang('roles_send_warning'))
                     ->cannotClose()
                     ->render();
-            if (ee()->config->item('ignore_member_stats') == 'y') {
+            if (bool_config_item('ignore_member_stats')) {
                 ee()->lang->load('members');
                 $vars['sections']['recipient_options'][] = ee('CP/Alert')->makeInline('roles-count-warn')
                     ->asWarning()

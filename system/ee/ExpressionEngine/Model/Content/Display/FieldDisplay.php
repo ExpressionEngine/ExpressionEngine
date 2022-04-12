@@ -107,6 +107,11 @@ class FieldDisplay
         return (bool) $this->getSetting('field_hide_title');
     }
 
+    public function publishLayoutCollapseIsHidden()
+    {
+        return (bool) $this->getSetting('field_hide_publish_layout_collapse');
+    }
+
     public function hide()
     {
         $this->visible = false;

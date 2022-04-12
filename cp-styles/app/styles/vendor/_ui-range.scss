@@ -3,9 +3,9 @@
 
   --value-offset-y: var(--ticks-gap);
   --value-active-color: var(--ee-button-primary-color);
-  --value-background: transparent;
+  --value-background: var(--ee-slider-value-bg);
   --value-background-hover: var(--primary-color);
-  --value-font: 700 14px/2 Roboto;
+  --value-font: 500 14px/2 Roboto;
 
   --fill-color: var(--primary-color);
   --progress-background: var(--ee-input-toggle-bg);
@@ -94,6 +94,7 @@
 
   &[data-ticks-position='top']{
     --flip-y: 1;
+    margin-bottom: 5px;
   }
 
   // mix/max texts
@@ -264,7 +265,7 @@
       position: absolute;
       z-index: 5;
       background: var(--value-background);
-      border-radius: 10px;
+      border-radius: $border-radius-base;
       padding: 2px 4px;
       left: var(--pos);
       transform: translate(var(--x-offset), calc(150% * var(--flip) - (var(--y-offset, 0px) + var(--value-offset-y)) * var(--flip)));

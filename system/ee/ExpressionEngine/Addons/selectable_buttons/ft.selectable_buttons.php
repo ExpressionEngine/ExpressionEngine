@@ -95,6 +95,25 @@ class Selectable_buttons_ft extends Multi_select_ft
         }
     }
 
+    /**
+     * :value modifier
+     */
+    public function replace_value($data, $params = array(), $tagdata = false)
+    {
+        ee()->load->helper('custom_field');
+        $data = decode_multi_field($data);
+
+        return $this->_parse_single($data, $params, true);
+    }
+
+    /**
+     * :label modifier
+     */
+    public function replace_label($data, $params = array(), $tagdata = false)
+    {
+        return $this->replace_tag($data, $params, $tagdata);
+    }
+
     public function display_settings($data)
     {
         $settings = $this->getSettingsForm(

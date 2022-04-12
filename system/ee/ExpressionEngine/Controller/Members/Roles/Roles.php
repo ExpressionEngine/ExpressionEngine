@@ -168,7 +168,7 @@ class Roles extends AbstractRolesController
             '' => lang('roles')
         );
 
-        if (ee()->config->item('ignore_member_stats') == 'y') {
+        if (bool_config_item('ignore_member_stats')) {
             ee()->lang->load('members');
             ee('CP/Alert')->makeInline('roles-count-warn')
                 ->asWarning()

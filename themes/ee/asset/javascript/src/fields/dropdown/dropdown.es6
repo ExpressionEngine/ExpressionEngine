@@ -114,7 +114,9 @@ class Dropdown extends React.Component {
           </label>
 
           {selected && this.props.name.includes('[condition_field_id]') && 
-            <span className="tooltiptext">{`${selected.label.replace(/<.*/g, "")} {${selected.label.match(/(?<=\{).+?(?=\})/g)}}`}</span>
+            <span className="tooltiptext">
+              {`${selected.label.replace(/<.*/g, "")} ${selected.label.match(/(?:\{).+?(?:\})/g)}`}
+            </span>
           }
         </div>
 

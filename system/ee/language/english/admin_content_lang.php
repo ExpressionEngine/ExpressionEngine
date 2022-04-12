@@ -236,6 +236,10 @@ $lang = array(
 
     'enable_versioning' => 'Enable Entry Versioning',
 
+    'field_conditions_sync_success' => 'Conditional Field Logic Updated',
+
+    'field_conditions_sync_success_desc' => 'All related channel entries have been updated to use the most recent conditional logic.',
+
     'field_conditions_sync_existing_entries' => 'Existing entries',
 
     'field_conditions_sync_desc' => '<b>%d</b> entries',
