@@ -133,9 +133,9 @@ function (_React$Component) {
         name: this.props.name,
         value: this.state.selected ? this.state.selected.value : '',
         "data-group-toggle": this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'
-      })), selected && this.props.name == 'condition-rule-field' && React.createElement("span", {
+      })), selected && this.props.name.includes('[condition_field_id]') && React.createElement("span", {
         className: "tooltiptext"
-      }, "".concat(selected.label, " {").concat(selected.value, "}"))), React.createElement("div", {
+      }, "".concat(selected.label.replace(/<.*/g, ""), " ").concat(selected.label.match(/(?:\{).+?(?:\})/g)))), React.createElement("div", {
         className: "select__dropdown dropdown"
       }, this.props.initialCount > this.props.tooMany && React.createElement("div", {
         className: "select__dropdown-search"

@@ -8,28 +8,26 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Addons\ToggleField\EvaluationRules;
-
+namespace ExpressionEngine\Addons\SliderInput\EvaluationRules;
 use ExpressionEngine\Service\ConditionalFields\EvaluationRules\AbstractEvaluationRule;
 use ExpressionEngine\Service\ConditionalFields\EvaluationRules\EvaluationRuleInterface;
 
 /**
- * Turned Off Rule
+ * Range Includes Rule
  */
-class TurnedOff extends AbstractEvaluationRule implements EvaluationRuleInterface
+class RangeIncludes extends AbstractEvaluationRule implements EvaluationRuleInterface
 {
     public function evaluate($fieldValue, $expectedValue, $fieldSettings)
     {
-        // If is null, set the value to the default value
-        if (is_null($fieldValue)) {
-            $fieldValue = $fieldSettings['field_default_value'];
+        if (!is_array($fieldValue)) {
+            return false;
         }
-
-        return !get_bool_from_string($fieldValue);
+        sort($fieldValue);
+        return ($expectedValue >= $fieldValue[0] && $expectedValue <= $fieldValue[1]);
     }
 
-    public function getConditionalFieldInputType()
+    public function getLanguageKey()
     {
-        return null;
+        return 'includes';
     }
 }

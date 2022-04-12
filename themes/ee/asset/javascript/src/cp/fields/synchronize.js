@@ -71,7 +71,7 @@ EE.fieldManager.sync = function() {
 
 	// We're done!
 	if(EE.fieldManager.entriesTodo.length === 0) {
-		EE.fieldManager.finish_sync();
+		return EE.fieldManager.finish_sync();
 	}
 
 	var data = EE.fieldManager.entriesTodo.pop();
@@ -125,7 +125,17 @@ EE.fieldManager.finish_sync = function() {
 		if (EE.fieldManager.sync_errors.length == 0) {
 			// No errors? Success flashdata message should be set,
 			// redirect back to the sync page to show success message
-			window.location = EE.fieldManager.sync_returnurl;
+			$.ajax({
+				url: EE.fieldManager.sync_endpoint,
+				type: 'POST',
+				dataType: 'json',
+				data: {'status': 'complete'},
+				success: function(data, textStatus, xhr) {
+					// Redirect to the return url
+					window.location = EE.fieldManager.sync_returnurl;
+				}
+			});
+
 		} else {
 			// If there are errors, pass them through POST, there may be too
 			// many to store in a flashdata cookie

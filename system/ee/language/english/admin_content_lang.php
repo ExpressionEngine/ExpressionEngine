@@ -236,6 +236,10 @@ $lang = array(
 
     'enable_versioning' => 'Enable Entry Versioning',
 
+    'field_conditions_sync_success' => 'Conditional Field Logic Updated',
+
+    'field_conditions_sync_success_desc' => 'All related channel entries have been updated to use the most recent conditional logic.',
+
     'field_conditions_sync_existing_entries' => 'Existing entries',
 
     'field_conditions_sync_desc' => '<b>%d</b> entries',
@@ -272,9 +276,9 @@ $lang = array(
 
     'field_options' => 'Field Options',
 
-    'field_populate_from_channel' => 'Populate the menu from another channel field',
+    'field_populate_from_channel' => 'Populate from another channel field',
 
-    'field_populate_manually' => 'Populate the menu manually',
+    'field_populate_manually' => 'Populate manually',
 
     'field_tools' => 'Field tools',
 
@@ -363,6 +367,10 @@ $lang = array(
     'make_conditional' => 'Make conditional?',
 
     'make_conditional_desc' => 'Only display this field when conditions of other field(s) are met',
+
+    'is_conditional' => 'Conditionals',
+
+    'is_conditional_desc' => 'This field is being used as conditional for the field(s) listed below.',
 
     'new_category' => 'New Category',
 

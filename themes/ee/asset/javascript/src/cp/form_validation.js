@@ -95,7 +95,7 @@ EE.cp.formValidation = {
 			}, 0);
 		});
 
-		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], select', function() {
+		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], input[type=range], select', function() {
 
 			var element = $(this);
 
@@ -274,6 +274,36 @@ EE.cp.formValidation = {
 		var that = this,
 			action = form.attr('action'),
 			data = form.serialize();
+
+		if($('.field-conditionset-wrapper').length) {
+			var sets = $('#fieldset-condition_fields .field-conditionset-wrapper').find('.conditionset-item');
+			var hiddenRuleInputs = sets.find('.rule.hidden');
+			var hiddenMatchInputs = $('#fieldset-condition_fields .conditionset-item.hidden').find('.match-react-element');
+
+			$.each(hiddenRuleInputs, function(key, value) {
+
+				// check if input in hidden container was init and have attr disable
+				var timer = setInterval(function() {
+					if ($(value).find('input').prop('disabled')) {
+						clearInterval(timer);
+					} else {
+						$(value).find('input').attr('disabled', 'disabled');
+					}
+				},50);
+			});
+
+			$.each(hiddenMatchInputs, function(key, value) {
+
+				// check if input in hidden container was init and have attr disable
+				var timer = setInterval(function() {
+					if ($(value).find('input').prop('disabled')) {
+						clearInterval(timer);
+					} else {
+						$(value).find('input').attr('disabled', 'disabled');
+					}
+				},50);
+			});
+		}
 
 		$.ajax({
 			url: action,

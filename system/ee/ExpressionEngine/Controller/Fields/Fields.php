@@ -372,6 +372,7 @@ class Fields extends AbstractFieldsController
             $field = $this->setWithPost($field);
             $this->validationResult = $field->validate();
 
+            $conditionSets = [];
             if (ee('Request')->post('field_is_conditional') == 'y') {
                 list($conditionSets, $conditions) = $this->prepareFieldConditions();
             }
@@ -385,27 +386,45 @@ class Fields extends AbstractFieldsController
                 // Build an array representing our conditions that we can compare
                 $conditionalsBefore = $this->getConditionArray($field->FieldConditionSets);
 
+                // If request is conditional we need to save those conditionals and sets
                 if (ee('Request')->post('field_is_conditional') == 'y') {
                     $assignedConditionalSetIds = [];
+                    // Loop through all conditional sets, created from POST data
                     foreach ($conditionSets as $i => $conditionSet) {
+                        // Associate the condition set with the field
                         $assignedConditionIds = [];
                         $conditionSet->ChannelFields->getAssociation()->set($field);
                         $conditionSet->save();
+
+                        // Loop through conditions and attach them to the condition sets
                         foreach ($conditions[$i] as $condition) {
                             $condition->condition_set_id = $conditionSet->getId();
                             $condition->save();
                             $assignedConditionIds[] = $condition->getId();
                         }
+
+                        // If a condition was removed lets delete it in the DB
                         $conditionSet->FieldConditions->filter('condition_id', 'NOT IN', $assignedConditionIds)->delete();
-                        $assignedConditionalSetIds[] = $conditionSet->getId();
+                        $assignedConditionalSetIds[$i] = $conditionSet->getId();
                     }
+                    // If a condition set was removed, lets delete it
                     $field->FieldConditionSets->filter('condition_set_id', 'NOT IN', $assignedConditionalSetIds)->delete();
+
+                    // Remove condition sets that were removed
+                    foreach (array_keys($conditionSets) as $i) {
+                        if (!isset($assignedConditionalSetIds[$i])) {
+                            unset($conditionSets[$i]);
+                        }
+                    }
                 } else {
                     $field->FieldConditionSets->delete();
                 }
 
+                // After saving all that, lets get the field again
+                $fieldAfterSave = ee('Model')->get('ChannelField', $id)->first();
+
                 // Build an array representing our conditions that we can compare
-                $conditionalsAfter = $this->getConditionArray($conditionSets);
+                $conditionalsAfter = $this->getConditionArray($fieldAfterSave->FieldConditionSets);
 
                 $conditionalEntriesRequireSync = ! $this->conditionsAreSame($conditionalsBefore, $conditionalsAfter);
 
@@ -503,6 +522,7 @@ class Fields extends AbstractFieldsController
         $channel_id = (int) ee()->input->post('channel_id');
         $limit = (int) ee()->input->post('limit');
         $offset = (int) ee()->input->post('offset');
+        $status = ee()->input->post('status');
 
         // Get all channel entries with post data
         $entries = ee('Model')->get('ChannelEntry')
@@ -520,6 +540,15 @@ class Fields extends AbstractFieldsController
             }
         }
 
+        // If the sync was successful, show success banner
+        if ($status && $status === 'complete') {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asSuccess()
+                ->withTitle(lang('field_conditions_sync_success'))
+                ->addToBody(lang('field_conditions_sync_success_desc'))
+                ->defer();
+        }
+
         return json_encode([
             'message_type' => 'success',
             'entries' => $entries->pluck('entry_id'),
@@ -533,20 +562,32 @@ class Fields extends AbstractFieldsController
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $field = ee('Model')->get('ChannelField', $field_id)->first();
+        if (!is_null($field_id)) {
+            $field = ee('Model')->get('ChannelField', $field_id)->first();
+        }
 
-        if (! $field) {
+        $channelIds = ee('Request')->get('channel_ids');
+        if ($channelIds) {
+            $channelIds = explode(',', $channelIds);
+        }
+
+        if (! $field_id && empty($channelIds)) {
             show_404();
         }
 
-        $field_groups = $field->ChannelFieldGroups;
-        $active_groups = $field_groups->pluck('group_id');
-        $this->generateSidebar($active_groups);
+        if (!is_null($field_id)) {
+            $field_groups = $field->ChannelFieldGroups;
+            $active_groups = $field_groups->pluck('group_id');
+            $this->generateSidebar($active_groups);
+            $channels = $field->getAllChannels();
+        } else {
+            $channels = ee('Model')->get('Channel')->filter('channel_id', 'IN', $channelIds)->all();
+        }
 
         $channelEntryCount = 0;
         $groupedChannelEntryCounts = [];
 
-        foreach ($field->getAllChannels() as $channel) {
+        foreach ($channels as $channel) {
             $count = $channel->Entries->count();
             $channelEntryCount += $count;
             $groupedChannelEntryCounts[] = [
@@ -579,10 +620,17 @@ class Fields extends AbstractFieldsController
             )
         );
 
-        $base_url = ee('CP/URL')->make('fields/syncConditions/' . $field_id);
-        $field_url = ee('CP/URL')->make('fields/edit/' . $field_id);
+        if (!is_null($field_id)) {
+            $base_url = ee('CP/URL')->make('fields/syncConditions/' . $field_id);
+            $defaultReturnUrl = ee('CP/URL')->make('fields/edit/' . $field_id);
+        } else {
+            $base_url = ee('CP/URL')->make('fields/syncConditions')
+                ->setQueryStringVariable('channel_ids', implode(',', $channelIds));
+            $defaultReturnUrl = ee('CP/URL')->make('fields');
+        }
 
-        $return = ee()->input->get('return') ? base64_decode(ee()->input->get('return')) : $field_url->compile();
+
+        $return = ee()->input->get('return') ? base64_decode(ee()->input->get('return')) : $defaultReturnUrl->compile();
 
         if ($channelEntryCount === 0) {
             ee()->functions->redirect($return);
@@ -643,13 +691,13 @@ class Fields extends AbstractFieldsController
         }
 
         foreach (array_keys($conditionSetsAfter) as $key) {
-            if (!$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
+            if (!isset($conditionSetsBefore[$key]) || !$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
                 return false;
             }
         }
 
         foreach (array_keys($conditionSetsBefore) as $key) {
-            if (!$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
+            if (!isset($conditionSetsAfter[$key]) || !$this->conditionsAreSame($conditionSetsBefore[$key], $conditionSetsAfter[$key])) {
                 return false;
             }
         }
@@ -859,6 +907,37 @@ class Fields extends AbstractFieldsController
 
         array_push($sections[0], $ruleGroupsField);
 
+        $relatedConditionalFields = [];
+        if (!is_null($field->UsesFieldConditions)) {
+            foreach ($field->UsesFieldConditions as $relatedFieldConditions) {
+                if (!is_null($relatedFieldConditions->FieldConditionSet)) {
+                    if (!is_null($relatedFieldConditions->FieldConditionSet->ChannelFields)) {
+                        foreach ($relatedFieldConditions->FieldConditionSet->ChannelFields as $relatedChannelField) {
+                            $relatedConditionalFields[$relatedChannelField->getId()] = [
+                                'id' => $relatedChannelField->getId(),
+                                'label' => $relatedChannelField->field_label,
+                                'extra' => '{' . $relatedChannelField->field_name . '}',
+                                'href' => ee('CP/URL')->make('fields/edit/' . $relatedChannelField->getId())->compile(),
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!empty($relatedConditionalFields)) {
+            $sections[0][] = array(
+                'title' => 'is_conditional',
+                'desc' => 'is_conditional_desc',
+                'fields' => array(
+                    'is_conditional' => array(
+                        'type' => 'html',
+                        'content' => ee('View')->make('ee:_shared/table-list')->render(['data' => $relatedConditionalFields, 'disable_action' => true])
+                    )
+                )
+            );
+        }
+
         ee()->javascript->output('$(document).ready(function () {
             EE.cp.fieldToggleDisable();
         });');
@@ -880,6 +959,23 @@ class Fields extends AbstractFieldsController
 
         $fields = ee('Model')->get('ChannelField', $field_ids)->all();
 
+        $dependentChannels = [];
+
+        // Lets loop through each field and figure out if it's used in a field condition
+        foreach ($fields as $field) {
+            // if the field is being used as a condition, lets loop through those conditions
+            foreach ($field->UsesFieldConditions as $fieldCondition) {
+                // Lets loop through each channel field that uses the current field as a condition
+                foreach ($fieldCondition->FieldConditionSet->ChannelFields as $channelField) {
+                    // This is a field dependent on the field being deleted as part of it's conditions
+                    // $dependentConditionalFields[$channelField->getId()] = $channelField;
+                    foreach ($channelField->getAllChannels() as $channel) {
+                        $dependentChannels[$channel->getId()] = $channel->getId();
+                    }
+                }
+            }
+        }
+
         $field_names = $fields->pluck('field_label');
 
         $fields->delete();
@@ -892,6 +988,13 @@ class Fields extends AbstractFieldsController
 
         foreach ($field_names as $field_name) {
             ee()->logger->log_action(sprintf(lang('removed_field'), '<b>' . $field_name . '</b>'));
+        }
+
+        if (!empty($dependentChannels)) {
+            ee()->functions->redirect(
+                ee('CP/URL')->make('fields/syncConditions')
+                ->setQueryStringVariable('channel_ids', implode(',', $dependentChannels))
+            );
         }
     }
 }
