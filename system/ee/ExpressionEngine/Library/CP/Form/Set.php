@@ -1,6 +1,14 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
-namespace EeObjects\Forms\Form;
+namespace ExpressionEngine\Library\CP\Form;
 
 class Set
 {
@@ -122,7 +130,7 @@ class Set
      */
     protected function buildField(string $name, string $type): Field
     {
-        $field = '\EeObjects\Forms\Form\Fields\\' . $this->studly($type);
+        $field = '\ExpressionEngine\Library\CP\Form\Fields\\' . $this->studly($type);
         if (class_exists($field)) {
             return new $field($name, $type);
         }
