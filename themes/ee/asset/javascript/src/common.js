@@ -12,18 +12,10 @@ $(document).ready(function(){
 	// the code is responsible for preventing the page scrolling when press on 
 	// the dropdown list using the spacebar (code 32)
 	window.addEventListener('keydown', (e) => {
-		if (e.keyCode === 32 && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) { 
+		if ((e.keyCode === 32 || e.keyCode === 13) && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) { 
 		  e.preventDefault();
+		  e.target.click();
 		}
-	});
-
-	// code for opening and moving through the select dropdown menu when pressing Enter (keyCode 13) or Spacebar (keyCode 32)
-	$('.js-dropdown-toggle, .select__dropdown-item').each(function() {
-		$(this).keyup(function(event) {
-			if (event.keyCode === 13 || event.keyCode === 32) {
-				$(this).click();
-			}
-		});
 	});
 
 	// =============================================
@@ -1096,7 +1088,9 @@ $(document).ready(function(){
 				if (mutation.addedNodes && mutation.addedNodes.length > 0) {
 
 					var hasClass = [].some.call(mutation.addedNodes, function(el) {
-						return el.classList.contains('app-notice')
+						if(el.classList) {
+							return el.classList.contains('app-notice');
+						}
 					})
 
 					if (hasClass) {
@@ -1141,5 +1135,16 @@ $(document).ready(function(){
                     })
                 });
             }
+        }
+
+        if ($('.range-slider').length) {
+
+        	$('.range-slider').each(function() {
+	        	var minValue = $(this).find('input[type="range"]').attr('min');
+	        	var maxValue = $(this).find('input[type="range"]').attr('max');
+
+	        	$(this).attr('data-min', minValue);
+	        	$(this).attr('data-max', maxValue);
+        	});
         }
 }); // close (document).ready

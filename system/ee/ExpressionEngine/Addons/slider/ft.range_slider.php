@@ -47,9 +47,9 @@ class Range_slider_ft extends Slider_ft
     {
         $field = array(
             'name' => $this->field_name . '[]',
-            'min' => (isset($this->settings['field_min_value']) && $this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0,
-            'max' => (isset($this->settings['field_max_value']) && $this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100,
-            'step' => (isset($this->settings['field_step']) && $this->settings['field_step'] != '') ? $this->settings['field_step'] : 1,
+            'min' => (isset($this->settings['field_min_value']) && is_numeric($this->settings['field_min_value'])) ? $this->settings['field_min_value'] : 0,
+            'max' => (isset($this->settings['field_max_value']) && is_numeric($this->settings['field_max_value'])) ? $this->settings['field_max_value'] : 100,
+            'step' => (isset($this->settings['field_step']) && is_numeric($this->settings['field_step'])) ? $this->settings['field_step'] : 1,
             'suffix' => isset($this->settings['field_suffix']) ? $this->settings['field_suffix'] : '',
             'prefix' => isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : ''
         );
@@ -83,6 +83,7 @@ class Range_slider_ft extends Slider_ft
     {
         if (is_array($data)) {
             ee()->load->helper('custom_field');
+            sort($data);
             $data = encode_multi_field($data);
         }
 
@@ -94,10 +95,10 @@ class Range_slider_ft extends Slider_ft
         ee()->load->helper('custom_field');
         $data = decode_multi_field($data);
         if (!isset($data[0])) {
-            $data[0] = (isset($this->settings['field_min_value']) && $this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0;
+            $data[0] = (isset($this->settings['field_min_value']) && is_numeric($this->settings['field_min_value'])) ? $this->settings['field_min_value'] : 0;
         }
         if (!isset($data[1])) {
-            $data[1] = (isset($this->settings['field_max_value']) && $this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100;
+            $data[1] = (isset($this->settings['field_max_value']) && is_numeric($this->settings['field_max_value'])) ? $this->settings['field_max_value'] : 100;
         }
 
         $vars = [

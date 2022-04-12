@@ -47,4 +47,51 @@ trait DurationTrait
 
         return $seconds;
     }
+
+    /**
+     * Apply a multiplier based on the field's units setting
+     *
+     * @param  int $number Number to apply the multiplier to
+     * @return int Duration, in terms of the field's units
+     */
+    private function applyMultiplier($number, $units = 'minutes')
+    {
+        if (!is_numeric($number)) {
+            return 0;
+        }
+        switch ($units) {
+            case 'hours':
+                $multiplier = 3600;
+
+                break;
+            case 'minutes':
+                $multiplier = 60;
+
+                break;
+            case 'seconds':
+            default:
+                $multiplier = 1;
+
+                break;
+        }
+
+        return $number * $multiplier;
+    }
+
+    /**
+     * Converts duration to seconds
+     *
+     * @param  string $duration Duration, in arbitrary notation
+     * @return int Duration, in seconds
+     */
+    private function convertDurationToSeconds($duration, $units = 'minutes')
+    {
+        if (strpos($duration, ':')) {
+            $duration = $this->convertFromColonNotation($duration, $units);
+        } else {
+            $duration = $this->applyMultiplier($duration);
+        }
+
+        return $duration;
+    }
 }

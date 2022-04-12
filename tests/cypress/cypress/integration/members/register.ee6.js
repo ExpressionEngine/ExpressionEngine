@@ -20,7 +20,7 @@ context('Member Registration', () => {
         cy.eeConfig({ item: 'req_mbr_activation', value: 'none' })
 
         //copy templates
-		cy.task('filesystem:copy', { from: 'support/templates/default_site/*', to: '../../system/user/templates/default_site/' }).then(() => {
+		cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.authVisit('admin.php?/cp/design')
             cy.clearCookies()
         })

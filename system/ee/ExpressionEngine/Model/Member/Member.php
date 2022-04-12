@@ -430,7 +430,7 @@ class Member extends ContentModel
     public function onAfterInsert()
     {
         parent::onAfterInsert();
-        if (ee()->config->item('ignore_member_stats') != 'y') {
+        if (! bool_config_item('ignore_member_stats')) {
             foreach ($this->getAllRoles() as $role) {
                 $role->total_members = null;
                 $role->save();
@@ -440,7 +440,7 @@ class Member extends ContentModel
 
     public function onAfterDelete()
     {
-        if (ee()->config->item('ignore_member_stats') != 'y') {
+        if (! bool_config_item('ignore_member_stats')) {
             foreach ($this->getAllRoles() as $role) {
                 $role->total_members = null;
                 $role->save();

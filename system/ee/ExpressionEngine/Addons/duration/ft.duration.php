@@ -128,11 +128,7 @@ class Duration_Ft extends EE_Fieldtype
      */
     public function replace_tag($data, $params = array(), $tagdata = false)
     {
-        if (strpos($data, ':')) {
-            $data = $this->convertFromColonNotation($data, $this->settings['units']);
-        } else {
-            $data = $this->applyMultiplier($data);
-        }
+        $data = $this->convertDurationToSeconds($data, $this->settings['units']);
 
         $data = ee('Format')->make('Number', $data)->duration($params);
 
@@ -245,33 +241,6 @@ class Duration_Ft extends EE_Fieldtype
             'minutes' => lang('duration_ft_minutes'),
             'hours' => lang('duration_ft_hours'),
         ];
-    }
-
-    /**
-     * Apply a multiplier based on the field's units setting
-     *
-     * @param  int $number Number to apply the multiplier to
-     * @return int Duration, in terms of the field's units
-     */
-    private function applyMultiplier($number)
-    {
-        switch ($this->settings['units']) {
-            case 'hours':
-                $multiplier = 3600;
-
-                break;
-            case 'minutes':
-                $multiplier = 60;
-
-                break;
-            case 'seconds':
-            default:
-                $multiplier = 1;
-
-                break;
-        }
-
-        return $number * $multiplier;
     }
 
     /**

@@ -22,6 +22,7 @@ class RangeIncludes extends AbstractEvaluationRule implements EvaluationRuleInte
         if (!is_array($fieldValue)) {
             return false;
         }
+        sort($fieldValue);
         return ($expectedValue >= $fieldValue[0] && $expectedValue <= $fieldValue[1]);
     }
 
