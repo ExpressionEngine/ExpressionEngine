@@ -62,6 +62,10 @@ class RteHelper
      */
     public static function replaceFileTags(&$data)
     {
+		if (empty($data)) {
+			return $data;
+		}
+		
         $tags = static::_getFileTags();
         $data = str_replace($tags[0], $tags[1], $data);
     }
@@ -154,7 +158,7 @@ class RteHelper
      */
     public static function replacePageTags(&$data)
     {
-        if (strpos($data, LD . 'page_') !== false) {
+        if ( !empty($data) && strpos($data, LD . 'page_') !== false) {
             $tags = static::_getPageTags();
 
             foreach ($tags[0] as $key => $pageTag) {
