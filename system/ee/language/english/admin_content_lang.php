@@ -236,6 +236,24 @@ $lang = array(
 
     'enable_versioning' => 'Enable Entry Versioning',
 
+    'field_conditions_sync_success' => 'Conditional Field Logic Updated',
+
+    'field_conditions_sync_success_desc' => 'All related channel entries have been updated to use the most recent conditional logic.',
+
+    'field_conditions_sync_existing_entries' => 'Existing entries',
+
+    'field_conditions_sync_desc' => '<b>%d</b> entries',
+
+    'field_conditions_syncing_conditional_logic' => 'Syncing Conditional Logic',
+
+    'field_conditions_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'field_conditions_sync_in_progress_message' => 'Do not navigate away from this screen while syncing is in progress.',
+
+    'btn_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'btn_sync_conditional_logic_working' => 'Syncing conditional logic...',
+
     'field' => 'Field',
 
     'fields_assign_to_group' => 'Assign one or more fields to this group.',
@@ -258,9 +276,9 @@ $lang = array(
 
     'field_options' => 'Field Options',
 
-    'field_populate_from_channel' => 'Populate the menu from another channel field',
+    'field_populate_from_channel' => 'Populate from another channel field',
 
-    'field_populate_manually' => 'Populate the menu manually',
+    'field_populate_manually' => 'Populate manually',
 
     'field_tools' => 'Field tools',
 
@@ -346,6 +364,14 @@ $lang = array(
 
     'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi-select in the publish form.</i>',
 
+    'make_conditional' => 'Make conditional?',
+
+    'make_conditional_desc' => 'Only display this field when conditions of other field(s) are met',
+
+    'is_conditional' => 'Conditionals',
+
+    'is_conditional_desc' => 'This field is being used as conditional for the field(s) listed below.',
+
     'new_category' => 'New Category',
 
     'new_channel' => 'New Channel',
@@ -398,7 +424,7 @@ $lang = array(
 
     'removed_fields_from_fluid_field' => 'The following fields were removed from the Fluid Field <b>%s</b> and their data was deleted: %s',
 
-    'require_field_desc' => 'When enabled, this field will be required to submit the publish form.',
+    'require_field_desc' => 'When enabled (and not conditionally hidden), this field will be required to submit the publish form.',
 
     'reserved_word' => 'The field name you have chosen is a reserved word and cannot be used. Please see the user guide for more information.',
 
@@ -819,8 +845,6 @@ $lang = array(
     'field_min_value' => 'Minimum value',
 
     'field_max_value' => 'Maximum value',
-
-    'field_step' => 'Step',
 
     'field_show_fmt' => 'Allow override?',
 

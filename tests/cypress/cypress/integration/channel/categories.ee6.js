@@ -23,7 +23,7 @@ context('Categories', () => {
         cy.contains('Sync Directory').first().click()
 
         //copy templates
-        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' }).then(() => {
+		cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.authVisit('admin.php?/cp/design')
         })
     })
@@ -119,7 +119,7 @@ context('Categories', () => {
 
     it('add category from entry page', function() {
         cy.visit('admin.php?/cp/publish/edit/entry/1');
-        
+
         cy.get('.tab-bar__tab').contains('Categories').click();
 
         cy.contains('Add Category').click()
@@ -174,7 +174,7 @@ context('Categories', () => {
     })
 
     it('check categories on entry page on frontend', function() {
-    
+
         cy.visit('index.php/cats/entry')
 
         check_category_one()
@@ -182,7 +182,7 @@ context('Categories', () => {
     })
 
     it('check category heading on frontend', function() {
-    
+
         cy.visit('index.php/cats/heading/category/C5')
 
         check_category_one()
@@ -201,12 +201,12 @@ context('Categories', () => {
     })
 
     it('check category archive on frontend', function() {
-    
+
         cy.visit('index.php/cats/archive')
 
         check_category_one()
 
-        
+
         cy.get("#details-News-1 .title").invoke('text').then((text) => {
             expect(text).equal('Getting to Know ExpressionEngine')
         })
@@ -231,12 +231,12 @@ context('Categories', () => {
     })
 
     it('check category archive (nested) on frontend', function() {
-    
+
         cy.visit('index.php/cats/archive-nested')
 
         check_category_one()
 
-        
+
         cy.get("#news").parent().find("#details-1 .title").invoke('text').then((text) => {
             expect(text).equal('Getting to Know ExpressionEngine')
         })
@@ -255,7 +255,7 @@ context('Categories', () => {
         cy.get("#news").parent().find("#details-1 .channel_url").invoke('text').then((text) => {
             expect(text).to.contain('/news')
         })
-        
+
         check_category_two()
 
     })
@@ -413,7 +413,7 @@ context('Categories', () => {
             }
         })
     })
-        
+
     describe('static usage of category heading tag', function() {
         it('category heading is correct when using category_id', function() {
 
@@ -424,19 +424,19 @@ context('Categories', () => {
             cy.log('... when using category ID in URL')
             cy.visit('index.php/cats/manual-heading-2/category/C5')
             check_category_two()
-            
+
             cy.log('switch the setting')
-            cy.visit('admin.php?/cp/settings/urls');    
-            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.visit('admin.php?/cp/settings/urls');
+            cy.get('input[name=use_category_name][value=y]').check()
             cy.get('.title-bar__extra-tools .button--primary').first().click()
-    
+
             cy.log('... when using category slug in URL')
-            cy.visit('index.php/cats/manual-heading-2/category/category-one')    
+            cy.visit('index.php/cats/manual-heading-2/category/category-one')
             check_category_two()
 
             cy.log('switch the setting back')
-            cy.visit('admin.php?/cp/settings/urls');    
-            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.visit('admin.php?/cp/settings/urls');
+            cy.get('input[name=use_category_name][value=y]').check()
             cy.get('.title-bar__extra-tools .button--primary').first().click()
 
         })
@@ -450,19 +450,19 @@ context('Categories', () => {
             cy.log('... when using category ID in URL')
             cy.visit('index.php/cats/manual-heading/category/C5')
             check_category_two()
-            
+
             cy.log('switch the setting')
-            cy.visit('admin.php?/cp/settings/urls');    
-            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.visit('admin.php?/cp/settings/urls');
+            cy.get('input[name=use_category_name][value=y]').check()
             cy.get('.title-bar__extra-tools .button--primary').first().click()
-    
+
             cy.log('... when using category slug in URL')
-            cy.visit('index.php/cats/manual-heading/category/category-one')    
+            cy.visit('index.php/cats/manual-heading/category/category-one')
             check_category_two()
 
             cy.log('switch the setting back')
-            cy.visit('admin.php?/cp/settings/urls');    
-            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.visit('admin.php?/cp/settings/urls');
+            cy.get('input[name=use_category_name][value=y]').check()
             cy.get('.title-bar__extra-tools .button--primary').first().click()
 
         })
@@ -484,7 +484,7 @@ context('Categories', () => {
         cy.get('#category-one .custom_dropdown').invoke('text').then((text) => {
             expect(text).equal('option two')
         })
-        
+
         cy.get('#category-one .category_image img')
             .should('be.visible')
             .and(($img) => {

@@ -28,6 +28,8 @@ class Email_address_Ft extends EE_Fieldtype
 
     public $size = 'small';
 
+    public $defaultEvaluationRule = 'isNotEmpty';
+
     /**
      * Validate Field
      *

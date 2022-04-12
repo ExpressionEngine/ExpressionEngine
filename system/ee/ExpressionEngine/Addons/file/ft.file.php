@@ -24,6 +24,10 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
 
     public $has_array_data = true;
 
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty', 'contains'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
+
     public $_dirs = array();
 
     /**
@@ -713,6 +717,10 @@ JSC;
     {
         // These are single variable tags only, so no need for replace_tag
         if ($modifier) {
+            if ($modifier == 'frontedit') {
+                return $tagdata;
+            }
+
             $key = 'url:' . $modifier;
 
             if ($modifier == 'thumbs') {

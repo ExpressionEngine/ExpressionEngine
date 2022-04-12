@@ -13,6 +13,7 @@
  */
 class Grid_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Grid',
         'version' => '1.0.0'
@@ -27,6 +28,13 @@ class Grid_ft extends EE_Fieldtype
     public $settings_form_field_name = 'grid';
 
     private $errors;
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = null;
 
     public function __construct()
     {

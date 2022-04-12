@@ -232,28 +232,17 @@
 
 
 .license-status-badge {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 15px;
-  font-weight:bold;
-  padding: 2px 10px 1px 10px;
-  border-radius: 5px;
-  font-size: 12px;
-  vertical-align: middle;
-  border: 2px solid color(accent-medium);
-  background-color: color(bg-blank);
-  color: color(accent-medium);
+  @extend .button;
+  @extend .button--secondary;
+  @extend .button--xsmall;
+  border-radius: $border-radius-full;
 
   &.license-status-expired {
-    background-color: color(warning);
-    color: #fff;
-    border: none;
+    @extend .button--warning;
   }
 
   &.license-status-invalid {
-    background-color: color(danger);
-    color: #fff;
-    border: none;
+    @extend .button--danger;
   }
 }
 // Special styling for Pro add-on card

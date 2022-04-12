@@ -12,18 +12,10 @@ $(document).ready(function(){
 	// the code is responsible for preventing the page scrolling when press on 
 	// the dropdown list using the spacebar (code 32)
 	window.addEventListener('keydown', (e) => {
-		if (e.keyCode === 32 && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) { 
+		if ((e.keyCode === 32 || e.keyCode === 13) && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) { 
 		  e.preventDefault();
+		  e.target.click();
 		}
-	});
-
-	// code for opening and moving through the select dropdown menu when pressing Enter (keyCode 13) or Spacebar (keyCode 32)
-	$('.js-dropdown-toggle, .select__dropdown-item').each(function() {
-		$(this).keyup(function(event) {
-			if (event.keyCode === 13 || event.keyCode === 32) {
-				$(this).click();
-			}
-		});
 	});
 
 	// =============================================
@@ -973,11 +965,11 @@ $(document).ready(function(){
 			if ($(this).hasClass('off')){
 				$(this).removeClass('off');
 				$(this).addClass('on');
-				$(input).val(yes_no ? 'y' : 1);
+				$(input).val(yes_no ? 'y' : 1).trigger('change');
 			} else {
 				$(this).removeClass('on');
 				$(this).addClass('off');
-				$(input).val(yes_no ? 'n' : 0);
+				$(input).val(yes_no ? 'n' : 0).trigger('change');
 			}
 
 			$(this).attr('alt', onOff);
@@ -989,6 +981,29 @@ $(document).ready(function(){
 			if($(input).data('groupToggle')) {
 				$('#fieldset-rel_min input[name="rel_min"]').prop('disabled', false);
 				$('#fieldset-rel_max input[name="rel_max"]').prop('disabled', false);
+			}
+
+			if($(this).attr('data-toggle-for') == 'field_is_conditional' && $(this).attr('data-state') == 'off') {
+				var invalidClass = $('#fieldset-condition_fields').find('.invalid');
+
+				if (invalidClass.length) {
+					invalidClass.each(function(){
+						$(this).find('.ee-form-error-message').remove();
+						$(this).removeClass('invalid');
+
+						// Mark entire Grid field as valid if all rows with invalid cells are cleared
+						if ($('#fieldset-condition_fields .invalid').length == 0 &&
+							EE.cp &&
+							EE.cp.formValidation !== undefined) {
+							EE.cp.formValidation.markFieldValid($('input, select, textarea', $('.conditionset-temlates-row')).eq(0));
+						}
+					});
+				}
+			}
+
+			if($(this).attr('data-toggle-for') == 'field_is_conditional' && $(this).attr('data-state') == 'on') {
+				$('.conditionset-item:not(.hidden)').find('.rule:not(.hidden) .condition-rule-field-wrap input').prop('disabled', false);
+				$('.conditionset-item:not(.hidden)').find('.match-react-element input').prop('disabled', false);
 			}
 
 			e.preventDefault();
@@ -1005,7 +1020,6 @@ $(document).ready(function(){
 				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_max').hide();
 			}
 		});
-
 
 		$('body').on('click', '.js-toggle-link', function(e) {
 			e.preventDefault()
@@ -1074,7 +1088,9 @@ $(document).ready(function(){
 				if (mutation.addedNodes && mutation.addedNodes.length > 0) {
 
 					var hasClass = [].some.call(mutation.addedNodes, function(el) {
-						return el.classList.contains('app-notice')
+						if(el.classList) {
+							return el.classList.contains('app-notice');
+						}
 					})
 
 					if (hasClass) {
@@ -1104,4 +1120,31 @@ $(document).ready(function(){
 		// Start observing changes
 		alertObserver.observe(document.body, { childList: true })
 
+
+		// Check the Entry page for existence and compliance with the conditions
+		// to show or hide fields depending on conditions
+        if(window.EE) {
+            EE.cp.hide_show_entries_fields = function(idArr) {
+                var hide_block = $('.hide-block');
+
+                $(hide_block).removeClass('hide-block');
+
+                $.each(idArr, function(index, id) {
+                    $('[data-field_id="'+id+'"]').each(function(){
+                        $(this).addClass('hide-block').removeClass('fieldset-invalid');
+                    })
+                });
+            }
+        }
+
+        if ($('.range-slider').length) {
+
+        	$('.range-slider').each(function() {
+	        	var minValue = $(this).find('input[type="range"]').attr('min');
+	        	var maxValue = $(this).find('input[type="range"]').attr('max');
+
+	        	$(this).attr('data-min', minValue);
+	        	$(this).attr('data-max', maxValue);
+        	});
+        }
 }); // close (document).ready

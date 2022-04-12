@@ -19,6 +19,7 @@ class FieldFacade
     private $data; // field_id_*
     private $format;  // field_ft_*
     private $timezone; // field_dt_*
+    private $hidden; // field_hide_*
     private $metadata;
     private $required;
     private $field_name;
@@ -90,6 +91,21 @@ class FieldFacade
     public function getTimezone()
     {
         return $this->timezone;
+    }
+
+    public function setHidden($hidden)
+    {
+        $this->hidden = ($hidden === 'y' || $hidden === true) ? 'y' : 'n';
+    }
+
+    public function getHidden()
+    {
+        return $this->hidden;
+    }
+
+    public function getSettings()
+    {
+        return isset($this->metadata['field_settings']) ? $this->metadata['field_settings'] : [];
     }
 
     protected function ensurePopulatedDefaults()
@@ -169,7 +185,7 @@ class FieldFacade
         if (empty($this->icon)) {
             $error_reporting = error_reporting(0);
             $fts = $this->api->fetch_all_fieldtypes();
-            $addon = ee('Addon')->get($fts[$this->getItem('field_type')]['package']);
+            $addon = ee('Addon')->get($fts[$this->getType()]['package']);
             $this->icon = $addon->getIconUrl('field.svg');
             error_reporting($error_reporting);
         }
@@ -248,6 +264,46 @@ class FieldFacade
         $field_value = $data['field_data'];
 
         return $this->api->apply('display_publish_field', array($field_value));
+    }
+
+    public function getSupportedEvaluationRules()
+    {
+        ee()->lang->load('fieldtypes');
+        $rulesList = [];
+        $supportedEvaluationRules = [];
+        $ft = $this->getNativeField();
+        if (!property_exists($ft, 'supportedEvaluationRules')) {
+            if (property_exists($ft, 'has_array_data') && $ft->has_array_data === true) {
+                $rulesList = ['isEmpty', 'isNotEmpty'];
+            } else {
+                $rulesList = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty', 'contains', 'notContains'];
+            }
+        } elseif (!empty($ft->supportedEvaluationRules)) {
+            $rulesList = $ft->supportedEvaluationRules;
+        }
+
+        foreach ($rulesList as $ruleName) {
+            $rule = ee('ConditionalFields')->make($ruleName, $this->getType());
+            $supportedEvaluationRules[$ruleName] = [
+                'text'      => lang($rule->getLanguageKey()),
+                'type'      => $rule->getConditionalFieldInputType()
+            ];
+        }
+
+        if (property_exists($ft, 'defaultEvaluationRule') && isset($supportedEvaluationRules[$ft->defaultEvaluationRule])) {
+            $supportedEvaluationRules[$ft->defaultEvaluationRule]['default'] = true;
+        } elseif (!empty($rulesList)) {
+            $supportedEvaluationRules[$rulesList[0]]['default'] = true;
+        }
+
+        return $supportedEvaluationRules;
+    }
+
+    public function getPossibleValuesForEvaluation()
+    {
+        $data = $this->initField();
+
+        return $this->api->apply('getPossibleValuesForEvaluation', [$data]);
     }
 
     public function getSettingsForm()
@@ -403,6 +459,18 @@ class FieldFacade
         return $ft->renderTableCell($data, $field_id, $entry);
     }
 
+    public function getConditionSets()
+    {
+        // Field is not conditional, so there should be no conditional sets
+        if (! $this->getItem('field_is_conditional')) {
+            return [];
+        }
+
+        $field = ee('Model')->get('ChannelField', $this->getId())->first();
+
+        return $field->FieldConditionSets;
+    }
+
     public function initField()
     {
         $this->ensurePopulatedDefaults();
@@ -425,6 +493,10 @@ class FieldFacade
             $this->setTimezone($info['field_dt']);
         }
 
+        if (is_null($this->getHidden()) && isset($info['field_hidden'])) {
+            $this->setHidden($info['field_hidden']);
+        }
+
         $data = $this->setupField();
 
         $this->api->setup_handler($data['field_id']);
@@ -440,6 +512,7 @@ class FieldFacade
     {
         $field_dt = $this->timezone;
         $field_fmt = $this->getFormat();
+        $field_hidden = $this->getHidden();
         $field_data = $this->data;
         $field_name = $this->getName();
 
@@ -457,6 +530,7 @@ class FieldFacade
             'field_instructions' => trim((string) $info['field_instructions']),
             'field_text_direction' => ($info['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
             'field_fmt' => $field_fmt,
+            'field_hidden' => $field_hidden,
             'field_dt' => $field_dt,
             'field_data' => $field_data,
             'field_name' => $field_name

@@ -15,6 +15,7 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
  */
 class Text_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Text Input',
         'version' => '1.0.0'
@@ -25,6 +26,7 @@ class Text_ft extends EE_Fieldtype
     // Parser Flag (preparse pairs?)
     public $has_array_data = false;
 
+    public $defaultEvaluationRule = 'isNotEmpty';
     protected $default_field_content_type = 'all';
 
     public function validate($data)
@@ -35,7 +37,7 @@ class Text_ft extends EE_Fieldtype
             return true;
         }
 
-        if (! isset($this->field_content_types)) {
+        if (! isset($this->field_content_types) || is_null($this->field_content_types)) {
             ee()->load->model('field_model');
             $this->field_content_types = ee()->field_model->get_field_content_types();
         }
@@ -86,7 +88,7 @@ class Text_ft extends EE_Fieldtype
      */
     public function save($data)
     {
-        if (! isset($this->field_content_types)) {
+        if (! isset($this->field_content_types) || is_null($this->field_content_types)) {
             ee()->load->model('field_model');
             $this->field_content_types = ee()->field_model->get_field_content_types();
         }
@@ -148,7 +150,7 @@ class Text_ft extends EE_Fieldtype
                 $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('directory' => 'all'));
 
                 ee()->cp->add_js_script(array(
-                    'file' => array('fields/textarea/textarea'),
+                    'file' => array('fields/textarea/cp'),
                     'plugin' => array('ee_txtarea')
                 ));
             }

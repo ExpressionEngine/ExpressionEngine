@@ -17,6 +17,8 @@ use CP_Controller;
  */
 abstract class AbstractFields extends CP_Controller
 {
+    protected $validationResult;
+    
     /**
      * Constructor
      */
@@ -123,6 +125,72 @@ abstract class AbstractFields extends CP_Controller
         }
 
         ee()->view->left_nav = $sidebar->render();
+    }
+
+    protected function prepareFieldConditions()
+    {
+        $conditionSets = [];
+        $conditions = [];
+        $set_index = 0;
+        foreach (ee('Request')->post('condition_set') as $condition_set_id => $condition_set_data) {
+            if (!is_numeric($condition_set_id)) {
+                $fieldConditionSet = ee('Model')->make('FieldConditionSet');
+            } else {
+                $fieldConditionSet = ee('Model')->get('FieldConditionSet', $condition_set_id)->first();
+                if (empty($fieldConditionSet)) {
+                    $fieldConditionSet = ee('Model')->make('FieldConditionSet');
+                }
+            }
+            $fieldConditionSet->match = $condition_set_data['match'] ?: 'all';
+            $fieldConditionSet->order = $set_index;
+            $fieldConditionSetValidation = $fieldConditionSet->validate();
+            if (!$fieldConditionSetValidation->isValid()) {
+                $errors = $fieldConditionSetValidation->getFailed();
+                foreach ($errors as $piece => $rules) {
+                    foreach ($rules as $rule) {
+                        $errorName = 'condition_set[' . $condition_set_id . '][' . $piece . ']';
+                        $this->validationResult->addFailed($errorName, $rule);
+                    }
+                }
+            }
+            $conditionSets[$set_index] = $fieldConditionSet;
+
+            $rule_index = 0;
+            $postedConditions = ee('Request')->post('condition');
+            if (!empty($postedConditions) && isset($postedConditions[$condition_set_id])) {
+                foreach ($postedConditions[$condition_set_id] as $condition_id => $condition_data) {
+                    if (!is_numeric($condition_id)) {
+                        $fieldCondition = ee('Model')->make('FieldCondition');
+                    } else {
+                        $fieldCondition = ee('Model')->get('FieldCondition', $condition_id)->first();
+                        if (empty($fieldCondition)) {
+                            $fieldCondition = ee('Model')->make('FieldCondition');
+                        }
+                    }
+                    $fieldCondition->evaluation_rule = isset($condition_data['evaluation_rule']) ? $condition_data['evaluation_rule'] : '';
+                    $fieldCondition->value = isset($condition_data['value']) ? $condition_data['value'] : '';
+                    $fieldCondition->condition_field_id = isset($condition_data['condition_field_id']) ? $condition_data['condition_field_id'] : '';
+                    $fieldCondition->order = $rule_index;
+                    $fieldConditionValidation = $fieldCondition->validate();
+                    if (!$fieldConditionValidation->isValid()) {
+                        $errors = $fieldConditionValidation->getFailed();
+                        foreach ($errors as $piece => $rules) {
+                            foreach ($rules as $rule) {
+                                $errorName = 'condition[' . $condition_set_id . '][' . $condition_id . '][' . $piece . ']';
+                                $this->validationResult->addFailed($errorName, $rule);
+                            }
+                        }
+                    }
+
+                    $conditions[$set_index][$rule_index] = $fieldCondition;
+                    $rule_index++;
+                }
+            }
+
+            $set_index++;
+        }
+
+        return array($conditionSets, $conditions);
     }
 
     /**
