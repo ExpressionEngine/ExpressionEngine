@@ -91,7 +91,6 @@ class Set
      * @param string $name
      * @param string $type
      * @return Field
-     * @throws \Exception
      */
     public function getField(string $name, string $type = ''): Field
     {

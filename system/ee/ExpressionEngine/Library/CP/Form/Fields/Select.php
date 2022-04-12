@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Library\CP\Form\Fields;
 
-use EeObjects\Forms\Form\OptionsField;
+use ExpressionEngine\Library\CP\Form\OptionsField;
 
 class Select extends OptionsField
 {

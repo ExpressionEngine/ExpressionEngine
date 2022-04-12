@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Library\CP\Form\Fields;
 
-use EeObjects\Forms\Form\Field;
+use ExpressionEngine\Library\CP\Form\Field;
 
 class Toggle extends Field
 {
