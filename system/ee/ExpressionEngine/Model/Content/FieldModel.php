@@ -63,6 +63,16 @@ abstract class FieldModel extends Model
         return $this->_field_facade;
     }
 
+    public function getSupportedEvaluationRules()
+    {
+        return $this->getField($this->getSettingsValues())->getSupportedEvaluationRules();
+    }
+
+    public function getPossibleValuesForEvaluation()
+    {
+        return $this->getField($this->getSettingsValues())->getPossibleValuesForEvaluation();
+    }
+
     public function getSettingsForm()
     {
         return $this->getField($this->getSettingsValues())->getSettingsForm();
@@ -110,6 +120,9 @@ abstract class FieldModel extends Model
                 }
             }
         }
+
+        //validate assigned conditions
+        
 
         return $result;
     }
@@ -354,6 +367,7 @@ abstract class FieldModel extends Model
     {
         $cache_key = $this->getCacheKey();
         $names = ee()->cache->get($cache_key);
+        $names = false;
 
         if ($names === false) {
             $names = array_keys($this->getColumns());

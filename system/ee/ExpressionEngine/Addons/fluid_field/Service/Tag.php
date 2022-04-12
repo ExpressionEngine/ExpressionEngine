@@ -216,7 +216,7 @@ class Tag
         return $this->tagdata;
     }
 
-    protected function parseConditionals(FieldFacade $field, $tagdata = null, $vars = [])
+    protected function parseConditionals(FieldFacade $field, $tagdata = '', $vars = [])
     {
         $tagdata = ($tagdata) ?: $this->getTagdata();
 
@@ -227,13 +227,13 @@ class Tag
         return $this->function_delegate->prep_conditionals($tagdata, $vars);
     }
 
-    protected function replaceMetaTags(array $meta, $tagdata = null)
+    protected function replaceMetaTags(array $meta, $tagdata = '')
     {
         $tagdata = ($tagdata) ?: $this->getTagdata();
 
         foreach ($meta as $name => $value) {
             $tag = LD . $name . RD;
-            $tagdata = str_replace($tag, $value, $tagdata);
+            $tagdata = str_replace($tag, (string) $value, $tagdata);
         }
 
         return $tagdata;

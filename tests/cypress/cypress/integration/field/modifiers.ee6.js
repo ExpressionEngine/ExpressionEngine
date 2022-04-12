@@ -13,7 +13,7 @@ context('Categories', () => {
         cy.task('filesystem:delete', '../../system/user/config/stopwords.php')
 
         //copy templates
-        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' })
+		cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' })
 
         cy.authVisit('admin.php?/cp/design')
     })
@@ -35,7 +35,7 @@ context('Categories', () => {
     })
 
     it('check the variables in templates', function() {
-    
+
         cy.visit('index.php/modifiers/index')
 
         cy.get('h4').contains('Entry ID all same line').next('span').invoke('text').should('eq', '2014')
@@ -45,7 +45,7 @@ context('Categories', () => {
     })
 
     describe('url_slug modifier in templates', () => {
-    
+
         it('without parameters', function() {
             cy.visit('index.php/modifiers/url_slug')
 
@@ -55,7 +55,7 @@ context('Categories', () => {
         })
 
         it('using stopwords', function() {
-            
+
             cy.visit('index.php/modifiers/url_slug')
 
             cy.get('h4').contains('url_slug, no params').next('span').invoke('text').should('eq', 'welcome-to-the-example-site')
@@ -134,7 +134,7 @@ context('Categories', () => {
         cy.get('h4').contains('limit, preserve words').next('span').invoke('text').should('eq', 'Welcome to the…')
     })
 
-    it.only('modifiers inside relationships', function() {
+    it('modifiers inside relationships', function() {
         cy.visit('index.php/modifiers/relation')
 
         cy.get('h4').contains('original entry with all params').next('span').invoke('text').should('contain', 'EUR')

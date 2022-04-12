@@ -5,6 +5,7 @@ context('Entry filtering', () => {
 
 		before(function(){
 			cy.task('db:seed')
+			cy.eeConfig({ item: 'password_security_policy', value: 'none' })
 			cy.auth()
 
 			//it('Creates Channels to work with', () => {

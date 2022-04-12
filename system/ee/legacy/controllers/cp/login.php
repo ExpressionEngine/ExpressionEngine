@@ -26,6 +26,22 @@ class Login extends CP_Controller
         $this->lang->loadfile('login');
     }
 
+    /**
+     * Magic method for redirecting if someone attempts to reach a login method that does not exist
+     *
+     * @access  public
+     * @return  redirect
+     */
+    public function __call($name, $arguments)
+    {
+        // has their session Timed out and they are requesting a page?
+        // Grab the URL, base64_encode it and send them to the login screen.
+        $safe_refresh = ee()->cp->get_safe_refresh();
+        $return_url = ($safe_refresh == 'C=homepage') ? '' : AMP . 'return=' . urlencode(ee('Encrypt')->encode($safe_refresh));
+
+        ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
+    }
+
     public function mfa()
     {
         if (ee()->session->userdata('member_id') == 0) {
@@ -92,8 +108,6 @@ class Login extends CP_Controller
                     $session->mfa_flag = 'skip';
                     $session->save();
                 }
-                //sync the session
-                ee()->session->fetch_member_data();
                 $this->functions->redirect($return_path);
             }
         }
@@ -323,10 +337,9 @@ class Login extends CP_Controller
                 ->now();
         }
 
-        if (ee()->config->item('cookie_domain') != '') {
+        if (ee()->config->item('cp_session_type') != 's' && ee()->config->item('cookie_domain') != '') {
             $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-            $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('cookie_domain'));
-            if ($domain_matches === false) {
+            if (strpos(ee()->config->item('cp_url'), $cookie_domain) === false) {
                 ee('CP/Alert')
                     ->makeInline()
                     ->asIssue()
@@ -519,7 +532,7 @@ class Login extends CP_Controller
 
         $data = array(
             'required_changes' => array(),
-            'focus_field' => 'new_username',
+            'focus_field' => 'password',
             'cp_page_title' => lang('login'),
             'username' => $this->input->post('username'),
             'new_username_required' => false,
@@ -529,7 +542,6 @@ class Login extends CP_Controller
             'new_password' => $new_pw,
             'hidden' => array(
                 'username' => $this->input->post('username'),
-                'password' => base64_encode($this->input->post('password'))
             )
         );
 
@@ -544,8 +556,12 @@ class Login extends CP_Controller
             $required_changes[] = sprintf(lang('pw_len'), $pml);
         }
 
+        if ($data['new_username_required']) {
+            $data['focus_field'] = 'new_username';
+        }
+
         $alert = ee('CP/Alert')
-            ->makeInline()
+            ->makeInline('required_changes')
             ->asIssue()
             ->addToBody(lang('access_notice'))
             ->cannotClose()
@@ -553,6 +569,15 @@ class Login extends CP_Controller
 
         if (! empty($required_changes)) {
             $alert->addToBody($required_changes);
+        }
+
+        if (!empty($message)) {
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody($message)
+                ->cannotClose()
+                ->now();
         }
 
         return ee('View')->make('account/update_un_pw')->render($data);
@@ -571,6 +596,7 @@ class Login extends CP_Controller
         $this->lang->loadfile('member');
 
         $missing = false;
+        $updated = false;
 
         if (! isset($_POST['new_username']) and ! isset($_POST['new_password'])) {
             return $this->_un_pw_update_form(lang('all_fields_required'));
@@ -590,14 +616,8 @@ class Login extends CP_Controller
         $new_pw = (string) $this->input->post('new_password');
         $new_pwc = (string) $this->input->post('new_password_confirm');
 
-        // Make sure validation library is available
-        if (! class_exists('EE_Validate')) {
-            require APPPATH . 'libraries/Validate.php';
-        }
-
         // Load it up with the information needed
-        $VAL = new EE_Validate(
-            array(
+        $data = array(
                 'val_type' => 'new',
                 'fetch_lang' => true,
                 'require_cpw' => false,
@@ -606,7 +626,6 @@ class Login extends CP_Controller
                 'password' => $new_pw,
                 'password_confirm' => $new_pwc,
                 'cur_password' => $this->input->post('password')
-            )
         );
 
         $un_exists = false;
@@ -617,35 +636,45 @@ class Login extends CP_Controller
 
         $pw_exists = ($new_pw !== '' and $new_pwc !== '') ? true : false;
 
+        $validationRules = [];
+
         if ($un_exists) {
-            $VAL->validate_username();
+            $validationRules['username'] = 'uniqueUsername|validUsername|notBanned';
         }
 
         if ($pw_exists) {
-            $VAL->validate_password();
+            $validationRules['password'] = 'validPassword|passwordMatchesSecurityPolicy|matches[password_confirm]';
         }
 
+        $validationResult = ee('Validation')->make($validationRules)->validate($data);
+
         // Display error is there are any
-        if (count($VAL->errors) > 0) {
+        if ($validationResult->isNotValid()) {
             $er = '';
 
-            foreach ($VAL->errors as $val) {
-                $er .= $val . BR;
+            foreach ($validationResult->getAllErrors() as $error) {
+                foreach ($error as $val) {
+                    $er .= $val . BR;
+                }
             }
 
-            return $this->_un_pw_update_form($er);
+            return $this->_un_pw_update_form(trim($er, BR));
         }
 
         if ($un_exists) {
+            $updated = true;
             $this->auth->update_username($member_id, $new_un);
         }
 
         if ($pw_exists) {
+            $updated = true;
             $this->auth->update_password($member_id, $new_pw);
         }
 
         // Send them back to login with updated username and password
-        $this->session->set_flashdata('message', lang('unpw_updated'));
+        if ($updated) {
+            $this->session->set_flashdata('message', lang('unpw_updated'));
+        }
         $this->functions->redirect(BASE . AMP . 'C=login');
     }
 
@@ -861,7 +890,7 @@ class Login extends CP_Controller
         }
 
         if ($this->session->userdata('is_banned') === true) {
-            return show_error(lang('unauthorized_request'));
+            show_error(lang('unauthorized_request'));
         }
 
         // Side note 'get_post' actually means 'fetch from post or get'.  It
@@ -883,7 +912,7 @@ class Login extends CP_Controller
         // If we don't find a valid token, then they
         // shouldn't be here.  Show em an error.
         if ($member_id_query->num_rows() === 0) {
-            return show_error(lang('id_not_found'));
+            show_error(lang('id_not_found'));
         }
 
         $member_id = $member_id_query->row('member_id');
@@ -951,6 +980,7 @@ class Login extends CP_Controller
         if (form_error('password_confirm')) {
             $alert->addToBody(strip_tags(form_error('password_confirm')))->now();
         }
+
 
         $this->view->cp_page_title = lang('enter_new_password');
         $this->view->resetcode = $resetcode;
@@ -1029,6 +1059,32 @@ class Login extends CP_Controller
         }
 
         $this->functions->redirect(BASE . AMP . $redirect);
+    }
+
+    /**
+     * AJAX endpoint for password strength meter
+     *
+     * @return JSON
+     */
+    public function validate_password()
+    {
+        if (! AJAX_REQUEST || ee('Request')->method() != 'POST') {
+            show_error(lang('unauthorized_access'), 403);
+        }
+        $field = !empty(ee('Request')->post('ee_fv_field')) ? ee('Security/XSS')->clean(ee('Request')->post('ee_fv_field')) : 'password';
+        $password = ee('Request')->post($field);
+        $result = [];
+        $result['rank'] = ee('Member')->calculatePasswordComplexity($password);
+        if ($result['rank'] >= 80) {
+            $result['rank_text'] = lang('password_rank_very_strong');
+        } elseif ($result['rank'] >= 60) {
+            $result['rank_text'] = lang('password_rank_strong');
+        } elseif ($result['rank'] >= 40) {
+            $result['rank_text'] = lang('password_rank_good');
+        } else {
+            $result['rank_text'] = lang('password_rank_weak');
+        }
+        ee()->output->send_ajax_response($result);
     }
 }
 // END CLASS

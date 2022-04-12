@@ -194,7 +194,7 @@ class TemplateGroup extends Model
      */
     public function validateTemplateGroupName($key, $value, $params, $rule)
     {
-        $reserved_names = array('act', 'css');
+        $reserved_names = array('act', 'css', 'js');
 
         if (in_array($value, $reserved_names)) {
             return 'reserved_name';
@@ -216,7 +216,7 @@ class TemplateGroup extends Model
         $return = parent::validateUnique($key, $value, $params);
         if (is_bool($return)) {
             // Don't allow case insensitive matches on template group names
-            if (strcasecmp($value, $this->getBackup($key)) == 0) {
+            if (strcasecmp($value, (string) $this->getBackup($key)) == 0) {
                 return 'template_group_taken';
             }
 

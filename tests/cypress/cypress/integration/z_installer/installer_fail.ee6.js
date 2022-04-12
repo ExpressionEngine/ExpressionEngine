@@ -11,7 +11,7 @@ const page = new Installer
 const install_form = new Form
 const install_success = new Success
 
-context.skip('Installer (should fail)', () => {
+context('Installer (should fail)', () => {
   before(function() {
 
   })
@@ -51,7 +51,7 @@ context.skip('Installer (should fail)', () => {
 
   after(function(){
     cy.task('installer:disable')
-    cy.task('installer:revert_config')
+    cy.task('installer:replace_config')
   })
 
   context('when using invalid database credentials', () => {
@@ -99,7 +99,7 @@ context.skip('Installer (should fail)', () => {
       install_form.get('db_username').clear().type('nonsense')
       install_form.get('username').clear().type('admin')
       install_form.get('email_address').clear().type('hello@expressionengine.com')
-      install_form.get('password').clear().type('password')
+      install_form.get('password').clear().type('1Password')
       install_form.get('license_agreement').click()
       install_form.get('install_submit').click()
 
@@ -153,7 +153,7 @@ context.skip('Installer (should fail)', () => {
     })
 
     it('shows an error when using a too-long username', () => {
-      Cypress.$('input[maxlength=50]').prop('maxlength', 80);
+      Cypress.$('input[name=username]').prop('maxlength', 80);
       install_form.get('username').clear().type('12345678901234567890123456789012345678901234567890123456789012345678901234567890')
       install_form.get('install_submit').click()
       page.get('inline_errors').its('length').should('gte', 1)
@@ -220,7 +220,7 @@ context.skip('Installer (should fail)', () => {
       }
       install_form.get('username').clear().type('admin')
       install_form.get('email_address').clear().type('hello@expressionengine.com')
-      install_form.get('password').clear().type('password')
+      install_form.get('password').clear().type('1Password')
       install_form.get('install_submit').click()
 
       cy.hasNoErrors()

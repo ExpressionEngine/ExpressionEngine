@@ -39,8 +39,8 @@ class EE_Core
         }
 
         // Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
-        if (function_exists("set_time_limit") == true) {
-            @set_time_limit((REQ == 'CP' || REQ == 'CLI') ? 300 : 90);
+        if (function_exists("set_time_limit") == true && php_sapi_name() !== 'cli') {
+            @set_time_limit((REQ == 'CP') ? 300 : 90);
         }
 
         // If someone's trying to access the CP but EE_APPPATH is defined, it likely
@@ -69,7 +69,7 @@ class EE_Core
         // application constants
         define('APP_NAME', 'ExpressionEngine');
         define('APP_BUILD', '20211021');
-        define('APP_VER', '6.2.0');
+        define('APP_VER', '6.3.0');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -83,6 +83,7 @@ class EE_Core
         define('PASSWORD_MAX_LENGTH', 72);
         define('DOC_URL', 'https://docs.expressionengine.com/v6/');
         define('URL_TITLE_MAX_LENGTH', 200);
+        define('CLONING_MODE', (ee('Request') && ee('Request')->post('submit') == 'save_as_new_entry'));
 
         ee()->load->helper('language');
         ee()->load->helper('string');
@@ -90,7 +91,22 @@ class EE_Core
         // Load the default caching driver
         ee()->load->driver('cache');
 
-        ee()->load->database();
+        try {
+            ee()->load->database();
+        } catch (\Exception $e) {
+            if (REQ == 'CLI' && isset($_SERVER['argv'][1]) && $_SERVER['argv'][1] == 'update') {
+                // If this is running form an earlier version of EE < 3.0.0
+                // We'll load the DB the old fashioned way
+                $db_config_path = SYSPATH . '/user/config/database.php';
+                if (is_file($db_config_path)) {
+                    require $db_config_path;
+                    ee()->config->_update_dbconfig($db[$active_group], true);
+                }
+                ee()->load->database();
+            } else {
+                throw $e;
+            }
+        }
         ee()->db->swap_pre = 'exp_';
         ee()->db->db_debug = false;
 
@@ -111,11 +127,13 @@ class EE_Core
         }
 
         // setup cookie settings for all providers
-        $providers = ee('App')->getProviders();
-        foreach ($providers as $provider) {
-            $provider->registerCookiesSettings();
+        if (REQ != 'CLI') {
+            $providers = ee('App')->getProviders();
+            foreach ($providers as $provider) {
+                $provider->registerCookiesSettings();
+            }
+            ee('CookieRegistry')->loadCookiesSettings();
         }
-        ee('CookieRegistry')->loadCookiesSettings();
 
         // Set ->api on the legacy facade to the model factory
         ee()->set('api', ee()->di->make('Model'));
@@ -258,10 +276,12 @@ class EE_Core
             'rte', 'search', 'simple_commerce', 'spam', 'stats'
         );
 
-        // Is this a stylesheet request?  If so, we're done.
-        if (isset($_GET['css']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) {
-            ee()->load->library('stylesheet');
-            ee()->stylesheet->request_css_template();
+        // Is this a asset request?  If so, we're done.
+        if (
+            isset($_GET['css']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'css')
+            || isset($_GET['js']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'js')
+        ) {
+            ee('Resource')->request_template();
             exit;
         }
 
@@ -282,7 +302,6 @@ class EE_Core
         ee()->load->library('remember');
         ee()->load->library('localize');
         ee()->load->library('session');
-        ee()->load->library('user_agent');
 
         // Get timezone to set as PHP timezone
         $timezone = ee()->session->userdata('timezone', ee()->config->item('default_site_timezone'));
@@ -465,9 +484,9 @@ class EE_Core
 
         // Does an admin session exist?
         // Only the "login" class can be accessed when there isn't an admin session
-        if (ee()->session->userdata('admin_sess') == 0 &&
-            ee()->router->fetch_class(true) != 'login' &&
-            ee()->router->fetch_class() != 'css') {
+        if (ee()->session->userdata('admin_sess') == 0  //if not logged in
+            && ee()->router->fetch_class(true) !== 'login' // if not on login page
+            && ee()->router->fetch_class() != 'css') { // and the class isnt css
             // has their session Timed out and they are requesting a page?
             // Grab the URL, base64_encode it and send them to the login screen.
             $safe_refresh = ee()->cp->get_safe_refresh();
@@ -822,9 +841,14 @@ class EE_Core
             $error = lang('csrf_token_expired');
 
             //is the cookie domain part of site URL?
-            if (ee()->config->item('cookie_domain') != '') {
+            if (
+                ee()->config->item('cookie_domain') != '' && (
+                    (REQ == 'CP' && ee()->config->item('cp_session_type') != 's') ||
+                    (REQ == 'ACTION' && ee()->config->item('website_session_type') != 's')
+                )
+            ) {
                 $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('cookie_domain'));
+                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('site_url'));
                 if ($domain_matches === false) {
                     $error = lang('cookie_domain_mismatch');
                 }

@@ -7,7 +7,7 @@ on:
       - 6.x
   push:
     branches:
-      - feature/6.x/one-click-updater-tests
+      - feature/6.x/preparing-to-release
 
 jobs:
   build:
@@ -37,6 +37,13 @@ jobs:
       - name: Install build tool dependencies
         working-directory: build-tools
         run: npm install
+
+      - name: Rebuild CSS and JS
+        run: |
+          npm install
+          npm run build:css --production
+          npm run build:js
+          npm run build:old-js
 
       - name: Get version
         id: build_json
@@ -105,8 +112,8 @@ jobs:
       strategy:
           fail-fast: false
           matrix:
-              php: [7.4]
-              os: [ubuntu-18.04]
+              php: [8.0]
+              os: [ubuntu-latest]
 
       name: One-click updater, PHP${{ matrix.php }} - ${{ matrix.os }}
 
@@ -123,10 +130,10 @@ jobs:
                   wget -q https://github.com/ExpressionEngine/ExpressionEngine/releases/download/6.1.5/ExpressionEngine6.1.5.zip
                   unzip -q ExpressionEngine6.1.5.zip
                   mv ./__repo/tests ./
-                  rm -rf system/ee/installer
+                  mv ./__repo/build-tools ./
                   sudo apt-get install -yq rpl
-                  rpl -Rv https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/ExpressionEngine/Service/Updater/Runner.php
-                  rpl -Rv https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/legacy/libraries/El_pings.php
+                  rpl -v https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/ExpressionEngine/Service/Updater/Runner.php
+                  rpl -v https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/legacy/libraries/El_pings.php
 
             - name: List the files
               run: |
@@ -144,7 +151,13 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-                rpl -Rv '${{ needs.build.outputs.version }}' '6.1.5' system/user/config/config.php
+                rpl -v '${{ needs.build.outputs.version }}' '6.1.5' system/user/config/config.php
+                rpl -v '${{ needs.build.outputs.version }}' '6.1.5' build-tools/build.json
+
+            - name: Remove installer
+              run: |
+                ls -lar system/ee
+                mv system/ee/installer system/ee/_installer
 
             - name: Setup Permissions
               run: |

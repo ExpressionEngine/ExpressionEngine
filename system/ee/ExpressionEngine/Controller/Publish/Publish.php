@@ -237,8 +237,9 @@ class Publish extends AbstractPublishController
             'errors' => new \ExpressionEngine\Service\Validation\Result(),
             'revisions' => $this->getRevisionsTable($entry),
             'buttons' => $this->getPublishFormButtons($entry, $livePreviewReady),
-            'header' => [
+            'head' => [
                 'title' => lang('new_entry'),
+                'class' => 'entries'
             ],
         );
 
@@ -326,7 +327,7 @@ class Publish extends AbstractPublishController
             return ee('View')->make('publish/modal-entry')->render($vars);
         }
 
-        ee()->cp->render('publish/entry', $vars);
+        return ee()->cp->render('publish/entry', $vars);
     }
 
     /**

@@ -3,16 +3,22 @@ name: Release
 on:
   push:
     tags:
-      - '6.1.4'
-      - '6.1.5'
-      - '6.1.6'
-      - '6.1.7'
-      - '6.1.8'
-      - '6.1.9'
-      - '6.1.10'
-      - '6.2.0'
-      - '6.2.1'
-      - '6.2.2'
+      - '6.2.6'
+      - '6.2.7'
+      - '6.2.8'
+      - '6.3.0'
+      - '6.3.1'
+      - '6.3.2'
+      - '6.3.3'
+      - '6.3.4'
+      - '6.3.5'
+      - '6.3.6'
+      - '6.3.7'
+      - '6.3.8'
+      - '6.3.9'
+      - '6.3.10'
+      - '6.4.0'
+      - '6.4.1'
 
 jobs:
   build:
@@ -41,6 +47,13 @@ jobs:
       - name: Install build tool dependencies
         working-directory: build-tools
         run: npm install
+
+      - name: Rebuild CSS and JS
+        run: |
+          npm install
+          npm run build:css --production
+          npm run build:js
+          npm run build:old-js
 
       - name: Run build process
         working-directory: build-tools

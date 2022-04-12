@@ -21,6 +21,6 @@ class Regex extends ValidationRule
     {
         list($regex) = $this->assertParameters('expression');
 
-        return (bool) preg_match($regex, $value);
+        return (bool) preg_match($regex, (string) $value);
     }
 }

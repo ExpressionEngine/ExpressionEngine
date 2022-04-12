@@ -259,7 +259,7 @@ class MemberImport extends Utilities
             $group_name = htmlentities($role->name, ENT_QUOTES, 'UTF-8');
         }
 
-        $this->xml_file_name = (! empty($this->xml_file_name)) ? $this->xml_file_name : ee('Encrypt')->decode($this->input->post('xml_file_name'));
+        $this->xml_file_name = (! empty($this->xml_file_name)) ? $this->xml_file_name : ee('Encrypt')->decode(ee()->input->post('xml_file_name'));
 
         $data = array(
             'xml_file_name' => ee('Encrypt')->encode($this->xml_file_name),
@@ -326,12 +326,12 @@ class MemberImport extends Utilities
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $this->lang->loadfile('member_import');
+        ee()->lang->loadfile('member_import');
 
         $this->xml_file_name = ee('Encrypt')->decode(ee()->input->post('xml_file_name'));
 
         //  Read XML file contents
-        $this->load->helper('file');
+        ee()->load->helper('file');
         $contents = read_file($this->cache . '/' . $this->xml_file_name);
 
         if ($contents === false) {
@@ -340,7 +340,7 @@ class MemberImport extends Utilities
             return $this->memberImportConfirm();
         }
 
-        $this->load->library('xmlparser');
+        ee()->load->library('xmlparser');
 
         // parse XML data
         $xml = $this->xmlparser->parse_xml($contents);
@@ -411,18 +411,20 @@ class MemberImport extends Utilities
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $this->lang->loadfile('member_import');
-        $this->load->library('validate');
+        ee()->lang->loadfile('members');
+        ee()->lang->loadfile('member_import');
 
-        $this->validate->member_id = '';
-        $this->validate->val_type = 'new';
-        $this->validate->fetch_lang = true;
-        $this->validate->require_cpw = false;
-        $this->validate->enable_log = false;
-        $this->validate->cur_username = '';
-        $this->validate->cur_screen_name = '';
-        $this->validate->cur_password = '';
-        $this->validate->cur_email = '';
+        $validate = [
+            'member_id' => '',
+            'val_type' => 'new',
+            'fetch_lang' => true,
+            'require_cpw' => false,
+            'enable_log' => false,
+            'cur_username' => '',
+            'cur_screen_name' => '',
+            'cur_password' => '',
+            'cur_email' => ''
+        ];
 
         $i = 0;
 
@@ -432,8 +434,8 @@ class MemberImport extends Utilities
             $this->default_fields[$field] = '';
         }
 
-        $this->db->select('m_field_name, m_field_id');
-        $m_custom_fields = $this->db->get('member_fields');
+        ee()->db->select('m_field_name, m_field_id');
+        $m_custom_fields = ee()->db->get('member_fields');
 
         if ($m_custom_fields->num_rows() > 0) {
             foreach ($m_custom_fields->result() as $row) {
@@ -453,6 +455,7 @@ class MemberImport extends Utilities
         if (is_array($xml->children[0]->children)) {
             foreach ($xml->children as $member) {
                 if ($member->tag == "member") {
+                    $validationData = $validate;
                     foreach ($member->children as $tag) {
                         // Is the XML tag an allowed database field
                         if (isset($this->default_fields[$tag->tag])) {
@@ -471,7 +474,7 @@ class MemberImport extends Utilities
 
                         switch ($tag->tag) {
                             case 'username':
-                                $this->validate->username = $tag->value;
+                                $validationData['username'] = $tag->value;
                                 if (! in_array($tag->value, $u)) {
                                     $u[] = $tag->value;
                                 } else {
@@ -480,7 +483,7 @@ class MemberImport extends Utilities
 
                                 break;
                             case 'screen_name':
-                                $this->validate->screen_name = $tag->value;
+                                $validationData['screen_name'] = $tag->value;
                                 $s[] = $tag->value;
 
                                 break;
@@ -491,7 +494,7 @@ class MemberImport extends Utilities
                                 } else {
                                     $errors[] = array(lang('duplicate_email') . $value);
                                 }
-                                $this->validate->email = $value;
+                                $validationData['email'] = $value;
 
                                 break;
                             case 'member_id':
@@ -512,7 +515,7 @@ class MemberImport extends Utilities
                                 // We require a type attribute here, as outlined in the docs.
                                 // This is a quick error check to ensure its present.
                                 if (! @$tag->attributes['type']) {
-                                    show_error(str_replace('%x', $this->validate->username, lang('missing_password_type')));
+                                    show_error(str_replace('%x', $validationData['username'], lang('missing_password_type')));
                                 }
 
                                 $this->members[$i][$tag->tag] = $tag->value;
@@ -537,35 +540,36 @@ class MemberImport extends Utilities
                     /*  Validate separately to display
                     /*  exact problem
                     /* -------------------------------------*/
-
-                    $this->validate->validate_username();
-
-                    if (! empty($this->validate->errors)) {
-                        foreach ($this->validate->errors as $key => $val) {
-                            $this->validate->errors[$key] = $val . " (Username: '" . $username . "' - " . lang('within_user_record') . " '" . $username . "')";
-                        }
-                        $errors[] = $this->validate->errors;
-                        unset($this->validate->errors);
+                    $validationRules = [];
+                    $validationRules['username'] = 'uniqueUsername|validUsername|notBanned';
+                    if ($screen_name) {
+                        $validationRules['screen_name'] = 'validScreenName|notBanned';
                     }
+                    $validationRules['email'] = 'email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned';
+                    $validationResult = ee('Validation')->make($validationRules)->validate($validationData);
 
-                    $this->validate->validate_screen_name();
-
-                    if (! empty($this->validate->errors)) {
-                        foreach ($this->validate->errors as $key => $val) {
-                            $this->validate->errors[$key] = $val . " (Screen Name: '" . $screen_name . "' - " . lang('within_user_record') . " '" . $username . "')";
+                    if ($validationResult->isNotValid()) {
+                        if ($validationResult->hasErrors('username')) {
+                            $error = [];
+                            foreach ($validationResult->getErrors('username') as $key => $val) {
+                                $error[$key] = $val . " (Username: '" . $username . "' - " . lang('within_user_record') . " '" . $username . "')";
+                            }
+                            $errors[] = $error;
                         }
-                        $errors[] = $this->validate->errors;
-                        unset($this->validate->errors);
-                    }
-
-                    $this->validate->validate_email();
-
-                    if (! empty($this->validate->errors)) {
-                        foreach ($this->validate->errors as $key => $val) {
-                            $this->validate->errors[$key] = $val . " (Email: '" . $email . "' - " . lang('within_user_record') . " '" . $username . "')";
+                        if ($validationResult->hasErrors('screen_name')) {
+                            $error = [];
+                            foreach ($validationResult->getErrors('screen_name') as $key => $val) {
+                                $error[$key] = $val . " (Screen Name: '" . $screen_name . "' - " . lang('within_user_record') . " '" . $username . "')";
+                            }
+                            $errors[] = $error;
                         }
-                        $errors[] = $this->validate->errors;
-                        unset($this->validate->errors);
+                        if ($validationResult->hasErrors('email')) {
+                            $error = [];
+                            foreach ($validationResult->getErrors('email') as $key => $val) {
+                                $error[$key] = $val . " (Email: '" . $email . "' - " . lang('within_user_record') . " '" . $username . "')";
+                            }
+                            $errors[] = $error;
+                        }
                     }
 
                     /** -------------------------------------
@@ -610,12 +614,12 @@ class MemberImport extends Utilities
         }
 
         //  Set our optional default values
-        $this->default_fields['role_id'] = $this->input->post('role_id');
-        $this->default_fields['language'] = ($this->input->post('language') == lang('none') or $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
-        $this->default_fields['timezone'] = $this->input->post('timezones') ?: null;
-        $this->default_fields['date_format'] = $this->input->post('date_format') ?: null;
-        $this->default_fields['time_format'] = $this->input->post('time_format') ?: null;
-        $this->default_fields['include_seconds'] = $this->input->post('include_seconds') ?: null;
+        $this->default_fields['role_id'] = ee()->input->post('role_id');
+        $this->default_fields['language'] = (ee()->input->post('language') == lang('none') or ee()->input->post('language') == '') ? 'english' : strtolower(ee()->input->post('language'));
+        $this->default_fields['timezone'] = ee()->input->post('timezones') ?: null;
+        $this->default_fields['date_format'] = ee()->input->post('date_format') ?: null;
+        $this->default_fields['time_format'] = ee()->input->post('time_format') ?: null;
+        $this->default_fields['include_seconds'] = ee()->input->post('include_seconds') ?: null;
         $this->default_fields['ip_address'] = '0.0.0.0';
         $this->default_fields['join_date'] = $this->localize->now;
 
@@ -695,7 +699,7 @@ class MemberImport extends Utilities
     private function _custom_field_check($xml_file)
     {
         //  Read XML file contents
-        $this->load->helper('file');
+        ee()->load->helper('file');
         $contents = read_file($xml_file);
         $new_custom_fields = array();
 
@@ -703,25 +707,25 @@ class MemberImport extends Utilities
             return;
         }
 
-        $this->load->library('xmlparser');
+        ee()->load->library('xmlparser');
 
         // parse XML data
-        $xml = $this->xmlparser->parse_xml($contents);
+        $xml = ee()->xmlparser->parse_xml($contents);
 
         if ($xml == false) {
             return false;
         }
 
         //  Retreive Valid fields from database
-        $query = $this->db->query("SHOW COLUMNS FROM exp_members");
+        $query = ee()->db->query("SHOW COLUMNS FROM exp_members");
         $existing_fields['birthday'] = '';
 
         foreach ($query->result_array() as $row) {
             $existing_fields[$row['Field']] = '';
         }
 
-        $this->db->select('m_field_name');
-        $m_custom_fields = $this->db->get('member_fields');
+        ee()->db->select('m_field_name');
+        $m_custom_fields = ee()->db->get('member_fields');
 
         if ($m_custom_fields->num_rows() > 0) {
             foreach ($m_custom_fields->result() as $row) {
@@ -754,7 +758,7 @@ class MemberImport extends Utilities
      *
      * Generates the form for new custom field settings
      *
-     * @return	void
+     * @return string
      */
     private function _new_custom_fields_form($vars, $new_custom_fields)
     {
@@ -767,7 +771,7 @@ class MemberImport extends Utilities
 
         ee()->view->cp_page_title = lang('custom_fields');
         ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/member_import'), lang('member_import'));
-        ee()->cp->render('utilities/member-import/custom', $vars);
+        return ee()->cp->render('utilities/member-import/custom', $vars);
     }
 
     /**
@@ -798,7 +802,7 @@ class MemberImport extends Utilities
         $error = array();
         $taken = array();
 
-        $total_fields = count($this->input->post('create_ids'));
+        $total_fields = count(ee()->input->post('create_ids'));
 
         foreach ($_POST['create_ids'] as $k => $v) {
             $field = ee('Model')->make('MemberField');
@@ -826,7 +830,7 @@ class MemberImport extends Utilities
             if ($_POST['new'][$k] != $_POST['m_field_name'][$k]) {
                 $_POST['field_map']['map'][$_POST['m_field_name'][$k]] = $_POST['new'][$k];
             }
-            //$this->default_custom_fields[$_POST['m_field_name'][$k]] = 'm_field_id_'.$this->db->insert_id();
+            //$this->default_custom_fields[$_POST['m_field_name'][$k]] = 'm_field_id_'.ee()->db->insert_id();
         }
 
         $_POST['auto_custom_field'] = 'n';
@@ -851,7 +855,7 @@ class MemberImport extends Utilities
 
         // Gather existing field names
         ee()->db->select('m_field_name');
-        $m_custom_fields = $this->db->get('member_fields');
+        $m_custom_fields = ee()->db->get('member_fields');
 
         if ($m_custom_fields->num_rows() > 0) {
             foreach ($m_custom_fields->result() as $row) {

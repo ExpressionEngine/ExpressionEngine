@@ -39,6 +39,23 @@ class Association
     }
 
     /**
+     * Remove some variables to get cleaner var_dump
+     *
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $footprint = get_object_vars($this);
+        unset($footprint['facade']);
+        if (empty($footprint['related'])) {
+            unset($footprint['diff']);
+            unset($footprint['model']);
+            unset($footprint['relation']);
+        }
+        return $footprint;
+    }
+
+    /**
      * Fill item(s) for this association. Will not mark changes.
      *
      * @param Mixed $related Model(s)|Collection

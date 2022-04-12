@@ -265,15 +265,16 @@
 					cursor: pointer;
 		      // padding-left: 1px;
 
-		      @-moz-document url-prefix() {
+	      	i {
+	      		position: absolute;
+	      		top: 50%;
+	      		left: 50%;
+	      		transform: translate(-50%, -50%);
 
-		      	i {
-		      		position: absolute;
-		      		top: 50%;
-		      		left: 50%;
-		      		transform: translate(-50%, -50%);
-		      	}
-		      }
+            @-moz-document url-prefix() {
+              padding-bottom: 1px;
+            }
+	      	}
 			  }
       }
 

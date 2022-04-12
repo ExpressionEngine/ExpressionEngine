@@ -13,6 +13,7 @@
  */
 class Toggle_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Toggle',
         'version' => '1.0.0'
@@ -28,6 +29,13 @@ class Toggle_ft extends EE_Fieldtype
     public $settings_vars = array(
         'field_default_value' => '0',
     );
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = ['turnedOn', 'turnedOff'];
 
     /**
      * Fetch the fieldtype's name and version from it's addon.setup.php file.

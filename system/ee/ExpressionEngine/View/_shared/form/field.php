@@ -21,7 +21,7 @@ if (is_string($value)) {
 }
 $attrs = (isset($field['attrs'])) ? $field['attrs'] : '';
 if (isset($field['disabled']) && $field['disabled'] == true) {
-    $attrs = ' disabled="disabled"';
+    $attrs .= ' disabled="disabled"';
 }
 // This is to handle showing and hiding certain parts
 // of the form when a form element changes
@@ -74,12 +74,34 @@ case 'short-text': ?>
             <span class="label-txt"><?=lang($field['label'])?></span>
         <?php endif;?>
     </label>
+    <?php break;
+case 'slider':
+    if ($class): ?>
+        <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
+    <?php endif ?>
+
+            <input type="range" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+
+    <?php if (!empty($class)): ?>
+        </div>
+    <?php endif ?>
+<?php break;
+case 'number':
+    if ($class): ?>
+        <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
+    <?php endif ?>
+
+            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+
+    <?php if (!empty($class)): ?>
+        </div>
+    <?php endif ?>
 <?php break;
 case 'file': ?>
     <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>">
 <?php break;
 case 'password': ?>
-    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>">
+    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' || $field_name=='password_confirm' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>">
 <?php break;
 case 'hidden': ?>
     <input type="hidden" name="<?=$field_name?>" value="<?=$value?>">

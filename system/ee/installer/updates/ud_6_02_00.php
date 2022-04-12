@@ -32,6 +32,9 @@ class Updater
             'addProFieldSettings',
             'addTotalMembersCount',
             'addEnableCliConfig',
+            'addMemberValidationAction',
+            'setPasswordSecurityPolicy',
+            'addPendingRoleToMember',
         ]);
 
         foreach ($steps as $k => $v) {
@@ -39,6 +42,61 @@ class Updater
         }
 
         return true;
+    }
+
+    private function addPendingRoleToMember() 
+    {
+        if (!ee()->db->field_exists('pending_role_id', 'members')) {
+            ee()->smartforge->add_column(
+                'members',
+                [
+                    'pending_role_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'default' => '0',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
+    }
+
+    private function addMemberValidationAction()
+    {
+
+        $action = ee()->db->get_where('actions', array('class' => 'Member', 'method' => 'validate'));
+
+        if ($action->num_rows() > 0) {
+            return;
+        }
+
+        ee()->db->insert('actions', array(
+            'class' => 'Member',
+            'method' => 'validate',
+        ));
+    }
+
+    private function setPasswordSecurityPolicy()
+    {
+        $require_secure_passwords = ee('Config')->getFile()->get('require_secure_passwords');
+        if (!empty($require_secure_passwords)) {
+            ee()->config->update_site_prefs(['password_security_policy' => ($require_secure_passwords == 'y' ? 'basic' : 'none')], 'all');
+            ee()->config->_update_config([], ['require_secure_passwords' => 'require_secure_passwords']);
+        } else {
+            $sites = ee()->db->get('sites');
+            foreach ($sites->result_array() as $site) {
+                $password_security_policy = 'none';
+                $configQuery = ee()->db->select('config_id, value')
+                    ->from('config')
+                    ->where('site_id', $site['site_id'])
+                    ->where('key', 'require_secure_passwords')
+                    ->get();
+                if ($configQuery->num_rows() > 0 && $configQuery->row('value') == 'y') {
+                    $password_security_policy = 'basic';
+                }
+                ee()->config->update_site_prefs(['password_security_policy' => $password_security_policy], $site['site_id']);
+            }
+        }
     }
 
     private function addMfaColumns()

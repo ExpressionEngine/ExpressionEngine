@@ -31,7 +31,3 @@
                 <?php echo ee('CP/NavigationSidebar')->render(); ?>
 
 			</div>
-
-
-
-

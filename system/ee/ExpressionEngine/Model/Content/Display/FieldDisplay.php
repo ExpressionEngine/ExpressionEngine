@@ -18,11 +18,13 @@ class FieldDisplay
     protected $field;
     protected $collapsed = false;
     protected $visible = true;
+    protected $conditional = false;
 
     public function __construct($field)
     {
         $this->field = $field;
         $this->collapsed = (bool) $field->getItem('field_is_hidden');
+        $this->conditional = $field->getItem('field_is_conditional');
     }
 
     public function get($key)
@@ -99,6 +101,17 @@ class FieldDisplay
     {
         return $this->collapsed;
     }
+
+    public function titleIsHidden()
+    {
+        return (bool) $this->getSetting('field_hide_title');
+    }
+
+    public function publishLayoutCollapseIsHidden()
+    {
+        return (bool) $this->getSetting('field_hide_publish_layout_collapse');
+    }
+
     public function hide()
     {
         $this->visible = false;
@@ -116,6 +129,16 @@ class FieldDisplay
     public function isVisible()
     {
         return $this->visible;
+    }
+
+    public function isConditional()
+    {
+        return get_bool_from_string($this->conditional);
+    }
+
+    public function isConditionallyHidden()
+    {
+        return get_bool_from_string($this->field->getHidden());
     }
 
     public function getSetting($item)

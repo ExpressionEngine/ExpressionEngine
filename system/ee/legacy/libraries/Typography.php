@@ -582,7 +582,7 @@ class EE_Typography
     public function parse_type($str, $prefs = '')
     {
         if ($str == '') {
-            return;
+            return $str;
         }
 
         // -------------------------------------------
@@ -800,7 +800,7 @@ class EE_Typography
 
         if (! class_exists($plugin)) {
             if (in_array($this->text_format, ee()->core->native_plugins)) {
-                require_once PATH_ADDONS . 'pi.' . $this->text_format . '.php';
+                require_once PATH_ADDONS . $this->text_format . '/pi.' . $this->text_format . '.php';
             } else {
                 require_once PATH_THIRD . $this->text_format . '/pi.' . $this->text_format . '.php';
             }

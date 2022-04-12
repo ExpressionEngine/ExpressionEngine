@@ -24,6 +24,13 @@ class Fluid_field_ft extends EE_Fieldtype
     private $errors;
 
     /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = null;
+
+    /**
      * Fetch the fieldtype's name and version from its addon.setup.php file.
      */
     public function __construct()
@@ -37,11 +44,11 @@ class Fluid_field_ft extends EE_Fieldtype
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
     }
 
-    public function validate($field_data)
+    public function validate($data)
     {
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
 
-        if (empty($field_data)) {
+        if (empty($data)) {
             return true;
         }
 
@@ -50,7 +57,7 @@ class Fluid_field_ft extends EE_Fieldtype
             ->all()
             ->indexByIds();
 
-        foreach ($field_data['fields'] as $key => $data) {
+        foreach ($data['fields'] as $key => $data) {
             $field_id = null;
             $fluid_field_data_id = null;
 
@@ -197,12 +204,12 @@ class Fluid_field_ft extends EE_Fieldtype
             }
 
             // Existing field
-            if (strpos($key, 'field_') === 0) {
+            if (strpos($key, 'field_') === 0 && (!defined('CLONING_MODE') || CLONING_MODE !== true)) {
                 $id = str_replace('field_', '', $key);
                 $this->updateField($fluid_field_data[$id], $i, $value);
                 unset($fluid_field_data[$id]);
             // New field
-            } elseif (strpos($key, 'new_field_') === 0) {
+            } elseif (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
                 foreach (array_keys($value) as $k) {
                     if (strpos($k, 'field_id_') === 0) {
                         $field_id = str_replace('field_id_', '', $k);
@@ -345,7 +352,7 @@ class Fluid_field_ft extends EE_Fieldtype
      * @param string $data Stored data for the field
      * @return string Field display
      */
-    public function display_field($field_data)
+    public function display_field($data)
     {
         $fields = '';
 
@@ -361,7 +368,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $field_templates = $field_templates->indexByIds();
 
-        if (! is_array($field_data)) {
+        if (! is_array($data)) {
             if ($this->content_id) {
                 $fluid_field_data = $this->getFieldData();
 
@@ -382,7 +389,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 }
             }
         } else {
-            foreach ($field_data['fields'] as $key => $data) {
+            foreach ($data['fields'] as $key => $data) {
                 $field_id = null;
 
                 foreach (array_keys($data) as $datum) {
@@ -455,6 +462,9 @@ class Fluid_field_ft extends EE_Fieldtype
                 'filters' => $filters,
             ));
         }
+
+        //since this is not implemented outside of CP, return empty string
+        return '';
     }
 
     public function display_settings($data)
@@ -536,7 +546,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
             $removed_fields = (array_diff($this->settings['field_channel_fields'], $all['field_channel_fields']));
 
-            if (! empty($removed_fields)) {
+            if (! empty($removed_fields) && ! isset($_POST['ee_fv_field'])) {
                 $fluid_field_data = ee('Model')->get('fluid_field:FluidField')
                     ->filter('fluid_field_id', $this->field_id)
                     ->filter('field_id', 'IN', $removed_fields)
