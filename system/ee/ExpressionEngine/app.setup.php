@@ -111,6 +111,9 @@ $setup = [
             return $grid;
         },
 
+        'CP/Form' => function ($ee) {
+            return new Library\CP\Form();
+        },
         'CP/JumpMenu' => function ($ee) {
             return new JumpMenu\JumpMenu();
         },
