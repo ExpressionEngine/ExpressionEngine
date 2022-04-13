@@ -87,11 +87,10 @@ jobs:
 
       - name: Build Changelog
         id: build_changelog
-        uses: okcredit/changelog-creator-action@v1.0.0
-        with:
-          milestone: ${{ steps.build_json.outputs.BUILD_VERSION }}
-          configuration: "build-tools/changelog.config.json"
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+        uses: mikepenz/release-changelog-builder-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
+          ignorePreReleases: true
 
       - name: Show changelog
         run: echo ${{ steps.build_changelog.outputs.changelog }}
@@ -116,7 +115,7 @@ jobs:
           ls -latr build-tools/builds
 
   test-one-click:
-      if: github.event.pull_request.draft == false
+      if: github.event.pull_request.draft == 123
       needs: build
       runs-on: ${{ matrix.os }}
 
