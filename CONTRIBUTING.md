@@ -116,13 +116,7 @@ If your idea is not useful to 80% of users and typical use cases, it may be bett
 
 ### Documentation
 
-Every pull request should have a single line descriptive changelog message in the appropriate changelog file. When a version is released, these items are moved to the User Guide release branch to publish the changes.
-
-| File | Semantic Version |
-| ---- | ---------------- |
-| changelogs/patch.rst | x.x.**X** |
-| changelogs/minor.rst | x.**X**.x |
-| changelogs/major.rst | **X**.x.x |
+Every pull request should have its title set to line that will form a changelog entry, ex. `Resolved #1234 where switching theme to pink did not work for non-superadmins`, referencing the corresponding GitHub issue. When a version is released, these items are moved to the User Guide release branch to publish the changes.
 
 All additive changes and new features should have a corresponding pull request in the [User Guide repository](https://github.com/ExpressionEngine/ExpressionEngine-User-Guide) that documents the changes.
 

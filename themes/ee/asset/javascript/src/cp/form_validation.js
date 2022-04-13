@@ -423,7 +423,7 @@ EE.cp.formValidation = {
 				tab_button.removeClass('invalid'); 
 			}
 
-			if (EE.hasOwnProperty('publish') && EE.publish.hasOwnProperty('has_conditional_fields') && EE.publish.has_conditional_fields) {
+			if (EE.hasOwnProperty('publish') && EE.publish.hasOwnProperty('has_conditional_fields') && EE.publish.has_conditional_fields && typeof(hidden_fields) !== 'undefined') {
 				EE.cp.hide_show_entries_fields(hidden_fields);
 			}
 
