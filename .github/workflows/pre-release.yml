@@ -51,6 +51,7 @@ jobs:
         run: |
           content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
           echo "::set-output name=BUILD_VERSION::$content"
+          git fetch --tags
 
       - name: Set DP version
         run: echo "dp_ver=1" >> $GITHUB_ENV
