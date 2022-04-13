@@ -106,8 +106,6 @@ class Notes_ft extends EE_Fieldtype
             ]
         ];
 
-        ee()->cp->add_js_script('file', 'cp/notes');
-
         return ['field_options_notes' => [
             'label' => 'field_options',
             'group' => 'notes',
