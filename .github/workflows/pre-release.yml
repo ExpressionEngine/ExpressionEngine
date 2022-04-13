@@ -76,7 +76,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
-          ignorePreReleases: false
+          fromTag: 6.3.0
 
       - name: Show changelog
         run: echo ${{ steps.build_changelog.outputs.changelog }}
