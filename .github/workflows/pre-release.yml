@@ -52,22 +52,6 @@ jobs:
           content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
           echo "::set-output name=BUILD_VERSION::$content"
 
-      - name: Run build process
-        working-directory: build-tools
-        env:
-          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-          APP_REPO_PATH: ${{ github.workspace }}
-          PRO_REPO_PATH: ${{ github.workspace }}/__pro
-        run: |
-          gulp app --local --nogit --head --skip-lint --jira-collector --version=${{ steps.build_json.outputs.BUILD_VERSION }}
-
-      - name: Archive Build files
-        uses: actions/upload-artifact@v2
-        with:
-          name: EE${{ steps.build_json.outputs.BUILD_VERSION }}
-          path: build-tools/builds
-      
       - name: Set DP version
         run: echo "dp_ver=1" >> $GITHUB_ENV
 
@@ -94,6 +78,22 @@ jobs:
 
       - name: Show changelog
         run: echo ${{ steps.build_changelog.outputs.changelog }}
+
+      - name: Run build process
+        working-directory: build-tools
+        env:
+          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          APP_REPO_PATH: ${{ github.workspace }}
+          PRO_REPO_PATH: ${{ github.workspace }}/__pro
+        run: |
+          gulp app --local --nogit --head --skip-lint --jira-collector --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+
+      - name: Archive Build files
+        uses: actions/upload-artifact@v2
+        with:
+          name: EE${{ steps.build_json.outputs.BUILD_VERSION }}
+          path: build-tools/builds
 
       - uses: ncipollo/release-action@v1
         with:
