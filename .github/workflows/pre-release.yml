@@ -90,7 +90,7 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
-          ignorePreReleases: true
+          fromTag: 6.3.0
 
       - name: Show changelog
         run: echo ${{ steps.build_changelog.outputs.changelog }}
