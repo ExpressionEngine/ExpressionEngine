@@ -85,6 +85,14 @@ jobs:
           content=`echo "${{ steps.prev_tag.outputs.tag }}" | rev | cut -d "." -s -f 1 | rev`
           echo "dp_ver=$(( 1+$content ))" >> $GITHUB_ENV
 
+      - name: Build Changelog
+        id: build_changelog
+        uses: okcredit/changelog-creator-action@{latest-release}
+        with:
+          milestone: ${{ steps.build_json.outputs.BUILD_VERSION }}
+          configuration: "build-tools/changelog.config.json"
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
@@ -95,7 +103,7 @@ jobs:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           prerelease: true
           #draft: true
-          body: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} developer preview ${{ env.dp_ver }}
+          body: ${{ steps.build_changelog.outputs.changelog }}
 
       - name: Directory Listing on Failure
         if: failure()
