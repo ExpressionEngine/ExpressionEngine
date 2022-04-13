@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,6 +19,8 @@ class Classifier
 
     // Sensitivity of the classifier, are we at least X% sure this is spam?
     public $sensitivity = .5;
+    public $corpus;
+    public $training;
 
     // This is the assumed a priori spam to ham ratio
     public $ratio = .8;

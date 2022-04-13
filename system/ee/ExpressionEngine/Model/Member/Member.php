@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,7 +32,8 @@ class Member extends ContentModel
     protected static $_hook_id = 'member';
 
     protected static $_typed_columns = array(
-        'cp_homepage_channel' => 'json'
+        'cp_homepage_channel' => 'json',
+        'enable_mfa' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -214,10 +215,10 @@ class Member extends ContentModel
 
     protected static $_validation_rules = array(
         'role_id' => 'required|isNatural|validateRoles',
-        'username' => 'required|unique|validateUsername',
-        'screen_name' => 'validateScreenName',
-        'email' => 'required|email|uniqueEmail|validateEmail',
-        'password' => 'required|validatePassword',
+        'username' => 'required|unique|validUsername|validateWhenIsNew|notBanned',
+        'screen_name' => 'validScreenName|notBanned',
+        'email' => 'required|email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned',
+        'password' => 'required|validPassword|passwordMatchesSecurityPolicy',
         'timezone' => 'validateTimezone',
         'date_format' => 'validateDateFormat',
         'time_format' => 'enum[12,24]',
@@ -228,8 +229,10 @@ class Member extends ContentModel
     protected static $_events = array(
         'afterUpdate',
         'beforeDelete',
+        'afterDelete',
         'afterBulkDelete',
         'beforeInsert',
+        'afterInsert',
         'beforeValidate',
         'afterSave'
     );
@@ -238,12 +241,14 @@ class Member extends ContentModel
     protected $member_id;
     protected $group_id;
     protected $role_id;
+    protected $pending_role_id;
     protected $username;
     protected $screen_name;
     protected $password;
     protected $salt;
     protected $unique_id;
     protected $crypt_key;
+    protected $backup_mfa_code;
     protected $authcode;
     protected $email;
     protected $signature;
@@ -301,6 +306,7 @@ class Member extends ContentModel
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
     protected $dismissed_pro_banner;
+    protected $enable_mfa;
 
     /**
      * Getter for legacy group_id property
@@ -419,6 +425,27 @@ class Member extends ContentModel
     {
         parent::onAfterSave();
         ee()->cache->file->delete('jumpmenu/' . md5($this->member_id));
+    }
+
+    public function onAfterInsert()
+    {
+        parent::onAfterInsert();
+        if (! bool_config_item('ignore_member_stats')) {
+            foreach ($this->getAllRoles() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
+        }
+    }
+
+    public function onAfterDelete()
+    {
+        if (! bool_config_item('ignore_member_stats')) {
+            foreach ($this->getAllRoles() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
+        }
     }
 
     /**
@@ -703,134 +730,11 @@ class Member extends ContentModel
     }
 
     /**
-     * Ensures the username doesn't have invalid characters, is the correct length, and isn't banned
+     * Additional validation for new member
      */
-    public function validateUsername($key, $username)
+    public function validateWhenIsNew($key, $value, $parameters, $rule)
     {
-        if (preg_match("/[\|'\"!<>\{\}]/", $username)) {
-            return 'invalid_characters_in_username';
-        }
-
-        // Is username min length correct?
-        $un_length = ee()->config->item('un_min_len');
-        if (strlen($username) < ee()->config->item('un_min_len')) {
-            return sprintf(lang('username_too_short'), $un_length);
-        }
-
-        if (strlen($username) > USERNAME_MAX_LENGTH) {
-            return 'username_too_long';
-        }
-
-        if ($this->isNew()) {
-            // Is username banned?
-            if (ee()->session->ban_check('username', $username)) {
-                return 'username_taken';
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Validation callback for screen name
-     */
-    public function validateScreenName($key, $screen_name)
-    {
-        if (preg_match('/[\{\}<>]/', $screen_name)) {
-            return 'disallowed_screen_chars';
-        }
-
-        if (strlen($screen_name) > USERNAME_MAX_LENGTH) {
-            return 'screenname_too_long';
-        }
-
-        if ($this->isNew()) {
-            if (ee()->session->ban_check('screen_name', $screen_name)) {
-                return 'screen_name_taken';
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Validation callback for email field
-     */
-    public function validateEmail($key, $email)
-    {
-        if (strlen($email) > USERNAME_MAX_LENGTH) {
-            return 'email_too_long';
-        }
-
-        // Is email address banned?
-        if (ee()->session->ban_check('email', $email)) {
-            return 'email_taken';
-        }
-
-        return true;
-    }
-
-    /**
-     * Ensures the group ID exists and the member has permission to add to the group
-     */
-    public function validatePassword($key, $password)
-    {
-        ee()->lang->loadfile('myaccount');
-
-        $pw_length = ee()->config->item('pw_min_len');
-        if (strlen($password) < $pw_length) {
-            return sprintf(lang('password_too_short'), $pw_length);
-        }
-
-        // Is password max length correct?
-        if (strlen($password) > PASSWORD_MAX_LENGTH) {
-            return 'password_too_long';
-        }
-
-        //  Make UN/PW lowercase for testing
-        $lc_user = strtolower($this->username);
-        $lc_pass = strtolower($password);
-        $nm_pass = strtr($lc_pass, 'elos', '3105');
-
-        if ($lc_user == $lc_pass or $lc_user == strrev($lc_pass) or $lc_user == $nm_pass or $lc_user == strrev($nm_pass)) {
-            return 'password_based_on_username';
-        }
-
-        // Are secure passwords required?
-        if (bool_config_item('require_secure_passwords')) {
-            $count = array('uc' => 0, 'lc' => 0, 'num' => 0);
-
-            $pass = preg_quote($password, "/");
-
-            $len = strlen($pass);
-
-            for ($i = 0; $i < $len; $i++) {
-                $n = substr($pass, $i, 1);
-
-                if (preg_match("/^[[:upper:]]$/", $n)) {
-                    $count['uc']++;
-                } elseif (preg_match("/^[[:lower:]]$/", $n)) {
-                    $count['lc']++;
-                } elseif (preg_match("/^[[:digit:]]$/", $n)) {
-                    $count['num']++;
-                }
-            }
-
-            foreach ($count as $val) {
-                if ($val == 0) {
-                    return 'not_secure_password';
-                }
-            }
-        }
-
-        // Does password exist in dictionary?
-        // TODO: move out of form validation library
-        ee()->load->library('form_validation');
-        if (ee()->form_validation->_lookup_dictionary_word($lc_pass) == true) {
-            return 'password_in_dictionary';
-        }
-
-        return true;
+        return $this->isNew() ? true : $rule->skip();
     }
 
     /**
@@ -1138,6 +1042,20 @@ class Member extends ContentModel
         }
 
         $uploads = [];
+        $limitedRoles = [2, 3, 4];
+        if (!in_array($this->role_id, $limitedRoles) && !array_intersect($this->getAllRoles()->pluck('role_id'), $limitedRoles)) {
+            $alwaysAllowed = ['Avatars'];
+            if (bool_config_item('prv_msg_enabled') && bool_config_item('prv_msg_allow_attachments')) {
+                $alwaysAllowed[] = 'PM Attachments';
+            }
+            if (bool_config_item('enable_signatures')) {
+                $alwaysAllowed[] = 'Signature Attachments';
+            }
+            $directories = ee('Model')->get('UploadDestination')->filter('name', 'IN', $alwaysAllowed)->all();
+            foreach ($directories as $dir) {
+                $uploads[$dir->getId()] = $dir;
+            }
+        }
         foreach ($this->getAllRoles() as $role) {
             foreach ($role->AssignedUploadDestinations as $dir) {
                 $uploads[$dir->getId()] = $dir;

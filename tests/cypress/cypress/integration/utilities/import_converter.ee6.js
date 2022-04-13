@@ -5,6 +5,9 @@ const page = new ImportConverter;
 
 context('Import File Converter', () => {
 
+    before(function(){
+        cy.task('db:seed')
+    })
 
 	beforeEach(function() {
 	    cy.visit('admin.php?/cp/login');

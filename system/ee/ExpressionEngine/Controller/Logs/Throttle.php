@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -53,12 +53,12 @@ class Throttle extends Logs
             $max_page_loads = 10;
             $lockout_time = 30;
 
-            if (is_numeric($this->config->item('max_page_loads'))) {
-                $max_page_loads = $this->config->item('max_page_loads');
+            if (is_numeric(ee()->config->item('max_page_loads'))) {
+                $max_page_loads = ee()->config->item('max_page_loads');
             }
 
-            if (is_numeric($this->config->item('lockout_time'))) {
-                $lockout_time = $this->config->item('lockout_time');
+            if (is_numeric(ee()->config->item('lockout_time'))) {
+                $lockout_time = ee()->config->item('lockout_time');
             }
 
             $logs = ee('Model')->get('Throttle')

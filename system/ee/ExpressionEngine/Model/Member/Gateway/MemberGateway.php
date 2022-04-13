@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,12 +23,14 @@ class MemberGateway extends Gateway
     // Properties
     protected $member_id;
     protected $role_id;
+    protected $pending_role_id;
     protected $username;
     protected $screen_name;
     protected $password;
     protected $salt;
     protected $unique_id;
     protected $crypt_key;
+    protected $backup_mfa_code;
     protected $authcode;
     protected $email;
     protected $signature;
@@ -86,6 +88,7 @@ class MemberGateway extends Gateway
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
     protected $dismissed_pro_banner;
+    protected $enable_mfa;
 }
 
 // EOF

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -216,7 +216,23 @@ class Channels extends AbstractChannelsController
         $vars['errors'] = null;
 
         if (! empty($_POST)) {
+            // List of all the fields && groups before saving
+            $beforeFields = $channel->CustomFields->pluck('field_id');
+            $beforeFieldGroups = $channel->FieldGroups->pluck('group_id');
+
+            // Set up the channel after changes
             $channel = $this->setWithPost($channel);
+
+            // List of all the fields && groups after saving
+            $afterFields = $channel->CustomFields->pluck('field_id');
+            $afterFieldGroups = $channel->FieldGroups->pluck('group_id');
+
+            // Get the fields that are different
+            $removedFields = array_diff($beforeFields, $afterFields);
+            $removedFieldGroups = array_diff($beforeFieldGroups, $afterFieldGroups);
+            $addedFields = array_diff($afterFields, $beforeFields);
+            $addedFieldGroups = array_diff($afterFieldGroups, $beforeFieldGroups);
+
             $channel->site_id = ee()->config->item('site_id');
             $result = $channel->validate();
 
@@ -238,12 +254,51 @@ class Channels extends AbstractChannelsController
                     ->defer();
 
                 if (ee('Request')->post('submit') == 'save_and_new') {
-                    ee()->functions->redirect(ee('CP/URL')->make('channels/create'));
+                    $redirectUrl = ee('CP/URL')->make('channels/create');
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
-                    ee()->functions->redirect(ee('CP/URL')->make('channels'));
+                    $redirectUrl = ee('CP/URL')->make('channels');
                 } else {
-                    ee()->functions->redirect(ee('CP/URL')->make('channels/edit/' . $channel->getId()));
+                    $redirectUrl = ee('CP/URL')->make('channels/edit/' . $channel->getId());
                 }
+                // If we added a field that is conditional, we need to sync channel entries
+                $syncNeeded = false;
+                if (!empty($addedFields)) {
+                    $fields = $channel->CustomFields->filter('field_id', 'IN', $addedFields);
+                    foreach ($fields as $field) {
+                        if ($field->field_is_conditional) {
+                            $syncNeeded = true;
+                            break;
+                        }
+                    }
+                }
+
+                // If we added a field group that has a field that is conditional, we need to sync channel entries
+                if (!empty($addedFieldGroups) && !$syncNeeded) {
+                    $fieldGroups = $channel->FieldGroups->filter('group_id', 'IN', $addedFieldGroups);
+
+                    foreach ($fieldGroups as $fieldGroup) {
+                        foreach ($fieldGroup->ChannelFields as $field) {
+                            if ($field->field_is_conditional) {
+                                $syncNeeded = true;
+                                break;
+                            }
+                        }
+
+                        if ($syncNeeded) {
+                            break;
+                        }
+                    }
+                }
+
+                // Redirect to sync page if we need to
+                if ($syncNeeded) {
+                    ee()->functions->redirect(
+                        ee('CP/URL')->make('channels/syncConditions/' . $channel->getId())
+                        ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                    );
+                }
+
+                ee()->functions->redirect($redirectUrl);
             } else {
                 // Put cat_group back as an array
                 $_POST['cat_group'] = explode('|', $_POST['cat_group']);
@@ -301,7 +356,7 @@ class Channels extends AbstractChannelsController
         ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
         ee()->view->header = array(
-            'title' => is_null($channel_id) ? lang('channels') : htmlspecialchars($channel->channel_title),
+            'title' => is_null($channel_id) ? lang('channels') : ee('Security/XSS')->clean(htmlspecialchars($channel->channel_title)),
             'toolbar_items' => array(
                 'settings' => array(
                     'href' => ee('CP/URL')->make('settings/content-design'),
@@ -343,6 +398,90 @@ class Channels extends AbstractChannelsController
                 'working' => 'btn_saving'
             ]
         ];
+
+        ee()->cp->render('settings/form', $vars);
+    }
+
+    public function syncConditions($channel_id = null)
+    {
+        if (! ee('Permission')->can('edit_channels')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $channel = ee('Model')->get('Channel', $channel_id)->first();
+
+        if (! $channel) {
+            show_404();
+        }
+
+        $channelEntryCount = 0;
+        $groupedChannelEntryCounts = [];
+
+
+        $count = $channel->Entries->count();
+        $channelEntryCount += $count;
+        $groupedChannelEntryCounts[] = [
+            'channel_id' => $channel->getId(),
+            'entry_count' => $count
+        ];
+
+        ksort($groupedChannelEntryCounts);
+
+        $vars['sections'] = array(
+            array(
+                array(
+                    'title' => 'field_conditions_sync_existing_entries',
+                    'desc' => sprintf(lang('field_conditions_sync_desc'), $channelEntryCount),
+                    'fields' => array(
+                        'progress' => array(
+                            'type' => 'html',
+                            'content' => ee()->load->view('_shared/progress_bar', array('percent' => 0), true)
+                        ),
+                        'message' => array(
+                            'type' => 'html',
+                            'content' => ee()->load->view('_shared/message', array(
+                                'cp_messages' => [
+                                    'field-instruct' => '<em>'.lang('field_conditions_sync_in_progress_message').'</em>'
+                                ]), true)
+                        )
+                    )
+                )
+            )
+        );
+
+        $base_url = ee('CP/URL')->make('channels/syncConditions/' . $channel_id);
+        $channel_url = ee('CP/URL')->make('channels/edit/' . $channel_id);
+
+        $return = ee()->input->get('return') ? base64_decode(ee()->input->get('return')) : $channel_url->compile();
+
+        if ($channelEntryCount === 0) {
+            ee()->functions->redirect($return);
+        }
+
+        ee()->cp->add_js_script('file', 'cp/fields/synchronize');
+
+        // Globals needed for JS script
+        ee()->javascript->set_global(array(
+            'fieldManager' => array(
+                'channel_entry_count' => $channelEntryCount,
+                'groupedChannelEntryCounts' => $groupedChannelEntryCounts,
+
+                'sync_baseurl' => $base_url->compile(),
+                'sync_returnurl' => $return,
+                'sync_endpoint' => ee('CP/URL')->make('fields/evaluateConditions')->compile(),
+            )
+        ));
+
+        ee()->view->base_url = $base_url;
+        ee()->view->cp_page_title = lang('field_conditions_syncing_conditional_logic');
+        ee()->view->cp_page_title_alt = lang('field_conditions_syncing_conditional_logic');
+        ee()->view->save_btn_text = 'btn_sync_conditional_logic';
+        ee()->view->save_btn_text_working = 'btn_sync_conditional_logic_working';
+
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('channels')->compile() => lang('channels'),
+            '' => lang('field_conditions_sync_conditional_logic')
+        );
 
         ee()->cp->render('settings/form', $vars);
     }
@@ -631,7 +770,7 @@ class Channels extends AbstractChannelsController
         $selected = ee('Request')->post('cat_group') ?: [];
 
         if ($channel && ! empty($channel->cat_group)) {
-            $selected = explode('|', $channel->cat_group);
+            $selected = explode('|', (string) $channel->cat_group);
         }
 
         $no_results = [
@@ -758,7 +897,7 @@ class Channels extends AbstractChannelsController
 
         $deft_category_options = ['' => lang('none')];
 
-        $category_group_ids = $channel->cat_group ? explode('|', $channel->cat_group) : array();
+        $category_group_ids = $channel->cat_group ? explode('|', (string) $channel->cat_group) : array();
 
         if (count($category_group_ids)) {
             $categories = ee('Model')->get('Category')
@@ -812,6 +951,12 @@ class Channels extends AbstractChannelsController
         ee()->load->model('admin_model');
 
         $author_list = $this->authorList();
+        if (!empty($channel_form->default_author) && !isset($author_list[$channel_form->default_author])) {
+            $defaultAuthor = ee('Model')->get('Member', $channel_form->default_author)->first();
+            if (!empty($defaultAuthor)) {
+                $author_list[$channel_form->default_author] = $defaultAuthor->getMemberName();
+            }
+        }
 
         $sections = array(
             array(
@@ -1031,7 +1176,7 @@ class Channels extends AbstractChannelsController
                     'fields' => array(
                         'default_author' => array(
                             'type' => 'radio',
-                            'choices' => $this->authorList(),
+                            'choices' => $author_list,
                             'filter_url' => ee('CP/URL')->make('channels/author-list')->compile(),
                             'value' => isset($author_list[$channel_form->default_author])
                                 ? $channel_form->default_author
@@ -1060,7 +1205,11 @@ class Channels extends AbstractChannelsController
                     'fields' => array(
                         'enable_versioning' => array(
                             'type' => 'yes_no',
-                            'value' => $channel->enable_versioning
+                            'value' => $channel->enable_versioning,
+                            'note' => form_label(
+                                form_checkbox('update_versioning', 'y')
+                                . lang('update_versioning')
+                            )
                         )
                     )
                 ),
@@ -1248,6 +1397,19 @@ class Channels extends AbstractChannelsController
             )
         );
 
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && (ee()->config->item('enable_entry_cloning') === false || ee()->config->item('enable_entry_cloning') === 'y')) {
+            $sections['publishing'][] = array(
+                'title' => 'enable_entry_cloning',
+                'desc' => 'enable_entry_cloning_desc',
+                'fields' => array(
+                    'enable_entry_cloning' => array(
+                        'type' => 'yes_no',
+                        'value' => $channel->enable_entry_cloning
+                    )
+                )
+            );
+        }
+
         $html = '';
 
         foreach ($sections as $name => $settings) {
@@ -1358,9 +1520,12 @@ class Channels extends AbstractChannelsController
      *
      * @return array ID => Screen name array of authors
      */
-    public function authorList()
+    public function authorList($search = null)
     {
-        $authors = ee('Member')->getAuthors(ee('Request')->get('search'));
+        if (!empty(ee('Request')->get('search'))) {
+            $search = ee('Request')->get('search');
+        }
+        $authors = ee('Member')->getAuthors($search);
 
         if (AJAX_REQUEST) {
             return ee('View/Helpers')->normalizedChoices($authors);
@@ -1460,11 +1625,11 @@ class Channels extends AbstractChannelsController
 
         // Create Channel
         if ($channel->isNew()) {
-            $channel->default_entry_title = '';
-            $channel->url_title_prefix = '';
-            $channel->channel_url = ee()->functions->fetch_site_index();
-            $channel->channel_lang = ee()->config->item('xml_lang');
-            $channel->site_id = ee()->config->item('site_id');
+            $channel->default_entry_title = $channel->default_entry_title ?: '';
+            $channel->url_title_prefix = $channel->url_title_prefix ?: '';
+            $channel->channel_url = $channel->channel_url ?: ee()->functions->fetch_site_index();
+            $channel->channel_lang = $channel->channel_lang ?: ee()->config->item('xml_lang');
+            $channel->site_id = $channel->site_id ?: ee()->config->item('site_id');
 
             $dupe_id = ee()->input->post('duplicate_channel_prefs');
             unset($_POST['duplicate_channel_prefs']);
@@ -1496,6 +1661,10 @@ class Channels extends AbstractChannelsController
             ee()->logger->log_action($success_msg . NBS . NBS . $_POST['channel_title']);
         } else {
             $channel->save();
+        }
+
+        if (ee('Request')->post('update_versioning')) {
+            ee('Channel/ChannelEntry')->updateVersioning($channel->getId(), ee('Request')->post('enable_versioning'));
         }
 
         $perms = [];

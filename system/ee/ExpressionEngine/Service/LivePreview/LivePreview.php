@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -74,7 +74,7 @@ class LivePreview
     /**
      * generate and display the live preview
      */
-    public function preview($channel_id, $entry_id = null, $preview_url = null)
+    public function preview($channel_id, $entry_id = null, $preview_url = null, $prefer_system_preview = false)
     {
         if (empty($_POST)) {
             return;
@@ -106,6 +106,15 @@ class LivePreview
             $data['categories'] = $_POST['categories'];
         }
 
+        //perform conditional fields calculations
+        $hiddenFields = $entry->evaluateConditionalFields();
+        if (!empty($hiddenFields)) {
+            foreach ($hiddenFields as $hiddenFieldId) {
+                $data['field_hide_' . $hiddenFieldId] = 'y';
+                $data['field_id_' . $hiddenFieldId] = null;
+            }
+        }
+
         ee('LivePreview')->setEntryData($data);
 
         ee()->load->library('template', null, 'TMPL');
@@ -113,7 +122,8 @@ class LivePreview
         $template_id = null;
 
         if (! empty($_POST['pages__pages_uri'])
-            && ! empty($_POST['pages__pages_template_id'])) {
+                && ! empty($_POST['pages__pages_template_id'])) {
+            //pages data passed with POST
             $values = [
                 'pages_uri' => $_POST['pages__pages_uri'],
                 'pages_template_id' => $_POST['pages__pages_template_id'],
@@ -129,6 +139,7 @@ class LivePreview
         }
 
         if (!empty($preview_url)) {
+            //preview/return url directly specified
             $site_index = str_ireplace(['http:', 'https:'], '', ee()->functions->fetch_site_index());
             $preview_url = str_ireplace(['http:', 'https:'], '', $preview_url);
             $uri = str_replace($site_index, '', $preview_url);
@@ -137,20 +148,26 @@ class LivePreview
                 $uri = str_ireplace($parsed_url['host'], '', $uri);
             }
             $uri = trim($uri, '/');
-        } elseif ($entry->hasPageURI()) {
-            $uri = $entry->getPageURI();
-            ee()->uri->page_query_string = $entry->entry_id;
-            if (! $template_id) {
-                $template_id = $entry->getPageTemplateID();
-            }
-        } else {
-            // We want to avoid replacing `{url_title}` with an empty string since that
-            // can cause the wrong thing to render (like 404s).
-            if (empty($entry->url_title)) {
-                $entry->url_title = $entry->entry_id;
-            }
+        }
 
-            $uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
+        if (empty($preview_url) || $prefer_system_preview === true) {
+            if ($entry->hasPageURI()) {
+                //pre-existing page URI
+                $uri = $entry->getPageURI();
+                ee()->uri->page_query_string = $entry->entry_id;
+                if (! $template_id) {
+                    $template_id = $entry->getPageTemplateID();
+                }
+            } else {
+                //channel settings
+                // We want to avoid replacing `{url_title}` with an empty string since that
+                // can cause the wrong thing to render (like 404s).
+                if (empty($entry->url_title)) {
+                    $entry->url_title = $entry->entry_id;
+                }
+
+                $uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
+            }
         }
 
         // -------------------------------------------

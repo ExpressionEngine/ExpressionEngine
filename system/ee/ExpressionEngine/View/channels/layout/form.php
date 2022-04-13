@@ -5,7 +5,13 @@
 	<?=form_open($form_url, 'class="ajax-validate"')?>
   <div class="panel-heading">
     <div class="form-btns form-btns-top">
-  		<?php $this->embed('ee:_shared/form/buttons'); ?>
+		<div class="title-bar title-bar--large">
+    		<h3 class="title-bar__title"><?=ee('Format')->make('Text', (isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title)->attributeSafe()->compile()?></h3>
+
+    		<div class="title-bar__extra-tools">
+  				<?php $this->embed('ee:_shared/form/buttons'); ?>
+			</div>
+		</div>
   	</div>
   </div>
   <div class="panel-body">
@@ -50,14 +56,16 @@
 							<div class="layout-item">
 								<div class="layout-item__handle ui-sortable-handle"></div>
 								<div class="layout-item__content">
-									<label class="layout-item__title"><span class="faded float-right"><?=$field->getTypeName()?></span><?=$field->getLabel()?> <span class="faded">(<?=$field->getShortName()?>)</span></label>
+									<label class="layout-item__title"><span class="faded float-right"><?=$field->getTypeName()?></span><?=$field->getLabel()?> <span class="faded"><?=(($tab->id != 'categories') ? '(' . $field->getShortName() . ')' : '') ?></span></label>
 									<div class="layout-item__options">
 										<?php if ($field->isRequired()): ?>
 										<label class="field-option-required"><?=ucwords(lang('required_field'))?></label>
 										<?php else: ?>
 										<label class="field-option-hide"><input class="checkbox checkbox--small" type="checkbox"<?php if (! $field->isVisible()): ?> checked="checked"<?php endif ?>><?=lang('hide')?></label>
 										<?php endif; ?>
+                                        <?php if (!$field->publishLayoutCollapseIsHidden()): ?>
 										<label class="field-option-collapse"><input class="checkbox checkbox--small" type="checkbox"<?php if ($field->isCollapsed()):?> checked="checked"<?php endif ?>><?=lang('collapse')?></label>
+                                        <?php endif; ?>
 									</div>
 								</div>
 							</div>

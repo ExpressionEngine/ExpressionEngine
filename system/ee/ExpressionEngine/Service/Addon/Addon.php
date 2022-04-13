@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -118,6 +118,13 @@ class Addon
             */
 
             $installed_plugins = self::$installed_plugins;
+
+            //always return true if the table does not exist
+            //e.g. when running update from EE2 to EE6
+            //some older version also don't use . as separator
+            if (version_compare(ee()->config->item('app_version'), '3.0.0', '<') || strpos(ee()->config->item('app_version'), '.') === false) {
+                return true;
+            }
 
             if (is_null($installed_plugins)) {
                 $installed_plugins = array_map('array_pop', ee()->db
@@ -372,6 +379,11 @@ class Addon
         return $this->getFullyQualified($class);
     }
 
+    public function getEvaluationRuleClass($rule)
+    {
+        return $this->getFullyQualified("EvaluationRules\\" . ucfirst($rule));
+    }
+
     /**
      * Has a README.md file?
      *
@@ -521,14 +533,16 @@ class Addon
                 unset($items[$key]);
 
                 // Modify the command, command_title, target, and add-on flag to denote it's an add-on command.
-                $items[$newKey]['addon'] = true;
+                $items[$newKey]['addon'] = (isset($item['addon']) && $item['addon'] === false) ? false : true;
                 $items[$newKey]['command'] = $this->shortname . ' ' . lang($items[$newKey]['command']);
-                $items[$newKey]['command_title'] = $this->provider->getName() . ': ' . lang($items[$newKey]['command_title']);
+                $items[$newKey]['command_title'] = ($items[$newKey]['addon'] === true) ? ($this->provider->getName() . ': ' . lang($items[$newKey]['command_title'])) : lang($items[$newKey]['command_title']);
 
-                if ($item['dynamic'] === true) {
-                    $items[$newKey]['target'] = 'addons/' . $this->shortname . '/' . ltrim($item['target'], '/');
-                } else {
-                    $items[$newKey]['target'] = 'addons/settings/' . $this->shortname . '/' . ltrim($item['target'], '/');
+                if ($items[$newKey]['addon'] === true) {
+                    if ($item['dynamic'] === true) {
+                        $items[$newKey]['target'] = 'addons/' . $this->shortname . '/' . ltrim($item['target'], '/');
+                    } else {
+                        $items[$newKey]['target'] = 'addons/settings/' . $this->shortname . '/' . ltrim($item['target'], '/');
+                    }
                 }
             }
         } catch (\Exception $e) {

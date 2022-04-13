@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -112,8 +112,13 @@ class EE_Image_lib
          * Convert array elements into class variables
          */
         if (count($props) > 0) {
+            $intProps = ['width', 'height', 'quality', 'orig_width', 'orig_height'];
             foreach ($props as $key => $val) {
-                $this->$key = $val;
+                if(in_array($key, $intProps) && $val > 0) {
+                    $this->$key = (int) $val;
+                } else {
+                    $this->$key = $val;
+                }
             }
         }
 
@@ -1336,9 +1341,9 @@ class EE_Image_lib
 
         if (($this->width != $new_width) and ($this->height != $new_height)) {
             if ($this->master_dim == 'height') {
-                $this->width = $new_width;
+                $this->width = (int) $new_width;
             } else {
-                $this->height = $new_height;
+                $this->height = (int) $new_height;
             }
         }
     }
@@ -1429,9 +1434,9 @@ class EE_Image_lib
         }
 
         if ($vals['new_width'] == 0) {
-            $vals['new_width'] = ceil($vals['width'] * $vals['new_height'] / $vals['height']);
+            $vals['new_width'] = (int) ceil($vals['width'] * $vals['new_height'] / $vals['height']);
         } elseif ($vals['new_height'] == 0) {
-            $vals['new_height'] = ceil($vals['new_width'] * $vals['height'] / $vals['width']);
+            $vals['new_height'] = (int) ceil($vals['new_width'] * $vals['height'] / $vals['width']);
         }
 
         return $vals;

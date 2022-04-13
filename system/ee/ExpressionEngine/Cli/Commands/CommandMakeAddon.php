@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -217,11 +217,16 @@ class CommandMakeAddon extends Cli
 
     private function getName()
     {
+        // This is the name passed to the CLI
         $name = $this->getFirstUnnamedArgument();
 
+        // If no name was passed, ask for a name
         if (is_null($name)) {
             $name = $this->ask('command_make_addon_what_is_name');
         }
+
+        // Lets filter the name to only allow alphanumerics, "-", "_" and spaces
+        $name = preg_replace("/[^A-Za-z0-9 \-_]/", '', $name);
 
         if (empty(trim($name))) {
             $this->fail('command_make_addon_addon_name_required');

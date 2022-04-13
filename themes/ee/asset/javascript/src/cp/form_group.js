@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -106,9 +106,9 @@ function toggleSections(sections, show, key) {
 
 			// if we're showing this section, but the field is hidden
 			// from another toggle, then don't show it
-			if (group && group != key) {
-				hidden[group] = ! show;
-			}
+			// if (group && group != key) {
+			// 	hidden[group] = ! show;
+			// }
 
 			if (show && group && hidden[group] != undefined) {
 				toggleFields(field, hidden[group], key);

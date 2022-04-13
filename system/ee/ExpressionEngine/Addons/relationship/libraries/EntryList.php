@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -123,7 +123,7 @@ class EntryList
 
             if (count($roles)) {
                 foreach (ee('Model')->get('Role', $roles)->all() as $role) {
-                    $members = array_merge($role->getAllMembers()->pluck('member_id'), $members);
+                    $members = array_merge($role->getAllMembersData('member_id'), $members);
                 }
             }
 
@@ -200,10 +200,10 @@ class EntryList
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $settings['search'] = ee('Request')->get('search');
-        $settings['channel_id'] = ee('Request')->get('channel_id');
-        $settings['related'] = ee('Request')->get('related');
-        $settings['selected'] = ee('Request')->get('selected');
+        $settings['search'] = ee('Request')->isPost() ? ee('Request')->post('search') : ee('Request')->get('search');
+        $settings['channel_id'] = ee('Request')->isPost() ? ee('Request')->post('channel_id') : ee('Request')->get('channel_id');
+        $settings['related'] = ee('Request')->isPost() ? ee('Request')->post('related') : ee('Request')->get('related');
+        $settings['selected'] = ee('Request')->isPost() ? ee('Request')->post('selected') : ee('Request')->get('selected');
 
         if (! AJAX_REQUEST or ! ee()->session->userdata('member_id')) {
             show_error(lang('unauthorized_access'), 403);
@@ -214,7 +214,7 @@ class EntryList
             $response[] = [
                 'value' => $entry->getId(),
                 'label' => $entry->title,
-                'instructions' => $entry->Channel->channel_title
+                'instructions' => $entry->Channel->channel_title,
             ];
         }
 

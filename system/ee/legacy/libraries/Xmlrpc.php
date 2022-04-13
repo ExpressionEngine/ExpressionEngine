@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 if (! function_exists('xml_parser_create')) {
@@ -1266,6 +1266,9 @@ class XML_RPC_Values extends EE_Xmlrpc
 
     public function iso8601_encode($time, $utc = 0)
     {
+        if (version_compare(PHP_VERSION, '8.1', '>=')) {
+            return date("%Y%m%dT%H:%M:%S", $time);
+        }
         if ($utc == 1) {
             $t = strftime("%Y%m%dT%H:%M:%S", $time);
         } else {

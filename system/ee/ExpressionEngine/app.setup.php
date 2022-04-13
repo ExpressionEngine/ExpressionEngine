@@ -4,17 +4,20 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 use ExpressionEngine\Library;
 use ExpressionEngine\Library\Filesystem;
 use ExpressionEngine\Library\Curl;
+use ExpressionEngine\Library\Resource;
 use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
+use ExpressionEngine\Service\Channel;
 use ExpressionEngine\Service\ChannelSet;
+use ExpressionEngine\Service\ConditionalFields;
 use ExpressionEngine\Service\Config;
 use ExpressionEngine\Service\Consent;
 use ExpressionEngine\Service\Cookie;
@@ -54,6 +57,7 @@ use ExpressionEngine\Service\Generator\CommandGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
+use ExpressionEngine\Model\Channel\ChannelEntry;
 
 // TODO should put the version in here at some point ...
 $setup = [
@@ -262,6 +266,18 @@ $setup = [
             );
         },
 
+        'Resource' => function () {
+            return new Resource\Request();
+        },
+
+        'Resource/Javascript' => function () {
+            return new Resource\Javascript();
+        },
+
+        'Resource/Stylesheet' => function () {
+            return new Resource\Stylesheet();
+        },
+
         'Updater/Runner' => function ($ee) {
             return new Updater\Runner();
         },
@@ -383,6 +399,9 @@ $setup = [
             );
         },
 
+        'ConditionalFieldEvaluator' => function ($ee, ChannelEntry $channelEntry) {
+            return new ConditionalFields\Evaluator($channelEntry);
+        },
     ),
 
     'services.singletons' => array(
@@ -393,6 +412,10 @@ $setup = [
 
         'Captcha' => function ($ee) {
             return new Library\Captcha();
+        },
+
+        'Channel/ChannelEntry' => function ($ee) {
+            return new Channel\ChannelEntry();
         },
 
         'ChannelSet' => function ($ee) {
@@ -443,6 +466,10 @@ $setup = [
             $view = $ee->make('View');
 
             return new Sidebar\Navigation\NavigationSidebar($view);
+        },
+
+        'ConditionalFields' => function ($ee) {
+            return new ConditionalFields\Factory();
         },
 
         'Config' => function ($ee) {
@@ -599,6 +626,10 @@ $setup = [
         'ChannelLayout' => 'Model\Channel\ChannelLayout',
         'FieldData' => 'Model\Content\FieldData',
 
+        // ..\ConditionalFields
+        'FieldConditionSet' => 'Model\ConditionalFields\FieldConditionSet',
+        'FieldCondition' => 'Model\ConditionalFields\FieldCondition',
+
         // ..\Comment
         'Comment' => 'Model\Comment\Comment',
         'CommentSubscription' => 'Model\Comment\CommentSubscription',
@@ -710,12 +741,19 @@ $setup = [
         ],
         'viewtype' => [
             'description' => 'lang:cookie_viewtype_desc',
+            'provider' => 'cp',
         ],
         'cp_last_site_id' => [
             'description' => 'lang:cookie_cp_last_site_id_desc',
+            'provider' => 'cp',
         ],
         'collapsed_nav' => [
             'description' => 'lang:cookie_collapsed_nav_desc',
+            'provider' => 'cp',
+        ],
+        'ee_cp_viewmode' => [
+            'description' => 'lang:cookie_ee_cp_viewmode_desc',
+            'provider' => 'cp',
         ],
     ],
 ];

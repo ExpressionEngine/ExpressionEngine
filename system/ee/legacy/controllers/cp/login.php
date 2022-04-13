@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -27,6 +27,241 @@ class Login extends CP_Controller
     }
 
     /**
+     * Magic method for redirecting if someone attempts to reach a login method that does not exist
+     *
+     * @access  public
+     * @return  redirect
+     */
+    public function __call($name, $arguments)
+    {
+        // has their session Timed out and they are requesting a page?
+        // Grab the URL, base64_encode it and send them to the login screen.
+        $safe_refresh = ee()->cp->get_safe_refresh();
+        $return_url = ($safe_refresh == 'C=homepage') ? '' : AMP . 'return=' . urlencode(ee('Encrypt')->encode($safe_refresh));
+
+        ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
+    }
+
+    public function mfa()
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return $this->authenticate();
+        }
+
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+
+        $redirect = '';
+        if ($this->input->post('return_path')) {
+            $redirect = $this->input->post('return_path');
+        } elseif ($this->input->get('return')) {
+            $redirect = urldecode($this->input->get('return'));
+        }
+
+        if (!empty($redirect)) {
+            $return_path = ee('Encrypt')->decode(str_replace(' ', '+', $redirect));
+
+            if (strpos($return_path, '{') === 0) {
+                $uri_elements = json_decode($return_path, true);
+                $return_path = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments'])->compile();
+                if (IS_PRO && isset($uri_elements['arguments']['hide_closer']) && $uri_elements['arguments']['hide_closer'] == 'y') {
+                    $this->view->hide_topbar = true;
+                    $this->view->pro_class = 'pro-frontend-modal';
+                }
+            }
+        }
+        if (empty($return_path)) {
+            $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+            $return_path = $member->getCPHomepageURL();
+        }
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
+            $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
+
+            // If there is a URL= parameter in the return URL folks could end up anywhere
+            // so if we see that we'll ditch everything we were told and just go to `/`
+            if (
+                strpos($return_path, '&URL=') !== false
+                || strpos($return_path, '?URL=') !== false
+            ) {
+                $return_path = ee('CP/URL')->make('/')->compile();
+            }
+
+            $this->functions->redirect($return_path);
+        }
+
+        if (!empty($_POST['mfa_code'])) {
+            $validated = ee('pro:Mfa')->validateOtp(ee('Request')->post('mfa_code'), ee()->session->userdata('unique_id') . ee()->session->getMember()->backup_mfa_code);
+            if (!$validated) {
+                ee()->session->save_password_lockout(ee()->session->userdata('username'));
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('mfa_wrong_code'))
+                    ->addToBody(lang('mfa_wrong_code_desc'))
+                    ->now();
+            } else {
+                ee()->session->delete_password_lockout();
+                $sessions = ee('Model')
+                    ->get('Session')
+                    ->filter('member_id', ee()->session->userdata('member_id'))
+                    ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                    ->all();
+                foreach ($sessions as $session) {
+                    $session->mfa_flag = 'skip';
+                    $session->save();
+                }
+                $this->functions->redirect($return_path);
+            }
+        }
+
+        $this->view->return_path = ee('Encrypt')->encode($return_path);
+
+        $this->view->focus_field = 'mfa_code';
+
+        if ($this->session->flashdata('message')) {
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody($this->session->flashdata('message'))
+                ->now();
+        }
+
+        // Normal login button state
+        $this->view->btn_class = 'button button--primary button--large button--wide';
+        $this->view->btn_label = lang('confirm');
+        $this->view->btn_disabled = '';
+
+        if (ee()->session->check_password_lockout(ee()->session->userdata('username')) === true) {
+            $this->view->btn_class .= ' disable';
+            $this->view->btn_label = lang('locked');
+            $this->view->btn_disabled = 'disabled';
+
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody(sprintf(
+                    lang('password_lockout_in_effect'),
+                    ee()->config->item('password_lockout_interval')
+                ))
+                ->cannotClose()
+                ->now();
+        }
+
+        // Show the site label
+        $site_label = ee('Model')->get('Site')
+            ->fields('site_label')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->first()
+            ->site_label;
+
+        $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
+
+        $view = 'pro:account/mfa';
+
+        $this->view->cp_page_title = lang('login');
+
+        $this->view->cp_session_type = ee()->config->item('cp_session_type');
+
+        ee()->output->enable_profiler(false);
+
+        $this->view->render($view);
+    }
+
+    public function mfa_reset()
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return $this->authenticate();
+        }
+
+        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $return_path = $member->getCPHomepageURL();
+
+        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
+            $this->functions->redirect($return_path);
+        }
+
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+
+        if (!empty($_POST)) {
+            if (md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))) == $member->backup_mfa_code) {
+                ee()->session->delete_password_lockout();
+                $sessions = ee('Model')
+                    ->get('Session')
+                    ->filter('member_id', ee()->session->userdata('member_id'))
+                    ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                    ->all();
+                foreach ($sessions as $session) {
+                    $session->mfa_flag = 'skip';
+                    $session->save();
+                }
+                $member->set(['backup_mfa_code' => '', 'enable_mfa' => false]);
+                $member->save();
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('mfa_reset_success'))
+                    ->addToBody(lang('mfa_reset_success_message'))
+                    ->defer();
+                $this->functions->redirect(ee('CP/URL', 'members/profile/pro/mfa')->compile());
+            } else {
+                ee()->session->save_password_lockout(ee()->session->userdata('username'));
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('mfa_wrong_backup_code'))
+                    ->addToBody(lang('mfa_wrong_backup_code_desc'))
+                    ->now();
+            }
+        }
+
+        $this->view->focus_field = 'backup_mfa_code';
+
+        if ($this->session->flashdata('message')) {
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody($this->session->flashdata('message'))
+                ->now();
+        }
+
+        // Normal login button state
+        $this->view->btn_class = 'button button--primary button--large button--wide';
+        $this->view->btn_label = lang('reset');
+        $this->view->btn_disabled = '';
+
+        if (ee()->session->check_password_lockout(ee()->session->userdata('username')) === true) {
+            $this->view->btn_class .= ' disable';
+            $this->view->btn_label = lang('locked');
+            $this->view->btn_disabled = 'disabled';
+
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody(sprintf(
+                    lang('password_lockout_in_effect'),
+                    ee()->config->item('password_lockout_interval')
+                ))
+                ->cannotClose()
+                ->now();
+        }
+
+        // Show the site label
+        $site_label = ee('Model')->get('Site')
+            ->fields('site_label')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->first()
+            ->site_label;
+
+        $this->view->header = ($site_label) ? lang('log_into') . ' ' . $site_label : lang('login');
+
+        $view = 'pro:account/mfa-reset';
+
+        $this->view->cp_page_title = lang('login');
+
+        $this->view->cp_session_type = ee()->config->item('cp_session_type');
+
+        ee()->output->enable_profiler(false);
+
+        $this->view->render($view);
+    }
+
+    /**
      * Main login form
      *
      * @access  public
@@ -36,8 +271,10 @@ class Login extends CP_Controller
     {
         // We don't want to allow access to the login screen to someone
         // who is already logged in.
-        if ($this->session->userdata('member_id') !== 0 &&
-            ee()->session->userdata('admin_sess') == 1) {
+        if (
+            $this->session->userdata('member_id') !== 0 &&
+            ee()->session->userdata('admin_sess') == 1
+        ) {
             $member = ee('Model')->get('Member')
                 ->filter('member_id', ee()->session->userdata('member_id'))
                 ->first();
@@ -98,6 +335,17 @@ class Login extends CP_Controller
                 ->asIssue()
                 ->addToBody($this->session->flashdata('message'))
                 ->now();
+        }
+
+        if (ee()->config->item('cp_session_type') != 's' && ee()->config->item('cookie_domain') != '') {
+            $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
+            if (strpos(ee()->config->item('cp_url'), $cookie_domain) === false) {
+                ee('CP/Alert')
+                    ->makeInline()
+                    ->asIssue()
+                    ->addToBody(lang('cookie_domain_mismatch'))
+                    ->now();
+            }
         }
 
         // Normal login button state
@@ -284,7 +532,7 @@ class Login extends CP_Controller
 
         $data = array(
             'required_changes' => array(),
-            'focus_field' => 'new_username',
+            'focus_field' => 'password',
             'cp_page_title' => lang('login'),
             'username' => $this->input->post('username'),
             'new_username_required' => false,
@@ -294,7 +542,6 @@ class Login extends CP_Controller
             'new_password' => $new_pw,
             'hidden' => array(
                 'username' => $this->input->post('username'),
-                'password' => base64_encode($this->input->post('password'))
             )
         );
 
@@ -309,8 +556,12 @@ class Login extends CP_Controller
             $required_changes[] = sprintf(lang('pw_len'), $pml);
         }
 
+        if ($data['new_username_required']) {
+            $data['focus_field'] = 'new_username';
+        }
+
         $alert = ee('CP/Alert')
-            ->makeInline()
+            ->makeInline('required_changes')
             ->asIssue()
             ->addToBody(lang('access_notice'))
             ->cannotClose()
@@ -318,6 +569,15 @@ class Login extends CP_Controller
 
         if (! empty($required_changes)) {
             $alert->addToBody($required_changes);
+        }
+
+        if (!empty($message)) {
+            ee('CP/Alert')
+                ->makeInline()
+                ->asIssue()
+                ->addToBody($message)
+                ->cannotClose()
+                ->now();
         }
 
         return ee('View')->make('account/update_un_pw')->render($data);
@@ -336,6 +596,7 @@ class Login extends CP_Controller
         $this->lang->loadfile('member');
 
         $missing = false;
+        $updated = false;
 
         if (! isset($_POST['new_username']) and ! isset($_POST['new_password'])) {
             return $this->_un_pw_update_form(lang('all_fields_required'));
@@ -355,14 +616,8 @@ class Login extends CP_Controller
         $new_pw = (string) $this->input->post('new_password');
         $new_pwc = (string) $this->input->post('new_password_confirm');
 
-        // Make sure validation library is available
-        if (! class_exists('EE_Validate')) {
-            require APPPATH . 'libraries/Validate.php';
-        }
-
         // Load it up with the information needed
-        $VAL = new EE_Validate(
-            array(
+        $data = array(
                 'val_type' => 'new',
                 'fetch_lang' => true,
                 'require_cpw' => false,
@@ -371,7 +626,6 @@ class Login extends CP_Controller
                 'password' => $new_pw,
                 'password_confirm' => $new_pwc,
                 'cur_password' => $this->input->post('password')
-            )
         );
 
         $un_exists = false;
@@ -382,35 +636,45 @@ class Login extends CP_Controller
 
         $pw_exists = ($new_pw !== '' and $new_pwc !== '') ? true : false;
 
+        $validationRules = [];
+
         if ($un_exists) {
-            $VAL->validate_username();
+            $validationRules['username'] = 'uniqueUsername|validUsername|notBanned';
         }
 
         if ($pw_exists) {
-            $VAL->validate_password();
+            $validationRules['password'] = 'validPassword|passwordMatchesSecurityPolicy|matches[password_confirm]';
         }
 
+        $validationResult = ee('Validation')->make($validationRules)->validate($data);
+
         // Display error is there are any
-        if (count($VAL->errors) > 0) {
+        if ($validationResult->isNotValid()) {
             $er = '';
 
-            foreach ($VAL->errors as $val) {
-                $er .= $val . BR;
+            foreach ($validationResult->getAllErrors() as $error) {
+                foreach ($error as $val) {
+                    $er .= $val . BR;
+                }
             }
 
-            return $this->_un_pw_update_form($er);
+            return $this->_un_pw_update_form(trim($er, BR));
         }
 
         if ($un_exists) {
+            $updated = true;
             $this->auth->update_username($member_id, $new_un);
         }
 
         if ($pw_exists) {
+            $updated = true;
             $this->auth->update_password($member_id, $new_pw);
         }
 
         // Send them back to login with updated username and password
-        $this->session->set_flashdata('message', lang('unpw_updated'));
+        if ($updated) {
+            $this->session->set_flashdata('message', lang('unpw_updated'));
+        }
         $this->functions->redirect(BASE . AMP . 'C=login');
     }
 
@@ -626,7 +890,7 @@ class Login extends CP_Controller
         }
 
         if ($this->session->userdata('is_banned') === true) {
-            return show_error(lang('unauthorized_request'));
+            show_error(lang('unauthorized_request'));
         }
 
         // Side note 'get_post' actually means 'fetch from post or get'.  It
@@ -648,7 +912,7 @@ class Login extends CP_Controller
         // If we don't find a valid token, then they
         // shouldn't be here.  Show em an error.
         if ($member_id_query->num_rows() === 0) {
-            return show_error(lang('id_not_found'));
+            show_error(lang('id_not_found'));
         }
 
         $member_id = $member_id_query->row('member_id');
@@ -716,6 +980,7 @@ class Login extends CP_Controller
         if (form_error('password_confirm')) {
             $alert->addToBody(strip_tags(form_error('password_confirm')))->now();
         }
+
 
         $this->view->cp_page_title = lang('enter_new_password');
         $this->view->resetcode = $resetcode;
@@ -794,6 +1059,32 @@ class Login extends CP_Controller
         }
 
         $this->functions->redirect(BASE . AMP . $redirect);
+    }
+
+    /**
+     * AJAX endpoint for password strength meter
+     *
+     * @return JSON
+     */
+    public function validate_password()
+    {
+        if (! AJAX_REQUEST || ee('Request')->method() != 'POST') {
+            show_error(lang('unauthorized_access'), 403);
+        }
+        $field = !empty(ee('Request')->post('ee_fv_field')) ? ee('Security/XSS')->clean(ee('Request')->post('ee_fv_field')) : 'password';
+        $password = ee('Request')->post($field);
+        $result = [];
+        $result['rank'] = ee('Member')->calculatePasswordComplexity($password);
+        if ($result['rank'] >= 80) {
+            $result['rank_text'] = lang('password_rank_very_strong');
+        } elseif ($result['rank'] >= 60) {
+            $result['rank_text'] = lang('password_rank_strong');
+        } elseif ($result['rank'] >= 40) {
+            $result['rank_text'] = lang('password_rank_good');
+        } else {
+            $result['rank_text'] = lang('password_rank_weak');
+        }
+        ee()->output->send_ajax_response($result);
     }
 }
 // END CLASS

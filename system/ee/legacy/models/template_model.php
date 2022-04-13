@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -266,8 +266,9 @@ class Template_model extends CI_Model
             return false;
         }
 
-        $this->load->library('extensions');
-        $this->load->library('api');
+        if (!isset(ee()->legacy_api)) {
+            $this->load->library('api');
+        }
         $this->legacy_api->instantiate('template_structure');
 
         // add a site short name folder, in case MSM uses the same template path, and repeat
@@ -417,7 +418,9 @@ class Template_model extends CI_Model
 
         // If a user other than Super Admin is creating a template group, give them
         // access to the group they just created
-        if (! ee('Permission')->isSuperAdmin()) {
+        // We need also check if the user is logged in,
+        // because it can be a anonymous request
+        if (!ee('Permission')->isSuperAdmin() && $this->session->userdata('member_id')) {
             $data = array();
             $data['group_id'] = $this->session->userdata('group_id');
             $data['template_group_id'] = $template_group_id;

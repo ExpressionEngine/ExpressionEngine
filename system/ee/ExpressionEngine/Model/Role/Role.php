@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -130,6 +130,7 @@ class Role extends Model
     ];
 
     protected static $_events = array(
+        'beforeSave',
         'afterSave'
     );
 
@@ -138,6 +139,7 @@ class Role extends Model
     protected $name;
     protected $short_name;
     protected $description;
+    protected $total_members;
     protected $is_locked;
 
     /**
@@ -149,7 +151,6 @@ class Role extends Model
     {
         $members = array_replace($this->Members->indexBy('member_id'), $this->PrimaryMembers->indexBy('member_id'));
 
-
         foreach ($this->RoleGroups as $role_group) {
             foreach ($role_group->Members as $member) {
                 $members[$member->member_id] = $member;
@@ -157,6 +158,68 @@ class Role extends Model
         }
 
         return new Collection($members);
+    }
+
+    /**
+     * Get total number of members that are assigned to this role (as primary or extra one)
+     *
+     * @param string $mode all/primary/secondary
+     * @return int
+     */
+    public function getMembersCount($mode = 'all')
+    {
+        $query = ee('db')
+            ->select("COUNT(DISTINCT members.member_id) AS total_members")
+            ->from('members AS members');
+        if (in_array($mode, ['all', 'secondary'])) {
+            $query->join('members_roles', 'members_roles.member_id=members.member_id', 'left')
+                ->join('members_role_groups', 'members_role_groups.member_id=members.member_id', 'left');
+        }
+        if (in_array($mode, ['all', 'primary'])) {
+            $query->where('members.role_id', $this->getId());
+        }
+        if ($mode == 'all') {
+            $query->or_where('members_roles.role_id', $this->getId());
+        } elseif ($mode == 'secondary') {
+            $query->where('members_roles.role_id', $this->getId());
+        }
+        if (in_array($mode, ['all', 'primary'])) {
+            foreach ($this->RoleGroups as $role_group) {
+                $query->or_where('members_role_groups.group_id', $role_group->getId());
+            }
+        }
+
+        return $query->get()->row('total_members');
+    }
+
+    /**
+     * Get total number of members that are assigned to this role (as primary or extra one)
+     *
+     * @return int
+     */
+    public function getAllMembersData($field = 'member_id')
+    {
+        $query = ee('db')
+            ->select("members." . $field)
+            ->distinct()
+            ->from('members AS members')
+            ->join('members_roles', 'members_roles.member_id=members.member_id', 'left')
+            ->join('members_role_groups', 'members_role_groups.member_id=members.member_id', 'left')
+            ->where('members.role_id', $this->getId())
+            ->or_where('members_roles.role_id', $this->getId());
+        foreach ($this->RoleGroups as $role_group) {
+            $query->or_where('members_role_groups.group_id', $role_group->getId());
+        }
+
+        $result = $query->get();
+        $data = [];
+        if ($result->num_rows() > 0) {
+            $data = $result->result_array();
+            array_walk($data, function (&$row, $key, $field) {
+                $row = $row[$field];
+            }, $field);
+        }
+        return $data;
     }
 
     protected function saveToCache($key, $data)
@@ -204,7 +267,7 @@ class Role extends Model
         if ($this->role_id == 1) {
             return true;
         }
-        
+
         $permissions = $this->getPermissions();
 
         return array_key_exists('can_' . $permission, $permissions);
@@ -221,10 +284,15 @@ class Role extends Model
         if ($this->role_id == 1) {
             return true;
         }
-        
+
         $permissions = $this->getPermissions();
 
         return array_key_exists($permission, $permissions);
+    }
+
+    public function onBeforeSave()
+    {
+        $this->setProperty('total_members', $this->getMembersCount('all'));
     }
 
     public function onAfterSave()

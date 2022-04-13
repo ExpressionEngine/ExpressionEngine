@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -16,6 +16,10 @@ class Colorpicker_ft extends EE_Fieldtype
     public $disable_frontedit = true;
 
     public $size = 'small';
+
+    public $supportedEvaluationRules = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'notEqual';
 
     public $default_settings = [
         'allowed_colors' => 'any',

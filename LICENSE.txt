@@ -429,3 +429,99 @@ For Redactor in the RTE fieldtype:
     Disclaimer Of Warranty
 
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF QUALITY, PERFORMANCE, NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. FURTHER, IMPERAVI LLC DOES NOT WARRANT THAT THE SOFTWARE OR ANY RELATED SERVICE WILL ALWAYS BE AVAILABLE.
+
+
+For the ExpressionEngine Pro:
+
+    Copyright (c) 2021, Packet Tide
+
+    Last updated: October 5, 2021
+
+    This License Agreement (the “Agreement”) is a legal agreement between you and Packet Tide LLC (“Packet Tide”) for the use of the ExpressionEngine Pro Add-on (the “Software” or “EE Pro”). By purchasing any version of the Software you agree to be bound by the terms and conditions of this license agreement as well as the Terms of Service (the “Terms of Service”) available at expressionengine.com/terms-of-service. To the extent that the terms and conditions of this Agreement conflict with the Terms of Service, this Agreement controls.
+
+    Packet Tide reserves the right to modify or alter this Agreement at any time, for any reason, by posting the revised terms on expressionengine.com/license and/or providing a copy to you via email. Revised Terms shall be effective as of the time they are posted, but will not apply retroactively. Your continued use of the Software after the posting of revised license agreement constitutes your acceptance of the revised terms. If you do not agree with amendments or modifications to the terms of this license agreement, your sole and exclusive remedy is to terminate your use of the Software.
+
+    ## EE Pro Installations
+
+    An ExpressionEngine Pro license purchase allows a single “live” installation in a production environment and ancillary “development use only” installations as needed to support the live installation (such as development and staging servers). Additional “live” installations require additional license purchases. If you have specific installation needs not covered by this license, please Contact Us.
+
+    ## Grant of License
+
+    Packet Tide hereby grants to you a non-exclusive, non-assignable, non-sublicensable license to access and use the Software subject to the terms and conditions of this Agreement. The licenses granted herein are conditioned upon your acceptance of this Agreement and payment in full for the Software. ​​Users of the EE Pro may use the Software on a website engaging in commercial, personal, non-commercial, or non-profit activities.
+
+    YOU MAY NOT USE, COPY, OR MODIFY THE SOFTWARE, IN WHOLE OR IN PART, EXCEPT AS EXPRESSLY PROVIDED FOR IN THIS AGREEMENT.
+
+    ## License Key
+
+    Upon payment for the Software, you will be issued a license key that may be used to access the Software in a “live” installation. You shall not allow an unauthorized person to access or use the license key assigned to you nor shall you use or allow the license key assigned to you to be used on multiple instances of ExpressionEngine. To do so shall be considered a material breach of this Agreement. You shall promptly report to Packet Tide any unauthorized use of the Software of which you become aware and shall take such further steps as may reasonably be requested by Packet Tide to prevent the unauthorized use thereof.
+
+    ## Restrictions
+
+    Unless you have been granted prior, written consent from Packet Tide, you may not:
+
+    -   Reverse engineer, decompile, disassemble, or attempt to derive the source code of the Software
+    -   Use the Software as the basis of a hosted blogging service, or to provide hosting services to others.
+    -   Reproduce, distribute, or transfer the Software, or portions thereof, to any third party.
+    -   Sell, rent, lease, assign, or sublet the Software or portions thereof.
+    -   Grant rights to any other person.
+    -   Use the Software in violation of any U.S. or international law or regulation.
+    -   All copyright and proprietary notices and logos in the Control Panel and within the Software files must remain intact.
+
+    ## Reproduction
+
+    You may reproduce the Software for back-up purposes only, provided that you reproduce the Software in its original form and with all proprietary notices on the back-up copy.
+
+    ## Modification
+
+    You may alter, modify, or extend the Software for your own use, or commission a third-party to perform modifications for you, but you may not resell, redistribute or transfer the modified or derivative version without prior written consent from Packet Tide. Components from the Software may not be extracted and used in other programs without prior written consent from Packet Tide.
+
+
+    ## Technical Support
+
+    Technical support is provided as described in the Support Policy.
+
+    ## Refund Policy
+
+    Due to the non-returnable nature of downloadable software, Packet Tide does not issue refunds once a transaction has been completed. If you have questions about whether or not EE Pro will work for you, you may install EE Pro at no charge before making your installation live. We encourage you to thoroughly test the system before purchasing to determine its suitability for your purposes and compatibility with your hosting account.
+
+    ## Indemnity
+
+    You agree to indemnify and hold harmless Packet Tide from any third-party claims, actions or suits, as well as any related expenses, liabilities, damages, settlements or fees arising from your use or misuse of the Software, or a violation of any terms of this license.
+
+    ## Disclaimer of Warranty
+
+    THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF QUALITY, PERFORMANCE, NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. FURTHER, ELLISLAB INC. DOES NOT WARRANT THAT THE SOFTWARE OR ANY RELATED SERVICE WILL ALWAYS BE AVAILABLE.
+
+    ## Limitation of Liability
+
+    YOU ASSUME ALL RISK ASSOCIATED WITH THE INSTALLATION AND USE OF THE SOFTWARE. IN NO EVENT SHALL PACKET TIDE, ITS OFFICERS, MEMBERS, LICENSEES, LICENSORS, CONTRACTORS, EMPLOYEES, OR AGENTS BE LIABLE FOR CLAIMS, DAMAGES OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE. LICENSE HOLDERS ARE SOLELY RESPONSIBLE FOR DETERMINING THE APPROPRIATENESS OF USE AND ASSUME ALL RISKS ASSOCIATED WITH ITS USE, INCLUDING BUT NOT LIMITED TO THE RISKS OF PROGRAM ERRORS, DAMAGE TO EQUIPMENT, LOSS OF DATA OR SOFTWARE PROGRAMS, OR UNAVAILABILITY OR INTERRUPTION OF OPERATIONS.
+
+    PACKET TIDE’S TOTAL LIABILITY TO YOU FOR ALL CLAIMS, IN THE AGGREGATE, WILL NOT EXCEED THE AMOUNT ACTUALLY PAID BY YOU TO PACKET TIDE OVER THE 12 MONTHS PRECEDING THE DATE YOUR FIRST CLAIM(S) AROSE. IF YOU LIVE IN A JURISDICTION THAT DOES NOT ALLOW THE EXCLUSION OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE ABOVE LIMITATION DOES NOT APPLY TO YOU. TO THE EXTENT THAT ONE OR ANY ASPECT OF PACKET TIDE’S LIMITATIONS SET OUT ABOVE DOES NOT APPLY, ALL REMAINING ASPECTS SURVIVE. THE EXCLUSIONS AND LIMITATIONS OF DAMAGES SET FORTH ABOVE ARE FUNDAMENTAL ELEMENTS OF THE BASIS OF THE BARGAIN BETWEEN PACKET TIDE AND YOU.
+
+    Class Action Waiver
+    THE PARTIES HERETO AGREE THAT BY ENTERING INTO THIS AGREEMENT, EACH PARTY WAIVES ITS RIGHT TO PARTICIPATE IN A CLASS ACTION, PRIVATE ATTORNEY GENERAL ACTION OR OTHER REPRESENTATIVE ACTION AGAINST THE OTHER IN A COURT OR IN ARBITRATION. THE PARTIES FURTHER AGREE THAT EACH MAY BRING DISPUTES AGAINST EACH OTHER ONLY IN THEIR INDIVIDUAL CAPACITY AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING.
+
+    If a dispute arises from or relates to this contract or the breach thereof, and if the dispute cannot be settled through direct discussions, the parties agree to endeavor first to settle the dispute by mediation administered by the American Arbitration Association under its Commercial Mediation Procedures before resorting to arbitration. The parties further agree that any unresolved controversy or claim arising out of or relating to this contract, or breach thereof, shall be settled by arbitration administered by the American Arbitration Association in accordance with its Commercial Arbitration Rules and judgment on the award rendered by the arbitrator(s) may be entered in any court having jurisdiction thereof. Claims shall be heard by a single arbitrator. The place of arbitration shall be Daytona Beach, Florida. The arbitration shall be governed by the laws of the State of Florida. Each party shall bear its own costs and expenses and an equal share of the arbitrators' and administrative fees of arbitration.
+
+    ## Governing Law
+    These Terms shall be governed and construed in accordance with the laws of Florida, United States, without regard to its conflict of law provisions.
+
+    Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights. If any provision of these Terms is held to be invalid or unenforceable by a court, the remaining provisions of these Terms will remain in effect. These Terms constitute the entire agreement between us regarding our Services, and supersede and replace any prior agreements we might have had between us regarding the Services.
+
+    Interpretation; Severability; Waiver; Remedies
+    Headings are for convenience only and shall not be used to construe these Terms. If any term of these Terms is found invalid or unenforceable by any court of competent jurisdiction, that term will be severed from these Terms. No failure or delay by Packet Tide  in exercising any right hereunder will waive any further exercise of that right. The waiver of any such right or provision will be effective only if in writing and signed by a duly authorized representative of Packet Tide. Packet Tide’s rights and remedies hereunder are cumulative and not exclusive.
+
+    Successors; Assignment; No Third Party Beneficiaries
+    These Terms are binding upon and will inure to the benefit of both parties and their respective successors, heirs, executors, administrators, personal representatives, and permitted assigns. You may not assign or transfer these Terms without Packet Tide’s prior written consent. Packet Tide may assign its rights, obligations and/or these Terms at any time at its sole discretion without notice to you.
+
+    ## Notices
+    You consent to receive all communications including notices, agreements, disclosures, or other information from Packet Tide electronically. Packet Tide may communicate by email or by posting to the Services. For support-related inquiries, you may email support@packettide.com. For all other notices to Packet Tide, write to the following addresses:
+
+        PACKET TIDE, LLC
+        260 Williamson Blvd.
+        Unit 730392
+        Ormond Beach, FL
+        32174
+
+    Nothing in these Terms or otherwise limits Packet Tide’s right to object to subpoenas, claims, or other demands.
+

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,6 +15,7 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
  */
 class Textarea_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Textarea',
         'version' => '1.0.0'
@@ -23,6 +24,8 @@ class Textarea_ft extends EE_Fieldtype
     public $has_array_data = false;
 
     public $size = 'large';
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     public function validate($data)
     {
@@ -166,7 +169,7 @@ class Textarea_ft extends EE_Fieldtype
                 $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('directory' => 'all'));
 
                 ee()->cp->add_js_script(array(
-                    'file' => array('fields/textarea/cp'),
+                    'file' => array('fields/textarea/textarea'),
                     'plugin' => array('ee_txtarea')
                 ));
             }

@@ -41,6 +41,8 @@ fieldset.tbl-search{
 
 .fieldset-faux {
 	margin-bottom: $s-m;
+
+	&.hide-block { display: none;}
 }
 
 fieldset {
@@ -55,6 +57,8 @@ fieldset {
 	&.last {
 		margin-bottom: 0;;
 	}
+
+	&.hide-block { display: none;}
 }
 
 .field-instruct {
@@ -77,7 +81,7 @@ fieldset {
 	}
 
     label + em {
-        margin-top: -($s-s / 2);
+        margin-top: - math.div($s-s, 2);
     }
 
     em {
@@ -155,14 +159,24 @@ fieldset {
 			// .fieldset-icon;
 			color: color(error);
 
-				&:after{
-					@extend %fa-icon;
-					@extend .fas;
-					font-size: $font-size-small;
-					color: color(error);
-					content: fa-content($fa-var-exclamation-triangle);
-					top: -1px;
-				}
+			&:after{
+				@extend %fa-icon;
+				@extend .fas;
+				font-size: $font-size-small;
+				color: color(error);
+				content: fa-content($fa-var-exclamation-triangle);
+				top: -1px;
+        margin-left: 3px;
+			}
+		}
+	}
+
+	> label {
+		> .field-control{
+			> em {
+				color: color(error);
+				font-style: normal;
+			}
 		}
 	}
 
@@ -185,7 +199,7 @@ fieldset {
 
 		> em {
 			color: color(error);
-      font-style: normal;
+			font-style: normal;
 		}
 	}
 
@@ -199,6 +213,34 @@ fieldset {
 		border: 1px solid color(error);
 		border-width: 1px 1px 0;
 		box-shadow: 0 0 0 1px color(error);
+	}
+}
+
+.fieldset-invalid {
+	> label{
+		color: color(error);
+
+		&:after{
+			@extend %fa-icon;
+			@extend .fas;
+			font-size: $font-size-small;
+			color: color(error);
+			content: fa-content($fa-var-exclamation-triangle);
+			top: -1px;
+		}
+	}
+}
+
+td.invalid {
+	> input,
+	> textarea,
+	.fields-select,
+	.field-drop-selected,
+	.field-drop-choices,
+	> div > input,
+	> div > textarea,
+	.c-colorpicker-input{
+		border: 1px solid color(error);
 	}
 }
 
@@ -314,4 +356,71 @@ fieldset {
     @extend .fas;
     content: fa-content($fa-var-chevron-right);
     top: -1px;
+}
+
+.rank-wrap {
+  position: absolute;
+  right: 45px;
+  top: 8px;
+  background: var(--ee-button-default-bg);
+  text-transform: uppercase;
+
+	.status-tag {
+		background: none;
+		text-transform: uppercase;
+		max-height: 24px;
+		line-height: 24px;
+		padding: 0 8px;
+
+		&.strong {
+		  border-color: var(--ee-success);
+		  color: var(--ee-success);
+		}
+
+		&.good {
+		  border-color: var(--ee-warning);
+		  color: var(--ee-warning);
+		}
+
+		&.weak {
+		  border-color: var(--ee-error);
+		  color: var(--ee-error);
+		}
+	}
+}
+
+// Password reveal toggle
+fieldset {
+	.eye,
+	#eye {
+		cursor: pointer;
+		position: absolute;
+		right: 25px;
+		top: 46px;
+	}
+	.field-control {
+		.eye,
+		#eye {
+			top: 12px;
+			right: 5px;
+		}
+	}
+}
+
+@media not all and (min-resolution:.001dpcm) {
+	@supports (-webkit-appearance:none) {
+		fieldset {
+			.eye,
+			#eye {
+				right: 35px;
+			}
+
+			.field-control {
+				.eye,
+				#eye {
+					right: 35px;
+				}
+			}
+		}
+	}
 }

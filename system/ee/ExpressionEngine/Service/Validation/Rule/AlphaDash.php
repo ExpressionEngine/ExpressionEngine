@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,7 +19,7 @@ class AlphaDash extends ValidationRule
 {
     public function validate($key, $value)
     {
-        return (bool) preg_match("/^([-a-z0-9_-])+$/i", $value);
+        return (bool) preg_match("/^([-a-z0-9_-])+$/i", (string) $value);
     }
 
     public function getLanguageKey()

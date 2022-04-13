@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -18,6 +18,8 @@ use ExpressionEngine\Library\CP\Table;
 class Buttons extends Settings
 {
     private $base_url = 'members/profile/buttons';
+    private $index_url;
+    private $predefined;
 
     // The current HTMLButton object
     private $button;
@@ -266,7 +268,7 @@ class Buttons extends Settings
      * Save HTMLButtons
      *
      * @access private
-     * @return void
+     * @return bool
      */
     private function saveButtons($form)
     {

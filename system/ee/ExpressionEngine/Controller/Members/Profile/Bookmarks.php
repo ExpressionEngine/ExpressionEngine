@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,6 +19,8 @@ use ExpressionEngine\Library\CP\Table;
 class Bookmarks extends Settings
 {
     private $base_url = 'members/profile/bookmarks';
+    public $bookmarks;
+    private $index_url;
 
     public function __construct()
     {
@@ -187,7 +189,7 @@ class Bookmarks extends Settings
     {
         $selection = array_map(function ($x) {
             return (string) $x;
-        }, $this->input->post('selection'));
+        }, ee()->input->post('selection'));
         $this->bookmarks = array_diff_key($this->bookmarks, array_flip($selection));
         $this->saveBookmarks();
 
@@ -198,7 +200,7 @@ class Bookmarks extends Settings
      * saveBookmarks compiles the links and saves them for the current member
      *
      * @access private
-     * @return void
+     * @return bool
      */
     private function saveBookmarks()
     {

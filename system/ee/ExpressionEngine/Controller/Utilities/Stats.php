@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -209,6 +209,12 @@ class Stats extends Utilities
 
                 ee()->db->where_not_in('member_id', array_keys($member_entries));
                 ee()->db->update('members', $data);
+            }
+
+            // re-save every role since that will trigger members recount automatically
+            foreach (ee('Model')->get('Role')->all() as $role) {
+                $role->total_members = null;
+                $role->save();
             }
         }
 

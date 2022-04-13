@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once(EE_APPPATH . '/libraries/Layout.php');
@@ -12,7 +12,7 @@ require_once(EE_APPPATH . '/libraries/Layout.php');
 /**
  * Installer Layout
  */
-class Installer_Layout extends EE_Layout
+class Installer_Layout extends Layout
 {
     // Nothing to see here.
 }

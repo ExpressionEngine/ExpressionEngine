@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -158,13 +158,15 @@ class Access extends Profile
 
                 foreach ($role->AssignedModules as $module) {
                     $addon = ee('Addon')->get(strtolower($module->module_name));
-                    $key = 'access_to_add_on_id_' . $module->getId() . ':' . $addon->getName();
+                    if ($addon) {
+                        $key = 'access_to_add_on_id_' . $module->getId() . ':' . $addon->getName(); 
 
-                    if (! array_key_exists($key, $permissions)) {
-                        $permissions[$key] = [];
+                        if (! array_key_exists($key, $permissions)) {
+                            $permissions[$key] = [];
+                        }
+
+                        $permissions[$key][] = $display;
                     }
-
-                    $permissions[$key][] = $display;
                 }
             }
         }

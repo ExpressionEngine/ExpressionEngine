@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -354,7 +354,6 @@ class Rss
 	<link>{$link}</link>
 	<description></description>
 	<docs>http://www.rssboard.org/rss-specification</docs>
-	<generator>ExpressionEngine v{$version} https://expressionengine.com/expressionengine</generator>
 
 	<item>
 		<title>{$content}</title>

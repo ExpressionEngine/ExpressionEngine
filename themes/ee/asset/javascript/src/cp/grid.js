@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -49,7 +49,7 @@ var Grid = window.Grid = {
  * @param	{string}	field		Selector of table to instantiate as a Grid
  */
 Grid.Publish = function(field, settings) {
-	if (field === null || field === undefined || $(field).closest('.fluid-field-templates').size() > 0) {
+	if (field === null || field === undefined || $(field).closest('.fluid-field-templates').length > 0) {
 		return;
 	}
 	this.root = $(field);
@@ -60,7 +60,7 @@ Grid.Publish = function(field, settings) {
 	this.rowContainer = this.root.find('.grid-field__table > tbody');
 	this.addButtonToolbar = $('.grid-field__footer:has([rel=add_row])', this.parentContainer);
 	this.header = null;
-	this.isFileGrid = this.root.closest('.js-file-grid').size() > 0;
+	this.isFileGrid = this.root.closest('.js-file-grid').length > 0;
 
 	this.rowSelector = 'tr';
 	this.cellSelector = 'td';
@@ -125,7 +125,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		// Store the original row count so we can properly increment new
 		// row placeholder IDs in _addRow()
-		this.original_row_count = this._getRows().size();
+		this.original_row_count = this._getRows().length;
 
 		// Disable input elements in our blank template container so they
 		// don't get submitted on form submission
@@ -196,7 +196,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		}
 
 		// Figure out how many rows we need to add
-		var rowsCount = this._getRows().size(),
+		var rowsCount = this._getRows().length,
 			neededRows = 0;
 
 		if (typeof(this.settings)!=='undefined')
@@ -222,8 +222,9 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 * based on the number of rows present and the max and min rows settings
 	 */
 	_toggleRowManipulationButtons: function() {
-		var rowCount = this._getRows().size(),
-			showControls = rowCount > 0;
+		var rowCount = this._getRows().length,
+			showControls = rowCount > 0,
+			that = this.root;
 
 		// Show add button below field when there are more than zero rows
 		this.addButtonToolbar.toggle(showControls && ! this.isFileGrid);
@@ -258,6 +259,15 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Inside File Grid? Hide Grid completely if there are no rows
 		if (this.isFileGrid) {
 			this.root.toggleClass('hidden', rowCount == 0)
+		}
+
+		if(rowCount == 0) {
+			var showAddButton = setInterval(function (){
+				if ( !that.find('.field-no-results').hasClass('hidden') ) {
+					that.find('.field-no-results').show();
+					clearInterval(showAddButton);
+				}
+			}, 50);
 		}
 	},
 
@@ -367,12 +377,12 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			that._toggleRowManipulationButtons();
 
 			// Show our empty field message if we have no rows left
-			if (that._getRows().size() == 0) {
+			if (that._getRows().length == 0) {
 				that._setNoResultsVisible(true);
 			}
 
 			// Mark entire Grid field as valid if all rows with invalid cells are cleared
-			if ($('td.invalid', that.root).size() == 0 &&
+			if ($('td.invalid', that.root).length == 0 &&
 				EE.cp &&
 				EE.cp.formValidation !== undefined) {
 				EE.cp.formValidation.markFieldValid($('input, select, textarea', that.blankRow).eq(0));
@@ -503,7 +513,7 @@ Grid.Settings.prototype = {
 	_expandErroredColumns: function() {
 		var that = this;
 		$('.fields-grid-item', this.root).each(function(i, column) {
-			if ($('.fieldset-invalid', column).size()) {
+			if ($('.fieldset-invalid', column).length) {
 				that._toggleColumnExpand($(column), true)
 			}
 		})
@@ -631,7 +641,7 @@ Grid.Settings.prototype = {
 			// Trigger validation on any invalid inputs in case the validaiton
 			// errors were due to a duplicate column name/label in this column
 			var invalidFields = $('fieldset.fieldset-invalid input', that.root)
-			if (invalidFields.size()) {
+			if (invalidFields.length) {
 				invalidFields.trigger('blur')
 			} else {
 			// Or, the deleted column contained the only validation errors, trigger
@@ -663,7 +673,7 @@ Grid.Settings.prototype = {
 	 * Get the number of columns for this Grid field
 	 */
 	_getColumnCount: function() {
-		return this.root.find('.fields-grid-item:visible').size()
+		return this.root.find('.fields-grid-item:visible').length
 	},
 
 	/**
@@ -759,7 +769,7 @@ Grid.Settings.prototype = {
 		el.find('input[name$="\\[col_name\\]"]').attr('value', '');
 
 		// Need to make sure the new column's field names are unique
-		var new_namespace = 'new_' + $('.fields-grid-item', this.root).size();
+		var new_namespace = 'new_' + $('.fields-grid-item', this.root).length;
 		var old_namespace = el.data('field-name');
 
 		el.html(
@@ -857,6 +867,7 @@ Grid.Settings.prototype = {
 				// .prop('checked', true) doesn't work, must set the attribute
 				if ($(this).prop('checked')) {
 					new_input.attr('checked', 'checked');
+					new_input.attr('value', 'y');
 				}
 			}
 			// Handle radio buttons

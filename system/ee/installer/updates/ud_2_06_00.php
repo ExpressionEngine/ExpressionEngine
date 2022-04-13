@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -413,7 +413,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
     private function _update_relationship_tags()
     {
         ee()->remove('template');
-        require_once(APPPATH . 'libraries/Template.php');
+        require_once(SYSPATH . 'ee/installer/libraries/Template.php');
         ee()->set('template', new \Installer_Template());
 
         // Since we don't have consistent destructors,
@@ -424,6 +424,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
         // We need to figure out which template to load.
         // Need to check the edit date.
+        ee()->load->model('template_model');
         $templates = ee()->template_model->fetch_last_edit(array(), true);
 
         // related_entries

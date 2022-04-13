@@ -1,7 +1,7 @@
 
 
 .select {
-	position: relative;
+	position: static;
 	width: 100%;
 }
 
@@ -97,7 +97,6 @@
   position: absolute;
 	z-index: 100;
 	top: 100%;
-	margin-top: $s-xs;
 	left: 0px;
 	display: none;
 
@@ -143,7 +142,7 @@
 	position: relative;
 
 	span {
-		padding: 0 $s-m;
+		padding: 0;
 		display: table-cell;
 	}
 

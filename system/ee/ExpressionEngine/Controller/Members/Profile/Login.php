@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -47,9 +47,16 @@ class Login extends Profile
                                 'site_index' => lang('site_index'),
                                 'other' => 'other'
                             ),
+                            'group_toggle' => [
+                                'other' => 'other'
+                            ],
                             'value' => 'site_index'
                         ),
-                        'other' => array('type' => 'text')
+                        'other' => array(
+                            'group' => 'other',
+                            'type' => 'text',
+                            'placeholder' => lang('url')
+                        )
                     )
                 )
             )
@@ -69,7 +76,7 @@ class Login extends Profile
                     'title' => 'existing_password',
                     'desc' => 'existing_password_exp',
                     'fields' => array(
-                        'password' => array(
+                        'password_confirm' => array(
                             'type' => 'password',
                             'required' => true,
                             'maxlength' => PASSWORD_MAX_LENGTH
@@ -79,7 +86,7 @@ class Login extends Profile
             );
 
             $rules[] = [
-                'field' => 'password',
+                'field' => 'password_confirm',
                 'label' => 'lang:password',
                 'rules' => 'required|auth_password[useAuthTimeout]'
             ];

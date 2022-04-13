@@ -17,7 +17,7 @@ $lang = array(
 
     // Database Server
     'db_settings' => 'Database Settings',
-    'db_hostname' => 'Server Address',
+    'db_hostname' => 'DB Server Address',
     'db_hostname_note' => 'Commonly <b>localhost</b>, but your host may require something else.',
     'db_name' => 'DB Name',
     'db_name_note' => 'Make sure the database exists, the installer will <b>not</b> create it.',
@@ -36,6 +36,7 @@ $lang = array(
     'username' => 'Username',
     'e_mail' => 'Email',
     'password' => 'Password',
+    'password_note' => 'Should contain both lowercase and uppercase letters and numbers, and be at least 8 characters long.',
 
     // Default Theme
     'default_theme' => 'Default theme',

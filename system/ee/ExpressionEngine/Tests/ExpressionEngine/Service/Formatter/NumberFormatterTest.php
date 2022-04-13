@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -20,10 +20,6 @@ class NumberFormatterTest extends TestCase
 {
     public function setUp(): void
     {
-        if (version_compare(PHP_VERSION, '8', '>=')) {
-            $this->markTestSkipped('`intl` not yet supported in PHP8 GitHub actions runner');
-        }
-
         $this->lang = m::mock('EE_Lang');
         $this->sess = m::mock('EE_Session');
 

@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -107,7 +107,7 @@ class Cp
             'cp_pad_table_template' => $cp_pad_table_template,
             'cp_theme_url' => $this->cp_theme_url,
             'cp_current_site_label' => ee()->config->item('site_name'),
-            'cp_screen_name' => $member->screen_name,
+            'cp_screen_name' => ee('Format')->make('Text', $member->screen_name)->attributeSafe(),
             'cp_member_primary_role_title' => $member->PrimaryRole ? $member->PrimaryRole->name : '',
             'cp_avatar_path' => ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png'),
             'cp_avatar_width' => ($member->avatar_filename) ? $member->avatar_width : '',
@@ -229,9 +229,8 @@ class Cp
                 'bootstrap/dropdown-controller', 'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters', 'cp/jump_menu',
                 'components/no_results', 'components/loading', 'components/filters', 'components/dropdown_button',
                 'components/filterable', 'components/toggle', 'components/select_list',
-                'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
+                'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown', 'cp/passwords')
         );
-
         $installed_modules = ee()->db->select('module_name,module_version')->get('modules');
 
         $installed_modules_js = [];

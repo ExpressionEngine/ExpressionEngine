@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -111,8 +111,7 @@ class Avatars extends Settings
                 'avatar_max_height' => ee()->input->post('avatar_max_height')
             );
 
-            if ($this->saveSettings($vars['sections'])
-                && $this->updateUploadDirectory($directory_settings)) {
+            if ($this->saveSettings($vars['sections']) && $this->updateUploadDirectory($directory_settings)) {
                 ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), true);
             }
 
@@ -139,7 +138,7 @@ class Avatars extends Settings
      *
      * @param mixed $data
      * @access private
-     * @return void
+     * @return bool
      */
     private function updateUploadDirectory($data)
     {

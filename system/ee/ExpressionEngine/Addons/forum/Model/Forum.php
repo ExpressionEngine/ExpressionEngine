@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -99,7 +99,8 @@ class Forum extends Model
     );
 
     protected static $_validation_rules = array(
-        'forum_name' => 'required',
+        'forum_name' => 'required|xss',
+        'forum_description' => 'xss',
         'forum_is_cat' => 'enum[y,n]',
         'forum_status' => 'enum[o,c,a]',
         'forum_last_post_type' => 'enum[p,a]',
@@ -240,7 +241,7 @@ class Forum extends Model
     {
         $email_string = '';
 
-        foreach ($forum->Moderators as $moderator) {
+        foreach ($this->Moderators as $moderator) {
             if ($moderator->Member) {
                 $email_string .= ',' . $moderator->Member->email;
             }

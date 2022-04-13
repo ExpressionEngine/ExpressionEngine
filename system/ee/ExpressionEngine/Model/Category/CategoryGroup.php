@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -59,7 +59,7 @@ class CategoryGroup extends StructureModel
     {
         // Disassociate this group from channels
         foreach ($this->Channels as $channel) {
-            $groups = explode('|', $channel->cat_group);
+            $groups = explode('|', (string) $channel->cat_group);
 
             if (($key = array_search($this->getId(), $groups)) !== false) {
                 unset($groups[$key]);
@@ -78,7 +78,7 @@ class CategoryGroup extends StructureModel
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->all()
                 ->filter(function ($channel) {
-                    return in_array($this->getId(), explode('|', $channel->cat_group));
+                    return in_array($this->getId(), explode('|', (string) $channel->cat_group));
                 });
         }
 
@@ -133,7 +133,7 @@ class CategoryGroup extends StructureModel
      */
     public function getFieldMetadata()
     {
-        $can_edit = explode('|', rtrim($this->can_edit_categories, '|'));
+        $can_edit = explode('|', rtrim((string) $this->can_edit_categories, '|'));
         $editable = false;
 
         if (ee('Permission')->isSuperAdmin()
@@ -141,7 +141,7 @@ class CategoryGroup extends StructureModel
             $editable = true;
         }
 
-        $can_delete = explode('|', rtrim($this->can_delete_categories, '|'));
+        $can_delete = explode('|', rtrim((string) $this->can_delete_categories, '|'));
         $deletable = false;
 
         if (ee('Permission')->isSuperAdmin()

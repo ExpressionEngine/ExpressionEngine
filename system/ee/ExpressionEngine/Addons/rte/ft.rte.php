@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,6 +13,7 @@ use ExpressionEngine\Addons\Rte\RteHelper;
 
 class Rte_ft extends EE_Fieldtype
 {
+
     public $has_array_data = true;
 
     public $entry_manager_compatible = true;
@@ -23,6 +24,8 @@ class Rte_ft extends EE_Fieldtype
         'name' => 'Rich Text Editor',
         'version' => '2.1.0'
     ];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Implements EntryManager\ColumnInterface

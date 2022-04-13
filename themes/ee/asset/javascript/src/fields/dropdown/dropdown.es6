@@ -25,7 +25,7 @@ class Dropdown extends React.Component {
     $('div[data-dropdown-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('dropdownReact')))
       props.name = $(this).data('inputValue')
-
+      
       // In the case a Dropdown has been dynamically created, allow an initial
       // value to be set other than the one in the initial config
       if ($(this).data('initialValue')) {
@@ -44,6 +44,14 @@ class Dropdown extends React.Component {
 
     if (this.props.groupToggle) {
       EE.cp.form_group_toggle(this.input)
+    }
+
+    if (this.props.conditionalRule == 'rule') {
+      EE.cp.show_hide_rule_operator_field(selected, this.input);
+    }
+
+    if (this.props.conditionalRule == 'operator') {
+      EE.cp.check_operator_value(selected, this.input);
     }
   }
 
@@ -87,11 +95,14 @@ class Dropdown extends React.Component {
     const selected = this.state.selected
 
     return (
-      <div className={"select" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
-        <div className={"select__button"} onClick={this.toggleOpen}>
+      <div className={"select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
+        <div className={"select__button js-dropdown-toggle"} onClick={this.toggleOpen} tabIndex="0">
           <label className={'select__button-label' + (this.state.selected ? ' act' : '')}>
             {selected &&
-              <span>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}<span dangerouslySetInnerHTML={{__html: selected.label}}></span></span>
+              <span>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}
+                <span dangerouslySetInnerHTML={{__html: selected.label}}></span>
+                {this.props.name == 'condition-rule-field' && <span className="short-name">{`{${selected.value}}`}</span>}
+              </span>
             }
             { ! selected && <i>{this.props.emptyText}</i>}
             <input type="hidden"
@@ -101,9 +112,15 @@ class Dropdown extends React.Component {
               data-group-toggle={this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'}
             />
           </label>
+
+          {selected && this.props.name.includes('[condition_field_id]') && 
+            <span className="tooltiptext">
+              {`${selected.label.replace(/<.*/g, "")} ${selected.label.match(/(?:\{).+?(?:\})/g)}`}
+            </span>
+          }
         </div>
 
-        <div className="select__dropdown">
+        <div className="select__dropdown dropdown">
           {this.props.initialCount > this.props.tooMany &&
             <div className="select__dropdown-search">
             <FieldTools>
@@ -124,7 +141,8 @@ class Dropdown extends React.Component {
               <DropdownItem key={item.value ? item.value : item.section}
                 item={item}
                 selected={this.state.selected && item.value == this.state.selected.value}
-                onClick={(e) => this.selectionChanged(item)} />
+                onClick={(e) => this.selectionChanged(item)}
+                name ={this.props.name} />
             )}
           </div>
         </div>
@@ -145,11 +163,13 @@ function DropdownItem (props) {
   }
 
   return (
-    <div onClick={props.onClick} className={'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')}>
+    <div onClick={props.onClick} className={'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')} tabIndex="0">
       <span dangerouslySetInnerHTML={{__html: item.label}}></span>{item.instructions && <i>{item.instructions}</i>}
+      {props.name == 'condition-rule-field' && <span className="short-name">{`{${item.value}}`}</span>}
     </div>
   )
 }
+
 
 $(document).ready(function () {
   Dropdown.renderFields()

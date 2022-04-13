@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -324,7 +324,7 @@ class Groups extends AbstractCategoriesController
                     'can_edit_categories' => array(
                         'type' => 'checkbox',
                         'choices' => $can_edit_categories ? ee('Model')->get('Role')->filter('role_id', 'IN', $can_edit_categories)->all()->getDictionary('role_id', 'name') : [],
-                        'value' => explode('|', rtrim($cat_group->can_edit_categories, '|')),
+                        'value' => explode('|', rtrim((string) $cat_group->can_edit_categories, '|')),
                         'no_results' => array(
                             'text' => 'cat_group_no_roles_found'
                         )
@@ -339,7 +339,7 @@ class Groups extends AbstractCategoriesController
                     'can_delete_categories' => array(
                         'type' => 'checkbox',
                         'choices' => $can_delete_categories ? ee('Model')->get('Role')->filter('role_id', 'IN', $can_delete_categories)->all()->getDictionary('role_id', 'name') : [],
-                        'value' => explode('|', rtrim($cat_group->can_edit_categories, '|')),
+                        'value' => explode('|', rtrim((string) $cat_group->can_edit_categories, '|')),
                         'no_results' => array(
                             'text' => 'cat_group_no_roles_found'
                         )

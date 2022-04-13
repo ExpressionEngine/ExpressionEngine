@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -47,7 +47,7 @@ class Config extends Model
     {
         // exception for email_newline, which uses backslashes, and is not a path variable
         if ($this->key != 'email_newline') {
-            $value = str_replace('\\', '/', $value);
+            $value = str_replace('\\', '/', (string) $value);
         }
 
         $this->setRawProperty('value', $value);

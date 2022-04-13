@@ -4,25 +4,29 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace ExpressionEngine\Addons\Spam\Library\Vectorizers;
 
 use ExpressionEngine\Addons\Spam\Library\Document;
-use ExpressionEngine\Addons\spam\Library\Vectorizer;
+use ExpressionEngine\Addons\Spam\Library\Vectorizer;
 
 /**
  * Spam Module Tfidf Vectorizer
  */
 class Tfidf implements Vectorizer
 {
+    public $tokenizer;
+    public $clean;
     public $documents = array();
     public $vocabulary = array();
     public $idf_lookup = array();
     public $corpus = "";
     public $limit = 1000;
+    public $stop_words;
+    public $document_count;
 
     /**
      * Get our corpus ready. First we strip out all common words specified in our stop word list,

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -76,7 +76,10 @@ class Member_memberlist extends Member
     /** ----------------------------------*/
     public function send_email()
     {
-        if (! $member_id = ee()->input->post('MID')) {
+        /** ---------------------------------
+        /**  Are we missing data?
+        /** ---------------------------------*/
+        if (! $member_id = (int) ee()->input->post('MID')) {
             return false;
         }
 
@@ -92,13 +95,6 @@ class Member_memberlist extends Member
         /** ---------------------------------*/
         if (ee()->session->userdata('member_id') == 0) {
             return $this->profile_login_form($this->_member_path('email_console/' . $member_id));
-        }
-
-        /** ---------------------------------
-        /**  Are we missing data?
-        /** ---------------------------------*/
-        if (! $member_id = ee()->input->post('MID')) {
-            return false;
         }
 
         if (! isset($_POST['subject']) or ! isset($_POST['message'])) {
@@ -132,7 +128,7 @@ class Member_memberlist extends Member
         /** ---------------------------------
         /**  Does the recipient accept email?
         /** ---------------------------------*/
-        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '{$member_id}'");
+        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '". ee()->db->escape_str($member_id) . "'");
 
         if ($query->num_rows() == 0) {
             return false;
@@ -300,12 +296,14 @@ class Member_memberlist extends Member
 
         // CP allows member_id, username, dates, member_group
         // We'll convert username to screen_name and dates to join_date below
-        $valid_order_bys = array('screen_name', 'total_comments', 'total_entries', 'total_posts', 'join_date', 'member_id', 'member_group');
+        $valid_order_bys = array('screen_name', 'total_comments', 'total_entries', 'total_posts', 'join_date', 'member_id', 'member_group', 'role');
 
         $sort_orders = array('asc', 'desc');
 
         if (($group_id = (int) ee()->input->post('group_id')) === 0) {
-            $group_id = 0;
+            if (($group_id = (int) ee()->input->post('role_id')) === 0) {
+                $group_id = 0;
+            }
         }
 
         if (ee()->TMPL->fetch_param('group_id') != '') {
@@ -331,7 +329,7 @@ class Member_memberlist extends Member
             // Normalizing cp available sorts
             $order_by = ($order_by == 'username') ? 'screen_name' : $order_by;
             $order_by = ($order_by == 'dates') ? 'join_date' : $order_by;
-            $order_by = ($order_by == 'role') ? 'role_id' : $order_by;
+            $order_by = ($order_by == 'member_group' || $order_by == 'role') ? 'role_id' : $order_by;
         }
 
         if (($row_count = (int) ee()->input->post('row_count')) === 0) {
@@ -410,7 +408,7 @@ class Member_memberlist extends Member
             $mcf_sql = '';
         }
 
-        $f_sql = "SELECT m.member_id, m.username, m.screen_name, m.email, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.name as member_group {$mcf_select} ";
+        $f_sql = "SELECT m.member_id, m.role_id, m.username, m.screen_name, m.email, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.name as member_group {$mcf_select} ";
         $p_sql = "SELECT COUNT(m.member_id) AS count ";
         $sql = "FROM exp_members m
 					LEFT JOIN exp_roles g ON g.role_id = m.role_id
@@ -511,6 +509,7 @@ class Member_memberlist extends Member
                 foreach ($member->getCustomFieldNames() as $name) {
                     $row[$name] = $member->$name;
                 }
+                $row['role'] = $row['member_group'];
 
                 $temp = $memberlist_rows;
 
@@ -748,6 +747,7 @@ class Member_memberlist extends Member
         }
 
         $template = str_replace(LD . 'group_id_options' . RD, $menu, $template);
+        $template = str_replace(LD . 'role_options' . RD, $menu, $template);
 
         /** ----------------------------------------
         /**  Create the "Order By" menu

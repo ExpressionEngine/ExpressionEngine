@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,6 +23,7 @@ class Installer extends Core
         define('APPPATH', SYSPATH . 'ee/installer/');
         define('EE_APPPATH', BASEPATH);
 
+        define('PATH_PRO_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/pro/levelups/');
         define('PATH_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/');
         define('PATH_MOD', SYSPATH . 'ee/ExpressionEngine/Addons/');
         define('PATH_PI', SYSPATH . 'ee/ExpressionEngine/Addons/');

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,6 +22,11 @@ class Application
      * @var ProviderRegistry
      */
     protected $registry;
+
+    /**
+     * @var Autoloader object
+     */
+    protected $autoloader;
 
     /**
      * @var ServiceProvider object

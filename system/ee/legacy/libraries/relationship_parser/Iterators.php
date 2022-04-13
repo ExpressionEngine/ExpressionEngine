@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,6 +15,7 @@
  */
 class ParseNodeIterator extends EE_TreeIterator
 {
+    #[\ReturnTypeWillChange]
     public function hasChildren()
     {
         if (! parent::hasChildren()) {
@@ -39,6 +40,7 @@ class ParseNodeIterator extends EE_TreeIterator
      *
      * @return Object<TreeIterator>
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         $current = $this->current();
@@ -75,6 +77,7 @@ class QueryNodeIterator extends EE_TreeIterator
      *
      * @return boolean
      */
+    #[\ReturnTypeWillChange]
     public function hasChildren()
     {
         $current = $this->current();
@@ -95,6 +98,7 @@ class QueryNodeIterator extends EE_TreeIterator
      *
      * @return Object<TreeIterator>
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         $current = $this->current();

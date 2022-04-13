@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,6 +13,7 @@
  */
 class Grid_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Grid',
         'version' => '1.0.0'
@@ -27,6 +28,13 @@ class Grid_ft extends EE_Fieldtype
     public $settings_form_field_name = 'grid';
 
     private $errors;
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = null;
 
     public function __construct()
     {
@@ -645,11 +653,11 @@ class Grid_ft extends EE_Fieldtype
 
                 switch ($field) {
                     case 'col_label':
-                        $rules[$field_name] = 'required|validGridColLabel';
+                        $rules[$field_name] = 'required|maxLength[50]|validGridColLabel';
 
                         break;
                     case 'col_name':
-                        $rules[$field_name] = 'required|alphaDash|validGridColName';
+                        $rules[$field_name] = 'required|alphaDash|maxLength[32]|validGridColName';
 
                         break;
                     case 'col_width':

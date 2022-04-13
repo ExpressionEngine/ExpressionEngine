@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -288,7 +288,7 @@ class Categories extends AbstractCategoriesController
         //  Check discrete privileges when editig (we have no discrete create
         //  permissions)
         if (AJAX_REQUEST) {
-            $can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
+            $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
 
             if (! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_edit)) {
                 show_error(lang('unauthorized_access'), 403);

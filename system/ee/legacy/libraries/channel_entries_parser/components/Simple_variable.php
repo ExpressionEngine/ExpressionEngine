@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -39,7 +39,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
         $result_path = (preg_match("/" . LD . $pre->prefix() . "member_search_path\s*=(.*?)" . RD . "/s", $tagdata, $match)) ? $match[1] : 'search/results';
         $result_path = str_replace(array('"',"'"), "", $result_path);
 
-        return ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;result_path=' . $result_path . '&amp;mbr=';
+        return (strpos($tagdata, 'member_search_path') !== false ) ? ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;result_path=' . $result_path . '&amp;mbr=' : '';
     }
 
     /**

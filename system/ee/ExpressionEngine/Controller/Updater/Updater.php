@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -116,13 +116,13 @@ class Updater extends CP_Controller
 
     public function authenticate()
     {
-        $this->load->library('auth');
+        ee()->load->library('auth');
 
         // Run through basic verifications: authenticate, username and
         // password both exist, not banned, IP checking is okay, run hook
-        if (! ($verify_result = $this->auth->verify())) {
+        if (! ($verify_result = ee()->auth->verify())) {
             if (AJAX_REQUEST) {
-                $this->output->send_ajax_response(array(
+                ee()->output->send_ajax_response(array(
                     'messageType' => 'failure',
                     'message' => $this->auth->errors
                 ));
@@ -130,7 +130,7 @@ class Updater extends CP_Controller
         }
 
         if (AJAX_REQUEST) {
-            $this->output->send_ajax_response(array(
+            ee()->output->send_ajax_response(array(
                 'messageType' => 'success',
                 'message' => ''
             ));

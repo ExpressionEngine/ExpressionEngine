@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -20,9 +20,9 @@ class Channel_form_session extends EE_Session
     /**
      * SC_Session
      *
-     * @access	public
-     * @param	mixed $config
-     * @return	void
+     * @access public
+     * @param mixed $config
+     * @return void
      */
     public function __construct($config)
     {
@@ -52,10 +52,10 @@ class Channel_form_session extends EE_Session
     /**
      * userdata
      *
-     * @param	mixed $str
-     * @return	void
+     * @param mixed $str
+     * @return void
      */
-    public function userdata($str)
+    public function userdata($str, $default = false)
     {
         if ($str == 'member_id' && $this->logged_out_member_id) {
             return $this->logged_out_member_id;

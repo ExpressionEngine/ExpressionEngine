@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,8 +19,11 @@ use Iterator;
  */
 class Document implements Iterator
 {
+    public $tokenizer;
+    public $text;
     public $frequency = array();
     public $words = array();
+    public $size;
     public $max_frequency = 0;
     private $position = 0;
 
@@ -110,6 +113,7 @@ class Document implements Iterator
         return $count;
     }
 
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->position = 0;
@@ -125,11 +129,13 @@ class Document implements Iterator
         return $this->words[$this->position];
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->position;
     }
 
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return isset($this->words[$this->position]);

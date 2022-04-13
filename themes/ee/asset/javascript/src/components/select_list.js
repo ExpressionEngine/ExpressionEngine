@@ -27,7 +27,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var SelectList =
@@ -492,7 +492,8 @@ function (_React$Component) {
             children: null,
             parent: parent ? parent : null,
             component: items[key].component != undefined ? items[key].component : null,
-            sectionLabel: currentSection
+            sectionLabel: currentSection,
+            entry_id: items[key].entry_id ? items[key].entry_id : ''
           };
 
           if (items[key].children) {
@@ -593,7 +594,7 @@ function (_React$Component2) {
         "data-group-toggle": props.groupToggle ? JSON.stringify(props.groupToggle) : '[]',
         disabled: disabled ? 'disabled' : ''
       }), React.createElement("div", {
-        className: "checkbox-label__text"
+        className: props.editable ? "checkbox-label__text checkbox-label__text-editable" : "checkbox-label__text"
       }, props.reorderable && React.createElement("span", {
         className: "icon-reorder icon-left"
       }), props.editable && React.createElement("a", {
@@ -608,15 +609,22 @@ function (_React$Component2) {
         }
       }), " ", props.item.instructions && React.createElement("span", {
         className: "meta-info"
-      }, props.item.instructions), props.removable && React.createElement("a", {
+      }, props.item.instructions), React.createElement("div", {
+        "class": "button-group button-group-xsmall button-group-flyout-right"
+      }, props.editable && React.createElement("a", {
         href: "",
-        className: "button button--small default float-right",
+        className: "button button--default flyout-edit flyout-edit-icon"
+      }, React.createElement("i", {
+        "class": "fas fa-pencil-alt"
+      })), props.removable && React.createElement("a", {
+        href: "",
+        className: "button button--default js-button-delete",
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
       }, React.createElement("i", {
         "class": "fas fa-fw fa-trash-alt"
-      }))));
+      })))));
 
       if (props.nested) {
         return React.createElement("li", {

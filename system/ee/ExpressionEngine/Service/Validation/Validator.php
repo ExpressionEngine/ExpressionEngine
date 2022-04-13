@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -155,7 +155,11 @@ class Validator
         $result = new Result();
 
         if (is_object($values)) {
-            $values = $this->prepForObject($values);
+            $prepValues = $this->prepForObject($values);
+            if ($values instanceof \ExpressionEngine\Model\Member\Member && !isset($prepValues['username'])) {
+                $prepValues['username'] = $values->username;
+            }
+            $values = $prepValues;
         }
 
         foreach ($this->rules as $key => $rules) {
@@ -174,6 +178,9 @@ class Validator
 
                 $rule->setAllValues($values);
 
+                if (is_null($value)) {
+                    $value = (string) $value;
+                }
                 $rule_return = $rule->validate($key, $value);
 
                 // Skip the rest of the rules?

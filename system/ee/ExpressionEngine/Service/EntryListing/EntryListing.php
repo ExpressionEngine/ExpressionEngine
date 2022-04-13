@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Pack et Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -239,7 +239,7 @@ class EntryListing
     {
         $entries = ee('Model')->get('ChannelEntry')
             ->with('Autosaves', 'Channel')
-            ->fields('entry_id', 'title', 'Channel.channel_title', 'Channel.preview_url', 'Channel.status_group', 'comment_total', 'entry_date', 'status')
+            ->fields('entry_id', 'title', 'Channel.channel_title', 'Channel.preview_url', 'Channel.status_group', 'comment_total', 'entry_date', 'status', 'sticky')
             ->filter('site_id', $this->site_id);
 
         if (in_array('Columns', $this->extra_filters)) {
@@ -332,7 +332,7 @@ class EntryListing
 
             switch ($this->search_in) {
                 case 'titles_and_content':
-                    $search_fields = array_merge(['title'], $content_fields);
+                    $search_fields = array_merge(['title', 'url_title', 'entry_id'], $content_fields);
 
                     break;
                 case 'content':
@@ -340,7 +340,7 @@ class EntryListing
 
                     break;
                 case 'titles':
-                    $search_fields = ['title'];
+                    $search_fields = ['title', 'url_title', 'entry_id'];
 
                     break;
             }
@@ -446,7 +446,7 @@ class EntryListing
      */
     private function createCategoryFilter($channel = null)
     {
-        $cat_id = ($channel) ? explode('|', $channel->cat_group) : null;
+        $cat_id = ($channel) ? explode('|', (string) $channel->cat_group) : null;
 
         $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
             ->with('Categories')

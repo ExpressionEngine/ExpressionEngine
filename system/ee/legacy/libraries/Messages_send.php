@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -482,7 +482,7 @@ class EE_Messages_send extends EE_Messages
         /**  Attachments?
         /** -------------------------------------*/
         if (ee()->input->get_post('attach') !== false && ee()->input->get_post('attach') != '') {
-            $this->attachments = explode('|', $_POST['attach']);
+            $this->attachments = array_map('intval', explode('|', $_POST['attach']));
         }
 
         /* -------------------------------------
@@ -797,7 +797,7 @@ class EE_Messages_send extends EE_Messages
             $copy_id = (ee()->input->get_post('replying') !== false) ? ee()->input->get_post('replying') : ee()->input->get_post('forwarding');
             $status = (ee()->input->get_post('replying') !== false) ? 'replied' : 'forwarded';
 
-            ee()->db->query("UPDATE exp_message_copies SET message_status = '{$status}' WHERE copy_id = '{$copy_id}'");
+            ee()->db->query("UPDATE exp_message_copies SET message_status = '{$status}' WHERE copy_id = '" . ee()->db->escape_str($copy_id) . "'");
         }
 
         /** -------------------------------------
@@ -805,7 +805,7 @@ class EE_Messages_send extends EE_Messages
         /** -------------------------------------*/
         if (count($this->attachments) > 0) {
             ee()->db->query("UPDATE exp_message_attachments SET message_id = '{$message_id}'
-						WHERE attachment_id IN ('" . implode("','", $this->attachments) . "')");
+                        WHERE attachment_id IN ('" . ee()->db->escape_str(implode("','", $this->attachments)) . "')");
         }
 
         /** -------------------------------------

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -28,7 +28,7 @@ class Ignore extends Profile
         parent::__construct();
         $this->index_url = $this->base_url;
         $this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
-        $this->ignore_list = explode('|', $this->member->ignore_list);
+        $this->ignore_list = explode('|', (string) $this->member->ignore_list);
     }
 
     /**
@@ -36,8 +36,8 @@ class Ignore extends Profile
      */
     public function index()
     {
-        $sort = ($this->config->item('memberlist_sort_order')) ? $this->config->item('memberlist_sort_order') : 'asc';
-        $perpage = $this->config->item('memberlist_row_limit');
+        $sort = (ee()->config->item('memberlist_sort_order')) ? ee()->config->item('memberlist_sort_order') : 'asc';
+        $perpage = ee()->config->item('memberlist_row_limit');
         $sort_col = ee()->input->get('sort_col') ?: 'username';
         $sort_dir = ee()->input->get('sort_dir') ?: $sort;
         $page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
@@ -155,7 +155,7 @@ class Ignore extends Profile
      */
     public function delete()
     {
-        $selection = $this->input->post('selection');
+        $selection = ee()->input->post('selection');
         $ignore = implode('|', array_diff($this->ignore_list, $selection));
         $this->member->ignore_list = $ignore;
         $this->member->save();

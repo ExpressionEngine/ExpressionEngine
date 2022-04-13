@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -42,17 +42,29 @@ EE.cp.formValidation = {
 			that = this;
 
 		// These are the text input selectors we listen to for activity
-		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea';
+		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea, div.redactor-styles, div.ck-content, div.condition-rule-field-wrap';
 		this._buttonSelector = '.form-btns .button';
 
 		form.each(function(index, el) {
-
 			that._bindButtonStateChange($(el));
 			that._bindForms($(el));
 		});
 
 		this._focusFirstError();
 		this._scrollGrid();
+		this._checkRequiredFields();
+	},
+
+	_checkRequiredFields: function() {
+		var invalidFields = $('td.invalid, div.invalid');
+
+		// check and removed `.invalid` from Fluid hidden templates block
+		invalidFields.each(function(index, el) {
+			if ( $(el).parents('.fluid-field-templates').length ) {
+				$(el).removeClass('invalid');
+				$(el).find('.ee-form-error-message').remove();
+			}
+		});
 	},
 
 	/**
@@ -83,7 +95,7 @@ EE.cp.formValidation = {
 			}, 0);
 		});
 
-		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], select', function() {
+		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], input[type=range], select', function() {
 
 			var element = $(this);
 
@@ -236,8 +248,7 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	form	jQuery object of form
 	 */
 	_errorsExist: function(form) {
-
-		return ($('.fieldset-invalid:visible, td.invalid:visible', form).size() != 0);
+		return ($('.fieldset-invalid:visible, td.invalid:visible, div.invalid:visible', form).size() != 0);
 	},
 
 	/**
@@ -263,6 +274,36 @@ EE.cp.formValidation = {
 		var that = this,
 			action = form.attr('action'),
 			data = form.serialize();
+
+		if($('.field-conditionset-wrapper').length) {
+			var sets = $('#fieldset-condition_fields .field-conditionset-wrapper').find('.conditionset-item');
+			var hiddenRuleInputs = sets.find('.rule.hidden');
+			var hiddenMatchInputs = $('#fieldset-condition_fields .conditionset-item.hidden').find('.match-react-element');
+
+			$.each(hiddenRuleInputs, function(key, value) {
+
+				// check if input in hidden container was init and have attr disable
+				var timer = setInterval(function() {
+					if ($(value).find('input').prop('disabled')) {
+						clearInterval(timer);
+					} else {
+						$(value).find('input').attr('disabled', 'disabled');
+					}
+				},50);
+			});
+
+			$.each(hiddenMatchInputs, function(key, value) {
+
+				// check if input in hidden container was init and have attr disable
+				var timer = setInterval(function() {
+					if ($(value).find('input').prop('disabled')) {
+						clearInterval(timer);
+					} else {
+						$(value).find('input').attr('disabled', 'disabled');
+					}
+				},50);
+			});
+		}
 
 		$.ajax({
 			url: action,
@@ -302,6 +343,11 @@ EE.cp.formValidation = {
 	 */
 	_toggleErrorForFields: function(field, message) {
 
+		if (message != 'success' && typeof(message.success) !== 'undefined' && message.success == 'success') {
+			hidden_fields = message.hidden_fields;
+			message = 'success';
+		}
+
 		var form = field.parents('form'),
 			container = field.parents('.field-control'),
 			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),
@@ -315,7 +361,8 @@ EE.cp.formValidation = {
 			// See if this tab has its own submit button
 			tab_has_own_button = (tab_container.size() > 0 && tab_container.find(this._buttonSelector).size() > 0),
 			// Finally, grab the button of the current form
-			button = (tab_has_own_button) ? tab_container.find(this._buttonSelector) : form.find(this._buttonSelector);
+			button = (tab_has_own_button) ? tab_container.find(this._buttonSelector) : form.find(this._buttonSelector),
+			tab_button = $(tab_container).parents('.tab-wrap').find('button[rel="'+tab_rel+'"]');
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places
@@ -326,9 +373,19 @@ EE.cp.formValidation = {
 			grid = true;
 		}
 
+		if (fieldset.find('.grid-field').size() > 0)
+		{
+			container = field.parents('td');
+			grid = true;
+		}
+		if (fieldset.find('.conditionset-item:not(.hidden)').length > 0)
+		{
+			grid = true;
+			container = field.parents('.condition-rule-field-wrap')
+		}
+
 		// Validation success, return the form to its original, submittable state
 		if (message == 'success') {
-
 			// For Grid, we also need to remove the class on the cell and do some
 			// special handling of the invalid class on the Grid field label
 			if (grid) {
@@ -343,6 +400,11 @@ EE.cp.formValidation = {
 					// Remove error message below Grid field
 					container.parents('div.field-control').find('> ' + errorClass).remove();
 				}
+
+				if (fieldset.find('.fluid').size() > 0 && !this._errorsExist(container)) {
+					fieldset.parent().find(errorClass).remove();
+				}
+
 			} else {
 				fieldset.removeClass('fieldset-invalid');
 			}
@@ -352,7 +414,17 @@ EE.cp.formValidation = {
 			// If no more errors on this tab, remove invalid class from tab
 			if (tab.size() > 0 &&  ! this._errorsExist(tab_container))
 			{
-				tab.removeClass('invalid');
+				tab.removeClass('invalid'); 
+			}
+
+			// If no more errors on this tab, remove invalid class from tab
+			if (tab_button.size() > 0 &&  ! this._errorsExist(tab_container))
+			{
+				tab_button.removeClass('invalid'); 
+			}
+
+			if (EE.hasOwnProperty('publish') && EE.publish.hasOwnProperty('has_conditional_fields') && EE.publish.has_conditional_fields && typeof(hidden_fields) !== 'undefined') {
+				EE.cp.hide_show_entries_fields(hidden_fields);
 			}
 
 			// Re-enable submit button only if all errors are gone
@@ -367,7 +439,9 @@ EE.cp.formValidation = {
 						if (thisButton.is('input')) {
 							thisButton.attr('value', decodeURIComponent(thisButton.data('submit-text')));
 						} else if (thisButton.is('button')) {
-							thisButton.html(decodeURIComponent(thisButton.data('submit-text')));
+							if (typeof(thisButton.data('submit-text')) != 'undefined') {
+								thisButton.html(decodeURIComponent(thisButton.data('submit-text')));
+							}
 						}
 					}
 				});
@@ -375,7 +449,6 @@ EE.cp.formValidation = {
 
 		// Validation error
 		} else {
-
 			// Bind timer for text fields to validate field while typing
 			this._bindTextFieldTimer(container);
 

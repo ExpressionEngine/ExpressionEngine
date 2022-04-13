@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -67,7 +67,7 @@ class License extends CP_Controller
         $encrypted = ee('Encrypt')->encode(json_encode($data), ee()->config->item('session_crypt_key'));
         ee()->cache->file->save('/addons-status', $encrypted . '||s=' . hash('sha256', $encrypted), 0);
 
-        $this->output->send_ajax_response(array(
+        return ee()->output->send_ajax_response(array(
             'messageType' => 'success',
             'message' => ''
         ));

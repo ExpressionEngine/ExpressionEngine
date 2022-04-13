@@ -23,7 +23,7 @@ class Forum_spam implements SpamModerationInterface
         require_once PATH_ADDONS . 'forum/mod.forum.php';
         require_once PATH_ADDONS . 'forum/mod.forum_core.php';
 
-        $this->fc = new \Forum_core();
+        $this->fc = new \Forum_Core();
     }
 
     /**

@@ -146,8 +146,6 @@ if (! function_exists('forgot_password_instructions')) {
     function forgot_password_instructions()
     {
         return <<<EOF
-{name},
-
 To reset your password, please go to the following page:
 
 {reset_url}
@@ -175,8 +173,6 @@ if (! function_exists('password_changed_notification')) {
     function password_changed_notification()
     {
         return <<<EOF
-{name},
-
 Your password was just changed.
 
 If you didn't make this change yourself, please contact an administrator right away.
@@ -200,11 +196,32 @@ if (! function_exists('email_changed_notification')) {
     function email_changed_notification()
     {
         return <<<EOF
-{name},
-
 Your email address has been changed, and this email address is no longer associated with your account.
 
 If you didn't make this change yourself, please contact an administrator right away.
+
+{site_name}
+{site_url}
+EOF;
+    }
+}
+
+if (! function_exists('forgot_username_instructions_title')) {
+    function forgot_username_instructions_title()
+    {
+        return <<<EOF
+Username information
+EOF;
+    }
+}
+
+if (! function_exists('forgot_username_instructions')) {
+    function forgot_username_instructions()
+    {
+        return <<<EOF
+Your username is: {username}
+
+If you didn't request your username yourself, please contact an administrator right away.
 
 {site_name}
 {site_url}
@@ -229,8 +246,6 @@ if (! function_exists('validated_member_notify')) {
     function validated_member_notify()
     {
         return <<<EOF
-{name},
-
 Your membership account has been activated and is ready for use.
 
 Thank You!
@@ -258,8 +273,6 @@ if (! function_exists('decline_member_validation')) {
     function decline_member_validation()
     {
         return <<<EOF
-{name},
-
 We're sorry but our staff has decided not to validate your membership.
 
 {site_name}
@@ -921,12 +934,393 @@ if (! function_exists('post_install_message_template')) {
 			</div>
 			<section class="bar">
 				<p style="float: left;"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
-				<p style="float: right;">&copy;2020 <a href="https://packettide.com/" rel="external">Packet Tide</a>, LLC</p>
+				<p style="float: right;">&copy;2021 <a href="https://packettide.com/" rel="external">Packet Tide</a>, LLC</p>
 			</section>
 		</section>
 
 	</body>
 </html>
+EOF;
+    }
+}
+
+/* -------------------------------------
+//  MFA Messages Template
+/* -------------------------------------*/
+if (! function_exists('mfa_message_template')) {
+    function mfa_message_template()
+    {
+        return <<<EOF
+<!doctype html>
+        <html dir="ltr">
+            <head>
+                <title>{title}</title>
+                <meta http-equiv="content-type" content="text/html; charset={charset}">
+                <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
+                <meta name="referrer" content="no-referrer">
+                {meta_refresh}
+                <style type="text/css">
+        :root, body {
+            --ee-panel-bg: #fff;
+            --ee-panel-border: #dfe0ef;
+            --ee-text-normal: #0d0d19;
+            --ee-text-secondary: #8f90b0;
+            --ee-main-bg: #f7f7fb;
+            --ee-link: #5D63F1;
+            --ee-link-hover: #171feb;
+            --ee-bg-blank: #fff;
+            --ee-code-border: #dfe0ef;
+        
+            --ee-input-color: #0d0d19;
+            --ee-input-bg: #fff;
+            --ee-input-placeholder: #adaec5;
+            --ee-input-border: #cbcbda;
+            --ee-input-border-accent: #ecedf5;
+            --ee-input-focus-border: #5D63F1;
+            --ee-input-focus-shadow: 0 3px 6px -3px rgba(174,151,255,0.14),0 5px 10px -3px rgba(97,114,242,0.05);
+            --ee-button-primary-color: #fff;
+            --ee-button-primary-bg: #5D63F1;
+            --ee-button-primary-border: #5D63F1;
+        
+            --ee-bg-0: #f7f7fb;
+            --ee-border: #dfe0ef;
+            --ee-error: #FA5252;
+            --ee-error-light: #fee7e7;
+            --ee-warning: #FFB40B;
+            --ee-warning-light: #fff6e1;
+        }
+
+        @font-face{font-family:Roboto;font-style:normal;font-weight:400;src:url({url_themes}webfonts/roboto-v20-latin-regular.eot);src:local("Roboto"),local("Roboto-Regular"),url({url_themes}webfonts/roboto-v20-latin-regular.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-regular.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-regular.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-regular.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-regular.svg#Roboto) format("svg")}@font-face{font-family:Roboto;font-style:italic;font-weight:400;src:url({url_themes}webfonts/roboto-v20-latin-italic.eot);src:local("Roboto Italic"),local("Roboto-Italic"),url({url_themes}webfonts/roboto-v20-latin-italic.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-italic.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-italic.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-italic.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-italic.svg#Roboto) format("svg")}@font-face{font-family:Roboto;font-style:normal;font-weight:500;src:url({url_themes}webfonts/roboto-v20-latin-500.eot);src:local("Roboto Medium"),local("Roboto-Medium"),url({url_themes}webfonts/roboto-v20-latin-500.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-500.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-500.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-500.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-500.svg#Roboto) format("svg")}@font-face{font-family:Roboto;font-style:italic;font-weight:500;src:url({url_themes}webfonts/roboto-v20-latin-500italic.eot);src:local("Roboto Medium Italic"),local("Roboto-MediumItalic"),url({url_themes}webfonts/roboto-v20-latin-500italic.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-500italic.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-500italic.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-500italic.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-500italic.svg#Roboto) format("svg")}@font-face{font-family:Roboto;font-style:normal;font-weight:700;src:url({url_themes}webfonts/roboto-v20-latin-700.eot);src:local("Roboto Bold"),local("Roboto-Bold"),url({url_themes}webfonts/roboto-v20-latin-700.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-700.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-700.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-700.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-700.svg#Roboto) format("svg")}@font-face{font-family:Roboto;font-style:italic;font-weight:700;src:url({url_themes}webfonts/roboto-v20-latin-700italic.eot);src:local("Roboto Bold Italic"),local("Roboto-BoldItalic"),url({url_themes}webfonts/roboto-v20-latin-700italic.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-700italic.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-700italic.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-700italic.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-700italic.svg#Roboto) format("svg")}
+        @font-face{font-family:'Font Awesome 5 Free';font-style:normal;font-weight:900;font-display:auto;src:url({url_themes}webfonts/fa-solid-900.eot);src:url({url_themes}webfonts/fa-solid-900.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/fa-solid-900.woff2) format("woff2"),url({url_themes}webfonts/fa-solid-900.woff) format("woff"),url({url_themes}webfonts/fa-solid-900.ttf) format("truetype"),url({url_themes}webfonts/fa-solid-900.svg#fontawesome) format("svg")}
+        
+        *, :after, :before {
+            box-sizing: inherit;
+        }
+        
+        html {
+            box-sizing: border-box;
+            font-size: 15px;
+            height: 100%;
+            line-height: 1.15;
+        }
+        
+        body {
+            font-family: Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Oxygen,Cantarell,sans-serif;
+            height: 100%;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--ee-text-normal);
+            background: var(--ee-main-bg);
+            -webkit-font-smoothing: antialiased;
+            margin: 0;
+        }
+        
+        .panel {
+            margin-bottom: 20px;
+            background-color: var(--ee-panel-bg);
+            border: 1px solid var(--ee-panel-border);
+            border-radius: 6px;
+        }
+        .redirect {
+            max-width: 700px;
+            min-width: 350px;
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translate(-50%);
+            height: 100vh;
+            overflow-y: auto;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            display: flex;
+        }
+        
+        .redirect-inner {
+          background-color: var(--ee-panel-bg);
+          border: 1px solid var(--ee-panel-border);
+          border-radius: 6px;
+          height: auto;
+          margin-top: auto;
+          margin-bottom: auto;
+        }
+
+        .redirect-inner .qr-code-wrap {
+            text-align: center;
+        }
+        
+        .panel-heading {
+            padding: 20px 25px;
+            position: relative;
+        }
+        
+        .panel-body {
+            padding: 20px 25px;
+        }
+        
+        .panel-body:after, .panel-body:before {
+            content: " ";
+            display: table;
+        }
+        
+        .redirect p {
+            margin-bottom: 20px;
+        }
+        p {
+            line-height: 1.6;
+        }
+        a, blockquote, code, h1, h2, h3, h4, h5, h6, ol, p, pre, ul {
+            color: inherit;
+            margin: 0;
+            padding: 0;
+            font-weight: inherit;
+        }
+
+        code {
+            font-size: inherit;
+            margin: 0 2px;
+            padding: 3px 6px;
+            border-radius: 5px;
+            border: 1px solid var(--ee-code-border);
+            background-color: var(--ee-bg-blank);
+            font-size: .96em;
+            white-space: normal;
+        }
+        
+        a {
+            color: var(--ee-link);
+            text-decoration: none;
+            -webkit-transition: color .15s ease-in-out;
+            -moz-transition: color .15s ease-in-out;
+            -o-transition: color .15s ease-in-out;
+        }
+        
+        a:hover {
+            color: var(--ee-link-hover);
+        }
+        
+        h3 {
+            font-size: 1.35em;
+            font-weight: 500;
+        }
+        
+        ol, ul {
+            padding-left: 0;
+        }
+        
+        ol li, ul li {
+            list-style-position: inside;
+        }
+        
+        .panel-footer {
+            padding: 20px 25px;
+            position: relative;
+        }
+        
+        fieldset {
+            margin: 0;
+            padding: 0;
+            margin-bottom: 20px;
+            border: 0;
+        }
+        
+        fieldset.last {
+            margin-bottom: 0;
+        }
+        
+        .field-instruct {
+            margin-bottom: 5px;
+        }
+        
+        .field-instruct label {
+            display: block;
+            color: var(--ee-text-normal);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .field-instruct :last-child {
+            margin-bottom: 0;
+        }
+
+        .field-instruct em {
+            color: var(--ee-text-secondary);
+            display: block;
+            font-size: .8rem;
+            font-style: normal;
+            margin-bottom: 10px;
+        }
+
+        .field-instruct label+em {
+            margin-top: -5px;
+        }
+        
+        button, input, optgroup, select, textarea {
+            font-family: inherit;
+            font-size: 100%;
+            line-height: 1.15;
+            margin: 0;
+        }
+        
+        input[type=text], input[type=password] {
+            display: block;
+            width: 100%;
+            padding: 8px 15px;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--ee-input-color);
+            background-color: var(--ee-input-bg);
+            background-image: none;
+            transition: border-color .2s ease,box-shadow .2s ease;
+            -webkit-appearance: none;
+            border: 1px solid var(--ee-input-border);
+            border-radius: 5px;
+        }
+        
+        input[type=text]:focus, input[type=password]:focus {
+            border-color: var(--ee-input-focus-border);
+        }
+        
+        input:focus {
+            outline: 0;
+        }
+        
+        .button {
+            -webkit-appearance: none;
+            display: inline-block;
+            font-weight: 500;
+            text-align: center;
+            vertical-align: middle;
+            touch-action: manipulation;
+            background-image: none;
+            cursor: pointer;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            -webkit-transition: background-color .15s ease-in-out;
+            -moz-transition: background-color .15s ease-in-out;
+            -o-transition: background-color .15s ease-in-out;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            padding: 8px 20px!important;
+            font-size: 1rem;
+            line-height: 1.6;
+            border-radius: 5px;
+        }
+        
+        .button--wide {
+            display: block;
+            width: 100%;
+        }
+        
+        .button--large {
+            padding: 10px 25px!important;
+            font-size: 1.2rem;
+            line-height: 1.7;
+            border-radius: 6px;
+        }
+        
+        .button--primary {
+            color: var(--ee-button-primary-color);
+            background-color: var(--ee-button-primary-bg);
+            border-color: var(--ee-button-primary-border);
+        }
+        
+        .button.disabled {
+            cursor: not-allowed;
+            opacity: .55;
+            box-shadow: none;
+        }
+        
+        .app-notice {
+            border: 1px solid var(--ee-border);
+            overflow: hidden;
+            background-color: var(--ee-bg-0);
+            border-radius: 5px;
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .app-notice---error {
+            border-color: var(--ee-error);
+            background-color: var(--ee-error-light);
+        }
+        
+        .app-notice---error .app-notice__tag {
+            color: var(--ee-error);
+        }
+
+        .app-notice---important {
+            border-color: var(--ee-warning);
+            background-color: var(--ee-warning-light);
+        }
+
+        .app-notice---important .app-notice__tag {
+            color: var(--ee-warning);
+        }
+        
+        .app-notice__tag {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .app-notice__icon {
+            position: relative;
+        }
+
+        .app-notice__icon::before {
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            content: "\\\\f06a";
+            position: relative;
+            z-index: 2;
+        }
+        
+        .app-notice---error .app-notice__icon::after {
+            background: var(--ee-error-light);
+        }
+        
+        .app-notice__tag+.app-notice__content {
+            padding-left: 0;
+        }
+        
+        .app-notice__content {
+            flex: 1 1;
+            padding: 15px 20px;
+        }
+
+        .app-notice__content p {
+            margin: 0;
+            color: var(--ee-text-primary);
+            opacity: .6;
+        }
+        
+                </style>
+            </head>
+            <body>
+                <section class="flex-wrap">
+                    <section class="wrap">
+                        <div class="panel redirect">
+                            <div class="redirect-inner">
+                                <div class="panel-heading">
+                                    <h3>{heading}</h3>
+                                </div>
+                                <div class="panel-body">
+                                    {content}
+                                </div>
+                                <div class="panel-footer">
+                                    {link}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+            </body>
+        </html>
 EOF;
     }
 }

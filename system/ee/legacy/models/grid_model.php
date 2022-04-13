@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -482,9 +482,9 @@ class Grid_model extends CI_Model
                     }
                     usort($override, function ($a, $b) use ($orderby, $sort) {
                         if ($sort == 'asc') {
-                            return $a[$orderby] > $b[$orderby];
+                            return ($a[$orderby] > $b[$orderby]) ? 1 : -1;
                         } else {
-                            return $a[$orderby] < $b[$orderby];
+                            return ($a[$orderby] < $b[$orderby]) ? 1 : -1;
                         }
                     });
                 }
@@ -850,10 +850,14 @@ class Grid_model extends CI_Model
             }
             // Existing rows
             elseif (strpos($row_id, 'row_id_') !== false) {
-                $columns['row_id'] = str_replace('row_id_', '', $row_id);
-                $row_ids[] = $columns['row_id'];
-
-                $updated_rows[] = $columns;
+                if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                    $columns['entry_id'] = $entry_id;
+                    $new_rows[] = $columns;
+                } else {
+                    $columns['row_id'] = str_replace('row_id_', '', $row_id);
+                    $row_ids[] = $columns['row_id'];
+                    $updated_rows[] = $columns;
+                }
             }
 
             $order++;

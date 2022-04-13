@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -741,16 +741,18 @@ class MenuManager extends Settings
             ->all()
             ->pluck('class');
 
-        if (empty($extensions)) {
-            return $result;
-        }
-
         foreach ($addons as $prefix => $addon) {
+            $baseClass = ucfirst($addon->getPrefix());
             if ($addon->hasExtension()) {
-                $class = ucfirst($addon->getPrefix()) . '_ext';
+                $class = $baseClass . '_ext';
 
                 if (in_array($class, $extensions)) {
                     $result[$class] = $addon->getName();
+                }
+            }
+            if (!$addon->get('built_in') && $addon->hasModule() && $addon->get('settings_exist')) {
+                if (!isset($result[$baseClass . '_ext'])) {
+                    $result[$baseClass] = $addon->getName();
                 }
             }
         }

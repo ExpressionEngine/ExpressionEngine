@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -261,6 +261,36 @@ class CI_DB_forge
         }
 
         $sql = $this->_alter_table('DROP', $this->db->dbprefix . $table, $column_name);
+
+        // Cached field names have changed
+        unset($this->db->data_cache['field_names'][$table]);
+
+        return $this->db->query($sql);
+    }
+
+    /**
+     * Batched Column Drop
+     *
+     * @access	public
+     * @param	string $table The table that contains the columns to drop
+     * @param	array $array An array of column names to drop
+     * @return	CI_DB_result The query result object
+     */
+    public function drop_column_batch($table, $column_names)
+    {
+        if (empty($table)) {
+            show_error('A table name is required for that operation.');
+        }
+
+        if (! is_array($column_names)) {
+            $column_name = array($column_names);
+        }
+
+        if (empty($column_names)) {
+            show_error('A column name is required for that operation.');
+        }
+
+        $sql = $this->_alter_table('DROP', $this->db->dbprefix . $table, $column_names);
 
         // Cached field names have changed
         unset($this->db->data_cache['field_names'][$table]);

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -95,6 +95,8 @@ class EE_Controller extends Base_Controller
  */
 class CP_Controller extends EE_Controller
 {
+    private $base_url;
+
     public function __construct()
     {
         parent::__construct();

@@ -132,6 +132,23 @@
   .form-btns > .button-group {
     margin-left: 5px;
   }
+
+  &.title-bar__extra-tools-publish {
+
+    .form-btns {
+
+      @include m-tablet-down {
+        display: block;
+      }
+    }
+  }
+}
+
+.panel-heading {
+  .title-bar__extra-tools > .button,
+  .title-bar__extra-tools > .button-group {
+    margin-left: 5px;
+  }
 }
 
 .form-standard {
@@ -155,6 +172,16 @@
 
   h2:first-child {
     margin-top: 0;
+  }
+
+  .redactor-styles h2 {
+  	  border: none;
+      text-transform: none;
+      letter-spacing: revert;
+      font-size: 1.728em;
+      color: #111;
+      margin-bottom: 0.5em;
+      padding: 0;
   }
 }
 

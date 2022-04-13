@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -189,6 +189,15 @@ class CI_DB_mysqli_forge extends CI_DB_forge
 
         // DROP has everything it needs now.
         if ($alter_type == 'DROP') {
+            if (is_array($fields)) {
+                $drop_batch = '';
+                foreach ($fields as $col) {
+                    $drop_batch .= 'DROP ' . $this->db->_protect_identifiers($col) . ", \n\t";
+                }
+
+                return $sql . rtrim(substr($drop_batch, 5), ", \n\t");
+            }
+
             return $sql . $this->db->_protect_identifiers($fields);
         }
 

@@ -8,9 +8,13 @@ $ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 	right: 0;
 	bottom: 0;
 	left: 0;
-	z-index: 50;
+	z-index: 250;
 	max-width: 100vw;
 	display: none;
+
+    ~ .modal-wrap {
+        z-index: 251;
+    }
 }
 
 .live-preview {
@@ -40,7 +44,8 @@ $ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	flex-basis: 40%;
+	flex-basis: 50%;
+	width: 50%;
 	padding-top: 0;
 	background: color(bg-blank);
 	transition: transform $speed $ease, opacity $speed $ease;
@@ -51,6 +56,14 @@ $ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 	overflow-y: auto;
 	padding: $s-m;
 	padding-top: 0;
+
+  .panel-heading__publish {
+    display: none;
+  }
+
+  .panel-body__publish {
+    padding: 0px;
+  }
 }
 
 .live-preview__form-header {
@@ -84,11 +97,12 @@ $ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 	background: color(bg-15);
 	cursor: col-resize;
 	transition: transform $speed $ease, opacity $speed $ease;
-	transition-delay: $speed / 2;
+	transition-delay: math.div($speed, 2);
 }
 
 .live-preview__preview {
-	flex-basis: 60%;
+	flex-basis: 50%;
+	width: 50%;
 	background: #fff;
 	transition: transform $speed $ease, opacity $speed $ease;
 	// padding: $s-l;

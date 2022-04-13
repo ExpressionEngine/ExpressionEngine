@@ -59,7 +59,3 @@ The ExpressionEngine project is copyright (c) 2003-2020 Packet Tide, LLC ([https
 Complete license terms and copyright information can be found in [LICENSE.txt](LICENSE.txt) in the root of this repository.
 
 "ExpressionEngine" is a registered trademark of Packet Tide, LLC. in the United States and around the world. Refer to ExpressionEngines's [Trademark Use Policy](https://expressionengine.com/about/trademark-use-policy) for access to logos and acceptable use.
-
-> ![EECONF 2020](https://www.eeconf.com/uploads/general/eeconf-2020-logo-flyers-orange.png)
->
-> The community powered EE CONF is coming to Philadelphia October 8-9. Join the ExpressionEngine community in a completely new and improved 2-day “summit” style conference in expert-led round table discussions to tackle your most challenging web development projects and business headaches. For more information visit [eeconf.com](https://eeconf.com)

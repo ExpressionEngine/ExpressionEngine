@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -221,7 +221,7 @@ class Email extends Settings
      **/
     public function _smtp_required_field($str)
     {
-        if (ee()->input->post('mail_protocol') == 'smtp' && trim($str) == '') {
+        if (ee()->input->post('mail_protocol') == 'smtp' && trim((string) $str) == '') {
             ee()->form_validation->set_message('_smtp_required_field', lang('empty_stmp_fields'));
 
             return false;

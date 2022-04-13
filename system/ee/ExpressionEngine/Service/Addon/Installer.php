@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -34,6 +34,7 @@ class Installer
 
     /**
      * Module installer
+     * @return bool
      */
     public function install()
     {
@@ -60,9 +61,25 @@ class Installer
 
     /**
      * Module updater
+     * @return bool
      */
     public function update($current = '')
     {
+        if ($current == '' or version_compare($current, $this->version, '==')) {
+            return false;
+        }
+        
+        foreach ($this->actions as $action) {
+            if (!isset($action['class'])) {
+                $action['class'] = $classname;
+            }
+            $model = ee('Model')->get('Action')->filter('class', $action['class'])->filter('method', $action['method'])->first();
+            if (!empty($model)) {
+                $model->save();
+            } else {
+                ee('Model')->make('Action', $action)->save();
+            }
+        }
         ee('Migration')->migrateAllByType($this->shortname);
 
         return true;
@@ -70,6 +87,7 @@ class Installer
 
     /**
      * Module uninstaller
+     * @return bool
      */
     public function uninstall()
     {
@@ -103,6 +121,7 @@ class Installer
 
     /**
      * Extension installer
+     * @return bool
      */
     public function activate_extension()
     {
@@ -125,6 +144,7 @@ class Installer
 
     /**
      * Extension installer
+     * @return bool
      */
     public function disable_extension()
     {

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -217,14 +217,15 @@ class Edit extends AbstractPublishController
             $choices[$link->compile()] = $text;
         }
 
-        ee()->view->header = array(
+        $vars['head'] = array(
             'title' => lang('entry_manager'),
             'action_button' => (count($choices) || ee('Permission')->can('create_entries_channel_id_' . $channel_id)) && $show_new_button ? [
                 'text' => $channel_id ? sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title) : lang('new'),
                 'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
                 'filter_placeholder' => lang('filter_channels'),
                 'choices' => $channel_id ? null : $choices
-            ] : null
+            ] : null,
+            'class' => 'entries'
         );
 
         if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {
@@ -400,8 +401,9 @@ class Edit extends AbstractPublishController
         $livePreviewReady = $this->createLivePreviewModal($entry);
 
         $vars = array(
-            'header' => [
+            'head' => [
                 'title' => lang('edit_entry'),
+                'class' => 'entries'
             ],
             'form_url' => $base_url,
             'form_attributes' => $form_attributes,
@@ -568,7 +570,7 @@ class Edit extends AbstractPublishController
         ee()->functions->redirect(ee('CP/URL')->make('publish/edit', ee()->cp->get_url_state()));
     }
 
-    private function removeEntries($entry_ids, $self_only = true)
+    private function removeEntries($entry_ids, $self_only = false)
     {
         $entries = ee('Model')->get('ChannelEntry', $entry_ids)
             ->filter('site_id', ee()->config->item('site_id'));
@@ -596,10 +598,11 @@ class Edit extends AbstractPublishController
                 return [];
             }
 
-            $entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
+            $entries->filter('channel_id', 'IN', $channel_ids);
         }
 
         $all_entries = $entries->all();
+        $entry_names = [];
         if (!empty($all_entries)) {
             $entry_names = $all_entries->pluck('title');
             $entry_ids = $all_entries->pluck('entry_id');
@@ -619,9 +622,9 @@ class Edit extends AbstractPublishController
                     $entry->Site->save();
                 }
             }
+            
+            $entries->delete();
         }
-
-        $entries->delete();
 
         return $entry_names;
     }

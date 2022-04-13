@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,8 +19,6 @@ class Updater
 
     public function do_update()
     {
-        ee()->load->library('layout');
-
         $layouts = ee()->db->get('layout_publish');
 
         if ($layouts->num_rows() === 0) {

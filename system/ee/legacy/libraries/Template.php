@@ -1,10 +1,11 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -18,89 +19,89 @@ class EE_Template
     // bring in the :modifier methods
     use Template\Variables\ModifiableTrait;
 
-    public $loop_count = 0;			// Main loop counter.
-    public $depth = 0;			// Sub-template loop depth
-    public $in_point = '';			// String position of matched opening tag
-    public $template = '';			// The requested template (page)
-    public $final_template = '';			// The finalized template
-    public $fl_tmpl = '';			// 'Floating' copy of the template.  Used as a temporary "work area".
-    public $cache_hash = '';			// md5 checksum of the template name.  Used as title of cache file.
-    public $cache_status = '';			// Status of page cache (NO_CACHE, CURRENT, EXPIRED)
-    public $tag_cache_status = '';			// Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
-    public $cache_timestamp = '';
-    public $template_type = '';			// Type of template (webpage, rss)
-    public $embed_type = '';			// Type of template for embedded template
-    public $template_hits = 0;
-    public $php_parse_location = 'output';	// Where in the chain the PHP gets parsed
-    public $template_edit_date = '';			// Template edit date
-    public $templates_sofar = '';			// Templates processed so far, subtemplate tracker
-    public $templates_loaded = array();		// Templates loaded so far (yes, redundant)
-    public $attempted_fetch = array();		// Templates attempted to fetch but may have bailed due to recursive embeds
-    public $encode_email = true;		// Whether to use the email encoder.  This is set automatically
-    public $hit_lock_override = false;		// Set to TRUE if you want hits tracked on sub-templates
-    public $hit_lock = false;		// Lets us lock the hit counter if sub-templates are contained in a template
-    public $parse_php = false;		// Whether to parse PHP or not
-    public $strict_urls = false;		// Whether to make URLs operate strictly or not.  This is set via a template global pref
-    public $protect_javascript = false;		// Protect js blocks from conditional parsing?
+    public $loop_count            = 0;         // Main loop counter.
+    public $depth                 = 0;          // Sub-template loop depth
+    public $in_point              = '';          // String position of matched opening tag
+    public $template              = '';          // The requested template (page)
+    public $final_template        = '';            // The finalized template
+    public $fl_tmpl               = '';           // 'Floating' copy of the template.  Used as a temporary "work area".
+    public $cache_hash            = '';            // md5 checksum of the template name.  Used as title of cache file.
+    public $cache_status          = '';          // Status of page cache (NO_CACHE, CURRENT, EXPIRED)
+    public $tag_cache_status      = '';          // Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
+    public $cache_timestamp       = '';
+    public $template_type         = '';         // Type of template (webpage, rss)
+    public $embed_type            = '';            // Type of template for embedded template
+    public $template_hits         = 0;
+    public $php_parse_location    = 'output';  // Where in the chain the PHP gets parsed
+    public $template_edit_date    = '';            // Template edit date
+    public $templates_sofar       = '';           // Templates processed so far, subtemplate tracker
+    public $templates_loaded      = array();     // Templates loaded so far (yes, redundant)
+    public $attempted_fetch       = array();      // Templates attempted to fetch but may have bailed due to recursive embeds
+    public $encode_email          = true;        // Whether to use the email encoder.  This is set automatically
+    public $hit_lock_override     = false;      // Set to TRUE if you want hits tracked on sub-templates
+    public $hit_lock              = false;       // Lets us lock the hit counter if sub-templates are contained in a template
+    public $parse_php             = false;      // Whether to parse PHP or not
+    public $strict_urls           = false;        // Whether to make URLs operate strictly or not.  This is set via a template global pref
+    public $protect_javascript    = false;     // Protect js blocks from conditional parsing?
 
-    public $group_name = '';			// Group of template being parsed
-    public $template_group_id = 0;
-    public $template_name = '';			// Name of template being parsed
-    public $template_id = 0;
-    public $enable_frontedit = 'y';
+    public $group_name            = '';            // Group of template being parsed
+    public $template_group_id     = 0;
+    public $template_name         = '';         // Name of template being parsed
+    public $template_id           = 0;
+    public $enable_frontedit      = 'y';
 
-    public $tag_data = array();		// Data contained in tags
-    public $tagparams = array();
-    public $tagchunk = '';
-    public $modules = array();		// List of installed modules
-    public $module_data = array();		// Data for modules from exp_channels
-    public $plugins = array();		// List of installed plug-ins
+    public $tag_data              = array();     // Data contained in tags
+    public $tagparams             = array();
+    public $tagchunk              = '';
+    public $modules               = array();      // List of installed modules
+    public $module_data           = array();      // Data for modules from exp_channels
+    public $plugins               = array();      // List of installed plug-ins
 
-    public $var_single = array();		// "Single" variables
-    public $var_cond = array();		// "Conditional" variables
-    public $var_pair = array();		// "Paired" variables
-    public $global_vars = array();		// This array can be set via the assign_to_config
-    public $embed_vars = array();		// This array can be set via the {embed} tag
-    public $layout_vars = array();		// This array can be set via the {layout} tag
-    public $segment_vars = array();		// Array of segment variables
-    public $template_route_vars = array();		// Array of segment variables
-    public $consent_vars = [];          // Array of consent variables
+    public $var_single            = array();       // "Single" variables
+    public $var_cond              = array();     // "Conditional" variables
+    public $var_pair              = array();     // "Paired" variables
+    public $global_vars           = array();      // This array can be set via the assign_to_config
+    public $embed_vars            = array();       // This array can be set via the {embed} tag
+    public $layout_vars           = array();      // This array can be set via the {layout} tag
+    public $segment_vars          = array();     // Array of segment variables
+    public $template_route_vars   = array();      // Array of segment variables
+    public $consent_vars          = [];          // Array of consent variables
 
-    public $tagparts = array();		// The parts of the tag: {exp:comment:form}
-    public $tagdata = '';			// The chunk between tag pairs.  This is what modules will utilize
-    public $tagproper = '';			// The full opening tag
-    public $no_results = '';			// The contents of the {if no_results}{/if} conditionals
-    public $no_results_block = '';			// The {if no_results}{/if} chunk
-    public $search_fields = array();		// Special array of tag parameters that begin with 'search:'
-    public $date_vars = array();		// Date variables found in the tagdata (FALSE if date variables do not exist in tagdata)
-    public $unfound_vars = array();		// These are variables that have not been found in the tagdata and can be ignored
-    public $conditional_vars = array();		// Used by the template variable parser to prep conditionals
-    public $layout_conditionals = array();		// Used for {if layout:variable conditionals
-    public $TYPE = false;		// FALSE if Typography has not been instantiated, Typography Class object otherwise
+    public $tagparts              = array();     // The parts of the tag: {exp:comment:form}
+    public $tagdata               = '';           // The chunk between tag pairs.  This is what modules will utilize
+    public $tagproper             = '';         // The full opening tag
+    public $no_results            = '';            // The contents of the {if no_results}{/if} conditionals
+    public $no_results_block      = '';          // The {if no_results}{/if} chunk
+    public $search_fields         = array();        // Special array of tag parameters that begin with 'search:'
+    public $date_vars             = array();        // Date variables found in the tagdata (FALSE if date variables do not exist in tagdata)
+    public $unfound_vars          = array();     // These are variables that have not been found in the tagdata and can be ignored
+    public $conditional_vars      = array();     // Used by the template variable parser to prep conditionals
+    public $layout_conditionals   = array();      // Used for {if layout:variable conditionals
+    public $TYPE                  = false;       // FALSE if Typography has not been instantiated, Typography Class object otherwise
 
-    public $related_data = array();		//  A multi-dimensional array containing any related tags
-    public $related_id = '';			// Used temporarily for the related ID number
-    public $related_markers = array();		// Used temporarily
-    public $reverse_related_data = array();	//  A multi-dimensional array containing any reverse related tags
+    public $related_data          = array();     //  A multi-dimensional array containing any related tags
+    public $related_id            = '';            // Used temporarily for the related ID number
+    public $related_markers       = array();      // Used temporarily
+    public $reverse_related_data  = array(); //  A multi-dimensional array containing any reverse related tags
 
-    public $site_ids = array();		// Site IDs for the Sites Request for a Tag
-    public $sites = array();		// Array of sites with site_id as key and site_name as value, used to determine site_ids for tag, above.
-    public $site_prefs_cache = array();		// Array of cached site prefs, to allow fetching of another site's template files
+    public $site_ids              = array();     // Site IDs for the Sites Request for a Tag
+    public $sites                 = array();        // Array of sites with site_id as key and site_name as value, used to determine site_ids for tag, above.
+    public $site_prefs_cache      = array();     // Array of cached site prefs, to allow fetching of another site's template files
 
-    public $disable_caching = false;
+    public $disable_caching       = false;
 
-    public $debugging = false;		// Template parser debugging on?
-    public $cease_processing = false;		// Used with no_results() method.
-    public $log = array();		// Log of Template processing
-    public $start_microtime = 0;			// For Logging (= microtime())
+    public $debugging             = false;      // Template parser debugging on?
+    public $cease_processing      = false;       // Used with no_results() method.
+    public $log                   = array();      // Log of Template processing
+    public $start_microtime       = 0;            // For Logging (= microtime())
 
-    public $form_id = '';		// 	Form Id
-    public $form_class = '';		// 	Form Class
+    public $form_id               = '';       //  Form Id
+    public $form_class            = '';        //  Form Class
 
-    public $realm = 'Restricted Content';  // Localize?
-    public $marker = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
+    public $realm                 = 'Restricted Content';  // Localize?
+    public $marker                = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
 
-    protected $_tag_cache_prefix = 'tag_cache';	// Tag cache key namespace
+    protected $_tag_cache_prefix  = 'tag_cache'; // Tag cache key namespace
     protected $_page_cache_prefix = 'page_cache'; // Page cache key namespace
 
     private $layout_contents = '';
@@ -114,7 +115,7 @@ class EE_Template
     /**
      * Constructor
      *
-     * @return	void
+     * @return  void
      */
     public function __construct()
     {
@@ -131,7 +132,7 @@ class EE_Template
         $this->user_vars = array(
             'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'username', 'screen_name',
             'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
-            'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+            'total_forum_posts', 'total_forum_topics', 'total_forum_replies', 'mfa_enabled',
         );
 
         $this->marker = md5(ee()->config->site_url() . $this->marker);
@@ -144,9 +145,9 @@ class EE_Template
      * Upon a Page or a Preview, it Runs the Processing of a Template
      * based on URI request or method arguments
      *
-     * @param	string
-     * @param	string
-     * @return	void
+     * @param   string
+     * @param   string
+     * @return  void
      */
     public function run_template_engine($template_group = '', $template = '')
     {
@@ -185,11 +186,11 @@ class EE_Template
      *
      * Determines what template to process, fetches the template and its preferences, and then processes all of it
      *
-     * @param	string
-     * @param	string
-     * @param	bool
-     * @param	int
-     * @return	void
+     * @param   string
+     * @param   string
+     * @param   bool
+     * @param   int
+     * @return  void
      */
     public function fetch_and_parse($template_group = '', $template = '', $is_embed = false, $site_id = '', $is_layout = false)
     {
@@ -218,7 +219,7 @@ class EE_Template
 
         // Record the New Relic transaction. Use a constant so that separate instances of this
         // class can't accidentally restart the transaction metrics
-        if (! defined('EECMS_NEW_RELIC_TRANS_NAME')) {
+        if (!defined('EECMS_NEW_RELIC_TRANS_NAME')) {
             $template = $this->templates_loaded[0];
             define('EECMS_NEW_RELIC_TRANS_NAME', "{$template['group_name']}/{$template['template_name']}");
             ee()->core->set_newrelic_transaction(EECMS_NEW_RELIC_TRANS_NAME);
@@ -233,12 +234,30 @@ class EE_Template
         //  - Modify template after tag parsing
         //
         if (ee()->extensions->active_hook('template_post_parse') === true) {
-            $this->final_template = ee()->extensions->call(
+
+            // Populate the $currentTemplateInfo array
+            $currentTemplateInfo = array();
+            if (count($this->templates_loaded)) { // don't do this if we don't have any template info!
+                $currentTemplateInfo = array(
+                    'template_name' => $template,
+                    'template_group' => $template_group,
+                );
+            }
+
+            // Build a return packet since we don't know at this stage where we are returning it
+            $return = ee()->extensions->call(
                 'template_post_parse',
-                $this->final_template,
+                $is_embed || $is_layout ? $this->template : $this->final_template,
                 ($is_embed || $is_layout), // $is_partial
-                $site_id
+                $site_id,
+                $currentTemplateInfo
             );
+            // Add a conditional to adjust what is updated by function depending on whether this is final template or not
+            if ($is_embed || $is_layout) {
+                $this->template = $return;
+            } else {
+                $this->final_template = $return;
+            }
         }
         //
         // -------------------------------------------
@@ -247,14 +266,14 @@ class EE_Template
     /**
      * Parse a string as a template
      *
-     * @param	string
-     * @param	string
-     * @return	void
+     * @param   string
+     * @param   string
+     * @return  void
      */
     public function parse(&$str, $is_embed = false, $site_id = '', $is_layout = false)
     {
         if ($str != '') {
-            $this->template = & $str;
+            $this->template = &$str;
         }
 
         // Static Content, No Parsing
@@ -270,13 +289,13 @@ class EE_Template
         /*  "Smart" Static Parsing
         /*
         /*  Performed on embedded webpage templates only that do not have
-        /*	ExpressionEngine tags or PHP in them.
+        /*  ExpressionEngine tags or PHP in them.
         /*
         /*  Hidden Configuration Variable
         /*  - smart_static_parsing => Bypass parsing of templates that could be
-        /*	of the type 'static' but aren't? (y/n)
+        /*  of the type 'static' but aren't? (y/n)
         /* -------------------------------------*/
-        if (ee()->config->item('smart_static_parsing') !== 'n' && $this->embed_type == 'webpage' && ! stristr($this->template, LD) && ! stristr($this->template, '<?')) {
+        if (ee()->config->item('smart_static_parsing') !== 'n' && $this->embed_type == 'webpage' && !stristr($this->template, LD) && !stristr($this->template, '<?')) {
             $this->log_item("Smart Static Parsing Triggered");
 
             if ($is_embed == false && $is_layout == false) {
@@ -319,6 +338,21 @@ class EE_Template
             'is_ajax_request' => AJAX_REQUEST,
             'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
         ];
+
+        //Pro conditionals
+        $added_globals['frontedit'] = false;
+        if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee('pro:Access')->hasDockPermission()) {
+            if (
+                REQ == 'PAGE' &&
+                ee()->session->userdata('admin_sess') == 1 &&
+                (ee()->config->item('enable_frontedit') == 'y' || ee()->config->item('enable_frontedit') === false) &&
+                (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) &&
+                ee()->TMPL->enable_frontedit != 'n' &&
+                ee()->input->cookie('frontedit') != 'off'
+            ) {
+                $added_globals['frontedit'] = true;
+            }
+        }
 
         $added_globals = array_merge($added_globals, $this->getMemberVariables());
 
@@ -418,7 +452,7 @@ class EE_Template
         if (preg_match("/{if errors}(.+?){\/if}/s", $this->template, $match)) {
             // If we have field errors, remove the template conditional and leave the error tags,
             // otherwise, remove the conditional and error tags completely.
-            if (! empty($errors)) {
+            if (!empty($errors)) {
                 $this->template = preg_replace("/{if errors}.+?{\/if}/s", $match['1'], $this->template);
             } else {
                 $this->template = preg_replace("/{if errors}.+?{\/if}/s", '', $this->template);
@@ -576,7 +610,7 @@ class EE_Template
 
             // we remove the layout name early to prevent nested tags, we need
             // to reinsert that tag at the beginning of template before caching
-            if (! empty($layout)) {
+            if (!empty($layout)) {
                 $cache_template = $layout[0] . "\n" . $this->template;
             }
 
@@ -684,7 +718,7 @@ class EE_Template
                 }
             }
 
-            if (! empty($modified_vars)) {
+            if (!empty($modified_vars)) {
                 $str = ee('Variables/Parser')->parseModifiedVariables($str, $modified_vars);
             }
         }
@@ -698,14 +732,14 @@ class EE_Template
      * Generates the regex needed to grab all global template
      * partials/variables present on the page
      *
-     * @return	string	Regex to grab globals
+     * @return  string  Regex to grab globals
      */
     private function getGlobalsRegex()
     {
         $global_names = array_keys(ee()->config->_global_vars);
         $cache_key = md5(serialize($global_names));
 
-        if (! isset($this->globals_regex[$cache_key])) {
+        if (!isset($this->globals_regex[$cache_key])) {
             $global_names = array_map(
                 function ($str) {
                     return preg_quote($str, '/');
@@ -731,8 +765,8 @@ class EE_Template
      * lengths doesn't exceed a certain number to prevent a "Regular Expression
      * too large" error in getGlobalsRegex() above
      *
-     * @param	array	$globals	Array of preg_quoted variable names
-     * @return	array	Chunked array of global variable names
+     * @param   array   $globals    Array of preg_quoted variable names
+     * @return  array   Chunked array of global variable names
      */
     private function chunkGlobalsArray($globals)
     {
@@ -760,10 +794,10 @@ class EE_Template
      * Error if any are found after the first exp: tag or if we find more
      * than one.
      *
-     * @return	array  $layout  Layout tag information
-     *				- 0: full tag
-     *				- 1: {layout=
-     * 				- 2: "some/path" [param=value]*
+     * @return  array  $layout  Layout tag information
+     *              - 0: full tag
+     *              - 1: {layout=
+     *              - 2: "some/path" [param=value]*
      */
     protected function _find_layout()
     {
@@ -815,7 +849,7 @@ class EE_Template
      * We need to do this at various steps of post parsing as doing it too early
      * can result in accidental cleanup of the {layout:contents} variable.
      *
-     * @return	void
+     * @return  void
      */
     protected function _cleanup_layout_tags()
     {
@@ -830,13 +864,13 @@ class EE_Template
      *
      * If any {embed=} tags are found, it processes those templates and does a replacement.
      *
-     * @param	string	$template  Template string
-     * @param	array	$layout	   {layout tag match information from ``_find_layout``
-     * @return	string	Layout with embeded template string
+     * @param   string  $template  Template string
+     * @param   array   $layout    {layout tag match information from ``_find_layout``
+     * @return  string  Layout with embeded template string
      */
     protected function process_layout_template($template, array $layout = null)
     {
-        if (! isset($layout)) {
+        if (!isset($layout)) {
             return $template;
         }
 
@@ -894,7 +928,7 @@ class EE_Template
             $next = strpos($template, $open_tag, $pos + $open_tag_len);
             $close = strpos($template, $closing_tag, $pos + $open_tag_len);
 
-            if ($close && (! $next || $close < $next)) {
+            if ($close && (!$next || $close < $next)) {
                 // we have a pair
                 $start = $pos + strlen($tag);
                 $value = substr($template, $start, $close - $start);
@@ -913,7 +947,7 @@ class EE_Template
 
                     break;
                 case 'prepend':
-                    if (! isset($this->layout_vars[$params['name']])) {
+                    if (!isset($this->layout_vars[$params['name']])) {
                         $this->layout_vars[$params['name']] = [];
                     }
                     array_unshift($this->layout_vars[$params['name']], $value);
@@ -937,7 +971,7 @@ class EE_Template
         // Extract the information we need to fetch the layout
         $fetch_data = $this->_get_fetch_data($parts[0]);
 
-        if (! isset($fetch_data)) {
+        if (!isset($fetch_data)) {
             return $template;
         }
 
@@ -953,7 +987,7 @@ class EE_Template
         $this->embed_type = '';
 
         // pull the subtemplate tracker back a level to the parent template
-        $this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|' . $site_id . ':' . $template_group . '/' . $template_name . '|'));
+        $this->templates_sofar = substr($this->templates_sofar, 0, -strlen('|' . $site_id . ':' . $template_group . '/' . $template_name . '|'));
 
         // Here we go again!  Wheeeeeee.....
         $template = $this->process_layout_template($template, $layout);
@@ -967,15 +1001,15 @@ class EE_Template
      *
      * If any {embed=} tags are found, it processes those templates and does a replacement.
      *
-     * @param	string  $parent_template  Template string to search for embeds in
-     * @return	string  Parent template with all embeds expanded
+     * @param   string  $parent_template  Template string to search for embeds in
+     * @return  string  Parent template with all embeds expanded
      */
     public function process_sub_templates($parent_template)
     {
         // Match all {embed=bla/bla} tags
         $matches = array();
 
-        if (! preg_match_all("/(" . LD . "embed\s*=)(.*?)" . RD . "/s", $parent_template, $matches)) {
+        if (!preg_match_all("/(" . LD . "embed\s*=)(.*?)" . RD . "/s", $parent_template, $matches)) {
             return $parent_template;
         }
 
@@ -1018,7 +1052,7 @@ class EE_Template
             // Extract the information we need to fetch the subtemplate
             $fetch_data = $this->_get_fetch_data($parts[0]);
 
-            if (! isset($fetch_data)) {
+            if (!isset($fetch_data)) {
                 continue;
             }
 
@@ -1027,16 +1061,18 @@ class EE_Template
             // Loop Prevention
 
             /* -------------------------------------------
-            /*	Hidden Configuration Variable
-            /*	- template_loop_prevention => 'n'
+            /*  Hidden Configuration Variable
+            /*  - template_loop_prevention => 'n'
                 Whether or not loop prevention is enabled - y/n
             /* -------------------------------------------*/
 
             $this->attempted_fetch[] = $template_group . '/' . $template_name;
 
             // Tell user if a template has been recursively loaded
-            if (substr_count($this->templates_sofar, '|' . $site_id . ':' . $template_group . '/' . $template_name . '|') > 1 &&
-                ee()->config->item('template_loop_prevention') != 'n') {
+            if (
+                substr_count($this->templates_sofar, '|' . $site_id . ':' . $template_group . '/' . $template_name . '|') > 1 &&
+                ee()->config->item('template_loop_prevention') != 'n'
+            ) {
                 // Set 503 status code, mainly so caching proxies do not cache this
                 ee()->output->set_status_header(503, 'Service Temporarily Unavailable');
 
@@ -1082,7 +1118,7 @@ class EE_Template
             $parent_template = str_replace($matches[0][$key], $full_subtemplate, $parent_template);
 
             // pull the subtemplate tracker back a level to the parent template
-            $this->templates_sofar = substr($this->templates_sofar, 0, - strlen('|' . $site_id . ':' . $template_group . '/' . $template_name . '|'));
+            $this->templates_sofar = substr($this->templates_sofar, 0, -strlen('|' . $site_id . ':' . $template_group . '/' . $template_name . '|'));
 
             // Restore layout vars. Technically we don't need these but a third
             // party may want them to behave correctly.
@@ -1102,11 +1138,11 @@ class EE_Template
     /**
      * Grab all the data required to fetch a template from a template path.
      *
-     * @param	string  Template path string (e.g somegroup/index)
-     * @return	array   Uniquely identifying template data
-     *				- template_group
-     *				- template
-     *				- site_id
+     * @param   string  Template path string (e.g somegroup/index)
+     * @return  array   Uniquely identifying template data
+     *              - template_group
+     *              - template
+     *              - site_id
      */
     protected function _get_fetch_data($template_path)
     {
@@ -1157,7 +1193,7 @@ class EE_Template
      *
      * Goes Through the Template, Finds the Beginning and End of Tags, and Stores Tag Data in a Class Array
      *
-     * @return	void
+     * @return  void
      */
     public function parse_tags()
     {
@@ -1182,7 +1218,7 @@ class EE_Template
 
                 // Grab the opening portion of the tag: {exp:some:tag param="value" param="value"}
 
-                if (! preg_match("/" . LD . 'exp:' . ".*?" . RD . "/s", $this->fl_tmpl, $matches)) {
+                if (!preg_match("/" . LD . 'exp:' . ".*?" . RD . "/s", $this->fl_tmpl, $matches)) {
                     $this->template = preg_replace("/" . LD . 'exp:' . ".*?$/", '', $this->template);
 
                     break;
@@ -1229,7 +1265,7 @@ class EE_Template
 
                 // if (count($class) == 1)
                 // {
-                // 	$class[1] = $class[0];
+                //  $class[1] = $class[0];
                 // }
 
                 foreach ($class as $key => $value) {
@@ -1362,7 +1398,7 @@ class EE_Template
      *
      * Goes Through the Template, Finds the Beginning and End of Tags, and Stores Tag Data in a Class Array
      *
-     * @return	void
+     * @return  void
      */
     public function tags()
     {
@@ -1407,7 +1443,7 @@ class EE_Template
      * Takes the Class Array Full of Tag Data and Processes the Tags One by One.  Class class, feeds
      * data to class, takes results, and puts it back into the Template.
      *
-     * @return	void
+     * @return  void
      */
     public function process_tags()
     {
@@ -1432,14 +1468,16 @@ class EE_Template
             } else {
                 // Is a module or plug-in being requested?
 
-                if (! in_array($this->tag_data[$i]['class'], $this->modules)) {
-                    if (! in_array($this->tag_data[$i]['class'], $this->plugins)) {
+                if (!in_array($this->tag_data[$i]['class'], $this->modules)) {
+                    if (!in_array($this->tag_data[$i]['class'], $this->plugins)) {
                         $this->log_item("Invalid Tag");
 
                         if (ee()->config->item('debug') >= 1) {
-                            if (isset($this->tag_data[$i]['tagparts'][1]) &&
+                            if (
+                                isset($this->tag_data[$i]['tagparts'][1]) &&
                                 $this->tag_data[$i]['tagparts'][0] == $this->tag_data[$i]['tagparts'][1] &&
-                                ! isset($this->tag_data[$i]['tagparts'][2])) {
+                                !isset($this->tag_data[$i]['tagparts'][2])
+                            ) {
                                 unset($this->tag_data[$i]['tagparts'][1]);
                             }
 
@@ -1503,8 +1541,10 @@ class EE_Template
                     foreach (array('params', 'search_fields') as $tag_data_key) {
                         foreach ($this->tag_data[$i][$tag_data_key] as $name => $param) {
                             // Find param values with {exp, but skip "search:" keys in params array
-                            if (stristr($this->tag_data[$i][$tag_data_key][$name], LD . 'exp') &&
-                                ! stristr($name, 'search:')) {
+                            if (
+                                stristr($this->tag_data[$i][$tag_data_key][$name], LD . 'exp') &&
+                                !stristr($name, 'search:')
+                            ) {
                                 $this->log_item("Plugin in Parameter, Processing Plugin First");
 
                                 $TMPL2 = clone $this;
@@ -1556,7 +1596,7 @@ class EE_Template
 
                 // Nested Plugins...
                 if (in_array($this->tag_data[$i]['class'], $this->plugins) && strpos($this->tag_data[$i]['block'], LD . 'exp:') !== false) {
-                    if (! isset($this->tag_data[$i]['params']['parse']) or $this->tag_data[$i]['params']['parse'] != 'inward') {
+                    if (!isset($this->tag_data[$i]['params']['parse']) or $this->tag_data[$i]['params']['parse'] != 'inward') {
                         $this->log_item("Nested Plugins in Tag, Parsing Outward First");
 
                         $TMPL2 = clone $this;
@@ -1634,7 +1674,7 @@ class EE_Template
 
                 $package_path = '';
 
-                if (! in_array($this->tag_data[$i]['class'], ee()->core->native_plugins)) {
+                if (!in_array($this->tag_data[$i]['class'], ee()->core->native_plugins)) {
                     $package_path = in_array($this->tag_data[$i]['class'], ee()->core->native_modules) ? PATH_ADDONS : PATH_THIRD;
                     $package_path .= strtolower($this->tag_data[$i]['class'] . '/');
 
@@ -1643,7 +1683,7 @@ class EE_Template
 
                 // Dynamically instantiate the class.
                 // If module, only if it is installed...
-                if (in_array($this->tag_data[$i]['class'], $this->modules) && ! isset($this->module_data[$class_name])) {
+                if (in_array($this->tag_data[$i]['class'], $this->modules) && !isset($this->module_data[$class_name])) {
                     $this->log_item("Problem Processing Module: Module Not Installed");
                 } else {
                     $fqcn = $addon->getFrontendClass();
@@ -1666,13 +1706,16 @@ class EE_Template
 
                 // Does method exist?  Is This A Module and Is It Installed?
                 if ((in_array($this->tag_data[$i]['class'], $this->modules) &&
-                              ! isset($this->module_data[$class_name])) or
-                              ! is_callable(array($EE, $meth_name))) {
+                        !isset($this->module_data[$class_name])) or
+                    !is_callable(array($EE, $meth_name))
+                ) {
                     $this->log_item("Tag Not Processed: Method Inexistent or Module Not Installed");
 
                     if (ee()->config->item('debug') >= 1) {
-                        if (isset($this->tag_data[$i]['tagparts'][1]) && $this->tag_data[$i]['tagparts'][0] == $this->tag_data[$i]['tagparts'][1] &&
-                            ! isset($this->tag_data[$i]['tagparts'][2])) {
+                        if (
+                            isset($this->tag_data[$i]['tagparts'][1]) && $this->tag_data[$i]['tagparts'][0] == $this->tag_data[$i]['tagparts'][1] &&
+                            !isset($this->tag_data[$i]['tagparts'][2])
+                        ) {
                             unset($this->tag_data[$i]['tagparts'][1]);
                         }
 
@@ -1757,9 +1800,9 @@ class EE_Template
      * Further, if one assigns the second argument, it will be returned as the value if a
      * parameter of the $which name does not exist for this tag.  Handy for default values!
      *
-     * @access	string
-     * @access	bool
-     * @return	string
+     * @access  string
+     * @access  bool
+     * @return  string
      */
     public function fetch_param($which, $default = false)
     {
@@ -1767,7 +1810,7 @@ class EE_Template
             return $this->tagparams[$which];
         }
 
-        if (! isset($this->tagparams[$which])) {
+        if (!isset($this->tagparams[$which])) {
             return $default;
         } else {
             // Making yes/no tag parameters consistent.  No "y/n" or "on/off".
@@ -1776,16 +1819,16 @@ class EE_Template
                 case 'on':
                     return 'yes';
 
-                break;
+                    break;
                 case 'n':
                 case 'off':
                     return 'no';
 
-                break;
+                    break;
                 default:
                     return $this->tagparams[$which];
 
-                break;
+                    break;
             }
         }
     }
@@ -1796,10 +1839,10 @@ class EE_Template
      * LEGACY!!!
      *
      * @deprecated
-     * @param	string
-     * @param	string
-     * @param	string
-     * @return	string
+     * @param   string
+     * @param   string
+     * @param   string
+     * @return  string
      */
     public function swap_var_single($search, $replace, $source)
     {
@@ -1812,10 +1855,10 @@ class EE_Template
      * LEGACY!!!
      *
      * @deprecated
-     * @param	string
-     * @param	string
-     * @param	string
-     * @return	string
+     * @param   string
+     * @param   string
+     * @param   string
+     * @return  string
      */
     public function swap_var_pairs($open, $close, $source)
     {
@@ -1828,10 +1871,10 @@ class EE_Template
      * LEGACY!!!
      *
      * @deprecated
-     * @param	string
-     * @param	string
-     * @param	string
-     * @return	string
+     * @param   string
+     * @param   string
+     * @param   string
+     * @return  string
      */
     public function delete_var_pairs($open, $close, $source)
     {
@@ -1844,9 +1887,9 @@ class EE_Template
      * LEGACY!!!
      *
      * @deprecated
-     * @param	string
-     * @param	string
-     * @return	string
+     * @param   string
+     * @param   string
+     * @return  string
      */
     public function fetch_data_between_var_pairs($str, $variable)
     {
@@ -1854,7 +1897,7 @@ class EE_Template
             return;
         }
 
-        if (! preg_match("/" . LD . $variable . ".*?" . RD . "(.*?)" . LD . '\/' . $variable . RD . "/s", $str, $match)) {
+        if (!preg_match("/" . LD . $variable . ".*?" . RD . "(.*?)" . LD . '\/' . $variable . RD . "/s", $str, $match)) {
             return;
         }
 
@@ -1864,8 +1907,8 @@ class EE_Template
     /**
      * Returns String with PHP Processed
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function parse_template_php($str)
     {
@@ -1885,19 +1928,19 @@ class EE_Template
     /**
      * Get Cache File Data
      *
-     * @param	string
-     * @param	string
-     * @param	mixed
-     * @return	string
+     * @param   string
+     * @param   string
+     * @param   mixed
+     * @return  string
      */
     public function fetch_cache_file($cfile, $cache_type = 'tag', $args = array())
     {
         // Which cache are we working on?
         $status = ($cache_type == 'tag') ? 'tag_cache_status' : 'cache_status';
-        $status = & $this->$status;
+        $status = &$this->$status;
 
         // Bail out if this tag/template isn't set to cache
-        if (! isset($args['cache']) or $args['cache'] != 'yes' or ee('LivePreview')->hasEntryData()) {
+        if (!isset($args['cache']) or $args['cache'] != 'yes' or ee('LivePreview')->hasEntryData()) {
             $status = 'NO_CACHE';
 
             return false;
@@ -1911,7 +1954,7 @@ class EE_Template
         }
 
         // Get refresh setting in minutes, convert to seconds
-        $refresh = (! isset($args['refresh'])) ? 0 : $args['refresh'];
+        $refresh = (!isset($args['refresh'])) ? 0 : $args['refresh'];
         $refresh *= 60;
 
         $namespace = ($cache_type == 'tag') ? $this->_tag_cache_prefix : $this->_page_cache_prefix;
@@ -1926,9 +1969,11 @@ class EE_Template
 
         // If expiration date plus refresh time is greater than now and there is
         // something in the cache, return cached copy
-        if (isset($cache_info['expire']) &&
+        if (
+            isset($cache_info['expire']) &&
             $cache_info['expire'] + $refresh > ee()->localize->now &&
-            $cache = ee()->cache->get('/' . $namespace . '/' . $cfile)) {
+            $cache = ee()->cache->get('/' . $namespace . '/' . $cfile)
+        ) {
             $status = 'CURRENT';
         } else {
             $cache = '';
@@ -1943,10 +1988,10 @@ class EE_Template
      *
      * Stores the Tag and Page Cache Data
      *
-     * @param	string
-     * @param	string
-     * @param	string
-     * @return	string
+     * @param   string
+     * @param   string
+     * @param   string
+     * @return  string
      */
     public function write_cache_file($cfile, $data, $cache_type = 'tag')
     {
@@ -1975,7 +2020,7 @@ class EE_Template
         // Prefix for URI or query string
         $cfile = $this->_get_cache_prefix() . '+' . $cfile;
 
-        if (! ee()->cache->save('/' . $namespace . '/' . $cfile, $data, 0)) {
+        if (!ee()->cache->save('/' . $namespace . '/' . $cfile, $data, 0)) {
             $this->log_item("Could not create/write to cache file: " . $namespace . '/' . $cfile);
         }
     }
@@ -1985,7 +2030,7 @@ class EE_Template
      * the current page so that tags can still be influenced by URI items
      * and still be cached
      *
-     * @return	string	MD5 hash of current URL
+     * @return  string  MD5 hash of current URL
      */
     protected function _get_cache_prefix()
     {
@@ -2007,7 +2052,7 @@ class EE_Template
      * are no more than 1000 page cache files, or the value set by the
      * 'max_caches' config value;
      *
-     * @return	void
+     * @return  void
      */
     protected function _garbage_collect_cache()
     {
@@ -2033,9 +2078,11 @@ class EE_Template
             $max = 1000;
 
             // Figure out what our max number of page cache files should be
-            if (! ee()->config->item('max_caches') or
-                ! is_numeric(ee()->config->item('max_caches')) or
-                ee()->config->item('max_caches') > 1000) {
+            if (
+                !ee()->config->item('max_caches') or
+                !is_numeric(ee()->config->item('max_caches')) or
+                ee()->config->item('max_caches') > 1000
+            ) {
                 $max = ee()->config->item('max_caches');
             }
 
@@ -2055,7 +2102,7 @@ class EE_Template
      * If invalid Template, shows Template Group's index page
      * If invalid Template Group, depending on sendings may show 404 or default Template Group
      *
-     * @return	string
+     * @return  string
      */
     public function parse_template_uri()
     {
@@ -2090,8 +2137,10 @@ class EE_Template
         }
 
         // Is only the pagination showing in the URI?
-        elseif (count(ee()->uri->segments) == 1 &&
-                preg_match("#^(P\d+)$#", ee()->uri->segment(1), $match)) {
+        elseif (
+            count(ee()->uri->segments) == 1 &&
+            preg_match("#^(P\d+)$#", ee()->uri->segment(1), $match)
+        ) {
             ee()->uri->query_string = $match['1'];
 
             return $this->fetch_template('', 'index', true);
@@ -2152,7 +2201,7 @@ class EE_Template
                     $template = ee()->uri->segment(2);
 
                     // Re-assign the query string variable in the Input class so the various tags can show the correct data
-                    ee()->uri->query_string = (! ee()->uri->segment(3) and ee()->uri->segment(2) != 'index') ? '' : trim_slashes(substr(ee()->uri->uri_string, strlen('/' . ee()->uri->segment(1) . '/' . ee()->uri->segment(2))));
+                    ee()->uri->query_string = (!ee()->uri->segment(3) and ee()->uri->segment(2) != 'index') ? '' : trim_slashes(substr(ee()->uri->uri_string, strlen('/' . ee()->uri->segment(1) . '/' . ee()->uri->segment(2))));
                 } else { // A valid template was not found
                     // is there a file we can automatically create this template from?
                     if (ee()->config->item('save_tmpl_files') == 'y') {
@@ -2165,7 +2214,7 @@ class EE_Template
                     $template = 'index';
 
                     // Re-assign the query string variable in the Input class so the various tags can show the correct data
-                    ee()->uri->query_string = (! ee()->uri->segment(3)) ? ee()->uri->segment(2) : trim_slashes(substr(ee()->uri->uri_string, strlen('/' . ee()->uri->segment(1))));
+                    ee()->uri->query_string = (!ee()->uri->segment(3)) ? ee()->uri->segment(2) : trim_slashes(substr(ee()->uri->uri_string, strlen('/' . ee()->uri->segment(1))));
                 }
             }
             // The second segment of the URL does not exist
@@ -2305,15 +2354,15 @@ class EE_Template
      * Takes a Template Group, Template, and Site ID and will retrieve the Template and its metadata
      * from the database (or file)
      *
-     * @param	string
-     * @param	string
-     * @param	bool
-     * @param	int
-     * @return	string
+     * @param   string
+     * @param   string
+     * @param   bool
+     * @param   int
+     * @return  string
      */
     public function fetch_template($template_group, $template, $show_default = true, $site_id = '')
     {
-        if ($site_id == '' or ! is_numeric($site_id)) {
+        if ($site_id == '' or !is_numeric($site_id)) {
             $site_id = ee()->config->item('site_id');
         }
 
@@ -2324,19 +2373,21 @@ class EE_Template
         $template_404 = '';
 
         /* -------------------------------------------
-        /*	Hidden Configuration Variable
-        /*	- hidden_template_indicator => '.'
+        /*  Hidden Configuration Variable
+        /*  - hidden_template_indicator => '.'
             The character(s) used to designate a template as "hidden"
         /* -------------------------------------------*/
 
         $hidden_indicator = (ee()->config->item('hidden_template_indicator') === false) ? '_' : ee()->config->item('hidden_template_indicator');
 
-        if ($this->depth == 0
+        if (
+            $this->depth == 0
             and substr($template, 0, 1) == $hidden_indicator
-            and ee()->uri->page_query_string == '') { // Allow hidden templates to be used for Pages requests
+            and ee()->uri->page_query_string == ''
+        ) { // Allow hidden templates to be used for Pages requests
             /* -------------------------------------------
-            /*	Hidden Configuration Variable
-            /*	- hidden_template_404 => y/n
+            /*  Hidden Configuration Variable
+            /*  - hidden_template_404 => y/n
                 If a hidden template is encountered, the default behavior is
                 to throw a 404.  With this set to 'n', the template group's
                 index page will be shown instead
@@ -2461,8 +2512,7 @@ class EE_Template
         }
 
         // Is the current user allowed to view this template?
-        if ($query->row('enable_http_auth') != 'y' && ! ee('Permission')->isSuperAdmin()) {
-            
+        if ($query->row('enable_http_auth') != 'y' && !ee('Permission')->isSuperAdmin()) {
             ee()->db->select('role_id');
             ee()->db->where('template_id', $query->row('template_id'));
             $results = ee()->db->get('templates_roles');
@@ -2471,8 +2521,8 @@ class EE_Template
                 foreach ($results->result_array() as $row) {
                     $templates_roles[] = $row['role_id'];
                 }
-            } 
-            
+            }
+
             if (!ee()->session->getMember()) {
                 $currentMemberRoles = [3];
             } else {
@@ -2489,9 +2539,9 @@ class EE_Template
                 // If no access redirect template was defined, 404
                 if ($query->row('no_auth_bounce') != '') {
                     $query = ee()->db->select('a.template_id, a.template_data,
-						a.template_name, a.template_type, a.edit_date,
-						a.cache, a.refresh, a.hits, a.protect_javascript,
-						a.allow_php, a.php_parse_location, b.group_name, a.group_id')
+                        a.template_name, a.template_type, a.edit_date,
+                        a.cache, a.refresh, a.hits, a.protect_javascript,
+                        a.allow_php, a.php_parse_location, b.group_name, a.group_id')
                         ->from('templates a')
                         ->join('template_groups b', 'a.group_id = b.group_id')
                         ->where('template_id', $query->row('no_auth_bounce'))
@@ -2506,7 +2556,7 @@ class EE_Template
                         foreach ($results->result_array() as $row) {
                             $templates_roles[] = $row['role_id'];
                         }
-                    } 
+                    }
                     if (!array_intersect($templates_roles, $currentMemberRoles)) {
                         $this->log_item("Access redirect denied, Show 404");
 
@@ -2540,7 +2590,8 @@ class EE_Template
 
         // Increment hit counter
         if (($this->hit_lock == false or $this->hit_lock_override == true) &&
-            bool_config_item('enable_hit_tracking')) {
+            bool_config_item('enable_hit_tracking')
+        ) {
             $this->template_hits = $row['hits'] + 1;
             $this->hit_lock = true;
 
@@ -2701,9 +2752,9 @@ class EE_Template
      *
      * Attempts to create a template group / template from a file
      *
-     * @param	string		template group name
-     * @param	string		template name
-     * @return	bool
+     * @param   string      template group name
+     * @param   string      template name
+     * @return  bool
      */
     public function _create_from_file($template_group, $template, $db_check = false)
     {
@@ -2723,6 +2774,7 @@ class EE_Template
             ee()->db->join('template_groups', 'templates.group_id = template_groups.group_id', 'left');
             ee()->db->where('group_name', $template_group);
             ee()->db->where('template_name', $template);
+            ee()->db->where('templates.site_id', ee()->config->item('site_id'));
             $valid_count = ee()->db->count_all_results();
 
             // We found a valid template!  Er- could this loop?  Better just return FALSE
@@ -2737,7 +2789,7 @@ class EE_Template
 
         $basepath = PATH_TMPL . ee()->config->item('site_short_name') . '/' . $template_group . '.group';
 
-        if (! is_dir($basepath)) {
+        if (!is_dir($basepath)) {
             return false;
         }
 
@@ -2761,7 +2813,7 @@ class EE_Template
             return false;
         }
 
-        if (! ee()->legacy_api->is_url_safe($template)) {
+        if (!ee()->legacy_api->is_url_safe($template)) {
             // bail out
             return false;
         }
@@ -2775,7 +2827,7 @@ class EE_Template
             $group_id = $query->row('group_id');
         } else {
             // we have a new group to create!
-            if (! ee()->legacy_api->is_url_safe($template_group)) {
+            if (!ee()->legacy_api->is_url_safe($template_group)) {
                 // bail out
                 return false;
             }
@@ -2801,7 +2853,7 @@ class EE_Template
             'template_type' => $template_type,
             'template_data' => file_get_contents($basepath . '/' . $filename),
             'edit_date' => ee()->localize->now,
-            'last_author_id' => '1',	// assume a super admin
+            'last_author_id' => '1',    // assume a super admin
             'site_id' => ee()->config->item('site_id')
         );
 
@@ -2823,11 +2875,11 @@ class EE_Template
      * If a tag/class has no results to show, it can call this method.  Any no_results variable in
      * the tag will be followed.  May be 404 page, content, or even a redirect.
      *
-     * @return	void
+     * @return  void
      */
     public function no_results()
     {
-        if (! preg_match("/" . LD . "redirect\s*=\s*(\042|\047)([^\\1]*?)\\1" . RD . "/si", $this->no_results, $match)) {
+        if (!preg_match("/" . LD . "redirect\s*=\s*(\042|\047)([^\\1]*?)\\1" . RD . "/si", $this->no_results, $match)) {
             $this->log_item("Returning No Results Content");
 
             return $this->no_results;
@@ -2858,8 +2910,8 @@ class EE_Template
      *
      * This fixes a parsing error when PHP is used in RSS templates
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function convert_xml_declaration($str)
     {
@@ -2873,8 +2925,8 @@ class EE_Template
     /**
      * Restore XML Declaration
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function restore_xml_declaration($str)
     {
@@ -2891,8 +2943,8 @@ class EE_Template
      * EE Templates have a special EE Code Comments for site designer notes and are removed prior
      * to Template processing.
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function remove_ee_comments($str)
     {
@@ -2912,7 +2964,7 @@ class EE_Template
      *
      * Gathers available modules and plugins
      *
-     * @return	void
+     * @return  void
      */
     public function fetch_addons()
     {
@@ -2954,8 +3006,8 @@ class EE_Template
      * paths, action IDs, CAPTCHAs.  Typically stuff that should only be done after caching to prevent
      * any manner of changes in the system or who is viewing the page to affect the display.
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function parse_globals($str)
     {
@@ -3013,36 +3065,72 @@ class EE_Template
 
         // now we can hit our path= type variables and some other non-cached items
 
-        // Stylesheet variable: {stylesheet=group/template}
-        if (strpos($str, 'stylesheet=') !== false && preg_match_all("/" . LD . "\s*stylesheet=[\042\047]?(.*?)[\042\047]?" . RD . "/", $str, $css_matches)) {
-            $css_versions = array();
+        // Stylesheet variable: {stylesheet=group/template} OR Script variable: {script=group/template}
+        if (
+            (strpos($str, 'stylesheet=') !== false || strpos($str, 'script=') !== false)
+            && preg_match_all("/" . LD . "\s*(stylesheet|script)=[\042\047]?(.*?)[\042\047]?" . RD . "/", $str, $asset_matches)
+        ) {
+            $asset_versions = array();
 
             if (ee()->config->item('send_headers') == 'y') {
-                $sql = "SELECT t.template_name, tg.group_name, t.edit_date FROM exp_templates t, exp_template_groups tg
-						WHERE  t.group_id = tg.group_id
-						AND    t.template_type = 'css'
-						AND    t.site_id = '" . ee()->db->escape_str(ee()->config->item('site_id')) . "'";
+                ee()->db->select('sites.site_name, templates.template_name, template_groups.group_name, templates.edit_date, templates.template_type')
+                    ->from('templates')
+                    ->join('template_groups', 'template_groups.group_id = templates.group_id');
 
-                foreach ($css_matches[1] as $css_match) {
-                    $ex = explode('/', $css_match, 2);
+                if (strpos($str, ':') === false) {
+                    ee()->db->where('templates.site_id', ee()->config->item('site_id'));
+                } else {
+                    ee()->db->join('sites', 'sites.site_id = templates.site_id');
+                }
 
-                    if (isset($ex[1])) {
-                        $css_parts[] = "(t.template_name = '" . ee()->db->escape_str($ex[1]) . "' AND tg.group_name = '" . ee()->db->escape_str($ex[0]) . "')";
+                for ($i = 0; $i < count($asset_matches[2]); $i++) {
+                    $group = $asset_matches[2][$i];
+                    $asset_type = $asset_matches[1][$i] === 'script' ? 'js' : 'css';
+
+                    if (strpos($group, '/') !== false) {
+                        // if there's a template, let's get it and redefine $group
+                        list($group, $name) = explode('/', $group, 2);
+                    }
+
+                    if (strpos($group, ':') !== false) {
+                        // if there's a site, let's get it and redefine $group
+                        list($site, $group) = explode(':', $group, 2);
+
+                        $site_where = " AND " . ee()->db->dbprefix('sites') . ".site_name = '" . ee()->db->escape_str($site) . "' ";
+                    } else {
+                        $site_where = " AND " . ee()->db->dbprefix('templates') . ".site_id = '" . ee()->db->escape_str(ee()->config->item('site_id')) . "' ";
+                    }
+
+                    $site_where .= " AND " . ee()->db->dbprefix('templates') . ".template_type = '" . $asset_type . "' ";
+
+                    if (isset($name) || isset($site)) {
+                        $asset_parts[] = "(" . ee()->db->dbprefix('templates') . ".template_name = '" . ee()->db->escape_str($name) . "' AND " . ee()->db->dbprefix('template_groups') . ".group_name = '" . ee()->db->escape_str($group) . "' " . $site_where . ")";
                     }
                 }
 
-                $css_query = (! isset($css_parts)) ? ee()->db->query($sql) : ee()->db->query($sql . ' AND (' . implode(' OR ', $css_parts) . ')');
+                if (isset($asset_parts)) {
+                    ee()->db->where('(' . implode(' OR ', $asset_parts) . ')');
+                }
 
-                if ($css_query->num_rows() > 0) {
-                    foreach ($css_query->result_array() as $row) {
-                        $css_versions[$row['group_name'] . '/' . $row['template_name']] = $row['edit_date'];
+                $asset_query = ee()->db->get();
+
+                if ($asset_query->num_rows() > 0) {
+                    foreach ($asset_query->result_array() as $row) {
+                        $version_key = $row['group_name'] . '/' . $row['template_name'];
+                        // there's no way to know if the result follows the order on template.
+                        // So, let's create TWO keys and keep the compatibility with old links,
+                        // the ones without the site short name: `/?css=default_site:site/styles`
+
+                        $asset_versions[$version_key] =
+                            $asset_versions[$row['site_name'] . ':' . $version_key] = $row['edit_date'];
 
                         if (ee()->config->item('save_tmpl_files') == 'y') {
                             $basepath = PATH_TMPL . ee()->config->item('site_short_name') . '/';
-                            $basepath .= $row['group_name'] . '.group/' . $row['template_name'] . '.css';
+                            $basepath .= $row['group_name'] . '.group/' . $row['template_name'] . '.' . $row['template_type'];
 
                             if (is_file($basepath)) {
-                                $css_versions[$row['group_name'] . '/' . $row['template_name']] = filemtime($basepath);
+                                $asset_versions[$version_key] =
+                                    $asset_versions[$row['site_name'] . ':' . $version_key] = filemtime($basepath);
                             }
                         }
                     }
@@ -3051,16 +3139,25 @@ class EE_Template
 
             $s_index = ee()->functions->fetch_site_index();
 
-            if (! QUERY_MARKER && substr($s_index, -1) != '?') {
+            if (!QUERY_MARKER && substr($s_index, -1) != '?') {
                 $s_index .= '&';
             }
 
-            for ($ci = 0, $cs = count($css_matches[0]); $ci < $cs; ++$ci) {
-                $str = str_replace($css_matches[0][$ci], $s_index . QUERY_MARKER . 'css=' . $css_matches[1][$ci] . (isset($css_versions[$css_matches[1][$ci]]) ? '.v.' . $css_versions[$css_matches[1][$ci]] : ''), $str);
-            }
+            for ($ci = 0, $cs = count($asset_matches[0]); $ci < $cs; ++$ci) {
+                $asset_type = $asset_matches[1][$ci] === 'script' ? 'js' : 'css';
 
-            unset($css_matches);
-            unset($css_versions);
+                $str = str_replace(
+                    $asset_matches[0][$ci],
+                    $s_index . QUERY_MARKER . $asset_type . '=' . $asset_matches[2][$ci]
+                        . (isset($asset_versions[$asset_matches[2][$ci]])
+                            ? '.v.' . $asset_versions[$asset_matches[2][$ci]]
+                            : ''
+                        ),
+                    $str
+                );
+            }
+            unset($asset_matches);
+            unset($asset_versions);
         }
 
         // Email encode: {encode="you@yoursite.com" title="click Me"}
@@ -3069,8 +3166,8 @@ class EE_Template
                 $str = $this->parse_encode_email($str);
             } else {
                 /* -------------------------------------------
-                /*	Hidden Configuration Variable
-                /*	- encode_removed_text => Text to display if there is an {encode=""}
+                /*  Hidden Configuration Variable
+                /*  - encode_removed_text => Text to display if there is an {encode=""}
                     tag but emails are not to be encoded
                 /* -------------------------------------------*/
 
@@ -3119,8 +3216,8 @@ class EE_Template
      * Parses and Process forms that cannot be stored in a cache file.  Probably one of the most
      * tedious parts of EE's Template parser for a while there in 2004...
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function parse_nocache($str)
     {
@@ -3179,8 +3276,8 @@ class EE_Template
                 $this->tagdata = $match[2][$i];
 
                 $vars = ee('Variables/Parser')->extractVariables($match[2][$i]);
-                $this->var_single	= $vars['var_single'];
-                $this->var_pair		= $vars['var_pair'];
+                $this->var_single   = $vars['var_single'];
+                $this->var_pair     = $vars['var_pair'];
 
                 $this->tagparams = ee('Variables/Parser')->parseTagParameters($match[1][$i]);
 
@@ -3212,8 +3309,8 @@ class EE_Template
      * variables and preps the conditionals with them.  Then, it converts the conditionals to PHP so that
      * PHP can do all of the really heavy lifting for us.
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function advanced_conditionals($str)
     {
@@ -3254,8 +3351,8 @@ class EE_Template
      * than that usage was required, we kept some separate processing in existence for the processing
      * of "simple" segment conditionals.  Only one variable, no elseif or else.
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function parse_simple_segment_conditionals($str)
     {
@@ -3275,10 +3372,10 @@ class EE_Template
      * sooner than Advanced Conditionals.  These conditionals are only one variable and have no
      * {if:elseif} or {if:else} control structures.
      *
-     * @access	public
-     * @param	string
-     * @param	array
-     * @return	string
+     * @access  public
+     * @param   string
+     * @param   array
+     * @return  string
      */
     public function simple_conditionals($str, $vars = array())
     {
@@ -3313,10 +3410,10 @@ class EE_Template
     /**
      * Log Item for Template Processing Log
      *
-     * @access	public
-     * @param	string
+     * @access  public
+     * @param   string
      * @param   mixed   string/array of detailed log data
-     * @return	void
+     * @return  void
      */
     public function log_item($str, $details = false)
     {
@@ -3350,21 +3447,21 @@ class EE_Template
     }
 
     /**
-     *	Assign Form Params
+     *  Assign Form Params
      *
-     *	Extract form_class / form_id from tagdata, and assign it to a class property
-     *	So it can be easily accessed.
+     *  Extract form_class / form_id from tagdata, and assign it to a class property
+     *  So it can be easily accessed.
      *
-     *	@access private
-     *	@param 	array
-     *	@return array
+     *  @access private
+     *  @param  array
+     *  @return array
      */
     public function _assign_form_params($tag_data)
     {
         $this->form_id = '';
         $this->form_class = '';
 
-        if (! isset($tag_data['params']) or ! is_array($tag_data['params'])) {
+        if (!isset($tag_data['params']) or !is_array($tag_data['params'])) {
             return $tag_data;
         }
 
@@ -3386,15 +3483,17 @@ class EE_Template
      * these parameters and load the data from the correct site.  We put it into a class variable
      * so that it only has to happen once during a page request
      *
-     * @access	private
+     * @access  private
      */
     public function _fetch_site_ids()
     {
         $this->site_ids = array();
 
         if (isset($this->tagparams['site'])) {
-            if (count($this->sites) == 0 &&
-                ee()->config->item('multiple_sites_enabled') == 'y') {
+            if (
+                count($this->sites) == 0 &&
+                ee()->config->item('multiple_sites_enabled') == 'y'
+            ) {
                 $sites_query = ee()->db->query("SELECT site_id, site_name FROM exp_sites ORDER BY site_id");
 
                 foreach ($sites_query->result_array() as $row) {
@@ -3426,14 +3525,14 @@ class EE_Template
      * Simplifies variable parsing for plugin
      * and modules developers
      *
-     * @param	string	- the tagdata / text to be parsed
-     * @param	array	- the rows of variables and their data
-     * @param	boolean	- Option to disable backspace parameter
-     * @return	string
+     * @param   string  - the tagdata / text to be parsed
+     * @param   array   - the rows of variables and their data
+     * @param   boolean - Option to disable backspace parameter
+     * @return  string
      */
     public function parse_variables($tagdata, $variables, $enable_backspace = true)
     {
-        if ($tagdata == '' or ! is_array($variables) or empty($variables) or ! is_array($variables[0])) {
+        if ($tagdata == '' or !is_array($variables) or empty($variables) or !is_array($variables[0])) {
             return $tagdata;
         }
 
@@ -3470,12 +3569,12 @@ class EE_Template
             $count++;
 
             // Add {count} variable
-            if (! isset($row['count'])) {
+            if (!isset($row['count'])) {
                 $row['count'] = $count;
             }
 
             // Add {total_results} variable
-            if (! isset($row['total_results'])) {
+            if (!isset($row['total_results'])) {
                 $row['total_results'] = $total_results;
             }
 
@@ -3502,15 +3601,15 @@ class EE_Template
      * Handles a "row" of variable data from
      * the parse_variables() method
      *
-     * @param	string	- the tagdata / text to be parsed
-     * @param	array	- the variables and their data
-     * @param	bool	- coming from parse_variables() or part of set, forces some caching
+     * @param   string  - the tagdata / text to be parsed
+     * @param   array   - the variables and their data
+     * @param   bool    - coming from parse_variables() or part of set, forces some caching
      *
-     * @return	string
+     * @return  string
      */
     public function parse_variables_row($tagdata, $variables, $solo = true)
     {
-        if ($tagdata == '' or ! is_array($variables) or empty($variables)) {
+        if ($tagdata == '' or !is_array($variables) or empty($variables)) {
             return $tagdata;
         }
 
@@ -3562,13 +3661,13 @@ class EE_Template
         // now hit modifiers, we do this after the data loop in case the add-on has defined "modified" variables in their data
         foreach ($this->modified_vars as $tag => $var) {
             // if the variable doesn't exist, don't bother
-            if (! isset($variables[$var['field_name']])) {
+            if (!isset($variables[$var['field_name']])) {
                 continue;
             }
 
             // is the modifier valid?
             $method = 'replace_' . $var['modifier'];
-            if (! method_exists($this, $method)) {
+            if (!method_exists($this, $method)) {
                 continue;
             }
 
@@ -3608,14 +3707,18 @@ class EE_Template
      *
      * Parses single variables from the parse_variables() method
      *
-     * @access	public
-     * @param	string	- the variable's name
-     * @param	string	- the variable's value
-     * @param	string	- the text to parse
-     * @return	string
+     * @access  public
+     * @param   string  - the variable's name
+     * @param   string  - the variable's value
+     * @param   string  - the text to parse
+     * @return  string
      */
     public function _parse_var_single($name, $value, $string)
     {
+        if (is_null($value)) {
+            $value = (string) $value;
+        }
+
         // parse date variables where applicable
         if (in_array($name, (array) $this->date_vars)) {
             return $this->parse_date_variables($string, array($name => $value));
@@ -3685,7 +3788,8 @@ class EE_Template
             ee()->load->library('typography');
             ee()->typography->initialize(
                 array(
-                    'convert_curly' => (isset($prefs['convert_curly']) && $prefs['convert_curly'] == 'n') ? false : true)
+                    'convert_curly' => (isset($prefs['convert_curly']) && $prefs['convert_curly'] == 'n') ? false : true
+                )
             );
 
             $value = ee()->typography->parse_type($raw_content, $prefs);
@@ -3703,16 +3807,16 @@ class EE_Template
      *
      * Parses pair variables from the parse_variables() method
      *
-     * @access	public
-     * @param	string	- the variable pair's name
-     * @param	array	- the variable pair's single variables
-     * @param	string	- the text to parse
-     * @param	integer	- iteration depth for unfound_vars
-     * @return	string
+     * @access  public
+     * @param   string  - the variable pair's name
+     * @param   array   - the variable pair's single variables
+     * @param   string  - the text to parse
+     * @param   integer - iteration depth for unfound_vars
+     * @return  string
      */
     public function _parse_var_pair($name, $variables, $string, $depth = 0)
     {
-        if (! $match_count = preg_match_all("|" . LD . $name . '.*?' . RD . '(.*?)' . LD . '/' . $name . RD . "|s", $string, $matches)) {
+        if (!$match_count = preg_match_all("|" . LD . $name . '.*?' . RD . '(.*?)' . LD . '/' . $name . RD . "|s", $string, $matches)) {
             return $string;
         }
 
@@ -3720,7 +3824,7 @@ class EE_Template
             return str_replace($matches[0], '', $string);
         }
 
-        if (! isset($this->unfound_vars[$depth])) {
+        if (!isset($this->unfound_vars[$depth])) {
             // created a separate unfound vars for each matched pair (kind of a crazy array, need to investigate if it's hindering performance at this point)
             $this->unfound_vars[$depth] = array();
         }
@@ -3742,8 +3846,10 @@ class EE_Template
                 $temp = $match;
 
                 foreach ($set as $key => $value) {
-                    if (isset($this->unfound_vars[$depth][$key]) or
-                        strpos($string, LD . $key) === false) {
+                    if (
+                        isset($this->unfound_vars[$depth][$key]) or
+                        strpos($string, LD . $key) === false
+                    ) {
                         continue;
                     }
 
@@ -3798,15 +3904,17 @@ class EE_Template
      * Finds date variables within tagdata and adds the variable name
      * to $this->date_vars
      *
-     * @access	public
-     * @param	string	$str	Tag data with possible date tags
-     * @return	void
+     * @access  public
+     * @param   string  $str    Tag data with possible date tags
+     * @return  void
      */
     public function _match_date_vars($str)
     {
-        if (strpos($str, 'format=') !== false ||
+        if (
+            strpos($str, 'format=') !== false ||
             strpos($str, 'timezone=') !== false ||
-            strpos($str, ':relative') !== false) {
+            strpos($str, ':relative') !== false
+        ) {
             if ($relative = preg_match_all("/" . LD . "([\w:\-]+):relative(?![\w-])(.*?)" . RD . "/", $str, $matches, PREG_SET_ORDER)) {
                 foreach ($matches as $match) {
                     $this->date_vars[] = $match[1];
@@ -3848,11 +3956,11 @@ class EE_Template
     /**
      * Parses {switch=} variables in a row of tag data
      *
-     * @param	string	Tag data for current row being parsed
-     * @param	int		Count of current row to determine which value to
+     * @param   string  Tag data for current row being parsed
+     * @param   int     Count of current row to determine which value to
      *                  replace the switch tag with
-     * @param	string	Optional tag prefix
-     * @return	string	Tag data with parsed switch variables
+     * @param   string  Optional tag prefix
+     * @return  string  Tag data with parsed switch variables
      */
     public function parse_switch($tagdata, $count, $prefix = '')
     {
@@ -3894,17 +4002,17 @@ class EE_Template
     /**
      * Parses {date_tag format="..."} variables in tag data
      *
-     * @param	string	$tagdata	Tag data being parsed
-     * @param	mixed[]	$dates		An associative array of dates
-     *  	e.g. 'entry_date' => 1234567890
-     * @param	bool	$localize	Localize the time?
-     * @return	string	Tag data with parsed date variables
+     * @param   string  $tagdata    Tag data being parsed
+     * @param   mixed[] $dates      An associative array of dates
+     *      e.g. 'entry_date' => 1234567890
+     * @param   bool    $localize   Localize the time?
+     * @return  string  Tag data with parsed date variables
      **/
     public function parse_date_variables($tagdata, $dates = array(), $localize = true)
     {
-        if (is_array($dates) && ! empty($dates)) {
+        if (is_array($dates) && !empty($dates)) {
             $tags = implode('|', array_keys($dates));
-            if (preg_match_all("/" . LD . "(" . $tags . ")(.*?)" . RD . "/i", $tagdata, $matches)) {
+            if (preg_match_all("/" . LD . "(" . $tags . ")(.*?)" . RD . "/si", $tagdata, $matches)) {
                 foreach ($matches[2] as $key => $val) {
                     $timestamp = $dates[$matches[1][$key]];
                     $dt = $timestamp;
@@ -3938,14 +4046,14 @@ class EE_Template
      * Determines how to format a date (UNIX timestamp, formatted date, or
      * relative date)
      *
-     * @param	string	$timestamp	The UNIX timestamp being processed
-     * @param	mixed[]	$parameters	An associative array of parameters
-     *  	e.g. 'format'   => '%Y-%m-%d'
-     * 		     'units'    => 'years|months|days'
-     * 		     'depth'    => '2'
-     * @param	bool	$relative	Calculate a relative date?
-     * @param	bool	$localize	Localize the time?
-     * @return	string	The "formatted" date
+     * @param   string  $timestamp  The UNIX timestamp being processed
+     * @param   mixed[] $parameters An associative array of parameters
+     *      e.g. 'format'   => '%Y-%m-%d'
+     *           'units'    => 'years|months|days'
+     *           'depth'    => '2'
+     * @param   bool    $relative   Calculate a relative date?
+     * @param   bool    $localize   Localize the time?
+     * @return  string  The "formatted" date
      **/
     public function process_date($timestamp, $parameters = array(), $relative = false, $localize = true)
     {
@@ -4050,8 +4158,8 @@ class EE_Template
         $is_multiline = (bool) substr_count($var_content, "\n");
         $has_ifs = (bool) preg_match('/\{if(:elseif)?/i', $var_content);
 
-        if (! $has_ifs) {
-            if (! $is_multiline) {
+        if (!$has_ifs) {
+            if (!$is_multiline) {
                 // don't annotate single line without conditonals
                 return $var_content;
             }
@@ -4074,7 +4182,7 @@ class EE_Template
      */
     public function markContext($context = null)
     {
-        if (! isset($context)) {
+        if (!isset($context)) {
             $context = 'Template "' . $this->group_name . '/' . $this->template_name . '"';
         }
 
@@ -4091,7 +4199,7 @@ class EE_Template
      */
     protected function createAnnotation($data)
     {
-        if (! isset($this->annotations)) {
+        if (!isset($this->annotations)) {
             $this->annotations = new \ExpressionEngine\Library\Template\Annotation\Runtime();
             $this->annotations->useSharedStore();
         }
@@ -4115,10 +4223,15 @@ class EE_Template
 
         // Lazy load templates instead, this was looping the group query with it included
 
-        $groups = ee('Model')->get('TemplateGroup')
-            ->with('Templates')
-            ->filter('site_id', ee()->config->item('site_id'))
-            ->all();
+        try {
+            $groups = ee('Model')->get('TemplateGroup')
+                ->with('Templates')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->all();
+        } catch (\Exception $e) {
+            //if we got SQL error, silently exit
+            return false;
+        }
         $group_ids_by_name = $groups->getDictionary('group_name', 'group_id');
 
         $existing = array();
@@ -4149,17 +4262,17 @@ class EE_Template
 
                 $group_id = '';
 
-                if (! preg_match("#^[a-zA-Z0-9_\-]+$#i", $group_name)) {
+                if (!preg_match("#^[a-zA-Z0-9_\-]+$#i", $group_name)) {
                     continue;
                 }
 
                 // if the template group doesn't exist, make it!
-                if (! isset($existing[$group])) {
-                    if (! ee()->legacy_api->is_url_safe($group_name)) {
+                if (!isset($existing[$group])) {
+                    if (!ee()->legacy_api->is_url_safe($group_name)) {
                         continue;
                     }
 
-                    if (in_array($group_name, array('act', 'css'))) {
+                    if (in_array($group_name, array('act', 'css', 'js'))) {
                         continue;
                     }
 
@@ -4196,7 +4309,7 @@ class EE_Template
                     }
 
                     $ext = strtolower(ltrim(strrchr($template, '.'), '.'));
-                    if (! in_array('.' . $ext, ee()->api_template_structure->file_extensions)) {
+                    if (!in_array('.' . $ext, ee()->api_template_structure->file_extensions)) {
                         continue;
                     }
 
@@ -4208,7 +4321,7 @@ class EE_Template
                         continue;
                     }
 
-                    if (! ee()->legacy_api->is_url_safe($template_name)) {
+                    if (!ee()->legacy_api->is_url_safe($template_name)) {
                         continue;
                     }
 
@@ -4239,7 +4352,7 @@ class EE_Template
                 }
 
                 // An index template is required- so we create it if necessary
-                if (! in_array('index', $existing[$group])) {
+                if (!in_array('index', $existing[$group])) {
                     $data = array(
                         'group_id' => $group_id,
                         'template_name' => 'index',
@@ -4268,7 +4381,7 @@ class EE_Template
                 $vars['logged_in_' . $user_var] = ee()->session->userdata[$user_var];
             }
 
-            if (! ee()->session->getMember()) {
+            if (!ee()->session->getMember()) {
                 $role = ee('Model')->get('Role', 3)->first();
                 $roles = array($role);
                 $assigned_role_ids = array(3);

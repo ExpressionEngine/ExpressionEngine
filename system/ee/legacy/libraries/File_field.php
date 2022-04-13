@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -85,7 +85,7 @@ class File_field
         }
 
         // Create the hidden fields for the file and directory
-        $vars['hidden'] = form_hidden($field_name . '_hidden_file', $vars['filename']);
+        $vars['hidden'] = form_hidden($field_name . '_hidden_file', rawurldecode($vars['filename']));
         $vars['hidden'] .= form_hidden($field_name . '_hidden_dir', $vars['upload_location_id']);
 
         // Create a standard file upload field and dropdown for folks
@@ -210,7 +210,7 @@ class File_field
             $title = $file->title;
         } else {
             $title = $data;
-            if (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+            if (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
                 $title = str_replace($matches[0], '', $data);
             }
         }
@@ -249,7 +249,7 @@ class File_field
         $file = null;
 
         // If the file field is in the "{filedir_n}image.jpg" format
-        if (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+        if (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);
@@ -472,7 +472,7 @@ class File_field
 
         foreach ($data as $field_data) {
             // If the file field is in the "{filedir_n}image.jpg" format
-            if (preg_match('/^{filedir_(\d+)}/', $field_data, $matches)) {
+            if (preg_match('/^{filedir_(\d+)}/', (string) $field_data, $matches)) {
                 $dir_ids[] = $matches[1];
                 $file_names[] = str_replace($matches[0], '', $field_data);
             }
@@ -613,7 +613,7 @@ class File_field
     public function parse_field($data)
     {
         // If the file field is in the "{filedir_n}image.jpg" format
-        if (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+        if (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);
@@ -731,7 +731,7 @@ class File_field
             : '/{filedir_(\d+)}/';
 
         // Find each instance of {filedir_n}
-        if (preg_match_all($pattern, $data, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all($pattern, (string) $data, $matches, PREG_SET_ORDER)) {
             ee()->load->model('file_upload_preferences_model');
             $file_dirs = ee()->file_upload_preferences_model->get_paths();
 

@@ -16,6 +16,22 @@
 		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext')?>" type="text/css" />
 		<?php endif;?>
 
+		<?php if (ee()->config->item('site_color') != ''): ?>
+		<style type="text/css">
+			body {
+				--ee-sidebar-title-bg: #<?=ee()->config->item('site_color')?>;
+				--ee-sidebar-title-bg-hover: #<?=ee()->config->item('site_color')?>;
+				--ee-sidebar-text-faded: #FFFFFF;
+			}
+			.ee-sidebar__title, .ee-sidebar__items-bottom, .ee-sidebar__title:hover {
+				background-color: #<?=ee()->config->item('site_color')?>;
+			}
+			.ee-sidebar__title-down-arrow, .ee-sidebar__items .ee-sidebar__version {
+				color: #FFFFFF;
+			}
+		</style>
+		<?php endif; ?>
+
 		<?php
         foreach (ee()->cp->get_head() as $item) {
             echo $item . "\n";
@@ -52,7 +68,7 @@ $current_page = ee()->uri->segment(2);
 			<div class="ee-main">
 		
 		<?php if (!isset($hide_topbar) || $hide_topbar != true) : ?>
-        <div class="ee-main-header">
+        <div class="ee-main-header <?php if (!empty($head['class']) ): echo $head['class']; endif ?>">
 
           <a href="" class="sidebar-toggle<?php if (isset($collapsed_nav) && $collapsed_nav == '1') : ?> sidebar-toggle__collapsed<?php endif; ?>" title="Toggle Sidebar"><i class="fas fa-angle-<?php if (isset($collapsed_nav) && $collapsed_nav == '1') : ?>right<?php else : ?>left<?php endif; ?>"></i></a>
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -14,17 +14,14 @@ use ExpressionEngine\Library\CP\URL;
 use ExpressionEngine\Service\View\ViewFactory;
 
 /**
- * Viewtype Filter
+ * ViewType Filter
  *
  * This will provide the HTML for a filter that will display a set of buttons
  * to change the view mode of the current result set into either list, thumbnail,
  * or a hybrid mini-thumbnail / list format.
  */
-class Viewtype extends Filter
+class ViewType extends Filter
 {
-    protected $total_threshold = 1000;
-    protected $confirm_show_all = false;
-
     /**
      * @param  array $options options
      * @param  string $default_value ['list', 'thumb']
@@ -54,13 +51,7 @@ class Viewtype extends Filter
      */
     public function value()
     {
-        $value = parent::value();
-
-        if (empty($value)) {
-            $value = $this->default_value;
-        }
-
-        return $value;
+        return !empty(parent::value()) ? parent::value() : $this->default_value;
     }
 
     /**
@@ -68,13 +59,7 @@ class Viewtype extends Filter
      */
     public function isValid()
     {
-        $value = $this->value();
-
-        if (in_array($value, ['list', 'thumb'])) {
-            return true;
-        }
-
-        return false;
+        return in_array($this->value(), ['list', 'thumb']);
     }
 
     /**

@@ -10,13 +10,19 @@ context('Block and Allow', () => {
 
   before(function(){
     cy.task('db:seed')
+    cy.task('installer:replace_config')
+    cy.intercept('**/check').as('check')
+    cy.intercept('**/license/handleAccessResponse').as('license')
 
     cy.auth();
 
-    // Install Pages
+    // Install Block and Allow
     addon_manager.load()
     cy.hasNoErrors()
     addon_manager.get('first_party_addons').find('.add-on-card:contains("Block and Allow") a').click()
+
+    cy.wait('@check')
+    cy.wait('@license')
   })
 
   beforeEach(function() {

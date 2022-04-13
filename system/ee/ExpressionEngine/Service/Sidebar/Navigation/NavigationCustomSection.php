@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -46,10 +46,12 @@ class NavigationCustomSection extends NavigationSection
             ->all();
 
         foreach ($items as $item) {
-            if ($active && $item->type == 'addon' && isset($byclass[$item->data])) {
+            if ($active && $item->type == 'addon' && isset($byclass[$item->data])) { //extension
                 foreach ($byclass[$item->data] as $metadata) {
                     ee()->extensions->call_class($item->data, 'cp_custom_menu', $metadata, $args);
                 }
+            } elseif ($item->type == 'addon') { //module
+                $custom->addItem($item->name, ee('CP/URL')->make('addons/settings/' . lcfirst($item->data)));
             } elseif ($item->type == 'submenu') {
                 $sub = $custom->addSubmenu($item->name);
 

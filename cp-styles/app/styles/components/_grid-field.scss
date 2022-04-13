@@ -17,7 +17,34 @@
   }
 
   tr {
+  	td {
+  		@include m-tablet-down {
+  			min-width: 0 !important;
+  			width: 100% !important;
+  			max-width: 100% !important;
+  		}
 
+  		&.grid-rte,
+  		&.grid-file-upload,
+  		&.grid-multi-relate {
+  			// min-width: 400px;
+  		}
+
+  		&.grid-field__column--tools {
+
+  		}
+
+  		&.grid-multi-relate {
+  			@include m-tablet-down {
+  				position: relative;
+
+  				.dropdown--open {
+  					top: calc(100% + 4px) !important;
+  					transform: none !important;
+  				}
+  			}
+  		}
+  	}
 	}
 
 	tr.ui-sortable-helper {
@@ -54,19 +81,19 @@
     margin-top: 0px;
 
 	.dropdown__link, .file-field__buttons {
-		text-indent: 20px;
+		text-indent: 0;
 	}
 	.dropdown__link--selected {
 		&::before {
 			margin-right: 20px;
-			margin-left: -20px;
+			margin-left: 0;
 		}
 	}
   }
 
 	.file-field__buttons {
 		.dropdown__link {
-			text-indent: 20px;
+			text-indent: 0;
 		}
 	}
 

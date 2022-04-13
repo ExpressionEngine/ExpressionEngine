@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -287,7 +287,7 @@ class File extends Model
      */
     private function stripAndTrim($str)
     {
-        return trim(strip_tags($str));
+        return trim(strip_tags((string) $str));
     }
 
     public function set__title($value)
@@ -320,7 +320,7 @@ class File extends Model
         $cat_groups = array();
 
         if ($this->UploadDestination->cat_group) {
-            $cat_groups = explode('|', $this->UploadDestination->cat_group);
+            $cat_groups = explode('|', (string) $this->UploadDestination->cat_group);
         }
 
         if (empty($categories)) {

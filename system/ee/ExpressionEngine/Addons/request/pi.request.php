@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -97,15 +97,43 @@ class Request
         $name = ee()->TMPL->fetch_param('name');
 
         if (!$name) {
-            $this->return_data = '';
-            return '';
+            if (empty(ee()->TMPL->tagdata)) {
+                $this->return_data = '';
+                return $this->return_data;
+            }
+
+            return ee()->TMPL->no_results();
         }
 
         // We will always want to XSS code, since we will be accessing
         // this from the front end.
         $val = ee()->input->{$method}($name, true);
 
-        $this->return_data = $val;
-        return $val;
+        if (empty($val)) {
+            return ee()->TMPL->no_results();
+        }
+
+        if (!empty(ee()->TMPL->tagdata)) {
+            $tagdata = ee()->TMPL->tagdata;
+        } else {
+            $separator = ee()->TMPL->fetch_param('separator', '|');
+            ee()->TMPL->tagparams['backspace'] = strlen($separator);
+            $tagdata = "{item}" . $separator;
+        }
+
+        $vars = [];
+
+        if (is_array($val)) {
+            foreach ($val as $item) {
+                $vars[]['item'] = $item;
+            }
+        } else {
+            $vars[]['item'] = $val;
+        }
+
+        $this->return_data = ee()->TMPL->parse_variables($tagdata, $vars);
+
+        return $this->return_data;
     }
 }
+// EOF

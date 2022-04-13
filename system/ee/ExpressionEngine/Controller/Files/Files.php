@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -27,7 +27,7 @@ class Files extends AbstractFilesController
     public function index()
     {
         $viewTypeService = new ViewType();
-        $view_type = $viewTypeService->determineViewType('all', 'list');
+        $view_type = $viewTypeService->determineViewType();
 
         $this->handleBulkActions(ee('CP/URL')->make('files', ee()->cp->get_url_state()));
 
@@ -40,7 +40,7 @@ class Files extends AbstractFilesController
 
         $vars = $this->listingsPage($files, $base_url, $view_type);
 
-        $this->generateSidebar(null);
+        $this->generateSidebar();
         $this->stdHeader();
         ee()->view->cp_page_title = lang('file_manager');
 
@@ -93,7 +93,7 @@ class Files extends AbstractFilesController
         $this->handleBulkActions(ee('CP/URL')->make('files/directory/' . $id, ee()->cp->get_url_state()));
 
         $viewTypeService = new ViewType();
-        $view_type = $viewTypeService->determineViewType('dir_' . $id, 'list');
+        $view_type = $viewTypeService->determineViewType('dir_' . $id);
         //$dir->default_modal_view is not used here as it's not modal view
 
         $base_url = ee('CP/URL')->make('files/directory/' . $id);

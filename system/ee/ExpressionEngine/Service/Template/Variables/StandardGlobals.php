@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -111,7 +111,7 @@ class StandardGlobals extends Variables
         if (ee()->session->userdata('member_id') != 0) {
             $name = (ee()->session->userdata['screen_name'] == '') ? ee()->session->userdata['username'] : ee()->session->userdata['screen_name'];
 
-            $path = "<a href='" . ee()->functions->create_url('/member/' . ee()->session->userdata('member_id')) . "'>" . $name . "</a>";
+            $path = "<a href='" . ee()->functions->create_url(ee()->config->item('profile_trigger') . '/' . ee()->session->userdata('member_id')) . "'>" . $name . "</a>";
 
             return $path;
         }

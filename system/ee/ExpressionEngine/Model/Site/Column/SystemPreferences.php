@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -52,7 +52,7 @@ class SystemPreferences extends CustomType
     protected $password_lockout_interval;
     protected $require_ip_for_login;
     protected $require_ip_for_posting;
-    protected $require_secure_passwords;
+    protected $password_security_policy;
     protected $allow_dictionary_pw;
     protected $name_of_dictionary_file;
     protected $xss_clean_uploads;

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -111,14 +111,14 @@ class DbBackup extends Utilities
             try {
                 $backup->startFile();
                 $backup->writeDropAndCreateStatements();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return $this->sendError($e->getMessage());
             }
         }
 
         try {
             $returned = $backup->writeTableInsertsConservatively($table_name, $offset);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
 

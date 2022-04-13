@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,11 +32,12 @@ class XSSTest extends TestCase
         $testArray = array(
             '"><script>alert(\'stored xss\')</script>' => '">[removed]alert&#40;\'stored xss\'&#41;[removed]',
             '"><a onload=alert(1);>' => '"><a >',
-            '"><a/onload=alert(1);>' => '"><a>',
+            '"><a/onload=alert(1);>' => '"><a/>',
             '"><img onload=alert(1);>' => '"><img >',
-            '"><img/onload=alert(1);>' => '"><img>',
+            '"><img/onload=alert(1);>' => '"><img/>',
             '"><svg onload=alert(1);>' => '"><svg >',
-            '"><svg/onload=alert(1);>' => '"><svg>',
+            '"><svg/onload=alert(1);>' => '"><svg/>',
+            '"><svg/onload=(prompt``)>' => '"><svg/>',
             '<x onclick=alert(1) src=a>1</x>' => '<x  src=a>1</x>',
             '<marquee loop=1 width=0 onfinish=confirm(1)//' => '<marquee loop=1 width=0 ',
             "<select autofocus onfocus='confirm(1)'" => '<select autofocus ',
@@ -59,6 +60,7 @@ class XSSTest extends TestCase
             '%bar%' => '%bar%',
             '<a href="http://example.com/%bar%">%bar%</a>' => '<a href="http://example.com/r%">%bar%</a>',
             '<a href="http://%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D">Google</a>' => '<a href="http://www.google.com">Google</a>',
+            '<r/onmouseover=eval.call`${\'alert\x28document.domain\x29\'}`>Text</r>' => '<r/>Text</r>',
         );
 
         foreach ($testArray as $before => $after) {

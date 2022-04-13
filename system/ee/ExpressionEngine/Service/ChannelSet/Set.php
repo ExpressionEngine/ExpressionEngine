@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -62,6 +62,7 @@ class Set
      * @var Array of model relationships to be assigned after the saves
      */
     private $assignments = array(
+        'previously_created_field_groups' => array(),
         'channel_field_groups' => array(),
         'channel_fields' => array(),
         'field_group_fields' => array(),
@@ -268,6 +269,17 @@ class Set
      */
     private function assignFieldGroupsToChannels()
     {
+        foreach ($this->assignments['previously_created_field_groups'] as $channel_title => $field_groups) {
+          $channel = $this->channels[$channel_title];
+
+          $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup')
+              ->filter('group_name', 'IN', $field_groups)
+              ->all();
+
+          $channel->save();
+        }
+        unset($channel_title, $field_group_ids);
+
         foreach ($this->assignments['channel_field_groups'] as $channel_title => $field_groups) {
             $channel = $this->channels[$channel_title];
 
@@ -474,6 +486,7 @@ class Set
             $this->applyOverrides($channel, $channel->channel_name);
 
             $field_groups = array();
+            $previously_created_field_groups = array();
 
             if (isset($channel_data->field_group)) {
                 $field_group_name = $channel_data->field_group;
@@ -493,12 +506,21 @@ class Set
                     if (isset($this->aliases['ee:ChannelFieldGroup'][$field_group])) {
                         $field_group = $this->aliases['ee:ChannelFieldGroup'][$field_group]['group_name'];
                     }
-                    $field_groups[] = $this->field_groups[$field_group];
+
+                    if (isset($this->field_groups[$field_group])) {
+                        $field_groups[] = $this->field_groups[$field_group];
+                    } else {
+                        $previously_created_field_groups[] = $field_group;
+                    }
                 }
             }
 
             if (! empty($field_groups)) {
                 $this->assignments['channel_field_groups'][$channel_title] = $field_groups;
+            }
+
+            if (! empty($previously_created_field_groups)) {
+                $this->assignments['previously_created_field_groups'][$channel_title] = $previously_created_field_groups;
             }
 
             if (isset($channel_data->fields)) {

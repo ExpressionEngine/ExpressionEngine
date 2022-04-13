@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -323,6 +323,10 @@ class EE_Form_validation
      */
     public function valid_username($str, $type)
     {
+        //deprecated, but will not throw deprecation error until 6.4
+        //ee()->load->library('logger');
+        //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
+
         if (! $type) {
             $type = 'update';
         }
@@ -394,27 +398,24 @@ class EE_Form_validation
      */
     public function valid_screen_name($str)
     {
-        if ($str == '') {
-            return true;
-        }
+        //deprecated, but will not throw deprecation error until 6.4
+        //ee()->load->library('logger');
+        //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
 
-        if (preg_match('/[\{\}<>]/', $str)) {
-            $this->set_message('valid_screen_name', ee()->lang->line('disallowed_screen_chars'));
+        $data = [
+            'screen_name' => $str
+        ];
 
-            return false;
-        }
+        $rules = array(
+            'screen_name' => 'validScreenName|notBanned'
+        );
 
-        if (strlen($str) > USERNAME_MAX_LENGTH) {
-            $this->set_message('valid_screen_name', ee()->lang->line('username_too_long'));
+        $result = ee('Validation')->make($rules)->validate($data);
 
-            return false;
-        }
-
-        // Is screen name banned?
-
-        if (ee()->session->ban_check('screen_name', $str) or trim(preg_replace("/&nbsp;*/", '', $str)) == '') {
-            $this->set_message('valid_screen_name', ee()->lang->line('screen_name_taken'));
-
+        if ($result->isNotValid()) {
+            foreach ($result->getAllErrors() as $key => $error) {
+                $this->set_message($key, $error);
+            }
             return false;
         }
 
@@ -433,80 +434,29 @@ class EE_Form_validation
      */
     public function valid_password($str, $username_field)
     {
+        //deprecated, but will not throw deprecation error until 6.4
+        //ee()->load->library('logger');
+        //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
+
         if (! $username_field) {
             $username_field = 'username';
         }
 
-        // Is password min length correct?
+        $data = [
+            'username' => ee('Request')->post($username_field),
+            'password' => $str
+        ];
 
-        $len = ee()->config->item('pw_min_len');
+        $rules = array(
+            'password' => 'validPassword|passwordMatchesSecurityPolicy'
+        );
 
-        if (strlen($str) < $len) {
-            $this->set_message('valid_password', sprintf(lang('password_too_short'), $len));
+        $result = ee('Validation')->make($rules)->validate($data);
 
-            return false;
-        }
-
-        // Is password max length correct?
-
-        if (strlen($str) > PASSWORD_MAX_LENGTH) {
-            $this->set_message('valid_password', ee()->lang->line('password_too_long'));
-
-            return false;
-        }
-
-        // Is password the same as username?
-        // - We check for a reversed password as well
-
-        $username = $_POST[$username_field];
-
-        //  Make UN/PW lowercase for testing
-
-        $lc_user = strtolower($username);
-        $lc_pass = strtolower($str);
-        $nm_pass = strtr($lc_pass, 'elos', '3105');
-
-        if ($lc_user == $lc_pass or $lc_user == strrev($lc_pass) or $lc_user == $nm_pass or $lc_user == strrev($nm_pass)) {
-            $this->set_message('valid_password', ee()->lang->line('password_based_on_username'));
-
-            return false;
-        }
-
-        // Are secure passwords required?
-
-        if (ee()->config->item('require_secure_passwords') == 'y') {
-            $count = array('uc' => 0, 'lc' => 0, 'num' => 0);
-
-            $pass = preg_quote($str, "/");
-
-            $len = strlen($pass);
-
-            for ($i = 0; $i < $len; $i++) {
-                $n = substr($pass, $i, 1);
-
-                if (preg_match("/^[[:upper:]]$/", $n)) {
-                    $count['uc']++;
-                } elseif (preg_match("/^[[:lower:]]$/", $n)) {
-                    $count['lc']++;
-                } elseif (preg_match("/^[[:digit:]]$/", $n)) {
-                    $count['num']++;
-                }
+        if ($result->isNotValid()) {
+            foreach ($result->getAllErrors() as $key => $error) {
+                $this->set_message($key, $error);
             }
-
-            foreach ($count as $val) {
-                if ($val == 0) {
-                    $this->set_message('valid_password', ee()->lang->line('not_secure_password'));
-
-                    return false;
-                }
-            }
-        }
-
-        // Does password exist in dictionary?
-
-        if ($this->_lookup_dictionary_word($lc_pass) == true) {
-            $this->set_message('valid_password', ee()->lang->line('password_in_dictionary'));
-
             return false;
         }
 
@@ -556,6 +506,10 @@ class EE_Form_validation
      */
     public function valid_user_email($str, $type)
     {
+        //deprecated, but will not throw deprecation error until 6.4
+        //ee()->load->library('logger');
+        //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
+
         if (! $type) {
             $type = 'update';
         }
@@ -849,7 +803,6 @@ class EE_Form_validation
         }
 
         // --------------------------------------------------------------------
-
         // Cycle through each rule and run it
         foreach ($rules as $rule) {
             $_in_array = false;
@@ -914,23 +867,39 @@ class EE_Form_validation
                     continue;
                 }
             } else {
-                if (! method_exists($this, $rule)) {
-                    // If our own wrapper function doesn't exist we see if a native PHP function does.
-                    // Users can use any native PHP function call that has one param.
-                    if (function_exists($rule)) {
-                        $result = $rule($postdata);
 
-                        if ($_in_array == true) {
-                            $this->_field_data[$row['field']]['postdata'][$cycles] = (is_bool($result)) ? $postdata : $result;
-                        } else {
-                            $this->_field_data[$row['field']]['postdata'] = (is_bool($result)) ? $postdata : $result;
+                if (method_exists($this, $rule)) {
+                    //this is the rule defined by this very lib
+                    $result = $this->$rule($postdata, $param);
+                } else {
+                    //is this valid stand-alone validation rule?
+                    $rule_class = 'ExpressionEngine\\Service\\Validation\\Rule\\' . implode('', array_map('ucfirst', explode('_', $rule)));
+                    if (class_exists($rule_class)) {
+                        $validator = ee('Validation')->make(array(
+                            $row['field'] => $rule
+                        ));
+                        $validation = $validator->validate($_POST);
+                        $result = $validation->isValid();
+                        if ($result == false) {
+                            $error = $validation->getErrors($row['field']);
+                            $this->set_message($rule, array_shift($error));
                         }
+                    } else {
+                        // If our own wrapper function doesn't exist we see if a native PHP function does.
+                        // Users can use any native PHP function call that has one param.
+                        if (function_exists($rule)) {
+                            $result = $rule($postdata);
+
+                            if ($_in_array == true) {
+                                $this->_field_data[$row['field']]['postdata'][$cycles] = (is_bool($result)) ? $postdata : $result;
+                            } else {
+                                $this->_field_data[$row['field']]['postdata'] = (is_bool($result)) ? $postdata : $result;
+                            }
+                        }
+
+                        continue;
                     }
-
-                    continue;
                 }
-
-                $result = $this->$rule($postdata, $param);
 
                 if ($_in_array == true) {
                     $this->_field_data[$row['field']]['postdata'][$cycles] = (is_bool($result)) ? $postdata : $result;
@@ -982,11 +951,16 @@ class EE_Form_validation
      */
     public function _lookup_dictionary_word($target)
     {
-        if (ee()->config->item('allow_dictionary_pw') == 'y' or ee()->config->item('name_of_dictionary_file') == '') {
+        //deprecated, but will not throw deprecation error until 6.4
+        //ee()->load->library('logger');
+        //ee()->logger->deprecated('6.4');
+
+        if (ee()->config->item('allow_dictionary_pw') == 'y') {
             return false;
         }
 
-        $path = reduce_double_slashes(PATH_DICT . ee()->config->item('name_of_dictionary_file'));
+        $file = !empty(ee()->config->item('name_of_dictionary_file')) ? ee()->config->item('name_of_dictionary_file') : 'dictionary.txt';
+        $path = reduce_double_slashes(PATH_DICT . $file);
 
         if (! file_exists($path)) {
             return false;

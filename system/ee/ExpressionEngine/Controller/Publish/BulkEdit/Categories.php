@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -127,7 +127,7 @@ class Categories extends AbstractBulkEdit
     protected function save($intent)
     {
         if (! ($entry_ids = ee('Request')->post('entry_ids'))) {
-            return show_error(lang('unauthorized_access'), 403);
+            show_error(lang('unauthorized_access'), 403);
         }
 
         $category_ids = [];
@@ -139,7 +139,7 @@ class Categories extends AbstractBulkEdit
             $entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
 
             if (! $this->hasPermissionToEditEntries($entries)) {
-                return show_error(lang('unauthorized_access'), 403);
+                show_error(lang('unauthorized_access'), 403);
             }
 
             $entries->edit_date = ee()->localize->now;

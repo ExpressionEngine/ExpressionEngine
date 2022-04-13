@@ -24,7 +24,7 @@ $lang = array(
 
     'search' => 'Search',
 
-    'search_all_groups' => 'Search All Member Groups',
+    'search_all_groups' => 'Search All Roles',
 
     'search_all_words' => 'Search for All Words',
 
@@ -104,7 +104,7 @@ $lang = array(
 
     'search_no_result' => 'Your search did not return any results.',
 
-    'search_no_stopwords' => 'Your search term included common words that are not allowed to be searched.',
+    'search_no_stopwords' => 'Your search term included only common words that are not allowed to be searched.',
 
     'search_not_allowed' => 'You are not permitted to use the search engine.',
 

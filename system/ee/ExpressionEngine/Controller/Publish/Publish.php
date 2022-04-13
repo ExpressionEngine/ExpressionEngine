@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -237,8 +237,9 @@ class Publish extends AbstractPublishController
             'errors' => new \ExpressionEngine\Service\Validation\Result(),
             'revisions' => $this->getRevisionsTable($entry),
             'buttons' => $this->getPublishFormButtons($entry, $livePreviewReady),
-            'header' => [
+            'head' => [
                 'title' => lang('new_entry'),
+                'class' => 'entries'
             ],
         );
 
@@ -326,7 +327,7 @@ class Publish extends AbstractPublishController
             return ee('View')->make('publish/modal-entry')->render($vars);
         }
 
-        ee()->cp->render('publish/entry', $vars);
+        return ee()->cp->render('publish/entry', $vars);
     }
 
     /**

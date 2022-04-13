@@ -7,7 +7,7 @@
 	padding: 0 5px;
 	height: $bubble-size;
 	line-height: $bubble-size;
-	border-radius: $bubble-size / 2;
+	border-radius: math.div($bubble-size, 2);
 	text-align: center;
 	font-size: 13px;
 }
@@ -17,7 +17,7 @@
 	padding: 0 4px;
 	height: $bubble-size;
 	line-height: $bubble-size;
-	border-radius: $bubble-size / 2;
+	border-radius: math.div($bubble-size, 2);
 	font-size: 11px;
 }
 

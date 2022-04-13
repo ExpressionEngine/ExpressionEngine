@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -597,6 +597,29 @@ class FunctionsStub
     public function clear_caching($type)
     {
         return true;
+    }
+
+    public function fetch_site_index($add_slash = false, $sess_id = true)
+    {
+        $url = ee()->config->slash_item('site_url');
+
+        $url .= ee()->config->item('site_index');
+
+        if (ee()->config->item('force_query_string') == 'y') {
+            $url .= '?';
+        }
+
+        if (ee()->config->item('website_session_type') != 'c' && is_object(ee()->session) && REQ != 'CP' && $sess_id == true && $this->template_type == 'webpage') {
+            $url .= (ee()->session->session_id('user')) ? "/S=" . ee()->session->session_id('user') . "/" : '';
+        }
+
+        if ($add_slash == true) {
+            if (substr($url, -1) != '/') {
+                $url .= "/";
+            }
+        }
+
+        return $url;
     }
 }
 

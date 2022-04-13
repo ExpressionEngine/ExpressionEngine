@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -142,6 +142,14 @@ trait ModifiableTrait
     public function replace_spellout($data, $params = array(), $tagdata = false)
     {
         return (string) ee('Format')->make('Number', $data)->spellout($params);
+    }
+
+    /**
+     * :trim modifier
+     */
+    public function replace_trim($data, $params = array(), $tagdata = false)
+    {
+        return (string) ee('Format')->make('Text', $data)->trim($params);
     }
 
     /**

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 if (! defined('LD')) {
@@ -32,15 +32,15 @@ class Installer_Template
     {
         // We're gonna need this to be already loaded.
         ee()->remove('functions');
-        require_once(APPPATH . 'libraries/Functions.php');
+        require_once(SYSPATH . 'ee/installer/libraries/Functions.php');
         ee()->set('functions', new Installer_Functions());
 
         ee()->remove('extensions');
-        require_once(APPPATH . 'libraries/Extensions.php');
+        require_once(SYSPATH . 'ee/installer/libraries/Extensions.php');
         ee()->set('extensions', new Installer_Extensions());
 
         ee()->remove('addons');
-        require_once(APPPATH . 'libraries/Addons.php');
+        require_once(SYSPATH . 'ee/installer/libraries/Addons.php');
         ee()->set('addons', new Installer_Addons());
     }
 

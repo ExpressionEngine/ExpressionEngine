@@ -10,8 +10,10 @@
 
 	<ul class="list-group">
 		<?php foreach ($data as $row): ?>
-			<li class="list-item list-item--action<?php if (isset($row['selected']) && $row['selected']):?> list-item--selected<?php endif ?>">
-
+			<li class="list-item list-item--action<?php if (isset($row['selected']) && $row['selected']):?> list-item--selected<?php endif ?>" style="position: relative;">
+        <div class="list-item__secondary">
+          #<?=$row['id']?> <?php if (! empty($row['extra'])):?> <span class="faded">/</span> <span class="click-select-text"><?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?><?php endif ?></span>
+        </div>
 				<a href="<?=$row['href']?>" class="list-item__content">
 					<div class="list-item__title">
 						<?=ee('Format')->make('Text', $row['label'])->convertToEntities()?>
@@ -19,14 +21,24 @@
 							<span class="faded"<?php echo isset($row['faded-href']) ? ' data-href="' . $row['faded-href'] . '"' : ''; ?>><?=$row['faded']?></span>
 						<?php endif ?>
 					</div>
-					<div class="list-item__secondary">
-						#<?=$row['id']?> <?php if (! empty($row['extra'])):?> <span class="faded">/</span> <?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?><?php endif ?>
-					</div>
+					<div class="list-item__secondary">&#160;</div>
 				</a>
 
+				<?php if (isset($row['status'])): ?>
+					<div class="status-wrap">
+						<?php 
+							$class = $row['status'] ? 'locked' : 'unlocked';
+							$status = $row['status'] ? lang('locked') : lang('unlocked');
+						?>
+						<span class="status-tag st-<?=$class?>"><?=$status?></span>
+					</div>
+				<?php endif; ?>
+
+				<?php if (isset($row['toolbar_items'])) : ?>
 				<div class="list-item__content-right">
 					<?=$this->embed('_shared/toolbar', ['toolbar_items' => $row['toolbar_items']])?>
 				</div>
+				<?php endif ?>
 
 				<?php if ((!isset($disable_action) || empty($disable_action)) && isset($row['selection'])): ?>
 					<div class="list-item__checkbox">

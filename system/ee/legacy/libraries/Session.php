@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -353,7 +353,7 @@ class EE_Session
     public function create_new_session($member_id, $admin_session = false, $can_debug = false)
     {
         if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
-            $this->member_model = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->first();
+            $this->member_model = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
         }
 
         if ($this->access_cp == true or $this->member_model->can('access_cp')) {
@@ -382,12 +382,14 @@ class EE_Session
         $this->sdata['sess_start'] = $this->sdata['last_activity'];
         $this->sdata['fingerprint'] = $this->_create_fingerprint((string) $crypt_key);
         $this->sdata['can_debug'] = ($can_debug) ? 'y' : 'n';
+        $this->sdata['mfa_flag'] = ($this->member_model->enable_mfa === true) ? 'show' : 'skip';
 
         $this->userdata['member_id'] = (int) $member_id;
         $this->userdata['role_id'] = (int) $this->member_model->role_id;
         $this->userdata['session_id'] = $this->sdata['session_id'];
         $this->userdata['fingerprint'] = $this->sdata['fingerprint'];
         $this->userdata['site_id'] = ee()->config->item('site_id');
+        $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
 
         // Set the session cookie, ONLY if this method is not called from the context of the constructor, i.e. a login action
         if (isset(ee()->session)) {
@@ -605,9 +607,12 @@ class EE_Session
         $this->userdata['group_description'] = $this->member_model->PrimaryRole->description;
 
         // Add in the Permissions for backwards compatibility
-        foreach ($this->member_model->getPermissions() as $perm => $perm_id) {
+        $permissions = $this->member_model->getPermissions();
+        foreach ($permissions as $perm => $perm_id) {
             $this->userdata[$perm] = 'y';
         }
+        //ensure we get those cached, as they are not cached on model layer yet
+        $this->set_cache("ExpressionEngine\Model\Member\Member", "Member/{$this->userdata['member_id']}/Permissions", $permissions);
 
         // Remember me may have validated the user agent for us, if so create a fingerprint now that we
         // can salt it properly for the user
@@ -623,6 +628,9 @@ class EE_Session
 
             return false;
         }
+
+        // Check MFA state
+        $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
 
         // Create the array for the Ignore List
         $this->userdata['ignore_list'] = ($this->userdata['ignore_list'] == '') ? array() : explode('|', $this->userdata['ignore_list']);
@@ -735,6 +743,8 @@ class EE_Session
 
         // Assign masquerader ID to session array
         $this->sdata['can_debug'] = $session->can_debug;
+
+        $this->sdata['mfa_flag'] = $session->mfa_flag;
 
         // Is this an admin session?
         $this->sdata['admin_sess'] = ($session->admin_sess == 1) ? 1 : 0;
@@ -1183,6 +1193,7 @@ class EE_Session
         if (! is_object($this->member_model) || $member_model->member_id != $member_id) {
             $this->member_model = ee('Model')->get('Member', $member_id)
                 ->with('PrimaryRole', 'Roles', 'RoleGroups')
+                ->all()
                 ->first();
         }
 
@@ -1201,6 +1212,7 @@ class EE_Session
             'fingerprint' => 0,
             'member_id' => 0,
             'admin_sess' => 0,
+            'mfa_flag' => 'skip',
             'ip_address' => ee()->input->ip_address(),
             'user_agent' => substr(ee()->input->user_agent(), 0, 120),
             'last_activity' => 0,
@@ -1229,6 +1241,7 @@ class EE_Session
             'include_seconds' => ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
             'role_id' => '3',
             'access_cp' => 0,
+            'mfa_enabled' => !empty($this->member_model) ? $this->member_model->enable_mfa : false,
             'last_visit' => 0,
             'is_banned' => $this->_do_ban_check(),
             'ignore_list' => array()
@@ -1285,7 +1298,7 @@ class EE_Session
         // Fetch Assigned Sites Available to User
         $assigned_sites = ee('Model')->get('Site')
             ->fields('site_id', 'site_label')
-            ->order('site_label', 'desc');
+            ->order('site_label', 'asc');
 
         if (! $is_superadmin) {
             $roles = $this->getMember()->getAllRoles()->pluck('role_id');

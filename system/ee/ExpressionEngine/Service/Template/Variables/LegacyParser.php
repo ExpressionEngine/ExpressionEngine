@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -44,9 +44,14 @@ class LegacyParser
     {
         $props = [];
 
-        $unprefixed_var = preg_replace('/^' . $prefix . '/', '', $template_var);
-        $orig_field_name = substr($unprefixed_var . ' ', 0, strpos($unprefixed_var . ' ', ' '));
-        $param_string = substr($unprefixed_var . ' ', strlen($orig_field_name));
+        $unprefixed_var = ltrim(preg_replace('/^' . $prefix . '/', '', $template_var));
+        $orig_field_name_length = strpos($unprefixed_var, ' ') ?: strpos($unprefixed_var, "\n");
+        if ($orig_field_name_length === false) {
+            $orig_field_name = $unprefixed_var;
+        } else {
+            $orig_field_name = substr($unprefixed_var, 0, $orig_field_name_length);
+        }
+        $param_string = trim(substr($unprefixed_var, strlen($orig_field_name)));
 
         $field_name = $orig_field_name;
         $modifier = '';
@@ -65,10 +70,10 @@ class LegacyParser
             $modifier = substr($orig_field_name, $modifier_loc + 1);
         }
 
-        $props['field_name'] = $field_name;
+        $props['field_name'] = trim($field_name);
         $props['params'] = (trim($param_string)) ? $this->parseTagParameters($param_string) : [];
-        $props['modifier'] = $modifier;
-        $props['full_modifier'] = $full_modifier;
+        $props['modifier'] = trim($modifier);
+        $props['full_modifier'] = trim($full_modifier);
 
         return $props;
     }
@@ -156,16 +161,17 @@ class LegacyParser
         }
 
         if ($target) {
-            preg_match_all('/' . LD . '(' . preg_quote($target, '/') . '.*?)' . RD . '/', $tagdata, $matches);
+            preg_match_all('/' . LD . '(' . preg_quote($target, '/') . '.*?)' . RD . '/s', $tagdata, $matches);
         } else {
-            preg_match_all('/' . LD . '(.+?)' . RD . '/', $tagdata, $matches);
+            preg_match_all('/' . LD . '([^\n].+?)' . RD . '/s', $tagdata, $matches);
         }
 
         $temp_close = [];
         $temp_misc = [];
 
         foreach ($matches[1] as $key => $val) {
-            if (strncmp($val, 'if ', 3) !== 0 &&
+            if (!is_numeric($val) &&
+                strncmp($val, 'if ', 3) !== 0 &&
                 strncmp($val, 'if:', 3) !== 0 &&
                 substr($val, 0, 3) != '/if') {
                 if (strpos($val, '{') !== false) {

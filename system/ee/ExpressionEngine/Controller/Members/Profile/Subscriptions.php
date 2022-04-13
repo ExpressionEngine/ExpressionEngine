@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -20,6 +20,7 @@ use ExpressionEngine\Library\CP\Table;
 class Subscriptions extends Settings
 {
     private $base_url = 'members/profile/subscriptions';
+    private $index_url;
 
     public function __construct()
     {
@@ -133,7 +134,6 @@ class Subscriptions extends Settings
         ee('CP/Alert')->makeInline('shared-form')
             ->asSuccess()
             ->withTitle(lang('unsubscribe_success'))
-            ->addToBody($cp_message)
             ->defer();
         ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
     }

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -52,26 +52,6 @@ class Factory
         $fp->setDirectories($dirs);
 
         return $fp;
-    }
-
-    /**
-     * Handle a filepicker request. Does all the default stuff.
-     */
-    public function handleRequest()
-    {
-        $fp = $this->fromRequest();
-
-        return $fp->render();
-    }
-
-    /**
-     * Take the request from the url and deal with it
-     */
-    protected function fromRequest()
-    {
-        $request = new RequestParser();
-
-        return new Endpoint($request);
     }
 }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -132,7 +132,7 @@ class Email extends Logs
         if (is_null($email)) {
             ee()->lang->load('communicate');
             ee()->view->set_message('issue', lang('no_cached_email'), '', true);
-            $this->functions->redirect(ee('CP/URL')->make('logs/email'));
+            ee()->functions->redirect(ee('CP/URL')->make('logs/email'));
         }
 
         ee()->view->cp_page_title = lang('email_log') . ': ' . $email->subject;

@@ -177,8 +177,8 @@ window.Rte;
 
         // Set up restoration of original z-indexes.
         var restoreZIndexes = function (){
-            $('.modal-file').css({'z-index': modalZIndex});
-            $('.overlay').css({'z-index': overlayZindex});
+            $('.modal-file').css({'z-index': ''});
+            $('.overlay, .app-overlay').css({'z-index': ''});
             $('body').css({ position:'initial', width:'initial' });
         };
 
@@ -234,11 +234,14 @@ function getPages( queryText ) {
         // Make the search case-insensitive.
         const searchString = queryText.toLowerCase();
 
-        // Include an item in the search results if name or username includes the current user input.
-        return (
-            item.text.toLowerCase().includes( searchString ) ||
-            item.href.toLowerCase().includes( searchString )
-        );
+        if(item.text) { //check if item.text not empty or not equal null
+
+            // Include an item in the search results if name or username includes the current user input.
+            return (
+                item.text.toLowerCase().includes( searchString ) ||
+                item.href.toLowerCase().includes( searchString )
+            );
+        }
     }
 }
 

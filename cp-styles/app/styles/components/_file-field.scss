@@ -17,7 +17,7 @@
 }
 
 .file-field__dropzone {
-	position: relative;
+	position: static;
 	width: 100%;
 	margin-top: $s-s;
 	padding: $sq-inset-m;
@@ -204,6 +204,12 @@
     margin-bottom: 15px;
     color: color(text-secondary);
 
+    & > div {
+    	white-space: nowrap;
+    	overflow: hidden;
+    	text-overflow: ellipsis;
+    }
+
     p {
       white-space: nowrap;
       overflow: hidden;
@@ -230,6 +236,10 @@
     img {
       max-width: 200px;
       max-height: 200px;
+
+      @include m-tablet-down {
+      	max-width: 100%;
+      }
     }
   }
 }

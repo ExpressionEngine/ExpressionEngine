@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,6 +17,7 @@ require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
  */
 class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 {
+
     public $info = array(
         'name' => 'Checkboxes',
         'version' => '1.0.0'
@@ -35,6 +36,15 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         'field_pre_field_id' => '',
         'field_pre_channel_id' => ''
     );
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'contains', 'notContains', 'isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'matches';
 
     /**
      * Constructor
@@ -164,7 +174,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         $disabled = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
         foreach ($fields as $id => $option) {
-            $checked = (in_array(form_prep($option), $values)) ? true : false;
+            $checked = (in_array(form_prep($id), $values)) ? true : false;
 
             if (is_array($option)) {
                 $out .= '<label>' . form_checkbox($this->field_name . '[]', $id, $checked, $disabled) . NBS . $option['name'] . '</label>';

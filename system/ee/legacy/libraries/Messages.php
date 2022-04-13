@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1409,7 +1409,7 @@ DOH;
                         ->first();
 
                     if ($role) {
-                        $search_query[] = " member_id IN (" . implode($role->Members->pluck('member_id'), ',') . ")";
+                        $search_query[] = " member_id IN (" . implode(',', $role->Members->pluck('member_id')) . ")";
                     }
                 }
             } elseif ($key == 'screen_name' || $key == 'email') {
@@ -1545,7 +1545,7 @@ DOH;
                         ->first();
 
                     if ($role) {
-                        $search_query[] = " member_id IN (" . implode($role->Members->pluck('member_id'), ',') . ")";
+                        $search_query[] = " member_id IN (" . implode(',', $role->Members->pluck('member_id')) . ")";
                     }
                 }
             }

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -32,6 +32,7 @@ class RoleSetting extends Model
         'include_in_authorlist' => 'boolString',
         'include_in_memberlist' => 'boolString',
         'cp_homepage_channel' => 'int',
+        'require_mfa' => 'boolString',
     ];
 
     protected static $_relationships = [
@@ -68,6 +69,7 @@ class RoleSetting extends Model
     protected $cp_homepage;
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
+    protected $require_mfa;
 }
 
 // EOF

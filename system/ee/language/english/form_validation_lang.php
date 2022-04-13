@@ -20,6 +20,8 @@ $lang = array(
 
     'greater_than' => 'This field must be greater than: %s',
 
+    'greater_or_equal_than' => 'This field must be greater or equal than: %s',
+
     'hex_color' => 'This field must contain a valid hex color code.',
 
     'integer' => 'This field must contain an integer.',
@@ -35,6 +37,8 @@ $lang = array(
     'is_numeric' => 'This field must contain only numeric characters.',
 
     'less_than' => 'This field must be less than: %s',
+
+    'less_or_equal_than' => 'This field must be less or equal than: %s',
 
     'limithtml' => 'This field can only contain the following HTML tags: %s. If you want to use angle brackets < in your text, but not HTML please try &amp;lt; to replace < and &amp;gt; to replace >.',
 

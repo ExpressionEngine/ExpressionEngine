@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -45,6 +45,9 @@ class EE_User_agent
      */
     public function __construct()
     {
+        ee()->load->library('logger');
+        ee()->logger->developer('User_agent library has been deprecated', true, 604800);
+
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
             $this->agent = trim($_SERVER['HTTP_USER_AGENT']);
         }

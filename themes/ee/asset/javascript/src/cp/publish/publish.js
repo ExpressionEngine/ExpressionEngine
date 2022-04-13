@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var isNavigatingAway = false;
@@ -109,7 +109,7 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						var publishHeading = $('.main-nav__title h1');
+						var publishHeading = $('.panel-heading .title-bar h3');
 						publishHeading.find('.app-badge').remove();
 
 						if (result.error) {
@@ -135,7 +135,7 @@ $(document).ready(function () {
 		});
 
 		// Start autosave when something changes
-		var writeable = $('textarea, input').not(':password,:checkbox,:radio,:submit,:button,:hidden'),
+		var writeable = $('textarea, input, div.redactor-styles, div.ck-content').not(':password,:checkbox,:radio,:submit,:button,:hidden'),
 			changeable = $('select, :checkbox, :radio, :file');
 
 		writeable.on('keypress change', function(){publishForm.trigger("entry:startAutosave")});
@@ -217,7 +217,7 @@ $(document).ready(function () {
 		// Move the publish form into the live preview container
 		container.append($(publishForm));
 
-		$(container).on('interact', 'input, textarea', function(e) {
+		$(container).on('interact', 'input, textarea, div.redactor-styles, div.ck-content', function(e) {
 			$('body').trigger('entry:preview', [225]);
 		});
 

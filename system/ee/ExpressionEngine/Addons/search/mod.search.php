@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -30,6 +30,9 @@ class Search
 
     protected $_meta = array();
     protected $custom_fields = [];
+    protected $m_paths;
+
+    private $param_bypass = null; // we need to define a standard here, something like `BYPASS PARAM`
 
     /**
      * Do Search
@@ -94,7 +97,7 @@ class Search
         /** ----------------------------------------
         /**  Flood control
         /** ----------------------------------------*/
-        if (ee()->session->userdata['search_flood_control'] > 0 and ! ee('Permission')->isSuperAdmin()) {
+        if (!empty(ee()->session->userdata['search_flood_control']) && !ee('Permission')->isSuperAdmin()) {
             $cutoff = time() - ee()->session->userdata['search_flood_control'];
 
             // Only checking current site searches
@@ -215,7 +218,9 @@ class Search
         /**  No query results?
         /** ----------------------------------------*/
         if ($query_parts == false) {
-            if (isset($this->_meta['no_results_page']) and $this->_meta['no_results_page'] != '') {
+            // IF THE BOTH PAGES ARE THE SAME, we need to cache the results,
+            // because there's difference between an expired search and an empty search
+            if (!empty($this->_meta['no_result_page'])) {
                 $data = array(
                     'search_id' => $this->hash,
                     'search_date' => time(),
@@ -226,13 +231,14 @@ class Search
                     'per_page' => 0,
                     'query' => '',
                     'custom_fields' => '',
-                    'result_page' => '',
+                    'result_page' => $this->_meta['result_page'],
+                    'no_result_page' => $this->_meta['no_result_page'],
                     'site_id' => ee()->config->item('site_id')
                 );
 
                 ee()->db->query(ee()->db->insert_string('exp_search', $data));
 
-                return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='" . $this->_meta['no_results_page'] . "'")) . '/' . $this->hash . '/');
+                return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='" . $this->_meta['no_result_page'] . "'")) . '/' . $this->hash . '/');
             } else {
                 return ee()->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
             }
@@ -252,6 +258,7 @@ class Search
             'query' => serialize($query_parts),
             'custom_fields' => addslashes(serialize($this->fields)),
             'result_page' => $this->_meta['result_page'],
+            'no_result_page' => $this->_meta['no_result_page'],
             'site_id' => ee()->config->item('site_id')  // site search was made from
         );
 
@@ -277,7 +284,13 @@ class Search
      */
     protected function _build_meta_array()
     {
-        $site_ids = (ee()->TMPL->fetch_param('site')) ? ee()->TMPL->site_ids : array(ee()->config->item('site_id'));
+        $site_ids = null;
+
+        if (ee()->TMPL->fetch_param('site') != $this->param_bypass) {
+            $site_ids = (ee()->TMPL->fetch_param('site'))
+                ? ee()->TMPL->site_ids
+                : array(ee()->config->item('site_id'));
+        }
 
         $meta = array(
             'status' => ee()->TMPL->fetch_param('status', ''),
@@ -288,7 +301,7 @@ class Search
             'show_expired' => ee()->TMPL->fetch_param('show_expired', ''),
             'show_future_entries' => ee()->TMPL->fetch_param('show_future_entries'),
             'result_page' => ee()->TMPL->fetch_param('result_page', 'search/results'),
-            'no_results_page' => ee()->TMPL->fetch_param('no_result_page', ''),
+            'no_result_page' => ee()->TMPL->fetch_param('no_result_page', ''),
             'site_ids' => $site_ids
         );
 
@@ -335,7 +348,57 @@ class Search
     {
         ee()->load->model('addons_model');
 
+        $channel_meta = isset($this->_meta['channel'])
+            ? ee('Variables/Parser')->parseOrParameter($this->_meta['channel'])
+            : array('options' => [], 'not' => false);
         $channel_array = array();
+
+        /** ---------------------------------------
+        /**  Fetch the searchable field names and MAYBE the channel_ids
+        /** ---------------------------------------*/
+        $fields = array();
+        $legacy_fields = array();
+        $joins = '';
+
+        // no need to do this unless there are keywords to search
+        if (trim($this->keywords) != '') {
+            if (empty($this->custom_fields)) {
+                $channels = ($this->_meta['site_ids'])
+                    ?  ee('Model')->get('Channel')
+                        ->filter('site_id', 'IN', $this->_meta['site_ids'])
+                        ->all()
+                    : ee('Model')->get('Channel')
+                        ->all();
+
+                if ($channels) {
+                    $custom_fields = array();
+                    foreach ($channels as $channel) {
+                        // as we're already looping through channels,
+                        // let's get the necessary IDs
+                        if (in_array($channel->channel_name, $channel_meta['options'])) {
+                            $channel_array[] = $channel->channel_id;
+                        }
+
+                        $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+                    }
+                    $this->custom_fields = array_chunk($custom_fields, 50);
+                }
+            }
+
+            foreach (array_shift($this->custom_fields) as $field) {
+                if ($field->field_search) {
+                    if (!isset($fields[$field->field_id])) {
+                        $fields[$field->field_id] = $field->field_id;
+                        $legacy_fields[$field->field_id] = $field->legacy_field_data;
+                        if (! $field->legacy_field_data) {
+                            $joins .= "\nLEFT JOIN exp_channel_data_field_{$field->field_id} ON exp_channel_data_field_{$field->field_id}.entry_id = exp_channel_titles.entry_id ";
+                        }
+                    }
+                }
+
+                $this->fields[$field->field_name] = array($field->field_id, $field->field_search);
+            }
+        }
 
         /** ---------------------------------------
         /**  Fetch the channel_id numbers
@@ -356,20 +419,27 @@ class Search
         // Which channels we are or are not supposed to search for, when
         // "Any Channel" is chosen
 
-        ee()->db->select('channel_id');
-        if (isset($this->_meta['channel']) and $this->_meta['channel'] != '') {
-            ee()->functions->ar_andor_string($this->_meta['channel'], 'channel_name');
-        }
-        ee()->db->where_in('site_id', $this->_meta['site_ids']);
-        $query = ee()->db->get('channels');
+        // If we get channel_ids on previous step, we don't need to get them again
+        if(empty($channel_array)) {
+            ee()->db->select('channel_id');
+            if (!empty($this->_meta['channel'])) {
+                ee()->functions->ar_andor_string($this->_meta['channel'], 'channel_name');
+            }
 
-        // If channel's are specified and there NO valid channels returned?  There can be no results!
-        if ($query->num_rows() == 0) {
-            return false;
-        }
+            if (!empty($this->_meta['site_ids'])) {
+                ee()->db->where_in('site_id', $this->_meta['site_ids']);
+            }
 
-        foreach ($query->result_array() as $row) {
-            $channel_array[] = $row['channel_id'];
+            $query = ee()->db->get('channels');
+
+            // If channel's are specified and there NO valid channels returned? There can be no results!
+            if ($query->num_rows() == 0) {
+                return false;
+            }
+
+            foreach ($query->result_array() as $row) {
+                $channel_array[] = $row['channel_id'];
+            }
         }
 
         /** ------------------------------------------------------
@@ -390,13 +460,15 @@ class Search
         if (count($channel_array) > 0) {
             foreach ($channel_array as $val) {
                 if ($val != 'null' and $val != '') {
-                    $id_query .= " exp_channel_titles.channel_id = '" . ee()->db->escape_str($val) . "' OR";
+                    $id_query .= ee()->db->escape_str($val) . ", ";
                 }
             }
 
             if ($id_query != '') {
                 $id_query = substr($id_query, 0, -2);
-                $id_query = ' AND (' . $id_query . ') ';
+                $id_query = $channel_meta['not']
+                    ? ' AND  exp_channel_titles.channel_id NOT IN (' . $id_query . ') '
+                    : ' AND  exp_channel_titles.channel_id IN (' . $id_query . ') ';
             }
         }
 
@@ -448,62 +520,44 @@ class Search
         unset($member_array);
 
         /** ---------------------------------------
-        /**  Fetch the searchable field names
-        /** ---------------------------------------*/
-        $fields = array();
-        $legacy_fields = array();
-        $joins = '';
-
-        // no need to do this unless there are keywords to search
-        if (trim($this->keywords) != '') {
-            $channels = ee('Model')->get('Channel')
-                ->filter('site_id', 'IN', $this->_meta['site_ids'])
-                ->all();
-
-            if ($channels) {
-                if (empty($this->custom_fields)) {
-                    $custom_fields = array();
-                    foreach ($channels as $channel) {
-                        $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
-                    }
-                    $this->custom_fields = array_chunk($custom_fields, 50);
-                }
-
-                foreach (array_shift($this->custom_fields) as $field) {
-                    if ($field->field_search) {
-                        if (! isset($fields[$field->field_id])) {
-                            $fields[$field->field_id] = $field->field_id;
-                            $legacy_fields[$field->field_id] = $field->legacy_field_data;
-                            if (! $field->legacy_field_data) {
-                                $joins .= "\nLEFT JOIN exp_channel_data_field_{$field->field_id} ON exp_channel_data_field_{$field->field_id}.entry_id = exp_channel_titles.entry_id ";
-                            }
-                        }
-                    }
-
-                    $this->fields[$field->field_name] = array($field->field_id, $field->field_search);
-                }
-            }
-        }
-
-        /** ---------------------------------------
         /**  Build the main query
         /** ---------------------------------------*/
+
         $sql = "SELECT
 			DISTINCT(exp_channel_titles.entry_id), exp_channel_titles.channel_id
-			FROM exp_channel_titles
-			LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
-			LEFT JOIN exp_channel_data ON exp_channel_titles.entry_id = exp_channel_data.entry_id ";
+			FROM exp_channel_titles ";
+
+        $sql .= "LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id ";
+
+        $sql .= "LEFT JOIN exp_channel_data ON exp_channel_titles.entry_id = exp_channel_data.entry_id ";
 
         $sql .= $joins;
 
         // is the comment module installed?
         if (ee()->addons_model->module_installed('comment')) {
-            $sql .= "LEFT JOIN exp_comments ON exp_channel_titles.entry_id = exp_comments.entry_id ";
+            // do we need to search on comments?
+            if(isset($this->_meta['search_in']) && $this->_meta['search_in'] == 'everywhere') {
+                $sql .= "LEFT JOIN exp_comments ON exp_channel_titles.entry_id = exp_comments.entry_id ";
+            }
         }
 
-        $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
-			LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id
-			WHERE exp_channels.site_id IN ('" . implode("','", $this->_meta['site_ids']) . "') ";
+        // do we need to limit to categories?
+        if (!empty($this->_meta['category']) OR !empty($_POST['cat_id'])) {
+            $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
+			LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
+        }
+
+        /** ----------------------------------------------
+        /**  START THE WHERE clauses
+        /** ----------------------------------------------*/
+
+        $sql .= "WHERE ";
+
+        if (!empty($this->_meta['site_ids']) && empty($channels)) {
+            $sql .= "exp_channels.site_id IN ('" . implode("','", $this->_meta['site_ids']) . "') ";
+        } else {
+            $sql .= "exp_channels.site_id IS NOT NULL ";
+        }
 
         /** ----------------------------------------------
         /**  We only select entries that have not expired
@@ -549,6 +603,44 @@ class Search
                 $sql .= "AND exp_channel_titles.entry_date < " . $cutoff . " ";
             } else {
                 $sql .= "AND exp_channel_titles.entry_date > " . $cutoff . " ";
+            }
+        }
+
+        /** ----------------------------------------------
+        /**  Limit query to a specific channel
+        /** ----------------------------------------------*/
+        if (count($channel_array) > 0) {
+            $sql .= $id_query;
+        }
+
+        /** ----------------------------------------------
+        /**  Limit query to a specific category
+        /** ----------------------------------------------*/
+
+        // Check for different sets of category IDs, checking the parameters
+        // first, then the $_POST
+        if (isset($this->_meta['category']) and $this->_meta['category'] != '' and !is_array($this->_meta['category'])) {
+            $this->_meta['category'] = explode('|', $this->_meta['category']);
+        } elseif (
+            (!isset($this->_meta['category']) or $this->_meta['category'] == '') and
+            (isset($_POST['cat_id']) and is_array($_POST['cat_id']))
+        ) {
+            $this->_meta['category'] = $_POST['cat_id'];
+        }
+
+        if (isset($this->_meta['category']) and is_array($this->_meta['category'])) {
+            $temp = '';
+
+            foreach ($this->_meta['category'] as $val) {
+                if ($val != 'all' and $val != '') {
+                    $temp .= " exp_categories.cat_id = '" . ee()->db->escape_str($val) . "' OR";
+                }
+            }
+
+            if ($temp != '') {
+                $temp = substr($temp, 0, -2);
+
+                $sql .= ' AND (' . $temp . ') ';
             }
         }
 
@@ -789,44 +881,6 @@ class Search
             }
         }
 
-        /** ----------------------------------------------
-        /**  Limit query to a specific channel
-        /** ----------------------------------------------*/
-        if (count($channel_array) > 0) {
-            $sql .= $id_query;
-        }
-
-        /** ----------------------------------------------
-        /**  Limit query to a specific category
-        /** ----------------------------------------------*/
-
-        // Check for different sets of category IDs, checking the parameters
-        // first, then the $_POST
-        if (isset($this->_meta['category']) and $this->_meta['category'] != '' and ! is_array($this->_meta['category'])) {
-            $this->_meta['category'] = explode('|', $this->_meta['category']);
-        } elseif (
-            (! isset($this->_meta['category']) or $this->_meta['category'] == '') and
-            (isset($_POST['cat_id']) and is_array($_POST['cat_id']))
-        ) {
-            $this->_meta['category'] = $_POST['cat_id'];
-        }
-
-        if (isset($this->_meta['category']) and is_array($this->_meta['category'])) {
-            $temp = '';
-
-            foreach ($this->_meta['category'] as $val) {
-                if ($val != 'all' and $val != '') {
-                    $temp .= " exp_categories.cat_id = '" . ee()->db->escape_str($val) . "' OR";
-                }
-            }
-
-            if ($temp != '') {
-                $temp = substr($temp, 0, -2);
-
-                $sql .= ' AND (' . $temp . ') ';
-            }
-        }
-
         // -------------------------------------------
         // 'channel_search_modify_search_query' hook.
         //  - Take the whole query string, do what you wish
@@ -939,21 +993,6 @@ class Search
     protected function getAllQueryParts()
     {
         $query_parts = $this->build_standard_query();
-
-        if (! empty($this->custom_fields)) {
-            foreach (array_keys($this->custom_fields) as $i) {
-                $qp = $this->build_standard_query();
-
-                if ($query_parts === false) {
-                    $query_parts = $qp;
-                } else {
-                    if ($qp) {
-                        $query_parts['entries'] = array_merge($query_parts['entries'], $qp['entries']);
-                        $query_parts['channel_ids'] = array_merge($query_parts['channel_ids'], $qp['channel_ids']);
-                    }
-                }
-            }
-        }
 
         // Set absolute count
         $this->num_rows = $query_parts ? count(array_unique($query_parts['entries'])) : 0;
@@ -1068,12 +1107,21 @@ class Search
         // Fetch the cached search query
         $query = ee()->db->get_where('search', array('search_id' => $search_id));
 
-        if ($query->num_rows() == 0 or $query->row('total_results') == 0) {
-            // This should be impossible as we already know there are results
+        if ($query->num_rows() == 0) {
             return ee()->output->show_user_error(
                 'general',
                 array(lang('invalid_action'))
             );
+        } elseif ($query->row('total_results') == 0) {
+            // this works if we use the same template for results and no results
+            if ($query->row('result_page') === $query->row('no_result_page')) {
+                return ee()->TMPL->no_results();
+            } else {
+                return ee()->output->show_user_error(
+                    'general',
+                    array(lang('invalid_action'))
+                );
+            }
         }
 
         $fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields')));
@@ -1304,7 +1352,7 @@ class Search
      * @return array Nested array containing tag and resulting paths for member
      *               path tags (e.g. {member_path="member/index"})
      */
-    private function get_member_path_tags($tagdata = null)
+    private function get_member_path_tags($tagdata = '')
     {
         if (isset($this->m_paths)) {
             return $this->m_paths;
@@ -1331,7 +1379,7 @@ class Search
      * @param  String $tagdata  The tagdata to get member_path tags from
      * @return int              The number of tags found
      */
-    private function tag_count($tag_name, $tagdata = null)
+    private function tag_count($tag_name, $tagdata = '')
     {
         $tagdata = ($tagdata) ?: ee()->TMPL->tagdata;
 

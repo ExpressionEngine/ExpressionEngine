@@ -23,8 +23,16 @@ context('Updater', () => {
     cy.task('cache:clear')
 
     cy.task('installer:enable')
+    cy.task('installer:test')
     cy.task('installer:replace_config', {file: config})
-    cy.task('installer:replace_database_config', {file: database})
+    cy.task('installer:replace_database_config', { file: database, options: {
+        hostname: Cypress.env('DB_HOST'),
+        database: Cypress.env('DB_DATABASE'),
+        username: Cypress.env('DB_USER'),
+        password: Cypress.env('DB_PASSWORD')
+    }})
+
+    // cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
 
     let installer_folder = '../../system/ee/installer';
 
@@ -58,8 +66,10 @@ context('Updater', () => {
   })
 
   it('appears when using a database.php file', () => {
-    cy.task('db:seed').then(()=>{
+    cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
+      //cy.wait(5000);
       page.load()
+      cy.get('body', { timeout: 20000 }).should('be.visible');
       cy.hasNoErrors()
       page.get('inline_errors').should('not.exist')
       page.get('header').invoke('text').then((text) => {
@@ -69,10 +79,12 @@ context('Updater', () => {
   })
 
   it('shows an error when no database information exists at all', () => {
-    cy.wait(5000);
+    //cy.wait(5000);
     cy.task('installer:delete_database_config').then(()=>{
-      cy.task('db:seed').then(()=>{
+      cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
+        //cy.wait(5000);
         page.load()
+        cy.get('body', { timeout: 20000 }).should('be.visible');
         page.get('header').invoke('text').then((text) => {
           expect(text).to.eq('Install Failed')
         })
@@ -82,9 +94,56 @@ context('Updater', () => {
     })
   })
 
+it('turns system off if system was off before updating', () => {
+    cy.task('installer:revert_config').then(() => {
+        cy.task('installer:replace_config', {
+            file: 'support/config/config-5.3.0.php', options: {
+                database: {
+                    hostname: Cypress.env("DB_HOST"),
+                    database: Cypress.env("DB_DATABASE"),
+                    username: Cypress.env("DB_USER"),
+                    password: Cypress.env("DB_PASSWORD")
+                },
+                app_version: '5.3.0',
+                is_system_on: 'n',
+            }
+        }).then(() => {
+            cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
+                test_cli_update()
+                cy.eeConfig({ item: 'is_system_on' }).then((config) => {
+                    expect(config.trim()).to.be.equal('n')
+                })
+            })
+        })
+    })
+})
+
+    it('turns system on if system was on before updating', () => {
+        cy.task('installer:revert_config').then(() => {
+            cy.task('installer:replace_config', {
+                file: 'support/config/config-5.3.0.php', options: {
+                    database: {
+                        hostname: Cypress.env("DB_HOST"),
+                        database: Cypress.env("DB_DATABASE"),
+                        username: Cypress.env("DB_USER"),
+                        password: Cypress.env("DB_PASSWORD")
+                    },
+                    app_version: '5.3.0',
+                    is_system_on: 'y',
+                }
+            }).then(() => {
+                cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
+                    test_cli_update()
+                    cy.eeConfig({ item: 'is_system_on' }).then((config) => {
+                        expect(config.trim()).to.be.equal('y')
+                    })
+                })
+            })
+        })
+    })
+
   context('when updating from 2.x to 6.x', () => {
     beforeEach(function(){
-
       cy.task('db:load', '../../support/sql/database_2.10.1.sql')
     })
 
@@ -98,14 +157,14 @@ context('Updater', () => {
 
     it('updates using localhost as the database host', () => {
       cy.task('installer:replace_database_config', {file: database, options: {hostname: 'localhost'}}).then(()=>{
-        test_update()
+        test_cli_update()
         test_templates()
       })
     })
 
     it('updates using 127.0.0.1 as the database host', () => {
       cy.task('installer:replace_database_config', {file: database, options: {hostname: '127.0.0.1'}}).then(()=>{
-        test_update()
+        test_cli_update()
         test_templates()
       })
     })
@@ -114,12 +173,18 @@ context('Updater', () => {
       cy.task('installer:revert_config').then(()=>{
         cy.task('installer:replace_config', {
           file: config, options: {
+                database: {
+                    hostname: Cypress.env("DB_HOST"),
+                    database: Cypress.env("DB_DATABASE"),
+                    username: Cypress.env("DB_USER"),
+                    password: Cypress.env("DB_PASSWORD")
+                },
             tmpl_file_basepath: '../system/expressionengine/templates',
             app_version: '2.20.0'
+
           }
         }).then(()=>{
-          cy.wait(5000)
-          test_update()
+          test_cli_update()
           test_templates()
         })
       })
@@ -133,7 +198,7 @@ context('Updater', () => {
             app_version: '2.20.0'
           }
         }).then(()=>{
-          test_update()
+          test_cli_update()
           test_templates()
         })
       })
@@ -147,14 +212,14 @@ context('Updater', () => {
             app_version: '2.20.0'
           }
         }).then(()=>{
-          test_update()
+          test_cli_update()
           test_templates()
         })
       })
     })
 
     it('has all required modules installed after the update', () => {
-      test_update()
+      test_cli_update()
       test_templates()
 
       let installed_modules = []
@@ -173,60 +238,6 @@ context('Updater', () => {
         expect(installed_modules).to.include('search')
       })
     })
-
-    it('turns system on if system was on before updating', () => {
-      cy.task('installer:revert_config').then(()=>{
-        cy.task('installer:replace_config', {
-          file: config,
-          options: {
-            is_system_on: 'y',
-            app_version: '2.20.0'
-          }
-        }).then(()=>{
-          test_update()
-          test_templates()
-          cy.eeConfig({item: 'is_system_on'}) .then((config) => {
-            expect(config.trim()).to.be.equal('y')
-          })
-        })
-      })
-    })
-
-    it('turns system off if system was off before updating', () => {
-      cy.task('installer:revert_config').then(()=>{
-        cy.task('installer:replace_config', {
-          file: config,
-          options: {
-            is_system_on: 'n',
-            app_version: '2.20.0'
-          }
-        }).then(()=>{
-          test_update()
-          test_templates()
-          cy.eeConfig({item: 'is_system_on'}) .then((config) => {
-            expect(config.trim()).to.be.equal('n')
-          })
-        })
-      })
-    })
-
-    // it('keeps system off if system was off before updating', () => {
-    //   cy.task('installer:revert_config').then(()=>{
-    //     cy.task('installer:replace_config', {
-    //       file: config,
-    //       options: {
-    //         is_system_on: 'n',
-    //         app_version: '2.20.0'
-    //       }
-    //     }).then(()=>{
-    //       test_update()
-    //       test_templates()
-    //       cy.eeConfig({item: 'is_system_on'}) .then((config) => {
-    //         expect(config.trim()).to.be.equal('n')
-    //       })
-    //     })
-    //   })
-    // })
   })
 
   it('updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module', () => {
@@ -248,7 +259,7 @@ context('Updater', () => {
           }).then(()=>{
             cy.task('db:load', '../../support/sql/database_2.1.3.sql').then(()=>{
               from_version = '2.1.3'
-              test_update()
+              test_cli_update()
             })
           })
         })
@@ -257,7 +268,7 @@ context('Updater', () => {
   })
 
   it('updates a core installation successfully and installs the member module', () => {
-    
+
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
         file: 'support/config/config-3.0.5-core.php', options: {
@@ -281,7 +292,7 @@ context('Updater', () => {
     })
   })
 
-  it('updates without notices going straigth to login page', () => {
+  it('updates without notices going straight to login page', () => {
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
         file: 'support/config/config-5.3.0.php', options: {
@@ -331,10 +342,21 @@ context('Updater', () => {
     })
   })
 
+  function test_cli_update(mailinglist = false) {
+      // Delete any stored mailing lists
+      cy.log('mailing list:')
+      cy.log(mailinglist)
+
+      const mailing_list_zip = '../../system/user/cache/mailing_list.zip'
+      cy.task('filesystem:delete', mailing_list_zip).then(() => {
+        cy.exec('php ../../system/ee/eecli.php update -v -y --skip-cleanup')
+      })
+  }
+
   function test_update(mailinglist = false, expect_login = false) {
-    cy.log('wait 5 sec');
-    cy.wait(5000)
-    
+    // cy.log('wait 5 sec');
+    // cy.wait(5000)
+
     // Delete any stored mailing lists
     cy.log('mailing list:')
     cy.log(mailinglist)
@@ -342,7 +364,9 @@ context('Updater', () => {
     const mailing_list_zip = '../../system/user/cache/mailing_list.zip'
     cy.task('filesystem:delete', mailing_list_zip).then(() => {
 
+      //cy.wait(5000);
       page.load()
+      cy.get('body', { timeout: 20000 }).should('be.visible');
 
       //cy.screenshot({capture: 'fullPage'})
 
@@ -366,12 +390,12 @@ context('Updater', () => {
       })
       page.get('updater_steps').contains('Running')
 
-      cy.hasNoErrors()
-
       if (mailinglist == true || expect_login == false) {
-        cy.get('body:contains("Update Complete!")').contains("Update Complete!", { matchCase: false, timeout: 200000 })
+        cy.contains("Update Complete!", { matchCase: false, timeout: 10000 })
+        // cy.get('body:contains("Update Complete!")').contains("Update Complete!", { matchCase: false, timeout: 200000 })
       } else {
-        cy.get('body:contains("Log into")').contains("Log into", { matchCase: false, timeout: 200000 })
+        cy.contains("Log into", { matchCase: false, timeout: 10000 })
+        // cy.get('body:contains("Log into")').contains("Log into", { matchCase: false, timeout: 200000 })
       }
 
       cy.hasNoErrors()

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -250,7 +250,7 @@ class Localize
         // Checking for ambiguous dates but only when we don't have a date
         // format.
         if (! $date_format) {
-            if (preg_match('/\b\d{1,2}-\d{1,2}-\d{2}\b/', $date_string)) {
+            if (preg_match('/\b\d{1,2}-\d{1,2}-\d{2}\b/', (string) $date_string)) {
                 return false;
             }
         }
@@ -311,7 +311,7 @@ class Localize
                 // a bug in php's usort (https://bugs.php.net/bug.php?id=50688).
                 // Used by the table library to sort by date
                 if (empty($dt)) {
-                    $dt = date_create($date_string, $timezone);
+                    $dt = date_create((string) $date_string, $timezone);
 
                     if ($dt === false) {
                         return false;

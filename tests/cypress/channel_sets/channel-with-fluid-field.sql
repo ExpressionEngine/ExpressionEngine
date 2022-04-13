@@ -310,6 +310,20 @@ CREATE TABLE `exp_channel_data_field_9` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
+# Dump of table exp_channel_data_field_23
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `exp_channel_data_field_23`;
+
+CREATE TABLE `exp_channel_data_field_23` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `entry_id` int(10) unsigned NOT NULL,
+  `field_id_23` text COLLATE utf8_unicode_ci,
+  `field_ft_23` tinytext COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `entry_id` (`entry_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 # Dump of table exp_channel_field_groups_fields
 # ------------------------------------------------------------
@@ -343,38 +357,7 @@ UNLOCK TABLES;
 # Dump of table exp_channel_fields
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `exp_channel_fields`;
-
-CREATE TABLE `exp_channel_fields` (
-  `field_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(10) unsigned DEFAULT NULL,
-  `field_name` varchar(32) NOT NULL,
-  `field_label` varchar(50) NOT NULL,
-  `field_instructions` text,
-  `field_type` varchar(50) NOT NULL DEFAULT 'text',
-  `field_list_items` text NOT NULL,
-  `field_pre_populate` char(1) NOT NULL DEFAULT 'n',
-  `field_pre_channel_id` int(6) unsigned DEFAULT NULL,
-  `field_pre_field_id` int(6) unsigned DEFAULT NULL,
-  `field_ta_rows` tinyint(2) DEFAULT '8',
-  `field_maxl` smallint(3) DEFAULT NULL,
-  `field_required` char(1) NOT NULL DEFAULT 'n',
-  `field_text_direction` char(3) NOT NULL DEFAULT 'ltr',
-  `field_search` char(1) NOT NULL DEFAULT 'n',
-  `field_is_hidden` char(1) NOT NULL DEFAULT 'n',
-  `field_fmt` varchar(40) NOT NULL DEFAULT 'xhtml',
-  `field_show_fmt` char(1) NOT NULL DEFAULT 'y',
-  `field_order` int(3) unsigned NOT NULL,
-  `field_content_type` varchar(20) NOT NULL DEFAULT 'any',
-  `field_settings` text,
-  `legacy_field_data` char(1) NOT NULL DEFAULT 'n',
-  PRIMARY KEY (`field_id`),
-  KEY `field_type` (`field_type`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-LOCK TABLES `exp_channel_fields` WRITE;
-/*!40000 ALTER TABLE `exp_channel_fields` DISABLE KEYS */;
+TRUNCATE `exp_channel_fields`;
 
 INSERT INTO `exp_channel_fields` (`field_id`, `site_id`, `field_name`, `field_label`, `field_instructions`, `field_type`, `field_list_items`, `field_pre_populate`, `field_pre_channel_id`, `field_pre_field_id`, `field_ta_rows`, `field_maxl`, `field_required`, `field_text_direction`, `field_search`, `field_is_hidden`, `field_fmt`, `field_show_fmt`, `field_order`, `field_content_type`, `field_settings`, `legacy_field_data`)
 VALUES
@@ -387,7 +370,7 @@ VALUES
 	(7,1,'about_extended','Extended','','textarea','','n',0,0,6,128,'n','ltr','y','y','xhtml','y',7,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=','y'),
 	(8,1,'a_date','A Date','','date','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',11,'any','YTowOnt9','n'),
 	(9,1,'checkboxes','Checkboxes','','checkboxes','One\nUno\nEin','n',NULL,NULL,8,NULL,'n','ltr','n','n','none','y',10,'any','YTowOnt9','n'),
-	(10,1,'corpse','Corpse','','fluid_field','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',19,'any','YToxOntzOjIwOiJmaWVsZF9jaGFubmVsX2ZpZWxkcyI7YToxNDp7aTowO2k6ODtpOjE7aTo5O2k6MjtpOjExO2k6MztpOjEyO2k6NDtpOjEzO2k6NTtpOjE0O2k6NjtpOjE1O2k6NztpOjE2O2k6ODtpOjE3O2k6OTtpOjE4O2k6MTA7aToxOTtpOjExO2k6MjA7aToxMjtpOjIxO2k6MTM7aToyMjt9fQ==','n'),
+	(10,1,'corpse','Corpse','','fluid_field','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',19,'any','YToxOntzOjIwOiJmaWVsZF9jaGFubmVsX2ZpZWxkcyI7YToxNTp7aTowO3M6MToiOCI7aToxO3M6MToiOSI7aToyO3M6MjoiMTEiO2k6MztzOjI6IjEyIjtpOjQ7czoyOiIxMyI7aTo1O3M6MjoiMTciO2k6NjtzOjI6IjE0IjtpOjc7czoyOiIxNSI7aTo4O3M6MjoiMTYiO2k6OTtzOjI6IjIzIjtpOjEwO3M6MjoiMTgiO2k6MTE7czoyOiIxOSI7aToxMjtzOjI6IjIwIjtpOjEzO3M6MjoiMjEiO2k6MTQ7czoyOiIyMiI7fX0=','n'),
 	(11,1,'electronic_mail_address','Electronic-Mail Address','','email_address','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',12,'any','YTowOnt9','n'),
 	(12,1,'home_page','Home Page','','url','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',18,'any','YToyOntzOjE5OiJhbGxvd2VkX3VybF9zY2hlbWVzIjthOjI6e2k6MDtzOjc6Imh0dHA6Ly8iO2k6MTtzOjg6Imh0dHBzOi8vIjt9czoyMjoidXJsX3NjaGVtZV9wbGFjZWhvbGRlciI7czo3OiJodHRwOi8vIjt9','n'),
 	(13,1,'image','Image','','file','','n',NULL,NULL,8,NULL,'n','ltr','n','n','none','y',2,'image','YTo1OntzOjE4OiJmaWVsZF9jb250ZW50X3R5cGUiO3M6NToiaW1hZ2UiO3M6MTk6ImFsbG93ZWRfZGlyZWN0b3JpZXMiO3M6MzoiYWxsIjtzOjEzOiJzaG93X2V4aXN0aW5nIjtzOjE6InkiO3M6MTI6Im51bV9leGlzdGluZyI7czoyOiI1MCI7czo5OiJmaWVsZF9mbXQiO3M6NDoibm9uZSI7fQ==','n'),
@@ -399,7 +382,8 @@ VALUES
 	(19,1,'stupid_grid','Stupid Grid','','grid','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',9,'any','YToyOntzOjEzOiJncmlkX21pbl9yb3dzIjtpOjA7czoxMzoiZ3JpZF9tYXhfcm93cyI7czowOiIiO30=','n'),
 	(20,1,'text','Text','','textarea','','n',NULL,NULL,6,NULL,'n','ltr','n','n','markdown','y',3,'any','YTozOntzOjI0OiJmaWVsZF9zaG93X2ZpbGVfc2VsZWN0b3IiO3M6MToibiI7czoxODoiZmllbGRfc2hvd19zbWlsZXlzIjtzOjE6Im4iO3M6MjY6ImZpZWxkX3Nob3dfZm9ybWF0dGluZ19idG5zIjtzOjE6Im4iO30=','n'),
 	(21,1,'truth_or_dare','Truth or Dare?','','toggle','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',17,'any','YToxOntzOjE5OiJmaWVsZF9kZWZhdWx0X3ZhbHVlIjtzOjE6IjAiO30=','n'),
-	(22,1,'youtube_url','YouTube URL','','text','','n',NULL,NULL,8,256,'n','ltr','n','n','none','n',1,'all','YTo0OntzOjEwOiJmaWVsZF9tYXhsIjtzOjM6IjI1NiI7czoxODoiZmllbGRfY29udGVudF90eXBlIjtzOjM6ImFsbCI7czoxODoiZmllbGRfc2hvd19zbWlsZXlzIjtzOjE6Im4iO3M6MjQ6ImZpZWxkX3Nob3dfZmlsZV9zZWxlY3RvciI7czoxOiJuIjt9','n');
+	(22,1,'youtube_url','YouTube URL','','text','','n',NULL,NULL,8,256,'n','ltr','n','n','none','n',1,'all','YTo0OntzOjEwOiJmaWVsZF9tYXhsIjtzOjM6IjI1NiI7czoxODoiZmllbGRfY29udGVudF90eXBlIjtzOjM6ImFsbCI7czoxODoiZmllbGRfc2hvd19zbWlsZXlzIjtzOjE6Im4iO3M6MjQ6ImZpZWxkX3Nob3dfZmlsZV9zZWxlY3RvciI7czoxOiJuIjt9','n'),
+  (23,1,'selectable_buttons','Selectable Buttons','','selectable_buttons','One\nUno\nEin','n',NULL,NULL,8,NULL,'n','ltr','n','n','none','y',10,'any','YTowOnt9','n');
 
 /*!40000 ALTER TABLE `exp_channel_fields` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -503,46 +487,6 @@ VALUES
 	(2,1,'About');
 
 /*!40000 ALTER TABLE `exp_field_groups` ENABLE KEYS */;
-UNLOCK TABLES;
-
-
-# Dump of table exp_fieldtypes
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `exp_fieldtypes`;
-
-CREATE TABLE `exp_fieldtypes` (
-  `fieldtype_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
-  `version` varchar(12) NOT NULL,
-  `settings` text,
-  `has_global_settings` char(1) DEFAULT 'n',
-  PRIMARY KEY (`fieldtype_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-LOCK TABLES `exp_fieldtypes` WRITE;
-/*!40000 ALTER TABLE `exp_fieldtypes` DISABLE KEYS */;
-
-INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `has_global_settings`)
-VALUES
-	(1,'select','1.0.0','YTowOnt9','n'),
-	(2,'text','1.0.0','YTowOnt9','n'),
-	(3,'textarea','1.0.0','YTowOnt9','n'),
-	(4,'date','1.0.0','YTowOnt9','n'),
-	(5,'file','1.0.0','YTowOnt9','n'),
-	(6,'grid','1.0.0','YTowOnt9','n'),
-	(7,'multi_select','1.0.0','YTowOnt9','n'),
-	(8,'checkboxes','1.0.0','YTowOnt9','n'),
-	(9,'radio','1.0.0','YTowOnt9','n'),
-	(10,'relationship','1.0.0','YTowOnt9','n'),
-	(11,'rte','2.1.0','YTowOnt9','n'),
-	(12,'url','1.0.0','YTowOnt9','n'),
-	(13,'email_address','1.0.0','YTowOnt9','n'),
-	(14,'toggle','1.0.0','YTowOnt9','n'),
-	(15,'fluid_field','1.0.0','YTowOnt9','n'),
-  (16,'file_grid','1.0.0','YTowOnt9','n');
-
-/*!40000 ALTER TABLE `exp_fieldtypes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
