@@ -72,7 +72,7 @@ jobs:
 
       - name: Build Changelog
         id: build_changelog
-        uses: okcredit/changelog-creator-action@v1
+        uses: okcredit/changelog-creator-action@v1.0.0
         with:
           milestone: ${{ steps.tagName.outputs.tag }}
           configuration: "build-tools/changelog.config.json"
