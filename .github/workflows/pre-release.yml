@@ -93,6 +93,9 @@ jobs:
           configuration: "build-tools/changelog.config.json"
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
 
+      - name: Show changelog
+        run: echo ${{ steps.build_changelog.outputs.changelog }}
+
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
