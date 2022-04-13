@@ -70,13 +70,21 @@ jobs:
           name: EE${{ steps.tagName.outputs.tag }}
           path: build-tools/builds
 
+      - name: Build Changelog
+        id: build_changelog
+        uses: okcredit/changelog-creator-action@v1.0.0
+        with:
+          milestone: ${{ steps.tagName.outputs.tag }}
+          configuration: "build-tools/changelog.config.json"
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.tagName.outputs.tag }}
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          body: ExpressionEngine ${{ steps.tagName.outputs.tag }}
+          body: ${{ steps.build_changelog.outputs.changelog }}
 
       - name: Directory Listing on Failure
         if: failure()
