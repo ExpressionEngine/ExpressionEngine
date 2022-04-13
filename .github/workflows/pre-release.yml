@@ -77,9 +77,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
           fromTag: 6.3.0
+          configuration: build-tools/changelog.config.json
 
       - name: Show changelog
-        run: echo ${{ steps.build_changelog.outputs.changelog }}
+        run: |
+          echo ${{ steps.build_changelog.outputs.changelog }}
 
       - name: Run build process
         working-directory: build-tools

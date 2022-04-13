@@ -13,10 +13,6 @@
       "labels": ["refactoring", "development"]
     }
   ],
-  "ignore_labels": [
-    "ignore"
-  ],
-  "sort": "DESC",
   "template": "11${{CHANGELOG}}",
   "pr_template": "22- ${{TITLE}}\n   - PR: #${{NUMBER}}",
   "empty_template": "- no changes"
