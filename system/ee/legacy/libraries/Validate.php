@@ -161,8 +161,16 @@ class EE_Validate
         //ee()->load->library('logger');
         //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
 
+        if ($this->screen_name == '') {
+            if ($this->username == '') {
+                return $this->errors[] = ee()->lang->line('missing_username');
+            }
+
+            return $this->screen_name = $this->username;
+        }
+
         $data = [
-            'screen_name' => $str
+            'screen_name' => $this->screen_name
         ];
 
         $rules = array(
@@ -190,17 +198,14 @@ class EE_Validate
         //ee()->load->library('logger');
         //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
 
-        if (! $username_field) {
-            $username_field = 'username';
-        }
-
         $data = [
-            'username' => ee('Request')->post($username_field),
-            'password' => $str
+            'username' => $this->username,
+            'password' => $this->password,
+            'password_confirm' => $this->password_confirm
         ];
 
         $rules = array(
-            'password' => 'required|validPassword|passwordMatchesSecurityPolicy'
+            'password' => 'required|validPassword|passwordMatchesSecurityPolicy|matches[password_confirm]'
         );
 
         $result = ee('Validation')->make($rules)->validate($data);
