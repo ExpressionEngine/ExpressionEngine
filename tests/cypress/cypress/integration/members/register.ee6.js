@@ -179,6 +179,24 @@ context('Member Registration', () => {
             cy.get("a:contains('user" + userCount + "')").should('not.exist')
         })
 
+        it('cannot register if passwords do not match', function() {
+            cy.clearCookies()
+
+            cy.visit('index.php/mbr/register');
+            cy.get('#username').clear().type('user' + userCount);
+            cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
+            cy.get('#password').clear().type('password');
+            cy.get('#password_confirm').clear().type('anotherpassword');
+            cy.get('#accept_terms').check();
+            cy.get('#submit').click();
+
+            cy.contains('The password and password confirmation do not match')
+            cy.clearCookies()
+
+            cy.authVisit('admin.php?/cp/members');
+            cy.get("a:contains('user" + userCount + "')").should('not.exist')
+        })
+
         it('can register with good password', function() {
             cy.clearCookies()
             cy.eeConfig({ item: 'password_security_policy', value: 'good' })
