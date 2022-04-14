@@ -205,7 +205,8 @@ class EE_Validate
         ];
 
         $rules = array(
-            'password' => 'required|validPassword|passwordMatchesSecurityPolicy|matches[password_confirm]'
+            'password' => 'required|validPassword|passwordMatchesSecurityPolicy',
+            'password_confirm' => 'matches[password]'
         );
 
         $result = ee('Validation')->make($rules)->validate($data);
@@ -213,6 +214,9 @@ class EE_Validate
         if ($result->isNotValid()) {
             foreach ($result->getErrors('password') as $key => $error) {
                 $this->errors[] = $error;
+            }
+            foreach ($result->getErrors('password_confirm') as $key => $error) {
+                $this->errors[] = lang('missmatched_passwords');
             }
             return $this->errors;
         }

@@ -435,8 +435,13 @@ class Member_register extends Member
 
         // Add password confirmation failure to main result object
         if ($passwordValidation->isNotValid()) {
-            foreach ($passwordValidation->getAllErrors() as $error) {
-                $cust_errors[] = lang($error);
+            foreach ($passwordValidation->getAllErrors() as $errors) {
+                foreach ($errors as $key => $error) {
+                    if ($key == 'matches') {
+                        $error = lang('missmatched_passwords');
+                    }
+                    $cust_errors[] = $error;
+                }
             }
         }
 
