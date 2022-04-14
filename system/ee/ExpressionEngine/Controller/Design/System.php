@@ -116,7 +116,7 @@ class System extends AbstractDesignController
                 ->withTitle(lang('update_template_success'))
                 ->addToBody(sprintf(lang('update_template_success_desc'), lang($template->template_name)));
 
-            if (ee()->input->post('submit') == 'finish') {
+            if (ee()->input->post('submit') == 'save_and_close') {
                 $alert->defer();
                 ee()->functions->redirect(ee('CP/URL')->make('design/system'));
             }
