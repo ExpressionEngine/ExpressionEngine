@@ -132,9 +132,28 @@ class System extends AbstractDesignController
             'author' => (empty($author)) ? '-' : $author->getMemberName(),
         );
 
+        $vars['buttons'] = [
+            [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save',
+                'text' => 'save',
+                'working' => 'btn_saving'
+            ],
+            [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_and_close',
+                'text' => 'save_and_close',
+                'working' => 'btn_saving'
+            ]
+        ];
+
         $this->loadCodeMirrorAssets();
 
-        ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));
+        ee()->view->cp_page_title = sprintf(lang($template->template_name));
+        ee()->view->save_btn_text = lang('save');
+        ee()->view->save_btn_text_working = 'btn_saving';
 
         // Supress browser XSS check that could cause obscure bug after saving
         ee()->output->set_header("X-XSS-Protection: 0");
