@@ -180,7 +180,7 @@ class EE_Validate
         $result = ee('Validation')->make($rules)->validate($data);
 
         if ($result->isNotValid()) {
-            foreach ($result->getAllErrors() as $key => $error) {
+            foreach ($result->getErrors('screen_name') as $key => $error) {
                 $this->errors[] = $error;
             }
             return $this->errors;
@@ -211,7 +211,7 @@ class EE_Validate
         $result = ee('Validation')->make($rules)->validate($data);
 
         if ($result->isNotValid()) {
-            foreach ($result->getAllErrors() as $key => $error) {
+            foreach ($result->getErrors('password') as $key => $error) {
                 $this->errors[] = $error;
             }
             return $this->errors;
