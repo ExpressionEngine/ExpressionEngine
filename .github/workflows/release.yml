@@ -1,5 +1,4 @@
 name: Release
-
 on:
   push:
     tags:
@@ -14,7 +13,6 @@ on:
       - '6.3.10'
       - '6.4.0'
       - '6.4.1'
-
 jobs:
   build:
     #if: github.base_ref == '6.x'
@@ -23,33 +21,27 @@ jobs:
     steps:
       - uses: olegtarasov/get-tag@v2.1
         id: tagName
-
       - name: Checkout code
         uses: actions/checkout@v2
-
       - name: Checkout Pro
         uses: actions/checkout@v2
         with:
           repository: EllisLab/ExpressionEngine-Pro
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: __pro
-
       - name: Setup node
         uses: actions/setup-node@v2
         with:
           node-version: '10'
-
       - name: Install build tool dependencies
         working-directory: build-tools
         run: npm install
-
       - name: Rebuild CSS and JS
         run: |
           npm install
           npm run build:css --production
           npm run build:js
           npm run build:old-js
-
       - name: Run build process
         working-directory: build-tools
         env:
@@ -58,13 +50,11 @@ jobs:
           APP_REPO_PATH: ${{ github.workspace }}
           PRO_REPO_PATH: ${{ github.workspace }}/__pro
         run: gulp app --local --head --skip-lint --version=${{ steps.tagName.outputs.tag }}
-
       - name: Archive Build files
         uses: actions/upload-artifact@v2
         with:
           name: EE${{ steps.tagName.outputs.tag }}
           path: build-tools/builds
-
       - name: Get previous release tag
         id: prev_release_tag
         continue-on-error: true
@@ -72,11 +62,9 @@ jobs:
         with:
           repository: ExpressionEngine/ExpressionEngine
           regex: '^\d+\.\d+\.\d+$'
-
       #- name: Fetch list of tags
       #  run: |
       #    git fetch --tags
-
       #- name: Build Changelog
       #  id: build_changelog
       #  uses: mikepenz/release-changelog-builder-action@v1
@@ -85,7 +73,6 @@ jobs:
       #  with:
       #    fromTag: ${{ steps.prev_release_tag.outputs.tag }}
       #    configuration: build-tools/changelog.config.json
-
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
@@ -93,7 +80,6 @@ jobs:
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           body: ExpressionEngine ${{ steps.tagName.outputs.tag }}
-
       - name: Directory Listing on Failure
         if: failure()
         run: |
