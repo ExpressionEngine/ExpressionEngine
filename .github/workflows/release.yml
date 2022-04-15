@@ -21,6 +21,10 @@ jobs:
     name: Build & Release
     runs-on: ubuntu-latest
     steps:
+      - name: Fetch list of tags
+        run: |
+          git fetch --tags
+
       - uses: olegtarasov/get-tag@v2.1
         id: tagName
 
@@ -72,10 +76,6 @@ jobs:
         with:
           repository: ExpressionEngine/ExpressionEngine
           regex: '^\d+\.\d+\.\d+$'
-
-      - name: Fetch list of tags
-        run: |
-          git fetch --tags
 
       - name: Build Changelog
         id: build_changelog
