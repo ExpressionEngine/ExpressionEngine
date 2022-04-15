@@ -3,11 +3,6 @@ name: Release
 on:
   push:
     tags:
-      - '6.2.6'
-      - '6.2.7'
-      - '6.2.8'
-      - '6.3.0'
-      - '6.3.1'
       - '6.3.2'
       - '6.3.3'
       - '6.3.4'
@@ -70,13 +65,26 @@ jobs:
           name: EE${{ steps.tagName.outputs.tag }}
           path: build-tools/builds
 
+      - name: Get previous release tag
+        id: prev_release_tag
+        continue-on-error: true
+        uses: oprypin/find-latest-tag@v1
+        with:
+          repository: ExpressionEngine/ExpressionEngine
+          regex: '^\d+\.\d+\.\d+$'
+
+      - name: Fetch list of tags
+        run: |
+          git fetch --tags
+
       - name: Build Changelog
         id: build_changelog
-        uses: okcredit/changelog-creator-action@v1.0.0
+        uses: mikepenz/release-changelog-builder-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
-          milestone: ${{ steps.tagName.outputs.tag }}
-          configuration: "build-tools/changelog.config.json"
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          fromTag: ${{ steps.prev_release_tag.outputs.tag }}
+          configuration: build-tools/changelog.config.json
 
       - uses: ncipollo/release-action@v1
         with:

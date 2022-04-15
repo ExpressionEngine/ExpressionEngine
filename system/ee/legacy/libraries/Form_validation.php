@@ -413,8 +413,8 @@ class EE_Form_validation
         $result = ee('Validation')->make($rules)->validate($data);
 
         if ($result->isNotValid()) {
-            foreach ($result->getAllErrors() as $key => $error) {
-                $this->set_message($key, $error);
+            foreach ($result->getErrors('screen_name') as $key => $error) {
+                $this->set_message('valid_screen_name', $error);
             }
             return false;
         }
@@ -454,8 +454,8 @@ class EE_Form_validation
         $result = ee('Validation')->make($rules)->validate($data);
 
         if ($result->isNotValid()) {
-            foreach ($result->getAllErrors() as $key => $error) {
-                $this->set_message($key, $error);
+            foreach ($result->getErrors('password') as $key => $error) {
+                $this->set_message('valid_password', $error);
             }
             return false;
         }

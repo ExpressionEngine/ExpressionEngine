@@ -3537,7 +3537,7 @@ class EE_Template
         }
 
         // Reset and Match date variables
-        $this->date_vars = false;
+        $this->date_vars = [];
         $this->_match_date_vars($tagdata);
 
         // Unfound Variables that We Need Not Parse - Reset
@@ -3930,7 +3930,7 @@ class EE_Template
             // Make sure we don't try to parse date variables again on further
             // calls to parse_variables() or parse_variables_row()
             if (empty($standard) && empty($relative)) {
-                $this->date_vars = false;
+                $this->date_vars = [];
             }
 
             // If a date has both the ":relative" modifier and "format=" it will
