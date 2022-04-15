@@ -21,10 +21,6 @@ jobs:
     name: Build & Release
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch list of tags
-        run: |
-          git fetch --tags
-
       - uses: olegtarasov/get-tag@v2.1
         id: tagName
 
@@ -77,14 +73,18 @@ jobs:
           repository: ExpressionEngine/ExpressionEngine
           regex: '^\d+\.\d+\.\d+$'
 
-      - name: Build Changelog
-        id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
-        with:
-          fromTag: ${{ steps.prev_release_tag.outputs.tag }}
-          configuration: build-tools/changelog.config.json
+      #- name: Fetch list of tags
+      #  run: |
+      #    git fetch --tags
+
+      #- name: Build Changelog
+      #  id: build_changelog
+      #  uses: mikepenz/release-changelog-builder-action@v1
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
+      #  with:
+      #    fromTag: ${{ steps.prev_release_tag.outputs.tag }}
+      #    configuration: build-tools/changelog.config.json
 
       - uses: ncipollo/release-action@v1
         with:
@@ -92,7 +92,7 @@ jobs:
           name: ExpressionEngine ${{ steps.tagName.outputs.tag }}
           allowUpdates: true
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          body: ${{ steps.build_changelog.outputs.changelog }}
+          body: ExpressionEngine ${{ steps.tagName.outputs.tag }}
 
       - name: Directory Listing on Failure
         if: failure()
