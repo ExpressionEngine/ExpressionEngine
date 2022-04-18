@@ -20,6 +20,8 @@ context('Search', () => {
     cy.get('h3:contains(Results)').should('exist')
     cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
     cy.get('body').should('not.contain', 'Welcome to the Example Site!')
+
+    cy.logFrontendPerformance()
   })
 
   it('search and get no results (on same page)', function(){
@@ -29,6 +31,8 @@ context('Search', () => {
     cy.get('h3:contains(Results)').should('not.exist')
     cy.get('body').should('not.contain', 'Getting to Know ExpressionEngine')
     cy.get('body').should('contain', 'Nothing found')
+
+    cy.logFrontendPerformance()
   })
 
   it('searches everywhere', function(){
@@ -44,6 +48,8 @@ context('Search', () => {
     cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
     cy.get('body').should('contain', 'Welcome to the Example Site!')
     cy.hasNoErrors()
+
+    cy.logFrontendPerformance()
   })
 
 
@@ -60,6 +66,7 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('exist')
         cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
         cy.hasNoErrors()
+        cy.logFrontendPerformance()
     })
     it('restrict to multiple channels', function(){
         cy.authVisit('admin.php?/cp/design/manager/search');
@@ -73,6 +80,7 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('exist')
         cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
         cy.hasNoErrors()
+        cy.logFrontendPerformance()
 
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('Label')
@@ -95,6 +103,7 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('not.exist')
         cy.get('body').should('not.contain', 'Getting to Know ExpressionEngine')
         cy.hasNoErrors()
+        cy.logFrontendPerformance()
     })
 
     it('exclude multiple channels', function(){
@@ -109,6 +118,7 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('not.exist')
         cy.get('body').should('not.contain', 'Getting to Know ExpressionEngine')
         cy.hasNoErrors()
+        cy.logFrontendPerformance()
 
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('Label')

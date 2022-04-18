@@ -99,20 +99,35 @@ context('Install with default theme', () => {
 
     cy.visit('index.php/')
     cy.hasNoErrors()
+    cy.logFrontendPerformance()
+
     cy.visit('/index.php/blog/entry/marrow-and-the-broken-bones')
     cy.hasNoErrors()
+    cy.logFrontendPerformance()
+
     cy.visit('/index.php/blog/entry/the-one-where-we-shake-it-ff')
     cy.hasNoErrors()
+    cy.logFrontendPerformance()
+
     cy.visit('/index.php/blog/entry/the-one-with-rope-cutting')
     cy.hasNoErrors()
+    cy.logFrontendPerformance()
+
     cy.visit('/index.php/member/1', {failOnStatusCode: false})
     cy.hasNoErrors()
+    cy.logFrontendPerformance()
+
     cy.visit('/index.php/blog')
     cy.hasNoErrors()
+    cy.logFrontendPerformance()
+
     cy.visit('/index.php/about')
     cy.hasNoErrors()
+    cy.logFrontendPerformance()
+
     cy.visit('/index.php/blog/category/news')
     cy.hasNoErrors()
+    cy.logFrontendPerformance()
 
   })
 
