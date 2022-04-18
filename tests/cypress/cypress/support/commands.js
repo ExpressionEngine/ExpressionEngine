@@ -114,7 +114,8 @@ Cypress.Commands.add("logFrontendPerformance", () => {
         cy.log("Elapsed time: " + elapsed_time)
         cy.get('#memory_usage em').invoke('text').then((memory_usage) => {
             cy.log("Memory usage: " + memory_usage)
-            var logEntry = '"' + Cypress.currentTest.titlePath[0] + '","' + Cypress.currentTest.titlePath[1] + '","' + elapsed_time + '","' + memory_usage + '"' + "\r\n"
+            var testInfo = Cypress.currentTest.titlePath.reverse()
+            var logEntry = '"' + testInfo[1] + '","' + testInfo[0] + '","' + elapsed_time + '","' + memory_usage + '"' + "\r\n"
             cy.writeFile('cypress/downloads/performance_fe.csv', logEntry, { flag: 'a+' })
         })
     })
@@ -128,7 +129,8 @@ Cypress.Commands.add("logCPPerformance", () => {
             memory_usage = memory_usage.replace("Memory Usage:", "").trim();
             memory_usage = memory_usage.substring(0, memory_usage.indexOf(' '));
             cy.log("Memory usage: " + memory_usage)
-            var logEntry = '"' + Cypress.currentTest.titlePath[0] + '","' + Cypress.currentTest.titlePath[1] + '","' + elapsed_time + '","' + memory_usage + '"' + "\r\n"
+            var testInfo = Cypress.currentTest.titlePath.reverse()
+            var logEntry = '"' + testInfo[1] + '","' + testInfo[0] + '","' + elapsed_time + '","' + memory_usage + '"' + "\r\n"
             cy.writeFile('cypress/downloads/performance_cp.csv', logEntry, { flag: 'a+' })
         })
     })

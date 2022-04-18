@@ -9,10 +9,6 @@ const install_form = new Form
 
 context('Install with default theme', () => {
   before(function() {
-    
-  })
-
-  beforeEach(function(){
     cy.task('installer:enable').then(() => {
       let installer_folder = '../../system/ee/installer';
       cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
@@ -57,7 +53,7 @@ context('Install with default theme', () => {
 
   })
 
-  afterEach(function(){
+  after(function(){
     let installer_folder = '../../system/ee/installer';
     cy.task('filesystem:list', {target: '../../system/ee/'}).then((files) => {
       for (const item in files) {
@@ -69,9 +65,7 @@ context('Install with default theme', () => {
         }
       }
     })
-  })
 
-  after(function(){
     cy.task('installer:disable')
     cy.task('installer:revert_config').then(()=>{
         cy.task('installer:replace_config', {
@@ -88,46 +82,124 @@ context('Install with default theme', () => {
     })
   })
 
-  it('pages in default theme have no errors', () => {
-    cy.login({ email: 'admin', password: '1Password' });
+  context('pages in default theme have no errors', () => {
 
-    cy.on('uncaught:exception', (err, runnable) => {
+    before(() => {
+      cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
+      cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' })
+      cy.login({ email: 'admin', password: '1Password' });
+
+      cy.visit('admin.php?/cp/design/manager/layouts');
+      cy.get('a:contains("_html-wrapper")').click()
+      cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
+      cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}')
+      cy.get('body').type('{ctrl}', {release: false}).type('s')
+    })
+
+    it('homepage', () => {
+
+      cy.on('uncaught:exception', (err, runnable) => {
+          // return false to prevent the error from
+          // failing this test
+          return false
+      })
+
+      cy.visit('index.php/')
+      cy.hasNoErrors()
+      cy.logFrontendPerformance()
+    })
+
+    it('Entry with BandCamp audio', () => {
+
+      cy.on('uncaught:exception', (err, runnable) => {
         // return false to prevent the error from
         // failing this test
         return false
+      })
+
+      cy.visit('/index.php/blog/entry/marrow-and-the-broken-bones')
+      cy.hasNoErrors()
+      cy.logFrontendPerformance()
     })
 
-    cy.visit('index.php/')
-    cy.hasNoErrors()
-    cy.logFrontendPerformance()
+    it('Entry with SoundCloud audio', () => {
 
-    cy.visit('/index.php/blog/entry/marrow-and-the-broken-bones')
-    cy.hasNoErrors()
-    cy.logFrontendPerformance()
+      cy.on('uncaught:exception', (err, runnable) => {
+        // return false to prevent the error from
+        // failing this test
+        return false
+      })
 
-    cy.visit('/index.php/blog/entry/the-one-where-we-shake-it-ff')
-    cy.hasNoErrors()
-    cy.logFrontendPerformance()
+      cy.visit('/index.php/blog/entry/the-one-where-we-shake-it-ff')
+      cy.hasNoErrors()
+      cy.logFrontendPerformance()
+    })
 
-    cy.visit('/index.php/blog/entry/the-one-with-rope-cutting')
-    cy.hasNoErrors()
-    cy.logFrontendPerformance()
+    it('Entry with YouTube video', () => {
 
-    cy.visit('/index.php/member/1', {failOnStatusCode: false})
-    cy.hasNoErrors()
-    cy.logFrontendPerformance()
+      cy.on('uncaught:exception', (err, runnable) => {
+        // return false to prevent the error from
+        // failing this test
+        return false
+      })
 
-    cy.visit('/index.php/blog')
-    cy.hasNoErrors()
-    cy.logFrontendPerformance()
+      cy.visit('/index.php/blog/entry/the-one-with-rope-cutting')
+      cy.hasNoErrors()
+      cy.logFrontendPerformance()
+    })
 
-    cy.visit('/index.php/about')
-    cy.hasNoErrors()
-    cy.logFrontendPerformance()
+    it('member', () => {
 
-    cy.visit('/index.php/blog/category/news')
-    cy.hasNoErrors()
-    cy.logFrontendPerformance()
+      cy.on('uncaught:exception', (err, runnable) => {
+        // return false to prevent the error from
+        // failing this test
+        return false
+      })
+
+      cy.visit('/index.php/member/1', {failOnStatusCode: false})
+      cy.hasNoErrors()
+      cy.logFrontendPerformance()
+    })
+
+    it('blog', () => {
+
+      cy.on('uncaught:exception', (err, runnable) => {
+        // return false to prevent the error from
+        // failing this test
+        return false
+      })
+
+      cy.visit('/index.php/blog')
+      cy.hasNoErrors()
+      cy.logFrontendPerformance()
+    })
+
+    it('about', () => {
+
+      cy.on('uncaught:exception', (err, runnable) => {
+        // return false to prevent the error from
+        // failing this test
+        return false
+      })
+
+      cy.visit('/index.php/about')
+      cy.hasNoErrors()
+      cy.logFrontendPerformance()
+    })
+
+    it('category', () => {
+
+      cy.on('uncaught:exception', (err, runnable) => {
+        // return false to prevent the error from
+        // failing this test
+        return false
+      })
+      
+      cy.visit('/index.php/blog/category/news')
+      cy.hasNoErrors()
+      cy.logFrontendPerformance()
+
+    })
 
   })
 
