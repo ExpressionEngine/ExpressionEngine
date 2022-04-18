@@ -11,11 +11,16 @@ context('Operate the site with many members', () => {
 
     before(function(){
       cy.task('db:seed')
+      cy.eeConfig({ item: 'show_profiler', value: 'y' })
       cy.createMembers({n: 500})
     })
 
     beforeEach(function() {
       cy.auth();
+    })
+
+    after(function(){
+      cy.eeConfig({ item: 'show_profiler', value: 'n' })
     })
 
     it('preserves default author in channel settings', () => {
@@ -32,6 +37,7 @@ context('Operate the site with many members', () => {
   
       cy.get('button:contains("Settings")').click()
       cy.get('[data-input-value="default_author"] .field-inputs [value="200"]').should('be.checked')
+      cy.logCPPerformance()
     })
   
     it('preserves author in entry', () => {
@@ -44,6 +50,7 @@ context('Operate the site with many members', () => {
   
       cy.get('button:contains("Options")').click()
       cy.get('[data-input-value="author_id"] .field-inputs [value="200"]').should('be.checked')
+      cy.logCPPerformance()
     })
   })
 
@@ -72,6 +79,7 @@ context('Operate the site with many members', () => {
         page.hasAlert('important')
         page.get('alert').contains("The mumber of members for each role might be inaccurate")
         cy.hasNoErrors()
+        cy.logCPPerformance()
 
         cy.visit('admin.php?/cp/utilities/stats')
         cy.hasNoErrors()
@@ -99,6 +107,7 @@ context('Operate the site with many members', () => {
         cy.visit('admin.php?/cp/members/roles')
         page.get('alert').should('not.exist')
         cy.hasNoErrors()
+        cy.logCPPerformance()
 
         cy.eeConfig({item: 'ignore_member_stats', value: 'y'}).then(() => {
 
