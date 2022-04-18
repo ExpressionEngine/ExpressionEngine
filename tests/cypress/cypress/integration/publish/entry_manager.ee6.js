@@ -28,6 +28,8 @@ context('Entry Manager', () => {
       page.get('alert').contains("Channel limit reached")
     })
 
+    cy.logCPPerformance()
+
   })
 
   it('offers a create option for channels with max_entries not yet reached', () => {
@@ -41,6 +43,8 @@ context('Entry Manager', () => {
       const btn_txt = 'New in ' + channel.channel_title;
       page.get('wrap').find('a:contains("'+btn_txt+'")').should('exist')
     })
+
+    cy.logCPPerformance()
   })
 
   it('create menu does not include channels when max_entries is hit', () => {
@@ -57,6 +61,8 @@ context('Entry Manager', () => {
         })
       })
     })
+
+    cy.logCPPerformance()
   })
 
   it('edit menu goes straight to publish for max_entries 1 = 1', () => {
@@ -73,6 +79,8 @@ context('Entry Manager', () => {
         })
       })
     })
+
+    cy.logCPPerformance()
   })
 
   it('creates entries', () => {
@@ -95,6 +103,8 @@ context('Entry Manager', () => {
       expect(rows[0].count).to.be.equal(20);
       page.get('entry_rows').should('have.length', 20);
     })
+
+    cy.logCPPerformance()
   })
 
   it('loads a page with 100 entries', () => {
@@ -111,6 +121,8 @@ context('Entry Manager', () => {
       expect(rows[0].count).to.be.equal(110);
       page.get('entry_rows').should('have.length', 100);
     })
+
+    cy.logCPPerformance()
   })
 
   it('deletes a single entry', () => {
@@ -133,6 +145,8 @@ context('Entry Manager', () => {
 
     page.get('entry_rows').should('have.length', 9);
     page.get('alert').contains('The following entries were deleted')
+
+    cy.logCPPerformance()
   })
 
   it('deletes all entries', () => {
@@ -157,6 +171,8 @@ context('Entry Manager', () => {
     page.get('entry_rows').should('have.length', 1)
     page.get('entry_rows').first().contains('No Entries found.')
     page.get('alert').contains('The following entries were deleted')
+
+    cy.logCPPerformance()
   })
 
   it('deletes 100 entries', () => {
@@ -182,6 +198,8 @@ context('Entry Manager', () => {
     page.get('entry_rows').should('have.length', 10);
     page.get('alert').contains('The following entries were deleted')
     page.get('alert').contains('and 96 others...')
+
+    cy.logCPPerformance()
   })
 
 })

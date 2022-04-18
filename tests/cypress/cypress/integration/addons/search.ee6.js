@@ -39,7 +39,7 @@ context('Search', () => {
     cy.authVisit('admin.php?/cp/design/manager/search');
     cy.get('a:contains(simple_form)').click()
     cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
-    cy.get('.CodeMirror-code').type('{home}{pageup}{{}exp:search:simple_form search_in="everywhere" result_page="search/index" no_result_page="search/simple_form"}')
+    cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}{{}exp:search:simple_form search_in="everywhere" result_page="search/index" no_result_page="search/simple_form"}')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
     cy.visit('index.php/search/simple_form');
     cy.get('#keywords').clear().type('ExpressionEngine')
@@ -58,7 +58,7 @@ context('Search', () => {
         cy.authVisit('admin.php?/cp/design/manager/search');
         cy.get('a:contains(simple_form)').click()
         cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
-        cy.get('.CodeMirror-code').type('{home}{pageup}{{}exp:search:simple_form channel="news" result_page="search/index" no_result_page="search/simple_form"}')
+        cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}{{}exp:search:simple_form channel="news" result_page="search/index" no_result_page="search/simple_form"}')
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('ExpressionEngine')
@@ -72,7 +72,7 @@ context('Search', () => {
         cy.authVisit('admin.php?/cp/design/manager/search');
         cy.get('a:contains(simple_form)').click()
         cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
-        cy.get('.CodeMirror-code').type('{home}{pageup}{{}exp:search:simple_form channel="news|about" result_page="search/index" no_result_page="search/simple_form"}')
+        cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}{{}exp:search:simple_form channel="news|about" result_page="search/index" no_result_page="search/simple_form"}')
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('ExpressionEngine')
@@ -95,7 +95,7 @@ context('Search', () => {
         cy.authVisit('admin.php?/cp/design/manager/search');
         cy.get('a:contains(simple_form)').click()
         cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
-        cy.get('.CodeMirror-code').type('{home}{pageup}{{}exp:search:simple_form channel="not news" result_page="search/index" no_result_page="search/simple_form"}')
+        cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}{{}exp:search:simple_form channel="not news" result_page="search/index" no_result_page="search/simple_form"}')
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('ExpressionEngine')
@@ -110,7 +110,7 @@ context('Search', () => {
         cy.authVisit('admin.php?/cp/design/manager/search');
         cy.get('a:contains(simple_form)').click()
         cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
-        cy.get('.CodeMirror-code').type('{home}{pageup}{{}exp:search:simple_form channel="not news|about" result_page="search/index" no_result_page="search/simple_form"}')
+        cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}{{}exp:search:simple_form channel="not news|about" result_page="search/index" no_result_page="search/simple_form"}')
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('ExpressionEngine')
