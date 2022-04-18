@@ -62,7 +62,7 @@ tests/cypress/cypress/integration/pro
 tests/cypress/support/sql/seed.sql
 tests/cypress/vendor/
 tests/cypress/vendor/*
-tests/cypress/downloads/*
+tests/cypress/cypress/downloads/*
 cypress.env.json
 
 

@@ -47,6 +47,8 @@ context('Relationship field - Edit', () => {
 
 			cy.get('.app-notice---success').contains('Entry Updated');
 			cy.get('[data-relationship-react] .list-item__title:visible').should('not.exist');
+
+			cy.logCPPerformance()
 		})
 
 		it('add button is not visible when rel max is reached', () => {
@@ -94,6 +96,7 @@ context('Relationship field - Edit', () => {
 
 		it('add button is visible when rel max is empty', () => {
 			cy.visit('admin.php?/cp/fields/edit/8');
+			cy.logCPPerformance()
 			cy.get('[data-toggle-for="relationship_allow_multiple"]').should('have.class', 'on')
 			cy.get('[name="rel_min"]').should('be.visible');
 			cy.get('[name="rel_max"]').should('be.visible');
@@ -292,6 +295,8 @@ context('Relationship field - Edit', () => {
 			cy.get('[name=field_id_3]').invoke('val').should('eq', "{filedir_2}ee_banner_120_240.gif");
 			cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 			cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
+
+			cy.logCPPerformance()
 		})
 
 		it('add button is not visible when rel max is reached for grid', () => {
@@ -338,6 +343,8 @@ context('Relationship field - Edit', () => {
 			cy.get('.app-notice---success').contains('Entry Updated');
 			cy.get('.grid-field button:contains("Relate Entry")').should('not.be.visible')
 			cy.hasNoErrors()
+
+			cy.logCPPerformance()
 
 		})
 
@@ -426,6 +433,8 @@ context('Relationship field - Edit', () => {
 			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
 			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('be.visible')
+
+			cy.logCPPerformance()
 		})
 	})
 })

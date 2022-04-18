@@ -60,6 +60,7 @@ context('Operate the site with many members', () => {
 
     before(function(){
       cy.task('db:seed')
+      cy.eeConfig({ item: 'show_profiler', value: 'y' })
       cy.eeConfig({item: 'ignore_member_stats', value: 'y'}).then(() => {
           for (let step = 0; step < 25; step++) {
               cy.createMembers({n: 2000})
@@ -70,6 +71,10 @@ context('Operate the site with many members', () => {
 
     beforeEach(function() {
       cy.auth();
+    })
+
+    after(function(){
+      cy.eeConfig({ item: 'show_profiler', value: 'n' })
     })
 
     it('loads the Roles page and has correct data', () => {
