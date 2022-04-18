@@ -22,6 +22,7 @@ context('Publish Page - Create', () => {
       cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
         cy.visit('admin.php?/cp/design')
       })
+      cy.eeConfig({ item: 'show_profiler', value: 'y' })
     })
 
     beforeEach(function(){
@@ -29,9 +30,14 @@ context('Publish Page - Create', () => {
         cy.hasNoErrors()
     })
 
-    it('shows a 404 if there is no channel id', () => {
+    after(function(){
+      cy.eeConfig({ item: 'show_profiler', value: 'n' })
+    })
+
+    it.only('shows a 404 if there is no channel id', () => {
         cy.visit(Cypress._.replace(page.url, '{channel_id}', ''), {failOnStatusCode: false})
         cy.contains("404")
+        cy.logCPPerformance()
     })
 
     it('shows comment fields when comments are enabled by system and channel allows comments', () => {
@@ -552,6 +558,7 @@ context('Publish Page - Create', () => {
         cy.get('.grid-field tbody tr:visible td').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.visit('index.php/entries/grid')
+        cy.logFrontendPerformance()
         cy.get('.grid_with_buttons .row-1 .col_1').invoke('text').then((text) => {
           expect(text).to.eq('row 1')
         })
