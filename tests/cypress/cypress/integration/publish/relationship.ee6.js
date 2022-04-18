@@ -9,11 +9,16 @@ const fluid_field = new FluidField;
 context('Relationship field - Edit', () => {
 	before(function(){
 		cy.task('db:seed')
+		cy.eeConfig({ item: 'show_profiler', value: 'y' })
 	})
 
 	beforeEach(function(){
 		cy.auth();
 		cy.hasNoErrors()
+	})
+
+	after(function(){
+		cy.eeConfig({ item: 'show_profiler', value: 'n' })
 	})
 
 	it('shows a 404 with no given entry_id', () => {
