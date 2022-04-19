@@ -26,6 +26,7 @@ class EE_Template
     public $final_template        = '';            // The finalized template
     public $fl_tmpl               = '';           // 'Floating' copy of the template.  Used as a temporary "work area".
     public $cache_hash            = '';            // md5 checksum of the template name.  Used as title of cache file.
+    public $cache_prefix          = '';          // prefix for cache file. Defaults to current URL, but can be set to custom string for shared cache
     public $cache_status          = '';          // Status of page cache (NO_CACHE, CURRENT, EXPIRED)
     public $tag_cache_status      = '';          // Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
     public $cache_timestamp       = '';
@@ -205,6 +206,11 @@ class EE_Template
         // Do not use a reference!
 
         $this->cache_status = 'NO_CACHE';
+
+        //if the template is not embedded, ensure the cache is restricted to current URI
+        if (!$is_embed) {
+            $this->cache_prefix = '';
+        }
 
         $this->template = ($template_group != '' and $template != '') ?
             $this->fetch_template($template_group, $template, false, $site_id) :
@@ -612,6 +618,11 @@ class EE_Template
             // to reinsert that tag at the beginning of template before caching
             if (!empty($layout)) {
                 $cache_template = $layout[0] . "\n" . $this->template;
+            }
+
+            //if the template is not embedded, ensure the cache is restricted to current URI
+            if (!$is_embed) {
+                $this->cache_prefix = '';
             }
 
             $this->write_cache_file($this->cache_hash, $cache_template, 'template');
@@ -1049,6 +1060,8 @@ class EE_Template
                 $this->embed_vars = array();
             }
 
+            $this->cache_prefix = (isset($this->embed_vars['cache_prefix'])) ? $this->embed_vars['cache_prefix'] : '';
+
             // Extract the information we need to fetch the subtemplate
             $fetch_data = $this->_get_fetch_data($parts[0]);
 
@@ -1245,12 +1258,6 @@ class EE_Template
 
                 $cur_tag_close = LD . '/' . $tag . RD;
 
-                // Deprecate "weblog" tags, but allow them to work until 2.1, then remove this.
-                if (strpos($tag, ':weblog:') !== false or strpos($tag, ' weblog=') !== false) {
-                    $tag = str_replace(array(':weblog:', ' weblog='), array(':channel:', ' channel='), $tag);
-                    $this->log_item("WARNING: Deprecated 'weblog' tag used, please change to 'channel'");
-                }
-
                 // -----------------------------------------
                 // Grab the class name and method names contained in the tag
 
@@ -1377,7 +1384,7 @@ class EE_Template
                 $this->tag_data[$this->loop_count]['params'] = $args;
                 $this->tag_data[$this->loop_count]['chunk'] = $chunk; // Matched data block - including opening/closing tags
                 $this->tag_data[$this->loop_count]['block'] = $block; // Matched data block - no tags
-                $this->tag_data[$this->loop_count]['cache'] = $args;
+                $this->tag_data[$this->loop_count]['cache'] = 'NO_CACHE';
                 $this->tag_data[$this->loop_count]['cfile'] = $cfile;
                 $this->tag_data[$this->loop_count]['no_results'] = $no_results;
                 $this->tag_data[$this->loop_count]['no_results_block'] = $no_results_block;
@@ -1454,7 +1461,8 @@ class EE_Template
 
         for ($i = 0, $ctd = count($this->tag_data); $i < $ctd; $i++) {
             // Check the tag cache file
-            $cache_contents = $this->fetch_cache_file($this->tag_data[$i]['cfile'], 'tag', $this->tag_data[$i]['cache']);
+            $this->cache_prefix = (isset($this->tag_data[$i]['params']['cache_prefix'])) ? $this->tag_data[$i]['params']['cache_prefix'] : '';
+            $cache_contents = $this->fetch_cache_file($this->tag_data[$i]['cfile'], 'tag', $this->tag_data[$i]['params']);
 
             // Set cache status for final processing
             $this->tag_data[$i]['cache'] = $this->tag_cache_status;
@@ -1771,6 +1779,7 @@ class EE_Template
                 // Write cache file if needed
 
                 if ($this->tag_data[$i]['cache'] == 'EXPIRED') {
+                    $this->cache_prefix = (isset($this->tag_data[$i]['params']['cache_prefix'])) ? $this->tag_data[$i]['params']['cache_prefix'] : '';
                     $this->write_cache_file($this->tag_data[$i]['cfile'], $return_data);
                 }
 
@@ -2037,10 +2046,10 @@ class EE_Template
         $language = ee()->session->get_language();
 
         if (ee()->uri->uri_string != '') {
-            return md5(ee()->functions->fetch_site_index() . $language . ee()->uri->uri_string);
+            return md5(ee()->functions->fetch_site_index() . $language . ($this->cache_prefix ?: ee()->uri->uri_string));
         }
 
-        return md5(ee()->config->item('site_url') . 'index' . $language . ee()->uri->query_string);
+        return md5(ee()->config->item('site_url') . 'index' . $language . ($this->cache_prefix ?: ee()->uri->query_string));
     }
 
     /**
