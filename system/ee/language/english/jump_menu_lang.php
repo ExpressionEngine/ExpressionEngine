@@ -66,6 +66,7 @@ $lang = array(
     'jump_systemSettingsConsentRequests' => 'Edit Security & Privacy &raquo; <b>Consent Requests</b> Settings',
     'jump_systemUtilitiesCommunicate' => 'System Utilities &raquo; <b>Communicate</b>',
     'jump_systemUtilitiesCommunicateSent' => 'System Utilities &raquo; Communicate &raquo; <b>Sent</b>',
+    'jump_systemUtilitiesSyncConditionalFields' => 'System Utilities &raquo; <b>Sync Conditional Fields</b>',
     'jump_systemUtilitiesTranslation' => 'System Utilities &raquo; <b>CP Translation</b>',
     'jump_systemUtilitiesPHPInfo' => 'System Utilities &raquo; <b>PHP Info</b>',
     'jump_systemUtilitiesExtensions' => 'System Utilities &raquo; <b>Extensions</b>',
