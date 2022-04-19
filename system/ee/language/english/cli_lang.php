@@ -304,9 +304,6 @@ $lang = array(
     'command_sync_conditional_fields_current_entry'     => 'Current channel entry: %s',
     'command_sync_conditional_fields_entries_processed' => "Entries processed: %d\t%s\t%s",
     'command_sync_conditional_fields_sync_complete'     => "Sync complete: %d entries\t%s\t%s",
-
-    'command_sync_conditional_fields_XXXXX'           => 'XXXXXXX',
-
 );
 
 // EOF
