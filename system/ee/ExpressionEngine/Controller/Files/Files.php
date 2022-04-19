@@ -108,7 +108,7 @@ class Files extends AbstractFilesController
 
         $this->generateSidebar($id);
         ee()->view->cp_page_title = lang('file_manager');
-        ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
+        ee()->view->cp_heading = sprintf($dir->name);
 
         // Check to see if they can sync the directory
         ee()->view->can_sync_directory = ee('Permission')->can('upload_new_files')

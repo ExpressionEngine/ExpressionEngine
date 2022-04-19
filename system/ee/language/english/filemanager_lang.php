@@ -4,6 +4,10 @@ $lang = array(
 
     'all_files' => 'All Files',
 
+    'allow_subfolders' => 'Allow subfolders?',
+
+    'allow_subfolders_desc' => 'Manage nested layers of subfolders within this upload directory.',
+
     'append' => 'Append numeral to <strong>newer</strong> file <i>&mdash; example: %s</i>',
 
     'btn_cancel_upload' => 'Cancel Upload',
@@ -19,6 +23,8 @@ $lang = array(
     'credit' => 'Credit',
 
     'custom_limit' => 'custom limit',
+
+    'custom_fields' => 'custom fields',
 
     'date_added' => 'Date Added',
 
@@ -37,6 +43,10 @@ $lang = array(
     'edit_file_metadata_success_desc' => 'The meta data for the file <b>%s</b> has been updated.',
 
     'exceeds_max_dimensions' => 'File exceeds maximum dimensions and is not resizable.',
+
+    'existing_subfolders' => 'Include existing subfolders?',
+
+    'existing_subfolders_desc' => 'Any existing folders in this upload directory will appear in the File Manager',
 
     'file' => 'File',
 
@@ -70,7 +80,19 @@ $lang = array(
 
     'invalid_upload_destination' => 'The upload destination is invalid.',
 
+    'keep_subfolders_top' => 'Keep subfolders on top?',
+
+    'keep_subfolders_top_desc' => 'Group subfolders at the top of the files list when browsing.',
+
     'location' => 'Location',
+
+    'limit_subfolder_toggle' => 'Limit layers of subfolders?',
+
+    'limit_subfolders_toggle_desc' => 'Include a limit to the number of nested subfolder layers',
+
+    'limit_subfolders' => 'Subfolder Layers Limit',
+
+    'limit_subfolders_desc' => 'How many nested layers of subfolders would you like to allow in this upload directory?',
 
     'no_file' => 'No file selected',
 
@@ -377,7 +399,13 @@ $lang = array(
 
     'upload_allowed_types_opt_all' => 'All file types',
 
-    'upload_allowed_types_opt_images' => 'Images only',
+    'upload_allowed_types_opt_images' => 'Images',
+
+    'upload_allowed_types_opt_documents' => 'Documents',
+
+    'upload_allowed_types_opt_videos' => 'Videos',
+
+    'upload_allowed_types_opt_audio' => 'Audio',
 
     'upload_btn_edit' => 'edit',
 
@@ -593,6 +621,8 @@ $lang = array(
 
     'browse_files' => 'Browse Files',
 
+    'browser_behavior' => 'Browser Behavior',
+
     'can_upload_files' => 'Can upload files',
 
     'cancel_changes' => 'Cancel Changes',
@@ -648,6 +678,8 @@ $lang = array(
     'errors' => 'Errors Encountered',
 
     'exit_apply_changes' => 'You are about to exit this edit mode. Permanently apply changes first?',
+
+    'field_options' => 'Field Options',
 
     'file_count' => 'Number of Files',
 

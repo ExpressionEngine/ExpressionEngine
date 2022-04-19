@@ -1,0 +1,87 @@
+// Styles for new File Manager 
+.file-manager-wrapper {
+  position: relative;
+
+  .pagination {
+    display: flex;
+    border-top: none;
+    width: 50%;
+    margin-left: auto;
+    justify-content: flex-end;
+
+    .filter-bar__item {
+      margin-bottom: 0;
+    }
+  }
+
+  .app-listing__row:last-child {
+    td {
+      border-bottom: 1px solid var(--ee-border);
+    }
+  }
+
+  .bulk-action-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+
+  .filter-search-bar {
+    .filter-search-bar__search-row {
+      .filter-search-bar__item {
+        &:first-child {
+          flex-grow: 0;
+        }
+
+        &:nth-child(2) {
+          flex-grow: 1;
+
+          .field-control {
+            width: 100%;
+          }
+        }
+      }
+
+      &:last-child {
+        @media only screen and (max-width: $tablet-width) {
+          flex-wrap: wrap;
+
+          .filter-search-bar__item {
+            &:first-child {
+              width: 100%;
+              margin-bottom: 10px;
+              order: 3;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.file-manager-table-breadcrumbs {
+  .breadcrumb {
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--ee-table-border);
+
+    li {
+      a, span {
+        border-radius: 0;
+        text-transform: capitalize;
+        padding: 5px;
+
+        i {
+          margin-right: 5px;
+        }
+      }
+
+      &:after {
+        content: '/';
+      }
+
+      &:last-child:after {
+        content: '';
+      }
+    }
+  }
+}

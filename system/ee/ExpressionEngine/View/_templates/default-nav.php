@@ -54,7 +54,9 @@
 
 						<div class="dropdown__scroll">
 						<?php foreach ($header['action_button']['choices'] as $link => $text): ?>
-							<a href="<?=$link?>" class="dropdown__link"><?=$text?></a>
+							<a href="<?=$link?>" class="dropdown__link">
+								<i class="fas fa-hdd"></i>
+								<?=$text?></a>
 						<?php endforeach ?>
 						</div>
 					</div>

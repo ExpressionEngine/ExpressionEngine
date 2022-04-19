@@ -201,12 +201,16 @@ class Uploads extends AbstractFilesController
                             'type' => 'radio',
                             'choices' => array(
                                 'img' => lang('upload_allowed_types_opt_images'),
-                                'all' => lang('upload_allowed_types_opt_all')
+                                'doc' => lang('upload_allowed_types_opt_documents'),
+                                'video' => lang('upload_allowed_types_opt_videos'),
+                                'audio' => lang('upload_allowed_types_opt_audio')
                             ),
                             'value' => $upload_destination->allowed_types ?: 'img'
                         )
                     )
                 ),
+            ),
+            'browser_behavior' => array(
                 array(
                     'title' => 'default_modal_view',
                     'desc' => 'default_modal_view_desc',
@@ -220,7 +224,67 @@ class Uploads extends AbstractFilesController
                             'value' => $upload_destination->default_modal_view ?: 'list'
                         )
                     )
-                )
+                ),
+                array(
+                    'title' => 'allow_subfolders',
+                    'desc' => 'allow_subfolders_desc',
+                    'fields' => array(
+                        'allow_file_subfolders' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'rel_subfolder',
+                            ),
+                            'value' => ''
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'existing_subfolders',
+                    'desc' => 'existing_subfolders_desc',
+                    'group' => 'rel_subfolder',
+                    'fields' => array(
+                        'include_existing_subfolder' => array(
+                            'type' => 'yes_no',
+                            'value' => ''
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'keep_subfolders_top',
+                    'desc' => 'keep_subfolders_top_desc',
+                    'group' => 'rel_subfolder',
+                    'fields' => array(
+                        'keep_subfolders_on_top' => array(
+                            'type' => 'yes_no',
+                            'value' => ''
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'limit_subfolder_toggle',
+                    'desc' => 'limit_subfolders_toggle_desc',
+                    'group' => 'rel_subfolder',
+                    'fields' => array(
+                        'limit_subfolders_layers' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'rel_limit',
+                            ),
+                            'value' => ''
+
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'limit_subfolders',
+                    'desc' => 'limit_subfolders_desc',
+                    'group' => 'rel_limit',
+                    'fields' => array(
+                        'limit_subfolders_layers' => array(
+                            'type' => 'text'
+                        )
+                    )
+                ),
             ),
             'file_limits' => array(
                 array(
@@ -297,6 +361,8 @@ class Uploads extends AbstractFilesController
             )
         );
 
+
+
         // Grid validation results
         ee()->view->image_sizes_errors = isset($this->upload_errors['image_sizes'])
             ? $this->upload_errors['image_sizes'] : array();
@@ -325,6 +391,12 @@ class Uploads extends AbstractFilesController
                     ]
                 )
             )
+        );
+
+        $vars['sections']['field_options'][] = array(
+            'title' => 'custom_fields',
+            'desc' => '',
+            'fields' => array()
         );
 
         ee()->view->ajax_validate = true;

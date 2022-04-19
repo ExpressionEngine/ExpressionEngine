@@ -48,6 +48,12 @@ abstract class AbstractFiles extends CP_Controller
 
         $sidebar = ee('CP/Sidebar')->make();
 
+        $all_files = $sidebar->addItem(lang('all_files'), ee('CP/URL')->make('files'))->withIcon('archive');
+
+        if ($active) {
+            $all_files->isInactive();
+        }
+
         $header = $sidebar->addHeader(lang('upload_directories'));
 
         $list = $header->addFolderList('directory')
@@ -85,6 +91,7 @@ abstract class AbstractFiles extends CP_Controller
             $display_name = htmlspecialchars($destination->name, ENT_QUOTES, 'UTF-8');
 
             $item = $list->addItem($display_name, ee('CP/URL')->make('files/directory/' . $destination->id))
+                ->withIcon('hdd')
                 ->withEditUrl(ee('CP/URL')->make('files/uploads/edit/' . $destination->id))
                 ->withRemoveConfirmation(lang('upload_directory') . ': <b>' . $display_name . '</b>')
                 ->identifiedBy($destination->id);

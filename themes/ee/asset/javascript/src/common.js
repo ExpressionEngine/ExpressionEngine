@@ -1021,6 +1021,16 @@ $(document).ready(function(){
 			}
 		});
 
+		$('#fieldset-limit_subfolders_layers button.toggle-btn').each(function(){
+			if( $(this).data('state') == 'on' ) {
+				$('#fieldset-limit_subfolders_layers').siblings('#fieldset-limit_subfolders_layers').show();
+			}
+
+			if( $(this).data('state') == 'off' ){
+				$('#fieldset-limit_subfolders_layers').siblings('#fieldset-limit_subfolders_layers').hide();
+			}
+		});
+
 		$('body').on('click', '.js-toggle-link', function(e) {
 			e.preventDefault()
 
@@ -1147,4 +1157,8 @@ $(document).ready(function(){
 	        	$(this).attr('data-max', maxValue);
         	});
         }
+
+  $('.file-manager-wrapper tbody').sortable({
+  	cursor: "move"
+  })
 }); // close (document).ready
