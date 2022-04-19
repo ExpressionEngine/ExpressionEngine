@@ -40,9 +40,9 @@ class Updater
 
     private function addConditionalFieldRequiredSyncFlag()
     {
-        if (! ee()->db->field_exists('conditional_sync_required', 'channel')) {
+        if (! ee()->db->field_exists('conditional_sync_required', 'channels')) {
             ee()->smartforge->add_column(
-                'channel',
+                'channels',
                 array(
                     'conditional_sync_required' => array(
                         'type' => 'CHAR(1)',
