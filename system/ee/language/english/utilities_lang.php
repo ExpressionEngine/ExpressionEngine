@@ -135,7 +135,7 @@ $lang = array(
     'translations_saved' => 'Translations Saved',
 
     /* Sync conditional fields */
-    'sync_channels' => 'Synchronize Channel Entry Conditional Logic',
+    'no_channels_available' => 'No channels available.',
 
     'sync_required' => 'Sync Required',
 

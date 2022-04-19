@@ -29,22 +29,33 @@ class SyncConditionalFields extends Utilities
 
     public function index()
     {
+        // If this is a bulk sync request, lets redirect to the sync page
+        if (ee('Request')->method() === 'POST' && ee('Request')->post('bulk_action') === 'SYNC') {
+            $channel_ids = ee('Request')->post('channel_id');
+
+            ee()->functions->redirect(
+                ee('CP/URL')->make('utilities/sync-conditional-fields/sync')
+                    ->setQueryStringVariable('channel_id', $channel_ids)
+                    ->compile()
+            );
+        }
+
         // Loop through channels and build up array of channel data for the sync
         $data = [];
         $channels = ee('Model')->get('Channel')->all();
         foreach ($channels as $channel) {
             $data[] = array(
                 $channel->channel_title,
-                $channel->conditional_sync_required ? 'yes' : 'no',
+                $channel->conditional_sync_required ? '<i class="app-notice__icon"></i>' : '-',
                 array('toolbar_items' => array(
-                    'view' => array(
+                    'sync' => array(
                         'href' => ee('CP/URL')->make(
                             'utilities/sync-conditional-fields/sync/',
                             array(
                                 'channel_id[]' => $channel->channel_id
                             )
                         ),
-                        'title' => lang('view')
+                        'title' => lang('sync')
                     )
                 )),
                 array(
@@ -59,8 +70,10 @@ class SyncConditionalFields extends Utilities
         $table->setColumns(
             array(
                 lang('channel'),
-                lang('sync_required'),
-                'manage' => array(
+                lang('sync_required') => [
+                    'encode' => false
+                ],
+                'sync' => array(
                     'type' => CP\Table::COL_TOOLBAR
                 ),
                 array(
@@ -71,10 +84,10 @@ class SyncConditionalFields extends Utilities
         $table->setNoResultsText('no_channels_available');
         $table->setData($data);
 
-        $vars['table'] = $table->viewData(ee('CP/URL')->make('utilities/sync-conditional-fields/sync'));
+        $vars['table'] = $table->viewData(ee('CP/URL')->make('utilities/sync-conditional-fields'));
 
         ee()->view->cp_page_title = lang('sync_conditional_fields');
-        ee()->view->table_heading = lang('sync_channels');
+        ee()->view->table_heading = lang('sync_conditional_fields');
 
         ee()->view->cp_breadcrumbs = array(
             '' => lang('sync_conditional_fields')
