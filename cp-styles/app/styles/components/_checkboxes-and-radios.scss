@@ -440,3 +440,19 @@ ul.field-nested ul {
     }
   }
 }
+div[data-input-value="category_fields"] {
+	.lots-of-checkboxes__selection { display: none;}
+
+	.lots-of-checkboxes {
+		.checkbox-label__text {
+			padding-left: 10px;
+		}
+	}
+
+	.checkbox-label:hover {
+		.checkbox-label__text {
+			background: var(--ee-bg-0);
+			border-radius: 5px;
+		}
+	}
+}
