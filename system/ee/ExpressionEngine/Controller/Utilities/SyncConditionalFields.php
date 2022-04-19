@@ -35,7 +35,7 @@ class SyncConditionalFields extends Utilities
         foreach ($channels as $channel) {
             $data[] = array(
                 $channel->channel_title,
-                'yes', // TODO: make dynamic
+                $channel->conditional_sync_required ? 'yes' : 'no',
                 array('toolbar_items' => array(
                     'view' => array(
                         'href' => ee('CP/URL')->make(
@@ -93,10 +93,11 @@ class SyncConditionalFields extends Utilities
                 ee()->functions->redirect(ee('CP/URL')->make('utilities/sync-conditional-fields/sync'));
             }
 
-            ee()->functions->redirect(ee('CP/URL')->make(
-                'utilities/sync-conditional-fields/sync',
-                ['channel_id' => $channel_ids]
-            )->compile());
+            ee()->functions->redirect(
+                ee('CP/URL')->make('utilities/sync-conditional-fields/sync')
+                    ->setQueryStringVariable('channel_id', $channel_ids)
+                    ->compile()
+            );
         }
 
         // Get an array of channel ID's
@@ -251,9 +252,8 @@ class SyncConditionalFields extends Utilities
         if ($status && $status === 'channel_complete') {
             $channel_id = (int) ee()->input->post('channel_id');
             $channel = ee('Model')->get('Channel', $channel_id)->first();
-
-            // TODO: unset channel sync required flag
-            // $channel->markAsSynced();
+            $channel->conditional_sync_required = 'n';
+            $channel->save();
 
             return json_encode([
                 'message_type' => lang('success'),

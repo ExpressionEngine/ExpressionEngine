@@ -40,7 +40,8 @@ class Channel extends StructureModel
         'comment_notify' => 'boolString',
         'comment_notify_authors' => 'boolString',
         'enable_versioning' => 'boolString',
-        'search_excerpt' => 'int'
+        'search_excerpt' => 'int',
+        'conditional_sync_required' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -143,7 +144,8 @@ class Channel extends StructureModel
         'default_entry_title' => 'xss',
         'url_title_prefix' => 'alphaDash|xss',
         'channel_notify_emails' => 'validateEmails',
-        'comment_notify_emails' => 'validateEmails'
+        'comment_notify_emails' => 'validateEmails',
+        'conditional_sync_required' => 'enum[y,n]',
     );
 
     protected static $_events = array(
@@ -212,6 +214,7 @@ class Channel extends StructureModel
     protected $max_entries;
     protected $preview_url;
     protected $allow_preview = true;
+    protected $conditional_sync_required = false;
 
     /**
      * Custom validation callback to validate a comma-separated list of email
@@ -331,7 +334,7 @@ class Channel extends StructureModel
 
                     break;
                 case 'deft_category':
-                    if (! isset($this->cat_group) or count(array_diff(explode('|',(string) $this->cat_group), explode('|', (string) $channel->cat_group))) == 0) {
+                    if (! isset($this->cat_group) or count(array_diff(explode('|', (string) $this->cat_group), explode('|', (string) $channel->cat_group))) == 0) {
                         $this->setRawProperty($property, $channel->{$property});
                     }
 
