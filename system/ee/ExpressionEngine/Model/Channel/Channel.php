@@ -597,6 +597,31 @@ class Channel extends StructureModel
         return new Collection($fields);
     }
 
+    /**
+     * Returns a collection of all the channel fields available for this channel that are conditional
+     *
+     * @return Collection A collection of conditional fields
+     */
+    public function getAllCustomConditionalFields()
+    {
+        $fields = $this->CustomFields->filter('field_is_conditional', true)->indexBy('field_name');
+
+        $cache_key = "ChannelFieldGroups/{$this->getId()}/";
+        if (($field_groups = ee()->session->cache(__CLASS__, $cache_key, false)) == false) {
+            $field_groups = $this->FieldGroups;
+        }
+
+        foreach ($field_groups as $field_group) {
+            foreach ($field_group->ChannelFields->filter('field_is_conditional', true) as $field) {
+                $fields[$field->field_name] = $field;
+            }
+        }
+
+        ee()->session->set_cache(__CLASS__, $cache_key, $field_groups);
+
+        return new Collection($fields);
+    }
+
     public function maxEntriesLimitReached()
     {
         return ($this->max_entries != 0 && $this->total_records >= $this->max_entries);

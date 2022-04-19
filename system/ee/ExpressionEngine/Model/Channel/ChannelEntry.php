@@ -768,7 +768,9 @@ class ChannelEntry extends ContentModel
 
     protected function setDataOnCustomFields(array $data = array())
     {
-        $currentlyHiddenFieldsIds = $this->isNew() ? $this->evaluateConditionalFields() : $this->HiddenFields->pluck('field_id');
+        // $currentlyHiddenFieldsIds = $this->getHiddenFieldIds();
+
+        $currentlyHiddenFieldsIds = $this->isNew() ? $this->evaluateConditionalFields() : $this->getHiddenFieldIds();
         $currentlyHiddenFieldsNames = [];
         foreach ($currentlyHiddenFieldsIds as $hiddenFieldId) {
             $currentlyHiddenFieldsNames[] = 'field_id_' . $hiddenFieldId;
@@ -785,10 +787,26 @@ class ChannelEntry extends ContentModel
                     $this->getCustomField($name)->setHidden('n');
                 }
             }
-            
         }
 
         parent::setDataOnCustomFields($data);
+    }
+
+    public function getHiddenFieldIds()
+    {
+        $fields = ee()->db->select('field_id')
+            ->from('channel_entry_hidden_fields')
+            ->where('entry_id', $this->getId())
+            ->get()
+            ->result();
+
+        $currentlyHiddenFieldsIds = [];
+
+        foreach ($fields as $field) {
+            $currentlyHiddenFieldsIds[] = $field->field_id;
+        }
+
+        return $currentlyHiddenFieldsIds;
     }
 
     /**
@@ -798,24 +816,36 @@ class ChannelEntry extends ContentModel
      */
     public function conditionalFieldsOutdated()
     {
-        $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        // $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+
+        $currentlyHiddenFieldsIds = $this->getHiddenFieldIds();
+
+        // echo "<pre>";
+        // var_dump($this->getId());
+        // var_dump($currentlyHiddenFieldsIds);
+        // var_dump($hidden);
+        // exit;
+
         $hiddenFieldIds = [];
         $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
+        // return false;
+        // echo "<pre>";
+        // $cond = $this->Channel->getAllCustomConditionalFields();
+        // var_dump($cond->count());
+        // var_dump($this->Channel->getAllCustomFields()->count());
+        // exit;
+        // $this->getCustomFields();
+        foreach ($this->Channel->getAllCustomConditionalFields() as $field) {
+            $myField = $this->getCustomField('field_id_' . $field->getId());
 
-        foreach ($this->getCustomFields() as $field) {
-            // If the ID isnt numeric, we can skip it since its something like title
-            if (! is_numeric($field->getId())) {
-                continue;
-            }
-
-            if ($field->getItem('field_is_conditional') === true) {
-                // Lets evaluate the condition sets
-                // if false, the field should be hidden
-                if (! $evaluator->evaluate($field)) {
-                    $hiddenFieldIds[] = $field->getId();
-                }
+            // Lets evaluate the condition sets
+            // if false, the field should be hidden
+            if (! $evaluator->evaluate($myField)) {
+                $hiddenFieldIds[] = $field->getId();
             }
         }
+
+        unset($evaluator);
 
         return (!empty(array_diff($currentlyHiddenFieldsIds, $hiddenFieldIds)) || !empty(array_diff($hiddenFieldIds, $currentlyHiddenFieldsIds)));
     }
@@ -827,29 +857,30 @@ class ChannelEntry extends ContentModel
      */
     public function evaluateConditionalFields()
     {
-        $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        // $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        $currentlyHiddenFieldsIds = $this->getHiddenFieldIds();
+
         $hiddenFieldIds = [];
         $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
+        foreach ($this->Channel->getAllCustomConditionalFields() as $field_name => $field) {
+            // echo "<pre>";
+            // var_dump($field);
+            // exit;
 
-        foreach ($this->getCustomFields() as $field_name => $field) {
-            // If the ID isnt numeric, we can skip it since its something like title
-            if (! is_numeric($field->getId())) {
-                continue;
-            }
 
             // This is the default status for hidden fields
             $hidden = 'n';
 
-            if ($field->getItem('field_is_conditional') === true) {
-                // Lets evaluate the condition sets
-                // if false, the field should be hidden
-                if (! $evaluator->evaluate($field)) {
-                    $hiddenFieldIds[] = $field->getId();
-                    $hidden = 'y';
-                }
+            $myField = $this->getCustomField('field_id_' . $field->getId());
+
+            // Lets evaluate the condition sets
+            // if false, the field should be hidden
+            if (! $evaluator->evaluate($myField)) {
+                $hiddenFieldIds[] = $field->getId();
+                $hidden = 'y';
             }
 
-            $field->setHidden($hidden);
+            $myField->setHidden($hidden);
         }
 
         if (!empty(array_diff($currentlyHiddenFieldsIds, $hiddenFieldIds)) || !empty(array_diff($hiddenFieldIds, $currentlyHiddenFieldsIds))) {

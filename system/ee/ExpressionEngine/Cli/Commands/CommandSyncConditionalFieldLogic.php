@@ -54,6 +54,7 @@ class CommandSyncConditionalFieldLogic extends Cli
     public $commandOptions = [
         'channel_id,c:'       => 'command_sync_conditional_fields_option_channel_id',
         'verbose,v'           => 'command_sync_conditional_fields_option_verbose',
+        'clear,x'             => 'Clear hidden fields table',
     ];
 
     /**
@@ -62,6 +63,13 @@ class CommandSyncConditionalFieldLogic extends Cli
      */
     public function handle()
     {
+        if($this->option('--clear')) {
+            ee()->db->where('entry_id > ', '0');
+            ee()->db->delete('exp_channel_entry_hidden_fields');
+            $this->info('Cleared all hidden fields');
+            exit;
+        }
+
         // Load the session
         ee()->load->library('session');
         // ee()->set('cp', new MockCP());
@@ -101,11 +109,11 @@ class CommandSyncConditionalFieldLogic extends Cli
                 }
 
                 // Check to see if the conditional fields are outdated before saving
-                if ($entry->conditionalFieldsOutdated()) {
+                // if ($entry->conditionalFieldsOutdated()) {
                     // Conditional fields are outdated, so we evaluate the conditions and save
                     $entry->evaluateConditionalFields();
                     $entry->save();
-                }
+                // }
 
                 unset($entry);
 
