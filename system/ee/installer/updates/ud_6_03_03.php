@@ -38,7 +38,6 @@ class Updater
         return true;
     }
 
-    // TODO ADD TO INSTALL FILES AND TEST DB
     private function addConditionalFieldRequiredSyncFlag()
     {
         if (! ee()->db->field_exists('conditional_sync_required', 'channel')) {
