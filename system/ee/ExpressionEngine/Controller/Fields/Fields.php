@@ -513,49 +513,6 @@ class Fields extends AbstractFieldsController
         ee()->cp->render('settings/form', $vars);
     }
 
-    public function evaluateConditions()
-    {
-        if (! ee('Permission')->can('edit_channel_fields') || empty($_POST)) {
-            show_error(lang('unauthorized_access'), 403);
-        }
-
-        $channel_id = (int) ee()->input->post('channel_id');
-        $limit = (int) ee()->input->post('limit');
-        $offset = (int) ee()->input->post('offset');
-        $status = ee()->input->post('status');
-
-        // Get all channel entries with post data
-        $entries = ee('Model')->get('ChannelEntry')
-            ->filter('channel_id', $channel_id)
-            ->limit($limit)
-            ->offset($offset)
-            ->all();
-
-        foreach ($entries as $entry) {
-            // Check to see if the conditional fields are outdated before saving
-            if ($entry->conditionalFieldsOutdated()) {
-                // Conditional fields are outdated, so we evaluate the conditions and save
-                $entry->evaluateConditionalFields();
-                $entry->save();
-            }
-        }
-
-        // If the sync was successful, show success banner
-        if ($status && $status === 'complete') {
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asSuccess()
-                ->withTitle(lang('field_conditions_sync_success'))
-                ->addToBody(lang('field_conditions_sync_success_desc'))
-                ->defer();
-        }
-
-        return json_encode([
-            'message_type' => 'success',
-            'entries' => $entries->pluck('entry_id'),
-            'entries_proccessed' => $entries->count()
-        ]);
-    }
-
     public function syncConditions($field_id = null)
     {
         if (! ee('Permission')->can('edit_channel_fields')) {

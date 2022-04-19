@@ -9,7 +9,11 @@
 
 EE.fieldManager = EE.fieldManager || {};
 EE.fieldManager.chunk_size = 50;
-EE.fieldManager.remainingCount = EE.fieldManager.channel_entry_count;
+EE.fieldManager.remainingCount = {
+	total: EE.fieldManager.channel_entry_count,
+	channels: [],
+};
+
 EE.fieldManager.entriesTodo = [];
 EE.fieldManager.sync_running = 0;
 EE.fieldManager.sync_errors = [];
@@ -22,7 +26,6 @@ $(document).ready(function() {
 EE.fieldManager.sync_listen = function() {
 	$('.form-standard form .button').click(function(event) {
 		event.preventDefault();
-
 		// Disable sync button
 		$('.button', this).prop('disabled', true);
 
@@ -32,6 +35,8 @@ EE.fieldManager.sync_listen = function() {
 		EE.fieldManager.entriesTodo = [];
 
 		EE.fieldManager.groupedChannelEntryCounts.forEach(function(entryCounts) {
+			// Set remainging for each channel
+			EE.fieldManager.remainingCount.channels[entryCounts.channel_id] = entryCounts.entry_count;
 
 			var offset = 0;
 
@@ -92,7 +97,7 @@ EE.fieldManager.sync = function() {
 
 			// Update the progress bar
 			var total_count       = EE.fieldManager.channel_entry_count,
-				current_count     = EE.fieldManager.remainingCount,
+				current_count     = EE.fieldManager.remainingCount.total,
 				already_processed = total_count - current_count;
 
 			EE.fieldManager.update_progress(Math.round(already_processed / total_count * 100));
@@ -101,7 +106,12 @@ EE.fieldManager.sync = function() {
 			EE.fieldManager.sync();
 		},
 		success: function(data, textStatus, xhr) {
-			EE.fieldManager.remainingCount -= data.entries_proccessed;
+			EE.fieldManager.remainingCount.total -= data.entries_proccessed;
+			EE.fieldManager.remainingCount.channels[data.channel_id] -= data.entries_proccessed;
+
+			if(EE.fieldManager.remainingCount.channels[data.channel_id] == 0) {
+				EE.fieldManager.channelSynced(data.channel_id);
+			}
 
 			if (data.message_type != "success") {
 				if (typeof(data.errors) != "undefined") {
@@ -126,7 +136,7 @@ EE.fieldManager.finish_sync = function() {
 			// No errors? Success flashdata message should be set,
 			// redirect back to the sync page to show success message
 			$.ajax({
-				url: EE.fieldManager.sync_endpoint,
+				url: EE.fieldManager.status_endpoint,
 				type: 'POST',
 				dataType: 'json',
 				data: {'status': 'complete'},
@@ -144,6 +154,19 @@ EE.fieldManager.finish_sync = function() {
 		}
 	};
 };
+
+EE.fieldManager.channelSynced = function(channel_id) {
+
+	$.ajax({
+		url: EE.fieldManager.status_endpoint,
+		type: 'POST',
+		dataType: 'json',
+		data: {
+			'status': 'channel_complete',
+			'channel_id': channel_id
+		}
+	});
+}
 
 /**
  * Update the progress bar

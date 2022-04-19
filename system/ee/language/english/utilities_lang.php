@@ -18,6 +18,8 @@ $lang = array(
 
     'cp_translations' => 'CP Translations',
 
+    'sync_conditional_fields' => 'Sync Conditional Fields',
+
     'data_operations' => 'Data Operations',
 
     'manage_extensions' => 'Manage Extensions',
@@ -131,6 +133,31 @@ $lang = array(
     'translate_error_desc' => 'We were unable to save the translation, please review and fix errors below.',
 
     'translations_saved' => 'Translations Saved',
+
+    /* Sync conditional fields */
+    'sync_channels' => 'Synchronize Channel Entry Conditional Logic',
+
+    'sync_required' => 'Sync Required',
+
+    'sync_channel_entries' => 'Sync channel entries',
+
+    'field_conditions_sync_success' => 'Conditional Field Logic Updated',
+
+    'field_conditions_sync_success_desc' => 'All related channel entries have been updated to use the most recent conditional logic.',
+
+    'field_conditions_sync_existing_entries' => 'Existing entries',
+
+    'field_conditions_sync_desc' => 'Syncing <b>%d</b> entries from channnels: %s',
+
+    'field_conditions_syncing_conditional_logic' => 'Syncing Conditional Logic',
+
+    'field_conditions_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'field_conditions_sync_in_progress_message' => 'Do not navigate away from this screen while syncing is in progress.',
+
+    'btn_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'btn_sync_conditional_logic_working' => 'Syncing conditional logic...',
 
     /* PHP Info */
     'php_info_title' => '<abbr title="Preprocessor Hypertext Processor">PHP</abbr> %s Info',

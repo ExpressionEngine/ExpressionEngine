@@ -71,6 +71,17 @@ class Utilities extends CP_Controller
             }
         }
 
+        if (ee('Permission')->can('edit_channel_fields')) {
+            $conditional_field_sync = $sidebar->addItem(lang('sync_conditional_fields'), ee('CP/URL')->make('utilities/sync-conditional-fields'));
+
+            // If we use a subpage like utilities/sync-conditional-fields/sync make it match the nav
+            $url = ee('CP/URL')->make('utilities/sync-conditional-fields');
+
+            if ($url->matchesTheRequestedURI()) {
+                $conditional_field_sync->isActive();
+            }
+        }
+
         $sidebar->addItem(lang('php_info'), ee('CP/URL')->make('utilities/php'))
             ->urlIsExternal();
 
@@ -122,8 +133,8 @@ class Utilities extends CP_Controller
     /**
      * Index
      *
-     * @access	public
-     * @return	void
+     * @access  public
+     * @return  void
      */
     public function index()
     {
