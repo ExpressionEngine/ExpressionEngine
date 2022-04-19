@@ -69,6 +69,7 @@ class Cli
         'migrate:reset' => Commands\CommandMigrateReset::class,
         'migrate:rollback' => Commands\CommandMigrateRollback::class,
         'cache:clear' => Commands\CommandClearCaches::class,
+        'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
     ];
 
     /**
@@ -477,8 +478,8 @@ class Cli
         // Automatically load the description and signature from the lang file
         if (isset($this->signature)) {
             $simplifiedSignature = str_replace([':', '-'], '_', $this->signature);
-            $this->description = isset($this->description) ? $this->description : lang('command_' . $simplifiedSignature . '_description');
-            $this->summary = isset($this->summary) ? $this->summary : lang('command_' . $simplifiedSignature . '_description');
+            $this->description = isset($this->description) ? lang($this->description) : lang('command_' . $simplifiedSignature . '_description');
+            $this->summary = isset($this->summary) ? lang($this->summary) : lang('command_' . $simplifiedSignature . '_description');
         }
     }
 }
