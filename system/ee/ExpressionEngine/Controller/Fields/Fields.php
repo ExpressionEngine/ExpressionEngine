@@ -849,7 +849,7 @@ class Fields extends AbstractFieldsController
 
         $field_names = $fields->pluck('field_label');
 
-        // $fields->delete();
+        $fields->delete();
 
         ee('CP/Alert')->makeInline('fields')
             ->asSuccess()
