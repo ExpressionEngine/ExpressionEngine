@@ -4,9 +4,10 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
 require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
@@ -14,6 +15,7 @@ require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
  */
 class Radio_ft extends OptionFieldtype
 {
+
     public $info = array(
         'name' => 'Radio Buttons',
         'version' => '1.0.0'
@@ -32,6 +34,14 @@ class Radio_ft extends OptionFieldtype
         'field_pre_field_id' => '',
         'field_pre_channel_id' => ''
     );
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'isEmpty', 'isNotEmpty'];
 
     public function validate($data)
     {

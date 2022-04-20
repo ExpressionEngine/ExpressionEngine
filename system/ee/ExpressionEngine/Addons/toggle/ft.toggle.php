@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,6 +13,7 @@
  */
 class Toggle_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Toggle',
         'version' => '1.0.0'
@@ -28,6 +29,13 @@ class Toggle_ft extends EE_Fieldtype
     public $settings_vars = array(
         'field_default_value' => '0',
     );
+
+    /**
+     * A list of operators that this field type supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = ['turnedOn', 'turnedOff'];
 
     /**
      * Fetch the fieldtype's name and version from it's addon.setup.php file.

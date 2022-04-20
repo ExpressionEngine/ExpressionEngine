@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -103,6 +103,9 @@ abstract class AbstractChannels extends CP_Controller
         ee()->cp->add_js_script(array(
             'file' => array('cp/channel/menu'),
         ));
+
+        ee()->cp->add_js_script('file', array('cp/conditional_logic'));
+
     }
 
     /**

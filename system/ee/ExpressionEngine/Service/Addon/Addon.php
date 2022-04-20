@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -118,6 +118,13 @@ class Addon
             */
 
             $installed_plugins = self::$installed_plugins;
+
+            //always return true if the table does not exist
+            //e.g. when running update from EE2 to EE6
+            //some older version also don't use . as separator
+            if (version_compare(ee()->config->item('app_version'), '3.0.0', '<') || strpos(ee()->config->item('app_version'), '.') === false) {
+                return true;
+            }
 
             if (is_null($installed_plugins)) {
                 $installed_plugins = array_map('array_pop', ee()->db
@@ -370,6 +377,11 @@ class Addon
         $class = ucfirst($this->shortname) . '_rtefb';
 
         return $this->getFullyQualified($class);
+    }
+
+    public function getEvaluationRuleClass($rule)
+    {
+        return $this->getFullyQualified("EvaluationRules\\" . ucfirst($rule));
     }
 
     /**

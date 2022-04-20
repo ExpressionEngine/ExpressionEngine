@@ -20,7 +20,7 @@ context('Member Registration', () => {
         cy.eeConfig({ item: 'req_mbr_activation', value: 'none' })
 
         //copy templates
-        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' }).then(() => {
+		cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.authVisit('admin.php?/cp/design')
             cy.clearCookies()
         })
@@ -67,7 +67,7 @@ context('Member Registration', () => {
         it('registers into unlocked default group', function() {
             cy.clearCookies()
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -88,7 +88,7 @@ context('Member Registration', () => {
         it('cannot register into locked default group', function() {
             cy.clearCookies()
             cy.eeConfig({ item: 'default_primary_role', value: '7' })
-            
+
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -106,7 +106,7 @@ context('Member Registration', () => {
 
         it('registers into selected unlocked group', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '7' })
-            
+
             cy.visit('index.php/mbr/register/6');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -126,7 +126,7 @@ context('Member Registration', () => {
 
         it('cannot register into selected locked group', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register/7');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -144,7 +144,7 @@ context('Member Registration', () => {
 
         it('cannot register into non-existing group', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register/143');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -163,7 +163,7 @@ context('Member Registration', () => {
         it('cannot register with weak password', function() {
             cy.clearCookies()
             cy.eeConfig({ item: 'password_security_policy', value: 'good' })
-            
+
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -179,10 +179,28 @@ context('Member Registration', () => {
             cy.get("a:contains('user" + userCount + "')").should('not.exist')
         })
 
+        it('cannot register if passwords do not match', function() {
+            cy.clearCookies()
+
+            cy.visit('index.php/mbr/register');
+            cy.get('#username').clear().type('user' + userCount);
+            cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
+            cy.get('#password').clear().type('password');
+            cy.get('#password_confirm').clear().type('anotherpassword');
+            cy.get('#accept_terms').check();
+            cy.get('#submit').click();
+
+            cy.contains('The password and password confirmation do not match')
+            cy.clearCookies()
+
+            cy.authVisit('admin.php?/cp/members');
+            cy.get("a:contains('user" + userCount + "')").should('not.exist')
+        })
+
         it('can register with good password', function() {
             cy.clearCookies()
             cy.eeConfig({ item: 'password_security_policy', value: 'good' })
-            
+
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -239,7 +257,7 @@ context('Member Registration', () => {
         it('registers into unlocked default group', function() {
             cy.clearCookies()
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -266,7 +284,7 @@ context('Member Registration', () => {
         it('cannot register into locked default group', function() {
             cy.clearCookies()
             cy.eeConfig({ item: 'default_primary_role', value: '7' })
-            
+
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -284,7 +302,7 @@ context('Member Registration', () => {
 
         it('registers into selected unlocked group', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '7' })
-            
+
             cy.visit('index.php/mbr/register/6');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -310,7 +328,7 @@ context('Member Registration', () => {
 
         it('cannot register into selected locked group', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register/7');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -328,7 +346,7 @@ context('Member Registration', () => {
 
         it('cannot register into non-existing group', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register/143');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -346,7 +364,7 @@ context('Member Registration', () => {
 
         it('approving moves into the group that existed when they registered', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -453,7 +471,7 @@ context('Member Registration', () => {
         it('registers into unlocked default group', function() {
             cy.clearCookies()
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -486,7 +504,7 @@ context('Member Registration', () => {
         it('cannot register into locked default group', function() {
             cy.clearCookies()
             cy.eeConfig({ item: 'default_primary_role', value: '7' })
-            
+
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -504,7 +522,7 @@ context('Member Registration', () => {
 
         it('registers into selected unlocked group', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '7' })
-            
+
             cy.visit('index.php/mbr/register/6');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -535,7 +553,7 @@ context('Member Registration', () => {
 
         it('cannot register into selected locked group', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register/7');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -553,7 +571,7 @@ context('Member Registration', () => {
 
         it('cannot register into non-existing group', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register/143');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -571,7 +589,7 @@ context('Member Registration', () => {
 
         it('approving moves into the group that existed when they registered', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
-            
+
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');

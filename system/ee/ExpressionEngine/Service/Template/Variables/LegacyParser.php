@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -163,7 +163,7 @@ class LegacyParser
         if ($target) {
             preg_match_all('/' . LD . '(' . preg_quote($target, '/') . '.*?)' . RD . '/s', $tagdata, $matches);
         } else {
-            preg_match_all('/' . LD . '(.+?)' . RD . '/s', $tagdata, $matches);
+            preg_match_all('/' . LD . '([^\n].+?)' . RD . '/s', $tagdata, $matches);
         }
 
         $temp_close = [];

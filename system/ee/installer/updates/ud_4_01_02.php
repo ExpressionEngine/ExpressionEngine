@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -53,7 +53,7 @@ class Updater
 
     private function addMissingNotificationTemplates()
     {
-        $sites = ee('Model')->get('Site')->all();
+        $sites = ee('Model')->get('Site')->fields('site_id')->all();
 
         $email_templates = ee('Model')->get('SpecialtyTemplate')
             ->filter('template_name', 'email_changed_notification')

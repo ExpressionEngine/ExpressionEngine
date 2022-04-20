@@ -7,6 +7,10 @@ const page = new WordCensorship
 
 context('Word Censorship Settings', () => {
 
+  before(function(){
+    cy.task('db:seed')
+  })
+  
   beforeEach(function() {
     cy.auth();
 
