@@ -127,11 +127,13 @@ class EE_Core
         }
 
         // setup cookie settings for all providers
-        if (REQ != 'CLI') {
+        if (REQ == 'CP') {
             $providers = ee('App')->getProviders();
             foreach ($providers as $provider) {
                 $provider->registerCookiesSettings();
             }
+        }
+        if (REQ != 'CLI') {
             ee('CookieRegistry')->loadCookiesSettings();
         }
 
