@@ -1492,12 +1492,12 @@ class EE_Template
                             }
 
                             $error = ee()->lang->line('error_tag_syntax');
-                            $error .= '<br /><br />';
+                            $error .= '<br /><br /><code>';
                             $error .= htmlspecialchars(LD);
                             $error .= 'exp:' . implode(':', $this->tag_data[$i]['tagparts']);
                             $error .= htmlspecialchars(RD);
-                            $error .= '<br /><br />';
-                            $error .= ee()->lang->line('error_fix_syntax');
+                            $error .= '</code><br /><br />';
+                            $error .= str_replace('%x', $this->tag_data[$i]['class'], ee()->lang->line('error_fix_install_addon'));
 
                             ee()->output->fatal_error($error);
                         } else {
@@ -2150,6 +2150,7 @@ class EE_Template
         // Is only the pagination showing in the URI?
         elseif (
             count(ee()->uri->segments) == 1 &&
+            strpos(ee()->uri->segment(1), 'P') === 0 &&
             preg_match("#^(P\d+)$#", ee()->uri->segment(1), $match)
         ) {
             ee()->uri->query_string = $match['1'];
@@ -2988,14 +2989,12 @@ class EE_Template
         foreach ($addons as $name => $info) {
             if ($info->hasModule()) {
                 $this->modules[] = $name;
+                if ($info->isInstalled()) {
+                    $this->module_data[ucfirst($name)] = $name;
+                }
+            } elseif ($info->hasPlugin() && $info->isInstalled()) {
+                $this->plugins[] = $name;
             }
-        }
-
-        // Fetch a list of installed plugins
-        $plugins = ee('Model')->get('Plugin')->all();
-
-        if ($plugins->count() > 0) {
-            $this->plugins = $plugins->pluck('plugin_package');
         }
     }
 
