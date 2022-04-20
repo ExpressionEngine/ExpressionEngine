@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -106,11 +106,37 @@ class LivePreview
             $data['categories'] = $_POST['categories'];
         }
 
+        //perform conditional fields calculations
+        $hiddenFields = $entry->evaluateConditionalFields();
+        if (!empty($hiddenFields)) {
+            foreach ($hiddenFields as $hiddenFieldId) {
+                $data['field_hide_' . $hiddenFieldId] = 'y';
+                $data['field_id_' . $hiddenFieldId] = null;
+            }
+        }
+
         ee('LivePreview')->setEntryData($data);
 
         ee()->load->library('template', null, 'TMPL');
 
         $template_id = null;
+
+        if (! empty($_POST['pages__pages_uri'])
+                && ! empty($_POST['pages__pages_template_id'])) {
+            //pages data passed with POST
+            $values = [
+                'pages_uri' => $_POST['pages__pages_uri'],
+                'pages_template_id' => $_POST['pages__pages_template_id'],
+            ];
+
+            $page_tab = new \Pages_tab();
+            $site_pages = $page_tab->prepareSitePagesData($entry, $values);
+
+            ee()->config->set_item('site_pages', $site_pages);
+            $entry->Site->site_pages = $site_pages;
+
+            $template_id = $_POST['pages__pages_template_id'];
+        }
 
         if (!empty($preview_url)) {
             //preview/return url directly specified
@@ -125,22 +151,7 @@ class LivePreview
         }
 
         if (empty($preview_url) || $prefer_system_preview === true) {
-            if (! empty($_POST['pages__pages_uri'])
-                && ! empty($_POST['pages__pages_template_id'])) {
-                //pages data passed with POST
-                $values = [
-                    'pages_uri' => $_POST['pages__pages_uri'],
-                    'pages_template_id' => $_POST['pages__pages_template_id'],
-                ];
-
-                $page_tab = new \Pages_tab();
-                $site_pages = $page_tab->prepareSitePagesData($entry, $values);
-
-                ee()->config->set_item('site_pages', $site_pages);
-                $entry->Site->site_pages = $site_pages;
-
-                $template_id = $_POST['pages__pages_template_id'];
-            } elseif ($entry->hasPageURI()) {
+            if ($entry->hasPageURI()) {
                 //pre-existing page URI
                 $uri = $entry->getPageURI();
                 ee()->uri->page_query_string = $entry->entry_id;

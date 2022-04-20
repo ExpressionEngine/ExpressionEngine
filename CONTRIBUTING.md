@@ -116,13 +116,7 @@ If your idea is not useful to 80% of users and typical use cases, it may be bett
 
 ### Documentation
 
-Every pull request should have a single line descriptive changelog message in the appropriate changelog file. When a version is released, these items are moved to the User Guide release branch to publish the changes.
-
-| File | Semantic Version |
-| ---- | ---------------- |
-| changelogs/patch.rst | x.x.**X** |
-| changelogs/minor.rst | x.**X**.x |
-| changelogs/major.rst | **X**.x.x |
+Every pull request should have its title set to line that will form a changelog entry, ex. `Resolved #1234 where switching theme to pink did not work for non-superadmins`, referencing the corresponding GitHub issue. When a version is released, these items are moved to the User Guide release branch to publish the changes.
 
 All additive changes and new features should have a corresponding pull request in the [User Guide repository](https://github.com/ExpressionEngine/ExpressionEngine-User-Guide) that documents the changes.
 
@@ -134,9 +128,9 @@ Integration testing helps maintain the quality of the application and prevents u
 
 To run the tests locally, you would need to ensure you have NPM and Cypress installed and then follow some steps as outlined below.
 
-1. Back up your existing database and `system/user/config.php` file.
+1. Back up your existing database and `system/user/config/config.php` file.
 
-2. Copy `tests/cypress/support/config/config.php` over to `system/user/config.php`. Update your configuration in file if necessary (we recommend using clean database for the tests).
+2. Copy `tests/cypress/support/config/config.php` over to `system/user/config/config.php`. Update your configuration in file if necessary (we recommend using clean database for the tests).
 
 3. Copy `tests/cypress/cypress.env.example.json` to `tests/cypress/cypress.env.json`. Update the configuration in file if necessary.
 

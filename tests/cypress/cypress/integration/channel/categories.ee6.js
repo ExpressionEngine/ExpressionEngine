@@ -23,7 +23,7 @@ context('Categories', () => {
         cy.contains('Sync Directory').first().click()
 
         //copy templates
-        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' }).then(() => {
+		cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.authVisit('admin.php?/cp/design')
         })
     })
@@ -119,7 +119,7 @@ context('Categories', () => {
 
     it('add category from entry page', function() {
         cy.visit('admin.php?/cp/publish/edit/entry/1');
-        
+
         cy.get('.tab-bar__tab').contains('Categories').click();
 
         cy.contains('Add Category').click()
@@ -149,27 +149,32 @@ context('Categories', () => {
     })
 
     it('check categories list on frontend', function() {
-    
-        cy.authVisit('admin.php?/cp/categories/group/1')
-        cy.get('.js-nestable-categories .list-item__title').then(function($title) {
-            let categoriesInCP = _.map($title, function(el) {
-                    return $(el).text().trim();
-            })
-            cy.visit('index.php/cats/index')
-            cy.get('.category_name').then(function($title) {
-                let categories = _.map($title, function(el) {
-                        return $(el).text().trim();
-                })
-                expect(categories).to.deep.equal(categoriesInCP)
+        
+        cy.exec('php -r "echo PHP_MAJOR_VERSION;"', {failOnNonZeroExit: false}).then((harvest) => {
+            var php_version = harvest.stdout;
+            if (php_version != 5) {
+                cy.authVisit('admin.php?/cp/categories/group/1')
+                cy.get('.js-nestable-categories .list-item__title').then(function($title) {
+                    let categoriesInCP = _.map($title, function(el) {
+                            return $(el).text().trim();
+                    })
+                    cy.visit('index.php/cats/index')
+                    cy.get('.category_name').then(function($title) {
+                        let categories = _.map($title, function(el) {
+                                return $(el).text().trim();
+                        })
+                        expect(categories).to.deep.equal(categoriesInCP)
 
-                check_category_one()
-                check_category_two()
-            })
+                        check_category_one()
+                        check_category_two()
+                    })
+                })
+            }
         })
     })
 
     it('check categories on entry page on frontend', function() {
-    
+
         cy.visit('index.php/cats/entry')
 
         check_category_one()
@@ -177,7 +182,7 @@ context('Categories', () => {
     })
 
     it('check category heading on frontend', function() {
-    
+
         cy.visit('index.php/cats/heading/category/C5')
 
         check_category_one()
@@ -196,12 +201,12 @@ context('Categories', () => {
     })
 
     it('check category archive on frontend', function() {
-    
+
         cy.visit('index.php/cats/archive')
 
         check_category_one()
 
-        
+
         cy.get("#details-News-1 .title").invoke('text').then((text) => {
             expect(text).equal('Getting to Know ExpressionEngine')
         })
@@ -226,12 +231,12 @@ context('Categories', () => {
     })
 
     it('check category archive (nested) on frontend', function() {
-    
+
         cy.visit('index.php/cats/archive-nested')
 
         check_category_one()
 
-        
+
         cy.get("#news").parent().find("#details-1 .title").invoke('text').then((text) => {
             expect(text).equal('Getting to Know ExpressionEngine')
         })
@@ -250,156 +255,165 @@ context('Categories', () => {
         cy.get("#news").parent().find("#details-1 .channel_url").invoke('text').then((text) => {
             expect(text).to.contain('/news')
         })
-        
+
         check_category_two()
 
     })
 
     it('reorder categories, check categories list', function() {
-        
-        cy.authVisit('admin.php?/cp/categories/group/1')
-        cy.get('.js-nestable-categories .list-item__title').then(function($title) {
-            let categoriesInCP = _.map($title, function(el) {
-                    return $(el).text().trim();
-            })
-            cy.visit('index.php/cats/index')
-            cy.get('.category_name').then(function($title) {
-                let categories = _.map($title, function(el) {
-                        return $(el).text().trim();
-                })
-                expect(categories).to.deep.equal(categoriesInCP)
-
-                cy.visit('admin.php?/cp/categories/group/1')
-                cy.get('.js-nestable-categories .js-nested-item').eq(2).find('.list-item__handle').trigger("mousedown", { which: 1 })
-                cy.get('.js-nestable-categories .js-nested-item').eq(1).find('.list-item__handle').trigger("mousemove", { force: true }).trigger("mousemove", 0, -20, { force: true }).trigger("mouseup", { force: true }).click({force: true});
-                cy.wait(2000)
+        cy.exec('php -r "echo PHP_MAJOR_VERSION;"', {failOnNonZeroExit: false}).then((harvest) => {
+            var php_version = harvest.stdout;
+            if (php_version != 5) {
+                cy.authVisit('admin.php?/cp/categories/group/1')
                 cy.get('.js-nestable-categories .list-item__title').then(function($title) {
-                    categoriesInCP = _.map($title, function(el) {
+                    let categoriesInCP = _.map($title, function(el) {
                             return $(el).text().trim();
                     })
-                    expect(categoriesInCP).to.not.deep.equal(categories)
                     cy.visit('index.php/cats/index')
                     cy.get('.category_name').then(function($title) {
-                        categories = _.map($title, function(el) {
+                        let categories = _.map($title, function(el) {
                                 return $(el).text().trim();
                         })
                         expect(categories).to.deep.equal(categoriesInCP)
-                    })
-                })
-            })
-            
-        })
 
+                        cy.visit('admin.php?/cp/categories/group/1')
+                        cy.get('.js-nestable-categories .js-nested-item').eq(2).find('.list-item__handle').trigger("mousedown", { which: 1 })
+                        cy.get('.js-nestable-categories .js-nested-item').eq(1).find('.list-item__handle').trigger("mousemove", { force: true }).trigger("mousemove", 0, -20, { force: true }).trigger("mouseup", { force: true }).click({force: true});
+                        cy.wait(2000)
+                        cy.get('.js-nestable-categories .list-item__title').then(function($title) {
+                            categoriesInCP = _.map($title, function(el) {
+                                    return $(el).text().trim();
+                            })
+                            expect(categoriesInCP).to.not.deep.equal(categories)
+                            cy.visit('index.php/cats/index')
+                            cy.get('.category_name').then(function($title) {
+                                categories = _.map($title, function(el) {
+                                        return $(el).text().trim();
+                                })
+                                expect(categories).to.deep.equal(categoriesInCP)
+                            })
+                        })
+                    })
+                    
+                })
+            }
+        })
     })
 
     it('check sorted category archive on frontend', function() {
+
+        cy.exec('php -r "echo PHP_MAJOR_VERSION;"', {failOnNonZeroExit: false}).then((harvest) => {
+            var php_version = harvest.stdout;
+            if (php_version != 5) {
         
-        cy.task('db:query', 'UPDATE exp_channel_titles SET entry_date=1409242039 WHERE entry_id=1').then(() => {
+                cy.task('db:query', 'UPDATE exp_channel_titles SET entry_date=1409242039 WHERE entry_id=1').then(() => {
 
-            cy.visit('index.php/cats/archive-sorted')
-            
-            cy.get(".default-linear .category_name").eq(0).invoke('text').then((text) => {
-                expect(text).equal('News')
-            })
-            cy.get(".default-linear .category_name").eq(1).invoke('text').then((text) => {
-                expect(text).equal('category one')
-            })
-            cy.get(".default-linear .category_name").eq(2).invoke('text').then((text) => {
-                expect(text).equal('Bands')
-            })
-            cy.get(".default-linear .category_name").eq(3).invoke('text').then((text) => {
-                expect(text).equal('category two')
-            })
-            
+                    cy.visit('index.php/cats/archive-sorted')
+                    
+                    cy.get(".default-linear .category_name").eq(0).invoke('text').then((text) => {
+                        expect(text).equal('News')
+                    })
+                    cy.get(".default-linear .category_name").eq(1).invoke('text').then((text) => {
+                        expect(text).equal('category one')
+                    })
+                    cy.get(".default-linear .category_name").eq(2).invoke('text').then((text) => {
+                        expect(text).equal('Bands')
+                    })
+                    cy.get(".default-linear .category_name").eq(3).invoke('text').then((text) => {
+                        expect(text).equal('category two')
+                    })
+                    
 
-            cy.get(".default-nested .category_name").eq(0).invoke('text').then((text) => {
-                expect(text).equal('News')
-            })
-            cy.get(".default-nested .category_name").eq(1).invoke('text').then((text) => {
-                expect(text).equal('category one')
-            })
-            cy.get(".default-nested .category_name").eq(2).invoke('text').then((text) => {
-                expect(text).equal('Bands')
-            })
-            cy.get(".default-nested .category_name").eq(3).invoke('text').then((text) => {
-                expect(text).equal('category two')
-            })
-            
+                    cy.get(".default-nested .category_name").eq(0).invoke('text').then((text) => {
+                        expect(text).equal('News')
+                    })
+                    cy.get(".default-nested .category_name").eq(1).invoke('text').then((text) => {
+                        expect(text).equal('category one')
+                    })
+                    cy.get(".default-nested .category_name").eq(2).invoke('text').then((text) => {
+                        expect(text).equal('Bands')
+                    })
+                    cy.get(".default-nested .category_name").eq(3).invoke('text').then((text) => {
+                        expect(text).equal('category two')
+                    })
+                    
 
-            cy.get(".title-linear .category_name").eq(0).invoke('text').then((text) => {
-                expect(text).equal('News')
-            })
-            cy.get(".title-linear .category_name").eq(1).invoke('text').then((text) => {
-                expect(text).equal('category one')
-            })
-            cy.get(".title-linear .category_name").eq(2).invoke('text').then((text) => {
-                expect(text).equal('Bands')
-            })
-            cy.get(".title-linear .category_name").eq(3).invoke('text').then((text) => {
-                expect(text).equal('category two')
-            })
-            
+                    cy.get(".title-linear .category_name").eq(0).invoke('text').then((text) => {
+                        expect(text).equal('News')
+                    })
+                    cy.get(".title-linear .category_name").eq(1).invoke('text').then((text) => {
+                        expect(text).equal('category one')
+                    })
+                    cy.get(".title-linear .category_name").eq(2).invoke('text').then((text) => {
+                        expect(text).equal('Bands')
+                    })
+                    cy.get(".title-linear .category_name").eq(3).invoke('text').then((text) => {
+                        expect(text).equal('category two')
+                    })
+                    
 
-            cy.get(".title-nested .category_name").eq(0).invoke('text').then((text) => {
-                expect(text).equal('News')
-            })
-            cy.get(".title-nested .category_name").eq(1).invoke('text').then((text) => {
-                expect(text).equal('category one')
-            })
-            cy.get(".title-nested .category_name").eq(2).invoke('text').then((text) => {
-                expect(text).equal('Bands')
-            })
-            cy.get(".title-nested .category_name").eq(3).invoke('text').then((text) => {
-                expect(text).equal('category two')
-            })
-            
+                    cy.get(".title-nested .category_name").eq(0).invoke('text').then((text) => {
+                        expect(text).equal('News')
+                    })
+                    cy.get(".title-nested .category_name").eq(1).invoke('text').then((text) => {
+                        expect(text).equal('category one')
+                    })
+                    cy.get(".title-nested .category_name").eq(2).invoke('text').then((text) => {
+                        expect(text).equal('Bands')
+                    })
+                    cy.get(".title-nested .category_name").eq(3).invoke('text').then((text) => {
+                        expect(text).equal('category two')
+                    })
+                    
 
-            cy.get(".date-nested .category_name").eq(0).invoke('text').then((text) => {
-                expect(text).equal('News')
-            })
-            cy.get(".date-nested .category_name").eq(1).invoke('text').then((text) => {
-                expect(text).equal('category one')
-            })
-            cy.get(".date-nested .category_name").eq(2).invoke('text').then((text) => {
-                expect(text).equal('Bands')
-            })
-            cy.get(".date-nested .category_name").eq(3).invoke('text').then((text) => {
-                expect(text).equal('category two')
-            })
+                    cy.get(".date-nested .category_name").eq(0).invoke('text').then((text) => {
+                        expect(text).equal('News')
+                    })
+                    cy.get(".date-nested .category_name").eq(1).invoke('text').then((text) => {
+                        expect(text).equal('category one')
+                    })
+                    cy.get(".date-nested .category_name").eq(2).invoke('text').then((text) => {
+                        expect(text).equal('Bands')
+                    })
+                    cy.get(".date-nested .category_name").eq(3).invoke('text').then((text) => {
+                        expect(text).equal('category two')
+                    })
 
-            cy.get(".date-linear .category_name").eq(0).invoke('text').then((text) => {
-                expect(text).equal('News')
-            })
-            cy.get(".date-linear .category_name").eq(1).invoke('text').then((text) => {
-                expect(text).equal('category one')
-            })
-            cy.get(".date-linear .category_name").eq(2).invoke('text').then((text) => {
-                expect(text).equal('Bands')
-            })
-            cy.get(".date-linear .category_name").eq(3).invoke('text').then((text) => {
-                expect(text).equal('category two')
-            })
-            
+                    cy.get(".date-linear .category_name").eq(0).invoke('text').then((text) => {
+                        expect(text).equal('News')
+                    })
+                    cy.get(".date-linear .category_name").eq(1).invoke('text').then((text) => {
+                        expect(text).equal('category one')
+                    })
+                    cy.get(".date-linear .category_name").eq(2).invoke('text').then((text) => {
+                        expect(text).equal('Bands')
+                    })
+                    cy.get(".date-linear .category_name").eq(3).invoke('text').then((text) => {
+                        expect(text).equal('category two')
+                    })
+                    
 
-            cy.get(".default-nested a").first().invoke('text').then((text) => {
-                expect(text).equal('Getting to Know ExpressionEngine')
-            })
-            cy.get(".title-linear a").first().invoke('text').then((text) => {
-                expect(text).equal('Getting to Know ExpressionEngine')
-            })
-            cy.get(".title-nested a").first().invoke('text').then((text) => {
-                expect(text).equal('Getting to Know ExpressionEngine')
-            })
-            cy.get(".date-nested a").first().invoke('text').then((text) => {
-                expect(text).equal('Welcome to the Example Site!')
-            })
-            cy.get(".date-linear a").first().invoke('text').then((text) => {
-                expect(text).equal('Welcome to the Example Site!')
-            })
-        
+                    cy.get(".default-nested a").first().invoke('text').then((text) => {
+                        expect(text).equal('Getting to Know ExpressionEngine')
+                    })
+                    cy.get(".title-linear a").first().invoke('text').then((text) => {
+                        expect(text).equal('Getting to Know ExpressionEngine')
+                    })
+                    cy.get(".title-nested a").first().invoke('text').then((text) => {
+                        expect(text).equal('Getting to Know ExpressionEngine')
+                    })
+                    cy.get(".date-nested a").first().invoke('text').then((text) => {
+                        expect(text).equal('Welcome to the Example Site!')
+                    })
+                    cy.get(".date-linear a").first().invoke('text').then((text) => {
+                        expect(text).equal('Welcome to the Example Site!')
+                    })
+                
+                })
+            }
         })
     })
-        
+
     describe('static usage of category heading tag', function() {
         it('category heading is correct when using category_id', function() {
 
@@ -410,19 +424,19 @@ context('Categories', () => {
             cy.log('... when using category ID in URL')
             cy.visit('index.php/cats/manual-heading-2/category/C5')
             check_category_two()
-            
+
             cy.log('switch the setting')
-            cy.visit('admin.php?/cp/settings/urls');    
-            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.visit('admin.php?/cp/settings/urls');
+            cy.get('input[name=use_category_name][value=y]').check()
             cy.get('.title-bar__extra-tools .button--primary').first().click()
-    
+
             cy.log('... when using category slug in URL')
-            cy.visit('index.php/cats/manual-heading-2/category/category-one')    
+            cy.visit('index.php/cats/manual-heading-2/category/category-one')
             check_category_two()
 
             cy.log('switch the setting back')
-            cy.visit('admin.php?/cp/settings/urls');    
-            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.visit('admin.php?/cp/settings/urls');
+            cy.get('input[name=use_category_name][value=y]').check()
             cy.get('.title-bar__extra-tools .button--primary').first().click()
 
         })
@@ -436,19 +450,19 @@ context('Categories', () => {
             cy.log('... when using category ID in URL')
             cy.visit('index.php/cats/manual-heading/category/C5')
             check_category_two()
-            
+
             cy.log('switch the setting')
-            cy.visit('admin.php?/cp/settings/urls');    
-            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.visit('admin.php?/cp/settings/urls');
+            cy.get('input[name=use_category_name][value=y]').check()
             cy.get('.title-bar__extra-tools .button--primary').first().click()
-    
+
             cy.log('... when using category slug in URL')
-            cy.visit('index.php/cats/manual-heading/category/category-one')    
+            cy.visit('index.php/cats/manual-heading/category/category-one')
             check_category_two()
 
             cy.log('switch the setting back')
-            cy.visit('admin.php?/cp/settings/urls');    
-            cy.get('input[name=use_category_name][value=y]').check()    
+            cy.visit('admin.php?/cp/settings/urls');
+            cy.get('input[name=use_category_name][value=y]').check()
             cy.get('.title-bar__extra-tools .button--primary').first().click()
 
         })
@@ -470,7 +484,7 @@ context('Categories', () => {
         cy.get('#category-one .custom_dropdown').invoke('text').then((text) => {
             expect(text).equal('option two')
         })
-        
+
         cy.get('#category-one .category_image img')
             .should('be.visible')
             .and(($img) => {

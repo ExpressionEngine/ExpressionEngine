@@ -97,7 +97,7 @@ $lang = array(
 The following files are affected:
 {changed}
 
-If you made these changes, please accept the modifications on the control panel homepage. If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and see: ' . DOC_URL . 'troubleshooting/error_messages/expressionengine_has_detected_the_modification_of_a_core_file.html',
+If you made these changes, please accept the modifications on the control panel homepage. If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and see: ' . DOC_URL . 'troubleshooting/error-messages.html#expressionengine-has-detected-the-modification-of-a-core-file',
 
     'checksum_email_subject' => 'A core file was modified on your site.',
 

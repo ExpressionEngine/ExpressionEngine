@@ -37,7 +37,7 @@
 
 	.action-tag {
 		margin-left: $s-m;
-		margin-right: -($s-m / 2);
+		margin-right: - math.div($s-m, 2);
 	}
 
     input {

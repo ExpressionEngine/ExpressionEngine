@@ -9,7 +9,7 @@ if (! defined('BASEPATH')) {
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -328,6 +328,60 @@ if (! function_exists('form_input')) {
 }
 
 /**
+ * Number input
+ */
+if (! function_exists('form_number')) {
+    function form_number($data = '', $value = '', $extra = '')
+    {
+        $defaults = array('type' => 'number', 'name' => ((! is_array($data)) ? $data : ''), 'value' => $value);
+
+        $datalist = '';
+        if (is_array($data) && isset($data['datalist']) && !empty($data['datalist'])) {
+            if (!is_array($data['datalist'])) {
+                $data['datalist'] = array($data['datalist']);
+            }
+            $datalistId = "datalist_" . (isset($data['name']) ? $data['name'] : $defaults['name']) . "_" . (isset($data['value']) ? $data['value'] : $defaults['value']);
+            $datalist = "\n<datalist id=\"{$datalistId}\">\n";
+            foreach ($data['datalist'] as $option) {
+                $datalist .= "<option value=\"{$option}\">\n";
+            }
+            $datalist .= "</datalist>";
+            $extra .= " list=\"{$datalistId}\"";
+            unset($data['datalist']);
+        }
+
+        return "<input " . _parse_form_attributes($data, $defaults) . $extra . " />" . $datalist;
+    }
+}
+
+/**
+ * Range input
+ */
+if (! function_exists('form_range')) {
+    function form_range($data = '', $value = '', $extra = '')
+    {
+        $defaults = array('type' => 'range', 'name' => ((! is_array($data)) ? $data : ''), 'value' => $value);
+
+        $datalist = '';
+        if (is_array($data) && isset($data['datalist']) && !empty($data['datalist'])) {
+            if (!is_array($data['datalist'])) {
+                $data['datalist'] = array($data['datalist']);
+            }
+            $datalistId = "datalist_" . (isset($data['name']) ? $data['name'] : $defaults['name']) . "_" . (isset($data['value']) ? $data['value'] : $defaults['value']);
+            $datalist = "\n<datalist id=\"{$datalistId}\">\n";
+            foreach ($data['datalist'] as $option) {
+                $datalist .= "<option value=\"{$option}\">\n";
+            }
+            $datalist .= "</datalist>";
+            $extra .= " list=\"{$datalistId}\"";
+            unset($data['datalist']);
+        }
+
+        return "<input " . _parse_form_attributes($data, $defaults) . $extra . " />" . $datalist;
+    }
+}
+
+/**
  * Password Field
  *
  * Identical to the input function but adds the "password" type
@@ -456,7 +510,7 @@ if (! function_exists('form_dropdown')) {
 
         $multiple = (count($selected) > 1 && strpos($extra, 'multiple') === false) ? ' multiple="multiple"' : '';
 
-        $form = '<select name="' . $name . '"' . $extra . $multiple . ">\n";
+        $form = '<select tabindex="0" name="' . $name . '"' . $extra . $multiple . ">\n";
 
         foreach ($options as $key => $val) {
             $key = (string) $key;

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,6 +24,11 @@ abstract class Core
      * @var bool Application done booting?
      */
     protected $booted = false;
+
+    /**
+     * @var \ExpressionEngine\Core\Application Application instance
+     */
+    protected $application = null;
 
     /**
      * @var bool Application started?
@@ -101,6 +106,10 @@ abstract class Core
         $routing = $this->getRouting($request);
 
         if (defined('REQ') && REQ === 'CLI') {
+            // Set a fake request and then allow CLI to boot
+            $application->setRequest($request);
+
+            // Keep off the CLI. Note: CLI requests die at the end of bootCli()
             $this->bootCli();
         }
 
@@ -298,7 +307,7 @@ abstract class Core
      */
     public function setTimeLimit($t)
     {
-        if (function_exists("set_time_limit")) {
+        if (function_exists("set_time_limit") == true && php_sapi_name() !== 'cli') {
             @set_time_limit($t);
         }
     }
@@ -306,8 +315,12 @@ abstract class Core
     /**
      * Setup the application with the default provider
      */
-    protected function loadApplicationCore()
+    public function loadApplicationCore()
     {
+        if (!is_null($this->application)) {
+            return $this->application;
+        }
+
         $autoloader = Autoloader::getInstance();
         $dependencies = new InjectionContainer();
         $providers = new ProviderRegistry($dependencies);
@@ -330,6 +343,7 @@ abstract class Core
         });
 
         $this->legacy->getFacade()->set('di', $dependencies);
+        $this->application = $application;
 
         return $application;
     }

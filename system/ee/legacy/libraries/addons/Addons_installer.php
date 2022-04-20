@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,7 +19,9 @@ class Addons_installer
     public function __construct()
     {
         ee()->load->library('api');
-        ee()->load->library('addons');
+        if (!isset(ee()->addons)) {
+            ee()->load->library('addons');
+        }
         ee()->lang->loadfile('modules');
     }
 

@@ -1,0 +1,86 @@
+.note-fieldtype {
+  color: color(note-fieldtype-color);
+  background-color: color(note-fieldtype-bg);
+  border-radius: $border-radius-base;
+  padding: 14px 20px 16px 55px;
+  margin-bottom: -5px;
+  position: relative;
+  overflow: hidden;
+
+  .note-fieldtype__icon {
+    display: block;
+    background-color: color(note-fieldtype-icon-bg);
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 35px;
+
+    i, fas {
+      margin: 0;
+      margin-left: 11px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: color(note-fieldtype-icon-color);
+      opacity: 0.6;
+    }
+  }
+
+  .note-fieldtype__content {
+    font-size: 90%;
+  }
+
+  h1, h2, h3 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+  }
+
+  h4, h5, h6 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  h6 {
+    font-size: 1.1em;
+  }
+
+  p {
+    margin-bottom: 15px;
+
+    &:last-child {
+      margin-bottom: 0px;
+    }
+  }
+
+  blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    border-left: 5px solid color(note-fieldtype-blockquote-border);
+  }
+
+  pre {
+    white-space: normal;
+    margin-bottom: 15px;
+  }
+
+  dl, ul, ol {
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+
+  dt {
+    font-weight: 600;
+  }
+}
+
+.form-standard .note-fieldtype h2:not(.title-bar__title) {
+  border-bottom: none;
+  color: inherit;
+  font-size: 1.55em;
+  margin: 0;
+  margin-bottom: 10px;
+  padding: 0;
+  text-transform: none;
+  letter-spacing: normal;
+}

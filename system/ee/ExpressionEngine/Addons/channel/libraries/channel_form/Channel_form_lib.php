@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'channel/libraries/channel_form/Channel_form_exception.php';
@@ -1582,10 +1582,6 @@ GRID_FALLBACK;
         //load the just created entry into memory
         $this->fetch_entry($new_id);
 
-        if ($captcha_required && $this->error_handling == 'inline') {
-            $this->field_errors = array_merge($this->field_errors, array('captcha_word' => (ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required'))));
-        }
-
         foreach ($this->field_errors as $field => $error) {
             if (isset($id_to_name_map[$field])) {
                 $this->field_errors[$id_to_name_map[$field]] = $error;
@@ -1642,7 +1638,7 @@ GRID_FALLBACK;
         }
 
         if ($this->json) {
-            return $this->send_ajax_response(
+            return ee()->output->send_ajax_response(
                 array(
                     'success' => (empty($this->errors) && empty($this->field_errors)) ? 1 : 0,
                     'errors' => (empty($this->errors)) ? array() : $this->errors,
