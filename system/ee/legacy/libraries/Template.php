@@ -455,11 +455,13 @@ class EE_Template
         // ee()->session->_age_flashdata();
 
         // If we have any errors from the submit, display those inline.
-        if (preg_match("/{if errors}(.+?){\/if}/s", $this->template, $match)) {
+        if (strpos($this->template, "{if errors}") !== false) {
             // If we have field errors, remove the template conditional and leave the error tags,
             // otherwise, remove the conditional and error tags completely.
             if (!empty($errors)) {
-                $this->template = preg_replace("/{if errors}.+?{\/if}/s", $match['1'], $this->template);
+                if (preg_match("/{if errors}(.+?){\/if}/s", $this->template, $match)) {
+                    $this->template = preg_replace("/{if errors}.+?{\/if}/s", $match['1'], $this->template);
+                }
             } else {
                 $this->template = preg_replace("/{if errors}.+?{\/if}/s", '', $this->template);
             }
@@ -815,7 +817,7 @@ class EE_Template
         $layout = null;
         $first_tag = strpos($this->template, LD . 'exp:');
 
-        if (preg_match('/(' . LD . 'layout\s*=)(.*?)' . RD . '/s', $this->template, $match)) {
+        if (strpos($this->template, LD . 'layout') !== false && preg_match('/(' . LD . 'layout\s*=)(.*?)' . RD . '/s', $this->template, $match)) {
             $tag_pos = strpos($this->template, $match[0]);
             $error = '';
 
@@ -1020,7 +1022,7 @@ class EE_Template
         // Match all {embed=bla/bla} tags
         $matches = array();
 
-        if (!preg_match_all("/(" . LD . "embed\s*=)(.*?)" . RD . "/s", $parent_template, $matches)) {
+        if (strpos($parent_template, LD . 'embed') === false || !preg_match_all("/(" . LD . "embed\s*=)(.*?)" . RD . "/s", $parent_template, $matches)) {
             return $parent_template;
         }
 
@@ -2888,7 +2890,11 @@ class EE_Template
      */
     public function no_results()
     {
-        if (!preg_match("/" . LD . "redirect\s*=\s*(\042|\047)([^\\1]*?)\\1" . RD . "/si", $this->no_results, $match)) {
+        if (strpos($this->no_results, LD . "redirect") === false) {
+            $this->log_item("Returning No Results Content");
+
+            return $this->no_results;
+        } elseif (!preg_match("/" . LD . "redirect\s*=\s*(\042|\047)([^\\1]*?)\\1" . RD . "/si", $this->no_results, $match)) {
             $this->log_item("Returning No Results Content");
 
             return $this->no_results;
@@ -3555,7 +3561,7 @@ class EE_Template
         // Match {switch="foo|bar"} variables
         $switch = array();
 
-        if (preg_match_all("/" . LD . "(switch\s*=.+?)" . RD . "/i", $tagdata, $matches, PREG_SET_ORDER)) {
+        if (strpos($tagdata, LD . "switch") !== false && preg_match_all("/" . LD . "(switch\s*=.+?)" . RD . "/i", $tagdata, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
 
@@ -3999,7 +4005,7 @@ class EE_Template
      */
     public function parse_encode_email($str)
     {
-        if (preg_match_all("/" . LD . "encode=(.+?)" . RD . "/i", $str, $matches)) {
+        if (strpos($str, LD . "encode=") !== false && preg_match_all("/" . LD . "encode=(.+?)" . RD . "/i", $str, $matches)) {
             for ($j = 0; $j < count($matches[0]); $j++) {
                 $str = preg_replace('/' . preg_quote($matches['0'][$j], '/') . '/', ee()->functions->encode_email($matches[1][$j]), $str, 1);
             }
@@ -4130,7 +4136,7 @@ class EE_Template
     private function replace_special_group_conditional($str)
     {
         // Member Group in_group('1') function, Super Secret!  Shhhhh!
-        if (preg_match_all("/in_group\(([^\)]+)\)/", $str, $matches)) {
+        if (strpos($str, 'in_group') !== false && preg_match_all("/in_group\(([^\)]+)\)/", $str, $matches)) {
             // Template pattern used to match against pipe, comma, or space
             // delimited member groups.
             // By rewriting the pattern instead of trying to evaluate it here,
@@ -4165,7 +4171,7 @@ class EE_Template
     public function wrapInContextAnnotations($var_content, $var_context, $current_context = null)
     {
         $is_multiline = (bool) substr_count($var_content, "\n");
-        $has_ifs = (bool) preg_match('/\{if(:elseif)?/i', $var_content);
+        $has_ifs = (strpos($var_content, '{if') !== false) && (bool) preg_match('/\{if(:elseif)?/i', $var_content);
 
         if (!$has_ifs) {
             if (!$is_multiline) {
