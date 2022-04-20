@@ -485,8 +485,10 @@ class File
         if ($filedata['is_image'] && function_exists('getimagesize')) {
             $D = @getimagesize($file_path);
 
-            $filedata['height'] = $D['1'];
-            $filedata['width'] = $D['0'];
+            if (is_array($D)) {
+                $filedata['height'] = $D['1'];
+                $filedata['width'] = $D['0'];
+            }
         }
 
         $s = get_file_info($file_path, array('size'));

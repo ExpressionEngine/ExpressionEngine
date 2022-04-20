@@ -25,6 +25,7 @@ context('Categories', () => {
 
     it('trim modifier in templates', function() {
         cy.visit('index.php/modifiers/trim')
+        cy.logFrontendPerformance()
 
         cy.get('.no-trim').invoke('text').should('eq', '		Hello, world!	')
 
@@ -37,6 +38,7 @@ context('Categories', () => {
     it('check the variables in templates', function() {
 
         cy.visit('index.php/modifiers/index')
+        cy.logFrontendPerformance()
 
         cy.get('h4').contains('Entry ID all same line').next('span').invoke('text').should('eq', '2014')
 
@@ -48,6 +50,7 @@ context('Categories', () => {
 
         it('without parameters', function() {
             cy.visit('index.php/modifiers/url_slug')
+            cy.logFrontendPerformance()
 
             cy.get('h4').contains('url_slug, no params').next('span').invoke('text').should('eq', 'welcome-to-the-example-site')
 
@@ -68,12 +71,14 @@ context('Categories', () => {
 
 
             cy.get('h4').contains('url_slug, stopwords next line').next('span').invoke('text').should('eq', 'welcome-site')
+            cy.logFrontendPerformance()
 
         })
     })
 
     it('url_encode modifier in templates', function() {
         cy.visit('index.php/modifiers/url_encode')
+        cy.logFrontendPerformance()
 
         cy.get('h4').contains('url_encode, no params').next('span').invoke('text').should('eq', 'Welcome%20to%20the%20Example%20Site%21')
 
@@ -100,12 +105,14 @@ context('Categories', () => {
         cy.get('h4').contains('url_decode with encoded spaces').next('span').invoke('text').should('eq', 'Welcome to the Example Site!')
 
         cy.get('h4').contains('url_decode, encoded spaces, break in several lines').next('span').invoke('text').should('eq', 'Welcome to the Example Site!')
+        cy.logFrontendPerformance()
     })
 
     it('url modifier in templates', function() {
         cy.visit('index.php/modifiers/url/www.expressionengine.com')
 
         cy.get('h4').contains('url').next('span').invoke('text').should('eq', 'http://www.expressionengine.com')
+        cy.logFrontendPerformance()
 
 
     })
@@ -116,6 +123,7 @@ context('Categories', () => {
         cy.get('h4').contains('spellout, no params').next('span').invoke('text').should('eq', 'eighty-four')
 
         //cy.get('h4').contains('spellout, localized').next('span').invoke('text').should('eq', 'Vierundachtzig')
+        cy.logFrontendPerformance()
     })
 
     it('currency modifier in templates', function() {
@@ -124,6 +132,7 @@ context('Categories', () => {
         cy.get('h4').contains('currency, single line').next('span').invoke('text').should('eq', '€2.00')
 
         cy.get('h4').contains('currency, two lines').next('span').invoke('text').should('eq', '€2.00')
+        cy.logFrontendPerformance()
     })
 
     it('limit modifier in templates', function() {
@@ -132,6 +141,7 @@ context('Categories', () => {
         cy.get('h4').contains('hard limit').next('span').invoke('text').should('eq', 'Welcome to the Examp…')
 
         cy.get('h4').contains('limit, preserve words').next('span').invoke('text').should('eq', 'Welcome to the…')
+        cy.logFrontendPerformance()
     })
 
     it('modifiers inside relationships', function() {
@@ -144,6 +154,8 @@ context('Categories', () => {
         cy.get('h4').contains('related entry, single param').next('span').invoke('text').should('eq', '€1.00')
 
         cy.get('h4').contains('related entry, localized').next('span').invoke('text').should('contain', '1,00').should('contain', 'EUR')
+
+        cy.logFrontendPerformance()
 
 
     })
