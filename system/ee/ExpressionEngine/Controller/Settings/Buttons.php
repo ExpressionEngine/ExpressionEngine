@@ -55,7 +55,7 @@ class Buttons extends Settings
             ->all();
 
         foreach ($buttons as $button) {
-            $name = (strpos($button->classname, 'html-') !== 0) ? htmlentities($button->tag_name) : '';
+            $name = (empty($button->classname) || strpos($button->classname, 'html-') !== 0) ? htmlentities($button->tag_name) : '';
 
             $preview = array('toolbar_items' => array(
                 $button->classname => array(
