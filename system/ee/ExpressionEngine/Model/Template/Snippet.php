@@ -165,11 +165,10 @@ class Snippet extends FileSyncedModel
      */
     protected function ensureFolderExists()
     {
-        $fs = new Filesystem();
         $path = $this->getFolderPath();
 
-        if (isset($path) && ! $fs->isDir($path)) {
-            $fs->mkDir($path, false);
+        if (isset($path) && ! ee('Filesystem')->isDir($path)) {
+            ee('Filesystem')->mkDir($path, false);
         }
     }
 
@@ -255,10 +254,9 @@ class Snippet extends FileSyncedModel
             return [];
         }
 
-        $fs = new Filesystem();
         $snippets = [];
 
-        if (! $fs->isDir($path)) {
+        if (! ee('Filesystem')->isDir($path)) {
             return $snippets;
         }
 

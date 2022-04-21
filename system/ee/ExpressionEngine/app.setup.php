@@ -187,10 +187,6 @@ $setup = [
             return new Event\Emitter();
         },
 
-        'Filesystem' => function ($ee) {
-            return new Filesystem\Filesystem();
-        },
-
         'Format' => function ($ee) {
             static $format_opts;
             if ($format_opts === null) {
@@ -501,6 +497,10 @@ $setup = [
 
         'File' => function ($ee) {
             return new File\Factory();
+        },
+
+        'Filesystem' => function ($ee) {
+            return new Filesystem\Filesystem();
         },
 
         'IpAddress' => function ($ee) {

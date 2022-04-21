@@ -164,11 +164,10 @@ class GlobalVariable extends FileSyncedModel
      */
     protected function ensureFolderExists()
     {
-        $fs = new Filesystem();
         $path = $this->getFolderPath();
 
-        if (isset($path) && ! $fs->isDir($path)) {
-            $fs->mkDir($path, false);
+        if (isset($path) && ! ee('Filesystem')->isDir($path)) {
+            ee('Filesystem')->mkDir($path, false);
         }
     }
 
@@ -254,10 +253,9 @@ class GlobalVariable extends FileSyncedModel
             return [];
         }
         
-        $fs = new Filesystem();
         $variables = [];
 
-        if (! $fs->isDir($path)) {
+        if (! ee('Filesystem')->isDir($path)) {
             return $variables;
         }
 
