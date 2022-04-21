@@ -1,11 +1,15 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
 <div class="box panel">
-    <div class="tbl-ctrls file-manager-wrapper">
+    <div class="tbl-ctrls f_manager-wrapper">
         <?=form_open($form_url)?>
         <div class="panel-heading">
             <div class="title-bar title-bar--large">
                <h3 class="title-bar__title"><?=$cp_heading?></h3>
+
+                <?php if (isset($filters)) {
+                    echo $filters;
+                } ?>
             </div>
         </div>
         <div class="entry-pannel-notice-wrap">
@@ -96,6 +100,28 @@
                 </div>
 
                 <div class="filter-search-bar__item ">
+                    <button type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" title="Title and Date">Title/Date</button>
+
+                    <div class="dropdown">
+                        <div class="dropdown__scroll">
+                            <a class="dropdown__link" href="<?php echo ee('CP/URL')->make('&viewtype=thumb&perpage=25&sort_col=title&sort_dir=asc'); ?>">
+                                <i class="fas fa-sort-amount-up"></i>
+                                Title Asc
+                            </a>
+                            <a class="dropdown__link" href="<?php echo ee('CP/URL')->make('&viewtype=thumb&perpage=25&sort_col=title&sort_dir=desc'); ?>">
+                                <i class="fas fa-sort-amount-down-alt"></i>
+                                Title Desc</a>
+                            <a class="dropdown__link" href="<?php echo ee('CP/URL')->make('&viewtype=thumb&perpage=25&sort_col=date_added&sort_dir=asc'); ?>">
+                                <i class="fas fa-sort-amount-up"></i>
+                                Date Asc</a>
+                            <a class="dropdown__link" href="<?php echo ee('CP/URL')->make('&viewtype=thumb&perpage=25&sort_col=date_added&sort_dir=desc'); ?>">
+                                <i class="fas fa-sort-amount-down-alt"></i>
+                                Date Desc</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-search-bar__item ">
                     <div class="filter-search-bar__item ">
                         <button type="button" class="filter-bar__button has-sub js-dropdown-toggle button button--default button--small" data-filter-label="columns" title="Columns"><i class="fas fa-columns"></i></button>
 
@@ -131,34 +157,54 @@
             </div>
         </div>
 
+        <!-- Display while file upload is in progress: -->
+        <div class="file-upload-progress__main-wrapper">
+            <div class="file-upload-progress__wrapper">
+                <label>Uploading <strong>3</strong> files...</label>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 75%"></div>
+                </div>
+            </div><!-- /file-upload-progress__wrapper -->
+
+            <div class="file-upload-progress__wrapper">
+                <label>Uploading <strong>1</strong> file...</label>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 25%"></div>
+                </div>
+            </div><!-- /file-upload-progress__wrapper -->
+        </div>
+
         <div class="panel-body">
             <?php $this->embed('_shared/thumb', $files->asArray()); ?>
-            <?php if (! empty($table['columns']) && ! empty($table['data'])): ?>
-            <?php
-                $options = [
-                    [
-                        'value' => "",
-                        'text' => '-- ' . lang('with_selected') . ' --'
-                    ]
-                ];
-                if (ee('Permission')->can('delete_files')) {
-                    $options[] = [
-                        'value' => "remove",
-                        'text' => lang('delete'),
-                        'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-file"'
+
+            <div class="f_manager-action-part">
+                <?php if (count($files)): ?>
+                <?php
+                    $options = [
+                        [
+                            'value' => "",
+                            'text' => '-- ' . lang('with_selected') . ' --'
+                        ]
                     ];
-                }
-                $options[] = [
-                    'value' => "download",
-                    'text' => lang('download')
-                ];
-                $this->embed('ee:_shared/form/bulk-action-bar', [
-                    'options' => $options,
-                    'modal' => true
-                ]);
-            ?>
-            <?php endif; ?>
-            <?=$pagination?>
+                    if (ee('Permission')->can('delete_files')) {
+                        $options[] = [
+                            'value' => "remove",
+                            'text' => lang('delete'),
+                            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-file"'
+                        ];
+                    }
+                    $options[] = [
+                        'value' => "download",
+                        'text' => lang('download')
+                    ];
+                    $this->embed('ee:_shared/form/bulk-action-bar', [
+                        'options' => $options,
+                        'modal' => true
+                    ]);
+                ?>
+                <?php endif; ?>
+                <?=$pagination?>
+            </div>
         </div>
     <?=form_close()?>
   </div>

@@ -17537,10 +17537,6 @@ fieldset .field-control #eye {
   color: var(--ee-text-secondary);
 }
 
-.file-preview-modal__form {
-  padding-top: 65px;
-}
-
 .file-preview-modal__preview-file {
   overflow: hidden;
   display: flex;
@@ -24058,64 +24054,175 @@ body[data-theme="dark"] {
   padding: 0px;
 }
 
-.file-manager-wrapper {
-  position: relative;
-}
-.file-manager-wrapper .pagination {
-  display: flex;
-  border-top: none;
-  width: 50%;
-  margin-left: auto;
-  justify-content: flex-end;
-}
-.file-manager-wrapper .pagination .filter-bar__item {
-  margin-bottom: 0;
-}
-.file-manager-wrapper .app-listing__row:last-child td {
+.f_manager-wrapper .app-listing__row:last-child td {
   border-bottom: 1px solid var(--ee-border);
 }
-.file-manager-wrapper .bulk-action-bar, .file-manager-wrapper .tbl-bulk-act {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-}
-.file-manager-wrapper .filter-search-bar .filter-search-bar__search-row .filter-search-bar__item:first-child {
+.f_manager-wrapper .filter-search-bar .filter-search-bar__search-row .filter-search-bar__item:first-child {
   flex-grow: 0;
 }
-.file-manager-wrapper .filter-search-bar .filter-search-bar__search-row .filter-search-bar__item:nth-child(2) {
+.f_manager-wrapper .filter-search-bar .filter-search-bar__search-row .filter-search-bar__item:nth-child(2) {
   flex-grow: 1;
 }
-.file-manager-wrapper .filter-search-bar .filter-search-bar__search-row .filter-search-bar__item:nth-child(2) .field-control {
+.f_manager-wrapper .filter-search-bar .filter-search-bar__search-row .filter-search-bar__item:nth-child(2) .field-control {
   width: 100%;
 }
 @media only screen and (max-width: 768px) {
-  .file-manager-wrapper .filter-search-bar .filter-search-bar__search-row:last-child {
+  .f_manager-wrapper .filter-search-bar .filter-search-bar__search-row:last-child {
     flex-wrap: wrap;
   }
-  .file-manager-wrapper .filter-search-bar .filter-search-bar__search-row:last-child .filter-search-bar__item:first-child {
+  .f_manager-wrapper .filter-search-bar .filter-search-bar__search-row:last-child .filter-search-bar__item:first-child {
     width: 100%;
     margin-bottom: 10px;
     order: 3;
   }
 }
 
-.file-manager-table-breadcrumbs .breadcrumb {
+.f_manager-table-breadcrumbs .breadcrumb {
   padding: 10px 20px;
   border-bottom: 1px solid var(--ee-table-border);
 }
-.file-manager-table-breadcrumbs .breadcrumb li a, .file-manager-table-breadcrumbs .breadcrumb li span {
+.f_manager-table-breadcrumbs .breadcrumb li a, .f_manager-table-breadcrumbs .breadcrumb li span {
   border-radius: 0;
   text-transform: capitalize;
   padding: 5px;
 }
-.file-manager-table-breadcrumbs .breadcrumb li a i, .file-manager-table-breadcrumbs .breadcrumb li span i {
+.f_manager-table-breadcrumbs .breadcrumb li a i, .f_manager-table-breadcrumbs .breadcrumb li span i {
   margin-right: 5px;
 }
-.file-manager-table-breadcrumbs .breadcrumb li:after {
+.f_manager-table-breadcrumbs .breadcrumb li a:hover {
+  background-color: transparent;
+}
+.f_manager-table-breadcrumbs .breadcrumb li:after {
   content: "/";
 }
-.file-manager-table-breadcrumbs .breadcrumb li:last-child:after {
+.f_manager-table-breadcrumbs .breadcrumb li:last-child:after {
   content: "";
+}
+
+.f_manager-action-part {
+  display: flex;
+  flex-wrap: wrap;
+}
+.f_manager-action-part .pagination {
+  border-top: none;
+  margin-left: auto;
+}
+.f_manager-action-part .pagination .filter-bar__item {
+  margin-bottom: 0;
+}
+
+.file-upload-progress__main-wrapper {
+  display: none;
+}
+
+.file-upload-progress__wrapper {
+  padding: 10px 25px 20px;
+  margin-bottom: -1px;
+  border-bottom: 1px solid var(--ee-panel-border);
+}
+.file-upload-progress__wrapper label {
+  font-weight: normal;
+  font-size: 13px;
+  color: var(--ee-text-secondary);
+  margin-bottom: 7px;
+}
+
+.file-grid__checkAll {
+  margin-bottom: 10px;
+  margin-top: -7px;
+}
+
+.file-grid__wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-column-gap: 15px;
+  grid-row-gap: 15px;
+  /* Additional class for larger thumbnails: */
+  /* This colors the grid SVG thumbnails for folders and documents: */
+}
+.file-grid__wrapper.file-grid__wrapper-large {
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  grid-column-gap: 20px;
+  grid-row-gap: 20px;
+}
+.file-grid__wrapper .file-grid__file {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ee-text-normal);
+  border-radius: 8px;
+  border: 1px solid transparent;
+  -webkit-transition: background-color 0.15s ease-in-out;
+  -moz-transition: background-color 0.15s ease-in-out;
+  -o-transition: background-color 0.15s ease-in-out;
+}
+.file-grid__wrapper .file-grid__file:hover, .file-grid__wrapper .file-grid__file.selected {
+  background-color: var(--ee-accent-light);
+  color: var(--ee-text-normal);
+}
+.file-grid__wrapper .file-grid__file.selected {
+  border: 1px solid var(--ee-accent-medium);
+}
+.file-grid__wrapper .file-thumbnail__wrapper {
+  height: 0;
+  padding: 10px;
+  padding-top: calc(100% - 10px);
+  position: relative;
+}
+.file-grid__wrapper .file-thumbnail {
+  line-height: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 88%;
+  width: 88%;
+}
+.file-grid__wrapper .file-thumbnail img,
+.file-grid__wrapper .file-thumbnail svg {
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 6px;
+}
+.file-grid__wrapper .file-thumbnail svg {
+  width: 100%;
+  height: 100%;
+}
+.file-grid__wrapper .file-grid__file-folder .file-thumbnail,
+.file-grid__wrapper .file-grid__file-document .file-thumbnail {
+  color: var(--ee-accent);
+}
+.file-grid__wrapper .file-metadata__wrapper {
+  padding: 0 19% 10px;
+  padding-right: calc(19% - 21px);
+  margin-top: -2%;
+  position: relative;
+  text-align: left;
+}
+.file-grid__wrapper .file-metadata__wrapper label {
+  padding: 8px;
+  position: absolute;
+  top: -4px;
+  left: calc(19% - 30px);
+  line-height: 0;
+  cursor: pointer;
+}
+.file-grid__wrapper .file-metadata__wrapper span {
+  color: var(--ee-text-secondary);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-grid__wrapper .file-metadata__wrapper span:first-of-type {
+  color: var(--ee-text-normal);
+  font-size: 14px;
+}
+.file-grid__wrapper .file-grid__file-folder .file-metadata__wrapper {
+  padding-left: calc(19% - 21px);
 }
 
 .hidden {

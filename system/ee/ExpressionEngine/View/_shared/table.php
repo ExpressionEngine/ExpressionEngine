@@ -49,8 +49,8 @@
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
-									<label for="<?=$table_id?>-select-all" class="hidden"><?=lang('select_all')?></label>
-									<input id="<?=$table_id?>-select-all" class="input--no-mrg" type="checkbox" title="<?=lang('select_all')?>">
+									<label for="<?=$table_id?>-select-all" class="hidden"><?=lang('select_all_files')?></label>
+									<input id="<?=$table_id?>-select-all" class="input--no-mrg" type="checkbox" title="<?=lang('select_all_files')?>">
 								<?php endif ?>
 							<?php endif ?>
 						</th>

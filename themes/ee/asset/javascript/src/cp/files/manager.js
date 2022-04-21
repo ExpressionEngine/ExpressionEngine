@@ -32,5 +32,73 @@
 				}
 			})
 		});
+
+		$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
+			cursor: "move"
+		})
+
+		// Select images if Grid view
+		$('.file-metadata__wrapper input:checkbox').on('change', function () {
+			if ($(this).is(":checked")) {
+				$(this).closest(".file-grid__file").addClass('selected');
+			} else {
+				$(this).closest(".file-grid__file").removeClass('selected');
+			};
+		});
+
+		// If Selected All Files are checked
+		$("#checkAll").on('change', function(){
+			if(this.checked){
+				$(".file-metadata__wrapper input[type='checkbox']").each(function(){
+					this.checked = true;
+					$(this).parent().parent().parent().addClass('selected')
+				});
+			} else {
+				$(".file-metadata__wrapper input[type='checkbox']").each(function(){
+					this.checked=false;
+					$(this).parent().parent().parent().removeClass('selected')
+				});
+			}
+		});
+
+		// if selected all files was checked and some of elements unchecked
+		$(".file-metadata__wrapper input[type='checkbox']").on('change', function () {
+			if ($(this).is(":checked")) {
+				var isAllChecked = 0;
+
+				$(".file-metadata__wrapper input[type='checkbox']").each(function(){
+					if(!this.checked) isAllChecked = 1;
+				})
+
+				if(isAllChecked == 0){
+					$("#checkAll").prop("checked", true);
+				}
+			} else {
+				$("#checkAll").prop("checked", false);
+			}
+		});
+
+
+		// show/hide bulk-action-bar for the File Manager page Table view
+		$('body').on('change', '.f_manager-wrapper table td:first-child input[type=checkbox], .f_manager-wrapper table th:first-child input[type=checkbox]', function() {
+			if ($(this).parents('form').find('.f_manager-action-part .bulk-action-bar').length > 0) {
+				if ($(this).parents('table').find('input:checked').length == 0) {
+					$(this).parents('.table-responsive').siblings('.f_manager-action-part').find('.bulk-action-bar').addClass('hidden');
+				} else {
+					$(this).parents('.table-responsive').siblings('.f_manager-action-part').find('.bulk-action-bar').removeClass('hidden');
+				}
+			}
+		});
+
+		// show/hide bulk-action-bar for the File Manager page Grid view
+		$('body').on('change', '.f_manager-wrapper .file-grid__wrapper input[type=checkbox], .f_manager-wrapper .file-grid__checkAll input[type=checkbox]', function() {
+			if ( $(this).parents('form').find('.f_manager-action-part .bulk-action-bar').length > 0) {
+				if ($('.file-grid__wrapper').find('input:checked').length == 0 ) {
+					$('.file-grid__wrapper').siblings('.f_manager-action-part').find('.bulk-action-bar').addClass('hidden');
+				} else {
+					$('.file-grid__wrapper').siblings('.f_manager-action-part').find('.bulk-action-bar').removeClass('hidden');
+				}
+			}
+		});
 	});
 })(jQuery);

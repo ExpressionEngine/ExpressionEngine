@@ -1,15 +1,18 @@
 <?php $this->extend('_templates/default-nav'); ?>
-<div class="panel file-manager-wrapper">
+<div class="panel f_manager-wrapper">
     <?=form_open($form_url)?>
 
     <div class="panel-heading">
         <div class="title-bar js-filters-collapsible">
             <h3 class="title-bar__title"><?=$cp_heading?></h3>
+                <?php if (isset($filters)) {
+                    echo $filters;
+                } ?>
 
             <div class="filters-toolbar title-bar__extra-tools">
                 <a class="button button--secondary icon--sync" href="#" title="Synchronize"><span class="hidden">Synchronize</span></a>
-                <a class="tn button button--primary" href="#">New Folred</a>
-                <a class="tn button button--primary" href="#">Upload</a>
+                <a class="btn button button--primary" href="#">New Folred</a>
+                <a class="btn button button--primary" href="#">Upload</a>
             </div>
         </div>
     </div>
@@ -137,7 +140,24 @@
         </div>
     </div>
 
-    <div class="file-manager-table-breadcrumbs">
+    <!-- Display while file upload is in progress: -->
+    <div class="file-upload-progress__main-wrapper">
+        <div class="file-upload-progress__wrapper">
+            <label>Uploading <strong>3</strong> files...</label>
+            <div class="progress-bar">
+                <div class="progress" style="width: 75%"></div>
+            </div>
+        </div><!-- /file-upload-progress__wrapper -->
+
+        <div class="file-upload-progress__wrapper">
+            <label>Uploading <strong>1</strong> file...</label>
+            <div class="progress-bar">
+                <div class="progress" style="width: 25%"></div>
+            </div>
+        </div><!-- /file-upload-progress__wrapper -->
+    </div>
+
+    <div class="f_manager-table-breadcrumbs">
         <ul class="breadcrumb">
             <li><a href="#"><i class="fas fa-hdd"></i><?=$cp_heading?></a></li>
             <li><a href="#"><i class="fas fa-folder"></i>Book Covers</a></li>
@@ -146,6 +166,7 @@
     </div>
 
     <?php $this->embed('_shared/table', $table); ?>
+    <div class="f_manager-action-part">
         <?php if (! empty($table['columns']) && ! empty($table['data'])): ?>
             <?php
                 $options = [
@@ -172,6 +193,7 @@
             ?>
         <?php endif; ?>
         <?=$pagination?>
+    </div>
     <?=form_close()?>
 </div>
 <?php $this->embed('files/_delete_modal'); ?>

@@ -1157,8 +1157,4 @@ $(document).ready(function(){
 	        	$(this).attr('data-max', maxValue);
         	});
         }
-
-  $('.file-manager-wrapper tbody').sortable({
-  	cursor: "move"
-  })
 }); // close (document).ready

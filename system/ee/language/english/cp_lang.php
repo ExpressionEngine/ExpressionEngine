@@ -334,6 +334,8 @@ $lang = array(
 
     'select_all' => 'Select All',
 
+    'select_all_files' => 'Select All Files',
+
     'search_in' => 'Search in',
 
     'show' => 'Show',

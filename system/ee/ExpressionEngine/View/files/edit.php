@@ -1,48 +1,33 @@
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="file-preview-modal">
-	<div class="file-preview-modal__preview">
-		<div class="title-bar">
+<div class="file-edit-view">
+    <div class="panel">
+        <div class="panel-heading">
+            <div class="form-btns form-btns-top">
+                <div class="title-bar title-bar--large">
+                    <h3 class="title-bar__title"><?=$file->title?></h3>
 
-			<div class="title-bar__extra-tools">
-				<div class="button-group">
-					<a class="button button--large filter-bar__button" href="<?=$download_url?>" title="<?=lang('download')?>"><i class="fas fa-download"></i></a>
-					<?php if ($file->isEditableImage()) : ?>
-					<a class="button button--large filter-bar__button" href="<?=ee('CP/URL')->make('files/file/crop/' . $file->file_id)?>" title="<?=lang('btn_crop')?>"><i class="fas fa-crop"></i></a>
-					<?php endif; ?>
-					<a class="button button--large filter-bar__button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('open')?>"><i class="fas fa-link"></i></a>
-				</div>
-			</div>
-		</div>
+                    <div class="title-bar__extra-tools">
+                        <a class="btn button button--primary" href="#">Replace</a>
+                        <a class="btn button button--primary" href="<?=$download_url?>" title="<?=lang('download')?>">Download</a>
+                        <?php $this->embed('ee:_shared/form/buttons'); ?>
+                    </div>
+                </div>
+            </div>
+      </div>
 
-		<div class="file-preview-modal__preview-file">
-			<?php if ($is_image) {
-    echo "<img src=\"{$file->getAbsoluteURL()}\">";
-} else {
-    echo "<div class=\"file-preview-modal__preview-file-name\">{$file->file_name}</div>";
-}
-            ?>
+      <div class="panel-body file-preview-modal">
+            <div class="file-preview-modal__preview">
+                <?php if ($is_image) {
+                    echo "<a href=\"{$file->getAbsoluteURL()}\" target=\"_blank\"><img src=\"{$file->getAbsoluteURL()}\"></a>";
+                } else {
+                    echo "<div class=\"file-preview-modal__preview-file-name\">{$file->file_name}</div>";
+                } ?>
+            </div>
 
-			<div class="file-preview-modal__preview-file-meta">
-				<?php
-                if ($is_image) {
-                    echo "{$image_info['width']} x {$image_info['height']} " . lang('pixels') . ' - ';
-                }
-                ?><i><?= $size ?></i>
-			</div>
-		</div>
-	</div>
-	<div class="file-preview-modal__form">
-
-	<?php
-    $this->embed('_shared/form');
-
-    $modal = ee('View')->make('ee:_shared/modal-form')->render([
-        'name' => 'modal-form',
-        'contents' => ''
-    ]);
-    ee('CP/Modal')->addModal('modal-form', $modal);
-?>
-
-
-	</div>
+            <div class="file-preview-modal__form">
+                <?php $this->embed('_shared/file/edit_file_template'); ?>
+            </div>
+      </div>
+    </div>
 </div>

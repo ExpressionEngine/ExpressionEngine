@@ -14,7 +14,7 @@ $lang = array(
 
     'delete_file' => 'Delete File',
 
-    'btn_edit_file_meta' => 'Save File Meta',
+    'btn_edit_file_meta' => 'Save',
 
     'btn_finish_upload' => 'Finish Upload',
 
@@ -93,6 +93,8 @@ $lang = array(
     'limit_subfolders' => 'Subfolder Layers Limit',
 
     'limit_subfolders_desc' => 'How many nested layers of subfolders would you like to allow in this upload directory?',
+
+    'name' => 'File Name',
 
     'no_file' => 'No file selected',
 

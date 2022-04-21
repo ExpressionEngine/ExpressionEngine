@@ -54,6 +54,38 @@ class File extends AbstractFilesController
         if ($is_image) {
             ee()->load->library('image_lib');
             $image_info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), true);
+        } else {
+            show_error(lang('not_an_image'));
+        }
+
+        if (! $file->exists()) {
+            $alert = ee('CP/Alert')->makeStandard()
+                ->asIssue()
+                ->withTitle(lang('file_not_found'))
+                ->addToBody(sprintf(lang('file_not_found_desc'), $file->getAbsolutePath()));
+
+            $dir = $file->getUploadDestination();
+            if (! $dir->exists()) {
+                $upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
+                $alert->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
+                    ->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url));
+            }
+
+            $alert->now();
+            show_404();
+        } else {
+            // Check permissions on the file
+            if (! $file->isWritable()) {
+                $alert = ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('file_not_writable'))
+                    ->addToBody(sprintf(lang('file_not_writable_desc'), $file->getAbsolutePath()))
+                    ->now();
+            }
+
+            ee()->load->library('image_lib');
+            $info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), true);
+            ee()->image_lib->error_msg = array(); // Reset any erorrs
         }
 
         $vars = [
@@ -70,6 +102,9 @@ class File extends AbstractFilesController
             'tabs' => array(
                 'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
                 'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
+                'crop' => $this->renderCropForm($file, $info),
+                'rotate' => $this->renderRotateForm($file),
+                'resize' => $this->renderResizeForm($file, $info),
             ),
             'buttons' => [
                 [
@@ -79,12 +114,23 @@ class File extends AbstractFilesController
                     'text' => 'btn_edit_file_meta',
                     'working' => 'btn_saving'
                 ],
+                [
+                    'name' => 'submit',
+                    'type' => 'submit',
+                    'value' => 'save_and_close',
+                    'text' => 'save_and_close',
+                    'working' => 'btn_saving'
+                ],
             ],
             'sections' => array(),
             'hide_top_buttons' => true
         ];
 
         ee()->view->cp_page_title = lang('edit_file_metadata');
+
+        ee()->view->header = array(
+            'title' => lang('edit_file'),
+        );
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('files')->compile() => lang('file_manager'),
