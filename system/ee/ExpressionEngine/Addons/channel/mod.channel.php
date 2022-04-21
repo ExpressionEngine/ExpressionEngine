@@ -249,7 +249,8 @@ class Channel
             }
         }
 
-        if ($this->enable['categories'] == true) {
+        //only fetch catgories if those are enabled and called in template
+        if ($this->enable['categories'] == true && (empty(ee()->TMPL->tagdata) || strpos(ee()->TMPL->tagdata, 'categories') !== false)) {
             $this->fetch_categories();
         }
 
