@@ -825,6 +825,9 @@ class ChannelEntry extends ContentModel
         // $this->getCustomFields();
         foreach ($this->Channel->getAllCustomConditionalFields() as $field) {
             $myField = $this->getCustomField('field_id_' . $field->getId());
+            // Pass the FieldConditionSets along to the FieldFacade so that they
+            // can be eager loaded on the ChannelEntry->Channel and improve performance
+            $myField->setConditionSets($field->FieldConditionSets);
 
             // Lets evaluate the condition sets
             // if false, the field should be hidden

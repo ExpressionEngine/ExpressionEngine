@@ -28,6 +28,7 @@ class FieldFacade
     private $value;
     private $api;
     private $icon;
+    private $conditionSets;
 
     /**
      * @var Flag to ensure defaults are only loaded once
