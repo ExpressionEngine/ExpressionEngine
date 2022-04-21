@@ -794,19 +794,7 @@ class ChannelEntry extends ContentModel
 
     public function getHiddenFieldIds()
     {
-        $fields = ee()->db->select('field_id')
-            ->from('channel_entry_hidden_fields')
-            ->where('entry_id', $this->getId())
-            ->get()
-            ->result();
-
-        $currentlyHiddenFieldsIds = [];
-
-        foreach ($fields as $field) {
-            $currentlyHiddenFieldsIds[] = $field->field_id;
-        }
-
-        return $currentlyHiddenFieldsIds;
+        return $this->HiddenFields->pluck('field_id');
     }
 
     /**
@@ -872,6 +860,9 @@ class ChannelEntry extends ContentModel
             $hidden = 'n';
 
             $myField = $this->getCustomField('field_id_' . $field->getId());
+            // Pass the FieldConditionSets along to the FieldFacade so that they
+            // can be eager loaded on the ChannelEntry->Channel and improve performance
+            $myField->setConditionSets($field->FieldConditionSets);
 
             // Lets evaluate the condition sets
             // if false, the field should be hidden
@@ -1177,6 +1168,13 @@ class ChannelEntry extends ContentModel
 
     public function populateChannels($field)
     {
+        $cacheKey = "populate.channels.{$this->Channel->getId()}.".ee()->session->userdata('member_id');
+
+        $cached = $this->getFromCache($cacheKey);
+        if ($cached !== false) {
+            return $cached;
+        }
+
         $allowed_channel_ids = (ee()->session->userdata('member_id') == 0
             or ee('Permission')->isSuperAdmin()
             or ! is_array(ee()->session->userdata('assigned_channels')))
@@ -1203,6 +1201,8 @@ class ChannelEntry extends ContentModel
             }
         }
 
+        $this->saveToCache($cacheKey, $channel_filter_options);
+
         $field->setItem('field_list_items', $channel_filter_options);
     }
 
@@ -1222,6 +1222,13 @@ class ChannelEntry extends ContentModel
      */
     public function populateAuthors($field)
     {
+        $cacheKey = "populate.authors.{$this->Channel->getId()}." . ee()->session->userdata('member_id');
+
+        $cached = $this->getFromCache($cacheKey);
+        if ($cached !== false) {
+            return $cached;
+        }
+
         $author_options = array();
 
         // Default author
@@ -1240,6 +1247,8 @@ class ChannelEntry extends ContentModel
             $author_options += ee('Member')->getAuthors();
         }
 
+        $this->saveToCache($cacheKey, $author_options);
+
         $field->setItem('field_list_items', $author_options);
     }
 
@@ -1254,6 +1263,13 @@ class ChannelEntry extends ContentModel
 
     public function populateStatus($field)
     {
+        $cacheKey = "populate.status.{$this->Channel->getId()}." . ee()->session->userdata('member_id');
+
+        $cached = $this->getFromCache($cacheKey);
+        if ($cached !== false) {
+            return $cached;
+        }
+
         // This generates an inscrutable error when installing the default theme, bail out
         $all_statuses = ! INSTALLER ? $this->Channel->Statuses->sortBy('status_order') : [];
 
@@ -1294,6 +1310,8 @@ class ChannelEntry extends ContentModel
         foreach ($status_options as $option) {
             $field_items[$option['value']] = $option['label'];
         }
+
+        $this->saveToCache($cacheKey, $field_items);
 
         $field->setItem('field_list_items', $field_items);
     }
@@ -1383,6 +1401,22 @@ class ChannelEntry extends ContentModel
         if ($this->Channel->allow_preview =='y') {
             return true;
         }
+        return false;
+    }
+
+    protected function saveToCache($key, $data)
+    {
+        if (isset(ee()->session)) {
+            ee()->session->set_cache(__CLASS__, $key, $data);
+        }
+    }
+
+    protected function getFromCache($key)
+    {
+        if (isset(ee()->session)) {
+            return ee()->session->cache(__CLASS__, $key, false);
+        }
+
         return false;
     }
 }

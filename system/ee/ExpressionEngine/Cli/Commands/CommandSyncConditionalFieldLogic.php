@@ -141,11 +141,17 @@ class CommandSyncConditionalFieldLogic extends Cli
             '(' . $timediff . ' s)',
             '(' . $this->getMemoryUsage() . ')',
         ));
+
+        $this->info(vsprintf('Database: %d queries in %f seconds', [
+            ee('Database')->getLog()->getQueryCount(),
+            number_format(ee('Database')->currentExecutionTime(), 4)
+        ]));
+        // print_r(ee('Database')->getLog()->getQueryMetrics());
     }
 
     private function getEntries($data)
     {
-        $entries = ee('Model')->get('ChannelEntry');
+        $entries = ee('Model')->get('ChannelEntry')->with(['Channel' => ['CustomFields' => ['FieldConditionSets' => 'FieldConditions']]],'HiddenFields');
 
         if (!empty($this->channel_id)) {
             $entries = $entries->filter('channel_id', $this->channel_id);

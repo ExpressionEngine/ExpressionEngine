@@ -465,10 +465,18 @@ class FieldFacade
         if (! $this->getItem('field_is_conditional')) {
             return [];
         }
+        
+        if($this->conditionSets) {
+            return $this->conditionSets;
+        }
 
         $field = ee('Model')->get('ChannelField', $this->getId())->first();
-
         return $field->FieldConditionSets;
+    }
+
+    public function setConditionSets($conditionSets = [])
+    {
+        $this->conditionSets = $conditionSets;
     }
 
     public function initField()
