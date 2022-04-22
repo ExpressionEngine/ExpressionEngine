@@ -952,6 +952,10 @@ class EE_Session
      */
     public function set_tracker_cookie($tracker = null)
     {
+        if (ee()->config->item('enable_tracking_cookie') === 'n') {
+            return true;
+        }
+        
         if (is_null($tracker)) {
             $tracker = $this->tracker;
         }

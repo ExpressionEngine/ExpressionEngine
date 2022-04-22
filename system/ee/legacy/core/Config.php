@@ -684,6 +684,7 @@ class EE_Config
             'enable_entry_view_tracking',
             'enable_hit_tracking',
             'enable_online_user_tracking',
+            'enable_tracking_cookie',
             'force_redirect',
             'is_system_on',
             'cli_enabled',
