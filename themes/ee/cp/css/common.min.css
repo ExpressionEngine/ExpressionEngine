@@ -16750,7 +16750,8 @@ ul.field-nested ul li ul::before {
 div[data-input-value=category_fields] .lots-of-checkboxes__selection {
   display: none;
 }
-div[data-input-value=category_fields] .lots-of-checkboxes .checkbox-label__text {
+div[data-input-value=category_fields] .lots-of-checkboxes .checkbox-label__text,
+div[data-input-value=category_fields] .lots-of-checkboxes__items .checkbox-label__text {
   padding-left: 10px;
 }
 div[data-input-value=category_fields] .checkbox-label:hover .checkbox-label__text {

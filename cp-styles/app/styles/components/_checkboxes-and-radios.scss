@@ -403,7 +403,8 @@ ul.field-nested ul {
 div[data-input-value="category_fields"] {
 	.lots-of-checkboxes__selection { display: none;}
 
-	.lots-of-checkboxes {
+	.lots-of-checkboxes,
+	.lots-of-checkboxes__items {
 		.checkbox-label__text {
 			padding-left: 10px;
 		}
