@@ -367,7 +367,6 @@ abstract class FieldModel extends Model
     {
         $cache_key = $this->getCacheKey();
         $names = ee()->cache->get($cache_key);
-        $names = false;
 
         if ($names === false) {
             $names = array_keys($this->getColumns());

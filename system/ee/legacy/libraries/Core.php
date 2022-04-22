@@ -169,8 +169,6 @@ class EE_Core
         // $last_site_id = the site that you're viewing
         // config->item('site_id') = the site who's URL is being used
 
-        $last_site_id = ee()->input->cookie('cp_last_site_id');
-
         if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y') {
             $cookie_prefix = ee()->config->item('cookie_prefix');
             $cookie_path = ee()->config->item('cookie_path');
@@ -181,6 +179,7 @@ class EE_Core
                 $cookie_prefix .= '_';
             }
 
+            $last_site_id = ee()->input->cookie('cp_last_site_id');
             if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id')) {
                 ee()->config->site_prefs('', $last_site_id);
             }
