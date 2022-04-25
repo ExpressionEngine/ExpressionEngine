@@ -123,11 +123,6 @@ class Request
             }
         }
 
-        if (ee()->config->item('cache_driver') === 'file') {
-            ee()->load->library('logger');
-            ee()->logger->developer('To fetch templates from database is usually faster than from file cache driver.');
-        }
-
         // Replace {site_url} in template before caching
         $template_data = str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data);
 
