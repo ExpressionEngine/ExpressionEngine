@@ -277,7 +277,7 @@ class DragAndDropUpload extends React.Component {
       .closest('.field-control')
       .find('> em')
 
-    if (errorElement.size() == 0) {
+    if (errorElement.length == 0) {
       errorElement = $('<em/>')
     }
 

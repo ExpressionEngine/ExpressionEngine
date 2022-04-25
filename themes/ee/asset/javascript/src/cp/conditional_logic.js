@@ -386,7 +386,7 @@ $(document).ready(function() {
 
     EE.cp.show_hide_rule_operator_field = function(element, input) {
 
-        if ( ! $(element).size()) {
+        if ( ! $(element).length) {
             return;
         }
 

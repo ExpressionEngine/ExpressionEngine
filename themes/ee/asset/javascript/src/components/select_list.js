@@ -190,7 +190,7 @@ function (_React$Component) {
               };
               var children = $(node).find('> ul > [data-id]');
 
-              if (children.size()) {
+              if (children.length) {
                 item['children'] = getNestedItems(children.toArray());
               }
 

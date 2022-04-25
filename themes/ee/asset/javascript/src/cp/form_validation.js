@@ -146,7 +146,7 @@ EE.cp.formValidation = {
 			.first();
 
 		// Bail if no field to focus
-		if (textInput.size() == 0)
+		if (textInput.length == 0)
 		{
 			return;
 		}
@@ -169,7 +169,7 @@ EE.cp.formValidation = {
 
 		var inputContainer = $('.invalid').has('input, select, textarea').first();
 
-		if (inputContainer.parents('.grid-publish').size() > 0)
+		if (inputContainer.parents('.grid-publish').length > 0)
 		{
 			var position = inputContainer.position();
 			inputContainer.parents('.tbl-wrap').scrollLeft(position.left);
@@ -190,7 +190,7 @@ EE.cp.formValidation = {
 		// Bind form submission to update button text
 		form.submit(function(event) {
 
-			if ($button.size() > 0)
+			if ($button.length > 0)
 			{
 				// Add "work" class to make the buttons pulsate
 				$button.addClass('work');
@@ -248,7 +248,7 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	form	jQuery object of form
 	 */
 	_errorsExist: function(form) {
-		return ($('.fieldset-invalid:visible, td.invalid:visible, div.invalid:visible', form).size() != 0);
+		return ($('.fieldset-invalid:visible, td.invalid:visible, div.invalid:visible', form).length != 0);
 	},
 
 	/**
@@ -350,16 +350,16 @@ EE.cp.formValidation = {
 
 		var form = field.parents('form'),
 			container = field.parents('.field-control'),
-			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),
+			fieldset = (container.parents('fieldset').length > 0) ? container.parents('fieldset') : container.parent(),
 			errorClass = 'em.ee-form-error-message',
 			grid = false;
 
 		// Tabs
 		var tab_container = field.parents('.tab'),
-			tab_rel = (tab_container.size() > 0) ? tab_container.attr('class').match(/t-\d+/) : '', // Grabs the tab identifier (ex: t-2)
+			tab_rel = (tab_container.length > 0) ? tab_container.attr('class').match(/t-\d+/) : '', // Grabs the tab identifier (ex: t-2)
 			tab = $(tab_container).parents('.tab-wrap').find('a[rel="'+tab_rel+'"]'), // Tab link
 			// See if this tab has its own submit button
-			tab_has_own_button = (tab_container.size() > 0 && tab_container.find(this._buttonSelector).size() > 0),
+			tab_has_own_button = (tab_container.length > 0 && tab_container.find(this._buttonSelector).length > 0),
 			// Finally, grab the button of the current form
 			button = (tab_has_own_button) ? tab_container.find(this._buttonSelector) : form.find(this._buttonSelector),
 			tab_button = $(tab_container).parents('.tab-wrap').find('button[rel="'+tab_rel+'"]');
@@ -373,7 +373,7 @@ EE.cp.formValidation = {
 			grid = true;
 		}
 
-		if (fieldset.find('.grid-field').size() > 0)
+		if (fieldset.find('.grid-field').length > 0)
 		{
 			container = field.parents('td');
 			grid = true;
@@ -394,14 +394,14 @@ EE.cp.formValidation = {
 
 				// For Grid, only remove the invalid class from the label if no
 				// more errors exist in the Grid
-				if (fieldset.parent().find('td.invalid').size() == 0) {
+				if (fieldset.parent().find('td.invalid').length == 0) {
 					fieldset.removeClass('fieldset-invalid');
 
 					// Remove error message below Grid field
 					container.parents('div.field-control').find('> ' + errorClass).remove();
 				}
 
-				if (fieldset.find('.fluid').size() > 0 && !this._errorsExist(container)) {
+				if (fieldset.find('.fluid').length > 0 && !this._errorsExist(container)) {
 					fieldset.parent().find(errorClass).remove();
 				}
 
@@ -412,13 +412,13 @@ EE.cp.formValidation = {
 			container.find('> ' + errorClass).remove();
 
 			// If no more errors on this tab, remove invalid class from tab
-			if (tab.size() > 0 &&  ! this._errorsExist(tab_container))
+			if (tab.length > 0 &&  ! this._errorsExist(tab_container))
 			{
 				tab.removeClass('invalid'); 
 			}
 
 			// If no more errors on this tab, remove invalid class from tab
-			if (tab_button.size() > 0 &&  ! this._errorsExist(tab_container))
+			if (tab_button.length > 0 &&  ! this._errorsExist(tab_container))
 			{
 				tab_button.removeClass('invalid'); 
 			}
@@ -471,7 +471,7 @@ EE.cp.formValidation = {
 			container.append(errorElement);
 
 			// Mark tab as invalid
-			if (tab.size() > 0)
+			if (tab.length > 0)
 			{
 				tab.addClass('invalid');
 			}

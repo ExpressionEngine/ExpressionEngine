@@ -15,7 +15,7 @@
 			var input = references.input_value;
 
 			// May be a markItUp button
-			if (input.size() == 0) {
+			if (input.length == 0) {
 				input = references.source.parents('.markItUpContainer').find('textarea.markItUpEditor');
 			}
 

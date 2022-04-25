@@ -245,7 +245,7 @@ var ColorPicker = /** @class */ (function (_super) {
 // Render color picker inputs when created:
 $(document).ready(function () {
     // Using window.load to make sure this code gets called after all document.readys
-    $(window).load(function () {
+    $(window).on('load', function () {
         ColorPicker.renderFields();
     });
 });

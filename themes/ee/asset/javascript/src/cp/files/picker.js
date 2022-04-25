@@ -100,7 +100,7 @@
 				payload_elements = $('.filter-bar input', this);
 
 			// Only do this if we're on the file listing screen
-			if (payload_elements.size() == 0) {
+			if (payload_elements.length == 0) {
 				return;
 			}
 

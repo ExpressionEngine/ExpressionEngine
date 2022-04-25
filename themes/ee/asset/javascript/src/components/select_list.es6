@@ -125,7 +125,7 @@ class SelectList extends React.Component {
               id: node.dataset.id
             }
             let children = $(node).find('> ul > [data-id]')
-            if (children.size()) {
+            if (children.length) {
               item['children'] = getNestedItems(children.toArray())
             }
             serialized.push(item)

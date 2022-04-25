@@ -48,7 +48,7 @@ class FileGrid extends React.Component {
   }
 
   getRowCount() {
-    return this.getGridInstance()._getRows().size()
+    return this.getGridInstance()._getRows().length
   }
 
   render() {

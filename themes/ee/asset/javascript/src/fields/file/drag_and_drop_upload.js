@@ -338,7 +338,7 @@ function (_React$Component) {
       this.toggleErrorState(true);
       var errorElement = $(this.dropZone).closest('.field-control').find('> em');
 
-      if (errorElement.size() == 0) {
+      if (errorElement.length == 0) {
         errorElement = $('<em/>');
       }
 
