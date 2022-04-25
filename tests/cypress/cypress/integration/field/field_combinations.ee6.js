@@ -694,8 +694,8 @@ function addGroup(name){
 //creates a feild with the name
 function addField(name){
 	cy.visit('admin.php?/cp/fields/create')
-	cy.get('[data-input-value=field_type] .select__button').click()
-	page.get('Type_Options').contains(name).click()
+	cy.get('[data-input-value=field_type] .select__button').click({force: true})
+	page.get('Type_Options').contains(name).click({force: true})
 	let title = 'AA ' + name + ' Test'
 	page.get('Name').type(title)
 
