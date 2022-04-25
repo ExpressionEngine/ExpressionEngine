@@ -883,16 +883,14 @@ class Channel
 
                     if ($dynamic == true) {
                         $sql = "SELECT count(*) AS count
-								FROM  exp_channel_titles, exp_channels
-								WHERE exp_channel_titles.channel_id = exp_channels.channel_id";
+								FROM  exp_channel_titles
+								WHERE exp_channel_titles.site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
 
                         if ($entry_id != '') {
                             $sql .= " AND exp_channel_titles.entry_id = '" . ee()->db->escape_str($entry_id) . "'";
                         } else {
                             $sql .= " AND exp_channel_titles.url_title = '" . ee()->db->escape_str($qstring) . "'";
                         }
-
-                        $sql .= " AND exp_channels.site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
 
                         $query = ee()->db->query($sql);
 
@@ -1642,14 +1640,15 @@ class Channel
         /**------*/
 
         if ($author_id = ee()->TMPL->fetch_param('author_id')) {
+            $join_member_table = true;
             // Shows entries ONLY for currently logged in user
 
             if ($author_id == 'CURRENT_USER') {
-                $sql .= "AND t.author_id = '" . ee()->session->userdata('member_id') . "' ";
+                $sql .= "AND m.member_id = '" . ee()->session->userdata('member_id') . "' ";
             } elseif ($author_id == 'NOT_CURRENT_USER') {
-                $sql .= "AND t.author_id != '" . ee()->session->userdata('member_id') . "' ";
+                $sql .= "AND m.member_id != '" . ee()->session->userdata('member_id') . "' ";
             } else {
-                $sql .= ee()->functions->sql_andor_string($author_id, 't.author_id');
+                $sql .= ee()->functions->sql_andor_string($author_id, 'm.member_id');
             }
         }
 

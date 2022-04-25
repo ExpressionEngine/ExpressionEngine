@@ -587,9 +587,9 @@ class Channel extends StructureModel
                 }
             }
 
-            ee()->session->set_cache(__CLASS__, $cache_key, $fields);
-
             $fields = new Collection($fields);
+
+            ee()->session->set_cache(__CLASS__, $cache_key, $fields);
         }
         return $fields;
     }
