@@ -721,10 +721,12 @@ class Channel
             if ($dynamic && is_numeric($qstring)) {
                 $entry_id = $qstring;
             } else {
+                $uri_has_digit = preg_match('/[0-9]/', $qstring);
+
                 /** --------------------------------------
                 /**  Parse day
                 /** --------------------------------------*/
-                if ($dynamic && preg_match("#(^|\/)(\d{4}/\d{2}/\d{2})#", $qstring, $match)) {
+                if ($dynamic && $uri_has_digit && preg_match("#(^|\/)(\d{4}/\d{2}/\d{2})#", $qstring, $match)) {
                     $ex = explode('/', $match[2]);
 
                     $year = $ex[0];
@@ -739,7 +741,7 @@ class Channel
                 /** --------------------------------------*/
 
                 // added (^|\/) to make sure this doesn't trigger with url titles like big_party_2006
-                if ($dynamic && preg_match("#(^|\/)(\d{4}/\d{2})(\/|$)#", $qstring, $match)) {
+                if ($dynamic && $uri_has_digit && preg_match("#(^|\/)(\d{4}/\d{2})(\/|$)#", $qstring, $match)) {
                     $ex = explode('/', $match[2]);
 
                     $year = $ex[0];
@@ -751,7 +753,7 @@ class Channel
                 /** --------------------------------------
                 /**  Parse ID indicator
                 /** --------------------------------------*/
-                if ($dynamic && preg_match("#^(\d+)(.*)#", $qstring, $match)) {
+                if ($dynamic && $uri_has_digit && preg_match("#^(\d+)(.*)#", $qstring, $match)) {
                     $seg = (! isset($match[2])) ? '' : $match[2];
 
                     if (substr($seg, 0, 1) == "/" or $seg == '') {
@@ -763,7 +765,7 @@ class Channel
                 /** --------------------------------------
                 /**  Parse page number
                 /** --------------------------------------*/
-                if (($dynamic or ee()->TMPL->fetch_param('paginate')) && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) {
+                if (($dynamic or ee()->TMPL->fetch_param('paginate'))  && $uri_has_digit && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) {
                     $this->uristr = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
                     $qstring = trim_slashes(str_replace($match[0], '', $qstring));
                     $page_marker = true;
@@ -864,7 +866,7 @@ class Channel
                 // The recent comments feature uses "N" as the URL indicator
                 // It needs to be removed if presenst
 
-                if (preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match)) {
+                if ($uri_has_digit && preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match)) {
                     $this->uristr = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
 
                     $qstring = trim_slashes(str_replace($match[0], '', $qstring));
@@ -1640,15 +1642,14 @@ class Channel
         /**------*/
 
         if ($author_id = ee()->TMPL->fetch_param('author_id')) {
-            $join_member_table = true;
             // Shows entries ONLY for currently logged in user
 
             if ($author_id == 'CURRENT_USER') {
-                $sql .= "AND m.member_id = '" . ee()->session->userdata('member_id') . "' ";
+                $sql .= "AND t.author_id = '" . ee()->session->userdata('member_id') . "' ";
             } elseif ($author_id == 'NOT_CURRENT_USER') {
-                $sql .= "AND m.member_id != '" . ee()->session->userdata('member_id') . "' ";
+                $sql .= "AND t.author_id != '" . ee()->session->userdata('member_id') . "' ";
             } else {
-                $sql .= ee()->functions->sql_andor_string($author_id, 'm.member_id');
+                $sql .= ee()->functions->sql_andor_string($author_id, 't.author_id');
             }
         }
 
