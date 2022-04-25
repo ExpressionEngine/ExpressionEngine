@@ -2,6 +2,8 @@
 
 $lang = array(
 
+    'added_by' => 'Added By',
+
     'all_files' => 'All Files',
 
     'allow_subfolders' => 'Allow subfolders?',
@@ -29,6 +31,8 @@ $lang = array(
     'date_added' => 'Date Added',
 
     'description' => 'Description',
+
+    'dimensions' => 'Dimensions',
 
     'download' => 'Download',
 
@@ -83,6 +87,8 @@ $lang = array(
     'keep_subfolders_top' => 'Keep subfolders on top?',
 
     'keep_subfolders_top_desc' => 'Group subfolders at the top of the files list when browsing.',
+
+    'last_modified' => 'Last Modified',
 
     'location' => 'Location',
 
@@ -139,6 +145,10 @@ $lang = array(
     'upload_new_file' => 'Upload New File',
 
     'upload_options' => 'Upload options',
+
+    'usage' => 'Usage',
+
+    'usage_desc' => 'This file is being used in the following locations:',
 
     /* sidebar */
     'zero_directories_found' => 'No <b>Directories</b> found',

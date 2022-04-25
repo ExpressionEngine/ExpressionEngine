@@ -105,6 +105,7 @@ class File extends AbstractFilesController
                 'crop' => $this->renderCropForm($file, $info),
                 'rotate' => $this->renderRotateForm($file),
                 'resize' => $this->renderResizeForm($file, $info),
+                'usage' => $this->renderUsageForm($file),
             ),
             'buttons' => [
                 [
@@ -341,6 +342,25 @@ class File extends AbstractFilesController
         ];
 
         ee()->cp->render('settings/form', $vars);
+    }
+
+    protected function renderUsageForm($file)
+    {
+        $section = [
+            [
+                'title' => 'usage_desc',
+                'desc' => '',
+                'fields' => [
+                    'usage_tables' => [
+                        'type' => 'html',
+                        'content' => ee('View')->make('ee:_shared/file/usage-tab')->render(),
+                    ],
+                ],
+            ],
+        ];
+
+        return ee('View')->make('_shared/form/section')
+            ->render(array('name' => null, 'settings' => $section));
     }
 
     protected function renderCropForm($file, $info)

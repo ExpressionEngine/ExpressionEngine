@@ -149,7 +149,6 @@ abstract class AbstractFiles extends CP_Controller
 
         ee()->view->header = array(
             'title' => lang('file_manager'),
-            'toolbar_items' => $toolbar_items,
             'action_button' => ee('Permission')->can('upload_new_files') && $upload_destinations->count() ? [
                 'text' => '<i class="fas fa-cloud-upload-alt icon-left"></i>' . lang('upload'),
                 'filter_placeholder' => lang('filter_upload_directories'),

@@ -24225,6 +24225,30 @@ body[data-theme="dark"] {
   padding-left: calc(19% - 21px);
 }
 
+.f_metadata-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+  grid-column-gap: 15px;
+  grid-row-gap: 15px;
+  padding: 20px;
+  background: var(--ee-bg-0);
+  margin-bottom: 20px;
+}
+.f_metadata-section .f_metadata-item {
+  margin-bottom: 10px;
+}
+.f_metadata-section .f_metadata-item span {
+  display: block;
+  color: var(--ee-text-normal);
+}
+.f_metadata-section .f_meta-name {
+  font-weight: 500;
+}
+
+#fieldset-usage_tables h2 {
+  padding: 15px 25px;
+}
+
 .hidden {
   display: none;
 }

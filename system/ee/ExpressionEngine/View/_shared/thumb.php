@@ -11,7 +11,7 @@
         <?php foreach ($files as $file): ?>
             <?php $missing = !$file->exists(); ?>
             <!-- Add class "file-grid__wrapper-large" for larger thumbnails: -->
-                <a href data-file-id="<?=$file->file_id?>" rel="modal-view-file" class="file-grid__file <?php if ($missing): echo 'file-card--missing'; endif; ?>" title="<?=$file->title?>">
+                <a href="<?=ee('CP/URL')->make('files/file/view/' . $file->file_id)?>" data-file-id="<?=$file->file_id?>" rel="modal-view-file" class="file-grid__file <?php if ($missing): echo 'file-card--missing'; endif; ?>" title="<?=$file->title?>">
 
                     <div class="file-thumbnail__wrapper">
                         <?php if ($missing): ?>
