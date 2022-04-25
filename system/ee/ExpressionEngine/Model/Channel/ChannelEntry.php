@@ -243,8 +243,14 @@ class ChannelEntry extends ContentModel
 
                 //let tabs do their cloning work
                 if (defined('CLONING_MODE') && CLONING_MODE === true) {
-                    if (method_exists($OBJ, 'clone') === true) {
-                        $values = $OBJ->clone($this, $values);
+                    $cloneFunction = null;
+                    if (method_exists($OBJ, 'cloneData') === true) {
+                        $cloneFunction = 'cloneData';
+                    } elseif (method_exists($OBJ, 'clone') === true) {
+                        $cloneFunction = 'clone';
+                    }
+                    if (!empty($cloneFunction)) {
+                        $values = $OBJ->$cloneFunction($this, $values);
                         foreach ($values as $field => $value) {
                             $property = $name . '__' . $field;
                             $this->$property = $value;
