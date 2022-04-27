@@ -149,9 +149,7 @@ class EE_relationship_tree_builder
         $entries_result = array();
 
         if (! empty($unique_entry_ids)) {
-            // @todo reduce to only those that have a categories pair or parameter
             $entriesQueryWith = ['Channel', 'Author'];
-            var_dump($disabledFeatures);
             if (! in_array('relationship_categories', $disabledFeatures)) {
                 ee()->load->model('category_model');
                 $category_lookup = ee()->category_model->get_entry_categories($unique_entry_ids);
