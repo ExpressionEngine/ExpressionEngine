@@ -519,7 +519,7 @@ context('Create combinations of field', () => {
 		cy.get('body').should('contain', 'tres')
 		cy.get('body').should('contain', 'cinco')
 
-		cy.log('Change the field type and make sure the output is the same')
+		cy.log('Change the fieldtype and make sure the output is the same')
 
 		cy.visit('admin.php?/cp/design')
 		cy.get('a').contains('aaSelectableButtons').eq(0).click()

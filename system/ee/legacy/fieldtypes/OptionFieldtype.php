@@ -9,7 +9,7 @@
  */
 
 /**
- * Option Field type
+ * Option fieldtype
  */
 abstract class OptionFieldtype extends EE_Fieldtype
 {

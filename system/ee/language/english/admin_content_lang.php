@@ -296,7 +296,7 @@ $lang = array(
 
     'fmt_has_changed' => 'Note: You have selected a different field formatting choice than what was previously saved.',
 
-    'formatting_no_available' => 'Text formatting is not available for your chosen field type',
+    'formatting_no_available' => 'Text formatting is not available for your chosen fieldtype',
 
     'global_sort_order' => 'Master Sort Order',
 
@@ -657,7 +657,7 @@ $lang = array(
 
     'delete_field_group_confirmation' => 'Are you sure you want to permanently delete this Channel Field Group?',
 
-    'dropdown_sub' => 'If you are using a \'drop-down\' field type',
+    'dropdown_sub' => 'If you are using a \'drop-down\' fieldtype',
 
     'duplicate_field_name' => 'The field name you chose is already taken',
 
@@ -675,7 +675,7 @@ $lang = array(
 
     'field_formatting' => 'Field Formatting',
 
-    'field_formatting_cont' => 'If you chose textarea field type',
+    'field_formatting_cont' => 'If you chose textarea fieldtype',
 
     'field_group' => 'Channel Field Group',
 
@@ -695,7 +695,7 @@ $lang = array(
 
     'field_list_items_cont' => 'If you chose drop-down menu',
 
-    'field_max_length_cont' => 'If you are using a \'text\' field type',
+    'field_max_length_cont' => 'If you are using a \'text\' fieldtype',
 
     'field_name' => 'Short Name',
 
@@ -711,7 +711,7 @@ $lang = array(
 
     'invalid_characters' => 'The field name you submitted contains invalid characters',
 
-    'invalid_field_type' => 'Invalid field type',
+    'invalid_field_type' => 'Invalid fieldtype',
 
     'is_field_required' => 'Is this a required field?',
 
@@ -753,7 +753,7 @@ $lang = array(
 
     'textarea_rows' => 'Textarea Rows',
 
-    'textarea_rows_cont' => 'If you are using a \'textarea\' field type',
+    'textarea_rows_cont' => 'If you are using a \'textarea\' fieldtype',
 
     'type_decimal' => 'Decimal',
 

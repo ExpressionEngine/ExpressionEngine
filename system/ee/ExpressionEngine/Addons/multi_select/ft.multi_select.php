@@ -24,7 +24,7 @@ class Multi_select_ft extends OptionFieldtype
     public $has_array_data = true;
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */
@@ -48,7 +48,7 @@ class Multi_select_ft extends OptionFieldtype
         $selected = decode_multi_field($data);
         $selected = (empty($selected) || $selected == array('')) ? array() : (array) $selected;
 
-        // in case another field type was here
+        // in case another fieldtype was here
         $field_options = $this->_get_field_options($data);
 
         if ($selected) {
