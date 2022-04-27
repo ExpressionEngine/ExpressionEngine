@@ -1272,7 +1272,13 @@ class ChannelEntry extends ContentModel
         return ($this->author_id && $this->Author) ? $this->Author->getMemberName() : '';
     }
 
-    public function getModChannelResultsArray()
+    /**
+     * Get the data and format as array to be used by exp:channel:entries
+     *
+     * @param array $disable ('categories')
+     * @return void
+     */
+    public function getModChannelResultsArray($disable = [])
     {
         $data = array_merge($this->getValues(), $this->Channel->getRawValues(), $this->Author->getValues());
         $data['entry_site_id'] = $this->site_id;
@@ -1283,11 +1289,13 @@ class ChannelEntry extends ContentModel
             $data['recent_comment_date'] = $this->recent_comment_date->format('U');
         }
 
-        foreach ($this->getStructure()->getAllCustomFields() as $field) {
-            $key = 'field_id_' . $field->getId();
+        if (!in_array('custom_fields', $disable)) {
+            foreach ($this->getStructure()->getAllCustomFields() as $field) {
+                $key = 'field_id_' . $field->getId();
 
-            if (! array_key_exists($key, $data)) {
-                $data[$key] = null;
+                if (! array_key_exists($key, $data)) {
+                    $data[$key] = null;
+                }
             }
         }
 
@@ -1295,11 +1303,13 @@ class ChannelEntry extends ContentModel
             $data[$key] = ($data[$key]) ? 'y' : 'n';
         }
 
-        $cat_ids = [];
-        foreach ($this->Categories as $cat) {
-            $cat_ids[] = $cat->getId();
+        if (!in_array('categories', $disable)) {
+            $cat_ids = [];
+            foreach ($this->Categories as $cat) {
+                $cat_ids[] = $cat->getId();
+            }
+            $data['cat_id'] = $cat_ids;
         }
-        $data['cat_id'] = $cat_ids;
 
         return $data;
     }

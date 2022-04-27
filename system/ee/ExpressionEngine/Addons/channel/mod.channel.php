@@ -4850,7 +4850,9 @@ class Channel
             'custom_fields' => true,
             'member_data' => true,
             'pagination' => true,
-            'relationships' => true
+            'relationships' => true,
+            'relationship_custom_fields' => true,
+            'relationship_categories' => true,
         );
 
         if ($disable = ee()->TMPL->fetch_param('disable')) {
