@@ -304,7 +304,7 @@ $lang = array(
 
     'grid_checkbox_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single checkbox and label pair in the publish form.',
 
-    'grid_multiselect_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a multi-select in the publish form.',
+    'grid_multiselect_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a multi select in the publish form.',
 
     'grid_radio_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single radio button and label pair in the publish form.',
 
@@ -360,9 +360,9 @@ $lang = array(
 
     'max_revisions_note' => 'Versioning can use up a lot of database space so it is recommended that you limit the number of revisions.',
 
-    'multiselect_options' => 'Multi-Select options',
+    'multiselect_options' => 'Multi Select options',
 
-    'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi-select in the publish form.</i>',
+    'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi select in the publish form.</i>',
 
     'make_conditional' => 'Make conditional?',
 
@@ -717,7 +717,7 @@ $lang = array(
 
     'is_field_searchable' => 'Is field searchable?',
 
-    'multi_list_items' => 'Multi-Select Options',
+    'multi_list_items' => 'Multi Select Options',
 
     'new_field_group' => 'New Field Group',
 

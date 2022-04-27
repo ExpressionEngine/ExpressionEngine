@@ -11,7 +11,7 @@
 require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
- * Multi-Select Fieldtype
+ * Multi Select Fieldtype
  */
 class Multi_select_ft extends OptionFieldtype
 {
