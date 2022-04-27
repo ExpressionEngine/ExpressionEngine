@@ -443,7 +443,8 @@ function (_React$Component) {
         },
         rel: "modal-file",
         itemClass: "m-link",
-        buttonClass: "button--default button--small"
+        buttonClass: "button--default button--small",
+        createNewDirectory: this.props.createNewDirectory
       }), React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_upload_new,
         action: true,
@@ -456,7 +457,8 @@ function (_React$Component) {
         },
         rel: "modal-file",
         itemClass: "m-link",
-        buttonClass: "button--default button--small"
+        buttonClass: "button--default button--small",
+        createNewDirectory: this.props.createNewDirectory
       }))));
     }
   }]);

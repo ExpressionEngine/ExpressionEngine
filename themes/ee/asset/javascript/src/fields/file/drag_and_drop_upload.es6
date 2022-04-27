@@ -381,6 +381,7 @@ class DragAndDropUpload extends React.Component {
               rel="modal-file"
               itemClass="m-link"
               buttonClass="button--default button--small"
+              createNewDirectory={this.props.createNewDirectory}
             />
 
             <DropDownButton key={EE.lang.file_dnd_upload_new}
@@ -393,6 +394,7 @@ class DragAndDropUpload extends React.Component {
               rel="modal-file"
               itemClass="m-link"
               buttonClass="button--default button--small"
+              createNewDirectory={this.props.createNewDirectory}
             />
           </div>
         )}
