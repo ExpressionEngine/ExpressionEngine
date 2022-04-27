@@ -24,7 +24,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 var DragAndDropUpload =
@@ -391,7 +391,8 @@ function (_React$Component) {
         onSelect: function onSelect(directory) {
           return _this5.setDirectory(directory);
         },
-        buttonClass: "button--default button--small"
+        buttonClass: "button--default button--small",
+        createNewDirectory: this.props.createNewDirectory
       })), React.createElement("div", {
         "class": "file-field__dropzone-icon"
       }, React.createElement("i", {

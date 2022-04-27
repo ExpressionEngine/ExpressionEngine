@@ -112,7 +112,11 @@ function (_React$Component) {
             return _this2.selectItem(e, item);
           }
         }, item.label);
-      }))));
+      })), this.props.createNewDirectory && React.createElement("p", {
+        className: "create_new_direction"
+      }, React.createElement("a", {
+        href: "#"
+      }, EE.lang.file_dnd_create_directory))));
     }
   }]);
 

@@ -24076,6 +24076,17 @@ body[data-theme="dark"] {
     order: 3;
   }
 }
+.f_manager-wrapper .no-results [data-file-field-react] .dropdown__link, .f_manager-wrapper .no-results [data-file-field-react] .button__within-dropdown, .f_manager-wrapper .no-results [data-file-field-react] .select__dropdown-item {
+  padding: 7px 20px !important;
+  margin-left: 0;
+  background-color: transparent;
+  border: none;
+  line-height: 2;
+  text-align: left;
+}
+.f_manager-wrapper .no-results [data-file-field-react] .dropdown__link:hover, .f_manager-wrapper .no-results [data-file-field-react] .button__within-dropdown:hover, .f_manager-wrapper .no-results [data-file-field-react] .select__dropdown-item:hover {
+  background-color: var(--ee-bg-dropdown-hover);
+}
 
 .f_manager-table-breadcrumbs .breadcrumb {
   padding: 10px 20px;

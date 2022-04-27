@@ -185,6 +185,8 @@ $lang = array(
 
     'file_dnd_upload_new' => 'Upload New',
 
+    'file_dnd_create_directory' => 'Create New Directory',
+
     /* Grid */
     'grid_add_field' => 'add new field',
 

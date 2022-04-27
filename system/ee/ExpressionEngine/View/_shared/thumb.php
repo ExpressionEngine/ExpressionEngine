@@ -58,7 +58,31 @@
     <?php if (isset($no_results)): ?>
         <div class="tbl-row no-results">
             <div class="none">
-                <p><?=$no_results['text']?><?php if (isset($no_results['href'])): ?> <a href="<?=$no_results['href']?>"><?=lang('add_new')?></a><?php endif ?></p>
+                <?php if($no_results['action_widget']): ?>
+
+                    <?php
+                        $component = [
+                            'allowedDirectory' => 'all',
+                            'contentType' => 'image',
+                            'file' => null,
+                            'showActionButtons' => false,
+                            'createNewDirectory' => true
+                        ];
+                    ?>
+
+                    <div data-file-field-react="<?=base64_encode(json_encode($component))?>">
+                        <div class="fields-select">
+                            <div class="field-inputs">
+                                <label class="field-loading">
+                                    <?=lang('loading')?><span></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                <?php else: ?>
+                    <p><?=$no_results['text']?><?php if (isset($no_results['href'])): ?> <a href="<?=$no_results['href']?>"><?=lang('add_new')?></a><?php endif ?></p>
+                <?php endif; ?>
             </div>
         </div>
     <?php endif ?>

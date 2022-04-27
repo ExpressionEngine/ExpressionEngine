@@ -717,13 +717,14 @@ class Table
      * @param	string	$action_link	Link for action button to create a new item
      * @return  void
      */
-    public function setNoResultsText($text, $action_text = '', $action_link = '', $external = false)
+    public function setNoResultsText($text, $action_text = '', $action_link = '', $external = false, $action_widget = false)
     {
         $this->config['no_results'] = array(
             'text' => $text,
             'action_text' => $action_text,
             'action_link' => $action_link,
-            'external' => $external
+            'external' => $external,
+            'action_widget' => $action_widget
         );
     }
 

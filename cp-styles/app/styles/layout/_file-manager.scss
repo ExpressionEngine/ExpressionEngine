@@ -37,6 +37,24 @@
       }
     }
   }
+
+  .no-results {
+    [data-file-field-react] {
+
+      .dropdown__link {
+        padding: 7px 20px !important;
+        margin-left: 0;
+        background-color: transparent;
+        border: none;
+        line-height: 2;
+        text-align: left;
+
+        &:hover {
+          background-color: var(--ee-bg-dropdown-hover);
+        }
+      }
+    }
+  }
 }
 
 .f_manager-table-breadcrumbs {

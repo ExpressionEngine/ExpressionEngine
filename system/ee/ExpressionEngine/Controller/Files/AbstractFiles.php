@@ -160,6 +160,9 @@ abstract class AbstractFiles extends CP_Controller
 
     protected function buildTable($files, $limit, $offset)
     {
+        ee()->load->library('file_field');
+        ee()->file_field->dragAndDropField('new_file_manager', '', 'all', 'image');
+
         $table = ee('CP/Table', array(
             'sort_col' => 'date_added',
             'sort_dir' => 'desc',
@@ -190,7 +193,7 @@ abstract class AbstractFiles extends CP_Controller
             )
         );
 
-        $table->setNoResultsText(sprintf(lang('no_found'), lang('files')));
+        $table->setNoResultsText(sprintf(lang('no_found'), lang('files')),'', '', false, true);
 
         $sort_col = $table->sort_col;
 
@@ -347,6 +350,8 @@ abstract class AbstractFiles extends CP_Controller
 
     protected function listingsPage($files, $base_url, $view_type = 'list')
     {
+        ee()->load->library('file_field');
+        ee()->file_field->dragAndDropField('new_file_manager', '', 'all', 'image');
         $vars = array();
         $search_terms = ee()->input->get_post('filter_by_keyword');
 
@@ -377,7 +382,8 @@ abstract class AbstractFiles extends CP_Controller
 
             if ($files->count() == 0) {
                 $vars['no_results'] = [
-                    'text' => sprintf(lang('no_found'), lang('files'))
+                    'text' => sprintf(lang('no_found'), lang('files')),
+                    'action_widget' => true
                 ];
             }
 
@@ -408,7 +414,8 @@ abstract class AbstractFiles extends CP_Controller
         ee()->cp->add_js_script(array(
             'file' => array(
                 'cp/confirm_remove',
-                'cp/files/manager'
+                'cp/files/manager',
+                'fields/file/file_field_drag_and_drop',
             ),
         ));
 

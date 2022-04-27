@@ -332,6 +332,7 @@ class DragAndDropUpload extends React.Component {
                         items={EE.dragAndDrop.uploadDesinations}
                         onSelect={(directory) => this.setDirectory(directory)}
                         buttonClass="button--default button--small"
+                        createNewDirectory={this.props.createNewDirectory}
                     />
                 }
             </div>

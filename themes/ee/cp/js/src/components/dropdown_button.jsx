@@ -63,6 +63,11 @@ class DropDownButton extends React.Component {
                             <a href="#" key={item.value} className={"dropdown__link " + this.props.itemClass} rel={this.props.rel} onClick={(e) => this.selectItem(e, item)}>{item.label}</a>
                         )}
                     </div>
+                    {this.props.createNewDirectory &&
+                        <p className="create_new_direction">
+                            <a href="#">{EE.lang.file_dnd_create_directory}</a>
+                        </p>
+                    }
                 </div>
             </>
         )
