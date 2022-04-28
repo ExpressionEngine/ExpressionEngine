@@ -154,16 +154,18 @@ class EE_relationship_tree_builder
                 ee()->load->model('category_model');
                 $category_lookup = ee()->category_model->get_entry_categories($unique_entry_ids);
                 $entriesQueryWith[] = 'Categories';
+            }else{
+                $disabledFeatures[] = 'categories';
             }
 
             // ready set, main query.
             if (in_array('relationship_custom_fields', $disabledFeatures)) {
-                $channelEnstryFields = ee('Model')->make('ChannelEntry')->getFields();
+                $channelEntryFields = ee('Model')->make('ChannelEntry')->getFields();
                 $channelFields = ee('Model')->make('Channel')->getFields();
                 $authorFields = ee('Model')->make('Member')->getFields();
                 $disabled = ['custom_fields', 'categories'];
                 $entriesQuery = ee('Model')->get('ChannelEntry', $unique_entry_ids)->with($entriesQueryWith);
-                foreach ($channelEnstryFields as $field) {
+                foreach ($channelEntryFields as $field) {
                     $entriesQuery->fields($field);
                 }
                 foreach ($channelFields as $field) {
@@ -179,7 +181,7 @@ class EE_relationship_tree_builder
                 $entries_result = ee('Model')->get('ChannelEntry', $unique_entry_ids)
                     ->with($entriesQueryWith)
                     ->all()
-                    ->getModChannelResultsArray();
+                    ->getModChannelResultsArray($disabledFeatures);
             }
 
             if (! is_array($entries_result)) {
