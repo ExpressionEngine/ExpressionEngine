@@ -502,6 +502,7 @@ class Template extends AbstractDesignController
         }
 
         $templates = ee('Model')->get('Template')
+            ->with('TemplateGroup')
             ->filter('site_id', ee()->config->item('site_id'))
             ->filter('template_data', 'LIKE', '%' . $search_terms . '%');
 

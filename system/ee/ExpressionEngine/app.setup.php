@@ -247,20 +247,6 @@ $setup = [
             return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri, ee('Format'));
         },
 
-        'Permission' => function ($ee, $site_id = null) {
-            $userdata = ee()->session->all_userdata();
-            $member = ee()->session->getMember();
-            $site_id = ($site_id) ?: ee()->config->item('site_id');
-
-            return new Permission\Permission(
-                $ee->make('Model'),
-                $userdata,
-                ($member) ? $member->getPermissions() : [],
-                ($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
-                $site_id
-            );
-        },
-
         'Resource' => function () {
             return new Resource\Request();
         },
@@ -537,6 +523,20 @@ $setup = [
             $app->setClassAliases();
 
             return new Model\DataStore($ee->make('Database'), $config);
+        },
+
+        'Permission' => function ($ee, $site_id = null) {
+            $userdata = ee()->session->all_userdata();
+            $member = ee()->session->getMember();
+            $site_id = ($site_id) ?: ee()->config->item('site_id');
+
+            return new Permission\Permission(
+                $ee->make('Model'),
+                $userdata,
+                ($member) ? $member->getPermissions() : [],
+                ($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
+                $site_id
+            );
         },
 
         'Request' => function ($ee) {
