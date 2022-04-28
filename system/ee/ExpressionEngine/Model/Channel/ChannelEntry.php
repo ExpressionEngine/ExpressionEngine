@@ -710,7 +710,7 @@ class ChannelEntry extends ContentModel
             $modules = [];
             $providers = ee('App')->getProviders();
             $installed_modules = $this->getModelFacade()->get('Module')
-                ->all()
+                ->all(true)
                 ->pluck('module_name');
 
             foreach (array_keys($providers) as $name) {

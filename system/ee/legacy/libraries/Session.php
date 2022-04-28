@@ -353,7 +353,7 @@ class EE_Session
     public function create_new_session($member_id, $admin_session = false, $can_debug = false)
     {
         if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
-            $this->member_model = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
+            $this->_setupMemberModel($member_id);
         }
 
         if ($this->access_cp == true or $this->member_model->can('access_cp')) {
@@ -1187,13 +1187,26 @@ class EE_Session
         $data = ee()->db->get();
 
         if (! is_object($this->member_model) || $member_model->member_id != $member_id) {
-            $this->member_model = ee('Model')->get('Member', $member_id)
-                ->with('PrimaryRole', 'Roles', 'RoleGroups')
-                ->all()
-                ->first();
+            $this->_setupMemberModel($member_id);
         }
 
         return $data;
+    }
+
+    /**
+     * Pupulate member_model with logged in member object
+     *
+     * @param int $memberId
+     * @return Member model
+     */
+    private function _setupMemberModel($memberId)
+    {
+        $memberQuery = ee('Model')->get('Member', $memberId)
+                ->with('PrimaryRole', 'Roles', 'RoleGroups');
+        if (REQ == 'CP') {
+            $memberQuery->with('EntryManagerViews');
+        }
+        $this->member_model = $memberQuery->all()->first();
     }
 
     /**

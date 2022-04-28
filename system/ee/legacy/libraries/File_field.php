@@ -255,6 +255,7 @@ class File_field
             $file_name = str_replace($matches[0], '', $data);
 
             $file = ee('Model')->get('File')
+                ->with('UploadDestination')
                 ->filter('file_name', $file_name)
                 ->filter('upload_location_id', $dir_id)
                 ->filter('site_id', ee()->config->item('site_id'))
@@ -262,7 +263,7 @@ class File_field
         }
         // If file field is just a file ID
         elseif (! empty($data) && is_numeric($data)) {
-            $file = ee('Model')->get('File', $data)->first();
+            $file = ee('Model')->get('File', $data)->with('UploadDestination')->first();
         }
 
         return $file;

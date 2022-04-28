@@ -478,7 +478,7 @@ class EntryListing
         if ($channel) {
             $statuses = $channel->Statuses;
         } else {
-            $statuses = ee('Model')->get('Status')->all();
+            $statuses = ee('Model')->get('Status')->all(true);
         }
 
         $status_options = array();

@@ -115,6 +115,10 @@ class Member extends ContentModel
             'model' => 'ChannelEntryAutosave',
             'to_key' => 'author_id'
         ),
+        'EntryManagerViews' => array(
+            'type' => 'hasMany',
+            'model' => 'EntryManagerView'
+        ),
         'Comments' => array(
             'type' => 'hasMany',
             'model' => 'Comment',
@@ -991,7 +995,7 @@ class Member extends ContentModel
 
         if ($modulesCollection === false) {
             if ($this->isSuperAdmin()) {
-                $modulesCollection = $this->getModelFacade()->get('Module')->all();
+                $modulesCollection = $this->getModelFacade()->get('Module')->all(true);
             } else {
                 $modules = [];
                 foreach ($this->getAllRoles() as $role) {
