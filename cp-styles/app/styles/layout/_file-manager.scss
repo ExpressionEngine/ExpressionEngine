@@ -292,3 +292,19 @@
     }
   }
 }
+
+.tooltip-img {
+  position: absolute;
+  display: none;
+  width: 200px;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: ease all 0.4s;
+  padding: 10px;
+  background-color: var(--ee-table-bg);
+  border-radius: 5px;
+  border: 2px solid var(--ee-table-border);
+  z-index: 200;
+}

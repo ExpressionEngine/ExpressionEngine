@@ -246,11 +246,11 @@ abstract class AbstractFiles extends CP_Controller
             }
 
             $file_description = $file->title;
-            $file_thumbnail = '<img src="' . $file->getAbsoluteURL() . '" style="max-width: 150px; max-height: 100px;">';
+            $file_thumbnail = '<img src="' . $file->getAbsoluteURL() . '" style="max-width: 150px; max-height: 100px;" class="thumbnail_img"><span class="tooltip-img" style="background-image:url('.$file->getAbsoluteURL().')"></span>';
 
             if (ee('Permission')->can('edit_files')) {
                 $file_description = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" data-file-id="' . $file->file_id . '" class="m-link">' . $file->title . '</a>';
-                $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" class=""><img src="'.$file->getAbsoluteURL().'" style="max-width: 150px; max-height: 100px;"></a>';
+                $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" class=""><img src="'.$file->getAbsoluteURL().'" style="max-width: 150px; max-height: 100px;" class="thumbnail_img"><span class="tooltip-img" style="background-image:url('.$file->getAbsoluteURL().')"></span></a>';
             }
 
             $attrs = array();

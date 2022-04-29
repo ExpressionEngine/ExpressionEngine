@@ -105,6 +105,7 @@
   .m-close { right: -8px;}
 }
 
+
 .app-modal__dismiss {
   margin-bottom: 20px;
 
@@ -163,4 +164,8 @@
       cursor: pointer;
     }
   }
+}
+.modal-file {
+  max-width: 100%;
+  width: 98%;
 }

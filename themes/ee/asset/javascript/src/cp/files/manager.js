@@ -101,5 +101,22 @@
 		});
 
 		new MutableSelectField('files_field', EE.fileManager.fileDirectory);
+
+		$('.thumbnail_img').hover(function(e) {
+			var X = e.offsetX;
+			var Y = e.offsetY;
+			var top = Y + 20 + 'px';
+			var left = X + 20 + 'px';
+			if ($(this).siblings('.tooltip-img').length) {
+				$(this).parents('td').css({position: 'relative'});
+				$(this).siblings('.tooltip-img').css({
+					display: 'block',
+					top: top,
+					left: left,
+				});
+			}
+		}, function(){
+			$(this).siblings('.tooltip-img').css({display: "none"})
+		});
 	});
 })(jQuery);

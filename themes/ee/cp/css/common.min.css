@@ -14092,6 +14092,11 @@ input[type=button].btn-block {
   cursor: pointer;
 }
 
+.modal-file {
+  max-width: 100%;
+  width: 98%;
+}
+
 .jump-menu {
   background: var(--ee-bg-dropdown);
   min-width: 400px;
@@ -24277,6 +24282,22 @@ body[data-theme="dark"] {
 }
 .create_new_direction a:hover {
   background-color: var(--ee-bg-dropdown-hover);
+}
+
+.tooltip-img {
+  position: absolute;
+  display: none;
+  width: 200px;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: ease all 0.4s;
+  padding: 10px;
+  background-color: var(--ee-table-bg);
+  border-radius: 5px;
+  border: 2px solid var(--ee-table-border);
+  z-index: 200;
 }
 
 .hidden {
