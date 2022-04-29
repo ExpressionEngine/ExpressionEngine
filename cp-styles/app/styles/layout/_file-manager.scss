@@ -55,6 +55,12 @@
       }
     }
   }
+
+  .create_new_direction {
+    a {
+      color: var(--ee-button-secondary-color);
+    }
+  }
 }
 
 .f_manager-table-breadcrumbs {
@@ -266,5 +272,23 @@
 #fieldset-usage_tables {
   h2 {
     padding: 15px 25px;
+  }
+}
+
+.create_new_direction {
+  border-top: 2px solid var(--ee-tab-bar-border);
+
+  a {
+    padding: 7px 20px;
+    display: block;
+    color: var(--ee-text-primary);
+    margin: 0;
+    background-color: transparent;
+    border: none;
+    text-align: left;
+
+    &:hover {
+      background-color: var(--ee-bg-dropdown-hover);
+    }
   }
 }

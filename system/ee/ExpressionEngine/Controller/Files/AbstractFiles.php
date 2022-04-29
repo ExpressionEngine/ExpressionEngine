@@ -409,7 +409,10 @@ abstract class AbstractFiles extends CP_Controller
             ->currentPage($page)
             ->render($base_url);
 
-        ee()->javascript->set_global('file_view_url', ee('CP/URL')->make('files/file/view/###')->compile());
+        ee()->javascript->set_global([
+            'file_view_url', ee('CP/URL')->make('files/file/view/###')->compile(),
+            'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
+        ]);
         ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
         ee()->cp->add_js_script(array(
             'file' => array(
@@ -418,7 +421,6 @@ abstract class AbstractFiles extends CP_Controller
                 'fields/file/file_field_drag_and_drop',
             ),
         ));
-
         return $vars;
     }
 }

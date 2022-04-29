@@ -36,11 +36,12 @@
 $component = [
     'allowedDirectory' => $allowed_directory,
     'contentType' => $content_type,
-    'file' => $file
+    'file' => $file,
+    'createNewDirectory' => true
 ];
 ?>
 
-<div data-file-field-react="<?=base64_encode(json_encode($component))?>">
+<div data-file-field-react="<?=base64_encode(json_encode($component))?>" data-input-value="files_field">
 	<div class="fields-select">
 		<div class="field-inputs">
 			<label class="field-loading">

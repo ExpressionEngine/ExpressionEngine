@@ -220,3 +220,11 @@
 </div>
 </div>
 <?php $this->embed('files/_delete_modal'); ?>
+
+<?php 
+    $modal = ee('View')->make('ee:_shared/modal-form')->render([
+        'name' => 'modal-form',
+        'contents' => ''
+    ]);
+    ee('CP/Modal')->addModal('modal-form', $modal);
+?>

@@ -115,8 +115,12 @@ function (_React$Component) {
       })), this.props.createNewDirectory && React.createElement("p", {
         className: "create_new_direction"
       }, React.createElement("a", {
-        href: "#"
-      }, EE.lang.file_dnd_create_directory))));
+        href: "#",
+        rel: "add_new",
+        "class": "js-modal-link--side submit"
+      }, React.createElement("i", {
+        "class": "fas fa-plus icon-left"
+      }), " ", EE.lang.file_dnd_create_directory))));
     }
   }]);
 

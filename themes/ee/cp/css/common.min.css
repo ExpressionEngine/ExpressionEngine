@@ -24087,6 +24087,9 @@ body[data-theme="dark"] {
 .f_manager-wrapper .no-results [data-file-field-react] .dropdown__link:hover, .f_manager-wrapper .no-results [data-file-field-react] .button__within-dropdown:hover, .f_manager-wrapper .no-results [data-file-field-react] .select__dropdown-item:hover {
   background-color: var(--ee-bg-dropdown-hover);
 }
+.f_manager-wrapper .create_new_direction a {
+  color: var(--ee-button-secondary-color);
+}
 
 .f_manager-table-breadcrumbs .breadcrumb {
   padding: 10px 20px;
@@ -24258,6 +24261,22 @@ body[data-theme="dark"] {
 
 #fieldset-usage_tables h2 {
   padding: 15px 25px;
+}
+
+.create_new_direction {
+  border-top: 2px solid var(--ee-tab-bar-border);
+}
+.create_new_direction a {
+  padding: 7px 20px;
+  display: block;
+  color: var(--ee-text-primary);
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  text-align: left;
+}
+.create_new_direction a:hover {
+  background-color: var(--ee-bg-dropdown-hover);
 }
 
 .hidden {

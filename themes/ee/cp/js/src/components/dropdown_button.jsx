@@ -65,7 +65,7 @@ class DropDownButton extends React.Component {
                     </div>
                     {this.props.createNewDirectory &&
                         <p className="create_new_direction">
-                            <a href="#">{EE.lang.file_dnd_create_directory}</a>
+                            <a href="#" rel="add_new" class='js-modal-link--side submit'><i class="fas fa-plus icon-left"></i> {EE.lang.file_dnd_create_directory}</a>
                         </p>
                     }
                 </div>

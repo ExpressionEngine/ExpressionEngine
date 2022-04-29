@@ -78,7 +78,6 @@
 			}
 		});
 
-
 		// show/hide bulk-action-bar for the File Manager page Table view
 		$('body').on('change', '.f_manager-wrapper table td:first-child input[type=checkbox], .f_manager-wrapper table th:first-child input[type=checkbox]', function() {
 			if ($(this).parents('form').find('.f_manager-action-part .bulk-action-bar').length > 0) {
@@ -100,5 +99,7 @@
 				}
 			}
 		});
+
+		new MutableSelectField('files_field', EE.fileManager.fileDirectory);
 	});
 })(jQuery);
