@@ -36,6 +36,10 @@ class Factory
      */
     public function get($name)
     {
+        if (false !== $addon = ee()->core->cache(__CLASS__, $name, false)) {
+            return $addon;
+        }
+        
         if (! $this->app->has($name)) {
             return null;
         }
@@ -43,7 +47,9 @@ class Factory
         $provider = $this->app->get($name);
 
         if ($this->isAddon($provider)) {
-            return new Addon($provider);
+            $addon = new Addon($provider);
+            ee()->core->set_cache(__CLASS__, $name, $addon);
+            return $addon;
         }
 
         return null;
@@ -56,6 +62,10 @@ class Factory
      */
     public function all()
     {
+        if (false !== $all = ee()->core->cache(__CLASS__, '_all', false)) {
+            return $all;
+        }
+
         $providers = $this->app->getProviders();
 
         $all = array();
@@ -65,6 +75,8 @@ class Factory
                 $all[$key] = new Addon($obj);
             }
         }
+
+        ee()->core->set_cache(__CLASS__, '_all', $all);
 
         return $all;
     }

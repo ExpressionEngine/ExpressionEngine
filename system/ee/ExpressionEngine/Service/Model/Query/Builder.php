@@ -592,18 +592,12 @@ class Builder
 
     protected function saveToCache($key, $data)
     {
-        if (isset(ee()->session)) {
-            ee()->session->set_cache(__CLASS__, $key, $data);
-        }
+        ee()->core->set_cache(__CLASS__, $key, $data);
     }
 
     protected function getFromCache($key)
     {
-        if (isset(ee()->session)) {
-            return ee()->session->cache(__CLASS__, $key, false);
-        }
-
-        return false;
+        return ee()->core->cache(__CLASS__, $key, false);
     }
 }
 

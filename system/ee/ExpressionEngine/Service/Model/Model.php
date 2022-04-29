@@ -1031,18 +1031,12 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
 
     protected function saveToCache($key, $data)
     {
-        if (isset(ee()->session)) {
-            ee()->session->set_cache(get_called_class(), $key, $data);
-        }
+        ee()->core->set_cache(get_called_class(), $key, $data);
     }
 
     protected function getFromCache($key)
     {
-        if (isset(ee()->session)) {
-            return ee()->session->cache(get_called_class(), $key, false);
-        }
-
-        return false;
+        return ee()->core->cache(get_called_class(), $key, false);
     }
 }
 

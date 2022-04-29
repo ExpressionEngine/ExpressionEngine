@@ -20,6 +20,12 @@ class EE_Core
     private $ee_loaded = false;
     private $cp_loaded = false;
 
+    // Store data for just this page load.
+    // Multi-dimensional array with module/class name,
+    // e.g. $this->cache['module']['var_name']
+    // Use set_cache() and cache() methods.
+    public $cache = array();
+
     /**
      * Sets constants, sets paths contants to appropriate directories, loads
      * the database and generally prepares the system to run.
@@ -251,6 +257,43 @@ class EE_Core
         ee()->load->library('functions');
         ee()->load->library('extensions');
         ee()->load->library('api');
+    }
+
+    /**
+     * Set Core Cache
+     *
+     * This method is a setter for the $cache class variable.
+     * Note, this is not persistent across requests
+     *
+     * @param 	string 	Super Class/Unique Identifier
+     * @param 	string 	Key for cached item
+     * @param 	mixed 	item to put in the cache
+     * @return 	object
+     */
+    public function set_cache($class, $key, $val)
+    {
+        if (! isset($this->cache[$class])) {
+            $this->cache[$class] = array();
+        }
+
+        $this->cache[$class][$key] = $val;
+
+        return $this;
+    }
+
+    /**
+     * Get Core Cache
+     *
+     * This method extracts a value from the session cache.
+     *
+     * @param 	string 	Super Class/Unique Identifier
+     * @param 	string 	Key to extract from the cache.
+     * @param 	mixed 	Default value to return if key doesn't exist
+     * @return 	mixed
+     */
+    public function cache($class, $key, $default = false)
+    {
+        return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
     }
 
     /**
