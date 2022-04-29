@@ -1712,6 +1712,9 @@ class Wizard extends CI_Controller
             'show_ee_news' => 'y',
             'cli_enabled' => 'y',
             'theme_folder_path' => $this->userdata['theme_folder_path'],
+            'legacy_member_data' => 'n',
+            'legacy_channel_data' => 'n',
+            'legacy_category_field_data' => 'n',
         );
 
         $inserts = [];

@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'addLegacyFieldsConfig',
+                'addExtensionsEnabledKey',
             ]
         );
 
@@ -61,6 +62,12 @@ class Updater
             'value' => $legacyFieldExists > 0 ? 'y' : 'n'
         ])->save();
     }
+
+    private function addExtensionsEnabledKey()
+    {
+        ee()->smartforge->add_key('extensions', 'enabled');
+    }
+
 }
 
 // EOF

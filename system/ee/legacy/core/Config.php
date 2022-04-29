@@ -691,7 +691,10 @@ class EE_Config
             'multiple_sites_enabled',
             'newrelic_app_name',
             'use_newrelic',
-            'search_reindex_needed'
+            'search_reindex_needed',
+            'legacy_member_data',
+            'legacy_channel_data',
+            'legacy_category_field_data'
         ];
 
         $name = $which . '_default';
