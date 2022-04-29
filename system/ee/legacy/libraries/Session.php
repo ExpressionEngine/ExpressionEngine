@@ -521,7 +521,7 @@ class EE_Session
      */
     public function fetch_guest_data()
     {
-        $role = ee('Model')->get('Role', 3)->first();
+        $role = ee('Model')->get('Role', 3)->with('RoleSettings', 'Permissions')->all()->first();
 
         $this->userdata = array_merge($this->userdata, $role->RoleSettings->getValues());
 
@@ -576,7 +576,7 @@ class EE_Session
     {
         $member_query = $this->_do_member_query();
 
-        if ($member_query->num_rows() == 0) {
+        if (empty($member_query) || $member_query->num_rows() == 0) {
             $this->_initialize_session();
 
             return false;
@@ -1168,10 +1168,7 @@ class EE_Session
     {
         // Query DB for member data.  Depending on the validation type we'll
         // either use the cookie data or the member ID gathered with the session query.
-
-        ee()->db->from(array('members m', 'role_settings g'))
-            ->where('g.site_id', (int) ee()->config->item('site_id'))
-            ->where('m.role_id', ' g.role_id', false);
+        $data = [];
 
         $member_id = $this->sdata['member_id'];
 
@@ -1182,11 +1179,17 @@ class EE_Session
             $member_id = ee()->remember->data('member_id');
         }
 
-        ee()->db->where('member_id', (int) $member_id);
+        if (! empty($member_id)) {
+            ee()->db->from(array('members m', 'role_settings g'))
+                ->where('g.site_id', (int) ee()->config->item('site_id'))
+                ->where('m.role_id', ' g.role_id', false);
 
-        $data = ee()->db->get();
+            ee()->db->where('member_id', (int) $member_id);
 
-        if (! is_object($this->member_model) || $member_model->member_id != $member_id) {
+            $data = ee()->db->get();
+        }
+
+        if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
             $this->_setupMemberModel($member_id);
         }
 

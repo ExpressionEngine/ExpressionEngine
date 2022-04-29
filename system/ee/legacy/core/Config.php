@@ -261,7 +261,7 @@ class EE_Config
             }
         }
 
-        if (! file_exists(APPPATH . 'libraries/Sites.php') or ! isset($this->default_ini['multiple_sites_enabled']) or $this->default_ini['multiple_sites_enabled'] != 'y') {
+        if (! isset($this->default_ini['multiple_sites_enabled']) or $this->default_ini['multiple_sites_enabled'] != 'y') {
             $site_name = '';
             $site_id = 1;
         }

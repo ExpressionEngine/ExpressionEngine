@@ -4396,13 +4396,13 @@ class EE_Template
             }
 
             if (!ee()->session->getMember()) {
-                $role = ee('Model')->get('Role', 3)->first();
+                $role = ee('Model')->get('Role', 3)->fields('role_id', 'short_name')->first();
                 $roles = array($role);
                 $assigned_role_ids = array(3);
             } else {
                 $member = ee()->session->getMember();
                 $assigned_role_ids = $member->getAllRoles()->pluck('role_id');
-                $roles = ee('Model')->get('Role')->all();
+                $roles = ee('Model')->get('Role')->fields('role_id', 'short_name')->all();
             }
 
             foreach ($roles as $role) {

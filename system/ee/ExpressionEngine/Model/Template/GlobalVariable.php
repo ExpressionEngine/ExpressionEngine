@@ -148,10 +148,10 @@ class GlobalVariable extends FileSyncedModel
         }
 
         if (! $site = ee()->session->cache('site/id/' . $this->site_id, 'site')) {
-            $site = $this->getModelFacade()->get('Site')
-                ->fields('site_name')
-                ->filter('site_id', $this->site_id)
-                ->first();
+            $sites = ee('Model')->get('Site')
+                ->fields('site_id', 'site_name')
+                ->all(true);
+            $site = $sites->filter('site_id', $this->site_id)->first();
 
             ee()->session->set_cache('site/id/' . $this->site_id, 'site', $site);
         }
@@ -213,7 +213,7 @@ class GlobalVariable extends FileSyncedModel
     {
         $sites = ee('Model')->get('Site')
             ->fields('site_id', 'site_name')
-            ->all();
+            ->all(true);
 
         // always include the global partials
         $paths = [0 => PATH_TMPL . '_global_variables'];

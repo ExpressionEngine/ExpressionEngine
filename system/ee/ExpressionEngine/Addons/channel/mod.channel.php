@@ -332,10 +332,10 @@ class Channel
 
         // If there are install-wide fields, make them available to each site
         if (isset($this->cfields[0])) {
-            $site_ids = ee('Model')->get('Site')
-                ->fields('site_id')
-                ->all()
-                ->getIds();
+            $sites = ee('Model')->get('Site')
+                ->fields('site_id', 'site_name')
+                ->all(true);
+            $site_ids = $sites->getIds();
 
             foreach (['cfields', 'dfields', 'rfields', 'gfields',
                 'pfields', 'ffields', 'tfields'] as $custom_fields) {

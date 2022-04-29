@@ -356,6 +356,7 @@ class Edit extends AbstractPublishController
 
         $entry = ee('Model')->get('ChannelEntry', $id)
             ->with('Channel', 'Autosaves')
+            ->all()
             ->first();
 
         if (! $entry) {
