@@ -100,7 +100,7 @@ class Updater
         ee()->dbforge->add_key('fieldtype_id', true);
         ee()->smartforge->create_table('fieldtypes');
 
-        // Install default field types
+        // Install default fieldtypes
 
         $default_fts = array('select', 'text', 'textarea', 'date', 'file', 'multi_select', 'checkboxes', 'radio', 'rel');
 

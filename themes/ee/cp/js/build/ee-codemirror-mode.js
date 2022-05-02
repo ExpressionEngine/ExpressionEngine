@@ -21,7 +21,7 @@
 
     if (!addon_exists || addon_not_installed) {
       if (!addon_exists) {
-        return 'Addon "' + tagname + '" does not exist.';
+        return 'Add-on "' + tagname + '" does not exist.';
       }
 
       return 'Module "' + tagname + '" exists, but is not installed.';

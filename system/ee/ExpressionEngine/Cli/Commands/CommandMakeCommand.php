@@ -70,7 +70,7 @@ class CommandMakeCommand extends Cli
         if (substr($this->data['signature'], 0, strlen($this->data['addon'] . ":")) == $this->data['addon'] . ":") {
             $this->data['signature'] = substr($this->data['signature'], strlen($this->data['addon'] . ":"));
         }
-        // Lets prefix with the addon name
+        // Lets prefix with the add-on name
         $this->data['signature'] = $this->data['addon'] . ":" . $this->data['signature'];
 
         $this->info('command_make_command_lets_build');

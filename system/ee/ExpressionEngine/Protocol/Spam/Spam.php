@@ -25,14 +25,14 @@ interface Spam
 
     /**
      * Store flagged spam to await moderation. We store a serialized copy of a model entity
-     * as well as the content type (addon name) and namespace of the handler. When spam is
+     * as well as the content type (add-on name) and namespace of the handler. When spam is
      * moderated, that entity will be passed to the addon's approve()/reject() methods to
      * take whatever action is necessary.
      *
-     * @param string $content_type the content type (addon short name, e.g. comment, discuss, etc.)
+     * @param string $content_type the content type (add-on short name, e.g. comment, discuss, etc.)
      * @param object $entity A valid model entity
      * @param string $document The text that was classified as spam
-     * @param object $optional_data Any optional data the addon would like to store in the trap for later use
+     * @param object $optional_data Any optional data the add-on would like to store in the trap for later use
      * @return void
      */
     public function moderate($content_type, $entity, $document, $optional_data);

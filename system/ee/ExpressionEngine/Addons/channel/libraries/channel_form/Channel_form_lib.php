@@ -1374,7 +1374,7 @@ GRID_FALLBACK;
                 //change field_name'd POSTed keys to field_id's
                 if ($key == $field->field_name) {
                     //@TODO what to do about xss_clean and "naughty" html
-                    //for now you can crack open this file and manually add fields_ids and/or field types to the respective arrays
+                    //for now you can crack open this file and manually add fields_ids and/or fieldtypes to the respective arrays
                     //to prevent xss_clean
                     //i had some people complain about not being able to submit <object>'s
                     $xss_clean = (! in_array($field->field_id, $this->skip_xss_field_ids) && ! in_array($field->field_type, $this->skip_xss_fieldtypes));

@@ -23,7 +23,7 @@ class Number_ft extends Text_ft
     protected $default_field_content_type = 'number';
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */
