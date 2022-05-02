@@ -36,7 +36,7 @@ class Factory
      */
     public function get($name)
     {
-        if (false !== $addon = ee()->core->cache(__CLASS__, $name, false)) {
+        if (isset(ee()->core) && false !== $addon = ee()->core->cache(__CLASS__, $name, false)) {
             return $addon;
         }
         
@@ -48,7 +48,9 @@ class Factory
 
         if ($this->isAddon($provider)) {
             $addon = new Addon($provider);
-            ee()->core->set_cache(__CLASS__, $name, $addon);
+            if (isset(ee()->core)) {
+                ee()->core->set_cache(__CLASS__, $name, $addon);
+            }
             return $addon;
         }
 
@@ -62,7 +64,7 @@ class Factory
      */
     public function all()
     {
-        if (false !== $all = ee()->core->cache(__CLASS__, '_all', false)) {
+        if (isset(ee()->core) && false !== $all = ee()->core->cache(__CLASS__, '_all', false)) {
             return $all;
         }
 
@@ -76,7 +78,9 @@ class Factory
             }
         }
 
-        ee()->core->set_cache(__CLASS__, '_all', $all);
+        if (isset(ee()->core)) {
+            ee()->core->set_cache(__CLASS__, '_all', $all);
+        }
 
         return $all;
     }
