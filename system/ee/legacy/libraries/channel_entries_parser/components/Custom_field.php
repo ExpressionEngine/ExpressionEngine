@@ -105,7 +105,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     ));
 
                     if (method_exists($obj, $parse_fnc)) {
-                        $entry = (string) ft_api->apply($parse_fnc, array(
+                        $entry = (string) $ft_api->apply($parse_fnc, array(
                             $data,
                             $field['params'],
                             false
