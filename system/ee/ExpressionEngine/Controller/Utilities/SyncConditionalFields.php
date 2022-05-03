@@ -218,7 +218,7 @@ class SyncConditionalFields extends Utilities
 
         // Get all channel entries with post data
         $entries = ee('Model')->get('ChannelEntry')
-            ->with(['Channel' => ['CustomFields' => ['FieldConditionSets' => 'FieldConditions']]], 'HiddenFields')
+            ->with(['Channel' => ['CustomFields' => ['FieldConditionSets' => 'FieldConditions']]]) // 'HiddenFields'
             ->filter('channel_id', $channel_id)
             ->limit($limit)
             ->offset($offset)

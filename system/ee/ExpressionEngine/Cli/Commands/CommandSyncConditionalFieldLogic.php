@@ -151,7 +151,7 @@ class CommandSyncConditionalFieldLogic extends Cli
 
     private function getEntries($data)
     {
-        $entries = ee('Model')->get('ChannelEntry')->with(['Channel' => ['CustomFields' => ['FieldConditionSets' => 'FieldConditions']]],'HiddenFields');
+        $entries = ee('Model')->get('ChannelEntry')->with(['Channel' => ['CustomFields' => ['FieldConditionSets' => 'FieldConditions']]]);//,'HiddenFields'
 
         if (!empty($this->channel_id)) {
             $entries = $entries->filter('channel_id', $this->channel_id);
