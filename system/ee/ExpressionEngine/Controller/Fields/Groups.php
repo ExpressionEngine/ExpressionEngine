@@ -418,29 +418,41 @@ class Groups extends AbstractFieldsController
     /**
      * Renders the Field Groups selection form for the channel create/edit form
      *
-     * @param Channel $channel A Channel entity, optional
+     * @param ChannelFieldGroup $field_group A ChannelFieldGroup entity, optional
+     * @param bool $allow_add Show/hide "add" button
      * @return string HTML
      */
     public function renderFieldsField($field_group = null, $allow_add = true)
     {
+        $selected = ee('Request')->post('channel_fields') ?: [];
+        if ($field_group) {
+            $selected = $field_group->ChannelFields->pluck('field_id');
+        }
+
         $fields = ee('Model')->get('ChannelField')
-            ->fields('field_label', 'field_name')
+            ->fields('field_id', 'field_label', 'field_name')
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->order('field_label')
             ->all();
 
-        $custom_field_options = $fields->map(function ($field) {
-            return [
-                'label' => $field->field_label,
-                'value' => $field->getId(),
-                'instructions' => LD . $field->field_name . RD
-            ];
-        });
-
-        $selected = ee('Request')->post('channel_fields') ?: [];
-
-        if ($field_group) {
-            $selected = $field_group->ChannelFields->pluck('field_id');
+        $custom_field_options = [];
+        foreach ($fields as $field) {
+            if (in_array($field->getId(), $selected)) {
+                $custom_field_options[] = [
+                    'label' => $field->field_label,
+                    'value' => $field->getId(),
+                    'instructions' => LD . $field->field_name . RD
+                ];
+            }
+        }
+        foreach ($fields as $field) {
+            if (! in_array($field->getId(), $selected)) {
+                $custom_field_options[] = [
+                    'label' => $field->field_label,
+                    'value' => $field->getId(),
+                    'instructions' => LD . $field->field_name . RD
+                ];
+            }
         }
 
         $no_results = ['text' => sprintf(lang('no_found'), lang('fields'))];
