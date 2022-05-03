@@ -449,6 +449,12 @@ class Edit extends AbstractPublishController
                 $vars['version'] = $version->toArray();
                 $vars['version']['number'] = $entry->Versions->filter('version_date', '<=', $version->version_date)->count();
                 $entry->set($version_data);
+
+                ee('CP/Alert')->makeInline('viewing-revision')
+                    ->asWarning()
+                    ->withTitle(lang('viewing_revision'))
+                    ->addToBody(lang('viewing_revision_desc'))
+                    ->now();
             }
         }
 
