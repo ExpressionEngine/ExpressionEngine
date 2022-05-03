@@ -686,25 +686,25 @@ class Channels extends AbstractChannelsController
             ->order('field_label')
             ->all();
 
-        $selected_field_options = [];
+        $custom_field_options = [];
         foreach ($fields as $field) {
             if (in_array($field->getId(), $selected)) {
-                $selected_field_options[] = [
+                $custom_field_options[] = [
                     'label' => $field->field_label,
                     'value' => $field->getId(),
                     'instructions' => LD . $field->field_name . RD
                 ];
             }
         }
-        $custom_field_options = $fields->map(function ($field) {
-            return [
-                'label' => $field->field_label,
-                'value' => $field->getId(),
-                'instructions' => LD . $field->field_name . RD
-            ];
-        });
-
-        $custom_field_options = array_merge($selected_field_options, $custom_field_options);
+        foreach ($fields as $field) {
+            if (! in_array($field->getId(), $selected)) {
+                $custom_field_options[] = [
+                    'label' => $field->field_label,
+                    'value' => $field->getId(),
+                    'instructions' => LD . $field->field_name . RD
+                ];
+            }
+        }
 
         $no_results = [
             'text' => sprintf(lang('no_found'), lang('fields'))
