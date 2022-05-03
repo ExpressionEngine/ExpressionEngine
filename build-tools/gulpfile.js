@@ -215,6 +215,25 @@ gulp.task('_set_debug', function (cb) {
 });
 
 /**
+ * Set current year as copyright date
+ */
+var copyrightDate = function (path) {
+	path = (typeof path !== 'undefined') ? path : properties.local_repositories.app + '/';
+	
+	var currentYear = new Date().getFullYear();
+	var pastYear = currentYear - 1;
+
+	gulp.src([path + '**/*.php', path + '**/*.js', path + '**/*.md', path + '**/*.txt'])
+		.pipe(plugin.replace(
+			'(c) 2003-' + pastYear + ', Packet Tide',
+			'(c) 2003-' + currentYear + ', Packet Tide',
+		))
+		.pipe(gulp.dest(path));
+
+	//cb();
+};
+
+/**
  * Replace JIRA collector tag
  */
 gulp.task('_replace_jira_collector', function (cb) {
@@ -464,6 +483,7 @@ gulp.task('_clone_docs', ['_build_directories'], function (cb) {
 
 gulp.task('version_bump', ['_properties'], function () {
 	updateExists();
+	//copyrightDate();
 	return versionBump();
 });
 

@@ -27,7 +27,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var SelectList =
@@ -483,7 +483,7 @@ function (_React$Component) {
           });
         } else {
           // When formatting selected items lists, selections will likely be a flat
-          // array of values for multi-select
+          // array of values for multi select
           var value = multi ? items[key] : key;
           var newItem = {
             value: items[key].value || items[key].value === '' ? items[key].value : value,

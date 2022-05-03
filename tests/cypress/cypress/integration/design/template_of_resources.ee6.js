@@ -47,6 +47,7 @@ context('Design', () => {
 
 	describe('loading of resources from templates', function () {
 		it('loads stylesheet resource template from the current site', function () {
+			cy.logFrontendPerformance()
 			cy.get("#first").should('have.css', 'background-color', 'rgb(0, 255, 255)')
 		})
 
@@ -63,6 +64,7 @@ context('Design', () => {
 		})
 
 		it('loads stylesheet using `/css/` on path', function () {
+			cy.logFrontendPerformance()
 			cy.get("#fourth").should('have.css', 'color', 'rgb(255, 255, 255)')
 		})
 	})

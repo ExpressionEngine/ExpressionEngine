@@ -461,7 +461,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('aaSelectableButtons').eq(0).click()
 		cy.get('a').contains('index').click()
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<h2> {title} </h2>{aa_selectable_buttons_test}{item:value}<br>{/aa_selectable_buttons_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Selectable Buttons Test').click()
@@ -481,7 +481,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('Add A Row').click()
 		cy.get('input[name = "value_label_pairs[rows][new_row_5][value]"]').type('cinco')
 		cy.get('input[name = "value_label_pairs[rows][new_row_5][label]"]').type('five')
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
@@ -490,7 +490,7 @@ context('Create combinations of field', () => {
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').click()
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('not.have.class', 'active')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').should('have.class', 'active')
-		cy.get('.button--primary').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('not.have.class', 'active')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("four")').should('have.class', 'active')
 
@@ -502,7 +502,7 @@ context('Create combinations of field', () => {
 		cy.get('div').contains('AA Selectable Buttons Test').click()
 		cy.get('[name="field_pre_populate"][value="v"]').should('be.checked')
 		cy.get('[data-toggle-for="allow_multiple"]').click()
-		cy.get('.button--primary').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
@@ -511,13 +511,65 @@ context('Create combinations of field', () => {
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').click()
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
-		cy.get('.button--primary').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
 		
 		cy.visit('index.php/aaSelectableButtons')
 		cy.get('body').should('contain', 'tres')
 		cy.get('body').should('contain', 'cinco')
+
+		cy.log('Change the fieldtype and make sure the output is the same')
+
+		cy.visit('admin.php?/cp/design')
+		cy.get('a').contains('aaSelectableButtons').eq(0).click()
+		cy.get('a').contains('index').click()
+		cy.get('.CodeMirror-scroll').type('<div id="single_tag">{exp:channel:entries channel="AATestChannel"}{aa_selectable_buttons_test}{/exp:channel:entries}</div>',{ parseSpecialCharSequences: false })
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+		cy.visit('admin.php?/cp/fields')
+		cy.get('div').contains('AA Selectable Buttons Test').click()
+		cy.get('[data-input-value=field_type] .select__button').click()
+		page.get('Type_Options').contains('Checkboxes').click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+		cy.visit('index.php/aaSelectableButtons')
+		cy.get('#single_tag').should('contain', 'three')
+		cy.get('#single_tag').should('contain', 'five')
+
+		cy.visit('admin.php?/cp/fields')
+		cy.get('div').contains('AA Selectable Buttons Test').click()
+		cy.get('[data-input-value=field_type] .select__button').click()
+		page.get('Type_Options').contains('Multi Select').click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+		cy.visit('index.php/aaSelectableButtons')
+		cy.get('#single_tag').should('contain', 'three')
+		cy.get('#single_tag').should('contain', 'five')
+
+		/*cy.visit('admin.php?/cp/publish/edit')
+		cy.get('div').contains('AA Test Entry').eq(0).click()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('input[value=tres]:visible').uncheck()
+		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('input[value=cinco]:visible').uncheck()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+		cy.visit('admin.php?/cp/fields')
+		cy.get('div').contains('AA Selectable Buttons Test').click()
+		cy.get('[data-input-value=field_type] .select__button').click()
+		page.get('Type_Options').contains('Radio Buttons').click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+		cy.visit('index.php/aaSelectableButtons')
+		cy.get('#single_tag').should('contain', 'four')
+
+		cy.visit('admin.php?/cp/fields')
+		cy.get('div').contains('AA Selectable Buttons Test').click()
+		cy.get('[data-input-value=field_type] .select__button').click()
+		page.get('Type_Options').contains('Select Dropdown').click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+		cy.visit('index.php/aaSelectableButtons')
+		cy.get('#single_tag').should('contain', 'four')*/
 	})
 
 

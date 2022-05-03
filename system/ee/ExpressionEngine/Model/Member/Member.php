@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -430,7 +430,7 @@ class Member extends ContentModel
     public function onAfterInsert()
     {
         parent::onAfterInsert();
-        if (ee()->config->item('ignore_member_stats') != 'y') {
+        if (! bool_config_item('ignore_member_stats')) {
             foreach ($this->getAllRoles() as $role) {
                 $role->total_members = null;
                 $role->save();
@@ -440,7 +440,7 @@ class Member extends ContentModel
 
     public function onAfterDelete()
     {
-        if (ee()->config->item('ignore_member_stats') != 'y') {
+        if (! bool_config_item('ignore_member_stats')) {
             foreach ($this->getAllRoles() as $role) {
                 $role->total_members = null;
                 $role->save();

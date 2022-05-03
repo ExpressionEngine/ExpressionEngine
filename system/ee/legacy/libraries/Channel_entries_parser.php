@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -44,7 +44,7 @@ class EE_Channel_entries_parser
      * Register a channel parser component
      *
      * These are for tags within the channel module. If you're a third
-     * party reading this, think twice! You probably want a field type.
+     * party reading this, think twice! You probably want a fieldtype.
      * If you're really sure, please make your tag names obvious!
      *
      * @param type    - single|pair depending on whether or not this is a tag

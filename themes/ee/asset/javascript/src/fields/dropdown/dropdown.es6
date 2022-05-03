@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -114,7 +114,9 @@ class Dropdown extends React.Component {
           </label>
 
           {selected && this.props.name.includes('[condition_field_id]') && 
-            <span className="tooltiptext">{`${selected.label.replace(/<.*/g, "")} {${selected.label.match(/(?<=\{).+?(?=\})/g)}}`}</span>
+            <span className="tooltiptext">
+              {`${selected.label.replace(/<.*/g, "")} ${selected.label.match(/(?:\{).+?(?:\})/g)}`}
+            </span>
           }
         </div>
 
