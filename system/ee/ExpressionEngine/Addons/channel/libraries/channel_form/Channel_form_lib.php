@@ -1307,6 +1307,9 @@ GRID_FALLBACK;
         }
 
         ee()->legacy_api->instantiate('channel_fields');
+        //added for EE2.1.2
+        ee()->legacy_api->instantiate('channel_categories');
+        ee()->load->library('api/api_channel_form_channel_entries');
 
         // If any checkbox fields are missing from the POST array,
         // add them in as blank values for form validation to catch
@@ -1447,10 +1450,6 @@ GRID_FALLBACK;
         $_POST['revision_post'] = $_POST;
 
         $this->_member_group_override();
-
-        //added for EE2.1.2
-        ee()->legacy_api->instantiate('channel_categories');
-        ee()->load->library('api/api_channel_form_channel_entries');
 
         foreach ($this->form_validation_methods as $method) {
             ee()->form_validation->set_message($method, lang('channel_form_' . $method));
