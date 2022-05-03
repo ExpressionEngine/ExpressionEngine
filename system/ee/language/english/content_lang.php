@@ -797,6 +797,10 @@ $lang = array(
 
     'view_wider' => 'View Wider',
 
+    'viewing_revision' => 'You Are Viewing a Revision',
+
+    'viewing_revision_desc' => 'Any changes saved will overwrite the newest version of this entry',
+
     'warning' => 'Warning',
 
     'width' => 'Width',
