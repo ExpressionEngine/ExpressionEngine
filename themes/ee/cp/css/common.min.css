@@ -16936,20 +16936,24 @@ td.invalid .c-colorpicker-input {
   padding-left: 20px;
 }
 
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .fields-select {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .fields-select,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .fields-select {
   background-color: var(--ee-bg-0);
   padding: 5px 10px;
   margin-top: 20px;
   margin-bottom: 10px;
   border-radius: 5px;
 }
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .lots-of-checkboxes__search-input {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .lots-of-checkboxes__search-input,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .lots-of-checkboxes__search-input {
   margin-right: 0;
 }
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .lots-of-checkboxes__search-input .filter-bar__item {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .lots-of-checkboxes__search-input .filter-bar__item,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .lots-of-checkboxes__search-input .filter-bar__item {
   width: 100%;
 }
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .field-inputs.lots-of-checkboxes__items {
   height: 250px;
   max-height: 1000px;
   overflow: auto;
@@ -16978,7 +16982,8 @@ td.invalid .c-colorpicker-input {
   }
   */
 }
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items .field-group-head {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items .field-group-head,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .field-inputs.lots-of-checkboxes__items .field-group-head {
   color: var(--ee-text-secondary);
   font-size: 0.85em;
   font-weight: 500;
@@ -16987,7 +16992,8 @@ td.invalid .c-colorpicker-input {
   text-transform: uppercase;
   letter-spacing: 1px;
 }
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items .field-group-head:first-child {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items .field-group-head:first-child,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .field-inputs.lots-of-checkboxes__items .field-group-head:first-child {
   margin-top: 0px;
 }
 
