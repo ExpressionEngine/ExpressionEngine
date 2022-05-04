@@ -52,9 +52,9 @@ class CommandSyncConditionalFieldLogic extends Cli
      * @var array
      */
     public $commandOptions = [
-        'channel_id,c:'       => 'command_sync_conditional_fields_option_channel_id',
-        'verbose,v'           => 'command_sync_conditional_fields_option_verbose',
-        'clear,x'             => 'Clear hidden fields table',
+        'channel_id,c:' => 'command_sync_conditional_fields_option_channel_id',
+        'verbose,v'     => 'command_sync_conditional_fields_option_verbose',
+        'clear,x'       => 'command_sync_conditional_fields_option_clear',
     ];
 
     /**
@@ -63,10 +63,9 @@ class CommandSyncConditionalFieldLogic extends Cli
      */
     public function handle()
     {
-        if($this->option('--clear')) {
-            ee()->db->where('entry_id > ', '0');
-            ee()->db->delete('exp_channel_entry_hidden_fields');
-            $this->info('Cleared all hidden fields');
+        if ($this->option('--clear')) {
+            ee()->db->delete('channel_entry_hidden_fields', ['entry_id != ' => 0]);
+            $this->info('command_sync_conditional_fields_cleared_all_hidden_fields');
             exit;
         }
 
@@ -138,10 +137,13 @@ class CommandSyncConditionalFieldLogic extends Cli
             '(' . $this->getMemoryUsage() . ')',
         ));
 
-        $this->info(vsprintf('Database: %d queries in %f seconds', [
-            ee('Database')->getLog()->getQueryCount(),
-            number_format(ee('Database')->currentExecutionTime(), 4)
-        ]));
+        $this->info(vsprintf(
+            lang('command_sync_conditional_fields_database_info'),
+            [
+                ee('Database')->getLog()->getQueryCount(),
+                number_format(ee('Database')->currentExecutionTime(), 4)
+            ]
+        ));
     }
 
     private function getEntries($data)
@@ -169,7 +171,7 @@ class CommandSyncConditionalFieldLogic extends Cli
             $step = $step > $remaining ? $remaining : $chunkSize;
 
             $loopData[] = [
-                'limit' => $step,
+                'limit'  => $step,
                 'offset' => $counter,
             ];
 
@@ -183,8 +185,8 @@ class CommandSyncConditionalFieldLogic extends Cli
     private function getMemoryUsage()
     {
         $size = memory_get_usage();
+        $unit = array('b','kb','mb','gb','tb','pb');
 
-        $unit=array('b','kb','mb','gb','tb','pb');
-        return number_format(@round($size/pow(1024, ($i=floor(log($size, 1024)))), 2), 2).' '.$unit[$i];
+        return number_format(@round($size / pow(1024, ($i = floor(log($size, 1024)))), 2), 2) . ' ' . $unit[$i];
     }
 }

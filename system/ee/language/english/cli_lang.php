@@ -297,13 +297,16 @@ $lang = array(
     // sync:conditional-fields options
     'command_sync_conditional_fields_option_channel_id' => 'Channel ID to sync. Defaults to all channels',
     'command_sync_conditional_fields_option_verbose'    => 'Verbose',
+    'command_sync_conditional_fields_option_clear'      => 'Clear',
 
-    //sync:conditional-fields output
+    // sync:conditional-fields output
     'command_sync_conditional_fields_sync_utility'      => 'Conditional logic sync utility',
     'command_sync_conditional_fields_syncing'           => 'Syncing %d channel entries',
     'command_sync_conditional_fields_current_entry'     => 'Current channel entry: %s',
     'command_sync_conditional_fields_entries_processed' => "Entries processed: %d\t%s\t%s",
     'command_sync_conditional_fields_sync_complete'     => "Sync complete: %d entries\t%s\t%s",
+    'command_sync_conditional_fields_cleared_all_hidden_fields' => "Cleared all hidden fields",
+    'command_sync_conditional_fields_database_info'             => "Database: %d queries in %f seconds",
 );
 
 // EOF
