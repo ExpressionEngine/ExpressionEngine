@@ -283,7 +283,7 @@ class Runner
     }
 
     /**
-     * runs addon updates if they have them
+     * runs add-on updates if they have them
      * @return void
      */
     public function updateAddons()
