@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Service\Database\Backup;
 
+use Exception;
+
 /**
  * Supporting query class for database backup
  *
@@ -20,6 +22,9 @@ class Query
     const BINARY_TYPE = 1;
     const STRING_TYPE = 2;
     const NUMBER_TYPE = 3;
+
+    const TABLE_STRUCTURE = 1;
+    const VIEW_STRUCTURE = 2;
 
     /**
      * @var Database\Query Database Query object
@@ -90,7 +95,8 @@ class Query
      *	[
      *		'table' => [
      *			'rows' => 123,
-     *			'size' => 123456
+     *			'size' => 123456,
+     *          'type' => self::TABLE_STRUCTURE
      *		],
      *		...
      *	]
@@ -104,9 +110,16 @@ class Query
                 ->query(sprintf('SHOW TABLE STATUS FROM `%s`', $this->query->database));
 
             foreach ($query->result() as $row) {
+                if ($row->Comment === 'VIEW') {
+                    $type = self::VIEW_STRUCTURE;
+                } else {
+                    $type = self::TABLE_STRUCTURE;
+                }
+
                 $this->tables[$row->Name] = [
                     'rows' => $row->Rows,
-                    'size' => $row->Data_length
+                    'size' => $row->Data_length,
+                    'type' => $type
                 ];
             }
         }
@@ -141,6 +154,31 @@ class Query
         }
 
         $create = $create_result['Create Table'] . ';';
+
+        if ($this->compact_queries) {
+            $create = str_replace("\n", '', $create);
+        }
+
+        return $create;
+    }
+
+    /**
+     * Given a view name, generates a CREATE VIEW statement for it
+     *
+     * @param   string  $view_name
+     * @return  string  CREATE VIEW statement for the given view
+     */
+    public function getCreateForView($view_name)
+    {
+        $create_result = $this->query
+            ->query(sprintf('SHOW CREATE VIEW `%s`;', $view_name))
+            ->row_array();
+
+        if (! isset($create_result['Create View'])) {
+            throw new Exception('Could not generate CREATE VIEW statement for view ' . $view_name, 2);
+        }
+
+        $create = $create_result['Create View'] . ';';
 
         if ($this->compact_queries) {
             $create = str_replace("\n", '', $create);

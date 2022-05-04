@@ -10,6 +10,7 @@
 
 namespace ExpressionEngine\Service\Database\Backup;
 
+use Exception;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
@@ -222,8 +223,18 @@ class Backup
 
         $this->writeSeparator('Create tables and their structure');
 
-        foreach ($tables as $table) {
-            $create = $this->query->getCreateForTable($table);
+        foreach ($tables as $structure) {
+            switch ($structure['type']) {
+                case Query::TABLE_STRUCTURE:
+                    $create = $this->query->getCreateForTable($structure);
+                    break;
+                case Query::VIEW_STRUCTURE:
+                    $create = $this->query->getCreateForView($structure);
+                    break;
+                default:
+                    throw new Exception("There is no implementation of 'get create' for type {$structure['type']}.");
+                /** @see Query::getTables() */
+            }
 
             // Add an extra linebreak if not a compact file
             if (! $this->compact_file) {
