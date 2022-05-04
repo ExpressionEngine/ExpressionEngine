@@ -416,6 +416,7 @@ class ChannelEntry extends ContentModel
                 foreach ($autosavedEntryData as $key => $val) {
                     if ($key == 'title' || strpos($key, 'field_id_') === 0) {
                         $deleteThisAutosave = false;
+
                         break;
                     }
                 }
@@ -768,8 +769,6 @@ class ChannelEntry extends ContentModel
 
     protected function setDataOnCustomFields(array $data = array())
     {
-        // $currentlyHiddenFieldsIds = $this->getHiddenFieldIds();
-
         $currentlyHiddenFieldsIds = $this->isNew() ? $this->evaluateConditionalFields() : $this->getHiddenFieldIds();
         $currentlyHiddenFieldsNames = [];
         foreach ($currentlyHiddenFieldsIds as $hiddenFieldId) {
@@ -804,25 +803,11 @@ class ChannelEntry extends ContentModel
      */
     public function conditionalFieldsOutdated()
     {
-        // $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
-
         $currentlyHiddenFieldsIds = $this->getHiddenFieldIds();
-
-        // echo "<pre>";
-        // var_dump($this->getId());
-        // var_dump($currentlyHiddenFieldsIds);
-        // var_dump($hidden);
-        // exit;
 
         $hiddenFieldIds = [];
         $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
-        // return false;
-        // echo "<pre>";
-        // $cond = $this->Channel->getAllCustomConditionalFields();
-        // var_dump($cond->count());
-        // var_dump($this->Channel->getAllCustomFields()->count());
-        // exit;
-        // $this->getCustomFields();
+
         foreach ($this->Channel->getAllCustomConditionalFields() as $field) {
             $myField = $this->getCustomField('field_id_' . $field->getId());
             // Pass the FieldConditionSets along to the FieldFacade so that they
@@ -848,17 +833,11 @@ class ChannelEntry extends ContentModel
      */
     public function evaluateConditionalFields()
     {
-        // $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
         $currentlyHiddenFieldsIds = $this->getHiddenFieldIds();
 
         $hiddenFieldIds = [];
         $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
         foreach ($this->Channel->getAllCustomConditionalFields() as $field_name => $field) {
-            // echo "<pre>";
-            // var_dump($field);
-            // exit;
-
-
             // This is the default status for hidden fields
             $hidden = 'n';
 
@@ -1171,7 +1150,7 @@ class ChannelEntry extends ContentModel
 
     public function populateChannels($field)
     {
-        $cacheKey = "populate.channels.{$this->Channel->getId()}.".ee()->session->userdata('member_id');
+        $cacheKey = "populate.channels.{$this->Channel->getId()}." . ee()->session->userdata('member_id');
 
         $cached = $this->getFromCache($cacheKey);
         if ($cached !== false) {
@@ -1383,7 +1362,7 @@ class ChannelEntry extends ContentModel
 
     public function isLivePreviewable()
     {
-        if ($this->Channel->preview_url && $this->Channel->allow_preview =='y') {
+        if ($this->Channel->preview_url && $this->Channel->allow_preview == 'y') {
             return true;
         }
 
@@ -1401,9 +1380,10 @@ class ChannelEntry extends ContentModel
 
     public function livePreviewAllowed()
     {
-        if ($this->Channel->allow_preview =='y') {
+        if ($this->Channel->allow_preview == 'y') {
             return true;
         }
+
         return false;
     }
 

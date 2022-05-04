@@ -72,7 +72,6 @@ class CommandSyncConditionalFieldLogic extends Cli
 
         // Load the session
         ee()->load->library('session');
-        // ee()->set('cp', new MockCP());
 
         $this->info('command_sync_conditional_fields_sync_utility');
 
@@ -108,12 +107,9 @@ class CommandSyncConditionalFieldLogic extends Cli
                     $this->info(sprintf(lang('command_sync_conditional_fields_current_entry'), $entry->getId()));
                 }
 
-                // Check to see if the conditional fields are outdated before saving
-                // if ($entry->conditionalFieldsOutdated()) {
-                    // Conditional fields are outdated, so we evaluate the conditions and save
-                    $entry->evaluateConditionalFields();
-                    $entry->save();
-                // }
+                // Evaluate the conditions and save
+                $entry->evaluateConditionalFields();
+                $entry->save();
 
                 unset($entry);
 
@@ -146,12 +142,11 @@ class CommandSyncConditionalFieldLogic extends Cli
             ee('Database')->getLog()->getQueryCount(),
             number_format(ee('Database')->currentExecutionTime(), 4)
         ]));
-        // print_r(ee('Database')->getLog()->getQueryMetrics());
     }
 
     private function getEntries($data)
     {
-        $entries = ee('Model')->get('ChannelEntry')->with(['Channel' => ['CustomFields' => ['FieldConditionSets' => 'FieldConditions']]]);//,'HiddenFields'
+        $entries = ee('Model')->get('ChannelEntry')->with(['Channel' => ['CustomFields' => ['FieldConditionSets' => 'FieldConditions']]]);
 
         if (!empty($this->channel_id)) {
             $entries = $entries->filter('channel_id', $this->channel_id);

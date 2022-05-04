@@ -281,7 +281,7 @@ class Cli
         return $argument;
     }
 
-    public function getOptionOrAsk($option, $askText, $default=null, $required=false)
+    public function getOptionOrAsk($option, $askText, $default = null, $required = false)
     {
         // Get option if it was passed
         if ($this->option($option)) {
