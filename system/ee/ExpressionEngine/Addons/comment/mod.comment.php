@@ -1130,8 +1130,6 @@ class Comment
         if (ee()->session->userdata('member_id') != 0) {
             $name = ee()->session->userdata('screen_name') ? ee()->session->userdata('screen_name') : ee()->session->userdata('username');
             $email = ee()->session->userdata('email');
-            $url = (string) ee()->session->userdata('url');
-            $location = (string) ee()->session->userdata('location');
         }
 
         /** ----------------------------------------

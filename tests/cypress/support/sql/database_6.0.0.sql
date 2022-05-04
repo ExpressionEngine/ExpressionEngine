@@ -610,7 +610,7 @@ INSERT INTO `exp_global_variables` (`variable_id`, `site_id`, `variable_name`, `
 	(3, 1, 'branding_end', '</div> <!-- ending #branding_sub -->\n</div> <!-- ending #branding -->', 0),
 	(4, 1, 'comment_guidelines', '<div id="comment_guidelines">\n	<h6>Comment Guidelines</h6>\n	<p>Basic HTML formatting permitted - <br />\n		<code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;a href&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code></p>\n</div>', 0),
 	(5, 1, 'favicon', '<!-- Favicon -->\n', 0),
-	(6, 1, 'html_close', '</body>\n</html>', 0),
+	(6, 1, 'html_close', '<p id="elapsed_time">Elapsed time: <em>{elapsed_time}</em></p><p id="memory_usage">Memory usage: <em>{memory_usage}</em></p></body>\n</html>', 0),
 	(7, 1, 'html_head', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n', 0),
 	(8, 1, 'html_head_end', '</head>\n', 0),
 	(9, 1, 'js', '<!-- JS -->\n<script src="http://code.jquery.com/jquery-1.12.1.min.js" type="text/javascript"></script>\n<script src="{site_url}themes/site/default/js/onload.js" type="text/javascript"></script>', 0),

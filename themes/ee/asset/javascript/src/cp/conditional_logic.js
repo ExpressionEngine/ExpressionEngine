@@ -530,6 +530,32 @@ $(document).ready(function() {
             $(this).find('.tooltiptext').css({display: "none"});
         }
     });
+
+    // Check which field_type is selected
+    $('body').on('change', "input[name='field_type']", function() {
+        var hiddenList = $('#fieldset-field_instructions, #fieldset-field_required, #fieldset-field_search, #fieldset-field_is_hidden, #fieldset-enable_frontedit');
+
+        var textInputSelectors = 'input[type=hidden], textarea, button.toggle-btn';
+
+        if ($(this).val() == "notes") {
+            hiddenList.each(function(){
+                var el = $(this);
+                el.hide();
+                $('#fieldset-enable_frontedit').prev('h2').hide();
+            });
+        } else {
+            hiddenList.each(function(){
+                var el = $(this);
+                el.show();
+                $('#fieldset-enable_frontedit').prev('h2').show();
+                
+                $(textInputSelectors, el).prop('disabled', false);
+            });
+
+        }
+    });
+
+    $("input[name='field_type']").trigger("change");
 });
 
 })(jQuery);

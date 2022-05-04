@@ -278,7 +278,7 @@ $lang = array(
 
     'fmt_has_changed' => 'Note: You have selected a different field formatting choice than what was previously saved.',
 
-    'formatting_no_available' => 'Text formatting is not available for your chosen field type',
+    'formatting_no_available' => 'Text formatting is not available for your chosen fieldtype',
 
     'global_sort_order' => 'Master Sort Order',
 
@@ -286,7 +286,7 @@ $lang = array(
 
     'grid_checkbox_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single checkbox and label pair in the publish form.',
 
-    'grid_multiselect_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a multi-select in the publish form.',
+    'grid_multiselect_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a multi select in the publish form.',
 
     'grid_radio_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single radio button and label pair in the publish form.',
 
@@ -342,9 +342,9 @@ $lang = array(
 
     'max_revisions_note' => 'Versioning can use up a lot of database space so it is recommended that you limit the number of revisions.',
 
-    'multiselect_options' => 'Multi-Select options',
+    'multiselect_options' => 'Multi Select options',
 
-    'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi-select in the publish form.</i>',
+    'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi select in the publish form.</i>',
 
     'make_conditional' => 'Make conditional?',
 
@@ -639,7 +639,7 @@ $lang = array(
 
     'delete_field_group_confirmation' => 'Are you sure you want to permanently delete this Channel Field Group?',
 
-    'dropdown_sub' => 'If you are using a \'drop-down\' field type',
+    'dropdown_sub' => 'If you are using a \'drop-down\' fieldtype',
 
     'duplicate_field_name' => 'The field name you chose is already taken',
 
@@ -657,7 +657,7 @@ $lang = array(
 
     'field_formatting' => 'Field Formatting',
 
-    'field_formatting_cont' => 'If you chose textarea field type',
+    'field_formatting_cont' => 'If you chose textarea fieldtype',
 
     'field_group' => 'Channel Field Group',
 
@@ -677,7 +677,7 @@ $lang = array(
 
     'field_list_items_cont' => 'If you chose drop-down menu',
 
-    'field_max_length_cont' => 'If you are using a \'text\' field type',
+    'field_max_length_cont' => 'If you are using a \'text\' fieldtype',
 
     'field_name' => 'Short Name',
 
@@ -693,13 +693,13 @@ $lang = array(
 
     'invalid_characters' => 'The field name you submitted contains invalid characters',
 
-    'invalid_field_type' => 'Invalid field type',
+    'invalid_field_type' => 'Invalid fieldtype',
 
     'is_field_required' => 'Is this a required field?',
 
     'is_field_searchable' => 'Is field searchable?',
 
-    'multi_list_items' => 'Multi-Select Options',
+    'multi_list_items' => 'Multi Select Options',
 
     'new_field_group' => 'New Field Group',
 
@@ -735,7 +735,7 @@ $lang = array(
 
     'textarea_rows' => 'Textarea Rows',
 
-    'textarea_rows_cont' => 'If you are using a \'textarea\' field type',
+    'textarea_rows_cont' => 'If you are using a \'textarea\' fieldtype',
 
     'type_decimal' => 'Decimal',
 

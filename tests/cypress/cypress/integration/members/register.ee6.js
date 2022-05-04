@@ -48,6 +48,7 @@ context('Member Registration', () => {
         it('registers normally', {retries: 2}, function() {
             cy.clearCookies()
             cy.visit('index.php/mbr/register');
+            cy.logFrontendPerformance()
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
             cy.get('#password').clear().type('password');
