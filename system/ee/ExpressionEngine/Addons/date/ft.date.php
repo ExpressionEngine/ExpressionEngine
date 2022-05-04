@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,6 +21,10 @@ class Date_ft extends EE_Fieldtype
     public $has_array_data = false;
 
     public $size = 'small';
+
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Parses the date input, first with the configured date format (as used

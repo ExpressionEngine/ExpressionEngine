@@ -4,12 +4,12 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
- * Core Addon Installer
+ * Core Add-on Installer
  */
 class Addons_installer
 {
@@ -26,7 +26,7 @@ class Addons_installer
     }
 
     /**
-     * Addon Installer
+     * Add-on Installer
      *
      * @access	public
      * @param	string
@@ -40,7 +40,7 @@ class Addons_installer
     }
 
     /**
-     * Addon Uninstaller
+     * Add-on Uninstaller
      *
      * Install one or more components
      *
@@ -264,7 +264,7 @@ class Addons_installer
     }
 
     /**
-     * Universal Addon (Un)Installer
+     * Universal Add-on (Un)Installer
      *
      * @access	private
      * @param	string

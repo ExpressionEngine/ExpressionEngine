@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -401,8 +401,9 @@ class Edit extends AbstractPublishController
         $livePreviewReady = $this->createLivePreviewModal($entry);
 
         $vars = array(
-            'header' => [
+            'head' => [
                 'title' => lang('edit_entry'),
+                'class' => 'entries'
             ],
             'form_url' => $base_url,
             'form_attributes' => $form_attributes,

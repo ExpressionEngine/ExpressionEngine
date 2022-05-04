@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -120,13 +120,13 @@ class Hooks
 
     public const PAGINATION_CREATE = [
         'name' => 'pagination_create',
-        'params' => '$this, $count',
+        'params' => '$obj, $count',
         'library' => 'Pagination',
     ];
 
     public const PAGINATION_FETCH_DATA = [
         'name' => 'pagination_fetch_data',
-        'params' => '$this',
+        'params' => '$obj',
         'library' => 'Pagination',
     ];
 
@@ -168,13 +168,13 @@ class Hooks
 
     public const SESSIONS_END = [
         'name' => 'sessions_end',
-        'params' => '$this',
+        'params' => '$obj',
         'library' => 'Session',
     ];
 
     public const SESSIONS_START = [
         'name' => 'sessions_start',
-        'params' => '$this',
+        'params' => '$obj',
         'library' => 'Session',
     ];
 
@@ -192,13 +192,13 @@ class Hooks
 
     public const TYPOGRAPHY_PARSE_TYPE_START = [
         'name' => 'typography_parse_type_start',
-        'params' => '$str, $this, $prefs',
+        'params' => '$str, $obj, $prefs',
         'library' => 'Typography',
     ];
 
     public const TYPOGRAPHY_PARSE_TYPE_END = [
         'name' => 'typography_parse_type_end',
-        'params' => '$str, $this, $prefs',
+        'params' => '$str, $obj, $prefs',
         'library' => 'Typography',
     ];
 
@@ -1542,25 +1542,25 @@ class Hooks
 
     public const CHANNEL_ENTRIES_QUERY_RESULT = [
         'name' => 'channel_entries_query_result',
-        'params' => '$this, $query_result',
+        'params' => '$obj, $query_result',
         'library' => 'Channel Module',
     ];
 
     public const CHANNEL_ENTRIES_TAGDATA = [
         'name' => 'channel_entries_tagdata',
-        'params' => '$tagdata, $row, $this',
+        'params' => '$tagdata, $row, $obj',
         'library' => 'Channel Module',
     ];
 
     public const CHANNEL_ENTRIES_ROW = [
         'name' => 'channel_entries_row',
-        'params' => '$this, $row',
+        'params' => '$obj, $row',
         'library' => 'Channel Module',
     ];
 
     public const FUNCTION_NAME = [
         'name' => 'function_name',
-        'params' => '$tagdata, $row, $this',
+        'params' => '$tagdata, $row, $obj',
         'library' => 'Channel Module',
     ];
 
@@ -1710,7 +1710,7 @@ class Hooks
 
     public const EMAIL_MODULE_TELLAFRIEND_OVERRIDE = [
         'name' => 'email_module_tellafriend_override',
-        'params' => '$qstring, $this',
+        'params' => '$qstring, $obj',
         'library' => 'Email Module',
     ];
 
@@ -1722,91 +1722,91 @@ class Hooks
 
     public const FORUM_INCLUDE_EXTRAS = [
         'name' => 'forum_include_extras',
-        'params' => '$this, $function, $element',
+        'params' => '$obj, $function, $element',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_SUBMISSION_FORM_START = [
         'name' => 'forum_submission_form_start',
-        'params' => '$this, $str',
+        'params' => '$obj, $str',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_SUBMISSION_FORM_END = [
         'name' => 'forum_submission_form_end',
-        'params' => '$this, $str',
+        'params' => '$obj, $str',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_SUBMISSION_PAGE = [
         'name' => 'forum_submission_page',
-        'params' => '$this, $type',
+        'params' => '$obj, $type',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_SUBMIT_POST_START = [
         'name' => 'forum_submit_post_start',
-        'params' => '$this',
+        'params' => '$obj',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_SUBMIT_POST_END = [
         'name' => 'forum_submit_post_end',
-        'params' => '$this, $data',
+        'params' => '$obj, $data',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_THREADS_TEMPLATE = [
         'name' => 'forum_threads_template',
-        'params' => '$this, $str, $tquery',
+        'params' => '$obj, $str, $tquery',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_THREAD_ROWS_ABSOLUTE_END = [
         'name' => 'forum_thread_rows_absolute_end',
-        'params' => '$this, $data, $thread_rows',
+        'params' => '$obj, $data, $thread_rows',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_THREAD_ROWS_LOOP_START = [
         'name' => 'forum_thread_rows_loop_start',
-        'params' => '$this, $data, $row, $temp',
+        'params' => '$obj, $data, $row, $temp',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_THREAD_ROWS_LOOP_END = [
         'name' => 'forum_thread_rows_loop_end',
-        'params' => '$this, $data, $row, $temp',
+        'params' => '$obj, $data, $row, $temp',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_THREAD_ROWS_START = [
         'name' => 'forum_thread_rows_start',
-        'params' => '$this, $template, $data, $is_announcement, $thread_review',
+        'params' => '$obj, $template, $data, $is_announcement, $thread_review',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_TOPICS_ABSOLUTE_END = [
         'name' => 'forum_topics_absolute_end',
-        'params' => '$this, $result, $str',
+        'params' => '$obj, $result, $str',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_TOPICS_LOOP_START = [
         'name' => 'forum_topics_loop_start',
-        'params' => '$this, $result, $row, $temp',
+        'params' => '$obj, $result, $row, $temp',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_TOPICS_LOOP_END = [
         'name' => 'forum_topics_loop_end',
-        'params' => '$this, $result, $row, $temp',
+        'params' => '$obj, $result, $row, $temp',
         'library' => 'Forum Module',
     ];
 
     public const FORUM_TOPICS_START = [
         'name' => 'forum_topics_start',
-        'params' => '$this, $str',
+        'params' => '$obj, $str',
         'library' => 'Forum Module',
     ];
 
@@ -1818,7 +1818,7 @@ class Hooks
 
     public const MEMBER_MANAGER = [
         'name' => 'member_manager',
-        'params' => '$this',
+        'params' => '$obj',
         'library' => 'Member Module',
     ];
 
@@ -1860,7 +1860,7 @@ class Hooks
 
     public const MEMBER_MEMBER_REGISTER_ERRORS = [
         'name' => 'member_member_register_errors',
-        'params' => '$this',
+        'params' => '$obj',
         'library' => 'Member Module Registration',
     ];
 
@@ -1902,61 +1902,61 @@ class Hooks
 
     public const SIMPLE_COMMERCE_EVALUATE_IPN_RESPONSE = [
         'name' => 'simple_commerce_evaluate_ipn_response',
-        'params' => '$this, $result',
+        'params' => '$obj, $result',
         'library' => 'Simple Commerce Module',
     ];
 
     public const SIMPLE_COMMERCE_PERFORM_ACTIONS_END = [
         'name' => 'simple_commerce_perform_actions_end',
-        'params' => '$this, $row',
+        'params' => '$obj, $row',
         'library' => 'Simple Commerce Module',
     ];
 
     public const SIMPLE_COMMERCE_PERFORM_ACTIONS_START = [
         'name' => 'simple_commerce_perform_actions_start',
-        'params' => '$this, $row',
+        'params' => '$obj, $row',
         'library' => 'Simple Commerce Module',
     ];
 
     public const WIKI_START = [
         'name' => 'wiki_start',
-        'params' => '$this',
+        'params' => '$obj',
         'library' => 'Wiki Module',
     ];
 
     public const WIKI_ARTICLE_START = [
         'name' => 'wiki_article_start',
-        'params' => '$this, $title, $query',
+        'params' => '$obj, $title, $query',
         'library' => 'Wiki Module',
     ];
 
     public const WIKI_ARTICLE_END = [
         'name' => 'wiki_article_end',
-        'params' => '$this, $query',
+        'params' => '$obj, $query',
         'library' => 'Wiki Module',
     ];
 
     public const WIKI_SPECIAL_PAGE = [
         'name' => 'wiki_special_page',
-        'params' => '$this, $topic',
+        'params' => '$obj, $topic',
         'library' => 'Wiki Module',
     ];
 
     public const EDIT_WIKI_ARTICLE_END = [
         'name' => 'edit_wiki_article_end',
-        'params' => '$this, $query',
+        'params' => '$obj, $query',
         'library' => 'Wiki Module',
     ];
 
     public const EDIT_WIKI_ARTICLE_FORM_START = [
         'name' => 'edit_wiki_article_form_start',
-        'params' => '$this, $title, $query',
+        'params' => '$obj, $title, $query',
         'library' => 'Wiki Module',
     ];
 
     public const EDIT_WIKI_ARTICLE_FORM_END = [
         'name' => 'edit_wiki_article_form_end',
-        'params' => '$this, $query',
+        'params' => '$obj, $query',
         'library' => 'Wiki Module',
     ];
 }

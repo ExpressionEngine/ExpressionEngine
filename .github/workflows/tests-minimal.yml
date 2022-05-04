@@ -66,7 +66,7 @@ jobs:
           - name: Setup node
             uses: actions/setup-node@v2
             with:
-              node-version: '10'
+              node-version: '17'
 
           - name: Install build tool dependencies
             working-directory: build-tools
@@ -205,13 +205,29 @@ jobs:
                 npm install -g maildev
                 maildev &
             
-            # - name: Get Cypress Specs
-            #   run: |
-            #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
-            #   id: specs
+            - name: Get Cypress Specs
+              if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
+              env:
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+              run: |
+                echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
+              id: specs
+
+            - name: Run Cypress Tests (without dashboard)
+              uses: cypress-io/github-action@v2
+              if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
+              with:
+                spec: ${{ steps.specs.outputs.SPECS }}
+                browser: chrome
+                headless: true
+                working-directory: tests/cypress
+                config-file: cypress.json
+              env:
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2
+              if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
@@ -240,3 +256,9 @@ jobs:
               with:
                 name: error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
                 path: /home/runner/php_errors.log
+
+            - name: Archive performance logs
+              uses: actions/upload-artifact@v2
+              with:
+                name: csv-reports.PHP${{ matrix.php }}-${{ matrix.containers }}
+                path: tests/cypress/cypress/downloads/

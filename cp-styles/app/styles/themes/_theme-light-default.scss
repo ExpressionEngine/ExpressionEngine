@@ -148,6 +148,12 @@ $light-theme: (
   button-action-hover-bg: darken($brand-success, 10%),
   button-action-hover-border: darken($brand-success, 10%),
 
+  button-warning-color: #ffffff,
+	button-warning-bg: $brand-warning,
+  button-warning-border: $brand-warning,
+	button-warning-hover-bg: darken($brand-warning, 10%),
+  button-warning-hover-border: darken($brand-warning, 10%),
+
 	button-danger-color: #ffffff,
 	button-danger-bg: $brand-danger,
   button-danger-border: $brand-danger,
@@ -203,6 +209,13 @@ $light-theme: (
   shadow-modal: rgba(69, 68, 85, 0.2),
   shadow-dropdown: rgba(0, 0, 0, 0.1),
 
+  // Fieldtypes
+  note-fieldtype-bg: $gray-0,
+  note-fieldtype-color: $text-secondary,
+  note-fieldtype-icon-bg: $gray-5,
+  note-fieldtype-icon-color: $text-secondary,
+  note-fieldtype-blockquote-border: $gray-5,
+
   // Other Colors
 	mark-bg: lighten($brand-warning, 45%),
   form-section-title-border: $gray-10,
@@ -214,6 +227,7 @@ $light-theme: (
   lots-of-checkboxes-border: $gray-10,
   layout-item-border: $gray-10,
   fluid-item-border: $gray-10,
+  slider-value-bg: lighten($brand-primary, 30%),
 
   // EE Update Indicators
   ee-update: $brand-primary,

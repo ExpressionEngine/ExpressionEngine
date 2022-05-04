@@ -1,5 +1,5 @@
 <?php
-$too_many = 8;
+$too_many = isset($too_many) ? $too_many : 8;
 $empty_text = isset($empty_text) ? $empty_text : lang('choose_wisely');
 $field_disabled = isset($field_disabled) ? $field_disabled : false;
 $class = isset($class) ? $class : '';
@@ -22,8 +22,11 @@ if ($field_disabled) {
         'limit' => isset($limit) ? $limit : 100,
         'groupToggle' => isset($group_toggle) ? $group_toggle : null,
         'emptyText' => $empty_text,
-        'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null
+        'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null,
+        'conditionalRule' => isset($conditional_toggle) ? $conditional_toggle : null,
+        'isRequired' => isset($is_required) ? isset($is_required) : false
     ];
+    
     $react = 'data-dropdown-react="' . base64_encode(json_encode($component)) . '" data-input-value="' . $field_name . '"';
 }
 
