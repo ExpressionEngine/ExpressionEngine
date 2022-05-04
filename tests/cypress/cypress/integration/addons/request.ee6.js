@@ -9,7 +9,7 @@ context('Request', () => {
   before(function(){
     cy.task('db:seed')
     cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
-	  cy.task('filesystem:copy', { from: 'support/templates/default_site/*', to: '../../system/user/templates/default_site/' })
+	  cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' })
     cy.auth();
     addon_manager.load()
     addon_manager.get('first_party_addons').find('.add-on-card:contains("Request") a').click()
@@ -29,6 +29,8 @@ context('Request', () => {
     cy.get('#get_post span').invoke('text').should('contain', "'hello'")
     cy.get('#get_post span').invoke('text').should('not.contain', "(")
     cy.get('#get_post span').invoke('text').should('not.contain', "script")
+
+    cy.logFrontendPerformance()
   })
 
   context('check all tags', function(){
@@ -53,6 +55,8 @@ context('Request', () => {
     })
     it('request_header', function(){
       cy.get('#request_header span').invoke('text').should('contain', "text/html")
+
+      cy.logFrontendPerformance()
     })
   })
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -104,6 +104,15 @@ class LivePreview
         $data['entry_site_id'] = $entry->site_id;
         if (isset($_POST['categories'])) {
             $data['categories'] = $_POST['categories'];
+        }
+
+        //perform conditional fields calculations
+        $hiddenFields = $entry->evaluateConditionalFields();
+        if (!empty($hiddenFields)) {
+            foreach ($hiddenFields as $hiddenFieldId) {
+                $data['field_hide_' . $hiddenFieldId] = 'y';
+                $data['field_id_' . $hiddenFieldId] = null;
+            }
         }
 
         ee('LivePreview')->setEntryData($data);

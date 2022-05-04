@@ -135,7 +135,7 @@ $lang = array(
 
     'file_ft_limit_desc' => 'Maximum number of files to show in the drop down.<br><i>Leave blank to show all files.</i>',
 
-    'file_ft_no_upload_directories' => 'There are currently no upload directories available. Please <a href="%s">add one or more upload directories</a> to use the File field type.',
+    'file_ft_no_upload_directories' => 'There are currently no upload directories available. Please <a href="%s">add one or more upload directories</a> to use the File fieldtype.',
 
     'file_ft_select_existing' => 'Select an existing file',
 
@@ -299,6 +299,24 @@ $lang = array(
 
     'colorpicker_swatches_populate_values' => 'Values',
     'colorpicker_swatches_populate_manually' => 'Populate the swatches manually',
+
+    /* Conditional Evaluation Rules */
+    'contains' => 'contains',
+    'notContains' => 'does not contain',
+    'equal' => 'is',
+    'notEqual' => 'is not',
+    'isEmpty' => 'is empty',
+    'isNotEmpty' => 'has any value',
+    'greaterThan' => 'greater than',
+    'greaterOrEqualThan' => 'greater than or equal to',
+    'lessThan' => 'less than',
+    'lessOrEqualThan' => 'less than or equal to',
+
+    'turnedOn' => 'is turned on',
+    'turnedOff' => 'is turned off',
+
+    'includes' => 'includes',
+    'notIncludes' => 'does not include',
 
     /* Slider */
     'field_step' => 'Step',

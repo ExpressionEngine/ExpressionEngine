@@ -14,9 +14,9 @@ namespace ExpressionEngine\Library\Resource;
 
 class Request
 {
-    public const CACHE_NAMESPACE = 'resource_cache/';
+    const CACHE_NAMESPACE = 'resource_cache/';
 
-    public const TYPES = array('css', 'js');
+    const TYPES = array('css', 'js');
 
     protected $type = 'plain';
     protected $cache_scope = '';
@@ -121,11 +121,6 @@ class Request
                     $edit_date = $file_edit_date;
                 }
             }
-        }
-
-        if (ee()->config->item('cache_driver') === 'file') {
-            ee()->load->library('logger');
-            ee()->logger->developer('To fetch templates from database is usually faster than from file cache driver.');
         }
 
         // Replace {site_url} in template before caching

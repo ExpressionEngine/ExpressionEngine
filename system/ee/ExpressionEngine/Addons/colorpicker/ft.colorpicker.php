@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -16,6 +16,10 @@ class Colorpicker_ft extends EE_Fieldtype
     public $disable_frontedit = true;
 
     public $size = 'small';
+
+    public $supportedEvaluationRules = ['equal', 'notEqual', 'isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'notEqual';
 
     public $default_settings = [
         'allowed_colors' => 'any',
@@ -60,7 +64,8 @@ class Colorpicker_ft extends EE_Fieldtype
 
         // Enforce that the color is one of the swatches or default color when in the swatches mode
         if ($this->get_setting('allowed_colors') == 'swatches') {
-            if (! in_array($value, $this->getSwatches())
+            $swatches = array_map('strtoupper', $this->getSwatches());
+            if (! in_array(strtoupper($value), $swatches)
                 and $this->get_setting('colorpicker_default_color') !== $value) {
                 ee()->lang->loadfile('fieldtypes');
 

@@ -15,7 +15,7 @@ context('Cookie Consents', () => {
         cy.eeConfig({ item: 'require_cookie_consent', value: 'y' })
         cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
         //copy templates
-		cy.task('filesystem:copy', { from: 'support/templates/default_site/*', to: '../../system/user/templates/default_site/' }).then(() => {
+		cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.eeConfig({item: 'save_tmpl_files'}) .then((config) => {
                 expect(config.trim()).to.be.equal('y')
             })
@@ -33,6 +33,7 @@ context('Cookie Consents', () => {
     it('tracker cookie not set if consent not granted', function() {
         cy.authVisit('index.php')
         cy.getCookie('exp_tracker').should('not.exist')
+        cy.logFrontendPerformance()
     })
 
     it('require consents in CP', function() {
@@ -99,6 +100,7 @@ context('Cookie Consents', () => {
         cy.get('.app-notice---important').contains('Cookies consent').should('be.visible');
 
         cy.visit('index.php/about/contact')
+        cy.logFrontendPerformance()
         //tracker still exists, but the value is old
         cy.getCookie('exp_tracker').should('exist')
         cy.getCookie('exp_tracker').then((cookie) => {
@@ -135,6 +137,7 @@ context('Cookie Consents', () => {
         cy.getCookie('exp_tracker').should('not.exist')
 
         cy.visit('index.php/consents/form')
+        cy.logFrontendPerformance()
         cy.getCookie('exp_tracker').should('exist')
         cy.getCookie('exp_tracker').then((cookie) => {
             tracker = cookie.value;

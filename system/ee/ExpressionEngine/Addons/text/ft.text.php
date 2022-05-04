@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,14 +15,18 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
  */
 class Text_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Text Input',
         'version' => '1.0.0'
     );
 
+    public $field_content_types;
+
     // Parser Flag (preparse pairs?)
     public $has_array_data = false;
 
+    public $defaultEvaluationRule = 'isNotEmpty';
     protected $default_field_content_type = 'all';
 
     public function validate($data)
@@ -33,7 +37,7 @@ class Text_ft extends EE_Fieldtype
             return true;
         }
 
-        if (! isset($this->field_content_types)) {
+        if (! isset($this->field_content_types) || is_null($this->field_content_types)) {
             ee()->load->model('field_model');
             $this->field_content_types = ee()->field_model->get_field_content_types();
         }
@@ -84,7 +88,7 @@ class Text_ft extends EE_Fieldtype
      */
     public function save($data)
     {
-        if (! isset($this->field_content_types)) {
+        if (! isset($this->field_content_types) || is_null($this->field_content_types)) {
             ee()->load->model('field_model');
             $this->field_content_types = ee()->field_model->get_field_content_types();
         }

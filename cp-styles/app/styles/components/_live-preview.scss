@@ -11,6 +11,10 @@ $ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 	z-index: 250;
 	max-width: 100vw;
 	display: none;
+
+    ~ .modal-wrap {
+        z-index: 251;
+    }
 }
 
 .live-preview {
@@ -40,7 +44,8 @@ $ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	flex-basis: 40%;
+	flex-basis: 50%;
+	width: 50%;
 	padding-top: 0;
 	background: color(bg-blank);
 	transition: transform $speed $ease, opacity $speed $ease;
@@ -96,7 +101,8 @@ $ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .live-preview__preview {
-	flex-basis: 60%;
+	flex-basis: 50%;
+	width: 50%;
 	background: #fff;
 	transition: transform $speed $ease, opacity $speed $ease;
 	// padding: $s-l;

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,6 +22,13 @@ class Fluid_field_ft extends EE_Fieldtype
     public $size = 'large';
 
     private $errors;
+
+    /**
+     * A list of operators that this fieldtype supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = null;
 
     /**
      * Fetch the fieldtype's name and version from its addon.setup.php file.
@@ -539,7 +546,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
             $removed_fields = (array_diff($this->settings['field_channel_fields'], $all['field_channel_fields']));
 
-            if (! empty($removed_fields)) {
+            if (! empty($removed_fields) && ! isset($_POST['ee_fv_field'])) {
                 $fluid_field_data = ee('Model')->get('fluid_field:FluidField')
                     ->filter('fluid_field_id', $this->field_id)
                     ->filter('field_id', 'IN', $removed_fields)

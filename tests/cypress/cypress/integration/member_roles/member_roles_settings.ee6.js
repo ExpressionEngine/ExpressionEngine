@@ -22,7 +22,7 @@ context('Test Member roles Settings ', () => {
 	   cy.get('p').contains('You are not authorized to perform this action')
 	 })
 
-	it('Let Addon Role access Settings and CP', () => {
+	it('Let Add-on Role access Settings and CP', () => {
 	   cy.auth();
 
 
