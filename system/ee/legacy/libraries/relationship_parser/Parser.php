@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -69,6 +69,10 @@ class EE_Relationship_data_parser
     {
         $node = $this->_tree;
         $this->_channel = $channel;
+        $all_cfields = [];
+        foreach ($this->_channel->cfields as $site_id => $cfields) {
+            $all_cfields = array_merge($all_cfields, $cfields);
+        }
 
         // push the root node down right away
         if (! $node->is_root()) {
@@ -77,9 +81,14 @@ class EE_Relationship_data_parser
 
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
-
         foreach ($node->children() as $child) {
-            $tagdata = $this->parse_node($child, $entry_id, $tagdata);
+            $field_id = isset($all_cfields[$child->field_name()]) ? $all_cfields[$child->field_name()] : null;
+            //if the field is conditionally hidden, do not parse
+            if (!is_null($field_id) && !ee('LivePreview')->hasEntryData() && isset($this->_channel->hidden_fields[$entry_id]) && in_array($field_id, $this->_channel->hidden_fields[$entry_id])) {
+                $tagdata = $this->clear_node_tagdata($child, $tagdata);
+            } else {
+                $tagdata = $this->parse_node($child, $entry_id, $tagdata);
+            }
         }
 
         return $tagdata;
@@ -390,8 +399,8 @@ class EE_Relationship_data_parser
         }
 
         // enforce offset and limit
-        $offset = $node->param('offset');
-        $limit = $node->param('limit');
+        $offset = $node->param('offset', 0);
+        $limit = $node->param('limit', null);
 
         // make sure defaults are set
         if (! $node->param('status')) {
@@ -551,7 +560,7 @@ class EE_Relationship_data_parser
         // If $end_script is TRUE, we should do no more processing after the hook!
 
         if ($end_script === false && ($limit or $offset)) {
-            $rows = array_slice($rows, $offset, $limit, true);
+            $rows = array_slice($rows, (int) $offset, $limit, true);
         }
 
         return array(

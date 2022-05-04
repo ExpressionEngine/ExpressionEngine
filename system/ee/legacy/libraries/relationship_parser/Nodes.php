@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -77,7 +77,7 @@ class ParseNode extends EE_TreeNode
      * @param	mixed	a default to return if the parameter is not set
      * @return 	mixed	parameter value || default
      */
-    public function param($key, $default = null)
+    public function param($key, $default = '')
     {
         return isset($this->data['params'][$key]) ? $this->data['params'][$key] : $default;
     }

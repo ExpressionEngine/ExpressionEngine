@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -89,6 +89,14 @@ abstract class AbstractPublish extends CP_Controller
             ee()->cp->add_to_foot(smiley_js());
         }
 
+        $usesConditionalFields = false;
+        foreach ($entry->getCustomFields() as $field) {
+            if ($field->getItem('field_is_conditional') === true) {
+                $usesConditionalFields = true;
+                break;
+            }
+        }
+
         ee()->javascript->set_global(array(
             'lang.add_new_html_button' => lang('add_new_html_button'),
             'lang.close' => lang('close'),
@@ -112,6 +120,7 @@ abstract class AbstractPublish extends CP_Controller
             'publish.url_title_prefix' => $entry->Channel->url_title_prefix,
             'publish.which' => ($entry_id) ? 'edit' : 'new',
             'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-',
+            'publish.has_conditional_fields' => $usesConditionalFields,
             'user.can_edit_html_buttons' => ee('Permission')->can('edit_html_buttons'),
             'user.foo' => false,
             'user_id' => ee()->session->userdata('member_id'),
@@ -387,9 +396,18 @@ abstract class AbstractPublish extends CP_Controller
             $entry->set($_POST);
         }
 
+        $hidden_fields = $entry->evaluateConditionalFields();
+
         $result = $entry->validate();
 
         if ($response = $this->ajaxValidation($result)) {
+            if (isset($response[0]) && $response[0] == 'success') {
+                $response = [
+                    'success' => 'success',
+                    'hidden_fields' => $hidden_fields
+                ];
+            }
+            
             ee()->output->send_ajax_response($response);
         }
 

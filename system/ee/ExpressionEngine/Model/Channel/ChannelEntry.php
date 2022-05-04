@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -107,6 +107,14 @@ class ChannelEntry extends ContentModel
         ),
         'Site' => array(
             'type' => 'belongsTo'
+        ),
+        'HiddenFields' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'ChannelField',
+            'pivot' => array(
+                'table' => 'channel_entry_hidden_fields'
+            ),
+            'weak' => true
         ),
     );
 
@@ -235,8 +243,14 @@ class ChannelEntry extends ContentModel
 
                 //let tabs do their cloning work
                 if (defined('CLONING_MODE') && CLONING_MODE === true) {
-                    if (method_exists($OBJ, 'clone') === true) {
-                        $values = $OBJ->clone($this, $values);
+                    $cloneFunction = null;
+                    if (method_exists($OBJ, 'cloneData') === true) {
+                        $cloneFunction = 'cloneData';
+                    } elseif (method_exists($OBJ, 'clone') === true) {
+                        $cloneFunction = 'clone';
+                    }
+                    if (!empty($cloneFunction)) {
+                        $values = $OBJ->$cloneFunction($this, $values);
                         foreach ($values as $field => $value) {
                             $property = $name . '__' . $field;
                             $this->$property = $value;
@@ -389,6 +403,8 @@ class ChannelEntry extends ContentModel
         if (empty($this->allow_comments)) {
             $this->allow_comments = $this->Channel->deft_comments;
         }
+        // Validate the conditional fields
+        $this->evaluateConditionalFields();
     }
 
     public function onAfterSave()
@@ -638,8 +654,8 @@ class ChannelEntry extends ContentModel
     /**
      * A link back to the owning channel object.
      *
-     * @return	Structure	A link back to the Structure object that defines
-     *						this Content's structure.
+     * @return  Structure   A link back to the Structure object that defines
+     *                      this Content's structure.
      */
     public function getStructure()
     {
@@ -754,6 +770,100 @@ class ChannelEntry extends ContentModel
         }
 
         return $module_tabs;
+    }
+
+    protected function setDataOnCustomFields(array $data = array())
+    {
+        $currentlyHiddenFieldsIds = $this->isNew() ? $this->evaluateConditionalFields() : $this->HiddenFields->pluck('field_id');
+        $currentlyHiddenFieldsNames = [];
+        foreach ($currentlyHiddenFieldsIds as $hiddenFieldId) {
+            $currentlyHiddenFieldsNames[] = 'field_id_' . $hiddenFieldId;
+        }
+
+        foreach ($data as $name => $value) {
+            if (strpos($name, 'field_ft_') === 0) {
+                $name = str_replace('field_ft_', 'field_id_', $name);
+            }
+            if ($this->hasCustomField($name)) {
+                if (in_array($name, $currentlyHiddenFieldsNames)) {
+                    $this->getCustomField($name)->setHidden('y');
+                } else {
+                    $this->getCustomField($name)->setHidden('n');
+                }
+            }
+            
+        }
+
+        parent::setDataOnCustomFields($data);
+    }
+
+    /**
+     * Evaluates all the conditional fields in a channel entry
+     *
+     * @return  boolean   returns true if the current hidden status of conditional fields are not correct
+     */
+    public function conditionalFieldsOutdated()
+    {
+        $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        $hiddenFieldIds = [];
+        $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
+
+        foreach ($this->getCustomFields() as $field) {
+            // If the ID isnt numeric, we can skip it since its something like title
+            if (! is_numeric($field->getId())) {
+                continue;
+            }
+
+            if ($field->getItem('field_is_conditional') === true) {
+                // Lets evaluate the condition sets
+                // if false, the field should be hidden
+                if (! $evaluator->evaluate($field)) {
+                    $hiddenFieldIds[] = $field->getId();
+                }
+            }
+        }
+
+        return (!empty(array_diff($currentlyHiddenFieldsIds, $hiddenFieldIds)) || !empty(array_diff($hiddenFieldIds, $currentlyHiddenFieldsIds)));
+    }
+
+    /**
+     * Evaluates all the conditional fields in a channel entry and sets the hidden flags
+     *
+     * @return  array   List of all hidden fields
+     */
+    public function evaluateConditionalFields()
+    {
+        $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        $hiddenFieldIds = [];
+        $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
+
+        foreach ($this->getCustomFields() as $field_name => $field) {
+            // If the ID isnt numeric, we can skip it since its something like title
+            if (! is_numeric($field->getId())) {
+                continue;
+            }
+
+            // This is the default status for hidden fields
+            $hidden = 'n';
+
+            if ($field->getItem('field_is_conditional') === true) {
+                // Lets evaluate the condition sets
+                // if false, the field should be hidden
+                if (! $evaluator->evaluate($field)) {
+                    $hiddenFieldIds[] = $field->getId();
+                    $hidden = 'y';
+                }
+            }
+
+            $field->setHidden($hidden);
+        }
+
+        if (!empty(array_diff($currentlyHiddenFieldsIds, $hiddenFieldIds)) || !empty(array_diff($hiddenFieldIds, $currentlyHiddenFieldsIds))) {
+            $hiddenFields = ee('Model')->get('ChannelField', $hiddenFieldIds)->all();
+            $this->getAssociation('HiddenFields')->set($hiddenFields);
+        }
+
+        return $hiddenFieldIds;
     }
 
     public function get__versioning_enabled()
@@ -1075,13 +1185,13 @@ class ChannelEntry extends ContentModel
      * Populate the Authors dropdown
      *
      * @param   object  $field  ChannelEntry object
-     * @return	void    Sets author field metaddata
+     * @return  void    Sets author field metaddata
      *
      * The following are included in the author list regardless of
      * their channel posting permissions (assuming the user has permission to assign entries to others):
-     *	  The current user
-     *	  The current author (if editing)
-     *	  Anyone in a group set to 'include_in_authorlist'
+     *    The current user
+     *    The current author (if editing)
+     *    Anyone in a group set to 'include_in_authorlist'
      *    Any individual member 'in_authorlist'
      *
      */
@@ -1243,13 +1353,13 @@ class ChannelEntry extends ContentModel
         return false;
     }
 
-    public function livePreviewAllowed() {
+    public function livePreviewAllowed()
+    {
         if ($this->Channel->allow_preview =='y') {
             return true;
         }
         return false;
     }
-
 }
 
 // EOF

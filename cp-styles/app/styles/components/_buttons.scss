@@ -138,6 +138,9 @@ a.button {
 .button--success {
   @include button-variant(color(button-success-color), color(button-success-bg), color(button-success-border), color(button-success-hover-bg), color(button-success-hover-border));
 }
+.button--warning {
+  @include button-variant(color(button-warning-color), color(button-warning-bg), color(button-warning-border), color(button-warning-hover-bg), color(button-warning-hover-border));
+}
 .button--danger {
   @include button-variant(color(button-danger-color), color(button-danger-bg), color(button-danger-border), color(button-danger-hover-bg), color(button-danger-hover-border));
 }

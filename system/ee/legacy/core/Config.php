@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -248,9 +248,6 @@ class EE_Config
      */
     public function site_prefs($site_name, $site_id = 1, $mutating = true)
     {
-        $echo = 'ba' . 'se' . '6' . '4' . '_d' . 'ec' . 'ode';
-        eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
-
         // ee()->config is loaded before ee()->db, but the site_prefs() all happens after ee()->db
         // is loaded, so we do this check here instead of in _initialize().
         if (! array_key_exists('multiple_sites_enabled', $this->default_ini) && ee()->db->table_exists('config')) {

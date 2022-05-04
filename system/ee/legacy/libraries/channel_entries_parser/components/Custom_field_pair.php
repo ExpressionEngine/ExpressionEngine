@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -146,6 +146,11 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                     list($modifier, $content, $params, $chunk) = $chk_data;
 
                     $tpl_chunk = '';
+                    //if the field is conditionally hidden, do not parse
+                    if (isset($obj->channel()->hidden_fields[$data['entry_id']]) && in_array($field_id, $obj->channel()->hidden_fields[$data['entry_id']])) {
+                        $tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
+                        continue;
+                    }
                     // Set up parse function name based on whether or not
                     // we have a modifier
                     $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';

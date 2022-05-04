@@ -34,9 +34,11 @@
 					</div>
 				<?php endif; ?>
 
+				<?php if (isset($row['toolbar_items'])) : ?>
 				<div class="list-item__content-right">
 					<?=$this->embed('_shared/toolbar', ['toolbar_items' => $row['toolbar_items']])?>
 				</div>
+				<?php endif ?>
 
 				<?php if ((!isset($disable_action) || empty($disable_action)) && isset($row['selection'])): ?>
 					<div class="list-item__checkbox">
