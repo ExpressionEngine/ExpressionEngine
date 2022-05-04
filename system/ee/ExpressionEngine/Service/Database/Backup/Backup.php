@@ -213,26 +213,26 @@ class Backup
      */
     public function writeDropAndCreateStatements()
     {
-        $tables = $this->getTables();
+        $tables = $this->query->getTables();
 
         $this->writeSeparator('Drop old tables if exists');
 
-        foreach ($tables as $table) {
-            $this->writeChunk($this->query->getDropStatement($table));
+        foreach ($tables as $tableName => $table) {
+            $this->writeChunk($this->query->getDropStatement($tableName));
         }
 
         $this->writeSeparator('Create tables and their structure');
 
-        foreach ($tables as $structure) {
+        foreach ($tables as $name => $structure) {
             switch ($structure['type']) {
                 case Query::TABLE_STRUCTURE:
-                    $create = $this->query->getCreateForTable($structure);
+                    $create = $this->query->getCreateForTable($name);
                     break;
                 case Query::VIEW_STRUCTURE:
-                    $create = $this->query->getCreateForView($structure);
+                    $create = $this->query->getCreateForView($name);
                     break;
                 default:
-                    throw new Exception("There is no implementation of 'get create' for type {$structure['type']}.");
+                    throw new Exception("There is no implementation of 'get create' for type {$structure['type']}. Name: $name");
                 /** @see Query::getTables() */
             }
 
