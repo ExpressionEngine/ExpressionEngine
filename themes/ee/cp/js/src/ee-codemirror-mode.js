@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,7 +21,7 @@
 		if ( ! addon_exists || addon_not_installed) {
 
 			if ( ! addon_exists) {
-				return 'Addon "' + tagname + '" does not exist.';
+				return 'Add-on "' + tagname + '" does not exist.';
 			}
 
 			return 'Module "' + tagname + '" exists, but is not installed.';

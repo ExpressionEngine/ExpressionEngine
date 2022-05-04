@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,6 +15,7 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
  */
 class Text_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Text Input',
         'version' => '1.0.0'
@@ -25,6 +26,9 @@ class Text_ft extends EE_Fieldtype
     // Parser Flag (preparse pairs?)
     public $has_array_data = false;
 
+    public $defaultEvaluationRule = 'isNotEmpty';
+    protected $default_field_content_type = 'all';
+
     public function validate($data)
     {
         ee()->load->library('form_validation');
@@ -33,7 +37,7 @@ class Text_ft extends EE_Fieldtype
             return true;
         }
 
-        if (! isset($this->field_content_types)) {
+        if (! isset($this->field_content_types) || is_null($this->field_content_types)) {
             ee()->load->model('field_model');
             $this->field_content_types = ee()->field_model->get_field_content_types();
         }
@@ -84,7 +88,7 @@ class Text_ft extends EE_Fieldtype
      */
     public function save($data)
     {
-        if (! isset($this->field_content_types)) {
+        if (! isset($this->field_content_types) || is_null($this->field_content_types)) {
             ee()->load->model('field_model');
             $this->field_content_types = ee()->field_model->get_field_content_types();
         }
@@ -104,7 +108,7 @@ class Text_ft extends EE_Fieldtype
 
     public function display_field($data)
     {
-        $type = $this->get_setting('field_content_type', 'all');
+        $type = $this->get_setting('field_content_type', $this->default_field_content_type);
         $field = array(
             'name' => $this->field_name,
             'value' => $this->_format_number($data, $type),
@@ -146,7 +150,7 @@ class Text_ft extends EE_Fieldtype
                 $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('directory' => 'all'));
 
                 ee()->cp->add_js_script(array(
-                    'file' => array('fields/textarea/textarea'),
+                    'file' => array('fields/textarea/cp'),
                     'plugin' => array('ee_txtarea')
                 ));
             }
@@ -164,7 +168,7 @@ class Text_ft extends EE_Fieldtype
             return ee()->functions->encode_ee_tags($data);
         }
 
-        $type = isset($this->settings['field_content_type']) ? $this->settings['field_content_type'] : 'all';
+        $type = isset($this->settings['field_content_type']) ? $this->settings['field_content_type'] : $this->default_field_content_type;
         $decimals = isset($params['decimal_place']) ? (int) $params['decimal_place'] : false;
 
         $data = $this->_format_number($data, $type, $decimals);
@@ -330,7 +334,7 @@ class Text_ft extends EE_Fieldtype
         }
 
         $settings = $data['field_settings'];
-        $field_content_type = isset($settings['field_content_type']) ? $settings['field_content_type'] : 'all';
+        $field_content_type = isset($settings['field_content_type']) ? $settings['field_content_type'] : $this->default_field_content_type;
 
         return $this->_get_column_settings($field_content_type, $data['field_id']);
     }
@@ -344,7 +348,7 @@ class Text_ft extends EE_Fieldtype
         }
 
         return $this->_get_column_settings(
-            isset($settings['field_content_type']) ? $settings['field_content_type'] : '',
+            isset($settings['field_content_type']) ? $settings['field_content_type'] : $this->default_field_content_type,
             $data['col_id'],
             true
         );

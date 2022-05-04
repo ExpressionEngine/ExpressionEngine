@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -85,7 +85,7 @@ class File_field
         }
 
         // Create the hidden fields for the file and directory
-        $vars['hidden'] = form_hidden($field_name . '_hidden_file', $vars['filename']);
+        $vars['hidden'] = form_hidden($field_name . '_hidden_file', rawurldecode($vars['filename']));
         $vars['hidden'] .= form_hidden($field_name . '_hidden_dir', $vars['upload_location_id']);
 
         // Create a standard file upload field and dropdown for folks

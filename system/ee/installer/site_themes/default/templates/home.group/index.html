@@ -19,7 +19,7 @@
     		data-cycle-next=".next-slide"
 		>
 			{!-- slideshow images from a specific directory, and category --}
-			{exp:file:entries directory_id='8' dynamic='no' limit='5' disable='pagination' category='not 25'}
+			{exp:file:entries directory_id='7' dynamic='no' limit='5' disable='pagination' category='not 25'}
 				<img src="{file_url}" alt="{file_name:attr_safe}"{if count == 1} class="act"{/if}>
 				{if count == 1}
 					<div class="slide-ctrls">

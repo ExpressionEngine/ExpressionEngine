@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -16,6 +16,7 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 {
+
     public $info = array(
         'name' => 'Relationships',
         'version' => '1.0.0'
@@ -26,6 +27,13 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
     private $_table = 'relationships';
 
     private $errors;
+
+    /**
+     * A list of operators that this fieldtype supports
+     *
+     * @var mixed
+     */
+    public $supportedEvaluationRules = null;
 
     /**
      * Validate Field

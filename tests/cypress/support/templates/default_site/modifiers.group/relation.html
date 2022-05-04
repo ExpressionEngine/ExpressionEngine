@@ -1,0 +1,25 @@
+{layout="cypress/layout"}
+{exp:channel:entries dynamic="no" entry_id="2"}
+<div>
+    <h4>original entry with all params</h4>
+    <span>{entry_id:currency currency="EUR" locale="uk_UA"}</span>
+    <hr />
+</div>
+{related_news}
+<div>
+    <h4>related entry, no params</h4>
+    <span>{related_news:entry_id:currency}</span>
+    <hr />
+</div>
+<div>
+    <h4>related entry, single param</h4>
+    <span>{related_news:entry_id:currency currency="EUR"}</span>
+    <hr />
+</div>
+<div>
+    <h4>related entry, localized</h4>
+    <span>{related_news:entry_id:currency currency="EUR" locale="uk_UA"}</span>
+    <hr />
+</div>
+{/related_news}
+{/exp:channel:entries}

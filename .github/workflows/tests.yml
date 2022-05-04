@@ -4,10 +4,10 @@ on:
   push:
     branches:
       - 6.dev
-      - 6.2.0
-      - 6.3.0
-      - 6.4.0
-      - 6.5.0
+      - release/6.3.0
+      - release/6.4.0
+      - release/6.5.0
+      - feature/html-title-to-file-EECORE-1680
 
 jobs:
 
@@ -29,7 +29,7 @@ jobs:
         steps:
           - name: Checkout code
             uses: actions/checkout@v2
-          
+
           - name: Cache repository info
             uses: actions/cache@v2
             with:
@@ -46,7 +46,7 @@ jobs:
           - name: Setup node
             uses: actions/setup-node@v2
             with:
-              node-version: '10'
+              node-version: '17'
 
           - name: Install build tool dependencies
             working-directory: build-tools
@@ -78,7 +78,7 @@ jobs:
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
-          
+
           - name: Directory Listing on Failure
             if: failure()
             run: |
@@ -93,13 +93,28 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.1, 7.2, 7.4, 8.0]
+                php: [5.6, 7.1, 7.2, 7.4, 8.0]
                 os: [ubuntu-18.04]
-                containers: [0, 1, 2, 3]
+                containers: [0, 1, 2, 3, 4 , 5]
                 include:
                   - php: 8.1
-                    os: ubuntu-latest #is using mysql8
-                    containers: [0, 1, 2, 3]
+                    os: ubuntu-latest
+                    containers: 0
+                  - php: 8.1
+                    os: ubuntu-latest
+                    containers: 1
+                  - php: 8.1
+                    os: ubuntu-latest
+                    containers: 2
+                  - php: 8.1
+                    os: ubuntu-latest
+                    containers: 3
+                  - php: 8.1
+                    os: ubuntu-latest
+                    containers: 4
+                  - php: 8.1
+                    os: ubuntu-latest
+                    containers: 5
 
         name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}
 
@@ -114,7 +129,7 @@ jobs:
             - name: Move files to webroot
               run: |
                 cp -R build-tools/builds/ExpressionEngine/* ./
-            
+
             - name: Restore cached git history
               uses: actions/cache@v2
               with:
@@ -125,7 +140,7 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-            
+
             - name: Copy .env.php
               run: |
                 rm -f .env.php
@@ -168,18 +183,19 @@ jobs:
 
             - name: Start PHP Server
               run: php tests/serve.php &
-            
+
             - name: Start SMTP Server
               run: |
                 npm install -g maildev
                 maildev &
-            
+
             # - name: Get Cypress Specs
             #   run: |
             #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 4 ${{ matrix.containers }})"
             #   id: specs
 
             - name: Run Cypress Tests
+              if: matrix.php != '5.6'
               uses: cypress-io/github-action@v2
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
@@ -187,6 +203,22 @@ jobs:
                 headless: true
                 working-directory: tests/cypress
                 config-file: cypress.json
+                record: true
+                parallel: true
+                group: PHP${{ matrix.php }}
+              env:
+                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Run Cypress Tests (PHP 5.6)
+              if: matrix.php == '5.6'
+              uses: cypress-io/github-action@v2
+              with:
+                browser: chrome
+                headless: true
+                working-directory: tests/cypress
+                config-file: cypress.without-pro.json
                 record: true
                 parallel: true
                 group: PHP${{ matrix.php }}

@@ -45,6 +45,8 @@ module.exports = (on, config) => {
         config.baseUrl = baseUrl;
     }
 
+    const { lighthouse, prepareAudit } = require('cypress-audit');
+
     const child_process = require('child_process');
 
     on('task', {
@@ -241,7 +243,10 @@ module.exports = (on, config) => {
     })
 
     on('task', {
-        'installer:replace_config': ({file, options}) => {
+        'installer:replace_config': ({file, options} = {}) => {
+            if (typeof(options)==='undefined') {
+                options = {database: db_defaults};
+            }
             installer.replace_config(file, options)
             installer.set_base_url(config.baseUrl)
             return true;
@@ -308,6 +313,9 @@ module.exports = (on, config) => {
 
 
     on('before:browser:launch', (browser, launchOptions) => {
+        if (browser.name === 'chrome') {
+            prepareAudit(launchOptions);
+        }
         if (browser.name === 'chrome' && browser.isHeadless) {
             launchOptions.args.push('--disable-gpu');
 
@@ -338,6 +346,10 @@ module.exports = (on, config) => {
 
             return launchOptions
         }
+    });
+
+    on('task', {
+        lighthouse: lighthouse()
     });
 
     return config;

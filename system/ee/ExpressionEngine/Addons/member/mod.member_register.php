@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -428,12 +428,21 @@ class Member_register extends Member
         $result = $member->validate();
 
         // Validate password
-        if (($pw_validate = $member->validatePassword('password', $_POST['password'])) !== true) {
-            $cust_errors[] = lang($pw_validate);
-        }
+        $validator = ee('Validation')->make();
+        $validator->setRule('password', 'validPassword');
+        $validator->setRule('password_confirm', 'matches[password]');
+        $passwordValidation = $validator->validate($_POST);
 
-        if ($_POST['password'] != $_POST['password_confirm']) {
-            $cust_errors[] = lang('missmatched_passwords');
+        // Add password confirmation failure to main result object
+        if ($passwordValidation->isNotValid()) {
+            foreach ($passwordValidation->getAllErrors() as $errors) {
+                foreach ($errors as $key => $error) {
+                    if ($key == 'matches') {
+                        $error = lang('missmatched_passwords');
+                    }
+                    $cust_errors[] = $error;
+                }
+            }
         }
 
         $field_labels = array();

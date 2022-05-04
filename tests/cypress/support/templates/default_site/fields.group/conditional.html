@@ -1,0 +1,30 @@
+{layout="cypress/layout"}
+{exp:channel:entries channel="news"}
+<h1>{title}</h1>
+
+<div class="news_body">{news_body}</div>
+
+<div class="if_news_body">{if news_body}if news_body{if:else}if not news_body{/if}</div>
+
+<div class="news_image">{news_image}</div>
+
+<div class="if_news_image">{if news_image}if news_image{if:else}if not news_image{/if}</div>
+
+<div class="cf_grid">{cf_grid}{cf_grid:column}{/cf_grid}</div>
+
+<div class="cf_grid_table">{cf_grid:table}</div>
+
+<div class="if_cf_grid">{if cf_grid}if cf_grid{if:else}if not cf_grid{/if}</div>
+
+<div class="if_cf_grid_rows">{if cf_grid:total_rows > 0}if cf_grid{if:else}if not cf_grid{/if}</div>
+
+<div class="related_news">{related_news}{related_news:title}{/related_news}</div>
+
+<div class="if_related_news">{if related_news}if related_news{if:else}if not related_news{/if}</div>
+
+<div class="fluid">{cf_fluid}{cf_fluid:news_body}{content}{/cf_fluid:news_body}{/cf_fluid}</div>
+
+<div class="if_fluid">{if cf_fluid}if cf_fluid{if:else}if not cf_fluid{/if}</div>
+
+
+{/exp:channel:entries}

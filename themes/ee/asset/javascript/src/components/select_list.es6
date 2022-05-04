@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -44,7 +44,7 @@ class SelectList extends React.Component {
         })
       } else {
         // When formatting selected items lists, selections will likely be a flat
-        // array of values for multi-select
+        // array of values for multi select
         var value = (multi) ? items[key] : key
         var newItem = {
           value: items[key].value || items[key].value === '' ? items[key].value : value,
@@ -498,7 +498,7 @@ class SelectItem extends React.Component {
             disabled={disabled ? 'disabled' : ''}
            />
         )}
-        <div className="checkbox-label__text">
+        <div className={props.editable ? "checkbox-label__text checkbox-label__text-editable" : "checkbox-label__text"}>
         {props.reorderable && (
           <span className="icon-reorder icon-left"></span>
         )}
@@ -510,9 +510,14 @@ class SelectItem extends React.Component {
         {props.item.instructions && (
           <span className="meta-info">{props.item.instructions}</span>
         )}
-        {props.removable && (
-            <a href="" className="button button--small default float-right" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
+        <div class="button-group button-group-xsmall button-group-flyout-right">
+        {props.editable && (
+          <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fas fa-pencil-alt"></i></a>
         )}
+        {props.removable && (
+            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
+        )}
+        </div>
         </div>
       </label>
     )
