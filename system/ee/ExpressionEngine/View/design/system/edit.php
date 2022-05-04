@@ -12,7 +12,9 @@
 		</div>
 	</div>
 	<div class="panel-body">
-		<?=ee('CP/Alert')->getAllInlines()?>
+		<div class="single-templates-notice-wrapper">
+			<?=ee('CP/Alert')->getAllInlines()?>
+		</div>
 		<fieldset class="col-group last">
 			<div class="setting-txt col w-16">
 				<em><?=sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), $author)?></em>

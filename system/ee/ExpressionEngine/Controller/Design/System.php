@@ -151,7 +151,7 @@ class System extends AbstractDesignController
 
         $this->loadCodeMirrorAssets();
 
-        ee()->view->cp_page_title = sprintf(lang($template->template_name));
+        ee()->view->cp_page_title = lang($template->template_name);
         ee()->view->save_btn_text = lang('save');
         ee()->view->save_btn_text_working = 'btn_saving';
 
