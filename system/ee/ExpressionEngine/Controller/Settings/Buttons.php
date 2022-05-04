@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -55,7 +55,7 @@ class Buttons extends Settings
             ->all();
 
         foreach ($buttons as $button) {
-            $name = (strpos($button->classname, 'html-') !== 0) ? htmlentities($button->tag_name) : '';
+            $name = (empty($button->classname) || strpos($button->classname, 'html-') !== 0) ? htmlentities($button->tag_name) : '';
 
             $preview = array('toolbar_items' => array(
                 $button->classname => array(

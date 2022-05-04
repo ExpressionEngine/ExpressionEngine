@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -494,7 +494,7 @@ class Grid_parser
             // Finally, do the replacement
             $grid_row = str_replace(
                 $match[0],
-                $replace_data,
+                (string) $replace_data,
                 $grid_row
             );
         }

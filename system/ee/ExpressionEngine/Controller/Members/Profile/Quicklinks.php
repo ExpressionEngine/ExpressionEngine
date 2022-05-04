@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -272,7 +272,7 @@ class Quicklinks extends Settings
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
                     ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
                 } else {
-                    ee()->functions->redirect(ee('CP/URL')->make($this->index_url . '/edit/' . $id, $this->query_string));
+                    ee()->functions->redirect(ee('CP/URL')->make($this->index_url . '/edit/' . (int) $id, $this->query_string));
                 }
             }
         } elseif (ee()->form_validation->errors_exist()) {

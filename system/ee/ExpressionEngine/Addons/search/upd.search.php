@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,7 +13,7 @@
  */
 class Search_upd
 {
-    public $version = '2.2.2';
+    public $version = '2.3.0';
 
     /**
      * Module Installer
@@ -37,6 +37,7 @@ class Search_upd
 					 query mediumtext NULL DEFAULT NULL,
 					 custom_fields mediumtext NULL DEFAULT NULL,
 					 result_page varchar(70) NOT NULL,
+					 no_result_page varchar(70),
 					 PRIMARY KEY `search_id` (`search_id`),
 					 KEY `site_id` (`site_id`)
 		 		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
@@ -147,6 +148,19 @@ class Search_upd
             ee()->db->where('class', 'Search')
                 ->where('method', 'do_search')
                 ->update('actions', array('csrf_exempt' => 1));
+        }
+
+        if (version_compare($current, '2.3', '<')) {
+            ee()->load->library('smartforge');
+
+            $fields = array(
+                'no_result_page' => array(
+                    'type' => 'varchar',
+                    'constraint' => '70',
+                )
+            );
+
+            ee()->smartforge->add_column('search', $fields);
         }
 
         return true;

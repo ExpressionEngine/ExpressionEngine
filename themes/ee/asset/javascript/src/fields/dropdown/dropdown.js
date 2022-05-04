@@ -25,7 +25,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var Dropdown =
@@ -48,6 +48,14 @@ function (_React$Component) {
 
       if (_this.props.groupToggle) {
         EE.cp.form_group_toggle(_this.input);
+      }
+
+      if (_this.props.conditionalRule == 'rule') {
+        EE.cp.show_hide_rule_operator_field(selected, _this.input);
+      }
+
+      if (_this.props.conditionalRule == 'operator') {
+        EE.cp.check_operator_value(selected, _this.input);
       }
     });
 
@@ -107,14 +115,17 @@ function (_React$Component) {
         className: "select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')
       }, React.createElement("div", {
         className: "select__button js-dropdown-toggle",
-        onClick: this.toggleOpen
+        onClick: this.toggleOpen,
+        tabIndex: "0"
       }, React.createElement("label", {
         className: 'select__button-label' + (this.state.selected ? ' act' : '')
       }, selected && React.createElement("span", null, selected.sectionLabel ? selected.sectionLabel + ' / ' : '', React.createElement("span", {
         dangerouslySetInnerHTML: {
           __html: selected.label
         }
-      })), !selected && React.createElement("i", null, this.props.emptyText), React.createElement("input", {
+      }), this.props.name == 'condition-rule-field' && React.createElement("span", {
+        className: "short-name"
+      }, "{".concat(selected.value, "}"))), !selected && React.createElement("i", null, this.props.emptyText), React.createElement("input", {
         type: "hidden",
         ref: function ref(input) {
           _this2.input = input;
@@ -122,7 +133,9 @@ function (_React$Component) {
         name: this.props.name,
         value: this.state.selected ? this.state.selected.value : '',
         "data-group-toggle": this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'
-      }))), React.createElement("div", {
+      })), selected && this.props.name.includes('[condition_field_id]') && React.createElement("span", {
+        className: "tooltiptext"
+      }, "".concat(selected.label.replace(/<.*/g, ""), " ").concat(selected.label.match(/(?:\{).+?(?:\})/g)))), React.createElement("div", {
         className: "select__dropdown dropdown"
       }, this.props.initialCount > this.props.tooMany && React.createElement("div", {
         className: "select__dropdown-search"
@@ -143,7 +156,8 @@ function (_React$Component) {
           selected: _this2.state.selected && item.value == _this2.state.selected.value,
           onClick: function onClick(e) {
             return _this2.selectionChanged(item);
-          }
+          },
+          name: _this2.props.name
         });
       }))));
     }
@@ -184,12 +198,15 @@ function DropdownItem(props) {
 
   return React.createElement("div", {
     onClick: props.onClick,
-    className: 'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')
+    className: 'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : ''),
+    tabIndex: "0"
   }, React.createElement("span", {
     dangerouslySetInnerHTML: {
       __html: item.label
     }
-  }), item.instructions && React.createElement("i", null, item.instructions));
+  }), item.instructions && React.createElement("i", null, item.instructions), props.name == 'condition-rule-field' && React.createElement("span", {
+    className: "short-name"
+  }, "{".concat(item.value, "}")));
 }
 
 $(document).ready(function () {

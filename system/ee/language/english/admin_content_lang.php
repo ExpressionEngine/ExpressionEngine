@@ -30,6 +30,10 @@ $lang = array(
 
     'be_careful' => 'BE CAREFUL!',
 
+    'selectable_buttons_options' => 'Buttons options',
+
+    'selectable_buttons_options_desc' => '<em><i>Each item in the textarea will be included as selectable button in the publish form.</i>',
+
     'can_edit_status' => 'Can access status',
 
     'category' => 'Category',
@@ -232,6 +236,24 @@ $lang = array(
 
     'enable_versioning' => 'Enable Entry Versioning',
 
+    'field_conditions_sync_success' => 'Conditional Field Logic Updated',
+
+    'field_conditions_sync_success_desc' => 'All related channel entries have been updated to use the most recent conditional logic.',
+
+    'field_conditions_sync_existing_entries' => 'Existing entries',
+
+    'field_conditions_sync_desc' => '<b>%d</b> entries',
+
+    'field_conditions_syncing_conditional_logic' => 'Syncing Conditional Logic',
+
+    'field_conditions_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'field_conditions_sync_in_progress_message' => 'Do not navigate away from this screen while syncing is in progress.',
+
+    'btn_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'btn_sync_conditional_logic_working' => 'Syncing conditional logic...',
+
     'field' => 'Field',
 
     'fields_assign_to_group' => 'Assign one or more fields to this group.',
@@ -254,9 +276,9 @@ $lang = array(
 
     'field_options' => 'Field Options',
 
-    'field_populate_from_channel' => 'Populate the menu from another channel field',
+    'field_populate_from_channel' => 'Populate from another channel field',
 
-    'field_populate_manually' => 'Populate the menu manually',
+    'field_populate_manually' => 'Populate manually',
 
     'field_tools' => 'Field tools',
 
@@ -274,13 +296,15 @@ $lang = array(
 
     'fmt_has_changed' => 'Note: You have selected a different field formatting choice than what was previously saved.',
 
-    'formatting_no_available' => 'Text formatting is not available for your chosen field type',
+    'formatting_no_available' => 'Text formatting is not available for your chosen fieldtype',
 
     'global_sort_order' => 'Master Sort Order',
 
+    'grid_buttons_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included as selectable buttons in the publish form.',
+
     'grid_checkbox_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single checkbox and label pair in the publish form.',
 
-    'grid_multiselect_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a multi-select in the publish form.',
+    'grid_multiselect_options_desc' => 'Specify value/label pairs, or each item in the textarea will be included in a multi select in the publish form.',
 
     'grid_radio_options_desc' => 'Specify value/label pairs, or each item in the textarea will generate a single radio button and label pair in the publish form.',
 
@@ -336,9 +360,17 @@ $lang = array(
 
     'max_revisions_note' => 'Versioning can use up a lot of database space so it is recommended that you limit the number of revisions.',
 
-    'multiselect_options' => 'Multi-Select options',
+    'multiselect_options' => 'Multi Select options',
 
-    'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi-select in the publish form.</i>',
+    'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi select in the publish form.</i>',
+
+    'make_conditional' => 'Make conditional?',
+
+    'make_conditional_desc' => 'Only display this field when conditions of other field(s) are met',
+
+    'is_conditional' => 'Conditionals',
+
+    'is_conditional_desc' => 'This field is being used as conditional for the field(s) listed below.',
 
     'new_category' => 'New Category',
 
@@ -392,7 +424,7 @@ $lang = array(
 
     'removed_fields_from_fluid_field' => 'The following fields were removed from the Fluid Field <b>%s</b> and their data was deleted: %s',
 
-    'require_field_desc' => 'When enabled, this field will be required to submit the publish form.',
+    'require_field_desc' => 'When enabled (and not conditionally hidden), this field will be required to submit the publish form.',
 
     'reserved_word' => 'The field name you have chosen is a reserved word and cannot be used. Please see the user guide for more information.',
 
@@ -613,6 +645,10 @@ $lang = array(
 
     'custom_field_empty' => 'The following field is required:',
 
+    'datalist_items' => 'Data List items',
+
+    'datalist_items_desc' => 'Values that will be shown as recommended options',
+
     'delete_field' => 'Delete Field',
 
     'delete_field_confirmation' => 'Are you sure you want to permanently delete this Channel Field?',
@@ -621,7 +657,7 @@ $lang = array(
 
     'delete_field_group_confirmation' => 'Are you sure you want to permanently delete this Channel Field Group?',
 
-    'dropdown_sub' => 'If you are using a \'drop-down\' field type',
+    'dropdown_sub' => 'If you are using a \'drop-down\' fieldtype',
 
     'duplicate_field_name' => 'The field name you chose is already taken',
 
@@ -639,7 +675,7 @@ $lang = array(
 
     'field_formatting' => 'Field Formatting',
 
-    'field_formatting_cont' => 'If you chose textarea field type',
+    'field_formatting_cont' => 'If you chose textarea fieldtype',
 
     'field_group' => 'Channel Field Group',
 
@@ -659,7 +695,7 @@ $lang = array(
 
     'field_list_items_cont' => 'If you chose drop-down menu',
 
-    'field_max_length_cont' => 'If you are using a \'text\' field type',
+    'field_max_length_cont' => 'If you are using a \'text\' fieldtype',
 
     'field_name' => 'Short Name',
 
@@ -675,13 +711,13 @@ $lang = array(
 
     'invalid_characters' => 'The field name you submitted contains invalid characters',
 
-    'invalid_field_type' => 'Invalid field type',
+    'invalid_field_type' => 'Invalid fieldtype',
 
     'is_field_required' => 'Is this a required field?',
 
     'is_field_searchable' => 'Is field searchable?',
 
-    'multi_list_items' => 'Multi-Select Options',
+    'multi_list_items' => 'Multi Select Options',
 
     'new_field_group' => 'New Field Group',
 
@@ -717,7 +753,7 @@ $lang = array(
 
     'textarea_rows' => 'Textarea Rows',
 
-    'textarea_rows_cont' => 'If you are using a \'textarea\' field type',
+    'textarea_rows_cont' => 'If you are using a \'textarea\' fieldtype',
 
     'type_decimal' => 'Decimal',
 
@@ -805,6 +841,10 @@ $lang = array(
     'field_fmt' => 'Text formatting',
 
     'field_max_length' => 'Maximum characters',
+
+    'field_min_value' => 'Minimum value',
+
+    'field_max_value' => 'Maximum value',
 
     'field_show_fmt' => 'Allow override?',
 

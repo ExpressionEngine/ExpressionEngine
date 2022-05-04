@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1334,6 +1334,14 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'share_analytics share_analytics_desc',
                         'command_title' => 'share_analytics'
                     ),
+                    'fieldset-cli_enabled' => array(
+                        'trail' => [
+                            'settings',
+                            'security_privacy'
+                        ],
+                        'command' => 'cli_enabled cli_enabled_shorthand cli_enabled_desc',
+                        'command_title' => 'cli_enabled'
+                    ),
                     'fieldset-cookie_domain' => array(
                         'trail' => [
                             'cookie_settings'
@@ -2034,11 +2042,11 @@ class JumpMenu extends AbstractJumpMenu
             $addon_infos = ee('Addon')->all();
             $assigned_modules = ee()->session->getMember()->getAssignedModules()->pluck('module_name');
             foreach ($addon_infos as $name => $info) {
-                if ($info->hasModule() && !in_array($info->getModuleClass(), $assigned_modules)) {
+                if ($info->get('built_in') || ! $info->isInstalled() || ! $info->get('settings_exist')) {
                     continue;
                 }
 
-                if ($info->get('built_in') || ! $info->isInstalled() || ! $info->get('settings_exist')) {
+                if ($info->hasModule() && !in_array($info->getModuleClass(), $assigned_modules)) {
                     continue;
                 }
 

@@ -1,0 +1,14 @@
+{layout="cypress/layout"}
+{exp:channel:entries dynamic="no" entry_id="2"}
+<div>
+    <h4>currency, single line</h4>
+    <span>{entry_id:currency currency='EUR' locale='en_UK'}</span>
+    <hr />
+</div>
+<div>
+    <h4>currency, two lines</h4>
+    <span>{entry_id:currency 
+        currency='EUR' locale='en_UK'}</span>
+    <hr />
+</div>
+{/exp:channel:entries}

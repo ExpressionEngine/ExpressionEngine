@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -111,8 +111,12 @@ class MimeType
         //try another method to get mime
         if ($mime == 'application/octet-stream') {
             $file_opening = file_get_contents($path, false, null, 0, 50);//get first 50 bytes off the file
-            if (strpos($file_opening, 'RIFF' === 0) && strpos($file_opening, 'WEBPVP8' !== false)) {
+            if (strpos($file_opening, 'RIFF') === 0 && strpos($file_opening, 'WEBPVP8') !== false) {
                 $mime = 'image/webp';
+                // PDF files start with "%PDF" (25 50 44 46) or " %PDF"
+                // @see https://en.wikipedia.org/wiki/Magic_number_%28programming%29#Examples
+            } else if (strpos($file_opening, '%PDF') !== false) {
+                $mime = 'application/pdf';
             }
         }
 
@@ -191,10 +195,25 @@ class MimeType
 
         if ($mime == 'image/svg+xml') {
             $file = file_get_contents($path);
-            if (strpos($file, '<?xml') !==0 || strpos($file, '<svg') === false) {
+            if ((strpos($file, '<?xml') !==0 && strpos($file, '<svg') !== 0) || strpos($file, '<svg') === false) {
                 return false;
             }
             return true;
+        }
+
+        // If the reported mime-type is an icon, we won't do the next validation step because imagecreatefromstring does not support .ico files
+        if ($mime === 'image/vnd.microsoft.icon' || $mime == 'image/x-icon') {
+            try {
+                $file = fopen($path, 'r');
+                $first = fread($file, 4);
+                fclose($file);
+                return $first === "\x00\x00\x01\x00";
+            } catch (\Exception $e) {
+                if (DEBUG) {
+                    show_error($e->getMessage());
+                }
+                return false;
+            }
         }
 
         // If the reported mime-type is an image we'll do an extra validation

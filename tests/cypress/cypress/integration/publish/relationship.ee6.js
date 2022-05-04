@@ -9,11 +9,16 @@ const fluid_field = new FluidField;
 context('Relationship field - Edit', () => {
 	before(function(){
 		cy.task('db:seed')
+		cy.eeConfig({ item: 'show_profiler', value: 'y' })
 	})
 
 	beforeEach(function(){
 		cy.auth();
 		cy.hasNoErrors()
+	})
+
+	after(function(){
+		cy.eeConfig({ item: 'show_profiler', value: 'n' })
 	})
 
 	it('shows a 404 with no given entry_id', () => {
@@ -24,7 +29,7 @@ context('Relationship field - Edit', () => {
 	context('relationship field', () => {
 
 			// default, display_entry_id is Off, items haven't been added 
-			it('saves relationship field', () => {
+		it('saves relationship field', () => {
 			cy.visit('admin.php?/cp/publish/edit/entry/1')
 			cy.get('button:contains("Relate Entry")').first().click()
 			cy.get('a.dropdown__link:contains("Welcome to the Example Site!")').first().click();
@@ -47,6 +52,8 @@ context('Relationship field - Edit', () => {
 
 			cy.get('.app-notice---success').contains('Entry Updated');
 			cy.get('[data-relationship-react] .list-item__title:visible').should('not.exist');
+
+			cy.logCPPerformance()
 		})
 
 		it('add button is not visible when rel max is reached', () => {
@@ -88,6 +95,47 @@ context('Relationship field - Edit', () => {
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 			cy.get('.app-notice---success').contains('Entry Updated');
 			cy.get('button:contains("Relate Entry")').should('not.be.visible')
+			cy.hasNoErrors()
+
+		})
+
+		it('add button is visible when rel max is empty', () => {
+			cy.visit('admin.php?/cp/fields/edit/8');
+			cy.logCPPerformance()
+			cy.get('[data-toggle-for="relationship_allow_multiple"]').should('have.class', 'on')
+			cy.get('[name="rel_min"]').should('be.visible');
+			cy.get('[name="rel_max"]').should('be.visible');
+			cy.get('[name="rel_max"]').clear()
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.hasNoErrors()
+
+			cy.visit('admin.php?/cp/publish/edit/entry/1')
+			cy.get('button:contains("Relate Entry")').should('be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('button:contains("Relate Entry")').should('be.visible')
+			cy.hasNoErrors()
+
+			cy.get('button:contains("Relate Entry")').should('be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('button:contains("Relate Entry")').should('be.visible')
+			cy.hasNoErrors()
+
+			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()
+			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('not.exist')
+			cy.get('button:contains("Relate Entry")').should('be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('button:contains("Relate Entry")').should('be.visible')
+			cy.hasNoErrors()
+
+			cy.get('button:contains("Relate Entry")').first().click()
+			cy.get('a.dropdown__link:contains("Band Title")').first().click();
+			cy.get('button:contains("Relate Entry")').should('be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('button:contains("Relate Entry")').should('be.visible')
 			cy.hasNoErrors()
 
 		})
@@ -186,7 +234,6 @@ context('Relationship field - Edit', () => {
 			cy.get('[name=title]').invoke('val').should('eq', "Getting to Know ExpressionEngine")
 			cy.get('[name=field_id_1]').invoke('val').should('contain', "Thank you for choosing ExpressionEngine!")
 			cy.get('[name=field_id_3]').invoke('val').should('eq', "{filedir_2}ee_banner_120_240.gif");
-			cy.get('button:contains("Relate Entry")').should('not.be.visible')
 			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
 		})
@@ -251,9 +298,10 @@ context('Relationship field - Edit', () => {
 			cy.get('[name=title]').invoke('val').should('eq', "Getting to Know ExpressionEngine")
 			cy.get('[name=field_id_1]').invoke('val').should('contain', "Thank you for choosing ExpressionEngine!")
 			cy.get('[name=field_id_3]').invoke('val').should('eq', "{filedir_2}ee_banner_120_240.gif");
-			//cy.get('button:contains("Relate Entry")').should('not.be.visible')
 			cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 			cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
+
+			cy.logCPPerformance()
 		})
 
 		it('add button is not visible when rel max is reached for grid', () => {
@@ -301,6 +349,55 @@ context('Relationship field - Edit', () => {
 			cy.get('.grid-field button:contains("Relate Entry")').should('not.be.visible')
 			cy.hasNoErrors()
 
+			cy.logCPPerformance()
+
+		})
+
+		it('add button is not visible when rel max is empty for grid', () => {
+			cy.visit('admin.php?/cp/fields/edit/19');
+			cy.get('[data-field-name=col_id_3] .fields-grid-tool-expand').first().click()
+			cy.get('[data-toggle-for="relationship_allow_multiple"]').should('have.class', 'on')
+			cy.get('[name="grid[cols][col_id_3][col_settings][rel_min]"]').should('be.visible');
+			cy.get('[name="grid[cols][col_id_3][col_settings][rel_max]"]').should('be.visible');
+			cy.get('[name="grid[cols][col_id_3][col_settings][rel_max]"]').clear()
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+			cy.visit('admin.php?/cp/publish/edit/entry/1')
+			cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()
+			cy.get('.grid-field tr:not(.hidden) .list-item__title:contains("Welcome to the Example Site!")').closest('.list-item').find('[title="Remove"]').click()
+
+			cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('not.exist')
+			cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Band Title!")').should('not.exist')
+			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('be.visible')
+			cy.hasNoErrors()
+
+			cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Welcome to the Example Site!")').first().click({force: true});
+			cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Band Title")').first().click({force: true});
+			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('be.visible')
+			cy.hasNoErrors()
+
+			cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()
+			cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Band Title")').should('not.exist')
+			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('be.visible')
+			cy.hasNoErrors()
+
+			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').first().click()
+			cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Band Title")').first().click({force: true});
+			cy.get('.grid-field button:contains("Relate Entry")').should('be.visible')
+			cy.get('body').type('{ctrl}', {release: false}).type('s')
+			cy.get('.app-notice---success').contains('Entry Updated');
+			cy.get('.grid-field button:contains("Relate Entry")').should('be.visible')
+			cy.hasNoErrors()
+
 		})
 
 		//	display_entry_id On, items have been added
@@ -320,7 +417,7 @@ context('Relationship field - Edit', () => {
 			cy.get('[name=field_id_3]').invoke('val').should('eq', "{filedir_2}ee_banner_120_240.gif");
 			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
-			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('not.be.visible')
+			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('be.visible')
 		})
 
 		//  display_entry_id Off, items have been added
@@ -340,7 +437,9 @@ context('Relationship field - Edit', () => {
 			cy.get('[name=field_id_3]').invoke('val').should('eq', "{filedir_2}ee_banner_120_240.gif");
 			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
-			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('not.be.visible')
+			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('be.visible')
+
+			cy.logCPPerformance()
 		})
 	})
 })

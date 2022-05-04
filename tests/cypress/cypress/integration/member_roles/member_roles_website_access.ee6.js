@@ -7,36 +7,24 @@ context('Test Member roles Web access ', () => {
 
 	before(function(){
 		cy.task('db:seed')
+		cy.eeConfig({item: 'is_system_on', value: 'n'})
 		cy.addRole('Test')
 		cy.addMembers('Test', 1)
+
+		//Let Test Role access CP
+		cy.authVisit('admin.php?/cp/members/roles')
+	   cy.get('div[class="list-item__title"]').contains('Test').click()
+	   cy.get('button').contains('CP Access').click()
+	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
+	   cy.get('button').contains('Save').first().click()
+
 		cy.logout()
 	})
 
-	it('Let Test Role access CP', () => {
-
-	   cy.authVisit('admin.php?/cp/members/roles')
-
-	   cy.get('div[class="list-item__title"]').contains('Test').click()
-
-	   cy.get('button').contains('CP Access').click()
-	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
-	})
-
-
 	it('Turns website offline --> Members cannot view Site but Super Aamin can', () =>{
 
-	   cy.authVisit('admin.php?/cp/members/profile/settings')
-
-	   cy.get('h1').contains('admin')//ensure admin logged in
-
-
-	   cy.get('.ee-sidebar').contains('Settings').click()
-
-
-		cy.get('.on > .slider').click();
-		cy.get('button').contains('Save Settings').click()
-
-		cy.visit('/')
+		cy.authVisit('/')
+		cy.get('body').should('not.contain', 'This site is currently offline')
 
 		cy.logout()
 
@@ -79,6 +67,8 @@ context('Test Member roles Web access ', () => {
 	   cy.get('.button').click();
 
 	   cy.visit('/',{failOnStatusCode: false})
+
+	   cy.get('body').should('not.contain', 'This site is currently offline')
 
 	})
 

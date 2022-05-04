@@ -12,13 +12,21 @@
     "failOnStatusCode": false,
     "redirectionLimit": 200,
     "testFiles": "**/*.ee6.js",
-    "retries": 0,
+    "retries": 1,
+    "lighthouse": {
+        "performance": 75,
+        "accessibility": 75,
+        "best-practices": 75,
+        "seo": 75,
+        "pwa": 25
+    },
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",
         "DB_HOST": "localhost",
         "DB_USER": "root",
         "DB_PASSWORD": "root",
+        "DB_PORT": "3306",
         "DB_DATABASE": "ee-test",
         "DB_DUMP": "database_6.0.0.sql",
         "TEMP_DIR": "/tmp",

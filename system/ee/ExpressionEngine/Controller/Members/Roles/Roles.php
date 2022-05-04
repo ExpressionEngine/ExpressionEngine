@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -118,10 +118,10 @@ class Roles extends AbstractRolesController
 
         foreach ($roles as $role) {
             $edit_url = ee('CP/URL')->make('members/roles/edit/' . $role->getId());
-
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
+                'status' => $role->is_locked,
                 'faded' => '(' . $role->total_members . ')',
                 'faded-href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                 'href' => $edit_url,
@@ -168,7 +168,7 @@ class Roles extends AbstractRolesController
             '' => lang('roles')
         );
 
-        if (ee()->config->item('ignore_member_stats') == 'y') {
+        if (bool_config_item('ignore_member_stats')) {
             ee()->lang->load('members');
             ee('CP/Alert')->makeInline('roles-count-warn')
                 ->asWarning()
@@ -663,7 +663,7 @@ class Roles extends AbstractRolesController
                         'require_mfa' => [
                             'type' => 'yes_no',
                             'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
-                            'value' => $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
+                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
                         ]
                     ]
                 ],

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -343,6 +343,26 @@ abstract class Entity extends MixableImpl implements Publisher
             $this->deleteBackup($name);
         } else {
             $this->clearBackups();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Mark a property or the entire entity as dirty.
+     *
+     * @param String $name Property name [optional]
+     */
+    public function markAsDirty($name = null)
+    {
+        if (!empty($name)) {
+            if (! $this->hasBackup($name) && $this->hasProperty($name)) {
+                $this->setBackup($name, $this->getRawProperty($name));
+            }
+        } else {
+            foreach ($this->getFields() as $field) {
+                $this->setBackup($field, $this->getRawProperty($field));
+            }
         }
 
         return $this;

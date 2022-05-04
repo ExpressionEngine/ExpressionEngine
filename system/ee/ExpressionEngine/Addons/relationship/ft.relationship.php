@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -16,6 +16,7 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 {
+
     public $info = array(
         'name' => 'Relationships',
         'version' => '1.0.0'
@@ -26,6 +27,13 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
     private $_table = 'relationships';
 
     private $errors;
+
+    /**
+     * A list of operators that this fieldtype supports
+     *
+     * @var mixed
+     */
+    public $supportedEvaluationRules = null;
 
     /**
      * Validate Field
@@ -74,22 +82,11 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
     public function validate_settings($data)
     {
         $rules = [
-            'rel_min' => 'isNatural|gtLimit',
+            'rel_min' => 'isNatural',
             'rel_max' => 'isNaturalNoZero'
         ];
 
         $validator = ee('Validation')->make($rules);
-
-        $validator->defineRule('gtLimit', function ($key, $value, $parameters, $rule) use ($data) {
-            if (
-                ((isset($data['allow_multiple']) && $data['allow_multiple'] == true) || (isset($data['relationship_allow_multiple']) && $data['relationship_allow_multiple'] == 'y'))
-                && $data['limit'] < $data['rel_min']
-            ) {
-                    $rule->stop();
-                    return lang('rel_ft_min_settings_error');
-            }
-            return true;
-        });
 
         $this->errors = $validator->validate($data);
 

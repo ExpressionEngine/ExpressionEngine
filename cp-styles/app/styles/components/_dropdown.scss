@@ -11,6 +11,8 @@
 	z-index: 200;
 	max-width: 600px;
 	min-width: 160px;
+	max-height: 90vh;
+	overflow-y: auto;
 
 	display: none;
 }
@@ -45,7 +47,7 @@
   display: -moz-box;
   display: -ms-flexbox;
   display: -webkit-flex;
-  display: flex;  
+  display: flex;
 	height: auto;
 	line-height: inherit;
 	padding: 7px 20px;
@@ -204,7 +206,7 @@
 	// font-size: 0.8em !important;
 	// height: 18px;
 	// line-height: 18px;
-	margin-right: $s-m;
+	margin-right: 15px;
 
 	i {
 		// color: #fff !important;

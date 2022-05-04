@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -34,7 +34,7 @@ class Api_channel_fields extends Api
             'field_type', 'field_list_items', 'field_pre_populate',
             'field_pre_channel_id', 'field_pre_field_id',
             'field_ta_rows', 'field_maxl', 'field_required',
-            'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
+            'field_text_direction', 'field_search', 'field_is_hidden', 'field_is_conditional', 'field_fmt', 'field_show_fmt',
             'field_order'
         );
     }
@@ -115,7 +115,9 @@ class Api_channel_fields extends Api
      */
     public function _fetch_fts($method)
     {
-        ee()->load->library('addons');
+        if (!isset(ee()->addons)) {
+            ee()->load->library('addons');
+        }
         $fts = ee()->addons->$method('fieldtypes');
 
         foreach ($fts as $key => $data) {
@@ -222,7 +224,9 @@ class Api_channel_fields extends Api
             $file = 'ft.' . $field_type . '.php';
             $paths = array(PATH_ADDONS . $field_type . '/');
 
-            ee()->load->library('addons');
+            if (!isset(ee()->addons)) {
+                ee()->load->library('addons');
+            }
 
             $fts = ee()->addons->get_files('fieldtypes');
 
@@ -264,7 +268,7 @@ class Api_channel_fields extends Api
     }
 
     /**
-     * Setup or re-initialize field type handler
+     * Setup or re-initialize fieldtype handler
      *
      * @access	public
      */
@@ -505,7 +509,7 @@ class Api_channel_fields extends Api
 
         $this->setup_handler($query->row($type_field));
 
-        // Field type changed ?
+        // fieldtype changed ?
         $type = ($query->row($type_field) == $field_type) ? 'get_data' : 'delete';
 
         $old_data = $query->row_array();
@@ -520,7 +524,7 @@ class Api_channel_fields extends Api
 
         $old_fields = $this->apply($col_settings_method, array($old_data));
 
-        // Switch handler back to the new field type
+        // Switch handler back to the new fieldtype
         $this->setup_handler($field_type);
 
         if (! isset($old_fields[$id_field_name])) {
@@ -564,7 +568,7 @@ class Api_channel_fields extends Api
      * @param	array (new custom field data)
      * @param	array (old custom field data)
      * @param	bool (TRUE if it is a new field)
-     * @param	bool (TRUE if the field type changed)
+     * @param	bool (TRUE if the fieldtype changed)
      * @return	void
      */
     public function set_datatype($field_id, $data, $old_fields = array(), $new = true, $type_change = false, $overrides = array())
@@ -682,7 +686,7 @@ class Api_channel_fields extends Api
     {
         $tab_modules = $this->get_modules();
 
-        $set = false;
+        $set = [];
 
         if ($tab_modules == false) {
             return false;
@@ -872,7 +876,7 @@ class Api_channel_fields extends Api
 
         // Do we have modules in play
         ee()->load->model('addons_model');
-        $custom_field_modules = false;
+        $custom_field_modules = [];
 
         $mquery = ee()->addons_model->get_installed_modules(false, true);
 
@@ -1145,7 +1149,7 @@ class Api_channel_fields extends Api
             return false;
         }
 
-        // Get the field type settings
+        // Get the fieldtype settings
         $this->fetch_all_fieldtypes();
         $this->setup_handler($field_type);
         $ft_settings = $this->apply('save_settings', array($this->get_posted_field_settings($field_type)));
@@ -1461,7 +1465,7 @@ class Api_channel_fields extends Api
     }
 
     /**
-     * Notify any extensions of incoming field type data
+     * Notify any extensions of incoming fieldtype data
      *
      * @param	object	Fieldtype that will be called
      * @param	string	Method that will be called on the fieldtype

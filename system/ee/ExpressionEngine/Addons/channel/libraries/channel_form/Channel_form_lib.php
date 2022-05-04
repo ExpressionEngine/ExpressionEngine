@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'channel/libraries/channel_form/Channel_form_exception.php';
@@ -619,7 +619,7 @@ class Channel_form_lib
         $captcha_conditional = array(
             'captcha' => (
                 $this->channel('channel_id') &&
-                $this->logged_out_member_id &&
+                ($this->logged_out_member_id || ee()->session->userdata('member_id') !=0) &&
                 ee('Captcha')->shouldRequireCaptcha()
             )
         );
@@ -1374,7 +1374,7 @@ GRID_FALLBACK;
                 //change field_name'd POSTed keys to field_id's
                 if ($key == $field->field_name) {
                     //@TODO what to do about xss_clean and "naughty" html
-                    //for now you can crack open this file and manually add fields_ids and/or field types to the respective arrays
+                    //for now you can crack open this file and manually add fields_ids and/or fieldtypes to the respective arrays
                     //to prevent xss_clean
                     //i had some people complain about not being able to submit <object>'s
                     $xss_clean = (! in_array($field->field_id, $this->skip_xss_field_ids) && ! in_array($field->field_type, $this->skip_xss_fieldtypes));
@@ -1582,10 +1582,6 @@ GRID_FALLBACK;
         //load the just created entry into memory
         $this->fetch_entry($new_id);
 
-        if ($captcha_required && $this->error_handling == 'inline') {
-            $this->field_errors = array_merge($this->field_errors, array('captcha_word' => (ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required'))));
-        }
-
         foreach ($this->field_errors as $field => $error) {
             if (isset($id_to_name_map[$field])) {
                 $this->field_errors[$id_to_name_map[$field]] = $error;
@@ -1642,7 +1638,7 @@ GRID_FALLBACK;
         }
 
         if ($this->json) {
-            return $this->send_ajax_response(
+            return ee()->output->send_ajax_response(
                 array(
                     'success' => (empty($this->errors) && empty($this->field_errors)) ? 1 : 0,
                     'errors' => (empty($this->errors)) ? array() : $this->errors,
@@ -2422,7 +2418,7 @@ GRID_FALLBACK;
         $options = array();
 
         $field_data = (is_array($this->entry('field_id_' . $field->field_id)))
-            ? $this->entry('field_id_' . $field->field_id) : explode('|', $this->entry('field_id_' . $field->field_id));
+            ? $this->entry('field_id_' . $field->field_id) : explode('|', (string) $this->entry('field_id_' . $field->field_id));
 
         if (in_array($field->field_type, $this->option_fields)) {
             $field_settings = $field->getField()->getItem('field_settings');
@@ -2461,7 +2457,7 @@ GRID_FALLBACK;
                     ->all();
 
                 if ($pop_entries && $pop_content = $pop_entries->pluck('field_id_' . $field->field_pre_field_id)) {
-                    $current = explode('|', $this->entry('field_id_' . $field->field_id));
+                    $current = explode('|', (string) $this->entry('field_id_' . $field->field_id));
 
                     foreach ($pop_content as $content) {
                         $options[] = array(

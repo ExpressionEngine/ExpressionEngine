@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -96,7 +96,7 @@ class Board extends Model
     );
 
     protected static $_validation_rules = array(
-        'board_label' => 'required',
+        'board_label' => 'required|xss',
         'board_name' => 'required|unique|alphaDash',
         'board_enabled' => 'enum[y,n]',
         'board_forum_trigger' => 'required|unique[board_site_id]|alphaDash|validateForumTrigger[board_site_id]',

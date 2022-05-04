@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -110,16 +110,12 @@ class Profile extends CP_Controller
 
         $list->addItem(lang('consents'), ee('CP/URL')->make('members/profile/consent', $this->query_string));
 
-        $publishing_link = null;
-
-        if (ee('Permission')->hasAll('can_access_members', 'can_edit_members')) {
-            $publishing_link = ee('CP/URL')->make('members/profile/publishing', $this->query_string);
-        }
-
         $list = $sidebar->addHeader(lang('content'))
             ->addBasicList();
 
-        $list->addItem(lang('publishing_settings'), $publishing_link);
+        if (ee('Permission')->hasAll('can_access_members', 'can_edit_members')) {
+            $list->addItem(lang('publishing_settings'), ee('CP/URL')->make('members/profile/publishing', $this->query_string));
+        }
 
         if (ee('Permission')->can('edit_html_buttons')) {
             $url = ee('CP/URL')->make('members/profile/buttons', $this->query_string);

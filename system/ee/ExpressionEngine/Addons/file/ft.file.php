@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,6 +23,10 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     );
 
     public $has_array_data = true;
+
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty', 'contains'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     public $_dirs = array();
 
@@ -308,37 +312,37 @@ JSC;
      *
      * @access	public
      */
-    public function replace_tag($file_info, $params = array(), $tagdata = false)
+    public function replace_tag($data, $params = array(), $tagdata = false)
     {
         // Make sure we have file_info to work with
-        if ($tagdata !== false && $file_info === false) {
+        if ($tagdata !== false && $data === false) {
             $tagdata = ee()->TMPL->parse_variables($tagdata, array());
         }
 
         // Experimental parameter, do not use
         if (isset($params['raw_output']) && $params['raw_output'] == 'yes') {
-            return $file_info['raw_output'];
+            return $data['raw_output'];
         }
 
         // Let's allow our default thumbs to be used inside the tag pair
-        if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension'])) {
-            $file_info['url:thumbs'] = $file_info['path'] . '_thumbs/' . $file_info['filename'] . '.' . $file_info['extension'];
+        if (isset($data['path']) && isset($data['filename']) && isset($data['extension'])) {
+            $data['url:thumbs'] = $data['path'] . '_thumbs/' . $data['filename'] . '.' . $data['extension'];
         }
 
-        if (isset($file_info['file_id'])) {
-            $file_info['id_path'] = array('/' . $file_info['file_id'], array('path_variable' => true));
+        if (isset($data['file_id'])) {
+            $data['id_path'] = array('/' . $data['file_id'], array('path_variable' => true));
         }
 
         // Make sure we have file_info to work with
-        if ($tagdata !== false && isset($file_info['file_id'])) {
-            return ee()->TMPL->parse_variables($tagdata, array($file_info));
+        if ($tagdata !== false && isset($data['file_id'])) {
+            return ee()->TMPL->parse_variables($tagdata, array($data));
         }
 
-        if (! empty($file_info['path']) && ! empty($file_info['filename']) && $file_info['extension'] !== false) {
-            $full_path = $file_info['path'] . $file_info['filename'] . '.' . $file_info['extension'];
+        if (! empty($data['path']) && ! empty($data['filename']) && $data['extension'] !== false) {
+            $full_path = $data['path'] . $data['filename'] . '.' . $data['extension'];
 
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($file_info, $params['wrap'], $full_path);
+                return $this->_wrap_it($data, $params['wrap'], $full_path);
             }
 
             return $full_path;
@@ -709,18 +713,22 @@ JSC;
      *
      * @access	public
      */
-    public function replace_tag_catchall($file_info = [], $params = array(), $tagdata = false, $modifier = '')
+    public function replace_tag_catchall($data = [], $params = array(), $tagdata = false, $modifier = '')
     {
         // These are single variable tags only, so no need for replace_tag
         if ($modifier) {
+            if ($modifier == 'frontedit') {
+                return $tagdata;
+            }
+
             $key = 'url:' . $modifier;
 
             if ($modifier == 'thumbs') {
-                if (isset($file_info['path']) && isset($file_info['filename']) && isset($file_info['extension'])) {
-                    $data = $file_info['path'] . '_thumbs/' . $file_info['filename'] . '.' . $file_info['extension'];
+                if (isset($data['path']) && isset($data['filename']) && isset($data['extension'])) {
+                    $data = $data['path'] . '_thumbs/' . $data['filename'] . '.' . $data['extension'];
                 }
-            } elseif (isset($file_info[$key])) {
-                $data = $file_info[$key];
+            } elseif (isset($data[$key])) {
+                $data = $data[$key];
             }
 
             if (empty($data)) {
@@ -728,7 +736,7 @@ JSC;
             }
 
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($file_info, $params['wrap'], $data);
+                return $this->_wrap_it($data, $params['wrap'], $data);
             }
 
             return $data;
@@ -740,20 +748,20 @@ JSC;
      *
      * @access	private
      */
-    public function _wrap_it($file_info, $type, $full_path)
+    public function _wrap_it($data, $type, $full_path)
     {
         if ($type == 'link') {
             ee()->load->helper('url_helper');
 
-            return $file_info['file_pre_format']
-                . anchor($full_path, $file_info['filename'], $file_info['file_properties'])
-                . $file_info['file_post_format'];
+            return $data['file_pre_format']
+                . anchor($full_path, $data['filename'], $data['file_properties'])
+                . $data['file_post_format'];
         } elseif ($type == 'image') {
-            $properties = (! empty($file_info['image_properties'])) ? ' ' . $file_info['image_properties'] : '';
+            $properties = (! empty($data['image_properties'])) ? ' ' . $data['image_properties'] : '';
 
-            return $file_info['image_pre_format']
-                . '<img src="' . $full_path . '"' . $properties . ' alt="' . $file_info['filename'] . '" />'
-                . $file_info['image_post_format'];
+            return $data['image_pre_format']
+                . '<img src="' . $full_path . '"' . $properties . ' alt="' . $data['filename'] . '" />'
+                . $data['image_post_format'];
         }
 
         return $full_path;
