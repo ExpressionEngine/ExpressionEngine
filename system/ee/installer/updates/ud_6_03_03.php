@@ -25,7 +25,27 @@ class Updater
      */
     public function do_update()
     {
+        $steps = new \ProgressIterator(
+            [
+                'syncMemberStats',
+            ]
+        );
+
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+
         return true;
+    }
+
+    private function syncMemberStats()
+    {
+        if (ee()->config->item('ignore_member_stats') != 'y') {
+            foreach (ee('Model')->get('Role')->all() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
+        }
     }
 }
 
