@@ -153,13 +153,15 @@ class Url_Ft extends EE_Fieldtype
     {
         ee()->lang->loadfile('fieldtypes');
 
+        $schemes  =$this->getSchemes();
+
         $settings = array(
             array(
                 'title' => 'url_ft_allowed_url_schemes',
                 'fields' => array(
                     'allowed_url_schemes' => array(
                         'type' => 'checkbox',
-                        'choices' => $this->getSchemes(),
+                        'choices' => $schemes,
                         'value' => (isset($data['allowed_url_schemes'])) ? $data['allowed_url_schemes'] : $this->getSchemes(true),
                         'required' => true
                     )
@@ -171,8 +173,8 @@ class Url_Ft extends EE_Fieldtype
                 'fields' => array(
                     'url_scheme_placeholder' => array(
                         'type' => 'radio',
-                        'choices' => $this->getSchemes(),
-                        'value' => (isset($data['url_scheme_placeholder'])) ? $data['url_scheme_placeholder'] : '',
+                        'choices' => $schemes,
+                        'value' => (isset($data['url_scheme_placeholder'])) ? $data['url_scheme_placeholder'] : array_shift($schemes),
                         'required' => true
                     )
                 )
