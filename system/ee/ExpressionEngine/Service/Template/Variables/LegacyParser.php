@@ -264,7 +264,7 @@ class LegacyParser
             // date variables
             elseif (strpos($val, 'format') !== false && preg_match("/.+?\s+?format/", $val)) {
                 $var_single[$val] = $this->extractDateFormat($val);
-            } else {  // single variables
+            } elseif (!is_numeric($val)) {  // single variables
                 $var_single[$val] = $val;
             }
         }

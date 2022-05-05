@@ -250,7 +250,7 @@ class EE_Menu
                 }
             }
 
-            // If none of the above are allowed, see if addon admin is
+            // If none of the above are allowed, see if add-on admin is
             // If so, land on extension debug page
 
             if (! isset($menu['utilities'])) {
