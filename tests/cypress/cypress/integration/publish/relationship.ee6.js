@@ -10,7 +10,7 @@ context('Relationship field - Edit', () => {
 	before(function(){
 		cy.task('db:seed')
 		cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
-        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' }).then(() => {
+        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.authVisit('admin.php?/cp/design')
         })
 		cy.eeConfig({ item: 'show_profiler', value: 'y' })
