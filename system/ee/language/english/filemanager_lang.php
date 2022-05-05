@@ -68,6 +68,8 @@ $lang = array(
 
     'invalid_short_name' => 'The image manipulation short name may only contain alpha-numeric characters, dashes and underscores, and cannot be named "thumbs".',
 
+    'link' => 'Link',
+
     'invalid_upload_destination' => 'The upload destination is invalid.',
 
     'location' => 'Location',
