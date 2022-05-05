@@ -9,7 +9,7 @@ if (! defined('BASEPATH')) {
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -155,7 +155,7 @@ function form_preference($name, $details)
             }
 
             break;
-        // Multi-Select
+        // Multi Select
         case 'ms':
             $pref = form_multiselect($name . '[]', $details['value'], $details['selected'], 'id="' . $name . '" size="8"');
 
@@ -457,7 +457,7 @@ if (! function_exists('form_textarea')) {
 }
 
 /**
- * Multi-select menu
+ * Multi select menu
  *
  * @access	public
  * @param	string

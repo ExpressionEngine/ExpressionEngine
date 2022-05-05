@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -18,6 +18,14 @@
  */
 if (! isset($_GET['URL'])) {
     exit();
+}
+
+// Should we allow front end redirects via the URL query string?
+if (REQ === 'PAGE' && !bool_config_item('allow_url_redirects_from_site')) {
+    // Check if they don't have an active CP session
+    if (!isset(ee()->session->access_cp) || ee()->session->access_cp == false) {
+        show_404();
+    }
 }
 
 if (strncmp($_GET['URL'], 'http', 4) != 0 && strpos($_GET['URL'], '://') === false && substr($_GET['URL'], 0, 1) != '/') {

@@ -75,17 +75,6 @@ case 'short-text': ?>
         <?php endif;?>
     </label>
     <?php break;
-case 'slider':
-    if ($class): ?>
-        <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
-    <?php endif ?>
-
-            <input type="range" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
-
-    <?php if (!empty($class)): ?>
-        </div>
-    <?php endif ?>
-<?php break;
 case 'number':
     if ($class): ?>
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
@@ -207,22 +196,15 @@ case 'image': ?>
     </figure>
 <?php break;
 
-case 'slider': ?>
-    <div class="slider <?=$class?>">
-        <input type="range" rel="range-value"
-            id="<?=$field_name?>"
-            name="<?=$field_name?>"
-            value="<?=$value?>"
-            min="<?= isset($field['min']) ? $field['min'] : 0 ?>"
-            max="<?= isset($field['max']) ? $field['max'] : 100 ?>"
-            step="<?= isset($field['step']) ? $field['step'] : 1 ?>"
-            <?= isset($field['list']) ? "list='{$field['list']}'" : null ?>
-        >
-        <div class="slider-output">
-            <output class="range-value" for="<?=$field_name?>"><?=$value?></output><?= isset($field['unit']) ? $field['unit'] : '%' ?>
-        </div>
-    </div>
-<?php break;
+case 'slider': 
+    $this->embed('slider:single', [
+        'min' => isset($field['min']) ? $field['min'] : 0,
+        'max' => isset($field['max']) ? $field['max'] : 100,
+        'step' => isset($field['step']) ? $field['step'] : 1,
+        'name' => $field_name,
+        'value' => $value,
+    ]); 
+break;
 
 case 'action_button': ?>
     <a class="button button--secondary tn <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>

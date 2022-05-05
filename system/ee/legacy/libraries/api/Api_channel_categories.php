@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -41,7 +41,7 @@ class Api_channel_categories extends Api
      * of categories.  There are two versions of the tree. The
      * "text" version is a list of links allowing the categories
      * to be edited.  The "form" version is displayed in a
-     * multi-select form on the new entry page.
+     * multi select form on the new entry page.
      *
      * @param 	mixed		int or array of category group ids
      * @param

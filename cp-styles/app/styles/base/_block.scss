@@ -163,30 +163,32 @@ ul, ol  {
 }
 
 .range-slider {
-	margin-top: 30px;
+	margin-top: 50px;
+	margin-bottom: 20px;
+
+	&:before {
+		content: attr(data-min);
+	}
+
+	&:after {
+		content: attr(data-max);
+	}
 
 	& > input {
 
 		& + output {
-			top: -100%;
-			padding: 3px 9px;
+			padding: 2px 11px;
 		}
 
 		&:hover {
 			& + output {
 				box-shadow: none;
-				top: 15px;
+				--y-offset: 0px;
 			}
 		}
 
 		&:active {
 			--thumb-color: inherit;
-		}
-
-		&:nth-of-type(2):hover {
-			& + output {
-				transform: translate(0px, -150%);
-			}
 		}
 	}
 }

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -38,8 +38,8 @@ abstract class ContentModel extends VariableColumnModel
     /**
      * A link back to the owning Structure object.
      *
-     * @return	Structure	A link back to the Structure object that defines
-     *						this Content's structure.
+     * @return  Structure   A link back to the Structure object that defines
+     *                      this Content's structure.
      */
     abstract public function getStructure();
 
@@ -258,7 +258,9 @@ abstract class ContentModel extends VariableColumnModel
         $facades = $this->getCustomFields();
 
         foreach ($facades as $name => $facade) {
-            if (! $this->isNew() && ! $this->isDirty($name)) {
+            // If this field is hidden by conditional logic or it is being 
+            // edited but has not changed then we are not concerned with validation
+            if (get_bool_from_string($facade->getHidden()) || (!$this->isNew() && !$this->isDirty($name))) {
                 continue;
             }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -616,14 +616,8 @@ class Login extends CP_Controller
         $new_pw = (string) $this->input->post('new_password');
         $new_pwc = (string) $this->input->post('new_password_confirm');
 
-        // Make sure validation library is available
-        if (! class_exists('EE_Validate')) {
-            require APPPATH . 'libraries/Validate.php';
-        }
-
         // Load it up with the information needed
-        $VAL = new EE_Validate(
-            array(
+        $data = array(
                 'val_type' => 'new',
                 'fetch_lang' => true,
                 'require_cpw' => false,
@@ -632,7 +626,6 @@ class Login extends CP_Controller
                 'password' => $new_pw,
                 'password_confirm' => $new_pwc,
                 'cur_password' => $this->input->post('password')
-            )
         );
 
         $un_exists = false;
@@ -643,20 +636,26 @@ class Login extends CP_Controller
 
         $pw_exists = ($new_pw !== '' and $new_pwc !== '') ? true : false;
 
+        $validationRules = [];
+
         if ($un_exists) {
-            $VAL->validate_username();
+            $validationRules['username'] = 'uniqueUsername|validUsername|notBanned';
         }
 
         if ($pw_exists) {
-            $VAL->validate_password();
+            $validationRules['password'] = 'validPassword|passwordMatchesSecurityPolicy|matches[password_confirm]';
         }
 
+        $validationResult = ee('Validation')->make($validationRules)->validate($data);
+
         // Display error is there are any
-        if (count($VAL->errors) > 0) {
+        if ($validationResult->isNotValid()) {
             $er = '';
 
-            foreach ($VAL->errors as $val) {
-                $er .= $val . BR;
+            foreach ($validationResult->getAllErrors() as $error) {
+                foreach ($error as $val) {
+                    $er .= $val . BR;
+                }
             }
 
             return $this->_un_pw_update_form(trim($er, BR));

@@ -4,12 +4,12 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
- * Option Field type
+ * Option fieldtype
  */
 abstract class OptionFieldtype extends EE_Fieldtype
 {
@@ -423,13 +423,14 @@ abstract class OptionFieldtype extends EE_Fieldtype
     }
 
     /**
-     * Parses a multi-selection field as a single variable
+     * Parses a multi select field as a single variable
      *
      * @param	string	$data	Entry field data
      * @param	array	$params	Params passed to the field via the template
+     * @param	array	$forceValue	Whether to force returning value and not label
      * @return	Parsed template string
      */
-    protected function _parse_single($data, $params)
+    protected function _parse_single($data, $params, $forceValue = false)
     {
         if (isset($params['limit'])) {
             $limit = intval($params['limit']);
@@ -441,7 +442,7 @@ abstract class OptionFieldtype extends EE_Fieldtype
 
         $pairs = $this->get_setting('value_label_pairs');
 
-        if (! empty($pairs)) {
+        if (!$forceValue && ! empty($pairs)) {
             foreach ($data as $key => $value) {
                 if (isset($pairs[$value])) {
                     $data[$key] = $pairs[$value];
@@ -472,7 +473,7 @@ abstract class OptionFieldtype extends EE_Fieldtype
     }
 
     /**
-    * Parses a multi-selection field as a variable pair
+    * Parses a multi select field as a variable pair
     *
     * @param	string	$data		Entry field data
     * @param	array	$params		Params passed to the field via the template
@@ -526,6 +527,14 @@ abstract class OptionFieldtype extends EE_Fieldtype
         }
 
         return $chunk;
+    }
+
+    /**
+     * Conditional Fields
+     */
+    public function getPossibleValuesForEvaluation()
+    {
+        return $this->_get_field_options([]);
     }
 }
 

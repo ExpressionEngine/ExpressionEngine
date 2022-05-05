@@ -1,30 +1,27 @@
-<html>
-    <body>
-        {exp:search:total_results}
-            <dl>
-                <dt>Total results:</dt>
-                <dd id="total-results__within-pair">{total_results}</dd>
-            </dl>
-        {/exp:search:total_results}
+{layout="cypress/layout"}
 
-        <dl>
-            <dt>total_results:</dt>
-            <dd id="total-results__single-var">{exp:search:total_results}</dd>
-        </dl>
+{exp:search:total_results}
+    <dl>
+        <dt>Total results:</dt>
+        <dd id="total-results__within-pair">{total_results}</dd>
+    </dl>
+{/exp:search:total_results}
 
-        {exp:search:search_results}
-            {if no_results} Nothing found {/if}
+<dl>
+    <dt>total_results:</dt>
+    <dd id="total-results__single-var">{exp:search:total_results}</dd>
+</dl>
 
-            <h3>Results:</h3>
+{exp:search:search_results}
+    {if no_results} Nothing found {/if}
 
-            <p>
-                <a href="{auto_path}">{title}</a>
-            </p>
+    <h3>Results:</h3>
 
-            {paginate}
-                <p>Page {current_page} of {total_pages} pages {pagination_links}</p>
-            {/paginate}
+    <p>
+        <a href="{auto_path}">{title}</a>
+    </p>
 
-        {/exp:search:search_results}
-    </body>
-</html>
+    {paginate}
+        <p>Page {current_page} of {total_pages} pages {pagination_links}</p>
+    {/paginate}
+{/exp:search:search_results}

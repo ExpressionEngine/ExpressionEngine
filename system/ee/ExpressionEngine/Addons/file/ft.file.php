@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,6 +23,10 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     );
 
     public $has_array_data = true;
+
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty', 'contains'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     public $_dirs = array();
 
