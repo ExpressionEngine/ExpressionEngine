@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -50,7 +50,7 @@ class Poll extends Model
 
     protected static $_validation_rules = array(
         'topic_id' => 'required',
-        'poll_question' => 'required',
+        'poll_question' => 'required|xss',
         'poll_answers' => 'required',
         'poll_date' => 'required',
     );

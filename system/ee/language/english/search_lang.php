@@ -24,7 +24,7 @@ $lang = array(
 
     'search' => 'Search',
 
-    'search_all_groups' => 'Search All Member Groups',
+    'search_all_groups' => 'Search All Roles',
 
     'search_all_words' => 'Search for All Words',
 
@@ -152,6 +152,7 @@ $lang = array(
 
     'today' => 'Today',
 
+    'expired_search_results' => 'The search results have expired. Please try searching again.',
 );
 
 // EOF

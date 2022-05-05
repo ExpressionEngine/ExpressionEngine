@@ -32,12 +32,10 @@ if (fs.existsSync('./local_config.json')) {
 	properties = Object.assign(properties, localProps)
 }
 
-properties.local_repositories.app = 'C:/OSPanel/domains/ExpressionEngine-Private/'
 if (process.env.APP_REPO_PATH) {
     properties.local_repositories.app = process.env.APP_REPO_PATH;
 }
 
-properties.local_repositories.pro = 'C:/OSPanel/domains/ExpressionEngine-Pro/'
 if (process.env.PRO_REPO_PATH) {
     properties.local_repositories.pro = process.env.PRO_REPO_PATH;
 }
@@ -215,6 +213,25 @@ gulp.task('_set_debug', function (cb) {
 
 	cb();
 });
+
+/**
+ * Set current year as copyright date
+ */
+var copyrightDate = function (path) {
+	path = (typeof path !== 'undefined') ? path : properties.local_repositories.app + '/';
+	
+	var currentYear = new Date().getFullYear();
+	var pastYear = currentYear - 1;
+
+	gulp.src([path + '**/*.php', path + '**/*.js', path + '**/*.md', path + '**/*.txt'])
+		.pipe(plugin.replace(
+			'(c) 2003-' + pastYear + ', Packet Tide',
+			'(c) 2003-' + currentYear + ', Packet Tide',
+		))
+		.pipe(gulp.dest(path));
+
+	//cb();
+};
 
 /**
  * Replace JIRA collector tag
@@ -466,6 +483,7 @@ gulp.task('_clone_docs', ['_build_directories'], function (cb) {
 
 gulp.task('version_bump', ['_properties'], function () {
 	updateExists();
+	//copyrightDate();
 	return versionBump();
 });
 
@@ -698,20 +716,6 @@ var deleteFiles = function(path, filesToDelete) {
 				))
 				.pipe(gulp.dest('system/ee/legacy/libraries/', {cwd: path}));
 		},
-		/*function () {
-			var file = path + '/tests/cypress/support/config/config.php';
-
-			fs.open(file, 'r', function (err, fd) {
-				if (err) throw err;
-			});
-
-			return gulp.src(file)
-				.pipe(plugin.replace(
-					/\$config\['app_version'\].*$/gim,
-					"$config['app_version'] = '" + properties.version + "';"
-				))
-				.pipe(gulp.dest('tests/cypress/support/config/', { cwd: path }));
-		},*/
 		function() {
 			var file = path + '/system/ee/installer/controllers/wizard.php';
 
@@ -727,6 +731,30 @@ var deleteFiles = function(path, filesToDelete) {
 				.pipe(gulp.dest('system/ee/installer/controllers/', {cwd: path}));
 		}
 	];
+
+	var cypressConfig = path + 'tests/cypress/support/config/config.php';
+	if (fs.existsSync(cypressConfig)) {
+		fns.push(function() {
+			return gulp.src(cypressConfig)
+				.pipe(plugin.replace(
+					/\$config\['app_version'\].*$/gim,
+					"$config['app_version'] = '" + properties.version + "';"
+				))
+				.pipe(gulp.dest('tests/cypress/support/config/', { cwd: path }));
+		})
+	}
+
+	var bootstrapFile = path + 'system/ee/ExpressionEngine/Tests/bootstrap.php';
+	if (fs.existsSync(bootstrapFile)) {
+		fns.push(function() {
+			return gulp.src(bootstrapFile)
+				.pipe(plugin.replace(
+					/define\('APP_VER',(\s+)'.*?'\);/gi,
+					"define('APP_VER',$1'" + properties.version + "');"
+				))
+				.pipe(gulp.dest('system/ee/ExpressionEngine/Tests/', { cwd: path }));
+		})
+	}
 
 	var promises = fns.map(function(fn) {
 		var deferred = Q.defer();
@@ -756,8 +784,21 @@ var deleteFiles = function(path, filesToDelete) {
 		return;
 	}
 
- 	fs.open(path + '/system/ee/installer/updates/' + properties.update_file, 'r', function (err, fd) {
- 		if (err) throw err;
+	var file = path + '/system/ee/installer/updates/' + properties.update_file
+
+ 	fs.open(file, 'r', function (err, fd) {
+ 		if (err) {
+			console.log('try to create ' + properties.update_file);
+			 fs.copyFile(path + '/system/ee/installer/updates/ud_6_02_03.php', file, (err) => {
+				if (err) throw err;
+				return gulp.src(file)
+					.pipe(plugin.replace(
+						"6_2_3",
+						properties.version.replace('.', '_').replace('.', '_').replace('.', '_')
+					))
+					.pipe(gulp.dest('system/ee/installer/updates/', {cwd: path}));
+			});
+		}
  	});
  }
 

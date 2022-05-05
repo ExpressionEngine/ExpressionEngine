@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -218,7 +218,9 @@ class Search
         /**  No query results?
         /** ----------------------------------------*/
         if ($query_parts == false) {
-            if (isset($this->_meta['no_results_page']) and $this->_meta['no_results_page'] != '') {
+            // IF THE BOTH PAGES ARE THE SAME, we need to cache the results,
+            // because there's difference between an expired search and an empty search
+            if (!empty($this->_meta['no_result_page'])) {
                 $data = array(
                     'search_id' => $this->hash,
                     'search_date' => time(),
@@ -229,13 +231,14 @@ class Search
                     'per_page' => 0,
                     'query' => '',
                     'custom_fields' => '',
-                    'result_page' => '',
+                    'result_page' => $this->_meta['result_page'],
+                    'no_result_page' => $this->_meta['no_result_page'],
                     'site_id' => ee()->config->item('site_id')
                 );
 
                 ee()->db->query(ee()->db->insert_string('exp_search', $data));
 
-                return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='" . $this->_meta['no_results_page'] . "'")) . '/' . $this->hash . '/');
+                return ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("='" . $this->_meta['no_result_page'] . "'")) . '/' . $this->hash . '/');
             } else {
                 return ee()->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));
             }
@@ -255,6 +258,7 @@ class Search
             'query' => serialize($query_parts),
             'custom_fields' => addslashes(serialize($this->fields)),
             'result_page' => $this->_meta['result_page'],
+            'no_result_page' => $this->_meta['no_result_page'],
             'site_id' => ee()->config->item('site_id')  // site search was made from
         );
 
@@ -297,7 +301,7 @@ class Search
             'show_expired' => ee()->TMPL->fetch_param('show_expired', ''),
             'show_future_entries' => ee()->TMPL->fetch_param('show_future_entries'),
             'result_page' => ee()->TMPL->fetch_param('result_page', 'search/results'),
-            'no_results_page' => ee()->TMPL->fetch_param('no_result_page', ''),
+            'no_result_page' => ee()->TMPL->fetch_param('no_result_page', ''),
             'site_ids' => $site_ids
         );
 
@@ -344,6 +348,9 @@ class Search
     {
         ee()->load->model('addons_model');
 
+        $channel_meta = isset($this->_meta['channel'])
+            ? ee('Variables/Parser')->parseOrParameter($this->_meta['channel'])
+            : array('options' => [], 'not' => false);
         $channel_array = array();
 
         /** ---------------------------------------
@@ -366,7 +373,12 @@ class Search
                 if ($channels) {
                     $custom_fields = array();
                     foreach ($channels as $channel) {
-                        $channel_array[] = $channel->channel_id;
+                        // as we're already looping through channels,
+                        // let's get the necessary IDs
+                        if (in_array($channel->channel_name, $channel_meta['options'])) {
+                            $channel_array[] = $channel->channel_id;
+                        }
+
                         $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
                     }
                     $this->custom_fields = array_chunk($custom_fields, 50);
@@ -454,7 +466,9 @@ class Search
 
             if ($id_query != '') {
                 $id_query = substr($id_query, 0, -2);
-                $id_query = ' AND  exp_channel_titles.channel_id IN (' . $id_query . ') ';
+                $id_query = $channel_meta['not']
+                    ? ' AND  exp_channel_titles.channel_id NOT IN (' . $id_query . ') '
+                    : ' AND  exp_channel_titles.channel_id IN (' . $id_query . ') ';
             }
         }
 
@@ -1093,12 +1107,21 @@ class Search
         // Fetch the cached search query
         $query = ee()->db->get_where('search', array('search_id' => $search_id));
 
-        if ($query->num_rows() == 0 or $query->row('total_results') == 0) {
-            // This should be impossible as we already know there are results
+        if ($query->num_rows() == 0) {
             return ee()->output->show_user_error(
                 'general',
-                array(lang('invalid_action'))
+                array(lang('expired_search_results'))
             );
+        } elseif ($query->row('total_results') == 0) {
+            // this works if we use the same template for results and no results
+            if ($query->row('result_page') === $query->row('no_result_page')) {
+                return ee()->TMPL->no_results();
+            } else {
+                return ee()->output->show_user_error(
+                    'general',
+                    array(lang('invalid_action'))
+                );
+            }
         }
 
         $fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields')));
@@ -1244,31 +1267,30 @@ class Search
         if (isset($row['field_id_' . $row['search_excerpt']]) and $row['field_id_' . $row['search_excerpt']]) {
             $format = (! isset($row['field_ft_' . $row['search_excerpt']])) ? 'xhtml' : $row['field_ft_' . $row['search_excerpt']];
 
-            $full_text = ee()->typography->parse_type(
-                // Replace block HTML tags with spaces so words don't run together in case
-                // they're saved with no spaces in between the markup
-                strip_tags(
-                    preg_replace(
-                        '/\s+/',
-                        ' ',
-                        preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_' . $row['search_excerpt']])
-                    )
-                ),
-                array(
-                    'text_format' => $format,
-                    'html_format' => 'safe',
-                    'auto_links' => 'y',
-                    'allow_img_url' => 'n'
+            // Replace block HTML tags with spaces so words don't run together in case
+            // they're saved with no spaces in between the markup
+            $full_text = strip_tags(
+                preg_replace(
+                    '/\s+/',
+                    ' ',
+                    preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_' . $row['search_excerpt']])
                 )
             );
 
-            $excerpt = trim(strip_tags($full_text));
-
+            $excerpt = trim($full_text);
             if (strpos($excerpt, "\r") !== false or strpos($excerpt, "\n") !== false) {
                 $excerpt = str_replace(array("\r\n", "\r", "\n"), " ", $excerpt);
             }
-
             $excerpt = ee()->functions->word_limiter($excerpt, 50);
+
+            $typography = array(
+                'text_format' => $format,
+                'html_format' => 'safe',
+                'auto_links' => 'y',
+                'allow_img_url' => 'n'
+            );
+            $full_text = ee()->typography->parse_type($full_text, $typography);
+            $excerpt = ee()->typography->parse_type($excerpt, $typography);
         } else {
             $excerpt = '';
             $full_text = '';
@@ -1329,7 +1351,7 @@ class Search
      * @return array Nested array containing tag and resulting paths for member
      *               path tags (e.g. {member_path="member/index"})
      */
-    private function get_member_path_tags($tagdata = null)
+    private function get_member_path_tags($tagdata = '')
     {
         if (isset($this->m_paths)) {
             return $this->m_paths;
@@ -1356,7 +1378,7 @@ class Search
      * @param  String $tagdata  The tagdata to get member_path tags from
      * @return int              The number of tags found
      */
-    private function tag_count($tag_name, $tagdata = null)
+    private function tag_count($tag_name, $tagdata = '')
     {
         $tagdata = ($tagdata) ?: ee()->TMPL->tagdata;
 

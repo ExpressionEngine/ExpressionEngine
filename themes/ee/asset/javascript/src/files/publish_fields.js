@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -54,7 +54,7 @@ EE.namespace('EE.publish.file_browser');
 
 			// We also need to allow file insertion into text inputs (vs textareas) but markitup
 			// will not accommodate this, so we need to detect if this request is coming from a
-			// markitup button or another field type.
+			// markitup button or another fieldtype.
 
 			// Fact is - markitup is actually pretty crappy for anything that doesn't specifically
 			// use markitup. So currently the image button only works correctly on markitup textareas.

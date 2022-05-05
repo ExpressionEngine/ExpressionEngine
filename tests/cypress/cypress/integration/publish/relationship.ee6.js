@@ -9,11 +9,20 @@ const fluid_field = new FluidField;
 context('Relationship field - Edit', () => {
 	before(function(){
 		cy.task('db:seed')
+		cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
+        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/default_site/' }).then(() => {
+            cy.authVisit('admin.php?/cp/design')
+        })
+		cy.eeConfig({ item: 'show_profiler', value: 'y' })
 	})
 
 	beforeEach(function(){
 		cy.auth();
 		cy.hasNoErrors()
+	})
+
+	after(function(){
+		cy.eeConfig({ item: 'show_profiler', value: 'n' })
 	})
 
 	it('shows a 404 with no given entry_id', () => {
@@ -41,12 +50,45 @@ context('Relationship field - Edit', () => {
 			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
 
+			cy.log('check field tag on frontend')
+			cy.visit('index.php/relationships')
+			cy.get('.open').should('contain', 'Welcome to the Example Site!')
+			cy.get('.open').should('not.contain', 'Band Title')
+			cy.get('.all').should('contain', 'Welcome to the Example Site!')
+			cy.get('.all').should('contain', 'Band Title')
+			cy.get('.not_open').should('not.contain', 'Welcome to the Example Site!')
+			cy.get('.not_open').should('contain', 'Band Title')
+
+			cy.log('check parent tags')
+			cy.visit('index.php/relationships/reverse/index')
+			cy.get('.all').should('contain', 'Getting to Know ExpressionEngine')
+			cy.get('.not_open').should('not.contain', 'Getting to Know ExpressionEngine')
+			cy.get('.not_all').should('not.contain', 'Getting to Know ExpressionEngine')
+
+			cy.log('check siblings tags')
+			cy.visit('index.php/relationships/siblings/2')
+			cy.get('.open').should('not.contain', 'Band Title')
+			cy.get('.all p').should('have.length', 1)
+			cy.get('.all').should('contain', 'Band Title')
+			cy.get('.not_open').should('contain', 'Band Title')
+
+			cy.visit('index.php/relationships/siblings/10')
+			cy.get('.open').should('contain', 'Welcome to the Example Site!')
+			cy.get('.all').should('contain', 'Welcome to the Example Site!')
+			cy.get('.all p').should('have.length', 1)
+			cy.get('.not_open').should('not.contain', 'Welcome to the Example Site!')
+			cy.get('.not_open p').should('not.exist')
+
+
+			cy.visit('admin.php?/cp/publish/edit/entry/1')
 			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').closest('.list-item').find('[title="Remove"]').click()
 			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 			cy.get('.app-notice---success').contains('Entry Updated');
 			cy.get('[data-relationship-react] .list-item__title:visible').should('not.exist');
+
+			cy.logCPPerformance()
 		})
 
 		it('add button is not visible when rel max is reached', () => {
@@ -94,6 +136,7 @@ context('Relationship field - Edit', () => {
 
 		it('add button is visible when rel max is empty', () => {
 			cy.visit('admin.php?/cp/fields/edit/8');
+			cy.logCPPerformance()
 			cy.get('[data-toggle-for="relationship_allow_multiple"]').should('have.class', 'on')
 			cy.get('[name="rel_min"]').should('be.visible');
 			cy.get('[name="rel_max"]').should('be.visible');
@@ -292,6 +335,8 @@ context('Relationship field - Edit', () => {
 			cy.get('[name=field_id_3]').invoke('val').should('eq', "{filedir_2}ee_banner_120_240.gif");
 			cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 			cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
+
+			cy.logCPPerformance()
 		})
 
 		it('add button is not visible when rel max is reached for grid', () => {
@@ -338,6 +383,8 @@ context('Relationship field - Edit', () => {
 			cy.get('.app-notice---success').contains('Entry Updated');
 			cy.get('.grid-field button:contains("Relate Entry")').should('not.be.visible')
 			cy.hasNoErrors()
+
+			cy.logCPPerformance()
 
 		})
 
@@ -426,6 +473,8 @@ context('Relationship field - Edit', () => {
 			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
 			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
 			cy.get('.grid-field tr:not(.hidden) button:contains("Relate Entry")').should('be.visible')
+
+			cy.logCPPerformance()
 		})
 	})
 })

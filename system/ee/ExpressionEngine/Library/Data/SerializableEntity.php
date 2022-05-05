@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -26,7 +26,7 @@ class SerializableEntity extends Entity implements Serializable
      */
     public function __serialize()
     {
-        return $this->serialize();
+        return $this->getSerializeData();
     }
     // legacy, keeping for PHP 5.6 support
     public function serialize()
@@ -42,7 +42,8 @@ class SerializableEntity extends Entity implements Serializable
      */
     public function __unserialize($serialized)
     {
-        return $this->unserialize($serialized);
+        $this->__construct();
+        $this->setSerializeData($serialized);
     }
     // legacy, keeping for PHP 5.6 support
     public function unserialize($serialized)

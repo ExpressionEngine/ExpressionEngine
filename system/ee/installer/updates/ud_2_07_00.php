@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -441,6 +441,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
         // We need to figure out which template to load.
         // Need to check the edit date.
+        ee()->load->model('template_model');
         $templates = ee()->template_model->fetch_last_edit(array(), true);
 
         foreach ($templates as $template) {
@@ -687,7 +688,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
     protected function _update_relationship_tags_in_snippets()
     {
         if (! class_exists('Installer_Template')) {
-            require_once(APPPATH . 'libraries/Template.php');
+            require_once(SYSPATH . 'ee/installer/libraries/Template.php');
         }
         ee()->remove('template');
         ee()->set('template', new \Installer_Template());

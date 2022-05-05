@@ -1,0 +1,49 @@
+{layout="cypress/layout"}
+
+{layout:set name="head"}
+<style>
+html,
+body {
+	margin: 0;
+	height: 100%;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: stretch;
+}
+
+body > div {
+	flex-grow: 1;
+	padding: 1.5em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+</style>
+
+<link rel="stylesheet" href="{stylesheet='resources/style'}" />
+
+<link rel="stylesheet" href="{stylesheet='second_site:resources/style'}" />
+
+<link rel="stylesheet" href="/index.php/css/resources/trigger/" />
+
+{/layout:set}
+
+<div id="first">
+	<p>Set by <var>default_site/resources/style.css</var></p>
+</div>
+<div id="second">
+	<p>Set by <var>default_site/resources/script.js</var></p>
+</div>
+<div id="third">
+	<p>Set by <var>second_site/resources/style.css</var></p>
+</div>
+<div id="fourth">
+	<p>Set by <var>second_site/resources/script.js</var></p>
+</div>
+
+<script src="{script='resources/script'}"></script>
+
+<script src="{script='second_site:resources/script'}"></script>

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -49,7 +49,7 @@ class Updater
      */
     private function normalizeFieldLayoutData()
     {
-        $layouts = ee('Model')->get('ChannelLayout')->all();
+        $layouts = ee('Model')->get('ChannelLayout')->fields('field_layout')->all();
 
         foreach ($layouts as $layout) {
             $field_layout = $layout->field_layout;

@@ -10,7 +10,7 @@ use ExpressionEngine\Addons\Comment\Service\Variables\Comment as CommentVars;
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1130,8 +1130,6 @@ class Comment
         if (ee()->session->userdata('member_id') != 0) {
             $name = ee()->session->userdata('screen_name') ? ee()->session->userdata('screen_name') : ee()->session->userdata('username');
             $email = ee()->session->userdata('email');
-            $url = (string) ee()->session->userdata('url');
-            $location = (string) ee()->session->userdata('location');
         }
 
         /** ----------------------------------------
@@ -1724,19 +1722,19 @@ class Comment
         /**  Set cookies
         /** ----------------------------------------*/
         if ($notify == 'y') {
-            ee()->input->set_cookie('notify_me', 'yes');
+            ee()->input->set_cookie('notify_me', 'yes', 31104000);
         } else {
-            ee()->input->set_cookie('notify_me', 'no');
+            ee()->input->set_cookie('notify_me', 'no', 31104000);
         }
 
         if (ee()->input->post('save_info')) {
-            ee()->input->set_cookie('save_info', 'yes');
+            ee()->input->set_cookie('save_info', 'yes', 31104000);
             ee('Cookie')->setSignedCookie('my_name', $_POST['name'], 31104000);
             ee('Cookie')->setSignedCookie('my_email', $_POST['email'], 31104000);
             ee('Cookie')->setSignedCookie('my_url', $_POST['url'], 31104000);
             ee('Cookie')->setSignedCookie('my_location', $_POST['location'], 31104000);
         } else {
-            ee()->input->set_cookie('save_info', 'no');
+            ee()->input->set_cookie('save_info', 'no', 31104000);
             ee()->input->delete_cookie('my_name');
             ee()->input->delete_cookie('my_email');
             ee()->input->delete_cookie('my_url');

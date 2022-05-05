@@ -4,22 +4,33 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
 require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
- * Multi-Select Fieldtype
+ * Multi Select Fieldtype
  */
 class Multi_select_ft extends OptionFieldtype
 {
+
     public $info = array(
         'name' => 'Multi Select',
         'version' => '1.0.0'
     );
 
     public $has_array_data = true;
+
+    /**
+     * A list of operators that this fieldtype supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'contains', 'notContains', 'isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'matches';
 
     /**
      * Constructor
@@ -37,7 +48,7 @@ class Multi_select_ft extends OptionFieldtype
         $selected = decode_multi_field($data);
         $selected = (empty($selected) || $selected == array('')) ? array() : (array) $selected;
 
-        // in case another field type was here
+        // in case another fieldtype was here
         $field_options = $this->_get_field_options($data);
 
         if ($selected) {
@@ -45,10 +56,10 @@ class Multi_select_ft extends OptionFieldtype
                 $selected = array($selected);
             }
 
-            $unknown = array_diff($selected, array_keys($field_options));
+            $unknown = array_filter(array_diff($selected, array_keys($field_options)));
 
             if (count($unknown) > 0) {
-                return 'Invalid Selection';
+                return ee()->lang->line('invalid_selection');
             }
         }
 

@@ -4,8 +4,8 @@
     echo " hidden";
 }?>">
 
-  <div class="fields-upload-chosen-name">
-		<div>
+	<div class="fields-upload-chosen-name">
+		<div title="<?=$title?>">
 			<?php if ($title): ?>
 				<?=$title?>
 			<?php elseif ($file): $file_info = pathinfo($file->file_name); ?>
@@ -15,7 +15,7 @@
 		<!--<div class="list-item__secondary">File Size</div>-->
 	</div>
 
-  <div class="fields-upload-chosen-controls">
+	<div class="fields-upload-chosen-controls">
 		<div class="fields-upload-tools">
 			<div class="button-group button-group-small">
 				<?=$fp_edit?>
@@ -24,7 +24,7 @@
 		</div>
 	</div>
 
-  <div class="fields-upload-chosen-file">
+	<div class="fields-upload-chosen-file">
 		<figure class="<?php if (! $is_image): ?>no-img<?php endif ?> <?php if ($file && $file->isSVG()): ?>is-svg<?php endif ?>"">
 			<img src="<?=$thumbnail?>" id="<?=$field_name?>" alt="<?=($file) ? $file->title : ''?>" class="js-file-image<?php if ($file && !$is_image): ?> hidden<?php endif ?>">
 		</figure>

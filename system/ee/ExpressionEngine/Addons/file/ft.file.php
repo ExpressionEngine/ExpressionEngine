@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,6 +23,10 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     );
 
     public $has_array_data = true;
+
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty', 'contains'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     public $_dirs = array();
 
@@ -712,15 +716,20 @@ JSC;
     public function replace_tag_catchall($data = [], $params = array(), $tagdata = false, $modifier = '')
     {
         // These are single variable tags only, so no need for replace_tag
+        $full_path = isset($data['url']) ? $data['url'] : '';
         if ($modifier) {
+            if ($modifier == 'frontedit') {
+                return $tagdata;
+            }
+
             $key = 'url:' . $modifier;
 
             if ($modifier == 'thumbs') {
                 if (isset($data['path']) && isset($data['filename']) && isset($data['extension'])) {
-                    $data = $data['path'] . '_thumbs/' . $data['filename'] . '.' . $data['extension'];
+                    $full_path = $data['path'] . '_thumbs/' . $data['filename'] . '.' . $data['extension'];
                 }
             } elseif (isset($data[$key])) {
-                $data = $data[$key];
+                $full_path = $data[$key];
             }
 
             if (empty($data)) {
@@ -728,10 +737,10 @@ JSC;
             }
 
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($data, $params['wrap'], $data);
+                return $this->_wrap_it($data, $params['wrap'], $full_path);
             }
 
-            return $data;
+            return $full_path;
         }
     }
 

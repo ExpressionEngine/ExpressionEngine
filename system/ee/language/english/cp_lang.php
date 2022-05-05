@@ -230,6 +230,8 @@ $lang = array(
 
     'save_and_close' => 'Save & Close',
 
+    'save_as_new_entry' => 'Clone to New Entry',
+
     'save_changes' => 'Save changes',
 
     'submit' => 'Submit',
@@ -760,7 +762,7 @@ $lang = array(
 
     'reindex_not_needed_desc' => 'Your search index is up-to-date!',
 
-    'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL . '/control-panel/utilities.html#search-reindex">user guide</a> for more details.',
+    'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain fieldtypes are searchable.<br>Please see the <a href="' . DOC_URL . '/control-panel/utilities.html#search-reindex">user guide</a> for more details.',
 
     /* Permissions */
 

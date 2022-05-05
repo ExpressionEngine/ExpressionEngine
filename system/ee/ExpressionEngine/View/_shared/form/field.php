@@ -21,7 +21,7 @@ if (is_string($value)) {
 }
 $attrs = (isset($field['attrs'])) ? $field['attrs'] : '';
 if (isset($field['disabled']) && $field['disabled'] == true) {
-    $attrs = ' disabled="disabled"';
+    $attrs .= ' disabled="disabled"';
 }
 // This is to handle showing and hiding certain parts
 // of the form when a form element changes
@@ -74,6 +74,17 @@ case 'short-text': ?>
             <span class="label-txt"><?=lang($field['label'])?></span>
         <?php endif;?>
     </label>
+    <?php break;
+case 'number':
+    if ($class): ?>
+        <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
+    <?php endif ?>
+
+            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+
+    <?php if (!empty($class)): ?>
+        </div>
+    <?php endif ?>
 <?php break;
 case 'file': ?>
     <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>">
@@ -185,22 +196,17 @@ case 'image': ?>
     </figure>
 <?php break;
 
-case 'slider': ?>
-    <div class="slider <?=$class?>">
-        <input type="range" rel="range-value"
-            id="<?=$field_name?>"
-            name="<?=$field_name?>"
-            value="<?=$value?>"
-            min="<?= isset($field['min']) ? $field['min'] : 0 ?>"
-            max="<?= isset($field['max']) ? $field['max'] : 100 ?>"
-            step="<?= isset($field['step']) ? $field['step'] : 1 ?>"
-            <?= isset($field['list']) ? "list='{$field['list']}'" : null ?>
-        >
-        <div class="slider-output">
-            <output class="range-value" for="<?=$field_name?>"><?=$value?></output><?= isset($field['unit']) ? $field['unit'] : '%' ?>
-        </div>
-    </div>
-<?php break;
+case 'slider': 
+    $this->embed('slider:single', [
+        'min' => isset($field['min']) ? $field['min'] : 0,
+        'max' => isset($field['max']) ? $field['max'] : 100,
+        'step' => isset($field['step']) ? $field['step'] : 1,
+        'name' => $field_name,
+        'value' => $value,
+        'suffix' => isset($field['suffix']) ? $field['suffix'] : '',
+        'prefix' => isset($field['prefix']) ? $field['prefix'] : '',
+    ]); 
+break;
 
 case 'action_button': ?>
     <a class="button button--secondary tn <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>

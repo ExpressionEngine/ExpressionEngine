@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -215,10 +215,10 @@ class Member extends ContentModel
 
     protected static $_validation_rules = array(
         'role_id' => 'required|isNatural|validateRoles',
-        'username' => 'required|unique|validateUsername',
-        'screen_name' => 'validateScreenName',
-        'email' => 'required|email|uniqueEmail|validateEmail',
-        'password' => 'required|validatePassword',
+        'username' => 'required|unique|validUsername|validateWhenIsNew|notBanned',
+        'screen_name' => 'validScreenName|notBanned',
+        'email' => 'required|email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned',
+        'password' => 'required|validPassword|passwordMatchesSecurityPolicy',
         'timezone' => 'validateTimezone',
         'date_format' => 'validateDateFormat',
         'time_format' => 'enum[12,24]',
@@ -429,7 +429,8 @@ class Member extends ContentModel
 
     public function onAfterInsert()
     {
-        if (ee()->config->item('ignore_member_stats') != 'y') {
+        parent::onAfterInsert();
+        if (! bool_config_item('ignore_member_stats')) {
             foreach ($this->getAllRoles() as $role) {
                 $role->total_members = null;
                 $role->save();
@@ -439,7 +440,7 @@ class Member extends ContentModel
 
     public function onAfterDelete()
     {
-        if (ee()->config->item('ignore_member_stats') != 'y') {
+        if (! bool_config_item('ignore_member_stats')) {
             foreach ($this->getAllRoles() as $role) {
                 $role->total_members = null;
                 $role->save();
@@ -729,112 +730,11 @@ class Member extends ContentModel
     }
 
     /**
-     * Ensures the username doesn't have invalid characters, is the correct length, and isn't banned
+     * Additional validation for new member
      */
-    public function validateUsername($key, $username)
+    public function validateWhenIsNew($key, $value, $parameters, $rule)
     {
-        if (preg_match("/[\|'\"!<>\{\}]/", $username)) {
-            return 'invalid_characters_in_username';
-        }
-
-        // Is username min length correct?
-        $un_length = ee()->config->item('un_min_len');
-        if (strlen($username) < ee()->config->item('un_min_len')) {
-            return sprintf(lang('username_too_short'), $un_length);
-        }
-
-        if (strlen($username) > USERNAME_MAX_LENGTH) {
-            return 'username_too_long';
-        }
-
-        if ($this->isNew()) {
-            // Is username banned?
-            if (ee()->session->ban_check('username', $username)) {
-                return 'username_taken';
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Validation callback for screen name
-     */
-    public function validateScreenName($key, $screen_name)
-    {
-        if (preg_match('/[\{\}<>]/', $screen_name)) {
-            return 'disallowed_screen_chars';
-        }
-
-        if (strlen($screen_name) > USERNAME_MAX_LENGTH) {
-            return 'screenname_too_long';
-        }
-
-        if ($this->isNew()) {
-            if (ee()->session->ban_check('screen_name', $screen_name)) {
-                return 'screen_name_taken';
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Validation callback for email field
-     */
-    public function validateEmail($key, $email)
-    {
-        if (strlen($email) > USERNAME_MAX_LENGTH) {
-            return 'email_too_long';
-        }
-
-        // Is email address banned?
-        if (ee()->session->ban_check('email', $email)) {
-            return 'email_taken';
-        }
-
-        return true;
-    }
-
-    /**
-     * Ensures the group ID exists and the member has permission to add to the group
-     */
-    public function validatePassword($key, $password)
-    {
-        ee()->lang->loadfile('myaccount');
-
-        $pw_length = ee()->config->item('pw_min_len');
-        if (strlen($password) < $pw_length) {
-            return sprintf(lang('password_too_short'), $pw_length);
-        }
-
-        // Is password max length correct?
-        if (strlen($password) > PASSWORD_MAX_LENGTH) {
-            return 'password_too_long';
-        }
-
-        //  Make UN/PW lowercase for testing
-        $lc_user = strtolower($this->username);
-        $lc_pass = strtolower($password);
-        $nm_pass = strtr($lc_pass, 'elos', '3105');
-
-        if ($lc_user == $lc_pass or $lc_user == strrev($lc_pass) or $lc_user == $nm_pass or $lc_user == strrev($nm_pass)) {
-            return 'password_based_on_username';
-        }
-
-        // Are secure passwords required?
-        if (! ee('Validation')->check('passwordMatchesSecurityPolicy', $password)) {
-            return 'not_secure_password';
-        }
-
-        // Does password exist in dictionary?
-        // TODO: move out of form validation library
-        ee()->load->library('form_validation');
-        if (ee()->form_validation->_lookup_dictionary_word($lc_pass) == true) {
-            return 'password_in_dictionary';
-        }
-
-        return true;
+        return $this->isNew() ? true : $rule->skip();
     }
 
     /**

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -50,8 +50,9 @@ class Updater
             ->first();
 
         if (! $notify_template) {
-            $sites = ee('Model')->get('Site')->all();
-            require_once SYSPATH . 'ee/language/' . ee()->config->item('language') . '/email_data.php';
+            $sites = ee('Model')->get('Site')->fields('site_id')->all();
+            $lang = !empty(ee()->config->item('deft_lang')) ? ee()->config->item('deft_lang') : 'english';
+            require_once SYSPATH . 'ee/language/' . $lang . '/email_data.php';
 
             foreach ($sites as $site) {
                 $notify_template = ee('Model')->make('SpecialtyTemplate')
@@ -76,8 +77,9 @@ class Updater
             ->first();
 
         if (! $notify_template) {
-            $sites = ee('Model')->get('Site')->all();
-            require_once SYSPATH . 'ee/language/' . ee()->config->item('language') . '/email_data.php';
+            $sites = ee('Model')->get('Site')->fields('site_id')->all();
+            $lang = !empty(ee()->config->item('deft_lang')) ? ee()->config->item('deft_lang') : 'english';
+            require_once SYSPATH . 'ee/language/' . $lang . '/email_data.php';
 
             foreach ($sites as $site) {
                 $notify_template = ee('Model')->make('SpecialtyTemplate')

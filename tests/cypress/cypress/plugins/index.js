@@ -37,10 +37,15 @@ module.exports = (on, config) => {
     const Installer = require('./installer.js');
     const installer = new Installer;
 
+    const Updater = require('./updater.js');
+    const updater = new Updater;
+
     const baseUrl = config.env.CYPRESS_BASE_URL || null;
     if (baseUrl) {
         config.baseUrl = baseUrl;
     }
+
+    const { lighthouse, prepareAudit } = require('cypress-audit');
 
     const child_process = require('child_process');
 
@@ -52,7 +57,13 @@ module.exports = (on, config) => {
 
     on('task', {
         'db:seed': () => {
+            var tempSeed = 'seed.sql';
             fs.delete('../../system/user/cache/default_site/');
+
+            if(fs.exists(db.sqlPath(tempSeed))) {
+                return db.seed(tempSeed);
+            }
+
             var renameInstaller = false;
             if (!fs.exists('../../system/ee/installer')) {
                 renameInstaller = true;
@@ -75,11 +86,17 @@ module.exports = (on, config) => {
                     console.log('------')
                 }
 
-                if (renameInstaller) {
+                if (renameInstaller || fs.exists('../../system/ee/installer')) {
                     fs.rename('../../system/ee/installer', '../../system/ee/_installer');
                 }
-                
-                return db.load(config.env.DB_DUMP)
+
+                // Load content from dump
+                return db.load(config.env.DB_DUMP).then(() => {;
+                    // Store database changes to skip initDb step in subsequent test runs
+                    return db.dump(tempSeed);
+                });
+
+                // return db.load(config.env.DB_DUMP)
             })
         }
     })
@@ -220,7 +237,16 @@ module.exports = (on, config) => {
     })
 
     on('task', {
-        'installer:replace_config': ({file, options}) => {
+        'installer:test': () => {
+            return 'testing';
+        }
+    })
+
+    on('task', {
+        'installer:replace_config': ({file, options} = {}) => {
+            if (typeof(options)==='undefined') {
+                options = {database: db_defaults};
+            }
             installer.replace_config(file, options)
             installer.set_base_url(config.baseUrl)
             return true;
@@ -269,12 +295,27 @@ module.exports = (on, config) => {
         }
     })
 
+    on('task', {
+        'updater:backup_files': () => {
+            return updater.backup_files()
+        }
+    })
+
+    on('task', {
+        'updater:restore_files': () => {
+            return updater.restore_files()
+        }
+    })
+
     on("task", {
         generateOTP: require("cypress-otp")
     });
 
 
     on('before:browser:launch', (browser, launchOptions) => {
+        if (browser.name === 'chrome') {
+            prepareAudit(launchOptions);
+        }
         if (browser.name === 'chrome' && browser.isHeadless) {
             launchOptions.args.push('--disable-gpu');
 
@@ -305,6 +346,10 @@ module.exports = (on, config) => {
 
             return launchOptions
         }
+    });
+
+    on('task', {
+        lighthouse: lighthouse()
     });
 
     return config;

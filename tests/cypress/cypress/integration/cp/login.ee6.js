@@ -2,6 +2,10 @@
 
 context('Login Page', () => {
 
+    before(function(){
+        cy.task('db:seed')
+    })
+
     beforeEach(() => {
         cy.visit('admin.php');
     })
@@ -11,6 +15,7 @@ context('Login Page', () => {
     })
 
     it('shows the login page content', function() {
+        cy.lighthouse();
         cy.contains('Username');
         cy.contains('Password');
         cy.contains('Remind me');

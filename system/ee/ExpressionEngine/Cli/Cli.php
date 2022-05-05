@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -264,16 +264,16 @@ class Cli
         $argument = isset($this->arguments[0]) ? $this->arguments[0] : null;
 
         // If the first argument is an option, we have nothing so return null
-        if (substr($argument, 0, 1) === '-') {
+        if (is_string($argument) && substr($argument, 0, 1) === '-') {
             $argument = null;
         }
 
-        if (empty(trim($argument)) && !is_null($question)) {
+        if (empty(trim((string) $argument)) && !is_null($question)) {
             $argument = $this->ask($question, $default);
         }
 
         // Name is a required field
-        if ($required && empty(trim($argument))) {
+        if ($required && empty(trim((string) $argument))) {
             $this->fail(lang('cli_error_is_required'));
         }
 

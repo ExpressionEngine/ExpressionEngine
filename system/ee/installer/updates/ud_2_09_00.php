@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -165,6 +165,7 @@ class Updater
 
         // We need to figure out which template to load.
         // Need to check the edit date.
+        ee()->load->model('template_model');
         $templates = ee()->template_model->fetch_last_edit(array(), true);
 
         foreach ($templates as $template) {
@@ -247,7 +248,7 @@ class Updater
         ee()->update_notices->setVersion('2.9');
 
         ee()->remove('template');
-        require_once(APPPATH . 'libraries/Template.php');
+        require_once(SYSPATH . 'ee/installer/libraries/Template.php');
         ee()->set('template', new \Installer_Template());
 
         $installer_config = ee()->config;
