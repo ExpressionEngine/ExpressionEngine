@@ -1110,7 +1110,7 @@ class Search
         if ($query->num_rows() == 0) {
             return ee()->output->show_user_error(
                 'general',
-                array(lang('invalid_action'))
+                array(lang('expired_search_results'))
             );
         } elseif ($query->row('total_results') == 0) {
             // this works if we use the same template for results and no results
