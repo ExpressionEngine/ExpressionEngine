@@ -368,20 +368,27 @@ context('Create combinations of field', () => {
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 
 		cy.get('input[placeholder="http://"]').type('index.php/aaToggle')
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+		page.get('alert').should('be.visible')
+		page.get('alert_error').should('be.visible')
+		page.get('alert').contains("Cannot Update Entry")
+		cy.get('.ee-form-error-message').contains('Your URL must begin with a valid scheme')
+
+		cy.get('input[placeholder="http://"]').clear().type('https://expressionengine.com').blur()
+		cy.get('.ee-form-error-message').should('not.exist')
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
+		page.get('alert_error').should('not.exist')
 
 		cy.visit('admin.php?/cp/design')
 		cy.get('a').contains('aaURL').eq(0).click()
 		cy.get('a').contains('index').click()
 
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<a href="{aa_url_test}">Visit us</a>{/exp:channel:entries}',{ parseSpecialCharSequences: false })
-		cy.get('button').contains('Save').eq(0).click()
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.visit('index.php/aaURL')
-		cy.get('body').contains('Visit us')
-		cy.get('a').contains('Visit us').click()
-
-		cy.url().should('contain', 'index.php/aaURL')
+		cy.get('a').contains('Visit us').invoke('attr', 'href').should('eq', 'https://expressionengine.com')
 	})
 
 	context('Number Input', function() {
@@ -519,7 +526,7 @@ context('Create combinations of field', () => {
 		cy.get('body').should('contain', 'tres')
 		cy.get('body').should('contain', 'cinco')
 
-		cy.log('Change the field type and make sure the output is the same')
+		cy.log('Change the fieldtype and make sure the output is the same')
 
 		cy.visit('admin.php?/cp/design')
 		cy.get('a').contains('aaSelectableButtons').eq(0).click()

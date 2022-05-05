@@ -1607,7 +1607,7 @@ class Addons extends CP_Controller
 
                 case 'ms':
                 case 'c':
-                    // Multi-select & Checkboxes
+                    // Multi select & Checkboxes
                     foreach ($options[1] as $k => $v) {
                         $choices[$k] = lang($v);
                     }
