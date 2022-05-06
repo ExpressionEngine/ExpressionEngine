@@ -120,10 +120,6 @@ context('Publish Page - Create', () => {
               file_modal.get('files').first().scrollIntoView().click()
 
               file_modal.get('files').should('not.be.visible')
-
-
-
-
             })
           page.get('chosen_files').should('have.length.gte', 2)
         })
@@ -515,6 +511,7 @@ context('Publish Page - Create', () => {
     context('various Grids', () => {
       it('Grid with Buttons', () => {
         cy.authVisit('admin.php?/cp/fields/create/1')
+        cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')
         cy.get('[data-input-value=field_type] .select__button').click()
         cy.get('[data-input-value=field_type] .select__dropdown-item:contains("Grid")').last().click()
         cy.get('input[type="text"][name = "field_label"]').type("Grid with Buttons")
@@ -539,6 +536,7 @@ context('Publish Page - Create', () => {
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
+        cy.get('.grid-field tbody [rel=add_row]:visible').should('be.visible');
         cy.get('.grid-field [rel=add_row]:visible').click();
         cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
         cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').click()
@@ -574,7 +572,4 @@ context('Publish Page - Create', () => {
         cy.logCPPerformance()
       })
     })
-
-
-
 })
