@@ -23,7 +23,7 @@ class FileManager extends FileManagerSection {
 					'file_type_header': '.ee-main__content form .table-responsive table tr th:nth-child(2)',
 					'date_added_header': '.ee-main__content form .table-responsive table tr th:nth-child(3)',
 					'manage_header': '.ee-main__content form .table-responsive table tr th:nth-child(4)',
-					'checkbox_header': '.ee-main__content form .table-responsive table tr th:nth-child(5)',
+					'checkbox_header': '.ee-main__content form .table-responsive table tr th:nth-child(5) input[type=checkbox]',
 
 					'title_names': '.ee-main__content form .table-responsive table tr td:first-child',
 					'file_types': '.ee-main__content form .table-responsive table tr td:nth-child(2)',

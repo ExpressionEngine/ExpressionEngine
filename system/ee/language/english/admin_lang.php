@@ -170,7 +170,7 @@ $lang = array(
 
     'avatar_url' => 'URL to Avatar Folder',
 
-    'backup_info' => 'Use this form to backup your database.',
+    'backup_info' => 'Use this form to back up your database.',
 
     'banish_masked_ips' => 'Deny Access if No IP Address is Present',
 
@@ -766,7 +766,7 @@ $lang = array(
 
     'search_and_replace' => 'Find and Replace',
 
-    'search_replace_disclaimer' => 'Depending on the syntax used, this function can produce undesired results. Consult the manual and backup your database.',
+    'search_replace_disclaimer' => 'Depending on the syntax used, this function can produce undesired results. Consult the manual and back up your database.',
 
     'search_term' => 'Search for this text',
 
