@@ -127,3 +127,7 @@ themes/ee/pro
 
 #
 *.code-workspace
+
+/vendor/
+/vendor-build/
+/vendor-bin/*/vendor

@@ -42,6 +42,8 @@
  *  Load the autoloader and register it
  * ------------------------------------------------------
  */
+    // Include composer autoloader
+    require 'vendor-build/autoload.php';
     require SYSPATH . 'ee/ExpressionEngine/Core/Autoloader.php';
 
     ExpressionEngine\Core\Autoloader::getInstance()
