@@ -584,6 +584,7 @@ $setup = [
         'UploadDestination' => 'Model\File\UploadDestination',
         'FileDimension' => 'Model\File\FileDimension',
         'File' => 'Model\File\File',
+        'FileField' => 'Model\File\FileField',
         'Watermark' => 'Model\File\Watermark',
 
         // ..\Log
@@ -691,7 +692,9 @@ $setup = [
 
         // ..\EntryManager
         'EntryManagerView' => 'Model\EntryManager\View',
-        'EntryManagerViewColumn' => 'Model\EntryManager\ViewColumn',
+
+        // ..\FileManager
+        'FileManagerView' => 'Model\File\FileManagerView',
     ),
 
     'cookies.necessary' => [

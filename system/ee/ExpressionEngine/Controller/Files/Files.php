@@ -31,14 +31,7 @@ class Files extends AbstractFilesController
 
         $this->handleBulkActions(ee('CP/URL')->make('files', ee()->cp->get_url_state()));
 
-        $base_url = ee('CP/URL')->make('files');
-
-        $files = ee('Model')->get('File')
-            ->with('UploadDestination')
-            ->filter('UploadDestination.module_id', 0)
-            ->filter('site_id', ee()->config->item('site_id'));
-
-        $vars = $this->listingsPage($files, $base_url, $view_type);
+        $vars = $this->listingsPage(null, $view_type);
 
         $this->generateSidebar();
         $this->stdHeader();
@@ -96,13 +89,7 @@ class Files extends AbstractFilesController
         $view_type = $viewTypeService->determineViewType('dir_' . $id);
         //$dir->default_modal_view is not used here as it's not modal view
 
-        $base_url = ee('CP/URL')->make('files/directory/' . $id);
-
-        $files = ee('Model')->get('File')
-            ->with('UploadDestination')
-            ->filter('upload_location_id', $dir->getId());
-
-        $vars = $this->listingsPage($files, $base_url, $view_type);
+        $vars = $this->listingsPage($dir, $view_type);
 
         $vars['dir_id'] = $id;
 

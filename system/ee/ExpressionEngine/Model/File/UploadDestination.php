@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Model\File;
 
-use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Model\Content\StructureModel;
 use ExpressionEngine\Model\Member\Member;
 
 /**
@@ -22,7 +22,7 @@ use ExpressionEngine\Model\Member\Member;
  * files may be uploaded to it, as well as essential information, such as the
  * server paths where those files actually end up.
  */
-class UploadDestination extends Model
+class UploadDestination extends StructureModel
 {
     protected static $_primary_key = 'id';
     protected static $_table_name = 'upload_prefs';

@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Model\File;
 
-use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Model\Content\ContentModel;
 
 /**
  * File Model
@@ -21,12 +21,18 @@ use ExpressionEngine\Service\Model\Model;
  * files may be uploaded to it, as well as essential information, such as the
  * server paths where those files actually end up.
  */
-class File extends Model
+class File extends ContentModel
 {
     protected static $_primary_key = 'file_id';
     protected static $_table_name = 'files';
-    protected static $_events = array('beforeDelete');
-    protected static $_binary_comparisons = array('file_name');
+    protected static $_gateway_names = array('FileGateway', 'FileFieldDataGateway');
+
+    protected static $_events = array(
+        'beforeDelete'
+    );
+    protected static $_binary_comparisons = array(
+        'file_name'
+    );
 
     protected static $_hook_id = 'file';
 
@@ -60,6 +66,12 @@ class File extends Model
         ),
     );
 
+    protected static $_field_data = array(
+        'field_model' => 'FileField',
+        'group_column' => 'group_id',
+        'structure_model' => 'UploadDestination',
+    );
+
     protected static $_validation_rules = array(
         'title' => 'xss',
         'description' => 'xss',
@@ -82,6 +94,17 @@ class File extends Model
     protected $modified_by_member_id;
     protected $modified_date;
     protected $file_hw_original;
+
+    /**
+     * A link back to the owning category group object.
+     *
+     * @return	Structure	A link back to the Structure object that defines
+     *						this Content's structure.
+     */
+    public function getStructure()
+    {
+        return $this->CategoryGroup;
+    }
 
     public function get__width()
     {

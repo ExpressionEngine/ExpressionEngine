@@ -11,7 +11,7 @@ define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH . 'ee/legacy/');
 define('PATH_CACHE', SYSPATH . 'user/cache/');
 define('APPPATH', BASEPATH);
-define('APP_VER', '6.3.2');
+define('APP_VER', '7.0.0-a.1');
 define('PATH_THEMES', realpath(SYSPATH . '/../themes') . '/');
 define('DOC_URL', 'http://our.doc.url/');
 

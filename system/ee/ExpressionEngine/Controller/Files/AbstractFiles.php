@@ -11,12 +11,9 @@ namespace ExpressionEngine\Controller\Files;
 
 use CP_Controller;
 
-use ExpressionEngine\Model\File\UploadDestination;
 use ExpressionEngine\Model\File\File;
-use ExpressionEngine\Library\Data\Collection;
 use ExpressionEngine\Library\CP\Table;
-use ExpressionEngine\Model\Content\FieldFacade;
-use ExpressionEngine\Model\Content\Display\FieldDisplay;
+use ExpressionEngine\Library\CP\FileManager\ColumnFactory;
 
 /**
  * Abstract Files Controller
@@ -158,10 +155,119 @@ abstract class AbstractFiles extends CP_Controller
         );
     }
 
-    protected function buildTable($files, $limit, $offset)
+    protected function validateFile(File $file)
     {
+        return ee('File')->makeUpload()->validateFile($file);
+    }
+
+    protected function saveFileAndRedirect(File $file, $is_new = false, $sub_alert = null)
+    {
+        $action = ($is_new) ? 'upload_filedata' : 'edit_file_metadata';
+
+        if ($file->isNew()) {
+            $file->uploaded_by_member_id = ee()->session->userdata('member_id');
+            $file->upload_date = ee()->localize->now;
+        }
+
+        $file->modified_by_member_id = ee()->session->userdata('member_id');
+        $file->modified_date = ee()->localize->now;
+
+        $file->save();
+
+        $alert = ee('CP/Alert')->makeInline('shared-form')
+            ->asSuccess()
+            ->withTitle(lang($action . '_success'))
+            ->addToBody(sprintf(lang($action . '_success_desc'), $file->title));
+
+        if ($sub_alert) {
+            $alert->setSubAlert($sub_alert);
+        }
+
+        $alert->defer();
+
+        if ($action == 'upload_filedata') {
+            ee()->session->set_flashdata('file_id', $file->file_id);
+        }
+
+        ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
+    }
+
+    protected function listingsPage($uploadLocation = null, $view_type = 'list')
+    {
+        $vars = array();
         ee()->load->library('file_field');
         ee()->file_field->dragAndDropField('new_file_manager', '', 'all', 'image');
+
+        if (empty($upload_location_id)) {
+            $base_url = ee('CP/URL')->make('files');
+        } else {
+            $base_url = ee('CP/URL')->make('files/directory/' . $uploadLocation->getId());
+        }
+
+        $files = ee('Model')->get('File')
+            ->with('UploadDestination');
+        if (empty($uploadLocation)) {
+            $files->filter('UploadDestination.module_id', 0)
+                ->filter('site_id', ee()->config->item('site_id'));
+        } else {
+            $files->filter('upload_location_id', $uploadLocation->getId());
+        }
+
+        $type_filter = $this->createTypeFilter($uploadLocation);
+        $category_filter = $this->createCategoryFilter($uploadLocation);
+        $author_filter = $this->createAuthorFilter($uploadLocation);
+        $filters = ee('CP/Filter')
+            ->add($type_filter)
+            ->add($category_filter)
+            ->add('Date')
+            ->add($author_filter)
+            ->add('ViewType', ['list', 'thumb'], $view_type)
+            ->add('EntryKeyword')
+            ->add(
+                'SearchIn',
+                [
+                    'titles' => 'titles',
+                    'titles_and_content' => 'titles_and_content',
+                ],
+                'titles'
+            )
+            ->add('Columns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
+
+
+        $search_terms = ee()->input->get_post('filter_by_keyword');
+
+        if ($search_terms) {
+            $base_url->setQueryStringVariable('filter_by_keyword', $search_terms);
+            $files->search(['title', 'file_name', 'mime_type'], $search_terms);
+            $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
+        }
+
+        if ($category_filter->value()) {
+            $files->with('Categories')
+                ->filter('Categories.cat_id', $category_filter->value());
+        }
+
+        if (! empty($author_filter) && $author_filter->value()) {
+            $files->filter('uploaded_by_member_id', $author_filter->value());
+        }
+
+        $total_files = $files->count();
+        $vars['total_files'] = $total_files;
+
+        $filters->add('Perpage', $total_files, 'show_all_files');
+
+        $filter_values = $filters->values();
+
+        $perpage = $filter_values['perpage'];
+        $page = ((int) ee()->input->get('page')) ?: 1;
+        $offset = ($page - 1) * $perpage;
+
+        $vars['pagination'] = ee('CP/Pagination', $total_files)
+            ->perPage($perpage)
+            ->currentPage($page)
+            ->render($base_url);
+
+        $base_url->addQueryStringVariables($filter_values);
 
         $table = ee('CP/Table', array(
             'sort_col' => 'date_added',
@@ -193,10 +299,18 @@ abstract class AbstractFiles extends CP_Controller
             )
         );
 
-        $table->setNoResultsText(sprintf(lang('no_found'), lang('files')),'', '', false, true);
+        $uploaderComponent = [
+            'allowedDirectory' => 'all',
+            'contentType' => 'image',
+            'file' => null,
+            'showActionButtons' => false,
+            'createNewDirectory' => true
+        ];
+
+        $table->setNoResultsHTML(ee('View')->make('ee:_shared/file/upload-widget')->render(['component' => $uploaderComponent]));
 
         $sort_col = $table->sort_col;
-
+    
         $sort_map = array(
             'title' => 'title',
             'file_type' => 'mime_type',
@@ -208,7 +322,7 @@ abstract class AbstractFiles extends CP_Controller
         }
 
         $files = $files->order($sort_map[$sort_col], $table->sort_dir)
-            ->limit($limit)
+            ->limit($perpage)
             ->offset($offset)
             ->all();
 
@@ -297,8 +411,6 @@ abstract class AbstractFiles extends CP_Controller
             );
         }
 
-        $table->setData($data);
-
         if ($missing_files) {
             ee('CP/Alert')->makeInline('missing-files')
                 ->asWarning()
@@ -308,74 +420,17 @@ abstract class AbstractFiles extends CP_Controller
                 ->now();
         }
 
-        return $table;
-    }
+        $table->setData($data);
 
-    protected function validateFile(File $file)
-    {
-        return ee('File')->makeUpload()->validateFile($file);
-    }
 
-    protected function saveFileAndRedirect(File $file, $is_new = false, $sub_alert = null)
-    {
-        $action = ($is_new) ? 'upload_filedata' : 'edit_file_metadata';
+        $base_url->setQueryStringVariable('sort_col', $table->sort_col);
+        $base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
-        if ($file->isNew()) {
-            $file->uploaded_by_member_id = ee()->session->userdata('member_id');
-            $file->upload_date = ee()->localize->now;
-        }
+        //ee()->view->filters = $filters->render($base_url);
 
-        $file->modified_by_member_id = ee()->session->userdata('member_id');
-        $file->modified_date = ee()->localize->now;
+        $vars['table'] = $table->viewData($base_url);
+        $vars['form_url'] = $vars['table']['base_url'];
 
-        $file->save();
-
-        $alert = ee('CP/Alert')->makeInline('shared-form')
-            ->asSuccess()
-            ->withTitle(lang($action . '_success'))
-            ->addToBody(sprintf(lang($action . '_success_desc'), $file->title));
-
-        if ($sub_alert) {
-            $alert->setSubAlert($sub_alert);
-        }
-
-        $alert->defer();
-
-        if ($action == 'upload_filedata') {
-            ee()->session->set_flashdata('file_id', $file->file_id);
-        }
-
-        ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
-    }
-
-    protected function listingsPage($files, $base_url, $view_type = 'list')
-    {
-        ee()->load->library('file_field');
-        ee()->file_field->dragAndDropField('new_file_manager', '', 'all', 'image');
-        $vars = array();
-        $search_terms = ee()->input->get_post('filter_by_keyword');
-
-        if ($search_terms) {
-            $base_url->setQueryStringVariable('filter_by_keyword', $search_terms);
-            $files->search(['title', 'file_name', 'mime_type'], $search_terms);
-            $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
-        }
-
-        $total_files = $files->count();
-        $vars['total_files'] = $total_files;
-
-        $filters = ee('CP/Filter')
-            ->add('Keyword')
-            ->add('ViewType', ['list', 'thumb'], $view_type)
-            ->add('Perpage', $total_files, 'show_all_files');
-
-        $filter_values = $filters->values();
-
-        $perpage = $filter_values['perpage'];
-        $page = ((int) ee()->input->get('page')) ?: 1;
-        $offset = ($page - 1) * $perpage;
-
-        $base_url->addQueryStringVariables($filter_values);
 
         if ($view_type === 'thumb') {
             ee()->view->filters = $filters->render($base_url);
@@ -390,24 +445,13 @@ abstract class AbstractFiles extends CP_Controller
             $files = $files->limit($perpage)
                 ->offset($offset);
 
-            $vars['files'] = $files->all();
+            $vars['files'] = $$data;
             $vars['form_url'] = $base_url;
-        } else {
-            $table = $this->buildTable($files, $perpage, $offset);
-
-            $base_url->setQueryStringVariable('sort_col', $table->sort_col);
-            $base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-            ee()->view->filters = $filters->render($base_url);
-
-            $vars['table'] = $table->viewData($base_url);
-            $vars['form_url'] = $vars['table']['base_url'];
         }
-
-        $vars['pagination'] = ee('CP/Pagination', $total_files)
-            ->perPage($perpage)
-            ->currentPage($page)
-            ->render($base_url);
+        
+        $vars['filters'] = $filters->renderEntryFilters($base_url);
+        $vars['filters_search'] = $filters->renderSearch($base_url);
+        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
         ee()->javascript->set_global([
             'file_view_url', ee('CP/URL')->make('files/file/view/###')->compile(),
@@ -423,6 +467,123 @@ abstract class AbstractFiles extends CP_Controller
         ));
         return $vars;
     }
+
+    /**
+     * Creates type filter
+     */
+    private function createTypeFilter($uploadLocation = null)
+    {
+        $cat_id = ($uploadLocation) ? explode('|', (string) $uploadLocation->cat_group) : null;
+
+        $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
+            ->with('Categories')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('exclude_group', '!=', 1)
+            ->all();
+
+        $category_options = array();
+        foreach ($category_groups as $group) {
+            $sort_column = ($group->sort_order == 'a') ? 'cat_name' : 'cat_order';
+            foreach ($group->Categories->sortBy($sort_column) as $category) {
+                $category_options[$category->cat_id] = $category->cat_name;
+            }
+        }
+
+        $categories = ee('CP/Filter')->make('filter_by_type', 'filter_by_type', $category_options);
+        $categories->setLabel(lang('type'));
+        $categories->useListFilter(); // disables custom values
+
+        return $categories;
+    }
+
+    /**
+     * Creates an author filter
+     */
+    private function createAuthorFilter($uploadLocation = null)
+    {
+        $db = ee('db')->distinct()
+            ->select('f.uploaded_by_member_id, m.screen_name')
+            ->from('files f')
+            ->join('members m', 'm.member_id = f.uploaded_by_member_id', 'LEFT')
+            ->order_by('screen_name', 'asc');
+
+        if ($uploadLocation) {
+            $db->where('upload_location_id', $uploadLocation->channel_id);
+        }
+
+        $authors_query = $db->get();
+
+        $author_filter_options = [];
+        foreach ($authors_query->result() as $row) {
+            $author_filter_options[$row->uploaded_by_member_id] = $row->screen_name;
+        }
+
+        // Put the current user at the top of the author list
+        if (isset($author_filter_options[ee()->session->userdata['member_id']])) {
+            $first[ee()->session->userdata['member_id']] = $author_filter_options[ee()->session->userdata['member_id']];
+            unset($author_filter_options[ee()->session->userdata['member_id']]);
+            $author_filter_options = $first + $author_filter_options;
+        }
+
+        $author_filter = ee('CP/Filter')->make('filter_by_author', 'filter_by_author', $author_filter_options);
+        $author_filter->setLabel(lang('added_by'));
+        $author_filter->useListFilter();
+
+        return $author_filter;
+    }
+
+    /**
+     * Creates a category filter
+     */
+    private function createCategoryFilter($uploadLocation = null)
+    {
+        $cat_id = ($uploadLocation) ? explode('|', (string) $uploadLocation->cat_group) : null;
+
+        $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
+            ->with('Categories')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('exclude_group', '!=', 1)
+            ->all();
+
+        $category_options = array();
+        foreach ($category_groups as $group) {
+            $sort_column = ($group->sort_order == 'a') ? 'cat_name' : 'cat_order';
+            foreach ($group->Categories->sortBy($sort_column) as $category) {
+                $category_options[$category->cat_id] = $category->cat_name;
+            }
+        }
+
+        $categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $category_options);
+        $categories->setPlaceholder(lang('filter_categories'));
+        $categories->setLabel(lang('category'));
+        $categories->useListFilter(); // disables custom values
+
+        return $categories;
+    }
+
+    /**
+     * Creates a column filter
+     */
+    private function createColumnFilter($uploadLocation = null)
+    {
+        $column_choices = [];
+
+        $columns = ColumnFactory::getAvailableColumns($uploadLocation);
+
+        foreach ($columns as $column) {
+            $identifier = $column->getTableColumnIdentifier();
+
+            // This column is mandatory, not optional
+            if ($identifier == 'checkbox') {
+                continue;
+            }
+
+            $column_choices[$identifier] = strip_tags(lang($column->getTableColumnLabel()));
+        }
+
+        return $column_choices;
+    }
+
 }
 
 // EOF

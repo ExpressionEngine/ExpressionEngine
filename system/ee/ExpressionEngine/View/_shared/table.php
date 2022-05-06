@@ -4,26 +4,10 @@
 
 <?php /* Table */ if (!$grid_input): ?>
 
-<?php if(empty($data) && $no_results['action_widget']):
-    $component = [
-        'allowedDirectory' => 'all',
-        'contentType' => 'image',
-        'file' => null,
-        'showActionButtons' => false,
-        'createNewDirectory' => true
-    ];
-?>
-<div class="no-results">
-    <div data-file-field-react="<?=base64_encode(json_encode($component))?>" data-input-value="files_field">
-        <div class="fields-select">
-            <div class="field-inputs">
-                <label class="field-loading">
-                    <?=lang('loading')?><span></span>
-                </label>
-            </div>
-        </div>
-    </div>
-</div>
+<?php if(empty($data) && !empty($no_results['html'])) : ?>
+	<div class="no-results">
+		<?=$no_results['html']?>
+	</div>
 <?php else: ?>
 
 

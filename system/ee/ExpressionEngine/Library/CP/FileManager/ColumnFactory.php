@@ -8,26 +8,28 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Library\CP\EntryManager;
+namespace ExpressionEngine\Library\CP\FileManager;
+use ExpressionEngine\Library\CP\EntryManager;
+use ExpressionEngine\Library\CP\EntryManager\Columns;
 
 /**
- * Entry Manager Column Factory
+ * File Manager Column Factory
  */
-class ColumnFactory
+class ColumnFactory extends EntryManager\ColumnFactory
 {
     protected static $standard_columns = [
-        'entry_id' => Columns\EntryId::class,
+        //'entry_id' => Columns\EntryId::class,
         'title' => Columns\Title::class,
-        'url_title' => Columns\UrlTitle::class,
-        'author' => Columns\Author::class,
-        'status' => Columns\Status::class,
-        'sticky' => Columns\Sticky::class,
-        'entry_date' => Columns\EntryDate::class,
-        'expiration_date' => Columns\ExpirationDate::class,
-        'channel' => Columns\ChannelName::class,
-        'comments' => Columns\Comments::class,
-        'categories' => Columns\Categories::class,
-        'checkbox' => Columns\Checkbox::class
+        //'url_title' => Columns\UrlTitle::class,
+        //'author' => Columns\Author::class,
+        //'status' => Columns\Status::class,
+        //'sticky' => Columns\Sticky::class,
+        //'entry_date' => Columns\EntryDate::class,
+        //'expiration_date' => Columns\ExpirationDate::class,
+        //'channel' => Columns\ChannelName::class,
+        //'comments' => Columns\Comments::class,
+        //'categories' => Columns\Categories::class,
+        //'checkbox' => Columns\Checkbox::class
     ];
 
     private static $instances = [];
@@ -90,6 +92,8 @@ class ColumnFactory
      */
     private static function getCustomFieldColumns($channel = false)
     {
+        return [];
+        
         // Grab all the applicable fields based on the channel if there is one.
         if (! empty($channel)) {
             $customFields = $channel->getAllCustomFields();
