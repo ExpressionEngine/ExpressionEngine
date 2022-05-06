@@ -29,7 +29,7 @@ class Range_slider_ft extends Slider_ft
     public $entry_manager_compatible = true;
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */

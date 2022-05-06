@@ -20966,6 +20966,7 @@ table .field-no-results {
 .add-on-layout .secondary-sidebar .sidebar__section-title a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) {
   color: var(--ee-text-normal);
   margin: -6px -12px;
+  padding-left: 12px !important;
 }
 .add-on-layout .secondary-sidebar .sidebar__section-title .button, .add-on-layout .secondary-sidebar .sidebar__section-title .markItUpHeader ul a, .markItUpHeader ul .add-on-layout .secondary-sidebar .sidebar__section-title a, .add-on-layout .secondary-sidebar .sidebar__section-title .filter-bar__button, .add-on-layout .secondary-sidebar .sidebar__section-title .license-status-badge, .add-on-layout .secondary-sidebar .sidebar__section-title .select__button, .add-on-layout .secondary-sidebar .sidebar__section-title .select-popup, .add-on-layout .secondary-sidebar .sidebar__section-title select, .add-on-layout .secondary-sidebar .sidebar__section-title .no-results a, .no-results .add-on-layout .secondary-sidebar .sidebar__section-title a,
 .add-on-layout .secondary-sidebar .sidebar__section-title .field-no-results a,

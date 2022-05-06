@@ -301,6 +301,9 @@ break;
             $collection[$forum_id]->forum_order = $i++;
             $collection[$forum_id]->forum_parent = ($forum_id == $current_category) ? 0 : $current_category;
             $collection[$forum_id]->save();
+
+            // Unset collection so it cant get saved again
+            unset($collection[$forum_id]);
         }
 
         ee()->output->send_ajax_response(null);

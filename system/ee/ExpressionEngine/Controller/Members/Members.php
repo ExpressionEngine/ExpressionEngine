@@ -1456,6 +1456,11 @@ class Members extends CP_Controller
 
                 $member->save();
 
+                // Get a fresh copy of this member model and update statistics for its roles
+                if (!bool_config_item('ignore_member_stats')) { 
+                    ee('Model')->get('Member')->filter('member_id', $member->getId())->first()->updateRoleTotalMembers();
+                }
+
                 // -------------------------------------------
                 // 'cp_members_member_create' hook.
                 //  - Additional processing when a member is created through the CP

@@ -82,6 +82,8 @@ $lang = array(
 
     'invalid_short_name' => 'The image manipulation short name may only contain alpha-numeric characters, dashes and underscores, and cannot be named "thumbs".',
 
+    'link' => 'Link',
+
     'invalid_upload_destination' => 'The upload destination is invalid.',
 
     'keep_subfolders_top' => 'Keep subfolders on top?',
@@ -760,7 +762,7 @@ $lang = array(
     'no_results' => 'No available member groups.',
 
     'no_sync_title' => 'No Results', // @todo, this phrase should change, just not sure what to put -ga
-    'no_upload_directories_for_fieldtype' => 'There are currently no upload directories available. Please <a href="%s" rel="external">add one or more upload directories</a> to use the File field type.',
+    'no_upload_directories_for_fieldtype' => 'There are currently no upload directories available. Please <a href="%s" rel="external">add one or more upload directories</a> to use the File fieldtype.',
 
     'no_upload_dirs_available' => 'No upload locations available',
 
@@ -774,7 +776,7 @@ $lang = array(
 
     'php_max_filesize' => 'Maximum upload size allowed by PHP is %s',
 
-    'please_add_upload' => 'There are currently no upload directories available. Please add one or more upload directories to use the File field type.',
+    'please_add_upload' => 'There are currently no upload directories available. Please add one or more upload directories to use the File fieldtype.',
 
     'please_select' => 'Please Select&hellip',
 

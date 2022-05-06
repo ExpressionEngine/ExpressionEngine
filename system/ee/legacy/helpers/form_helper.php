@@ -31,10 +31,6 @@ if (! defined('BASEPATH')) {
 if (REQ == 'CP') {
     function form_open($action = '', $attributes = array(), $hidden = array())
     {
-        if (strpos($action, '://') === false && strpos($action, BASE) !== 0) {
-            //$action = BASE.AMP.$action;
-        }
-
         $action = ee()->uri->reformat($action);
 
         $form = '<form action="' . $action . '"';
@@ -155,7 +151,7 @@ function form_preference($name, $details)
             }
 
             break;
-        // Multi-Select
+        // Multi Select
         case 'ms':
             $pref = form_multiselect($name . '[]', $details['value'], $details['selected'], 'id="' . $name . '" size="8"');
 
@@ -457,7 +453,7 @@ if (! function_exists('form_textarea')) {
 }
 
 /**
- * Multi-select menu
+ * Multi select menu
  *
  * @access	public
  * @param	string

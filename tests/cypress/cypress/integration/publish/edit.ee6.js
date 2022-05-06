@@ -8,11 +8,16 @@ const page = new Edit;
 context('Publish Page - Edit', () => {
   before(function(){
     cy.task('db:seed')
+    cy.eeConfig({ item: 'show_profiler', value: 'y' })
   })
 
   beforeEach(function(){
     cy.auth();
     cy.hasNoErrors()
+  })
+
+  after(function(){
+    cy.eeConfig({ item: 'show_profiler', value: 'n' })
   })
 
   it('shows a 404 with no given entry_id', () => {
@@ -50,7 +55,7 @@ context('Publish Page - Edit', () => {
       cy.get('tbody tr:last-child').should('not.have.class', 'auto-saved')
       cy.get('tbody tr:last-child span.auto-save').should('not.exist')
 
-      
+      cy.logCPPerformance()
     })
 
     it('prevent navigating away', () => {
@@ -83,6 +88,8 @@ context('Publish Page - Edit', () => {
     //cy.get('button:contains("Relate Entry")').should('not.be.visible')
     cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('exist')
     cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').should('exist')
+
+    cy.logCPPerformance()
   })
 
   
