@@ -29,7 +29,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
     private $errors;
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var mixed
      */
