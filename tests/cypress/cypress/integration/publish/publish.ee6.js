@@ -101,6 +101,8 @@ context('Publish Page - Create', () => {
 
           createSecondFileField()
 
+          cy.wait(1000)
+
           page.get('file_fields').each(function(field, i) {
 
               let link = field.find("button:contains('Choose Existing')")
@@ -154,6 +156,7 @@ context('Publish Page - Create', () => {
         })
 
         it('the file field retains data after being created and edited', () => {
+          cy.wait(1000)
           page.get('file_fields').each(function(field, i) {
             let link = field.find("button:contains('Choose Existing')")
             cy.get(link).click()

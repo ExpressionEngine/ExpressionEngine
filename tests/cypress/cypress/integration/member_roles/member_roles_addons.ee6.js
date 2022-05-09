@@ -100,13 +100,13 @@ context('Test Member roles Addons ', () => {
 	   cy.contains('Rich Text Editor')
 	   cy.contains('Statistics')
 
-
 	   addonManager.get('addons').eq(1).then((addon_card) => {
 		const addon_name = addon_card.find('.add-on-card__title').contents().filter(function(){ return this.nodeType == 3; }).text().trim();
 		cy.log(addon_name);
 		let btn = addon_card.find('.js-dropdown-toggle')
-		btn.click()
-		btn.next('.dropdown').find('a:contains("Uninstall")').click()
+		cy.get(btn).should('exist')
+		cy.get(btn).trigger('click')
+		cy.get(btn).next('.dropdown').find('a:contains("Uninstall")').click()
 
 		addonManager.get('modal_submit_button').contains('Confirm, and Uninstall').click() // Submits a form
 		cy.hasNoErrors()
