@@ -329,6 +329,16 @@ class FilterFactory
     }
 
     /**
+     * This will instantiate and return a default FilemanagerColumns filter
+     *
+     * @return Filter\FilemanagerColumns a FilemanagerColumns Filter object
+     */
+    protected function createDefaultFilemanagerColumns($columns, $uploadLocation = null, $view_id = null)
+    {
+        return new Filter\FilemanagerColumns($columns, $uploadLocation, $view_id);
+    }
+
+    /**
      * This will instantiate and return a default Site filter
      *
      * @todo Use the $container to make Config->item

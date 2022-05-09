@@ -1,4 +1,8 @@
-<?php $this->extend('_templates/default-nav'); ?>
+<?php 
+if (! AJAX_REQUEST) {
+    $this->extend('_templates/default-nav'); 
+}
+?>
 
 
 <div class="box panel">
@@ -76,4 +80,8 @@
   </div>
 </div>
 
-<?php $this->embed('files/_delete_modal'); ?>
+<?php 
+if (! AJAX_REQUEST) {
+    $this->embed('files/_delete_modal');
+}
+?>

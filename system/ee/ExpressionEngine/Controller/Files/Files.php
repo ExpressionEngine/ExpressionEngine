@@ -39,18 +39,32 @@ class Files extends AbstractFilesController
 
         // Set search results heading
         if (! empty($vars['search_terms'])) {
-            ee()->view->cp_heading = sprintf(
+            $vars['cp_heading'] = sprintf(
                 lang('search_results_heading'),
                 $vars['total_files'],
                 $vars['search_terms']
             );
         } else {
-            ee()->view->cp_heading = lang('all_files');
+            $vars['cp_heading'] = lang('all_files');
         }
 
         ee()->view->cp_breadcrumbs = array(
             '' => lang('files')
         );
+
+        if ($view_type == 'thumb') {
+            $view = 'files/index-' . $view_type;
+        } else {
+            $view = 'files/index';
+        }
+
+        if (AJAX_REQUEST) {
+            return array(
+                'html' => ee('View')->make($view)->render($vars),
+                'url' => $vars['form_url']->compile(),
+                'viewManager_saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => null])->compile()
+            );
+        }
 
         if ($view_type == 'thumb') {
             ee()->cp->render('files/index-' . $view_type, $vars);

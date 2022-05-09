@@ -1253,6 +1253,11 @@ class EE_Schema
 			KEY `site_id` (`site_id`)
 		)";
 
+        $Q[] = "CREATE TABLE `exp_file_data` (
+			`file_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY (`file_id`)
+		)";
+
         $Q[] = "CREATE TABLE `exp_file_categories` (
 			`file_id` int(10) unsigned NOT NULL,
 			`cat_id` int(10) unsigned NOT NULL,
@@ -1494,7 +1499,19 @@ class EE_Schema
 			`member_id` int(10) unsigned NOT NULL,
 			`name` varchar(128) NOT NULL DEFAULT '',
 			`columns` text NOT NULL,
-			PRIMARY KEY (`view_id`)
+			PRIMARY KEY (`view_id`),
+			KEY `channel_id_member_id` (`channel_id`, `member_id`)
+		);";
+
+        // file manager
+        $Q[] = "CREATE TABLE `exp_file_manager_views` (
+			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`upload_id` int(6) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`name` varchar(128) NOT NULL DEFAULT '',
+			`columns` text NOT NULL,
+			PRIMARY KEY (`view_id`),
+			KEY `upload_id_member_id` (`upload_id`, `member_id`)
 		);";
 
         // Default menu set

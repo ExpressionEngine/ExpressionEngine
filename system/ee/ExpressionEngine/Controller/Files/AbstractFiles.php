@@ -14,6 +14,7 @@ use CP_Controller;
 use ExpressionEngine\Model\File\File;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Library\CP\FileManager\ColumnFactory;
+use ExpressionEngine\Library\CP\EntryManager;
 
 /**
  * Abstract Files Controller
@@ -198,19 +199,22 @@ abstract class AbstractFiles extends CP_Controller
         ee()->load->library('file_field');
         ee()->file_field->dragAndDropField('new_file_manager', '', 'all', 'image');
 
+        $upload_location_id = !empty($uploadLocation) ? $uploadLocation->getId() : null;
+
         if (empty($upload_location_id)) {
             $base_url = ee('CP/URL')->make('files');
         } else {
-            $base_url = ee('CP/URL')->make('files/directory/' . $uploadLocation->getId());
+            $base_url = ee('CP/URL')->make('files/directory/' . $upload_location_id);
         }
 
         $files = ee('Model')->get('File')
-            ->with('UploadDestination');
-        if (empty($uploadLocation)) {
+            ->with('UploadDestination')
+            ->fields('File.file_name', 'UploadDestination.server_path', 'UploadDestination.url');
+        if (empty($upload_location_id)) {
             $files->filter('UploadDestination.module_id', 0)
                 ->filter('site_id', ee()->config->item('site_id'));
         } else {
-            $files->filter('upload_location_id', $uploadLocation->getId());
+            $files->filter('upload_location_id', $upload_location_id);
         }
 
         $type_filter = $this->createTypeFilter($uploadLocation);
@@ -231,7 +235,7 @@ abstract class AbstractFiles extends CP_Controller
                 ],
                 'titles'
             )
-            ->add('Columns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
+            ->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
 
 
         $search_terms = ee()->input->get_post('filter_by_keyword');
@@ -275,29 +279,42 @@ abstract class AbstractFiles extends CP_Controller
             'class' => 'tbl-fixed'
         ));
 
-        $table->setColumns(
-            array(
-                array(
-                    'type' => Table::COL_CHECKBOX,
-                ),
-                '' => array(
-                    'encode' => false,
-                    'attrs' => array(
-                        'width' => '160px'
-                    ),
-                ),
-                'title' => array(
-                    'encode' => false,
-                ),
-                'name',
-                'file_type',
-                'date_added',
-                'size',
-                'manage' => array(
-                    'type' => Table::COL_TOOLBAR
-                ),
-            )
-        );
+        //which columns should we show
+        $selected_columns = $filter_values['columns'];
+        array_unshift($selected_columns, 'thumbnail');
+        array_unshift($selected_columns, 'checkbox');
+        $selected_columns[] = 'manage';
+
+        $columns = [];
+        foreach ($selected_columns as $column) {
+            $columns[$column] = ColumnFactory::getColumn($column);
+        }
+        $columns = array_filter($columns);
+
+        foreach ($columns as $column) {
+            if (!empty($column)) {
+                if (!empty($column->getEntryManagerColumnModels())) {
+                    foreach ($column->getEntryManagerColumnModels() as $with) {
+                        if (!empty($with)) {
+                            $files->with($with);
+                        }
+                    }
+                }
+                if (!empty($column->getEntryManagerColumnFields())) {
+                    foreach ($column->getEntryManagerColumnFields() as $field) {
+                        if (!empty($field)) {
+                            $files->fields($field);
+                        }
+                    }
+                } else {
+                    $files->fields($column->getTableColumnIdentifier());
+                }
+            }
+        }
+
+        $column_renderer = new EntryManager\ColumnRenderer($columns);
+        $table_columns = $column_renderer->getTableColumnsConfig();
+        $table->setColumns($table_columns);
 
         $uploaderComponent = [
             'allowedDirectory' => 'all',
@@ -309,19 +326,17 @@ abstract class AbstractFiles extends CP_Controller
 
         $table->setNoResultsHTML(ee('View')->make('ee:_shared/file/upload-widget')->render(['component' => $uploaderComponent]));
 
-        $sort_col = $table->sort_col;
-    
-        $sort_map = array(
-            'title' => 'title',
-            'file_type' => 'mime_type',
-            'date_added' => 'upload_date',
-        );
+        $sort_col = 'file_id';
+        foreach ($table_columns as $table_column) {
+            if ($table_column['label'] == $table->sort_col) {
+                $sort_col = $table_column['name'];
 
-        if (! array_key_exists($sort_col, $sort_map)) {
-            throw new \Exception("Invalid sort column: " . htmlentities($sort_col));
+                break;
+            }
         }
+        $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
 
-        $files = $files->order($sort_map[$sort_col], $table->sort_dir)
+        $files = $files->order($sort_field, $table->sort_dir)
             ->limit($perpage)
             ->offset($offset)
             ->all();
@@ -337,82 +352,20 @@ abstract class AbstractFiles extends CP_Controller
                 continue;
             }
 
-            $toolbar = array(
-                'edit' => array(
-                    'href' => '',
-                    'rel' => 'modal-view-file',
-                    'class' => 'm-link',
-                    'title' => lang('edit'),
-                    'data-file-id' => $file->file_id
-                ),
-                'link' => array(
-                    'href' => $file->getAbsoluteURL(),
-                    'title' => lang('link'),
-                    'target' => '_blank',
-                ),
-                'crop' => array(
-                    'href' => ee('CP/URL')->make('files/file/crop/' . $file->file_id),
-                    'title' => lang('crop'),
-                ),
-                'download' => array(
-                    'href' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
-                    'title' => lang('download'),
-                ),
-            );
+            $attrs = array('class' => '');
 
-            if (! ee('Permission')->can('edit_files') || ! $file->isEditableImage()) {
-                unset($toolbar['crop']);
-            }
-
-            $file_description = $file->title;
-            $file_thumbnail = '<img src="' . $file->getAbsoluteURL() . '" style="max-width: 150px; max-height: 100px;" class="thumbnail_img"><span class="tooltip-img" style="background-image:url('.$file->getAbsoluteURL().')"></span>';
-
-            if (ee('Permission')->can('edit_files')) {
-                $file_description = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" data-file-id="' . $file->file_id . '" class="m-link">' . $file->title . '</a>';
-                $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" class=""><img src="'.$file->getAbsoluteURL().'" style="max-width: 150px; max-height: 100px;" class="thumbnail_img"><span class="tooltip-img" style="background-image:url('.$file->getAbsoluteURL().')"></span></a>';
-            }
-
-            $attrs = array();
-
-            if (!$file->exists()) {
+            if (! $file->exists()) {
                 $attrs['class'] = 'missing';
                 $missing_files = true;
-                $file_description .= '<br><em class="faded">' . lang('file_not_found') . '</em>';
-            } else {
-                // $file_description .= '<br><em class="faded">' . $file->file_name . '</em>';
             }
 
-            $file_name = $file->file_name;
-            $file_size = round($file->file_size * 0.001) .' Kb';
-
-            $column = array(
-                array(
-                    'name' => 'selection[]',
-                    'value' => $file->file_id,
-                    'data' => array(
-                        'confirm' => lang('file') . ': <b>' . htmlentities($file->title, ENT_QUOTES, 'UTF-8') . '</b>'
-                    )
-                ),
-                $file_thumbnail,
-                $file_description,
-                $file_name,
-                $file->mime_type,
-                ee()->localize->human_time($file->upload_date),
-                $file_size,
-                array('toolbar_items' => $toolbar),
-            );
-
             if ($file_id && $file->file_id == $file_id) {
-                if (array_key_exists('class', $attrs)) {
-                    $attrs['class'] .= ' selected';
-                } else {
-                    $attrs['class'] = 'selected';
-                }
+                $attrs['class'] .= ' selected';
             }
 
             $data[] = array(
                 'attrs' => $attrs,
-                'columns' => $column
+                'columns' => $column_renderer->getRenderedTableRowForEntry($file)
             );
         }
 
@@ -462,11 +415,16 @@ abstract class AbstractFiles extends CP_Controller
             'file_view_url', ee('CP/URL')->make('files/file/view/###')->compile(),
             'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
         ]);
-        ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
+        ee()->javascript->set_global([
+            'lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>',
+            'viewManager.saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => $upload_location_id])->compile()
+        ]);
+        
         ee()->cp->add_js_script(array(
             'file' => array(
                 'cp/confirm_remove',
                 'cp/files/manager',
+                'cp/publish/entry-list',
                 'fields/file/file_field_drag_and_drop',
             ),
         ));
@@ -579,7 +537,7 @@ abstract class AbstractFiles extends CP_Controller
             $identifier = $column->getTableColumnIdentifier();
 
             // This column is mandatory, not optional
-            if ($identifier == 'checkbox') {
+            if (in_array($identifier, ['checkbox', 'thumbnail', 'manage'])) {
                 continue;
             }
 

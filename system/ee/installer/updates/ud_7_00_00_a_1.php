@@ -28,6 +28,8 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'addFieldDataTable',
+                'addFileManagerViewsTable',
+                'addEntryManagerViewsKeys'
             ]
         );
 
@@ -60,6 +62,54 @@ class Updater
 
         ee('db')->query('INSERT INTO exp_file_data (file_id) SELECT file_id FROM exp_files');
     }
+
+    private function addFileManagerViewsTable()
+    {
+        if (! ee()->db->table_exists('file_manager_views')) {
+            ee()->dbforge->add_field(
+                [
+                    'view_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                        'auto_increment' => true
+                    ],
+                    'upload_id' => [
+                        'type' => 'int',
+                        'constraint' => 6,
+                        'unsigned' => true,
+                        'null' => false,
+                    ],
+                    'member_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                    ],
+                    'name' => [
+                        'type' => 'varchar',
+                        'constraint' => 128,
+                        'null' => false,
+                        'default' => '',
+                    ],
+                    'columns' => [
+                        'type' => 'text',
+                        'null' => false
+                    ]
+                ]
+            );
+            ee()->dbforge->add_key('view_id', true);
+            ee()->dbforge->add_key(['upload_id', 'member_id']);
+            ee()->smartforge->create_table('file_manager_views');
+        }
+    }
+
+    private function addEntryManagerViewsKeys()
+    {
+        ee()->smartforge->add_key('entry_manager_views', ['channel_id', 'member_id']);
+    }
+
 }
 
 // EOF
