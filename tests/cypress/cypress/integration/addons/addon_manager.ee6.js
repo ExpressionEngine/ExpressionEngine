@@ -81,8 +81,8 @@ context('Add-On Manager', () => {
             // The filter should not change
             page.hasAlert()
 
-            page.get('alert').contains("Add-Ons Uninstalled")
-            page.get('alert').contains(addon_name);
+             cy.get('div.app-notice.app-notice--inline').contains("Add-Ons Uninstalled")
+             cy.get('div.app-notice.app-notice--inline').contains(addon_name);
         })
 
     })
