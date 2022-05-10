@@ -39,7 +39,7 @@ class Request
         $resource = ''; // with group, like `group/styles`
         $group = '';
         $name = '';
-        $site = '';
+        $site_name = '';
         $template_version = 0;
 
         if (in_array(ee()->uri->segment(1), ee()->uri->reserved) && false !== ee()->uri->segment(2)) {
@@ -83,7 +83,7 @@ class Request
 
         if (false !== strpos($group, ':')) {
             // if there's a site, let's get it and redefine $group
-            list($site, $group) = array_map('trim', explode(':', $group, 2));
+            list($site_name, $group) = array_map('trim', explode(':', $group, 2));
         }
 
         $cache_path = $this->_cache_path($resource);
@@ -96,8 +96,8 @@ class Request
                 ->filter('template_type', $this->type)
                 ->with('TemplateGroup')->filter('TemplateGroup.group_name', $group);
 
-            $template = !empty($site)
-                ? $template->with('Site')->filter('Site.site_name', $site)
+            $template = !empty($site_name)
+                ? $template->with('Site')->filter('Site.site_name', $site_name)
                 : $template->filter('site_id', ee()->config->item('site_id'));
 
             $template = $template
@@ -121,7 +121,7 @@ class Request
         /** -----------------------------------------*/
         if (bool_config_item('save_tmpl_files')) {
             ee()->load->helper('file');
-            $filepath = PATH_TMPL . (isset($site) ? $site : ee()->config->item('site_short_name')) . '/';
+            $filepath = PATH_TMPL . (isset($site_name) ? $site_name : ee()->config->item('site_short_name')) . '/';
             $filepath .= $group . '.group/' . $name . '.' . $this->type;
             $file_edit_date = filemtime($filepath);
 
