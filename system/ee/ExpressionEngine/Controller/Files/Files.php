@@ -32,6 +32,7 @@ class Files extends AbstractFilesController
         $this->handleBulkActions(ee('CP/URL')->make('files', ee()->cp->get_url_state()));
 
         $vars = $this->listingsPage(null, $view_type);
+        $vars['viewtype'] = $view_type;
 
         $this->generateSidebar();
         $this->stdHeader();
@@ -48,29 +49,21 @@ class Files extends AbstractFilesController
             $vars['cp_heading'] = lang('all_files');
         }
 
+        $vars['toolbar_items'] = [];
+
         ee()->view->cp_breadcrumbs = array(
             '' => lang('files')
         );
 
-        if ($view_type == 'thumb') {
-            $view = 'files/index-' . $view_type;
-        } else {
-            $view = 'files/index';
-        }
-
         if (AJAX_REQUEST) {
             return array(
-                'html' => ee('View')->make($view)->render($vars),
+                'html' => ee('View')->make('files/index')->render($vars),
                 'url' => $vars['form_url']->compile(),
                 'viewManager_saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => null])->compile()
             );
         }
 
-        if ($view_type == 'thumb') {
-            ee()->cp->render('files/index-' . $view_type, $vars);
-        } else {
-            ee()->cp->render('files/index', $vars);
-        }
+        ee()->cp->render('files/index', $vars);
     }
 
     public function directory($id)
@@ -104,6 +97,7 @@ class Files extends AbstractFilesController
         //$dir->default_modal_view is not used here as it's not modal view
 
         $vars = $this->listingsPage($dir, $view_type);
+        $vars['viewtype'] = $view_type;
 
         $vars['dir_id'] = $id;
 
@@ -111,24 +105,32 @@ class Files extends AbstractFilesController
         ee()->view->cp_page_title = lang('file_manager');
         ee()->view->cp_heading = sprintf($dir->name);
 
-        // Check to see if they can sync the directory
-        ee()->view->can_sync_directory = ee('Permission')->can('upload_new_files')
-            && $dir->memberHasAccess(ee()->session->getMember());
 
-        $this->stdHeader(
-            ee()->view->can_sync_directory ? $id : null
-        );
+        $this->stdHeader();
+
+        $vars['toolbar_items'] = [];
+        if (ee('Permission')->can('upload_new_files') && $dir->memberHasAccess(ee()->session->getMember())) {
+            $vars['toolbar_items']['sync'] = [
+                'href' => ee('CP/URL')->make('files/uploads/sync/' . $id),
+                'title' => lang('sync'),
+                'class' => 'button--secondary icon--sync'
+            ];
+            $vars['toolbar_items']['new_folder'] = [
+                'href' => '#',
+                'content' => lang('new_folder'),
+            ];
+            $vars['toolbar_items']['upload'] = [
+                'href' => '#',
+                'content' => lang('upload'),
+            ];
+        }
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('files')->compile() => lang('files'),
             '' => $dir->name
         );
 
-        if ($view_type == 'thumb') {
-            ee()->cp->render('files/directory-' . $view_type, $vars);
-        } else {
-            ee()->cp->render('files/directory', $vars);
-        }
+        ee()->cp->render('files/index', $vars);
     }
 
     public function export()

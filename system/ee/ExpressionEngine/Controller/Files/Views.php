@@ -30,6 +30,7 @@ class Views extends CP_Controller
     {
         $query = ee('Model')->get('FileManagerView')
             ->filter('member_id', ee()->session->userdata('member_id'))
+            ->filter('viewtype', ee()->input->get('viewtype'))
             ->filter('upload_id', (int) ee()->input->get('upload_id'));
         $view = $query->first();
         if (empty($view)) {
@@ -37,6 +38,7 @@ class Views extends CP_Controller
         }
 
         $view->member_id = ee()->session->userdata('member_id');
+        $view->viewtype = ee()->input->get('viewtype');
         $view->upload_id = (int) ee()->input->get('upload_id');
         $view->columns = json_encode(ee()->input->post('columns'));
 

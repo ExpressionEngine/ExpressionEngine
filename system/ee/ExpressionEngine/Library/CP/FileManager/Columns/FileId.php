@@ -19,6 +19,6 @@ class FileId extends EntryManager\Columns\EntryId
 {
     public function getTableColumnLabel()
     {
-        return 'file_id';
+        return 'column_file_id';
     }
 }

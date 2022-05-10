@@ -169,7 +169,7 @@ abstract class Filter
         $options = $this->prepareOptions($url);
 
         if (empty($options)) {
-            return;
+            //return;
         }
 
         $value = $this->display_value;

@@ -175,36 +175,9 @@
         </div>
 
         <div class="panel-body">
-            <?php $this->embed('_shared/thumb', $files->asArray()); ?>
+            <?php $this->embed('_shared/thumb', $table); ?>
 
-            <div class="f_manager-action-part">
-                <?php if (count($files)): ?>
-                <?php
-                    $options = [
-                        [
-                            'value' => "",
-                            'text' => '-- ' . lang('with_selected') . ' --'
-                        ]
-                    ];
-                    if (ee('Permission')->can('delete_files')) {
-                        $options[] = [
-                            'value' => "remove",
-                            'text' => lang('delete'),
-                            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-file"'
-                        ];
-                    }
-                    $options[] = [
-                        'value' => "download",
-                        'text' => lang('download')
-                    ];
-                    $this->embed('ee:_shared/form/bulk-action-bar', [
-                        'options' => $options,
-                        'modal' => true
-                    ]);
-                ?>
-                <?php endif; ?>
-                <?=$pagination?>
-            </div>
+
         </div>
     <?=form_close()?>
   </div>

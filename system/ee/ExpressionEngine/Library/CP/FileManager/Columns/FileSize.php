@@ -24,6 +24,16 @@ class FileSize extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $file)
     {
-        return round($file->file_size * 0.001) .' Kb';
+        $unit = 'Kb';
+        $fileSize = $file->file_size / 1024;
+        if ($fileSize >= 1000) {
+            $fileSize = $fileSize / 1024;
+            $unit = 'Mb';
+            if ($fileSize >= 1000) {
+                $fileSize = $fileSize / 1024;
+                $unit = 'Gb';
+            }
+        }
+        return round($fileSize) .' ' . $unit;
     }
 }

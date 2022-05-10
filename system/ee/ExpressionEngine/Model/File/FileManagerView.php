@@ -22,6 +22,7 @@ class FileManagerView extends Model
 
     protected static $_typed_columns = [
         'view_id' => 'int',
+        'viewtype' => 'string',
         'member_id' => 'int',
         'upload_id' => 'int',
         'name' => 'string',
@@ -44,6 +45,7 @@ class FileManagerView extends Model
     ];
 
     protected $view_id;
+    protected $viewtype;
     protected $member_id;
     protected $upload_id;
     protected $name;

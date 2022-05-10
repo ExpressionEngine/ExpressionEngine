@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Library\CP\FileManager\Columns;
 
 use ExpressionEngine\Library\CP\EntryManager;
+use ExpressionEngine\Library\CP\Table;
 
 /**
  * Dimensions Column
@@ -24,7 +25,8 @@ class Dimensions extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $file)
     {
-        return $file->file_hw_original;
+        $dimensions = explode(" ", $file->file_hw_original);
+        return $dimensions[0] . 'x' . $dimensions[1];
     }
 
     public function getEntryManagerColumnFields()
@@ -35,5 +37,12 @@ class Dimensions extends EntryManager\Columns\Column
     public function getEntryManagerColumnSortField()
     {
         return 'file_hw_original';
+    }
+
+    public function getTableColumnConfig()
+    {
+        return [
+            'type' => Table::COL_INFO
+        ];
     }
 }

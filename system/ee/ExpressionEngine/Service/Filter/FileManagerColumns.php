@@ -24,7 +24,7 @@ class FileManagerColumns extends Columns
     {
         parent::__construct($columns, $uploadLocation, $view_id);
 
-        $this->default_value = ['title', 'name', 'file_type', 'date_added', 'size'];
+        $this->default_value = ['title', 'file_name', 'file_type', 'upload_date', 'file_size'];
     }
 
     // get columns from view
@@ -38,9 +38,11 @@ class FileManagerColumns extends Columns
         }
 
         $upload_id = !empty(ee()->input->post('filter_by_channel')) ? (int) ee()->input->post('filter_by_channel') : (int) ee()->input->get('filter_by_channel');
+        $viewtype = in_array(ee()->input->get('viewtype'), ['thumb', 'list']) ? ee()->input->get('viewtype') : 'list';
 
         $query = ee('Model')->get('FileManagerView')
             ->filter('member_id', ee()->session->userdata('member_id'))
+            ->filter('viewtype', $viewtype)
             ->filter('upload_id', $upload_id);
         $view = $query->first();
 
@@ -49,6 +51,9 @@ class FileManagerColumns extends Columns
         }
 
         if (empty($value)) {
+            if ($viewtype !== 'list') {
+                $this->default_value = ['title', 'file_size'];
+            }
             $value = $this->default_value;
         }
 

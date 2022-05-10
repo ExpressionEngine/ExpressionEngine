@@ -22,6 +22,7 @@ class Table
     const COL_ID = 5;
     const COL_SMALL = 6;
     const COL_INFO = 7;
+    const COL_THUMB = 8;
 
     public $config = array();
     protected $columns = array();

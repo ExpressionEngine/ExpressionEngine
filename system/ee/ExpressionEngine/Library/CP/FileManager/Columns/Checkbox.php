@@ -32,4 +32,9 @@ class Checkbox extends EntryManager\Columns\Checkbox
             ]
         ];
     }
+
+    public function getEntryManagerColumnSortField()
+    {
+        return 'file_id';
+    }
 }

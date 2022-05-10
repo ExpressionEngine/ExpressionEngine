@@ -75,6 +75,12 @@ class Updater
                         'null' => false,
                         'auto_increment' => true
                     ],
+                    'viewtype' => [
+                        'type' => 'varchar',
+                        'constraint' => 10,
+                        'null' => false,
+                        'default' => 'list',
+                    ],
                     'upload_id' => [
                         'type' => 'int',
                         'constraint' => 6,
@@ -100,7 +106,7 @@ class Updater
                 ]
             );
             ee()->dbforge->add_key('view_id', true);
-            ee()->dbforge->add_key(['upload_id', 'member_id']);
+            ee()->dbforge->add_key(['viewtype', 'upload_id', 'member_id']);
             ee()->smartforge->create_table('file_manager_views');
         }
     }

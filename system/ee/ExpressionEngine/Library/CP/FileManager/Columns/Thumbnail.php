@@ -26,19 +26,24 @@ class Thumbnail extends EntryManager\Columns\Column
     public function getTableColumnConfig()
     {
         return [
-            'type' => Table::COL_INFO,
+            'type' => Table::COL_THUMB,
             'encode' => false,
         ];
     }
 
-    public function renderTableCell($data, $field_id, $file)
+    public function renderTableCell($data, $field_id, $file, $viewtype = 'list')
     {
-        $file_thumbnail = '<img src="' . $file->getThumbnailUrl() . '" style="max-width: 150px; max-height: 100px;" class="thumbnail_img"><span class="tooltip-img" style="background-image:url('.$file->getAbsoluteURL().')"></span>';
+        $file_thumbnail = ee('Thumbnail')->get($file)->tag;
 
-        if (ee('Permission')->can('edit_files')) {
-            $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" class=""><img src="'.$file->getThumbnailUrl().'" style="max-width: 150px; max-height: 100px;" class="thumbnail_img"><span class="tooltip-img" style="background-image:url('.$file->getAbsoluteURL().')"></span></a>';
+        if ($viewtype != 'thumb' && ee('Permission')->can('edit_files')) {
+            $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" class="">' . $file_thumbnail . '</a>';
         }
 
         return $file_thumbnail;
+    }
+
+    public function getEntryManagerColumnSortField()
+    {
+        return 'file_name';
     }
 }

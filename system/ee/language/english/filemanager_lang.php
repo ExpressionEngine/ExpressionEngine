@@ -22,6 +22,10 @@ $lang = array(
 
     'categories' => 'Categories',
 
+    'column_file_id' => 'ID#',
+
+    'column_title' => 'Title',
+
     'credit' => 'Credit',
 
     'custom_limit' => 'custom limit',
@@ -29,6 +33,8 @@ $lang = array(
     'custom_fields' => 'custom fields',
 
     'date_added' => 'Date Added',
+
+    'date_modified' => 'Date Modified',
 
     'description' => 'Description',
 
@@ -102,6 +108,8 @@ $lang = array(
 
     'limit_subfolders_desc' => 'How many nested layers of subfolders would you like to allow in this upload directory?',
 
+    'modified_by' => 'Modified By',
+
     'name' => 'File Name',
 
     'no_file' => 'No file selected',
@@ -147,6 +155,8 @@ $lang = array(
     'upload_new_file' => 'Upload New File',
 
     'upload_options' => 'Upload options',
+
+    'uploaded_by' => 'Uploaded By',
 
     'usage' => 'Usage',
 

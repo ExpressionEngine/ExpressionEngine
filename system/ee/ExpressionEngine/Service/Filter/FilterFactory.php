@@ -184,7 +184,7 @@ class FilterFactory
                 continue;
             }
 
-            $html = $filter->render($this->view, $url);
+            $html = $filter->render($this->view, $url, true);
             if (! empty($html)) {
                 $filters[] = [
                     'name' => $filter->name,
@@ -208,9 +208,10 @@ class FilterFactory
      * Filters and calling their individual render() methods.
      *
      * @param URL $base_url A URL object reference to use when constructing URLs
+     * @param bool $skipSearchIn skip "search in" filter and just add closing HTML instead
      * @return string Returns HTML
      */
-    public function renderSearch(URL $base_url)
+    public function renderSearch(URL $base_url, $skipSearchIn = false)
     {
         $url = clone $base_url;
         $url->addQueryStringVariables($this->values());
@@ -236,7 +237,8 @@ class FilterFactory
         $vars = array(
             'filters' => $filters,
             'has_reset' => $this->canReset(),
-            'reset_url' => $base_url
+            'reset_url' => $base_url,
+            'skipSearchIn' => $skipSearchIn,
         );
 
         return $this->view->make('_shared/filters/search')->render($vars);

@@ -138,15 +138,9 @@ abstract class AbstractFiles extends CP_Controller
 
         $toolbar_items = [];
 
-        if ($active !== null) {
-            $toolbar_items['sync'] = [
-                'href' => ee('CP/URL')->make('files/uploads/sync/' . $active),
-                'title' => lang('sync')
-            ];
-        }
-
         ee()->view->header = array(
             'title' => lang('file_manager'),
+            'toolbar_items' => $toolbar_items,
             'action_button' => ee('Permission')->can('upload_new_files') && $upload_destinations->count() ? [
                 'text' => '<i class="fas fa-cloud-upload-alt icon-left"></i>' . lang('upload'),
                 'filter_placeholder' => lang('filter_upload_directories'),
@@ -209,7 +203,7 @@ abstract class AbstractFiles extends CP_Controller
 
         $files = ee('Model')->get('File')
             ->with('UploadDestination')
-            ->fields('File.file_name', 'UploadDestination.server_path', 'UploadDestination.url');
+            ->fields('File.*', 'UploadDestination.server_path', 'UploadDestination.url');
         if (empty($upload_location_id)) {
             $files->filter('UploadDestination.module_id', 0)
                 ->filter('site_id', ee()->config->item('site_id'));
@@ -227,24 +221,16 @@ abstract class AbstractFiles extends CP_Controller
             ->add($author_filter)
             ->add('ViewType', ['list', 'thumb'], $view_type)
             ->add('EntryKeyword')
-            ->add(
-                'SearchIn',
-                [
-                    'titles' => 'titles',
-                    'titles_and_content' => 'titles_and_content',
-                ],
-                'titles'
-            )
             ->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
 
 
-        $search_terms = ee()->input->get_post('filter_by_keyword');
+        /*$search_terms = ee()->input->get_post('filter_by_keyword');
 
         if ($search_terms) {
             $base_url->setQueryStringVariable('filter_by_keyword', $search_terms);
             $files->search(['title', 'file_name', 'mime_type'], $search_terms);
             $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
-        }
+        }*/
 
         if ($category_filter->value()) {
             $files->with('Categories')
@@ -253,6 +239,15 @@ abstract class AbstractFiles extends CP_Controller
 
         if (! empty($author_filter) && $author_filter->value()) {
             $files->filter('uploaded_by_member_id', $author_filter->value());
+        }
+
+        if (! empty($filter_values['filter_by_date'])) {
+            if (is_array($filter_values['filter_by_date'])) {
+                $files->filter('upload_date', '>=', $filter_values['filter_by_date'][0]);
+                $files->filter('upload_date', '<', $filter_values['filter_by_date'][1]);
+            } else {
+                $files->filter('upload_date', '>=', $this->now - $filter_values['filter_by_date']);
+            }
         }
 
         $total_files = $files->count();
@@ -271,19 +266,33 @@ abstract class AbstractFiles extends CP_Controller
             ->currentPage($page)
             ->render($base_url);
 
-        $base_url->addQueryStringVariables($filter_values);
+        $base_url->addQueryStringVariables(
+            array_filter(
+                $filter_values,
+                function ($key) {
+                    return ($key != 'columns');
+                },
+                ARRAY_FILTER_USE_KEY
+            )
+        );
 
         $table = ee('CP/Table', array(
-            'sort_col' => 'date_added',
+            'sort_col' => 'upload_date',
             'sort_dir' => 'desc',
             'class' => 'tbl-fixed'
         ));
 
         //which columns should we show
+        //different view types need different order
         $selected_columns = $filter_values['columns'];
-        array_unshift($selected_columns, 'thumbnail');
-        array_unshift($selected_columns, 'checkbox');
-        $selected_columns[] = 'manage';
+        if ($view_type == 'thumb') {
+            array_unshift($selected_columns, 'checkbox');
+            array_unshift($selected_columns, 'thumbnail');
+        } else {
+            array_unshift($selected_columns, 'thumbnail');
+            array_unshift($selected_columns, 'checkbox');
+            $selected_columns[] = 'manage';
+        }
 
         $columns = [];
         foreach ($selected_columns as $column) {
@@ -352,7 +361,11 @@ abstract class AbstractFiles extends CP_Controller
                 continue;
             }
 
-            $attrs = array('class' => '');
+            $attrs = [
+                'class' => '',
+                'file_id' => $file->file_id,
+                'title' => $file->title,
+            ];
 
             if (! $file->exists()) {
                 $attrs['class'] = 'missing';
@@ -365,7 +378,7 @@ abstract class AbstractFiles extends CP_Controller
 
             $data[] = array(
                 'attrs' => $attrs,
-                'columns' => $column_renderer->getRenderedTableRowForEntry($file)
+                'columns' => $column_renderer->getRenderedTableRowForEntry($file, $view_type)
             );
         }
 
@@ -380,35 +393,14 @@ abstract class AbstractFiles extends CP_Controller
 
         $table->setData($data);
 
-
         $base_url->setQueryStringVariable('sort_col', $table->sort_col);
         $base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-        //ee()->view->filters = $filters->render($base_url);
 
         $vars['table'] = $table->viewData($base_url);
         $vars['form_url'] = $vars['table']['base_url'];
 
-
-        if ($view_type === 'thumb') {
-            ee()->view->filters = $filters->render($base_url);
-
-            if ($files->count() == 0) {
-                $vars['no_results'] = [
-                    'text' => sprintf(lang('no_found'), lang('files')),
-                    'action_widget' => true
-                ];
-            }
-
-            $files = $files->limit($perpage)
-                ->offset($offset);
-
-            $vars['files'] = $$data;
-            $vars['form_url'] = $base_url;
-        }
-        
         $vars['filters'] = $filters->renderEntryFilters($base_url);
-        $vars['filters_search'] = $filters->renderSearch($base_url);
+        $vars['filters_search'] = $filters->renderSearch($base_url, true);
         $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
         ee()->javascript->set_global([
@@ -471,7 +463,7 @@ abstract class AbstractFiles extends CP_Controller
             ->order_by('screen_name', 'asc');
 
         if ($uploadLocation) {
-            $db->where('upload_location_id', $uploadLocation->channel_id);
+            $db->where('upload_location_id', $uploadLocation->id);
         }
 
         $authors_query = $db->get();

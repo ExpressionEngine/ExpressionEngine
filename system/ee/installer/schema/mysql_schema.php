@@ -1506,12 +1506,13 @@ class EE_Schema
         // file manager
         $Q[] = "CREATE TABLE `exp_file_manager_views` (
 			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`viewtype` varchar(10) NOT NULL DEFAULT 'list',
 			`upload_id` int(6) unsigned NOT NULL,
 			`member_id` int(10) unsigned NOT NULL,
 			`name` varchar(128) NOT NULL DEFAULT '',
 			`columns` text NOT NULL,
 			PRIMARY KEY (`view_id`),
-			KEY `upload_id_member_id` (`upload_id`, `member_id`)
+			KEY `viewtype_upload_id_member_id` (`viewtype`, `upload_id`, `member_id`)
 		);";
 
         // Default menu set

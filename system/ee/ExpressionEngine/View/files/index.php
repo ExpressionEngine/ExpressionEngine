@@ -11,6 +11,9 @@ if (! AJAX_REQUEST) {
             <div class="panel-heading">
                 <div class="title-bar">
                     <h3 class="title-bar__title title-bar--large"><?=$cp_heading?></h3>
+
+                    <?php $this->embed('ee:_shared/title-toolbar', $toolbar_items); ?>
+
                 </div>
             </div>
 
@@ -47,37 +50,51 @@ if (! AJAX_REQUEST) {
                 </div><!-- /file-upload-progress__wrapper -->
             </div>
 
-        <?php $this->embed('_shared/table', $table); ?>
-        <div class="f_manager-action-part">
-            <?php if (! empty($table['columns']) && ! empty($table['data'])): ?>
-            	<?php
-                $options = [
-                    [
-                        'value' => "",
-                        'text' => '-- ' . lang('with_selected') . ' --'
-                    ]
-                ];
-                $options[] = [
-                    'value' => "download",
-                    'text' => lang('download')
-                ];
-                if (ee('Permission')->can('delete_files')) {
-                    $options[] = [
-                        'value' => "remove",
-                        'text' => lang('delete'),
-                        'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-file"'
-                    ];
-                }
-                $this->embed('ee:_shared/form/bulk-action-bar', [
-                    'options' => $options,
-                    'modal' => true
-                ]);
-            ?>
+            <div class="f_manager-table-breadcrumbs">
+                <ul class="breadcrumb">
+                    <li><a href="#"><i class="fas fa-hdd"></i><?=$cp_heading?></a></li>
+                    <li><a href="#"><i class="fas fa-folder"></i>Book Covers</a></li>
+                    <li><span><i class="fas fa-folder"></i>Front Covers</span></li>
+                </ul>
+            </div>
+
+            <?php if ($viewtype == 'thumb') : ?>
+                <div class="panel-body">
+                <?php $this->embed('_shared/thumb', $table); ?>
+                </div>
+            <?php else : ?>
+            <?php $this->embed('_shared/table', $table); ?>
             <?php endif; ?>
-            <?=$pagination?>
-        </div>
-  	<?=form_close()?>
-  </div>
+
+            <div class="f_manager-action-part">
+                <?php if (! empty($table['columns']) && ! empty($table['data'])) {
+                    $options = [
+                        [
+                            'value' => "",
+                            'text' => '-- ' . lang('with_selected') . ' --'
+                        ]
+                    ];
+                    $options[] = [
+                        'value' => "download",
+                        'text' => lang('download')
+                    ];
+                    if (ee('Permission')->can('delete_files')) {
+                        $options[] = [
+                            'value' => "remove",
+                            'text' => lang('delete'),
+                            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete-file"'
+                        ];
+                    }
+                    $this->embed('ee:_shared/form/bulk-action-bar', [
+                        'options' => $options,
+                        'modal' => true
+                    ]);
+                }
+                ?>
+                <?=$pagination?>
+            </div>
+        <?=form_close()?>
+    </div>
 </div>
 
 <?php 

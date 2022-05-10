@@ -24,6 +24,13 @@ class Thumbnail
     protected $url;
 
     /**
+     * HTML code to use as thumbnail
+     *
+     * @var string $tag
+     */
+    protected $tag;
+
+    /**
      * @var str The path to the thumbnail
      */
     protected $path;
@@ -46,9 +53,22 @@ class Thumbnail
         if ($file) {
             if (! $file->exists()) {
                 $this->setMissing();
-            } elseif ($file->isImage()) {
+            } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL();
                 $this->path = $file->getAbsoluteThumbnailPath();
+                $this->tag = '<img src="' . $this->url . '" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" /><span class="tooltip-img" style="background-image:url(' . $file->getAbsoluteURL() . ')"></span>';
+            } else {
+                switch ($file->mime_type) {
+                    case 'text/plain':
+                        $this->tag = '<i class="fas fa-file-alt fa-3x"></i>';
+                        break;
+                    case 'application/zip':
+                        $this->tag = '<i class="fas fa-file-archive fa-3x"></i>';
+                        break;
+                    default:
+                        $this->tag = '<i class="fas fa-file fa-3x"></i>';
+                        break;
+                }
             }
         }
     }
@@ -83,6 +103,7 @@ class Thumbnail
         $this->missing = true;
         $this->url = PATH_CP_GBL_IMG . 'missing.jpg';
         $this->path = PATH_THEMES . 'asset/img/missing.jpg';
+        $this->tag = '<i class="fas fa-lg fa-exclamation-triangle"></i>';
     }
 
     /**
