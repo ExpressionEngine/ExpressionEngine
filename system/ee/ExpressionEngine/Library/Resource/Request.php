@@ -41,11 +41,13 @@ class Request
         $name = '';
         $site_name = '';
         $template_version = 0;
+        $modified_since = ee('Request')->header('IF_MODIFIED_SINCE');
 
+        // requests by trigger segments, the ones without version suffixes
         if (in_array(ee()->uri->segment(1), ee()->uri->reserved) && false !== ee()->uri->segment(2)) {
             $resource = ee()->uri->segment(2) . '/' . ee()->uri->segment(3);
             $this->type = ee()->uri->segment(1);
-        } else {
+        } else { // requests query strings, the ones with version suffixes
             foreach (self::TYPES as $type) {
                 if (ee('Request')->get($type)) {
                     $resource = ee('Request')->get($type);
@@ -55,14 +57,25 @@ class Request
             }
         }
 
-        preg_match('/\\.v\\.([0-9]{10})/', $resource, $matches);  // get version info
-
-        if (!empty($matches[0])) {
-            $resource = str_replace($matches[0], '', $resource);  // Remove version info
+        // Remove anything after the semicolon
+        if ($pos = strrpos($modified_since, ';') !== false) {
+            $modified_since = substr($modified_since, 0, $pos);
         }
 
-        if (!empty($matches[1])) {
-            $template_version = (int) $matches[1];
+        if ($modified_since = strtotime($modified_since)) {
+            $template_version = $modified_since;
+
+            $resource = preg_replace('/\\.v\\.[0-9]{10}/', '', $resource);  // Remove version info
+        } else {
+            preg_match('/\\.v\\.([0-9]{10})/', $resource, $matches);  // get version info
+
+            if (!empty($matches[0])) {
+                $resource = str_replace($matches[0], '', $resource);  // Remove version info
+            }
+
+            if (!empty($matches[1])) {
+                $template_version = (int) $matches[1];
+            }
         }
 
         if ('' == $resource or false === strpos($resource, '/')) {
