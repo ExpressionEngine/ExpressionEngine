@@ -37,6 +37,10 @@ class Request
         $template_data = '';
         $edit_date = 0;
         $resource = ''; // with group, like `group/styles`
+        $group = '';
+        $name = '';
+        $site = '';
+        $template_version = 0;
 
         if (in_array(ee()->uri->segment(1), ee()->uri->reserved) && false !== ee()->uri->segment(2)) {
             $resource = ee()->uri->segment(2) . '/' . ee()->uri->segment(3);
@@ -51,7 +55,15 @@ class Request
             }
         }
 
-        $resource = preg_replace('/\\.v\\.[0-9]{10}/', '', $resource);  // Remove version info
+        preg_match('/\\.v\\.([0-9]{10})/', $resource, $matches);  // get version info
+
+        if (!empty($matches[0])) {
+            $resource = str_replace($matches[0], '', $resource);  // Remove version info
+        }
+
+        if (!empty($matches[1])) {
+            $template_version = (int) $matches[1];
+        }
 
         if ('' == $resource or false === strpos($resource, '/')) {
             show_404();
@@ -78,13 +90,13 @@ class Request
 
         $cached = ee()->cache->get($cache_path, $this->cache_scope);
 
-        if (!$cached) {
+        if (!$cached || !isset($cached['edit_date']) || $cached['edit_date'] < $template_version) {
             $template = ee('Model')->get('Template')
-            ->filter('template_name', $name)
-            ->filter('template_type', $this->type)
+                ->filter('template_name', $name)
+                ->filter('template_type', $this->type)
                 ->with('TemplateGroup')->filter('TemplateGroup.group_name', $group);
 
-            $template = isset($site)
+            $template = !empty($site)
                 ? $template->with('Site')->filter('Site.site_name', $site)
                 : $template->filter('site_id', ee()->config->item('site_id'));
 
