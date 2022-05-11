@@ -7,11 +7,11 @@ if (isset($table_attrs['id'])) {
     $table_id = uniqid('tbl_');
 }
 ?>
-<?php if (count($data)): ?>
+    <?php if (count($data)): ?>
     <div class="file-grid__checkAll">
-      <label class="checkbox-label">
-          <input name="checkAll" id="checkAll" type="checkbox">
-          <div class="checkbox-label__text">Select All Files</div>
+      <label for="<?=$table_id?>-select-all" class="checkbox-label">
+          <input id="<?=$table_id?>-select-all" type="checkbox" title="<?=lang('select_all_files')?>" />
+          <div class="checkbox-label__text"><?=lang('select_all_files')?></div>
       </label>
     </div><!-- /file-grid__select-all -->
     <?php endif; ?>
@@ -84,30 +84,12 @@ if (isset($table_attrs['id'])) {
                 </a>
         <?php endforeach; ?>
     </div>
-    <?php if (isset($no_results)): ?>
+    <?php if (empty($data) && isset($no_results)): ?>
         <div class="tbl-row no-results">
             <div class="none">
-                <?php if($no_results['action_widget']): ?>
+                <?php if (isset($no_results['html'])) : ?>
 
-                    <?php
-                        $component = [
-                            'allowedDirectory' => 'all',
-                            'contentType' => 'image',
-                            'file' => null,
-                            'showActionButtons' => false,
-                            'createNewDirectory' => true
-                        ];
-                    ?>
-
-                    <div data-file-field-react="<?=base64_encode(json_encode($component))?>" data-input-value="files_field">
-                        <div class="fields-select">
-                            <div class="field-inputs">
-                                <label class="field-loading">
-                                    <?=lang('loading')?><span></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+                    <?=$no_results['html']?>
 
                 <?php else: ?>
                     <p><?=$no_results['text']?><?php if (isset($no_results['href'])): ?> <a href="<?=$no_results['href']?>"><?=lang('add_new')?></a><?php endif ?></p>

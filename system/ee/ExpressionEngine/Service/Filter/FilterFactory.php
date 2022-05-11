@@ -175,12 +175,20 @@ class FilterFactory
     public function renderEntryFilters(URL $base_url)
     {
         $url = clone $base_url;
-        $url->addQueryStringVariables($this->values());
+        $values = $this->values();
+        unset($values['columns']);
+        if (isset($values['sort'])) {
+            $sort = explode('|', $values['sort']);
+            $values['sort_col'] = $sort[0];
+            $values['sort_dir'] = $sort[1];
+            unset($values['sort']);
+        }
+        $url->addQueryStringVariables($values);
 
         $filters = array();
 
         foreach ($this->filters as $filter) {
-            if (in_array($filter->name, ['filter_by_keyword', 'search_in', 'filter_by_entry_keyword', 'columns', 'perpage', 'viewtype'])) {
+            if (in_array($filter->name, ['filter_by_keyword', 'search_in', 'filter_by_entry_keyword', 'columns', 'perpage', 'viewtype', 'sort'])) {
                 continue;
             }
 
@@ -214,12 +222,20 @@ class FilterFactory
     public function renderSearch(URL $base_url, $skipSearchIn = false)
     {
         $url = clone $base_url;
-        $url->addQueryStringVariables($this->values());
+        $values = $this->values();
+        unset($values['columns']);
+        if (isset($values['sort'])) {
+            $sort = explode('|', $values['sort']);
+            $values['sort_col'] = $sort[0];
+            $values['sort_dir'] = $sort[1];
+            unset($values['sort']);
+        }
+        $url->addQueryStringVariables($values);
 
         $filters = array();
 
         foreach ($this->filters as $filter) {
-            if (!in_array($filter->name, ['columns', 'filter_by_keyword', 'search_in', 'viewtype'])) {
+            if (!in_array($filter->name, ['columns', 'filter_by_keyword', 'search_in', 'viewtype', 'sort'])) {
                 continue;
             }
 
@@ -338,6 +354,16 @@ class FilterFactory
     protected function createDefaultFilemanagerColumns($columns, $uploadLocation = null, $view_id = null)
     {
         return new Filter\FilemanagerColumns($columns, $uploadLocation, $view_id);
+    }
+
+    /**
+     * This will instantiate and return a default Sort filter
+     *
+     * @return Filter\Sort a Sort Filter object
+     */
+    protected function createDefaultSort($options, $default = null)
+    {
+        return new Filter\Sort($options, $default);
     }
 
     /**

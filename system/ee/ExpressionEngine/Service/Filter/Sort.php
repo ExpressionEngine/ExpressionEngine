@@ -15,45 +15,36 @@ use ExpressionEngine\Service\View\ViewFactory;
 use ExpressionEngine\Model\Content\StructureModel;
 
 /**
- * Columns Filter
+ * Sort Filter
  */
-class Columns extends Filter
+class Sort extends Filter
 {
-    public $view_id = null;
-    public $channel_id = null;
-
-    public function __construct(array $columns = array(), StructureModel $channel = null, $view_id = null)
+    public function __construct(array $options = array(), $default = null)
     {
-        $this->name = 'columns';
-        $this->label = lang('columns_filter');
-        $this->options = $columns;
-        $this->view_id = $view_id;
+        $this->name = 'sort';
+        $this->label = lang('sort_filter');
+        $this->options = $options;
+        $this->has_custom_value = false;
 
-        $this->default_value = ['entry_id', 'title', 'entry_date', 'author', 'status', 'comments'];
+        $this->default_value = $default;
     }
 
-    // get columns from view
     public function value()
     {
-        $value = '';
+        $value = parent::value();
 
-        //if we had channel switched and no saved view, make sure to fallback to default
-        if (ee()->input->post('filter_by_channel') != '') {
-            $value = parent::value();
+        if (ee('Request')->get('sort_col') != '') {
+            $values = [
+                'sort_col' => ee('Request')->get('sort_col'),
+                'sort_dir' => 'desc'
+            ];
+            if (ee('Request')->get('sort_dir') != '') {
+                $values['sort_dir'] = ee('Request')->get('sort_dir');
+            }
+            $value = implode('|', $values);
         }
 
-        $channel_id = !empty(ee()->input->post('filter_by_channel')) ? (int) ee()->input->post('filter_by_channel') : (int) ee()->input->get('filter_by_channel');
-
-        $query = ee('Model')->get('EntryManagerView')
-            ->filter('member_id', ee()->session->userdata('member_id'))
-            ->filter('channel_id', $channel_id);
-        $view = $query->first();
-
-        if (!empty($view)) {
-            $value = $view->getColumns();
-        }
-
-        if (empty($value)) {
+        if (empty($value) || ! array_key_exists($value, $this->options)) {
             $value = $this->default_value;
         }
 
@@ -65,27 +56,32 @@ class Columns extends Filter
      */
     public function render(ViewFactory $view, URL $url)
     {
-        //selected options go first in chosen order
-        $options = [];
-        $selected = $this->value();
-        if (!is_array($selected)) {
-            $selected = json_decode($selected);
+        $options = array();
+        $url->removeQueryStringVariable('columns');
+        $url->removeQueryStringVariable('sort');
+        $url->removeQueryStringVariable('sort_col');
+        $url->removeQueryStringVariable('sort_dir');
+        foreach ($this->options as $show => $label) {
+            $url = clone $url;
+            $sort = explode('|', $show);
+            $sort_col = $sort[0];
+            $sort_dir = $sort[1];
+            $url->addQueryStringVariables(['sort_col' => $sort_col, 'sort_dir' => $sort_dir]);
+            $options[$url->compile()] = $label;
         }
-        foreach ($selected as $key) {
-            if (isset($this->options[$key])) {
-                $options[$key] = $this->options[$key];
-                unset($this->options[$key]);
-            }
-        }
-        $options = array_merge($options, $this->options);
+
         $filter = array(
-            'label' => '<i class=\'fas fa-columns\'></i>',
-            'value' => '',
-            'available_columns' => $options,
-            'selected_columns' => $selected
+            'label' => $this->label,
+            'name' => $this->name,
+            'value' => $this->options[$this->value()],
+            'has_list_filter' => $this->has_list_filter,
+            'has_custom_value' => $this->has_custom_value,
+            'custom_value' => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : false,
+            'placeholder' => $this->placeholder,
+            'options' => $options,
         );
 
-        return $view->make('_shared/filters/columns')->render($filter);
+        return $view->make('_shared/filters/sort')->render($filter);
     }
 }
 

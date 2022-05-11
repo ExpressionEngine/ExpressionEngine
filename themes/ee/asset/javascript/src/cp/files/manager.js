@@ -47,7 +47,7 @@
 		});
 
 		// If Selected All Files are checked
-		$("#checkAll").on('change', function(){
+		$(".file-grid__checkAll input[type=checkbox]").on('change', function(){
 			if(this.checked){
 				$(".file-metadata__wrapper input[type='checkbox']").each(function(){
 					this.checked = true;
@@ -71,10 +71,10 @@
 				})
 
 				if(isAllChecked == 0){
-					$("#checkAll").prop("checked", true);
+					$(".file-grid__checkAll input[type=checkbox]").prop("checked", true);
 				}
 			} else {
-				$("#checkAll").prop("checked", false);
+				$(".file-grid__checkAll input[type=checkbox]").prop("checked", false);
 			}
 		});
 
@@ -93,9 +93,9 @@
 		$('body').on('change', '.f_manager-wrapper .file-grid__wrapper input[type=checkbox], .f_manager-wrapper .file-grid__checkAll input[type=checkbox]', function() {
 			if ( $(this).parents('form').find('.f_manager-action-part .bulk-action-bar').length > 0) {
 				if ($('.file-grid__wrapper').find('input:checked').length == 0 ) {
-					$('.file-grid__wrapper').siblings('.f_manager-action-part').find('.bulk-action-bar').addClass('hidden');
+					$(this).parents('form').find('.f_manager-action-part .bulk-action-bar').addClass('hidden');
 				} else {
-					$('.file-grid__wrapper').siblings('.f_manager-action-part').find('.bulk-action-bar').removeClass('hidden');
+					$(this).parents('form').find('.f_manager-action-part .bulk-action-bar').removeClass('hidden');
 				}
 			}
 		});

@@ -22,6 +22,11 @@ class UploadDate extends EntryManager\Columns\Column
         return 'date_added';
     }
 
+    public function getEntryManagerColumnSortField()
+    {
+        return 'upload_date';
+    }
+
     public function renderTableCell($data, $field_id, $file)
     {
         return ee()->localize->human_time($file->upload_date);

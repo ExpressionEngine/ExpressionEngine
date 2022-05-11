@@ -221,16 +221,25 @@ abstract class AbstractFiles extends CP_Controller
             ->add($author_filter)
             ->add('ViewType', ['list', 'thumb'], $view_type)
             ->add('EntryKeyword')
+            ->add(
+                'Sort',
+                [
+                    'column_title|asc' => '<i class="fas fa-sort-amount-up"></i> ' . lang('title'),
+                    'column_title|desc' => '<i class="fas fa-sort-amount-down-alt"></i> ' . lang('title'),
+                    'date_added|asc' => '<i class="fas fa-sort-amount-up"></i> ' . lang('date_added'),
+                    'date_added|desc' => '<i class="fas fa-sort-amount-down-alt"></i> ' . lang('date_added'),
+                ],
+                'date_added|desc'
+            )
             ->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
 
 
-        /*$search_terms = ee()->input->get_post('filter_by_keyword');
+        $search_terms = ee()->input->get_post('filter_by_keyword');
 
         if ($search_terms) {
-            $base_url->setQueryStringVariable('filter_by_keyword', $search_terms);
             $files->search(['title', 'file_name', 'mime_type'], $search_terms);
             $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
-        }*/
+        }
 
         if ($category_filter->value()) {
             $files->with('Categories')
@@ -270,14 +279,14 @@ abstract class AbstractFiles extends CP_Controller
             array_filter(
                 $filter_values,
                 function ($key) {
-                    return ($key != 'columns');
+                    return (!in_array($key, ['columns', 'sort']));
                 },
                 ARRAY_FILTER_USE_KEY
             )
         );
 
         $table = ee('CP/Table', array(
-            'sort_col' => 'upload_date',
+            'sort_col' => 'date_added',
             'sort_dir' => 'desc',
             'class' => 'tbl-fixed'
         ));
@@ -343,6 +352,7 @@ abstract class AbstractFiles extends CP_Controller
                 break;
             }
         }
+
         $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
 
         $files = $files->order($sort_field, $table->sort_dir)
@@ -393,8 +403,6 @@ abstract class AbstractFiles extends CP_Controller
 
         $table->setData($data);
 
-        $base_url->setQueryStringVariable('sort_col', $table->sort_col);
-        $base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
         $vars['table'] = $table->viewData($base_url);
         $vars['form_url'] = $vars['table']['base_url'];
@@ -404,12 +412,10 @@ abstract class AbstractFiles extends CP_Controller
         $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
         ee()->javascript->set_global([
-            'file_view_url', ee('CP/URL')->make('files/file/view/###')->compile(),
+            'file_view_url' => ee('CP/URL')->make('files/file/view/###')->compile(),
             'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
-        ]);
-        ee()->javascript->set_global([
             'lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>',
-            'viewManager.saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => $upload_location_id])->compile()
+            'viewManager.saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => $upload_location_id, 'viewtype' => $view_type])->compile()
         ]);
         
         ee()->cp->add_js_script(array(

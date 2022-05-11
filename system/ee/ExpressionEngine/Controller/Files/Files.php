@@ -38,16 +38,7 @@ class Files extends AbstractFilesController
         $this->stdHeader();
         ee()->view->cp_page_title = lang('file_manager');
 
-        // Set search results heading
-        if (! empty($vars['search_terms'])) {
-            $vars['cp_heading'] = sprintf(
-                lang('search_results_heading'),
-                $vars['total_files'],
-                $vars['search_terms']
-            );
-        } else {
-            $vars['cp_heading'] = lang('all_files');
-        }
+        $vars['cp_heading'] = lang('all_files');
 
         $vars['toolbar_items'] = [];
 
@@ -59,7 +50,7 @@ class Files extends AbstractFilesController
             return array(
                 'html' => ee('View')->make('files/index')->render($vars),
                 'url' => $vars['form_url']->compile(),
-                'viewManager_saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => null])->compile()
+                'viewManager_saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => null, 'viewtype' => $view_type])->compile()
             );
         }
 
@@ -103,7 +94,7 @@ class Files extends AbstractFilesController
 
         $this->generateSidebar($id);
         ee()->view->cp_page_title = lang('file_manager');
-        ee()->view->cp_heading = sprintf($dir->name);
+        $vars['cp_heading'] = sprintf($dir->name);
 
 
         $this->stdHeader();
@@ -129,6 +120,14 @@ class Files extends AbstractFilesController
             ee('CP/URL')->make('files')->compile() => lang('files'),
             '' => $dir->name
         );
+
+        if (AJAX_REQUEST) {
+            return array(
+                'html' => ee('View')->make('files/index')->render($vars),
+                'url' => $vars['form_url']->compile(),
+                'viewManager_saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => $id, 'viewtype' => $view_type])->compile()
+            );
+        }
 
         ee()->cp->render('files/index', $vars);
     }

@@ -112,6 +112,8 @@ $lang = array(
 
     'name' => 'File Name',
 
+    'new_folder' => 'New Folder',
+
     'no_file' => 'No file selected',
 
     'no_filename' => 'A new filename was not submitted.',
