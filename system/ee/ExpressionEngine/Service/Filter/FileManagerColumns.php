@@ -32,12 +32,7 @@ class FileManagerColumns extends Columns
     {
         $value = '';
 
-        //if we had channel switched and no saved view, make sure to fallback to default
-        if (ee()->input->post('filter_by_channel') != '') {
-            $value = parent::value();
-        }
-
-        $upload_id = !empty(ee()->input->post('filter_by_channel')) ? (int) ee()->input->post('filter_by_channel') : (int) ee()->input->get('filter_by_channel');
+        $upload_id = !empty(ee()->uri->segment(4)) ? (int) ee()->uri->segment(4) : 0;
         $viewtype = in_array(ee()->input->get('viewtype'), ['thumb', 'list']) ? ee()->input->get('viewtype') : 'list';
 
         $query = ee('Model')->get('FileManagerView')

@@ -197,18 +197,36 @@ abstract class AbstractFiles extends CP_Controller
 
         if (empty($upload_location_id)) {
             $base_url = ee('CP/URL')->make('files');
+            $model = 'File';
         } else {
             $base_url = ee('CP/URL')->make('files/directory/' . $upload_location_id);
+            $model = 'FileSystemEntity';
         }
 
-        $files = ee('Model')->get('File')
+        $files = ee('Model')->get($model)
             ->with('UploadDestination')
-            ->fields('File.*', 'UploadDestination.server_path', 'UploadDestination.url');
+            ->fields($model . '.*', 'UploadDestination.server_path', 'UploadDestination.url');
         if (empty($upload_location_id)) {
             $files->filter('UploadDestination.module_id', 0)
                 ->filter('site_id', ee()->config->item('site_id'));
         } else {
             $files->filter('upload_location_id', $upload_location_id);
+        }
+
+        //limit to subfolder, show breadcrumbs
+        if (! empty($uploadLocation)) {
+            $directory_id = (int) ee('Request')->get('directory_id');
+            $files->filter('directory_id', $directory_id);
+            if (! empty(ee('Request')->get('directory_id'))) {
+                $breadcrumbs = [];
+                do {
+                    $directory = ee('Model')->get('FileSystemEntity', $directory_id)->fields('file_id', 'directory_id', 'title')->first();
+                    $directory_id = $directory->directory_id;
+                    $breadcrumbs[ee('CP/URL')->make('files/directory/' . $upload_location_id, ['directory_id' => $directory->file_id])->compile()] = $directory->title;
+                } while ($directory->directory_id != 0);
+                $vars['breadcrumbs'] = array_merge([$base_url->compile() => $uploadLocation->name], array_reverse($breadcrumbs));
+                $base_url->setQueryStringVariable('directory_id', (int) ee('Request')->get('directory_id'));
+            }
         }
 
         $type_filter = $this->createTypeFilter($uploadLocation);
@@ -220,8 +238,9 @@ abstract class AbstractFiles extends CP_Controller
             ->add('Date')
             ->add($author_filter)
             ->add('ViewType', ['list', 'thumb'], $view_type)
-            ->add('EntryKeyword')
-            ->add(
+            ->add('EntryKeyword');
+        if ($view_type != 'list') {
+            $filters->add(
                 'Sort',
                 [
                     'column_title|asc' => '<i class="fas fa-sort-amount-up"></i> ' . lang('title'),
@@ -230,9 +249,9 @@ abstract class AbstractFiles extends CP_Controller
                     'date_added|desc' => '<i class="fas fa-sort-amount-down-alt"></i> ' . lang('date_added'),
                 ],
                 'date_added|desc'
-            )
-            ->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
-
+            );
+        }
+        $filters->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
 
         $search_terms = ee()->input->get_post('filter_by_keyword');
 
@@ -270,11 +289,6 @@ abstract class AbstractFiles extends CP_Controller
         $page = ((int) ee()->input->get('page')) ?: 1;
         $offset = ($page - 1) * $perpage;
 
-        $vars['pagination'] = ee('CP/Pagination', $total_files)
-            ->perPage($perpage)
-            ->currentPage($page)
-            ->render($base_url);
-
         $base_url->addQueryStringVariables(
             array_filter(
                 $filter_values,
@@ -284,6 +298,11 @@ abstract class AbstractFiles extends CP_Controller
                 ARRAY_FILTER_USE_KEY
             )
         );
+
+        $vars['pagination'] = ee('CP/Pagination', $total_files)
+            ->perPage($perpage)
+            ->currentPage($page)
+            ->render($base_url);
 
         $table = ee('CP/Table', array(
             'sort_col' => 'date_added',
@@ -386,6 +405,14 @@ abstract class AbstractFiles extends CP_Controller
                 $attrs['class'] .= ' selected';
             }
 
+            if ($view_type != 'list') {
+                if ($file->isDirectory()) {
+                    $attrs['href'] = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]);
+                } elseif (ee('Permission')->can('edit_files')) {
+                    $attrs['href'] = ee('CP/URL')->make('files/file/view/' . $file->file_id);
+                }
+            }
+
             $data[] = array(
                 'attrs' => $attrs,
                 'columns' => $column_renderer->getRenderedTableRowForEntry($file, $view_type)
@@ -476,7 +503,9 @@ abstract class AbstractFiles extends CP_Controller
 
         $author_filter_options = [];
         foreach ($authors_query->result() as $row) {
-            $author_filter_options[$row->uploaded_by_member_id] = $row->screen_name;
+            if (! empty($row->screen_name)) {
+                $author_filter_options[$row->uploaded_by_member_id] = $row->screen_name;
+            }
         }
 
         // Put the current user at the top of the author list

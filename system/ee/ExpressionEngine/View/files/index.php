@@ -50,13 +50,21 @@ if (! AJAX_REQUEST) {
                 </div><!-- /file-upload-progress__wrapper -->
             </div>
 
+            <?php if (isset($breadcrumbs) && !empty($breadcrumbs)) : ?>
+            <?php $i = 0; ?>
             <div class="f_manager-table-breadcrumbs">
                 <ul class="breadcrumb">
-                    <li><a href="#"><i class="fas fa-hdd"></i><?=$cp_heading?></a></li>
-                    <li><a href="#"><i class="fas fa-folder"></i>Book Covers</a></li>
-                    <li><span><i class="fas fa-folder"></i>Front Covers</span></li>
+                    <?php foreach($breadcrumbs as $url => $name) : ?>
+                        <?php $i++; ?>
+                        <?php if ($i < count($breadcrumbs)) : ?>
+                        <li><a href="<?=$url?>"><i class="fas fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
+                        <?php else : ?>
+                        <li><span><i class="fas fa-folder"></i><?=$name?></span></li>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
                 </ul>
             </div>
+            <?php endif; ?>
 
             <?php if ($viewtype == 'thumb') : ?>
                 <div class="panel-body">

@@ -1234,9 +1234,11 @@ class EE_Schema
         // Files table
         $Q[] = "CREATE TABLE `exp_files` (
 			`file_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`model_type` ENUM('File','Directory') NOT NULL DEFAULT 'File',
 			`site_id` int(4) unsigned DEFAULT '1',
 			`title` varchar(255) DEFAULT NULL,
 			`upload_location_id` int(4) unsigned DEFAULT '0',
+			`directory_id` int(10) unsigned DEFAULT '0',
 			`mime_type` varchar(255) DEFAULT NULL,
 			`file_name` varchar(255) DEFAULT NULL,
 			`file_size` int(10) DEFAULT '0',
@@ -1250,6 +1252,8 @@ class EE_Schema
 			`file_hw_original` varchar(20) NOT NULL DEFAULT '',
 			PRIMARY KEY (`file_id`),
 			KEY `upload_location_id` (`upload_location_id`),
+			KEY `model_type` (`model_type`),
+			KEY `directory_id` (`directory_id`),
 			KEY `site_id` (`site_id`)
 		)";
 

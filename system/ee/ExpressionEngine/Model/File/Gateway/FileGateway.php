@@ -22,9 +22,11 @@ class FileGateway extends Gateway
 
     // Properties
     protected $file_id;
+    protected $model_type;
     protected $site_id;
     protected $title;
     protected $upload_location_id;
+    protected $directory_id;
     protected $mime_type;
     protected $file_name;
     protected $file_size;

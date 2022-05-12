@@ -171,7 +171,7 @@
     									<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
     									<input
     										id="<?=$table_id . '-' . $i . '-' . $row_id?>"
-    										class="input--no-mrg"
+    										class="input--no-mrg<?php if (isset($column['hidden']) && $column['hidden']):?> hidden<?php endif; ?>"
     										name="<?=form_prep($column['name'])?>"
     										value="<?=form_prep($column['value'])?>"
     										<?php if (isset($column['data'])):?>

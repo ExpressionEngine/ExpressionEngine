@@ -10,14 +10,14 @@
 
 namespace ExpressionEngine\Service\Thumbnail;
 
-use ExpressionEngine\Model\File\File;
+use ExpressionEngine\Model\File;
 
 /**
  * Thumbnail Service Factory
  */
 class ThumbnailFactory
 {
-    public function get(File $file = null)
+    public function get(File\FileSystemEntity $file = null)
     {
         $thumb = new Thumbnail($file);
 
@@ -33,7 +33,7 @@ class ThumbnailFactory
         return $thumb;
     }
 
-    public function make(File $file)
+    public function make(File\FileSystemEntity $file)
     {
         // We only make thumbnails of images
         if ($file->isImage()) {

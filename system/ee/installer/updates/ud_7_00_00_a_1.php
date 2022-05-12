@@ -27,9 +27,10 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
-                'addFieldDataTable',
-                'addFileManagerViewsTable',
-                'addEntryManagerViewsKeys'
+                //'addFileDataTable',
+                //'addFileManagerViewsTable',
+                'addFilesTableColumns',
+                //'addEntryManagerViewsKeys'
             ]
         );
 
@@ -40,7 +41,7 @@ class Updater
         return true;
     }
 
-    private function addFieldDataTable()
+    private function addFileDataTable()
     {
         if (ee()->db->table_exists('file_data')) {
             return;
@@ -108,6 +109,42 @@ class Updater
             ee()->dbforge->add_key('view_id', true);
             ee()->dbforge->add_key(['viewtype', 'upload_id', 'member_id']);
             ee()->smartforge->create_table('file_manager_views');
+        }
+    }
+
+    private function addFilesTableColumns()
+    {
+        if (! ee()->db->field_exists('model_type', 'files')) {
+            ee()->smartforge->add_column(
+                'files',
+                [
+                    'model_type' => [
+                        'type' => 'enum',
+                        'constraint' => "'File','Directory'",
+                        'default' => 'File',
+                        'null' => false
+                    ]
+                ],
+                'file_id'
+            );
+            ee()->smartforge->add_key('files', 'model_type');
+        }
+
+        if (! ee()->db->field_exists('directory_id', 'files')) {
+            ee()->smartforge->add_column(
+                'files',
+                [
+                    'directory_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'default' => 0,
+                        'unsigned' => true,
+                        'null' => false
+                    ]
+                ],
+                'upload_location_id'
+            );
+            ee()->smartforge->add_key('files', 'directory_id');
         }
     }
 

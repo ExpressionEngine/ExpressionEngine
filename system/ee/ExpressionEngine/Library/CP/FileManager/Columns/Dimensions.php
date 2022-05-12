@@ -26,7 +26,10 @@ class Dimensions extends EntryManager\Columns\Column
     public function renderTableCell($data, $field_id, $file)
     {
         $dimensions = explode(" ", $file->file_hw_original);
-        return $dimensions[0] . 'x' . $dimensions[1];
+        if (count($dimensions) > 1) {
+            return $dimensions[0] . 'x' . $dimensions[1];
+        }
+        return '';
     }
 
     public function getEntryManagerColumnFields()

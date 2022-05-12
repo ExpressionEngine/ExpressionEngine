@@ -21,14 +21,15 @@ class Title extends EntryManager\Columns\Title
     {
         $title = $file->title;
 
-        if ($viewtype != 'thumb' && ee('Permission')->can('edit_files')) {
-            $title = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" data-file-id="' . $file->file_id . '" class="m-link">' . $file->title . '</a>';
+        if ($viewtype == 'list') {
+            if ($file->isDirectory()) {
+                $title = '<a href="' . ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]) . '">' . $title . '</a>';
+            } elseif (ee('Permission')->can('edit_files')) {
+                $title = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '">' . $title . '</a>';
+            }
         }
 
-        $attrs = array();
-
         if (! $file->exists()) {
-            $attrs['class'] = 'missing';
             $title .= '<br><em class="faded">' . lang('file_not_found') . '</em>';
         }
 

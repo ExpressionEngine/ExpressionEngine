@@ -318,6 +318,16 @@ class UploadDestination extends StructureModel
     {
         return is_writable($this->parseConfigVars((string) $this->getProperty('server_path')));
     }
+
+    /**
+     * Returns a collection of all the custom fields available for files in this Upload Destination
+     *
+     * @return Collection A collection of fields
+     */
+    public function getAllCustomFields()
+    {
+        return [];
+    }
 }
 
 // EOF

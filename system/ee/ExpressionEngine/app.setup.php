@@ -583,7 +583,9 @@ $setup = [
         // ..\File
         'UploadDestination' => 'Model\File\UploadDestination',
         'FileDimension' => 'Model\File\FileDimension',
+        'FileSystemEntity' => 'Model\File\FileSystemEntity',
         'File' => 'Model\File\File',
+        'Directory' => 'Model\File\Directory',
         'FileField' => 'Model\File\FileField',
         'Watermark' => 'Model\File\Watermark',
 

@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Service\Thumbnail;
 
-use ExpressionEngine\Model\File\File;
+use ExpressionEngine\Model\File;
 use InvalidArgumentException;
 
 /**
@@ -46,13 +46,15 @@ class Thumbnail
      * @param File $file (optional) A File entity from which we'll calculate the
      *   thumbnail url and path.
      */
-    public function __construct(File $file = null)
+    public function __construct(File\FileSystemEntity $file = null)
     {
         $this->setDefault();
 
         if ($file) {
             if (! $file->exists()) {
                 $this->setMissing();
+            } elseif ($file->isDirectory()) {
+                $this->tag = '<i class="fas fa-folder fa-3x"></i>';
             } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL();
                 $this->path = $file->getAbsoluteThumbnailPath();

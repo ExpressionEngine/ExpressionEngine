@@ -18,10 +18,8 @@ if (isset($table_attrs['id'])) {
 
     <div class="file-grid__wrapper">
         <?php foreach ($data as $row_id => $row): ?>
-            
-            <?php $missing = false ?>
             <!-- Add class "file-grid__wrapper-large" for larger thumbnails: -->
-            <a href="<?=ee('CP/URL')->make('files/file/view/' . $row['attrs']['file_id'])?>" data-file-id="<?=$row['attrs']['file_id']?>" rel="modal-view-file" class="file-grid__file <?php if ($missing): echo 'file-card--missing'; endif; ?>" title="<?=$row['attrs']['title']?>">
+            <a href="<?=$row['attrs']['href']?>" data-file-id="<?=$row['attrs']['file_id']?>" class="file-grid__file" title="<?=$row['attrs']['title']?>">
 
             <?php
             $i = 0;
@@ -55,7 +53,7 @@ if (isset($table_attrs['id'])) {
                     <label for="<?=$table_id . '-' . $row_id?>">
                         <input
                             id="<?=$table_id . '-' . $row_id?>"
-                            class="input--no-mrg"
+                            class="input--no-mrg<?php if (isset($column['hidden']) && $column['hidden']):?> hidden<?php endif; ?>"
                             name="<?=form_prep($column['name'])?>"
                             value="<?=form_prep($column['value'])?>"
                             <?php if (isset($column['data'])):?>

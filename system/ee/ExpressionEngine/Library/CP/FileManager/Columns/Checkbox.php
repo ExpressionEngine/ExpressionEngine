@@ -25,6 +25,8 @@ class Checkbox extends EntryManager\Columns\Checkbox
             'name' => 'selection[]',
             'value' => $file->getId(),
             //'disabled' => ! $this->canEdit($entry) && ! $this->canDelete($entry),
+            'disabled' => $file->isDirectory(),
+            'hidden' => $file->isDirectory(),
             'data' => [
                 'title' => $title,
                 //'channel-id' => $entry->Channel->getId(),
