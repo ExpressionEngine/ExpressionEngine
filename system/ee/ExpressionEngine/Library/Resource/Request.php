@@ -124,43 +124,43 @@ class Request
 
             $template_data = $template->template_data;
             $edit_date = $template->edit_date;
+
+            /* -----------------------------------------
+            /**  Retrieve template file if necessary
+            /** -----------------------------------------*/
+            if (bool_config_item('save_tmpl_files')) {
+                ee()->load->helper('file');
+                $filepath = PATH_TMPL . (!empty($site_name) ? $site_name : ee()->config->item('site_short_name')) . '/';
+                $filepath .= $group . '.group' . '/' . $name . '.' . $this->type;
+                $file_edit_date = filemtime($filepath);
+
+                if ($file_edit_date > $edit_date) {
+                    $str = read_file($filepath);
+
+                    if (false !== $str) {
+                        $template_data = $str;
+                        $edit_date = $file_edit_date;
+                    }
+                }
+            }
+
+            // Replace {site_url} in template before caching
+            $template_data = str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data);
+
+            ee()->cache->save(
+                $cache_path,
+                array(
+                    'edit_date' => $edit_date,
+                    'template_data' => $template_data
+                ),
+                // No TTL, cache lives on till cleared
+                0,
+                $this->cache_scope
+            );
         } else {
             $template_data = $cached['template_data'];
             $edit_date = $cached['edit_date'];
         }
-
-        /* -----------------------------------------
-        /**  Retrieve template file if necessary
-        /** -----------------------------------------*/
-        if (bool_config_item('save_tmpl_files')) {
-            ee()->load->helper('file');
-            $filepath = PATH_TMPL . (isset($site_name) ? $site_name : ee()->config->item('site_short_name')) . '/';
-            $filepath .= $group . '.group/' . $name . '.' . $this->type;
-            $file_edit_date = filemtime($filepath);
-
-            if ($file_edit_date < $edit_date) {
-                $str = read_file($filepath);
-
-                if (false !== $str) {
-                    $template_data = $str;
-                    $edit_date = $file_edit_date;
-                }
-            }
-        }
-
-        // Replace {site_url} in template before caching
-        $template_data = str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data);
-
-        ee()->cache->save(
-            $cache_path,
-            array(
-                'edit_date' => $edit_date,
-                'template_data' => $template_data
-            ),
-            // No TTL, cache lives on till cleared
-            0,
-            $this->cache_scope
-        );
 
         $this->_send_resource($template_data, $edit_date);
     }
