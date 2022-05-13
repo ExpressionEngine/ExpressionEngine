@@ -29,41 +29,7 @@ class Upload
      */
     public function getFileDataForm(FileModel $file, $errors)
     {
-        $image_info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), true);
-
         $html = '';
-
-        $html .= '<div class="f_metadata-section">';
-            $html .= '<p class="f_metadata-item">';
-                $html .= '<span class="f_meta-name">' . lang('name') . '</span>';
-                $html .= '<span class="f_meta-info">' . $file->file_name . '</span>';
-            $html .= '</p>';
-
-            $html .= '<p class="f_metadata-item">';
-                $html .= '<span class="f_meta-name">' . lang('size') . '</span>';
-                $html .= '<span class="f_meta-info">' . $image_info['width'] . ' x ' . $image_info['height'] . ' - ' . ee('Format')->make('Number', $file->file_size)->bytes() . '</span>';
-            $html .= '</p>';
-
-            $html .= '<p class="f_metadata-item">';
-                $html .= '<span class="f_meta-name">' . lang('image_manip_type') . '</span>';
-                $html .= '<span class="f_meta-info">' . $file->mime_type . '</span>';
-            $html .= '</p>';
-
-            $html .= '<p class="f_metadata-item">';
-                $html .= '<span class="f_meta-name">' . lang('dimensions') . '</span>';
-                $html .= '<span class="f_meta-info">2500 x 1500 pixels</span>';
-            $html .= '</p>';
-
-            $html .= '<p class="f_metadata-item">';
-                $html .= '<span class="f_meta-name">' . lang('last_modified') . '</span>';
-                $html .= '<span class="f_meta-info">2/15/22 3:30PM</span>';
-            $html .= '</p>';
-
-            $html .= '<p class="f_metadata-item">';
-                $html .= '<span class="f_meta-name">' . lang('added_by') . '</span>';
-                $html .= '<span class="f_meta-info">ajonhson</span>';
-            $html .= '</p>';
-        $html .= '</div>';
 
         $sections = array(
             array(
@@ -74,6 +40,16 @@ class Upload
                         'file' => array(
                             'type' => 'file',
                             'required' => true
+                        )
+                    )
+                ),
+                array(
+                    'fields' => array(
+                        'f_metadata' => array(
+                            'type' => 'html',
+                            // 'content' => ee()->load->view('files/file-data', $file->file_id, true)
+                            'content' => ee('View')->make('ee:files/file-data')->render(['file' => $file])
+
                         )
                     )
                 ),
