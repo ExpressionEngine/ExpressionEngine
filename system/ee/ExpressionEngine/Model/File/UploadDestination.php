@@ -274,7 +274,7 @@ class UploadDestination extends StructureModel
      */
     public function getFilesystem()
     {
-        $fs = ee('File')->getPath($this->getProperty('server_path'));
+        $fs = ee('File')->getPath($this->parseConfigVars((string) $this->getProperty('server_path')));
         $fs->setUrl($this->getProperty('url'));
 
         return $fs;
@@ -306,7 +306,14 @@ class UploadDestination extends StructureModel
      */
     public function exists()
     {
-        return file_exists($this->parseConfigVars((string) $this->getProperty('server_path')));
+        try {
+            // return $this->getFilesystem()->exists('/');
+            $this->getFilesystem();
+            return true;
+        }catch(\LogicException $e) {
+            return false;
+        }
+        // return file_exists($this->parseConfigVars((string) $this->getProperty('server_path')));
     }
 
     /**
@@ -316,7 +323,8 @@ class UploadDestination extends StructureModel
      */
     public function isWritable()
     {
-        return is_writable($this->parseConfigVars((string) $this->getProperty('server_path')));
+        return $this->getFilesystem()->isWritable('');
+        // return is_writable($this->parseConfigVars((string) $this->getProperty('server_path')));
     }
 
     /**

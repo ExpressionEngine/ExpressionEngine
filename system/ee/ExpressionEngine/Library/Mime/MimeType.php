@@ -12,6 +12,7 @@ namespace ExpressionEngine\Library\Mime;
 
 use Exception;
 use InvalidArgumentException;
+use ExpressionEngine\Dependency\League\MimeTypeDetection;
 
 /**
  * Mime Type
@@ -29,7 +30,25 @@ class MimeType
      */
     public function __construct(array $mimes = array())
     {
+        $this->detector = new MimeTypeDetection\FinfoMimeTypeDetector();
         $this->addMimeTypes($mimes);
+    }
+    
+    public function whitelistMimesFromConfig()
+    {
+        $whitelist = ee()->config->loadFile('mimes');
+
+        $this->addMimeTypes($whitelist);
+
+        // Add any mime types from the config
+        $extra_mimes = ee()->config->item('mime_whitelist_additions');
+        if ($extra_mimes !== false) {
+            if (is_array($extra_mimes)) {
+                $this->addMimeTypes($extra_mimes);
+            } else {
+                $this->addMimeTypes(explode('|', $extra_mimes));
+            }
+        }
     }
 
     /**
@@ -92,60 +111,21 @@ class MimeType
         if (! file_exists($path)) {
             throw new Exception("File " . $path . " does not exist.");
         }
+        
+        $file_opening = file_get_contents($path, false, null, 0, 50); //get first 50 bytes off the file
+        $mime = $this->detector->detectMimeType($path, $file_opening);
 
         // Set a default
-        $mime = 'application/octet-stream';
+        $mime = !is_null($mime) ? $mime :  'application/octet-stream';
 
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        if ($finfo !== false) {
-            $fres = @finfo_file($finfo, $path);
-            if (($fres !== false)
-                && is_string($fres)
-                && (strlen($fres) > 0)) {
-                $mime = $fres;
-            }
-
-            @finfo_close($finfo);
-        }
-
-        //try another method to get mime
+        // try another method to get mime
         if ($mime == 'application/octet-stream') {
-            $file_opening = file_get_contents($path, false, null, 0, 50);//get first 50 bytes off the file
             if (strpos($file_opening, 'RIFF') === 0 && strpos($file_opening, 'WEBPVP8') !== false) {
                 $mime = 'image/webp';
                 // PDF files start with "%PDF" (25 50 44 46) or " %PDF"
                 // @see https://en.wikipedia.org/wiki/Magic_number_%28programming%29#Examples
             } else if (strpos($file_opening, '%PDF') !== false) {
                 $mime = 'application/pdf';
-            }
-        }
-
-        // A few files are identified as plain text, which while true is not as
-        // helpful as which type of plain text files they are.
-        if ($mime == 'text/plain') {
-            $parts = explode('.', $path);
-            $extension = end($parts);
-
-            switch ($extension) {
-                case 'css':
-                    $mime = 'text/css';
-
-                    break;
-
-                case 'js':
-                    $mime = 'application/javascript';
-
-                    break;
-
-                case 'json':
-                    $mime = 'application/json';
-
-                    break;
-
-                case 'svg':
-                    $mime = 'image/svg+xml';
-
-                    break;
             }
         }
 
@@ -161,22 +141,13 @@ class MimeType
     public function ofBuffer($buffer)
     {
         // Set a default
-        $mime = 'application/octet-stream';
+        $default = 'application/octet-stream';
 
-        $finfo = @finfo_open(FILEINFO_MIME_TYPE);
-
-        if ($finfo !== false && !is_array($buffer) && !is_object($buffer)) {
-            $fres = @finfo_buffer($finfo, $buffer);
-            if (($fres !== false)
-                && is_string($fres)
-                && (strlen($fres) > 0)) {
-                $mime = $fres;
-            }
-
-            @finfo_close($finfo);
+        if (is_array($buffer) || is_object($buffer)) {
+            return $default;
         }
 
-        return $mime;
+        return $this->detector->detectMimeTypeFromBuffer((string) $buffer) ?: $default;
     }
 
     /**

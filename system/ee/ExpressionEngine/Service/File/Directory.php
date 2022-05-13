@@ -21,21 +21,22 @@ class Directory extends Filesystem
     protected $url;
     protected $root;
 
-    public function __construct($path)
-    {
-        $this->root = realpath($path);
-    }
+    // public function __construct($path)
+    // {
+    //     parent::__construct();
+    //     $this->root = realpath($path);
+    // }
 
     /**
      * @override
      */
     protected function normalize($path)
     {
-        $path = $this->root . '/' . $path;
-
         if ($path == '..' || strpos($path, '../') !== false) {
             throw new FilesystemException('Attempting to access file outside of directory.');
         }
+
+        // return $this->flysystem->getAdapter()->applyPathPrefix($path);
 
         return $path;
     }

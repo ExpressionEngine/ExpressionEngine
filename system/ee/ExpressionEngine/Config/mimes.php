@@ -118,6 +118,7 @@ return array(
     'text/csv', // .csv
     'text/html', // .html, .htm
     'text/plain', // .log, .text, .txt
+    'text/markdown', // .md
     'text/richtext', // .rtx
     'text/rtf', // .rtf
     'text/x-comma-separated-values', // .csv

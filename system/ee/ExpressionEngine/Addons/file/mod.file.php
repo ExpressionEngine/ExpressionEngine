@@ -530,7 +530,7 @@ class File
         } else {
             $path = PATH_THEMES . 'asset/img/default-addon-icon.svg';
         }
-        $mime = ee()->mime_type->ofFile($path);
+        $mime = ee('MimeType')->ofFile($path);
         if ($mime == 'image/svg') {
             $mime = 'image/svg+xml';
         }

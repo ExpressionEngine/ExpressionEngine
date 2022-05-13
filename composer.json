@@ -23,6 +23,9 @@
         "bamarni/composer-bin-plugin": "^1.5"
     },
     "config": {
+        "platform": {
+            "php": "7.2.5"
+        },
         "allow-plugins": {
             "bamarni/composer-bin-plugin": true
         }

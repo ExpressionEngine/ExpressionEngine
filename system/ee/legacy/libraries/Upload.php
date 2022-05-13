@@ -172,7 +172,7 @@ class EE_Upload
         // Set the uploaded data as class variables
         $this->file_temp = $_FILES[$field]['tmp_name'];
         $this->file_size = $_FILES[$field]['size'];
-        $this->file_type = ee()->mime_type->ofFile($this->file_temp);
+        $this->file_type = ee('MimeType')->ofFile($this->file_temp);
         $this->file_name = $this->_prep_filename($_FILES[$field]['name']);
         $this->file_ext = $this->get_extension($this->file_name);
         $this->client_name = $this->file_name;
@@ -518,7 +518,7 @@ class EE_Upload
      */
     public function is_image()
     {
-        return ee()->mime_type->fileIsImage($this->file_temp);
+        return ee('MimeType')->fileIsImage($this->file_temp);
     }
 
     /**
@@ -543,10 +543,10 @@ class EE_Upload
         }
 
         if ($this->is_image) {
-            return ee()->mime_type->fileIsImage($this->file_temp);
+            return ee('MimeType')->fileIsImage($this->file_temp);
         }
 
-        return ee()->mime_type->fileIsSafeForUpload($this->file_temp);
+        return ee('MimeType')->fileIsSafeForUpload($this->file_temp);
     }
 
     /**
@@ -698,7 +698,7 @@ class EE_Upload
         // _except_ an attempted XSS attack.
 
         if (function_exists('getimagesize') && ($image = getimagesize($file)) !== false) {
-            if (ee()->mime_type->fileIsSafeForUpload($file) === false) {
+            if (ee('MimeType')->fileIsSafeForUpload($file) === false) {
                 return false; // tricky tricky
             }
 
@@ -803,9 +803,7 @@ class EE_Upload
      */
     public function mimes_types($mime)
     {
-        ee()->load->library('mime_type');
-
-        return ee()->mime_type->isSafeForUpload($mime);
+        return ee('MimeType')->isSafeForUpload($mime);
     }
 
     /**

@@ -206,22 +206,17 @@ class Filemanager
     public function security_check($file_path, $prefs)
     {
         ee()->load->helper(array('file', 'xss'));
-        ee()->load->library('mime_type');
 
         $is_image = false;
         $allowed = $prefs['allowed_types'];
-        $mime = ee()->mime_type->ofFile($file_path);
+        $mime = ee('MimeType')->ofFile($file_path);
 
         if ($allowed == 'all' or $allowed == '*') {
-            if (ee()->mime_type->isSafeForUpload($mime)) {
-                return $mime;
-            } else {
-                return false;
-            }
+            return ee('MimeType')->isSafeForUpload($mime) ? $mime : false;
         }
 
         if ($allowed == 'img') {
-            if (! ee()->mime_type->isImage($mime)) {
+            if (! ee('MimeType')->isImage($mime)) {
                 return false;
             }
 
@@ -1108,7 +1103,6 @@ class Filemanager
     public function create_thumb($file_path, $prefs, $thumb = true, $missing_only = true)
     {
         ee()->load->library('image_lib');
-        ee()->load->library('mime_type');
         ee()->load->helper('file');
 
         $img_path = rtrim($prefs['server_path'], '/') . '/';
@@ -1116,7 +1110,7 @@ class Filemanager
 
         if (! isset($prefs['mime_type'])) {
             // Figure out the mime type
-            $prefs['mime_type'] = ee()->mime_type->ofFile($file_path);
+            $prefs['mime_type'] = ee('MimeType')->ofFile($file_path);
         }
 
         if (! $this->is_editable_image($file_path, $prefs['mime_type'])) {
@@ -1401,11 +1395,10 @@ class Filemanager
         // If the raw file name was passed in, figure out the mime_type
         if (! is_array($file) or ! isset($file['mime_type'])) {
             ee()->load->helper('file');
-            ee()->load->library('mime_type');
 
             $file = array(
                 'file_name' => $file,
-                'mime_type' => ee()->mime_type->ofFile($directory['server_path'] . $file)
+                'mime_type' => ee('MimeType')->ofFile($directory['server_path'] . $file)
             );
         }
 
@@ -2373,54 +2366,44 @@ class Filemanager
      * @param  int    $directory_depth depth of directories to traverse
      *   (0 = fully recursive, 1 = current dir, etc)
      * @param  bool   $hidden Include hidden files (default: FALSE)
-     * @param  string $allowed_tpyes Either "img" for images or "all" for
+     * @param  string $allowed_types Either "img" for images or "all" for
      *   everything
      * @return array|bool FALSE if we cannot open the directory, an array of
      *   files otherwise.
      */
-    public function directory_files_map($source_dir, $directory_depth = 0, $hidden = false, $allowed_types = 'all')
+    public function directory_files_map(\ExpressionEngine\Library\Filesystem\Filesystem $source, $directory_depth = 0, $hidden = false, $allowed_types = 'all')
     {
+        if (!$source->isReadable()) {
+            return false;
+        }
+
         ee()->load->helper(array('file', 'directory'));
         ee()->load->library('mime_type');
 
-        if ($fp = @opendir($source_dir)) {
-            $filedata = array();
-            $new_depth = $directory_depth - 1;
-            $source_dir = rtrim($source_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $filedata = array();
+        $new_depth = $directory_depth - 1;
+        $indexFiles = array('index.html', 'index.htm', 'index.php');
 
-            while (false !== ($file = readdir($fp))) {
-                $allowed = true;
-                // Remove '.', '..', and hidden files [optional]
-                if (! trim($file, '.') or ($hidden == false && $file[0] == '.')) {
+        foreach($source->getDirectoryContents() as $path) {
+            // Remove '.', '..', and hidden files [optional]
+            if (!trim($path, '.') || ($hidden == false && $path[0] == '.')) {
+                continue;
+            }
+
+            if (!$source->isDir($path) && !in_array($path, $indexFiles)) {
+                if ($allowed_types == 'img' && !ee('MimeType')->isImage($source->getMimetype($path))) {
                     continue;
                 }
 
-                $index = array('index.html', 'index.htm', 'index.php');
-                if (! is_dir($source_dir . $file) && ! in_array($file, $index)) {
-                    $mime = ee()->mime_type->ofFile($source_dir . $file);
-
-                    if ($allowed_types == 'img') {
-                        $allowed = ee()->mime_type->isImage($mime);
-                    }
-
-                    if (! $allowed) {
-                        continue;
-                    }
-
-                    $filedata[] = $file;
-                } elseif (($directory_depth < 1 or $new_depth > 0) && @is_dir($source_dir . $file)) {
-                    $filedata[$file] = directory_map($source_dir . $file . DIRECTORY_SEPARATOR, $new_depth, $hidden);
-                }
+                $filedata[] = $path;
+            } elseif (($directory_depth < 1 || $new_depth > 0) && $source->isDir($path)) {
+                $filedata[$path] = $source->getDirectoryContents($path, false, $hidden); //directory_map($source_dir . $file . DIRECTORY_SEPARATOR, $new_depth, $hidden);
             }
 
-            closedir($fp);
-
-            sort($filedata);
-
-            return $filedata;
         }
 
-        return false;
+        sort($filedata);
+        return $filedata;
     }
 
     /**
@@ -2516,9 +2499,7 @@ class Filemanager
      */
     public function is_image($mime)
     {
-        ee()->load->library('mime_type');
-
-        return ee()->mime_type->isImage($mime);
+        return ee('MimeType')->isImage($mime);
     }
 
     /**

@@ -32,7 +32,7 @@
 						<?php if ($file->isEditableImage() || $file->isSVG()): ?>
 							<img src="<?=ee('Thumbnail')->get($file)->url?>" alt="<?=$file->file_name?>">
 						<?php else: ?>
-							<?php if ($file->mime_type == 'text/plain'): ?>
+							<?php if (in_array($file->mime_type, ['text/plain', 'text/markdown'])): ?>
 								<i class="fas fa-file-alt fa-5x"></i>
 							<?php elseif ($file->mime_type == 'application/zip'): ?>
 								<i class="fas fa-file-archive fa-5x"></i>

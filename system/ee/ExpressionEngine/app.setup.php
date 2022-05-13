@@ -515,6 +515,13 @@ $setup = [
             return new Member\Member();
         },
 
+        'MimeType' => function($ee) {
+            $mimeType = new ExpressionEngine\Library\Mime\MimeType();
+            $mimeType->whitelistMimesFromConfig();
+            
+            return $mimeType;
+        },
+
         'Model/Datastore' => function ($ee) {
             $app = $ee->make('App');
             $addons = $ee->make('Addon')->installed();

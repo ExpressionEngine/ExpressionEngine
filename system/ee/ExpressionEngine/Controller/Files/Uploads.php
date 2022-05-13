@@ -740,7 +740,7 @@ class Uploads extends AbstractFilesController
         // Get a listing of raw files in the directory
         ee()->load->library('filemanager');
         $files = ee()->filemanager->directory_files_map(
-            $upload_destination->server_path,
+            $upload_destination->getFilesystem(),
             1,
             false,
             $upload_destination->allowed_types

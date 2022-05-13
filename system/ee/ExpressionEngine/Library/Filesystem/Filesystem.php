@@ -10,6 +10,7 @@
 
 namespace ExpressionEngine\Library\Filesystem;
 
+use ExpressionEngine\Dependency\League\Flysystem;
 use FilesystemIterator;
 
 /**
@@ -17,6 +18,16 @@ use FilesystemIterator;
  */
 class Filesystem
 {
+    protected $flysystem;
+
+    public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = null)
+    {
+        if(is_null($adapter)) {
+            $adapter = new Flysystem\Adapter\Local('/');
+        }
+        $this->flysystem = new Flysystem\Filesystem($adapter, $config);
+    }
+
     /**
      * Read a file from disk
      *
@@ -33,7 +44,7 @@ class Filesystem
             throw new FilesystemException("Cannot read file: {$path}");
         }
 
-        return file_get_contents($this->normalize($path));
+        return $this->flysystem->read($this->normalize($path));
     }
 
     /**
@@ -44,6 +55,7 @@ class Filesystem
      */
     public function readLineByLine($path, callable $callback)
     {
+        // @todo implement flysystem option, likely needs to read by stream
         if (! $this->exists($path)) {
             throw new FilesystemException("File not found: {$path}");
         } elseif (! $this->isFile($path)) {
@@ -77,14 +89,16 @@ class Filesystem
             throw new FilesystemException("Cannot write file, path is a directory: {$path}");
         } elseif ($this->isFile($path) && $overwrite == false && $append == false) {
             throw new FilesystemException("File already exists: {$path}");
+        } elseif ($append && !($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local)) {
+            throw new FilesystemException("Appending to file not supported by adapter '".get_class($this->flysystem->getAdapter())."'");
         }
 
-        $flags = LOCK_EX;
         if ($overwrite == false && $append == true) {
             $flags = FILE_APPEND | LOCK_EX;
+            file_put_contents($path, $data, $flags);
+        }else{
+            $this->flysystem->put($path, $data);
         }
-
-        file_put_contents($path, $data, $flags);
 
         $this->ensureCorrectAccessMode($path);
     }
@@ -110,10 +124,7 @@ class Filesystem
     public function mkDir($path, $with_index = true)
     {
         $path = $this->normalize($path);
-
-        $old_umask = umask(0);
-        $result = @mkdir($path, DIR_WRITE_MODE, true);
-        umask($old_umask);
+        $result = $this->flysystem->createDir($path);
 
         if (! $result) {
             return false;
@@ -135,11 +146,7 @@ class Filesystem
      */
     public function delete($path)
     {
-        if ($this->isDir($path)) {
-            return $this->deleteDir($path);
-        }
-
-        return $this->deleteFile($path);
+        return $this->flysystem->delete($path);
     }
 
     /**
@@ -153,7 +160,7 @@ class Filesystem
             throw new FilesystemException("File does not exist {$path}");
         }
 
-        return @unlink($this->normalize($path));
+        return $this->flysystem->delete($this->normalize($path));
     }
 
     /**
@@ -174,18 +181,10 @@ class Filesystem
             return true;
         }
 
-        $contents = new FilesystemIterator($this->normalize($path));
+        $this->flysystem->deleteDir($path);
 
-        foreach ($contents as $item) {
-            if ($item->isDir()) {
-                $this->deleteDir($item->getPathname());
-            } else {
-                $this->deleteFile($item->getPathName());
-            }
-        }
-
-        if (! $leave_empty) {
-            @rmdir($this->normalize($path));
+        if ($leave_empty) {
+            $this->flysystem->createDir($this->normalize($path));
         }
 
         return true;
@@ -199,7 +198,7 @@ class Filesystem
      * @param bool $recursive Whether or not to do a recursive search
      * @param array Array of all paths found inside the specified directory
      */
-    public function getDirectoryContents($path, $recursive = false)
+    public function getDirectoryContents($path = '', $recursive = false, $includeHidden = false)
     {
         if (! $this->exists($path)) {
             throw new FilesystemException('Cannot get contents of path, the path is invalid: ' . $path);
@@ -209,14 +208,14 @@ class Filesystem
             throw new FilesystemException('Cannot get contents of path, the path is not a directory: ' . $path);
         }
 
-        $contents = new FilesystemIterator($this->normalize($path));
+        $contents = $this->flysystem->listContents($path);
         $contents_array = [];
 
         foreach ($contents as $item) {
-            if ($item->isDir() && $recursive) {
-                $contents_array += $this->getDirectoryContents($item->getPathname(), $recursive);
-            } else {
-                $contents_array[] = $item->getPathName();
+            if ($item['type'] == 'dir' && $recursive) {
+                $contents_array += $this->getDirectoryContents($item['path'], $recursive);
+            } else if($includeHidden || strpos($item['path'], '.') !== 0) {
+                $contents_array[] = $item['path'];
             }
         }
 
@@ -247,6 +246,10 @@ class Filesystem
      */
     protected function attemptFastDelete($path)
     {
+        if (!$this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+            return false;
+        }
+
         $path = $this->normalize($path);
 
         $delete_name = sha1($path . '_delete_' . mt_rand());
@@ -283,10 +286,7 @@ class Filesystem
         }
 
         // Suppressing potential warning when renaming a directory to one that already exists.
-        @rename(
-            $this->normalize($source),
-            $this->normalize($dest)
-        );
+        @$this->flysystem->rename($this->normalize($source), $this->normalize($dest));
 
         $this->ensureCorrectAccessMode($dest);
     }
@@ -306,10 +306,7 @@ class Filesystem
         if ($this->isDir($source)) {
             $this->recursiveCopy($source, $dest);
         } else {
-            copy(
-                $this->normalize($source),
-                $this->normalize($dest)
-            );
+            $this->flysystem->copy($this->normalize($source), $this->normalize($dest));
         }
 
         $this->ensureCorrectAccessMode($dest);
@@ -323,20 +320,16 @@ class Filesystem
      */
     protected function recursiveCopy($source, $dest)
     {
-        $dir = opendir($source);
-        @mkdir($dest);
+        $dir = $this->flysystem->listContents($source, false);
+        $this->flysystem->createDir($dest);
 
-        while (false !== ($file = readdir($dir))) {
-            if (($file != '.') && ($file != '..')) {
-                if ($this->isDir($source . '/' . $file)) {
-                    $this->recursiveCopy($source . '/' . $file, $dest . '/' . $file);
-                } else {
-                    copy($source . '/' . $file, $dest . '/' . $file);
-                }
+        foreach($dir as $file) {
+            if ($this->isDir($source . '/' . $file['path'])) {
+                $this->recursiveCopy($source . '/' . $file['path'], $dest . '/' . $file['path']);
+            } else {
+                $this->flysystem->copy($source . '/' . $file['path'], $dest . '/' . $file['path']);
             }
         }
-
-        closedir($dir);
     }
 
     /**
@@ -347,7 +340,7 @@ class Filesystem
      */
     public function dirname($path)
     {
-        return dirname($this->normalize($path));
+        return pathinfo($this->normalize($path), PATHINFO_DIRNAME);
     }
 
     /**
@@ -391,11 +384,10 @@ class Filesystem
      */
     public function exists($path)
     {
-        if ($path = $this->normalize($path)) {
-            return file_exists($path);
-        }
-
-        return false;
+        // We are intentionally not calling `$this->flysystem->has($path);` so that
+        // we can handle calls to check the existence of the base path
+        $path = Flysystem\Util::normalizePath($path);
+        return (bool) $this->flysystem->getAdapter()->has($path);
     }
 
     /**
@@ -410,7 +402,18 @@ class Filesystem
             throw new FilesystemException("File does not exist: {$path}");
         }
 
-        return filemtime($this->normalize($path));
+        return $this->flysystem->getTimestamp($this->normalize($path));
+    }
+
+    /**
+     * Get the mimetype for file at $path
+     *
+     * @param String $path Path to file
+     * @return String|false mime-type or false on failure
+     */
+    public function getMimetype($path)
+    {
+        return $this->flysystem->getMimetype($path);
     }
 
     /**
@@ -425,10 +428,10 @@ class Filesystem
             throw new FilesystemException("Touching non-existent files is not supported: {$path}");
         }
 
-        if (isset($time)) {
-            touch($this->normalize($path), $time);
+        if (isset($time) && $this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+            touch($this->flysystem->getAdapter()->applyPathPrefix($this->normalize($path)), $time);
         } else {
-            touch($this->normalize($path));
+            $this->write($this->normalize($path), '');
         }
     }
 
@@ -440,7 +443,11 @@ class Filesystem
      */
     public function isDir($path)
     {
-        return is_dir($this->normalize($path));
+        if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+            return is_dir($this->flysystem->getAdapter()->applyPathPrefix($path));
+        }
+
+        return empty($this->extension($path)) && $this->flysystem->has($path);
     }
 
     /**
@@ -451,7 +458,11 @@ class Filesystem
      */
     public function isFile($path)
     {
-        return is_file($this->normalize($path));
+        if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+            return is_file($this->normalize($path));
+        }
+
+        return !empty($this->extension($path)) && $this->flysystem->has($path);
     }
 
     /**
@@ -460,8 +471,12 @@ class Filesystem
      * @param String $path Path to check
      * @return bool Is readable?
      */
-    public function isReadable($path)
+    public function isReadable($path = '')
     {
+        if (!$this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+            return true; // or is `return $this->flysystem->has($path);` better?
+        }
+
         return is_readable($this->normalize($path));
     }
 
@@ -484,17 +499,22 @@ class Filesystem
      * @param String $path Path to check
      * @return bool Is writable?
      */
-    public function isWritable($path)
+    public function isWritable($path = '')
     {
+        if(! $this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+            return true;
+        }
+
+        $path = $this->flysystem->getAdapter()->applyPathPrefix($this->normalize($path));
         // If we're on a Unix server with safe_mode off we call is_writable
         if (DIRECTORY_SEPARATOR == '/') {
-            return is_writable($this->normalize($path));
+            return is_writable($path);
         }
 
         // For windows servers and safe_mode "on" installations we'll actually
         // write a file then read it.  Bah...
         if ($this->isDir($path)) {
-            $path = rtrim($this->normalize($path), '/') . '/' . md5(mt_rand(1, 100) . mt_rand(1, 100));
+            $path = rtrim($path, '/') . '/' . md5(mt_rand(1, 100) . mt_rand(1, 100));
 
             if (($fp = @fopen($path, FOPEN_WRITE_CREATE)) === false) {
                 return false;
@@ -527,7 +547,7 @@ class Filesystem
             throw new FilesystemException("File does not exist: {$filename}");
         }
 
-        return hash_file($algo, $filename);
+        return hash($algo, $this->read($filename));
     }
 
     /**
@@ -538,6 +558,10 @@ class Filesystem
      */
     public function getFreeDiskSpace($path = '/')
     {
+        if(!$this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+            return null;
+        }
+
         return @disk_free_space($path);
     }
 
@@ -569,38 +593,49 @@ class Filesystem
 
         $i = 0;
         $extension = $this->extension($path);
-        $filename = $this->dirname($path) . '/' . $this->filename($path);
+        $dirname =  $this->dirname($path);
+        $filename = $this->filename($path);
 
-        $files = glob($filename . '_*' . $extension);
+        // Glob only works with local filesytem but is more performant than filtering directory results
+        if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+            $files = array_map(function($file) {
+                return $this->filename($file);
+            }, glob($dirname . DIRECTORY_SEPARATOR . $filename . '_*' . $extension));
+        }else{
+            // Filter out any files that do not start with our filename
+            $files = array_column(array_filter($this->flysystem->listContents($dirname), function($file) use($filename) {
+                return strpos($file['filename'], "{$filename}_") === 0;
+            }), 'filename');
+        }
 
-        if (! empty($files)) {
-            // Try to figure out if we already have a file we've renamed, then
-            // we can pick up where we left off, and reduce the guessing.
-            if (version_compare(PHP_VERSION, '5.4.0') < 0) {
-                rsort($files); // SORT_NATURAL was introduced in 5.4.0 :(
-            } else {
-                rsort($files, SORT_NATURAL);
-            }
+        // If we do not have any matching files at this point it gets the _1 suffix
+        if(empty($files)) {
+            return $dirname . DIRECTORY_SEPARATOR . "{$filename}_1.{$extension}";
+        }
 
-            foreach ($files as $file) {
-                $number = str_replace(array($filename, $extension), '', $file);
-                if (substr_count($number, '_') == 1 && strpos($number, '_') === 0) {
-                    $number = str_replace('_', '', $number);
-                    if (is_numeric($number)) {
-                        $i = (int) $number;
+        // Try to figure out if we already have a file we've renamed, then
+        // we can pick up where we left off, and reduce the guessing.
+        rsort($files, SORT_NATURAL);
 
-                        break;
-                    }
+        foreach ($files as $file) {
+            $number = str_replace(array($filename, $extension), '', $file);
+            if (substr_count($number, '_') == 1 && strpos($number, '_') === 0) {
+                $number = str_replace('_', '', $number);
+                if (is_numeric($number)) {
+                    $i = (int) $number;
+                    break;
                 }
             }
         }
 
+        $uniqueName = '';
+
         do {
             $i++;
-            $path = $filename . '_' . $i . '.' . $extension;
-        } while (in_array($path, $files));
+            $uniqueName = $filename . '_' . $i . '.' . $extension;
+        } while (in_array($uniqueName, $files));
 
-        return $path;
+        return $dirname . DIRECTORY_SEPARATOR . $uniqueName;
     }
 
     /**
@@ -661,6 +696,11 @@ class Filesystem
      */
     protected function ensureCorrectAccessMode($path)
     {
+        // This function is only relevant to Local filesystems
+        if(!$this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+            return;
+        }
+
         if ($this->isDir($path)) {
             $this->chmod($path, DIR_WRITE_MODE);
         } else {
