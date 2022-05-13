@@ -70,6 +70,10 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
 
         $field = ee('Variables/Parser')->parseVariableProperties($tag, $prefix);
 
+        if ($field['invalid_modifier']) {
+            return $tagdata;
+        }
+
         if (isset($cfields[$field['field_name']])) {
             $entry = '';
             $field_id = $cfields[$field['field_name']];

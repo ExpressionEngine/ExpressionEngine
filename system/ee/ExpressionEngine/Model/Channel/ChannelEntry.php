@@ -410,6 +410,7 @@ class ChannelEntry extends ContentModel
     public function onAfterSave()
     {
         parent::onAfterSave();
+        //front-end editing needs to treat autosaves in a special way
         if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
             foreach ($this->Autosaves as $autosave) {
                 $deleteThisAutosave = true;
@@ -439,6 +440,8 @@ class ChannelEntry extends ContentModel
         $this->updateEntryStats();
         $this->saveTabData();
         $this->saveVersion();
+
+        $this->updateFilesUsage();
 
         // clear caches
         if (ee()->config->item('new_posts_clear_caches') == 'y') {
@@ -538,6 +541,7 @@ class ChannelEntry extends ContentModel
 
         $last_author->updateAuthorStats();
         $this->updateEntryStats();
+        $this->updateFilesUsage();
     }
 
     public function saveTabData()
@@ -649,6 +653,11 @@ class ChannelEntry extends ContentModel
         $stats->save();
 
         $this->Channel->updateEntryStats();
+    }
+
+    private function updateFilesUsage()
+    {
+        
     }
 
     /**

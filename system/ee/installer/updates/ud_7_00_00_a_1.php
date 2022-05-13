@@ -27,9 +27,10 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
-                //'addFileDataTable',
-                //'addFileManagerViewsTable',
+                'addFileDataTable',
+                'addFileManagerViewsTable',
                 'addFilesTableColumns',
+                'addFileUsageTable',
                 //'addEntryManagerViewsKeys'
             ]
         );
@@ -146,11 +147,72 @@ class Updater
             );
             ee()->smartforge->add_key('files', 'directory_id');
         }
+
+        if (! ee()->db->field_exists('total_records', 'files')) {
+            ee()->smartforge->add_column(
+                'files',
+                [
+                    'total_records' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'default' => 0,
+                        'unsigned' => true,
+                        'null' => false
+                    ]
+                ],
+            );
+        }
+    }
+
+    private function addFileUsageTable()
+    {
+        if (ee()->db->table_exists('file_usage')) {
+            return;
+        }
+
+        // Create table
+        ee()->dbforge->add_field(
+            [
+                'file_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                ],
+                'field_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
+                ],
+                'entry_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
+                ],
+                'cat_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
+                ],
+            ]
+        );
+        ee()->dbforge->add_key('file_id');
+        ee()->dbforge->add_key('entry_id');
+        ee()->dbforge->add_key(['entry_id', 'field_id']);
+        ee()->dbforge->add_key('cat_id');
+        ee()->dbforge->add_key(['cat_id', 'field_id']);
+        ee()->smartforge->create_table('file_usage');
     }
 
     private function addEntryManagerViewsKeys()
     {
-        ee()->smartforge->add_key('entry_manager_views', ['channel_id', 'member_id']);
+        //ee()->smartforge->add_key('entry_manager_views', ['channel_id', 'member_id']);
     }
 
 }

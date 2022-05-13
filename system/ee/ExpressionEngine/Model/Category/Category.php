@@ -76,7 +76,9 @@ class Category extends ContentModel
 
     protected static $_events = array(
         'beforeInsert',
-        'beforeDelete'
+        'beforeDelete',
+        'afterSave',
+        'afterDelete',
     );
 
     // Properties
@@ -130,6 +132,56 @@ class Category extends ContentModel
         if (empty($parent_id)) {
             $this->setProperty('parent_id', 0);
         }
+    }
+
+    public function onAfterSave()
+    {
+        parent::onAfterSave();
+
+        // find the existing images listed as used
+        // if not present, or not same, then update usage info
+        $fileIds = [
+            $this->getProperty('cat_image')
+        ];
+
+        $usageQuery = ee('db')->select('file_id')->from('file_usage')->where('cat_id', $this->cat_id)->get();
+        $filesUsed = [];
+        foreach ($usageQuery->result_array() as $usageInfo) {
+            $filesUsed[$usageInfo['file_id']] = $usageInfo['file_id'];
+        }
+        //categories currently are limited to single image per category
+        foreach ($fileIds as $fileId) {
+            if (! empty($fileId) && is_numeric($fileId)) {
+                if (empty($filesUsed) || !in_array($fileId, $filesUsed)) {
+                    ee('db')->insert('file_usage', [
+                        'cat_id' => $this->cat_id,
+                        'file_id' => $fileId
+                    ]);
+                }
+            }
+        }
+        $usageToDelete = array_diff($usageInfo, $fileIds);
+        if (! empty($usageToDelete)) {
+            ee('db')->where('cat_id', $this->cat_id)->where_in('file_usage', $usageToDelete)->delete('file_usage');
+        }
+
+        //recalculate the totals
+        ee('db')->query('UPDATE exp_files SET total_records = (SELECT COUNT(*) FROM exp_file_usage WHERE exp_file_usage.file_id = "' . $fileId . '") WHERE exp_files.file_id = "' . $fileId . '"');
+    }
+
+    public function onAfterDelete()
+    {
+        $usageQuery = ee('db')->select('file_id')->from('file_usage')->where('cat_id', $this->cat_id)->get();
+        $filesUsed = [];
+        foreach ($usageQuery->result_array() as $usageInfo) {
+            $filesUsed[] = $usageInfo['file_id'];
+        }
+        foreach ($filesUsed as $fileId) {
+            //recalculate the total for each file
+            ee('db')->query('UPDATE exp_files SET total_records = (SELECT COUNT(*) FROM exp_file_usage WHERE exp_file_usage.file_id = "' . $fileId . '" AND exp_file_usage.cat_id != ' . $this->cat_id . ') WHERE exp_files.file_id = "' . $fileId . '"');
+        }
+        //drop the usage info
+        ee('db')->where(['cat_id' => $this->cat_id])->delete('file_usage');
     }
 
     /**

@@ -1250,6 +1250,7 @@ class EE_Schema
 			`modified_by_member_id` int(10) unsigned DEFAULT '0',
 			`modified_date` int(10) DEFAULT NULL,
 			`file_hw_original` varchar(20) NOT NULL DEFAULT '',
+			`total_records` int(10) unsigned DEFAULT '0',
 			PRIMARY KEY (`file_id`),
 			KEY `upload_location_id` (`upload_location_id`),
 			KEY `model_type` (`model_type`),

@@ -66,6 +66,24 @@ class FileSystemEntity extends ContentModel
                 'right' => 'cat_id'
             )
         ),
+        'FileCategories' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Category',
+            'pivot' => array(
+                'table' => 'file_usage',
+                'left' => 'file_id',
+                'right' => 'cat_id'
+            )
+        ),
+        'FileEntries' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'ChannelEntry',
+            'pivot' => array(
+                'table' => 'file_usage',
+                'left' => 'file_id',
+                'right' => 'entry_id'
+            )
+        ),
     );
 
     protected static $_field_data = array(
