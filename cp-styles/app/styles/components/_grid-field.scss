@@ -7,13 +7,6 @@
 		border: 1px solid color(border);
 		// overflow-x: visible;
 	}
-
-	@include m-tablet-down {
-		padding: 10px;
-		background: var(--ee-bg-0);
-		border: 1px solid var(--ee-border);
-		border-radius: 5px;
-	}
 }
 
 .grid-field__table {
@@ -132,51 +125,12 @@
 	}
 }
 
-// .grid-field__table td {
-// 	padding: 0;
-
-// 	textarea,
-// 	select,
-// 	input[type='text'],
-// 	input[type='email'],
-// 	input[type='number'],
-// 	input[type='password'],
-// 	input[type='url'] {
-// 		border-color: transparent;
-// 		border-radius: 0;
-// 		box-shadow: none;
-// 		height: 100%;
-
-// 		&:focus {
-// 			border-width: 1px;
-// 			border-color: color(accent);
-// 		}
-// 	}
-// }
-
-// .grid-field__table tr:last-child {
-// 	td:first-child {
-// 		input, textarea, select {
-// 			border-bottom-left-radius: $corners-big;
-// 		}
-// 	}
-
-// 	td:last-child {
-// 		input, textarea, select {
-// 			border-bottom-right-radius: $corners-big;
-// 		}
-// 	}
-// }
-
 .grid-field__column-label {
 	display: none;
 }
 
 .grid-field__column-remove {
 	width: 1%;
-	// background: color(bg-10);
-	// border-bottom: none;
-	// border-bottom-right-radius: 0 !important;
 }
 
 .grid-field__column--tools {
@@ -184,7 +138,6 @@
 	font-size: 1rem;
 	padding-left: 8px;
   padding-right: 8px !important;
-	// background: color(bg-10);
 
   .button {
     margin-bottom: 5px;
@@ -196,11 +149,6 @@
 }
 
 .grid-field__column-tool {
-	// display: block;
-	// padding: $s-xs;
-	// line-height: 1 !important;
-	// color: color(text-tertiary) !important;
-
 	&:last-child {
 		margin-bottom: 0;
 	}
@@ -464,31 +412,25 @@
 	}
 
 	.grid-field__column--tools {
-		// position: absolute;
-		// top: 0;
-		// bottom: 0;
-		// order: -5;
-		// display: flex;
-		// justify-content: center;
-		// width: 40px;
-		// right: 0;
-		// border-radius: 0 $corners-big $corners-big 0 !important;
-		// background: color(bg-5);
-		// padding: $sq-inset-s;
-		// padding: $sq-s 0 0 0 !important;
 		text-align: left;
-		// border-radius: $corners-big $corners-big 0 0;
 
     .button {
       margin-bottom: 0;
     }
 	}
 
-	.grid-field__item-fieldset {
-		display: block;
-		position: relative;
-		border-bottom: 1px solid var(--ee-border) !important;
-	}
+	.entry-grid, .vertical-layout {
+		padding: 10px;
+		background: var(--ee-bg-0);
+		border: 1px solid var(--ee-border);
+		border-radius: 5px;
 
-	td.grid-field__column--tools { display: none !important;}
+		.grid-field__item-fieldset {
+			display: block;
+			position: relative;
+			border-bottom: 1px solid var(--ee-border) !important;
+		}
+
+		td.grid-field__column--tools { display: none !important;}
+	}
 }

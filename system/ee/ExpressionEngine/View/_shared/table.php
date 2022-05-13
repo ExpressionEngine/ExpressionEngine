@@ -217,7 +217,9 @@
 <?php /* End table */
 
 else: ?>
-	<div class="grid-field <?php if ($vertical_layout) { echo 'vertical-layout'; } ?>" id="<?=$grid_field_name?>">
+	<div 
+		class="grid-field <?php if (isset($vertical_layout) && $vertical_layout) : echo 'vertical-layout' ; elseif (isset($vertical_layout)) : echo 'entry-grid'; endif; ?>"
+		id="<?=$grid_field_name?>">
 
 	<div class="table-responsive">
 	<table class="grid-field__table"<?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
@@ -328,7 +330,7 @@ else: ?>
                     }
                 ?>
 					<tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
-
+						<?php if (isset($vertical_layout)):?>
 						<td class="grid-field__item-fieldset">
 							<div class="grid-field__item-tools grid-field__item-tools--item-open">
 								<a href class="grid-field__item-tool js-toggle-grid-item">
@@ -356,6 +358,7 @@ else: ?>
 								</label>
 							</div>
 						</td>
+						<?php endif; ?>
 
 						<?php foreach ($row['columns'] as $key => $column):
                             $column_name = $columns[$key]['label'];

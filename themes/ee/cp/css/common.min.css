@@ -17790,14 +17790,6 @@ fieldset .field-control #eye {
   box-shadow: none;
   border: 1px solid var(--ee-border);
 }
-@media (max-width: 767px) {
-  .grid-field {
-    padding: 10px;
-    background: var(--ee-bg-0);
-    border: 1px solid var(--ee-border);
-    border-radius: 5px;
-  }
-}
 
 .grid-field__table th {
   font-size: 0.9em;
@@ -18126,13 +18118,18 @@ fieldset .field-control #eye {
     margin-bottom: 0;
   }
 
-  .grid-field__item-fieldset {
+  .entry-grid, .vertical-layout {
+    padding: 10px;
+    background: var(--ee-bg-0);
+    border: 1px solid var(--ee-border);
+    border-radius: 5px;
+  }
+  .entry-grid .grid-field__item-fieldset, .vertical-layout .grid-field__item-fieldset {
     display: block;
     position: relative;
     border-bottom: 1px solid var(--ee-border) !important;
   }
-
-  td.grid-field__column--tools {
+  .entry-grid td.grid-field__column--tools, .vertical-layout td.grid-field__column--tools {
     display: none !important;
   }
 }
