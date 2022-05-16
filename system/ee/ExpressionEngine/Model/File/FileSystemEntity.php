@@ -71,8 +71,6 @@ class FileSystemEntity extends ContentModel
             'model' => 'Category',
             'pivot' => array(
                 'table' => 'file_usage',
-                'left' => 'file_id',
-                'right' => 'cat_id'
             )
         ),
         'FileEntries' => array(
@@ -80,8 +78,6 @@ class FileSystemEntity extends ContentModel
             'model' => 'ChannelEntry',
             'pivot' => array(
                 'table' => 'file_usage',
-                'left' => 'file_id',
-                'right' => 'entry_id'
             )
         ),
     );

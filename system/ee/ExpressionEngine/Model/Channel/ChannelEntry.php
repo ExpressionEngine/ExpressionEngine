@@ -116,6 +116,14 @@ class ChannelEntry extends ContentModel
             ),
             'weak' => true
         ),
+        'EntryFiles' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'File',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
     );
 
     protected static $_field_data = array(
@@ -405,6 +413,8 @@ class ChannelEntry extends ContentModel
         }
         // Validate the conditional fields
         $this->evaluateConditionalFields();
+
+        $this->updateFilesUsage();
     }
 
     public function onAfterSave()
@@ -440,8 +450,6 @@ class ChannelEntry extends ContentModel
         $this->updateEntryStats();
         $this->saveTabData();
         $this->saveVersion();
-
-        $this->updateFilesUsage();
 
         // clear caches
         if (ee()->config->item('new_posts_clear_caches') == 'y') {
@@ -541,7 +549,6 @@ class ChannelEntry extends ContentModel
 
         $last_author->updateAuthorStats();
         $this->updateEntryStats();
-        $this->updateFilesUsage();
     }
 
     public function saveTabData()
@@ -657,36 +664,25 @@ class ChannelEntry extends ContentModel
 
     private function updateFilesUsage()
     {
-        /*$data = $_POST ?: $this->getValues();
+        $data = $_POST ?: $this->getValues();
 
         $usage = [];
-        foreach ($data as $fieldKey => $fieldData) {
-            if (strpos($fieldKey, 'field_id_') !== 0)
-            {
-                continue;
+        array_walk_recursive($data, function ($item) use (&$usage) {
+            if (! is_string($item) || strpos($item, '{file:') === false ) {
+                return;
             }
-            $fieldId = substr($fieldKey, 9);
-            $usage[$fieldId] = 
-        }
-        if 
-        var_dump($data);
-        exit();
+            if (preg_match('/^{file\:(\d+)\:url}/', $item, $matches)) {
+                $file_id = $matches[1];
+                if (! isset($usage[$file_id])) {
+                    $usage[$file_id] = 1;
+                } else {
+                    $usage[$file_id]++;
+                }
+            }
+        });
         
-        foreach ($this->getCustomFields() as $field) {
-            // If the ID isnt numeric, we can skip it since its something like title
-            if (! is_numeric($field->getId())) {
-                continue;
-            }
-            if (isset($data['field_id_' . $field->getId()]) {
-                if (is_string($data['field_id_' . $field->getId()])) 
-            }
-        }*/
-        
-    }
-
-    private function findFileReferencesRecursive($data, $rootFieldId)
-    {
-
+        $entryFiles = ee('Model')->get('File', array_keys($usage))->all();
+        $this->getAssociation('EntryFiles')->set($entryFiles);
     }
 
     /**
