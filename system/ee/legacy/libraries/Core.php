@@ -20,6 +20,12 @@ class EE_Core
     private $ee_loaded = false;
     private $cp_loaded = false;
 
+    // Store data for just this page load.
+    // Multi-dimensional array with module/class name,
+    // e.g. $this->cache['module']['var_name']
+    // Use set_cache() and cache() methods.
+    public $cache = array();
+
     /**
      * Sets constants, sets paths contants to appropriate directories, loads
      * the database and generally prepares the system to run.
@@ -127,11 +133,13 @@ class EE_Core
         }
 
         // setup cookie settings for all providers
-        if (REQ != 'CLI') {
+        if (REQ == 'CP') {
             $providers = ee('App')->getProviders();
             foreach ($providers as $provider) {
                 $provider->registerCookiesSettings();
             }
+        }
+        if (REQ != 'CLI') {
             ee('CookieRegistry')->loadCookiesSettings();
         }
 
@@ -167,8 +175,6 @@ class EE_Core
         // $last_site_id = the site that you're viewing
         // config->item('site_id') = the site who's URL is being used
 
-        $last_site_id = ee()->input->cookie('cp_last_site_id');
-
         if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y') {
             $cookie_prefix = ee()->config->item('cookie_prefix');
             $cookie_path = ee()->config->item('cookie_path');
@@ -179,6 +185,7 @@ class EE_Core
                 $cookie_prefix .= '_';
             }
 
+            $last_site_id = ee()->input->cookie('cp_last_site_id');
             if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id')) {
                 ee()->config->site_prefs('', $last_site_id);
             }
@@ -250,6 +257,43 @@ class EE_Core
         ee()->load->library('functions');
         ee()->load->library('extensions');
         ee()->load->library('api');
+    }
+
+    /**
+     * Set Core Cache
+     *
+     * This method is a setter for the $cache class variable.
+     * Note, this is not persistent across requests
+     *
+     * @param 	string 	Super Class/Unique Identifier
+     * @param 	string 	Key for cached item
+     * @param 	mixed 	item to put in the cache
+     * @return 	object
+     */
+    public function set_cache($class, $key, $val)
+    {
+        if (! isset($this->cache[$class])) {
+            $this->cache[$class] = array();
+        }
+
+        $this->cache[$class][$key] = $val;
+
+        return $this;
+    }
+
+    /**
+     * Get Core Cache
+     *
+     * This method extracts a value from the session cache.
+     *
+     * @param 	string 	Super Class/Unique Identifier
+     * @param 	string 	Key to extract from the cache.
+     * @param 	mixed 	Default value to return if key doesn't exist
+     * @return 	mixed
+     */
+    public function cache($class, $key, $default = false)
+    {
+        return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
     }
 
     /**

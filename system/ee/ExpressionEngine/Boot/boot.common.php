@@ -54,9 +54,7 @@ if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/r
  */
     function is_really_writable($file)
     {
-        $fs = new Filesystem();
-
-        return $fs->isWritable($file);
+        return ee('Filesystem')->isWritable($file);
     }
 
 /**

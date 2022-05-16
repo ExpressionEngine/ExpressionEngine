@@ -44,8 +44,6 @@ class UpgradeUtility
 
     protected static function rename_installer()
     {
-        $filesystem = new Filesystem();
-
         $installerPath = SYSPATH . 'ee/installer';
 
         // Generate the new path by suffixing a dotless version number
@@ -56,6 +54,6 @@ class UpgradeUtility
         );
 
         // Move the directory
-        return $filesystem->rename($installerPath, $new_path);
+        return ee('Filesystem')->rename($installerPath, $new_path);
     }
 }

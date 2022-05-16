@@ -44,10 +44,7 @@ class Columns extends Filter
 
         $channel_id = !empty(ee()->input->post('filter_by_channel')) ? (int) ee()->input->post('filter_by_channel') : (int) ee()->input->get('filter_by_channel');
 
-        $query = ee('Model')->get('EntryManagerView')
-            ->filter('member_id', ee()->session->userdata('member_id'))
-            ->filter('channel_id', $channel_id);
-        $view = $query->first();
+        $view = ee()->session->getMember()->EntryManagerViews->filter('channel_id', $channel_id)->first();
 
         if (!empty($view)) {
             $value = $view->getColumns();

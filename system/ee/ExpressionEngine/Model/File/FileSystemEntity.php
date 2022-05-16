@@ -117,7 +117,8 @@ class FileSystemEntity extends ContentModel
     protected $modified_date;
     protected $file_hw_original;
 
-    protected $usage_count;
+    protected $_absolutePath;
+    protected $_usage_count;
 
     /**
      * A link back to the owning group object.
@@ -216,7 +217,10 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsolutePath()
     {
-        return rtrim($this->UploadDestination->server_path, '/') . '/' . $this->file_name;
+        if (empty($this->_absolutePath)) {
+            $this->_absolutePath = rtrim($this->UploadDestination->server_path, '/') . '/' . $this->file_name;
+        }
+        return $this->_absolutePath;
     }
 
     /**
