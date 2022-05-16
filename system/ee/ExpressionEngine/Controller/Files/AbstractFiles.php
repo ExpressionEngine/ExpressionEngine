@@ -353,6 +353,11 @@ abstract class AbstractFiles extends CP_Controller
         $table_columns = $column_renderer->getTableColumnsConfig();
         $table->setColumns($table_columns);
 
+        echo "<pre>";
+        var_dump($upload_location_id);
+        echo "</pre>";
+        // exit;
+        // TODO UPDATE THIS
         $uploaderComponent = [
             'allowedDirectory' => 'all',
             'contentType' => 'image',
@@ -430,7 +435,6 @@ abstract class AbstractFiles extends CP_Controller
 
         $table->setData($data);
 
-
         $vars['table'] = $table->viewData($base_url);
         $vars['form_url'] = $vars['table']['base_url'];
 
@@ -444,7 +448,7 @@ abstract class AbstractFiles extends CP_Controller
             'lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>',
             'viewManager.saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => $upload_location_id, 'viewtype' => $view_type])->compile()
         ]);
-        
+
         ee()->cp->add_js_script(array(
             'file' => array(
                 'cp/confirm_remove',
@@ -453,6 +457,7 @@ abstract class AbstractFiles extends CP_Controller
                 'fields/file/file_field_drag_and_drop',
             ),
         ));
+
         return $vars;
     }
 
@@ -567,7 +572,6 @@ abstract class AbstractFiles extends CP_Controller
 
         return $column_choices;
     }
-
 }
 
 // EOF
