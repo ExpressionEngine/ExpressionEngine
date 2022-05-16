@@ -41,6 +41,9 @@ class file_grid_ft extends Grid_ft
         ee()->javascript->set_global([
             'lang.file_grid_maximum_rows_hit' => lang('file_grid_maximum_rows_hit'),
         ]);
+        echo "<pre>";
+        var_dump($this->get_setting('allowed_directories', 'all'));
+        exit;
 
         return ee('View')->make('grid:file_grid')->render([
             'grid_markup' => $grid_markup,
@@ -142,8 +145,8 @@ class file_grid_ft extends Grid_ft
 
         ee()->javascript->output('EE.grid_settings($(".fields-grid-setup[data-group=file_grid]"), ' . $settings_json . ');');
         ee()->javascript->output('FieldManager.on("fieldModalDisplay", function(modal) {
-			EE.grid_settings($(".fields-grid-setup[data-group=file_grid]", modal), ' . $settings_json . ');
-		});');
+            EE.grid_settings($(".fields-grid-setup[data-group=file_grid]", modal), ' . $settings_json . ');
+        });');
 
         return $settings;
     }
