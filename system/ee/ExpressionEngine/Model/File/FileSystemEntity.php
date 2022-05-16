@@ -117,6 +117,8 @@ class FileSystemEntity extends ContentModel
     protected $modified_date;
     protected $file_hw_original;
 
+    protected $usage_count;
+
     /**
      * A link back to the owning group object.
      *

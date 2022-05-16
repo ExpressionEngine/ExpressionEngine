@@ -179,13 +179,6 @@ class Updater
                     'unsigned' => true,
                     'null' => false,
                 ],
-                'field_id' => [
-                    'type' => 'int',
-                    'constraint' => 10,
-                    'unsigned' => true,
-                    'null' => false,
-                    'default' => 0
-                ],
                 'entry_id' => [
                     'type' => 'int',
                     'constraint' => 10,
@@ -204,9 +197,7 @@ class Updater
         );
         ee()->dbforge->add_key('file_id');
         ee()->dbforge->add_key('entry_id');
-        ee()->dbforge->add_key(['entry_id', 'field_id']);
         ee()->dbforge->add_key('cat_id');
-        ee()->dbforge->add_key(['cat_id', 'field_id']);
         ee()->smartforge->create_table('file_usage');
     }
 

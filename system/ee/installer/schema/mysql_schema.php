@@ -1258,11 +1258,6 @@ class EE_Schema
 			KEY `site_id` (`site_id`)
 		)";
 
-        $Q[] = "CREATE TABLE `exp_file_data` (
-			`file_id` int(10) unsigned NOT NULL,
-			PRIMARY KEY (`file_id`)
-		)";
-
         $Q[] = "CREATE TABLE `exp_file_categories` (
 			`file_id` int(10) unsigned NOT NULL,
 			`cat_id` int(10) unsigned NOT NULL,
@@ -1270,6 +1265,11 @@ class EE_Schema
 			`is_cover` char(1) DEFAULT 'n',
 			PRIMARY KEY (`file_id`, `cat_id`),
 			KEY `cat_id` (`cat_id`)
+		)";
+
+        $Q[] = "CREATE TABLE `exp_file_data` (
+			`file_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY (`file_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_file_dimensions` (
@@ -1285,6 +1285,15 @@ class EE_Schema
 			`watermark_id` int(4) unsigned DEFAULT NULL,
 			PRIMARY KEY (`id`),
 			KEY `upload_location_id` (`upload_location_id`)
+		)";
+
+        $Q[] = "CREATE TABLE `exp_file_usage` (
+			`file_id` int(10) unsigned NOT NULL,
+			`entry_id` int(10) unsigned NOT NULL,
+			`cat_id` int(10) unsigned NOT NULL,
+			KEY `file_id` (`file_id`),
+			KEY `entry_id` (`entry_id`),
+			KEY `cat_id` (`cat_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_file_watermarks` (

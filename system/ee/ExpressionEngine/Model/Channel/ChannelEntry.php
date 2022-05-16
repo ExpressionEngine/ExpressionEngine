@@ -657,7 +657,36 @@ class ChannelEntry extends ContentModel
 
     private function updateFilesUsage()
     {
+        /*$data = $_POST ?: $this->getValues();
+
+        $usage = [];
+        foreach ($data as $fieldKey => $fieldData) {
+            if (strpos($fieldKey, 'field_id_') !== 0)
+            {
+                continue;
+            }
+            $fieldId = substr($fieldKey, 9);
+            $usage[$fieldId] = 
+        }
+        if 
+        var_dump($data);
+        exit();
         
+        foreach ($this->getCustomFields() as $field) {
+            // If the ID isnt numeric, we can skip it since its something like title
+            if (! is_numeric($field->getId())) {
+                continue;
+            }
+            if (isset($data['field_id_' . $field->getId()]) {
+                if (is_string($data['field_id_' . $field->getId()])) 
+            }
+        }*/
+        
+    }
+
+    private function findFileReferencesRecursive($data, $rootFieldId)
+    {
+
     }
 
     /**

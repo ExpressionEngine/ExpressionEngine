@@ -562,7 +562,7 @@ class EE_Typography
      */
     public function parse_file_paths($str)
     {
-        if ($this->parse_images == false or strpos($str, 'filedir_') === false) {
+        if ($this->parse_images == false or strpos($str, '{filedir_') === false or strpos($str, '{file:') === false) {
             return $str;
         }
 

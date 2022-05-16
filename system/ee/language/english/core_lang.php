@@ -163,6 +163,10 @@ If you made these changes, please accept the modifications on the control panel 
 
     'php72_intl_error' => 'Your <code>intl</code> PHP extentsion is out-of-date. Please ensure you have <code>ICU 4.6</code> or newer installed.',
 
+    'license_error' => 'License error',
+    'license_error_file_not_writable' => 'The cache folder needs to be writable in order for ExpressionEngine Pro to work',
+    'license_error_file_broken' => 'There has been an error validating ExpressionEngine Pro license status',
+
     /* Member Groups */
     'banned' => 'Banned',
 

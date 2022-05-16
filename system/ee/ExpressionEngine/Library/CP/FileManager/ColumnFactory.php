@@ -33,6 +33,7 @@ class ColumnFactory extends EntryManager\ColumnFactory
         'checkbox' => Columns\Checkbox::class,
         'thumbnail' => Columns\Thumbnail::class,
         'manage' => Columns\Manage::class,
+        'usage' => Columns\Usage::class,
     ];
 
     /**

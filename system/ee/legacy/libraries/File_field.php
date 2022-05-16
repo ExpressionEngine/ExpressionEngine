@@ -244,12 +244,26 @@ class File_field
      * @param string $data Standard file field data string
      * @return File Model
      */
-    private function getFileModelForFieldData($data)
+    public function getFileModelForFieldData($data)
     {
         $file = null;
 
+        if (empty($data)) {
+            return $file;
+        }
+
+        // If file field is just a file ID
+        if (! empty($data) && is_numeric($data)) {
+            $file = ee('Model')->get('File', $data)->first();
+        }
+        // If the file field is in the "{file:XX:url}" format
+        elseif (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+            // Set upload directory ID and file name
+            $file_id = $matches[1];
+            $file = ee('Model')->get('File', $file_id)->first();
+        }
         // If the file field is in the "{filedir_n}image.jpg" format
-        if (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
+        elseif (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);
@@ -259,10 +273,6 @@ class File_field
                 ->filter('upload_location_id', $dir_id)
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->first();
-        }
-        // If file field is just a file ID
-        elseif (! empty($data) && is_numeric($data)) {
-            $file = ee('Model')->get('File', $data)->first();
         }
 
         return $file;
@@ -612,8 +622,14 @@ class File_field
      */
     public function parse_field($data)
     {
+        // If the file field is in the "{file:XX:url}" format
+        if (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+            // Set upload directory ID and file name
+            $file_id = $matches[1];
+            $file = $this->get_file($file_id);
+        }
         // If the file field is in the "{filedir_n}image.jpg" format
-        if (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
+        elseif (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);

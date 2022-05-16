@@ -102,7 +102,9 @@ class EE_Cache_file extends CI_Driver
             // to see if that's the case and if not, something else went wrong
             // and we'll show an error
             if (! is_dir($path) or ! is_really_writable($path)) {
-                trigger_error($error['message'], E_USER_WARNING);
+                if (! empty($error)) {
+                    trigger_error($error['message'], E_USER_WARNING);
+                }
             } else {
                 // Write an index.html file to ensure no directory indexing
                 write_index_html($path);

@@ -23,8 +23,8 @@
 			}
 
 			// Assign the value {filedir_#}filename.ext
-			//input.val('{filedir_' + data.upload_location_id + '}' + data.file_name)
-			input.val(data.file_id)
+			input.val('{filedir_' + data.upload_location_id + '}' + data.file_name)
+			//input.val('{file:' + data.file_id + ':url}')
 				.trigger('change')
 				.trigger('hasFile', data);
 

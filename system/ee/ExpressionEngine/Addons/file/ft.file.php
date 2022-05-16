@@ -62,71 +62,61 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
             return array('value' => '');
         }
 
-        // Does it look like '{filedir_n}file_name.ext'?
-        if (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
-            $upload_location_id = $matches[1];
-            $file_name = str_replace($matches[0], '', $data);
+        $file = ee()->file_field->getFileModelForFieldData($data);
 
-            $file = ee('Model')->get('File')
-                ->filter('site_id', ee()->config->item('site_id'))
-                ->filter('upload_location_id', $upload_location_id)
-                ->filter('file_name', $file_name)
-                ->first();
+        if ($file) {
+            $check_permissions = false;
 
-            if ($file) {
-                $check_permissions = false;
+            // Is this an edit?
+            if ($this->content_id) {
+                // Are we validating on grid data?
+                if (isset($this->settings['grid_row_id'])) {
+                    $fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
 
-                // Is this an edit?
-                if ($this->content_id) {
-                    // Are we validating on grid data?
-                    if (isset($this->settings['grid_row_id'])) {
-                        $fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
+                    ee()->load->model('grid_model');
+                    $rows = ee()->grid_model->get_entry_rows(
+                        $this->content_id,
+                        $this->settings['grid_field_id'],
+                        $this->settings['grid_content_type'],
+                        array(),
+                        false,
+                        $fluid_field_data_id
+                    );
 
-                        ee()->load->model('grid_model');
-                        $rows = ee()->grid_model->get_entry_rows(
-                            $this->content_id,
-                            $this->settings['grid_field_id'],
-                            $this->settings['grid_content_type'],
-                            array(),
-                            false,
-                            $fluid_field_data_id
-                        );
-
-                        // If this filed was we need to check permissions.
-                        if ($rows[$this->content_id][$this->settings['grid_row_id']] != $data) {
-                            $check_permissions = true;
-                        }
-                    } else {
-                        $entry = ee('Model')->get('ChannelEntry', $this->content_id)->first();
-                        $field_name = $this->name();
-
-                        // If this filed was we need to check permissions.
-                        if ($entry && $entry->$field_name != $data) {
-                            $check_permissions = true;
-                        }
+                    // If this filed was we need to check permissions.
+                    if ($rows[$this->content_id][$this->settings['grid_row_id']] != $data) {
+                        $check_permissions = true;
                     }
                 } else {
-                    $check_permissions = true;
-                }
+                    $entry = ee('Model')->get('ChannelEntry', $this->content_id)->first();
+                    $field_name = $this->name();
 
-                if ($check_permissions) {
-                    $member = ee()->session->getMember();
-                    if (!$member && isset(ee()->channel_form)) {
-                        ee()->load->add_package_path(PATH_ADDONS . 'channel');
-                        ee()->load->library('channel_form/channel_form_lib');
-                        ee()->channel_form_lib->fetch_logged_out_member();
-                        if (!empty(ee()->channel_form_lib->logged_out_member_id)) {
-                            $member = ee('Model')->get('Member', ee()->channel_form_lib->logged_out_member_id)->first();
-                        }
-                        ee()->load->remove_package_path(PATH_ADDONS . 'channel');
-                    }
-                    if (!$member || $file->memberHasAccess($member) == false) {
-                        return array('value' => '', 'error' => lang('directory_no_access'));
+                    // If this filed was we need to check permissions.
+                    if ($entry && $entry->$field_name != $data) {
+                        $check_permissions = true;
                     }
                 }
-
-                return array('value' => $data);
+            } else {
+                $check_permissions = true;
             }
+
+            if ($check_permissions) {
+                $member = ee()->session->getMember();
+                if (!$member && isset(ee()->channel_form)) {
+                    ee()->load->add_package_path(PATH_ADDONS . 'channel');
+                    ee()->load->library('channel_form/channel_form_lib');
+                    ee()->channel_form_lib->fetch_logged_out_member();
+                    if (!empty(ee()->channel_form_lib->logged_out_member_id)) {
+                        $member = ee('Model')->get('Member', ee()->channel_form_lib->logged_out_member_id)->first();
+                    }
+                    ee()->load->remove_package_path(PATH_ADDONS . 'channel');
+                }
+                if (!$member || $file->memberHasAccess($member) == false) {
+                    return array('value' => '', 'error' => lang('directory_no_access'));
+                }
+            }
+
+            return array('value' => $data);
         }
 
         return array('value' => '', 'error' => lang('invalid_selection'));
@@ -183,37 +173,13 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     {
         $status = 'ok';
 
-        $file = $this->_parse_field($data);
+        $file = ee()->file_field->getFileModelForFieldData($data);
 
         if ($file && ! $file->exists()) {
             $status = 'warning';
         }
 
         return $status;
-    }
-
-    private function _parse_field($data)
-    {
-        $file = null;
-
-        // If the file field is in the "{filedir_n}image.jpg" format
-        if (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
-            // Set upload directory ID and file name
-            $dir_id = $matches[1];
-            $file_name = str_replace($matches[0], '', $data);
-
-            $file = ee('Model')->get('File')
-                ->filter('file_name', $file_name)
-                ->filter('upload_location_id', $dir_id)
-                ->filter('site_id', ee()->config->item('site_id'))
-                ->first();
-        }
-        // If file field is just a file ID
-        elseif (! empty($data) && is_numeric($data)) {
-            $file = ee('Model')->get('File', $data)->first();
-        }
-
-        return $file;
     }
 
     /**
