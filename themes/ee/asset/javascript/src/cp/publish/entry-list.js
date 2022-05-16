@@ -63,6 +63,9 @@ $(document).ready(function () {
 				searching = null;
 				replaceData(response);
 				sortableColumns();
+				$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
+					cursor: "move"
+				})
 			}
 		});
 	}

@@ -38,7 +38,7 @@
 		})
 
 		// Select images if Grid view
-		$('.file-metadata__wrapper input:checkbox').on('change', function () {
+		$('body').on('change', '.file-metadata__wrapper input:checkbox', function () {
 			if ($(this).is(":checked")) {
 				$(this).closest(".file-grid__file").addClass('selected');
 			} else {
@@ -47,7 +47,7 @@
 		});
 
 		// If Selected All Files are checked
-		$(".file-grid__checkAll input[type=checkbox]").on('change', function(){
+		$('body').on('change', ".file-grid__checkAll input[type=checkbox]", function(){
 			if(this.checked){
 				$(".file-metadata__wrapper input[type='checkbox']").each(function(){
 					this.checked = true;
@@ -62,7 +62,7 @@
 		});
 
 		// if selected all files was checked and some of elements unchecked
-		$(".file-metadata__wrapper input[type='checkbox']").on('change', function () {
+		$('body').on('change', ".file-metadata__wrapper input[type='checkbox']", function () {
 			if ($(this).is(":checked")) {
 				var isAllChecked = 0;
 
