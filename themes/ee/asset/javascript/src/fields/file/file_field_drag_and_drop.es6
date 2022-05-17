@@ -61,10 +61,10 @@ console.log(this)
 console.log(fileField)
 
     EE.FileField.pickerCallback(response, {
-input_value: fileField.find('input.js-file-input'),
-input_img: fileField.find('img.js-file-image'),
-modal: $('.modal-file')
-})
+        input_value: fileField.find('input.js-file-input'),
+        input_img: fileField.find('img.js-file-image'),
+        modal: $('.modal-file')
+    })
 
     this.setState({
       file: response
