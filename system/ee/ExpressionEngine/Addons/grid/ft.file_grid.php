@@ -41,9 +41,6 @@ class file_grid_ft extends Grid_ft
         ee()->javascript->set_global([
             'lang.file_grid_maximum_rows_hit' => lang('file_grid_maximum_rows_hit'),
         ]);
-        echo "<pre>";
-        var_dump($this->get_setting('allowed_directories', 'all'));
-        exit;
 
         return ee('View')->make('grid:file_grid')->render([
             'grid_markup' => $grid_markup,

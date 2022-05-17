@@ -354,12 +354,13 @@ abstract class AbstractFiles extends CP_Controller
         $table->setColumns($table_columns);
 
         echo "<pre>";
-        var_dump($upload_location_id);
+        var_dump($uploadLocation);
         echo "</pre>";
+
         // exit;
         // TODO UPDATE THIS
         $uploaderComponent = [
-            'allowedDirectory' => 'all',
+            'allowedDirectory' => $upload_location_id,
             'contentType' => 'image',
             'file' => null,
             'showActionButtons' => false,

@@ -38,7 +38,7 @@
   }
 
   getFieldContainer() {
-
+console.log(this)
     // If in a grid, return that
     if($(this.props.thisField).closest('.grid-file-upload').length) {
       return $(this.props.thisField).closest('.grid-file-upload')
@@ -58,12 +58,13 @@
 
   setFile = (response) => {
     let fileField = this.getFieldContainer()
+console.log(fileField)
 
     EE.FileField.pickerCallback(response, {
-      input_value: fileField.find('input.js-file-input'),
-      input_img: fileField.find('img.js-file-image'),
-      modal: $('.modal-file')
-    })
+input_value: fileField.find('input.js-file-input'),
+input_img: fileField.find('img.js-file-image'),
+modal: $('.modal-file')
+})
 
     this.setState({
       file: response
