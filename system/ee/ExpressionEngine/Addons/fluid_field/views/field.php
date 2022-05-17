@@ -4,7 +4,7 @@
          <div class="fluid__item-tools fluid__item-tools--item-open">
             <a href class="fluid__item-tool js-toggle-fluid-item">
                 <span class="sr-only"><?=lang('collapse')?></span>
-                <i class="fas fa-caret-square-up"></i>
+                <i class="fas fa-caret-square-up fa-fw"></i>
             </a>
 
            <?php if (empty($is_bulk_edit)): ?>
@@ -24,7 +24,7 @@
              <button type="button" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle" title="<?=lang('add_field')?>"><i class="fas fa-fw fa-plus"></i></button>
              <div class="dropdown">
              <?php foreach ($fields as $field_item): ?>
-              <a href="#" class="dropdown__link" data-field-name="<?=$field_item->getShortName()?>"><img src="<?=$field_item->getIcon()?>" width="12" height="12" /> 
+              <a href="#" class="dropdown__link" data-field-name="<?=$field_item->getShortName()?>"><img src="<?=$field_item->getIcon()?>" width="12" height="12" />
                   <?=$field_item->getItem('field_label')?>
               </a>
              <?php endforeach; ?>

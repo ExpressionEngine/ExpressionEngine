@@ -217,7 +217,7 @@
 <?php /* End table */
 
 else: ?>
-	<div 
+	<div
 		class="grid-field <?php if (isset($vertical_layout) && $vertical_layout) : echo 'vertical-layout' ; elseif (isset($vertical_layout)) : echo 'entry-grid'; endif; ?>"
 		id="<?=$grid_field_name?>">
 
@@ -335,7 +335,7 @@ else: ?>
 							<div class="grid-field__item-tools grid-field__item-tools--item-open">
 								<a href class="grid-field__item-tool js-toggle-grid-item">
 									<span class="sr-only"><?=lang('collapse')?></span>
-									<i class="fas fa-caret-square-up"></i>
+									<i class="fas fa-caret-square-up fa-fw"></i>
 								</a>
 
 								<button type="button" data-dropdown-offset="0px, -30px" data-dropdown-pos="bottom-end" class="grid-field__item-tool js-dropdown-toggle"><i class="fas fa-fw fa-cog"></i></button>

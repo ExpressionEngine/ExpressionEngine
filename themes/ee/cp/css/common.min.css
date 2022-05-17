@@ -17950,13 +17950,17 @@ fieldset .field-control #eye {
   margin-right: 5px;
   color: var(--ee-text-secondary);
   display: inline-block;
-  font-size: 1.1em;
+  font-size: 1rem;
   margin-bottom: 0 !important;
+  margin-left: -5px;
 }
 .grid-field__item-fieldset .field-instruct button {
   border: none;
   background: none;
   color: inherit;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 .grid-field__item-fieldset tr.grid__item--collapsed {
   padding-bottom: 0 !important;
@@ -17999,7 +18003,6 @@ fieldset .field-control #eye {
   position: relative;
   border: 1px solid var(--ee-border);
   margin-bottom: 10px;
-  border-radius: 8px;
   padding-bottom: 15px;
   background-color: var(--ee-bg-blank);
 }
@@ -18012,6 +18015,7 @@ fieldset .field-control #eye {
   border-bottom: none;
   padding: 10px 15px 10px 15px;
   padding-bottom: 0;
+  font-size: 1rem;
 }
 .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools {
   text-align: left;
@@ -18022,8 +18026,9 @@ fieldset .field-control #eye {
   margin-bottom: 0;
 }
 .grid-field.vertical-layout .grid-field__table tbody tr.no-results {
-  border: 1px solid var(--ee-border);
-  padding-bottom: 18px;
+  padding: 0px;
+  background-color: transparent;
+  border: none;
 }
 .grid-field.vertical-layout .grid-field__table tbody tr.no-results td {
   padding-top: 0;
@@ -18045,8 +18050,19 @@ fieldset .field-control #eye {
   border-bottom: 1px solid var(--ee-border) !important;
   position: relative;
 }
+.grid-field.vertical-layout .grid-field__item-fieldset .field-instruct label {
+  font-size: 1rem;
+}
+.grid-field.vertical-layout .grid-field__item-fieldset .field-instruct label button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
 .grid-field.vertical-layout .grid-field__column--tools {
   display: none !important;
+}
+.grid-field.vertical-layout .grid-field__column-label {
+  display: inherit;
 }
 
 @media (max-width: 767px) {
@@ -18079,13 +18095,11 @@ fieldset .field-control #eye {
     position: relative;
     border: 1px solid var(--ee-border);
     margin-bottom: 10px;
-    border-radius: 8px;
     padding-bottom: 15px;
     background-color: var(--ee-bg-blank);
   }
   .grid-field__table tr.no-results {
-    border: 1px solid var(--ee-border);
-    padding-bottom: 18px;
+    padding: 0px;
   }
   .grid-field__table tr.no-results td {
     padding-top: 0;
@@ -18128,6 +18142,7 @@ fieldset .field-control #eye {
     display: block;
     position: relative;
     border-bottom: 1px solid var(--ee-border) !important;
+    font-size: 1rem;
   }
   .entry-grid td.grid-field__column--tools, .vertical-layout td.grid-field__column--tools {
     display: none !important;

@@ -75,7 +75,7 @@
     padding-right: 15px;
     border-right: none;
   }
-  
+
 
   .file-field__dropzone {
     margin-top: 0px;
@@ -222,14 +222,18 @@
 			margin-right: 5px;
 			color: var(--ee-text-secondary);
 			display: inline-block;
-			font-size: 1.1em;
+			font-size: 1rem;
 			margin-bottom: 0 !important;
+      margin-left: -5px;
 		}
 
 		button {
 			border: none;
 			background: none;
 			color:inherit;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
 		}
 	}
 
@@ -279,7 +283,6 @@
 				position: relative;
 				border: 1px solid var(--ee-border);
 				margin-bottom: 10px;
-				border-radius: 8px;
 				padding-bottom: 15px;
 				background-color: var(--ee-bg-blank);
 
@@ -292,6 +295,7 @@
 					border-bottom: none;
 					padding: 10px 15px 10px 15px;
 					padding-bottom: 0;
+          font-size: 1rem;
 
 					&.grid-field__column--tools {
 						text-align: left;
@@ -304,8 +308,9 @@
 			}
 
 			tr.no-results {
-				border: 1px solid var(--ee-border);
-				padding-bottom: 18px;
+				padding: 0px;
+        background-color: transparent;
+        border: none;
 
 				td {
 					padding-top: 0;
@@ -332,9 +337,26 @@
 		padding: 10px 15px 5px 15px;
 		border-bottom: 1px solid var(--ee-border) !important;
 		position: relative;
+
+    .field-instruct {
+
+      label {
+        font-size: 1rem;
+
+        button {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+    }
 	}
 
 	.grid-field__column--tools { display: none !important;}
+
+  .grid-field__column-label {
+  	display: inherit;
+  }
 }
 
 // Collapse the grid field on mobile
@@ -375,13 +397,11 @@
 			position: relative;
 			border: 1px solid color(border);
 			margin-bottom: 10px;
-			border-radius: $corners-big;
 			padding-bottom: $sq-s;
 			background-color: var(--ee-bg-blank);
 
       &.no-results {
-        border: 1px solid color(border);
-        padding-bottom: 18px;
+        padding: 0px;
 
         td {
           padding-top: 0;
@@ -429,6 +449,7 @@
 			display: block;
 			position: relative;
 			border-bottom: 1px solid var(--ee-border) !important;
+      font-size: 1rem;
 		}
 
 		td.grid-field__column--tools { display: none !important;}
