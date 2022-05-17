@@ -10,6 +10,7 @@
 
 namespace ExpressionEngine\Controller\Files;
 
+use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
 
@@ -25,6 +26,7 @@ class File extends AbstractFilesController
         }
 
         $file = ee('Model')->get('File', $id)
+            ->with('UploadDestination', 'UploadAuthor', 'ModifyAuthor', 'Categories', 'FileCategories', 'FileEntries')
             ->filter('site_id', ee()->config->item('site_id'))
             ->first();
 
@@ -46,16 +48,6 @@ class File extends AbstractFilesController
             if ($result->isValid()) {
                 $this->saveFileAndRedirect($file);
             }
-        }
-
-        $is_image = $file->isImage();
-        $image_info = [];
-
-        if ($is_image) {
-            ee()->load->library('image_lib');
-            $image_info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), true);
-        } else {
-            show_error(lang('not_an_image'));
         }
 
         if (! $file->exists()) {
@@ -88,10 +80,20 @@ class File extends AbstractFilesController
             ee()->image_lib->error_msg = array(); // Reset any erorrs
         }
 
+        $tabs = array(
+            'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
+            'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
+        );
+        if ($file->isEditableImage()) {
+            $tabs['crop'] = $this->renderCropForm($file, $info);
+            $tabs['rotate'] = $this->renderRotateForm($file);
+            $tabs['resize'] = $this->renderResizeForm($file, $info);
+        }
+        $tabs['usage'] = $this->renderUsageForm($file);
+
         $vars = [
             'file' => $file,
-            'is_image' => $is_image,
-            'image_info' => $image_info,
+            'is_image' => $file->isImage(),
             'size' => (string) ee('Format')->make('Number', $file->file_size)->bytes(),
             'download_url' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
 
@@ -99,14 +101,7 @@ class File extends AbstractFilesController
             'base_url' => ee('CP/URL')->make('files/file/view/' . $id),
             'save_btn_text' => 'btn_edit_file_meta',
             'save_btn_text_working' => 'btn_saving',
-            'tabs' => array(
-                'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
-                'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
-                'crop' => $this->renderCropForm($file, $info),
-                'rotate' => $this->renderRotateForm($file),
-                'resize' => $this->renderResizeForm($file, $info),
-                'usage' => $this->renderUsageForm($file),
-            ),
+            'tabs' => $tabs,
             'buttons' => [
                 [
                     'name' => 'submit',
@@ -134,7 +129,9 @@ class File extends AbstractFilesController
         );
 
         ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('files')->compile() => lang('file_manager'),
+            ee('CP/URL')->make('files')->compile() => lang('files'),
+            ee('CP/URL')->make('files/directory/' . $file->UploadDestination->getId())->compile() => $file->UploadDestination->name,
+            '' => lang('edit_file')
         );
 
         ee()->cp->render('files/edit', $vars);
@@ -346,6 +343,81 @@ class File extends AbstractFilesController
 
     protected function renderUsageForm($file)
     {
+        $entriesTable = ee('CP/Table', array(
+            'class' => 'tbl-fixed',
+        ));
+        $entriesTable->setColumns(
+            array(
+                'title' => array(
+                    'encode' => false,
+                    'attrs' => array(
+                        'width' => '40%'
+                    ),
+                ),
+                //'date_added',
+                'channel',
+                'status' => [
+                    'type' => Table::COL_STATUS
+                ]
+            )
+        );
+        //$entriesTable->setNoResultsText(lang('no_uploaded_files'));
+        $data = array();
+        foreach ($file->FileEntries as $entry) {
+            $title = ee('Format')->make('Text', $entry->title)->convertToEntities();
+            if (ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
+                || (ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id) &&
+                $entry->author_id == ee()->session->userdata('member_id'))) {
+                    $title = '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '">' . $title . '</a>';
+            }
+            $attrs = [];
+            $columns = [
+                $title,
+                //ee()->localize->human_time($entry->entry_date),
+                $entry->Channel->channel_title,
+                !empty($entry->getStatus()) ? $entry->getStatus()->renderTag() : $entry->status
+            ];
+            $data[] = array(
+                'attrs' => $attrs,
+                'columns' => $columns
+            );
+        }
+        $entriesTable->setData($data);
+
+        $categoriesTable = ee('CP/Table', array(
+            'class' => 'tbl-fixed',
+        ));
+        $categoriesTable->setColumns(
+            array(
+                'name' => array(
+                    'encode' => false,
+                    'attrs' => array(
+                        'width' => '40%'
+                    ),
+                ),
+                'category_group',
+            )
+        );
+        $data = array();
+        foreach ($file->FileCategories as $category) {
+            $title = ee('Format')->make('Text', $category->cat_name)->convertToEntities();
+            $can_edit = explode('|', rtrim((string) $category->CategoryGroup->can_edit_categories, '|'));
+            if (ee('Permission')->isSuperAdmin()
+                || (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit))) {
+                    $title = '<a href="' . ee('CP/URL')->make('categories/edit/' . $category->group_id . '/' . $category->cat_id) . '">' . $title . '</a>';
+            }
+            $attrs = [];
+            $columns = [
+                $title,
+                $category->CategoryGroup->group_name,
+            ];
+            $data[] = array(
+                'attrs' => $attrs,
+                'columns' => $columns
+            );
+        }
+        $categoriesTable->setData($data);
+        
         $section = [
             [
                 'title' => 'usage_desc',
@@ -353,7 +425,10 @@ class File extends AbstractFilesController
                 'fields' => [
                     'usage_tables' => [
                         'type' => 'html',
-                        'content' => ee('View')->make('ee:_shared/file/usage-tab')->render(),
+                        'content' => ee('View')->make('ee:_shared/file/usage-tab')->render([
+                            'entries' => $entriesTable->viewData(),
+                            'categories' => $categoriesTable->viewData(),
+                        ]),
                     ],
                 ],
             ],
@@ -398,15 +473,6 @@ class File extends AbstractFilesController
                     ]
                 ]
             ],
-            [
-                'title' => '',
-                'fields' => [
-                    'img_preview' => [
-                        'type' => 'html',
-                        'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '?v=' . time() . '"></figure>'
-                    ]
-                ]
-            ]
         ];
 
         return ee('View')->make('_shared/form/section')
@@ -432,15 +498,6 @@ class File extends AbstractFilesController
                     ],
                 ]
             ],
-            [
-                'title' => '',
-                'fields' => [
-                    'img_preview' => [
-                        'type' => 'html',
-                        'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '?v=' . time() . '"></figure>'
-                    ]
-                ]
-            ]
         ];
 
         return ee('View')->make('_shared/form/section')
@@ -466,15 +523,6 @@ class File extends AbstractFilesController
                     ]
                 ]
             ],
-            [
-                'title' => '',
-                'fields' => [
-                    'img_preview' => [
-                        'type' => 'html',
-                        'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '?v=' . time() . '"></figure>'
-                    ]
-                ]
-            ]
         ];
 
         return ee('View')->make('_shared/form/section')

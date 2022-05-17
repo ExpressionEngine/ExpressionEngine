@@ -5,11 +5,14 @@
         <div class="panel-heading">
             <div class="form-btns form-btns-top">
                 <div class="title-bar title-bar--large">
-                    <h3 class="title-bar__title"><?=$file->title?></h3>
+                    <h3 class="title-bar__title">
+                        <?=$file->title?>
+                        <a class="button button--large filter-bar__button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_url')?>"><i class="fas fa-link"></i></a>
+                    </h3>
 
                     <div class="title-bar__extra-tools">
-                        <a class="btn button button--primary" href="#">Replace</a>
-                        <a class="btn button button--primary" href="<?=$download_url?>" title="<?=lang('download')?>">Download</a>
+                        <a class="btn button button--secondary" href="#">Replace</a>
+                        <a class="btn button button--secondary" href="<?=$download_url?>" title="<?=lang('download')?>"><?=lang('download')?></a>
                         <?php $this->embed('ee:_shared/form/buttons'); ?>
                     </div>
                 </div>
@@ -18,11 +21,11 @@
 
       <div class="panel-body file-preview-modal">
             <div class="file-preview-modal__preview">
-                <?php if ($is_image) {
-                    echo "<a href=\"{$file->getAbsoluteURL()}\" target=\"_blank\"><img src=\"{$file->getAbsoluteURL()}\"></a>";
-                } else {
-                    echo "<div class=\"file-preview-modal__preview-file-name\">{$file->file_name}</div>";
-                } ?>
+                <?php if ($is_image) : ?>
+                    <a href="<?=$file->getAbsoluteURL() . '?v=' . time()?>" target="_blank"><img src="<?=$file->getAbsoluteURL() . '?v=' . time()?>"></a>
+                <?php else: ?>
+                    <div class="file-preview-modal__preview-file-name"><?=$file->file_name?></div>
+                <?php endif; ?>
             </div>
 
             <div class="file-preview-modal__form">
