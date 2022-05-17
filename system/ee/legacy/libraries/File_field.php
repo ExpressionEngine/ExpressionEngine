@@ -743,12 +743,30 @@ class File_field
      */
     public function parse_string($data, $parse_encoded = false)
     {
+        if (empty($data)) {
+            return '';
+        }
+
+        if (strpos((string) $data, 'file:') !== false ) {
+            if (preg_match_all('/{file\:(\d+)\:url}/', (string) $data, $matches, PREG_SET_ORDER)) {
+                $file_ids = [];
+                foreach ($matches as $match) {
+                    $file_ids[] = $match[1];
+                }
+                $files = ee('Model')->get('File', $file_ids)->fields('file_id', 'upload_location_id', 'file_name')->all();
+                $this->_get_upload_prefs();
+                foreach ($files as $file) {
+                    $data = str_replace('{file:' . $file->file_id . ':url}', $this->_upload_prefs[$file->upload_location_id]['url'] . $file->file_name, $data);
+                }
+            }
+        }
+        
         $pattern = ($parse_encoded)
             ? '/(?:{|&#123;)filedir_(\d+)(?:}|&#125;)/'
             : '/{filedir_(\d+)}/';
 
         // Find each instance of {filedir_n}
-        if (preg_match_all($pattern, (string) $data, $matches, PREG_SET_ORDER)) {
+        if (strpos((string) $data, 'filedir_') !== false && preg_match_all($pattern, (string) $data, $matches, PREG_SET_ORDER)) {
             ee()->load->model('file_upload_preferences_model');
             $file_dirs = ee()->file_upload_preferences_model->get_paths();
 

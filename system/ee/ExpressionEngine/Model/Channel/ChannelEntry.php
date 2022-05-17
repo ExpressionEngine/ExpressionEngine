@@ -671,7 +671,7 @@ class ChannelEntry extends ContentModel
             if (! is_string($item) || strpos($item, '{file:') === false ) {
                 return;
             }
-            if (preg_match('/^{file\:(\d+)\:url}/', $item, $matches)) {
+            if (preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
                 $file_id = $matches[1];
                 if (! isset($usage[$file_id])) {
                     $usage[$file_id] = 1;
