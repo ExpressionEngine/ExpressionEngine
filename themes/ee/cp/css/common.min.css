@@ -17922,6 +17922,9 @@ fieldset .field-control #eye {
   transform: translateY(-50%);
   z-index: 1;
 }
+.grid-field__item-fieldset .grid-field__item-tools.has-open-dropdown {
+  z-index: 200;
+}
 .grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool {
   -webkit-appearance: none;
   appearance: none;

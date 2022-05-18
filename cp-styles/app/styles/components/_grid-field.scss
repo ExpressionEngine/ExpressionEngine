@@ -190,6 +190,10 @@
 		transform: translateY(-50%);
 		z-index: 1;
 
+		&.has-open-dropdown {
+			z-index: 200;
+		}
+
 		.grid-field__item-tool {
 			-webkit-appearance: none;
 			appearance: none;
