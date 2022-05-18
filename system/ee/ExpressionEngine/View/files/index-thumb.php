@@ -8,8 +8,8 @@
                <h3 class="title-bar__title"><?=$cp_heading?></h3>
 
                 <?php if (isset($filters)) {
-                    echo $filters;
-                } ?>
+    echo $filters;
+} ?>
             </div>
         </div>
         <div class="entry-pannel-notice-wrap">
@@ -183,4 +183,4 @@
   </div>
 </div>
 
-<?php $this->embed('files/_delete_modal'); ?>
+<?php $this->embed('files/modals/_delete'); ?>

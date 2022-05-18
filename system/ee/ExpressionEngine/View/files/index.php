@@ -107,6 +107,6 @@ if (! AJAX_REQUEST) {
 
 <?php 
 if (! AJAX_REQUEST) {
-    $this->embed('files/_delete_modal');
+    $this->embed('files/modals/_delete');
 }
 ?>
