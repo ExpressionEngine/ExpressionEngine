@@ -13996,7 +13996,7 @@ input[type=button].btn-block {
   padding: 20px 30px 20px 30px;
   overflow: hidden;
   position: relative;
-  border-radius: 5px;
+  border-radius: 6px;
   box-shadow: 0 8px 40px var(--ee-shadow-modal);
 }
 .modal .col {
@@ -18726,6 +18726,7 @@ body[data-theme=dark] .select-popup {
   align-items: center;
   padding: 20px 30px 20px 30px;
   background-color: var(--ee-bg-0);
+  border-bottom: 1px solid var(--ee-border);
 }
 
 .dialog__header--centered {
@@ -18773,6 +18774,7 @@ body[data-theme=dark] .select-popup {
 .dialog__actions {
   padding: 20px 30px 20px 30px;
   background-color: var(--ee-bg-0);
+  border-top: 1px solid var(--ee-border);
 }
 .dialog__actions .button + .button, .dialog__actions .pagination__link + .button, .dialog__actions .button + .pagination__link, .dialog__actions .pagination__link + .pagination__link, .dialog__actions .no-results a + .button, .dialog__actions .no-results a + .pagination__link, .no-results .dialog__actions a + .button, .no-results .dialog__actions a + .pagination__link,
 .dialog__actions .field-no-results a + .button,
