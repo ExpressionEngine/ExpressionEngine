@@ -96,11 +96,12 @@ class Files extends AbstractFilesController
         ee()->view->cp_page_title = lang('file_manager');
         $vars['cp_heading'] = sprintf($dir->name);
 
-
         $this->stdHeader();
 
         $vars['toolbar_items'] = [];
         if (ee('Permission')->can('upload_new_files') && $dir->memberHasAccess(ee()->session->getMember())) {
+            $new_folder_modal_name = 'modal_new_folder';
+
             $vars['toolbar_items']['sync'] = [
                 'href' => ee('CP/URL')->make('files/uploads/sync/' . $id),
                 'title' => lang('sync'),
@@ -108,12 +109,28 @@ class Files extends AbstractFilesController
             ];
             $vars['toolbar_items']['new_folder'] = [
                 'href' => '#',
+                'rel' => 'modal-new-folder',
+                'class' => 'm-link',
                 'content' => lang('new_folder'),
             ];
             $vars['toolbar_items']['upload'] = [
                 'href' => '#',
                 'content' => lang('upload'),
             ];
+
+            // Generate the contents of the new folder modal
+            $contents = ee('View')->make('files/modals/new_folder')->render([
+                'form_url'=> ee('CP/URL')->make('files/new_folder')->compile(),
+                'destinations' => ee('Model')->get('UploadDestination')->fields('id', 'name')->all()->getDictionary('id', 'name')
+            ]);
+
+            $modal_html = ee('View')->make('ee:_shared/modal')->render([
+                'name' => 'modal-new-folder',
+                'contents' => $contents
+            ]);
+
+            // Add the modal to the DOM
+            ee('CP/Modal')->addModal('modal-new-folder', $modal_html);
         }
 
         ee()->view->cp_breadcrumbs = array(
@@ -130,6 +147,13 @@ class Files extends AbstractFilesController
         }
 
         ee()->cp->render('files/index', $vars);
+    }
+
+    public function new_folder()
+    {
+        echo "<pre>";
+        var_dump($_POST);
+        exit;
     }
 
     public function export()
