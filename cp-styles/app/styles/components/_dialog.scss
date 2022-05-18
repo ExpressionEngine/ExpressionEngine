@@ -35,6 +35,7 @@ body[data-theme="dark"] .dialog--danger .dialog__header {
 	padding: $sq-inset-m;
   background-color: color(bg-0);
   border-bottom: 1px solid color(border);
+  border-radius: $border-radius-large $border-radius-large 0 0;
 }
 
 .dialog__header--centered {
@@ -88,6 +89,7 @@ body[data-theme="dark"] .dialog--danger .dialog__header {
 	padding: $sq-inset-m;
   background-color: color(bg-0);
   border-top: 1px solid color(border);
+  border-radius: 0 0 $border-radius-large $border-radius-large;
 
   .button + .button {
     margin-left: 7px;
