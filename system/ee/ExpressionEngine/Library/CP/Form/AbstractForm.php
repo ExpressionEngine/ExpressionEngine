@@ -4,11 +4,11 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Library\CP;
+namespace ExpressionEngine\Library\CP\Form;
 
 use ExpressionEngine\Service\Validation\ValidationAware;
 use ExpressionEngine\Service\Validation\Validator;
@@ -136,7 +136,7 @@ abstract class AbstractForm implements ValidationAware
             return true;
         }
 
-        return 'eeobjects.error.invalid_member_id';
+        return 'error.invalid_member_id';
     }
 
     /**
@@ -159,7 +159,7 @@ abstract class AbstractForm implements ValidationAware
             }
         }
 
-        return 'eeobjects.error.invalid_super_admin_id';
+        return 'error.invalid_super_admin_id';
     }
 
     /**
