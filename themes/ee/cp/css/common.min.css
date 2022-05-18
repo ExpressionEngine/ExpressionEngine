@@ -13994,6 +13994,7 @@ input[type=button].btn-block {
   background-color: var(--ee-bg-0);
   margin-bottom: 40px;
   padding: 20px 30px 20px 30px;
+  overflow: hidden;
   position: relative;
   border-radius: 5px;
   box-shadow: 0 8px 40px var(--ee-shadow-modal);
