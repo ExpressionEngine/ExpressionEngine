@@ -7,7 +7,9 @@
                 <div class="title-bar title-bar--large">
                     <h3 class="title-bar__title">
                         <?=$file->title?>
-                        <a class="button button--large filter-bar__button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_url')?>"><i class="fas fa-link"></i></a>
+                        <a class="button button--large filter-bar__button js-copy-url-button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_url')?>">
+                            <i class="fas fa-link"></i>
+                        </a>
                     </h3>
 
                     <div class="title-bar__extra-tools">
@@ -18,6 +20,13 @@
                 </div>
             </div>
       </div>
+
+    <div class="alert alert--success f_manager-alert">
+        <div class="alert__icon"><i class="fas fa-check-circle fa-fw"></i></div>
+        <div class="alert__content">
+            <p class="alert__title">link copied</code></p>
+        </div>
+    </div>
 
       <div class="panel-body file-preview-modal">
             <div class="file-preview-modal__preview">

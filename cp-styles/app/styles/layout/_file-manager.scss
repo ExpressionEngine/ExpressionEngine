@@ -308,3 +308,13 @@
   border: 2px solid var(--ee-table-border);
   z-index: 200;
 }
+
+.file-edit-view {
+  .filter-bar__button { margin-left: 10px;}
+}
+
+.f_manager-alert{
+  display: none;
+  margin: 5px auto;
+  width: calc(100% - 10px);
+}

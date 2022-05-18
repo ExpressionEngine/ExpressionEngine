@@ -134,6 +134,10 @@ class File extends AbstractFilesController
             '' => lang('edit_file')
         );
 
+        ee()->cp->add_js_script(array(
+            'file' => array('cp/files/copy-url'),
+        ));
+
         ee()->cp->render('files/edit', $vars);
     }
 
