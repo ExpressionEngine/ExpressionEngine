@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -216,6 +216,11 @@ abstract class AbstractFiles extends CP_Controller
                     'class' => 'm-link',
                     'title' => lang('edit'),
                     'data-file-id' => $file->file_id
+                ),
+                'link' => array(
+                    'href' => $file->getAbsoluteURL(),
+                    'title' => lang('link'),
+                    'target' => '_blank',
                 ),
                 'crop' => array(
                     'href' => ee('CP/URL')->make('files/file/crop/' . $file->file_id),

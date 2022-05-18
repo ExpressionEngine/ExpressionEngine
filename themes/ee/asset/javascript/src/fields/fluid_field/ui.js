@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,12 +19,17 @@
 			$('.fluid-field-templates :input').attr('disabled', 'disabled');
 		});
 
-	    var addField = function(e) {
+		$('.fluid').each(function() {
+			var savedFluidItems = $(this).find('.js-sorting-container .fluid__item').length;
+			$(this).attr('data-field-count', savedFluidItems);
+		});
+
+		var addField = function(e) {
 			var fluidField   = $(this).closest('.fluid'),
-			    fieldToAdd   = $(this).data('field-name'),
-			    fieldCount   = fluidField.data('field-count'),
-			    fieldToClone = fluidField.find('.fluid-field-templates .fluid__item[data-field-name="' + fieldToAdd + '"]'),
-			    fieldClone   = fieldToClone.clone();
+				fieldToAdd   = $(this).data('field-name'),
+				fieldCount   = fluidField.attr('data-field-count'),
+				fieldToClone = fluidField.find('.fluid-field-templates .fluid__item[data-field-name="' + fieldToAdd + '"]'),
+				fieldClone   = fieldToClone.clone();
 
 			fieldCount++;
 
@@ -35,9 +40,10 @@
 				)
 			);
 
-			fluidField.data('field-count', fieldCount);
+			fluidField.attr('data-field-count', fieldCount);
 
 			// Enable inputs
+
 			fieldClone.find(':input').removeAttr('disabled');
 
 			// Insert it
@@ -69,8 +75,16 @@
 
 		$('.fluid').on('click', 'a.js-fluid-remove', function(e) {
 			var el = $(this).closest('.fluid__item');
+			var fluidCount = $(this).parents('.fluid').attr('data-field-count');
+
 			FluidField.fireEvent($(el).data('field-type'), 'remove', el);
 			$(document).trigger('entry:preview');
+
+			if (fluidCount > 0) {
+				fluidCount--;
+				el.parents('.fluid').attr('data-field-count', fluidCount);
+			}
+
 			el.remove();
 			e.preventDefault();
 		});

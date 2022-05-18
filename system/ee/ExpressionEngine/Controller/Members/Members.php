@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1455,6 +1455,11 @@ class Members extends CP_Controller
                 // -------------------------------------------
 
                 $member->save();
+
+                // Get a fresh copy of this member model and update statistics for its roles
+                if (!bool_config_item('ignore_member_stats')) { 
+                    ee('Model')->get('Member')->filter('member_id', $member->getId())->first()->updateRoleTotalMembers();
+                }
 
                 // -------------------------------------------
                 // 'cp_members_member_create' hook.

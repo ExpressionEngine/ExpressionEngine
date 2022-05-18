@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1766,7 +1766,7 @@ class EE_Schema
 				values (1, '0', '" . $predefined_buttons[$button]['tag_name'] . "', '" . $predefined_buttons[$button]['tag_open'] . "', '" . $predefined_buttons[$button]['tag_close'] . "', '" . $predefined_buttons[$button]['accesskey'] . "', '" . $buttoncount++ . "', '1', '" . $predefined_buttons[$button]['classname'] . "')";
         }
 
-        // Default field types
+        // Default fieldtypes
         $default_fts = array('select', 'text', 'number', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'slider', 'range_slider', 'toggle', 'url', 'colorpicker', 'selectable_buttons', 'notes');
 
         foreach ($default_fts as $name) {

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -399,8 +399,8 @@ class EE_Relationship_data_parser
         }
 
         // enforce offset and limit
-        $offset = $node->param('offset');
-        $limit = $node->param('limit');
+        $offset = $node->param('offset', 0);
+        $limit = $node->param('limit', null);
 
         // make sure defaults are set
         if (! $node->param('status')) {
@@ -455,6 +455,7 @@ class EE_Relationship_data_parser
 
                 if (strpos($value, 'not ') === 0) {
                     $not = true;
+                    $value = substr($value, 4);
                 }
 
                 $value = trim($value, " |\t\n\r");
@@ -559,7 +560,7 @@ class EE_Relationship_data_parser
         // If $end_script is TRUE, we should do no more processing after the hook!
 
         if ($end_script === false && ($limit or $offset)) {
-            $rows = array_slice($rows, $offset, $limit, true);
+            $rows = array_slice($rows, (int) $offset, $limit, true);
         }
 
         return array(
