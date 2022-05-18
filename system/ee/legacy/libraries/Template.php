@@ -1857,7 +1857,7 @@ class EE_Template
      */
     public function swap_var_single($search, $replace, $source)
     {
-        return str_replace(LD . $search . RD, $replace, $source);
+        return str_replace(LD . $search . RD, (string) $replace, $source);
     }
 
     /**

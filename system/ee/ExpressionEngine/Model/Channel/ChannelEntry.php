@@ -666,17 +666,58 @@ class ChannelEntry extends ContentModel
     {
         $data = $_POST ?: $this->getValues();
 
+        ee()->load->model('file_upload_preferences_model');
+        $file_dirs = ee()->file_upload_preferences_model->get_paths();
+
         $usage = [];
-        array_walk_recursive($data, function ($item) use (&$usage) {
-            if (! is_string($item) || strpos($item, '{file:') === false ) {
+        array_walk_recursive($data, function ($item) use (&$usage, $file_dirs) {
+            if (! is_string($item)) {
                 return;
             }
-            if (preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
+            if (strpos($item, '{file:') !== false && preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
                 $file_id = $matches[1];
                 if (! isset($usage[$file_id])) {
                     $usage[$file_id] = 1;
                 } else {
                     $usage[$file_id]++;
+                }
+            }
+            $dirUrlsMatches = [];
+            foreach ($file_dirs as $dir_id => $dir_url) {
+                if (strpos($item, $dir_url) !== false) {
+                    $dirUrlsMatches[$dir_id] = $dir_url;
+                }
+            }
+            if (! empty($dirUrlsMatches) || strpos($item, '{filedir_') !== false) {
+                ee()->load->model('file_upload_preferences_model');
+                $dirs = [];
+                foreach (ee()->file_upload_preferences_model->get_paths() as $dir_id => $dir_url) {
+                    $dirs['{filedir_' . $dir_id . '}'] = $dir_url;
+                }
+                $item = str_replace(array_keys($dirs), $dirs, $item);
+
+                if (preg_match_all('/{filedir_(\d+)}(.*)\"/', $item, $matches, PREG_SET_ORDER)) {
+                    $dirsAndFiles = [];
+                    foreach ($matches as $match) {
+                        $dirsAndFiles[$match[1]][] = $match[2];
+                    }
+                }
+                $files = ee('Model')
+                    ->get('File')
+                    ->fields('file_id', 'upload_location_id', 'file_name');
+                foreach ($dirsAndFiles as $dir_id => $file_names) {
+                    $files->orFilterGroup()
+                        ->filter('upload_location_id', $dir_id)
+                        ->filter('file_name', 'IN', $file_names)
+                        ->endFilterGroup();
+                }
+                foreach ($files->all() as $file) {
+                    $file_id = $file->file_id;
+                    if (! isset($usage[$file_id])) {
+                        $usage[$file_id] = 1;
+                    } else {
+                        $usage[$file_id]++;
+                    }
                 }
             }
         });

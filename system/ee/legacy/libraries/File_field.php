@@ -482,8 +482,12 @@ class File_field
         $data = array_unique($data);
 
         foreach ($data as $field_data) {
+            // If the file field is in the "{file:XX:url}" format
+            if (preg_match('/^{file\:(\d+)\:url}/', (string) $field_data, $matches)) {
+                $file_ids[] = $matches[1];
+            }
             // If the file field is in the "{filedir_n}image.jpg" format
-            if (preg_match('/^{filedir_(\d+)}/', (string) $field_data, $matches)) {
+            elseif (preg_match('/^{filedir_(\d+)}/', (string) $field_data, $matches)) {
                 $dir_ids[] = $matches[1];
                 $file_names[] = str_replace($matches[0], '', $field_data);
             }
