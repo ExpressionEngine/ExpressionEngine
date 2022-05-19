@@ -104,7 +104,12 @@
 		</div>
 	<?php endif; ?>
 
-	<div class="container">
+	<div class="container" style="position: relative;">
+    <?php if (isset($left_nav)): ?>
+    <div class="secondary-sidebar-toggle">
+      <a href="" class="secondary-sidebar-toggle__target" title="Toggle Sidebar"><i class="fas fa-angle-left"></i></a>
+    </div>
+    <?php endif; ?>
 		<?=$child_view?>
 	</div>
 
