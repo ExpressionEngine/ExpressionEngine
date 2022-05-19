@@ -899,15 +899,6 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'image_library_path image_resizing',
                         'command_title' => 'image_library_path'
                     ),
-                    // Image Resizing -- Thumbnail suffix
-                    'fieldset-thumbnail_prefix' => array(
-                        'trail' => [
-                            'settings',
-                            'content_and_design'
-                        ],
-                        'command' => 'thumbnail_suffix thumbnail_suffix_desc image_resizing',
-                        'command_title' => 'thumbnail_suffix'
-                    ),
                     // Enable emoticons?
                     'fieldset-enable_emoticons' => array(
                         'trail' => [

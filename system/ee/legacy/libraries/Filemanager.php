@@ -2190,6 +2190,9 @@ class Filemanager
      */
     public function edit_image()
     {
+        ee()->load->library('logger');
+        ee()->logger->deprecated('7.0.0');
+
         ee()->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
         ee()->output->set_header("Pragma: no-cache");
 

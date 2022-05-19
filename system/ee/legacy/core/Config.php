@@ -663,7 +663,6 @@ class EE_Config
         $channel_default = array(
             'image_resize_protocol',
             'image_library_path',
-            'thumbnail_prefix',
             'word_separator',
             'use_category_name',
             'reserved_category_word',
@@ -1353,7 +1352,6 @@ class EE_Config
             'image_cfg' => array(
                 'image_resize_protocol' => array('s', array('gd' => 'gd', 'gd2' => 'gd2', 'imagemagick' => 'imagemagick', 'netpbm' => 'netpbm')),
                 'image_library_path' => array('i', ''),
-                'thumbnail_prefix' => array('i', '')
             ),
 
             'security_cfg' => array(
@@ -1707,7 +1705,6 @@ class EE_Config
             'force_query_string' => array('force_query_string_explanation'),
             'image_resize_protocol' => array('image_resize_protocol_exp'),
             'image_library_path' => array('image_library_path_exp'),
-            'thumbnail_prefix' => array('thumbnail_prefix_exp'),
             'member_theme' => array('member_theme_exp'),
             'require_terms_of_service' => array('require_terms_of_service_exp'),
             'email_console_timelock' => array('email_console_timelock_exp'),

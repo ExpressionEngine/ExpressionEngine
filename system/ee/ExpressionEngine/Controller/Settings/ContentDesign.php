@@ -80,13 +80,6 @@ class ContentDesign extends Settings
                         'image_library_path' => array('type' => 'text')
                     )
                 ),
-                array(
-                    'title' => 'thumbnail_suffix',
-                    'desc' => 'thumbnail_suffix_desc',
-                    'fields' => array(
-                        'thumbnail_prefix' => array('type' => 'text')
-                    )
-                )
             ),
             'emoticons' => array(
                 array(
@@ -111,11 +104,6 @@ class ContentDesign extends Settings
                 'field' => 'image_library_path',
                 'label' => 'lang:image_library_path',
                 'rules' => 'strip_tags|valid_xss_check|callback__validateResizeLibraryPath'
-            ),
-            array(
-                'field' => 'thumbnail_prefix',
-                'label' => 'lang:thumbnail_suffix',
-                'rules' => 'strip_tags|valid_xss_check'
             ),
             array(
                 'field' => 'emoticon_url',
