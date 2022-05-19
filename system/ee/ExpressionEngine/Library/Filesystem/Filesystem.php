@@ -22,8 +22,8 @@ class Filesystem
 
     public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = null)
     {
-        if(is_null($adapter)) {
-            $adapter = new Flysystem\Adapter\Local('/');
+        if (is_null($adapter)) {
+            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath(SYSPATH));
         }
         $this->flysystem = new Flysystem\Filesystem($adapter, $config);
     }
@@ -36,11 +36,11 @@ class Filesystem
      */
     public function read($path)
     {
-        if (! $this->exists($path)) {
+        if (!$this->exists($path)) {
             throw new FilesystemException("File not found: {$path}");
-        } elseif (! $this->isFile($path)) {
+        } elseif (!$this->isFile($path)) {
             throw new FilesystemException("Not a file: {$path}");
-        } elseif (! $this->isReadable($path)) {
+        } elseif (!$this->isReadable($path)) {
             throw new FilesystemException("Cannot read file: {$path}");
         }
 
@@ -56,17 +56,17 @@ class Filesystem
     public function readLineByLine($path, callable $callback)
     {
         // @todo implement flysystem option, likely needs to read by stream
-        if (! $this->exists($path)) {
+        if (!$this->exists($path)) {
             throw new FilesystemException("File not found: {$path}");
-        } elseif (! $this->isFile($path)) {
+        } elseif (!$this->isFile($path)) {
             throw new FilesystemException("Not a file: {$path}");
-        } elseif (! $this->isReadable($path)) {
+        } elseif (!$this->isReadable($path)) {
             throw new FilesystemException("Cannot read file: {$path}");
         }
 
         $pointer = fopen($path, 'r');
 
-        while (! feof($pointer)) {
+        while (!feof($pointer)) {
             $callback(fgets($pointer));
         }
 
@@ -90,17 +90,22 @@ class Filesystem
         } elseif ($this->isFile($path) && $overwrite == false && $append == false) {
             throw new FilesystemException("File already exists: {$path}");
         } elseif ($append && !($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local)) {
-            throw new FilesystemException("Appending to file not supported by adapter '".get_class($this->flysystem->getAdapter())."'");
+            throw new FilesystemException("Appending to file not supported by adapter '" . get_class($this->flysystem->getAdapter()) . "'");
         }
 
         if ($overwrite == false && $append == true) {
             $flags = FILE_APPEND | LOCK_EX;
             file_put_contents($path, $data, $flags);
-        }else{
+        } else {
             $this->flysystem->put($path, $data);
         }
 
         $this->ensureCorrectAccessMode($path);
+    }
+
+    public function writeStream($path, $resource, array $config = [])
+    {
+        return $this->flysystem->writeStream($path, $resource, $config);
     }
 
     /**
@@ -126,7 +131,7 @@ class Filesystem
         $path = $this->normalize($path);
         $result = $this->flysystem->createDir($path);
 
-        if (! $result) {
+        if (!$result) {
             return false;
         }
 
@@ -156,7 +161,7 @@ class Filesystem
      */
     public function deleteFile($path)
     {
-        if (! $this->isFile($path)) {
+        if (!$this->isFile($path)) {
             throw new FilesystemException("File does not exist {$path}");
         }
 
@@ -173,11 +178,11 @@ class Filesystem
     {
         $path = rtrim($path, '/');
 
-        if (! $this->isDir($path)) {
+        if (!$this->isDir($path)) {
             throw new FilesystemException("Directory does not exist {$path}.");
         }
 
-        if (! $leave_empty && $this->attemptFastDelete($path)) {
+        if (!$leave_empty && $this->attemptFastDelete($path)) {
             return true;
         }
 
@@ -198,14 +203,16 @@ class Filesystem
      * @param bool $recursive Whether or not to do a recursive search
      * @param array Array of all paths found inside the specified directory
      */
-    public function getDirectoryContents($path = '', $recursive = false, $includeHidden = false)
+    public function getDirectoryContents($path = '/', $recursive = false, $includeHidden = false)
     {
-        if (! $this->exists($path)) {
-            throw new FilesystemException('Cannot get contents of path, the path is invalid: ' . $path);
-        }
+        if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+            if (!$this->exists($path)) {
+                throw new FilesystemException('Cannot get contents of path, the path is invalid: ' . $path);
+            }
 
-        if (! $this->isDir($path)) {
-            throw new FilesystemException('Cannot get contents of path, the path is not a directory: ' . $path);
+            if (!$this->isDir($path)) {
+                throw new FilesystemException('Cannot get contents of path, the path is not a directory: ' . $path);
+            }
         }
 
         $contents = $this->flysystem->listContents($path);
@@ -441,13 +448,13 @@ class Filesystem
      * @param String $path Path to check
      * @return bool Is a directory?
      */
-    public function isDir($path)
+    public function isDir($path = '/')
     {
         if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
-            return is_dir($this->flysystem->getAdapter()->applyPathPrefix($path));
+            return is_dir($this->ensurePrefixedPath($path));
         }
 
-        return empty($this->extension($path)) && $this->flysystem->has($path);
+        return empty($this->extension($path)) && $this->exists($path);
     }
 
     /**
@@ -499,13 +506,14 @@ class Filesystem
      * @param String $path Path to check
      * @return bool Is writable?
      */
-    public function isWritable($path = '')
+    public function isWritable($path = '/')
     {
         if(! $this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
             return true;
         }
 
-        $path = $this->flysystem->getAdapter()->applyPathPrefix($this->normalize($path));
+        $path = $this->ensurePrefixedPath($this->normalize($path));
+
         // If we're on a Unix server with safe_mode off we call is_writable
         if (DIRECTORY_SEPARATOR == '/') {
             return is_writable($path);
@@ -706,6 +714,24 @@ class Filesystem
         } else {
             $this->chmod($path, FILE_WRITE_MODE);
         }
+    }
+
+    protected function normalizeAbsolutePath($path)
+    {
+        return ((strpos($path, '/') === 0) ? '/' : '') . Flysystem\Util::normalizePath($path);
+    }
+
+    protected function ensurePrefixedPath($path)
+    {
+        $adapter = $this->flysystem->getAdapter();
+        $normalized = $this->normalizeAbsolutePath($path);
+        $prefix = rtrim($adapter->getPathPrefix(), '\\/');
+
+        if (strpos($normalized, $prefix) === 0) {
+            return $normalized;
+        }
+
+        return $adapter->applyPathPrefix(Flysystem\Util::normalizePath($path));
     }
 
     /**
