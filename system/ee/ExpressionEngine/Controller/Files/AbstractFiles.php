@@ -461,27 +461,21 @@ abstract class AbstractFiles extends CP_Controller
      */
     private function createTypeFilter($uploadLocation = null)
     {
-        $cat_id = ($uploadLocation) ? explode('|', (string) $uploadLocation->cat_group) : null;
+        $typesQuery = ee('db')->select('file_type')->distinct()->from('files');
+        if (! empty($uploadLocation)) {
+            $typesQuery->where('upload_location_id', $uploadLocation->getId());
+        }
+        $types = $typesQuery->get();
 
-        $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
-            ->with('Categories')
-            ->filter('site_id', ee()->config->item('site_id'))
-            ->filter('exclude_group', '!=', 1)
-            ->all();
-
-        $category_options = array();
-        foreach ($category_groups as $group) {
-            $sort_column = ($group->sort_order == 'a') ? 'cat_name' : 'cat_order';
-            foreach ($group->Categories->sortBy($sort_column) as $category) {
-                $category_options[$category->cat_id] = $category->cat_name;
-            }
+        $options = array();
+        foreach ($types->result() as $type) {
+            $options[$type->file_type] = lang('type_' . $type->file_type);
         }
 
-        $categories = ee('CP/Filter')->make('filter_by_type', 'filter_by_type', $category_options);
-        $categories->setLabel(lang('type'));
-        $categories->useListFilter(); // disables custom values
+        $filter = ee('CP/Filter')->make('file_type', 'type', $options);
+        $filter->useListFilter();
 
-        return $categories;
+        return $filter;
     }
 
     /**

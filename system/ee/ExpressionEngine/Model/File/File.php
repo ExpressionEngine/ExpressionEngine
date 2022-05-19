@@ -21,7 +21,24 @@ namespace ExpressionEngine\Model\File;
  */
 class File extends FileSystemEntity
 {
-    
+    protected static $_events = array(
+        'beforeDelete',
+        'beforeInsert'
+    );
+
+    public function onBeforeInsert()
+    {
+        // file_type is set based on mime_type on initial upload
+        // and cannot be changed
+        $mimes = ee()->config->loadFile('mimes');
+        $fileTypes = array_filter(array_keys($mimes), 'is_string');
+        foreach ($fileTypes as $fileType) {
+            if (in_array($this->getProperty('mime_type'), $mimes[$fileType])) {
+                $this->setProperty('file_type', $fileType);
+                break;
+            }
+        }
+    }
 }
 
 // EOF

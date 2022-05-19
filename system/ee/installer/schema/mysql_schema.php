@@ -1036,7 +1036,7 @@ class EE_Schema
 			name varchar(50) NOT NULL,
 			server_path varchar(255) NOT NULL default '',
 			url varchar(100) NOT NULL,
-			allowed_types varchar(3) NOT NULL default 'img',
+			allowed_types varchar(100) NOT NULL default 'img',
 			default_modal_view varchar(5) NOT NULL default 'list',
 			max_size varchar(16) NULL DEFAULT NULL,
 			max_height varchar(6) NULL DEFAULT NULL,
@@ -1241,6 +1241,7 @@ class EE_Schema
 			`upload_location_id` int(4) unsigned DEFAULT '0',
 			`directory_id` int(10) unsigned DEFAULT '0',
 			`mime_type` varchar(255) DEFAULT NULL,
+			`file_type` varchar(50) DEFAULT NULL,
 			`file_name` varchar(255) DEFAULT NULL,
 			`file_size` int(10) DEFAULT '0',
 			`description` text,
@@ -1253,9 +1254,10 @@ class EE_Schema
 			`file_hw_original` varchar(20) NOT NULL DEFAULT '',
 			`total_records` int(10) unsigned DEFAULT '0',
 			PRIMARY KEY (`file_id`),
-			KEY `upload_location_id` (`upload_location_id`),
 			KEY `model_type` (`model_type`),
+			KEY `upload_location_id` (`upload_location_id`),
 			KEY `directory_id` (`directory_id`),
+			KEY `file_type` (`file_type`),
 			KEY `site_id` (`site_id`)
 		)";
 

@@ -24,16 +24,16 @@ class FileType extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $file)
     {
-        return $file->mime_type;
+        return lang($file->file_type);
     }
 
     public function getEntryManagerColumnFields()
     {
-        return ['mime_type'];
+        return ['file_type'];
     }
 
     public function getEntryManagerColumnSortField()
     {
-        return 'mime_type';
+        return 'file_type';
     }
 }

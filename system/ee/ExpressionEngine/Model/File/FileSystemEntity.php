@@ -102,6 +102,7 @@ class FileSystemEntity extends ContentModel
     protected $upload_location_id;
     protected $directory_id;
     protected $mime_type;
+    protected $file_type;
     protected $file_name;
     protected $file_size;
     protected $description;

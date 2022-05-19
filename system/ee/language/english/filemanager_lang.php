@@ -423,15 +423,19 @@ $lang = array(
 
     'upload_allowed_types' => 'Allowed file types?',
 
-    'upload_allowed_types_opt_all' => 'All file types',
+    'type_all' => 'All file types',
 
-    'upload_allowed_types_opt_images' => 'Images',
+    'type_img' => 'Images',
 
-    'upload_allowed_types_opt_documents' => 'Documents',
+    'type_doc' => 'Documents',
 
-    'upload_allowed_types_opt_videos' => 'Videos',
+    'type_video' => 'Videos',
 
-    'upload_allowed_types_opt_audio' => 'Audio',
+    'type_audio' => 'Audio',
+
+    'type_archive' => 'Archive',
+
+    'type_other' => 'Other',
 
     'upload_btn_edit' => 'edit',
 

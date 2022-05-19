@@ -159,6 +159,12 @@ class Uploads extends AbstractFilesController
             }
         }
 
+        $fileTypes = array_filter(array_keys(ee()->config->loadFile('mimes')), 'is_string');
+        $allowed_types = [];
+        foreach ($fileTypes as $type) {
+            $allowed_types[$type] = lang('type_' . $type);
+        }
+
         $vars['sections'] = array(
             array(
                 array(
@@ -198,15 +204,18 @@ class Uploads extends AbstractFilesController
                     'desc' => '',
                     'fields' => array(
                         'allowed_types' => array(
-                            'type' => 'radio',
-                            'choices' => array(
-                                'img' => lang('upload_allowed_types_opt_images'),
-                                'doc' => lang('upload_allowed_types_opt_documents'),
-                                'video' => lang('upload_allowed_types_opt_videos'),
-                                'audio' => lang('upload_allowed_types_opt_audio')
-                            ),
-                            'value' => $upload_destination->allowed_types ?: 'img'
-                        )
+                            'type' => 'checkbox',
+                            'nested' => true,
+                            'attrs' => 'data-any="y"',
+                            'choices' => [
+                                'all' => [
+                                    'name' => lang('type_all'),
+                                    'children' => $allowed_types,
+                                ]
+                            ],
+                            'value' => $upload_destination->allowed_types ?: 'img',
+                            'toggle_all' => false,
+                        ),
                     )
                 ),
             ),

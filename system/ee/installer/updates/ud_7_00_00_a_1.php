@@ -31,6 +31,7 @@ class Updater
                 'addFileManagerViewsTable',
                 'addFilesTableColumns',
                 'addFileUsageTable',
+                'modifyUploadPrefsTable',
                 //'addEntryManagerViewsKeys'
             ]
         );
@@ -131,6 +132,22 @@ class Updater
             ee()->smartforge->add_key('files', 'model_type');
         }
 
+        if (! ee()->db->field_exists('file_type', 'files')) {
+            ee()->smartforge->add_column(
+                'files',
+                [
+                    'file_type' => [
+                        'type' => 'varchar',
+                        'constraint' => '50',
+                        'default' => 'other',
+                        'null' => false
+                    ]
+                ],
+                'mime_type'
+            );
+            ee()->smartforge->add_key('files', 'file_type');
+        }
+
         if (! ee()->db->field_exists('directory_id', 'files')) {
             ee()->smartforge->add_column(
                 'files',
@@ -162,6 +179,22 @@ class Updater
                 ],
             );
         }
+    }
+
+    private function modifyUploadPrefsTable()
+    {
+        ee()->smartforge->modify_column(
+            'upload_prefs',
+            array(
+                'allowed_types' => array(
+                    'name' => 'allowed_types',
+                    'type' => 'varchar',
+                    'constraint' => 100,
+                    'default' => 'img',
+                    'null' => false
+                )
+            )
+        );
     }
 
     private function addFileUsageTable()
@@ -203,7 +236,7 @@ class Updater
 
     private function addEntryManagerViewsKeys()
     {
-        //ee()->smartforge->add_key('entry_manager_views', ['channel_id', 'member_id']);
+        ee()->smartforge->add_key('entry_manager_views', ['channel_id', 'member_id']);
     }
 
 }

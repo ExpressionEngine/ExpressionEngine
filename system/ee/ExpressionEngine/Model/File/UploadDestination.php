@@ -62,14 +62,14 @@ class UploadDestination extends StructureModel
     );
 
     protected static $_typed_columns = array(
-        'server_path' => 'LocalPath'
+        'server_path' => 'LocalPath',
+        'allowed_types' => 'pipeDelimited',
     );
 
     protected static $_validation_rules = array(
         'name' => 'required|xss|noHtml|unique[site_id]',
         'server_path' => 'required|fileExists|writable',
         'url' => 'required|validateUrl',
-        'allowed_types' => 'enum[img,all]',
         'default_modal_view' => 'enum[list,thumb]',
         'max_size' => 'numeric|greaterThan[0]',
         'max_height' => 'isNatural',

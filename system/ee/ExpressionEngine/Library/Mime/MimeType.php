@@ -85,6 +85,9 @@ class MimeType
     public function addMimeTypes(array $mimes)
     {
         foreach ($mimes as $mime) {
+            if (is_array($mime)) {
+                $this->addMimeTypes($mime);
+            }
             $this->addMimeType($mime);
         }
     }
@@ -224,6 +227,9 @@ class MimeType
      */
     public function fileIsSafeForUpload($path)
     {
+        if ($this->memberExcludedFromWhitelistRestrictions()) {
+            return true;
+        }
         return $this->isSafeForUpload($this->ofFile($path));
     }
 
@@ -236,7 +242,41 @@ class MimeType
      */
     public function isSafeForUpload($mime)
     {
+        if ($this->memberExcludedFromWhitelistRestrictions()) {
+            return true;
+        }
         return in_array($mime, $this->whitelist, true);
+    }
+
+    /**
+     * Checks the config for specific member exceptions or member group
+     * exceptions and compares the current member to those lists.
+     *
+     * @return bool TRUE if excluded; FALSE otherwise
+     */
+    protected function memberExcludedFromWhitelistRestrictions()
+    {
+        $excluded_members = ee()->config->item('mime_whitelist_member_exception');
+        if ($excluded_members !== false) {
+            $excluded_members = preg_split('/[\s|,]/', $excluded_members, -1, PREG_SPLIT_NO_EMPTY);
+            $excluded_members = is_array($excluded_members) ? $excluded_members : array($excluded_members);
+
+            if (in_array(ee()->session->userdata('member_id'), $excluded_members)) {
+                return true;
+            }
+        }
+
+        $excluded_member_groups = ee()->config->item('mime_whitelist_member_group_exception');
+        if ($excluded_member_groups !== false) {
+            $excluded_member_groups = preg_split('/[\s|,]/', $excluded_member_groups, -1, PREG_SPLIT_NO_EMPTY);
+            $excluded_member_groups = is_array($excluded_member_groups) ? $excluded_member_groups : array($excluded_member_groups);
+
+            if (ee('Permission')->hasAnyRole($excluded_member_groups)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
