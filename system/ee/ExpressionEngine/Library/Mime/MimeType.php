@@ -86,7 +86,7 @@ class MimeType
     {
         foreach ($mimes as $mime) {
             if (is_array($mime)) {
-                $this->addMimeTypes($mime);
+                return $this->addMimeTypes($mime);
             }
             $this->addMimeType($mime);
         }
