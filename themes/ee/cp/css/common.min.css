@@ -14007,8 +14007,8 @@ input[type=button].btn-block {
 }
 .modal-wrap .m-close {
   height: 20px;
-  top: 20px;
   right: 20px;
+  top: 9px;
 }
 .modal-wrap .m-close:before {
   font-size: 20px;
