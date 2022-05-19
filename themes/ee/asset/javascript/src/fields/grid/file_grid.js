@@ -82,7 +82,7 @@ function (_React$Component) {
   }, {
     key: "getRowCount",
     value: function getRowCount() {
-      return this.getGridInstance()._getRows().size();
+      return this.getGridInstance()._getRows().length;
     }
   }, {
     key: "render",

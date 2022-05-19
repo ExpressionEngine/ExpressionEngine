@@ -153,7 +153,7 @@
 			$iframe = $('#file_uploader iframe').contents();
 
 			// If we're editing file metadata, clear out content
-			if ($iframe.find('#edit_file_metadata').size()) {
+			if ($iframe.find('#edit_file_metadata').length) {
 				// Change both resize dimensions back to default
 				$iframe.find('#resize input').each(function(index) {
 					$(this).val($(this).data('default')).removeClass('oversized');
@@ -242,7 +242,7 @@
 			source = source + '&directory_id=' + directory_id;
 
 			// Add restrict_directory get variable if we need to restrict to a directory
-			if ($('.dir_choice_container:visible').size() <= 0) {
+			if ($('.dir_choice_container:visible').length <= 0) {
 				source = source + '&restrict_directory=true';
 			}
 

@@ -344,7 +344,7 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
 
 $(document).ready(function () {
     // Using window.load to make sure this code gets called after all document.readys
-    $(window).load(() => {
+    $(window).on('load', () => {
         ColorPicker.renderFields()
     })
 })

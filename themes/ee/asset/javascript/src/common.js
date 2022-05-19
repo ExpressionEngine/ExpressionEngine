@@ -952,8 +952,8 @@ $(document).ready(function(){
 
 		$('body').on('click', 'button.toggle-btn', function (e) {
 			if ($(this).hasClass('disabled') ||
-				$(this).parents('.toggle-tools').size() > 0 ||
-				$(this).parents('[data-reactroot]').size() > 0) {
+				$(this).parents('.toggle-tools').length > 0 ||
+				$(this).parents('[data-reactroot]').length > 0) {
 				return;
 			}
 

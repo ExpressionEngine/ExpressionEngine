@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var __extends = (this && this.__extends) || (function () {
@@ -245,7 +245,7 @@ var ColorPicker = /** @class */ (function (_super) {
 // Render color picker inputs when created:
 $(document).ready(function () {
     // Using window.load to make sure this code gets called after all document.readys
-    $(window).load(function () {
+    $(window).on('load', function () {
         ColorPicker.renderFields();
     });
 });
