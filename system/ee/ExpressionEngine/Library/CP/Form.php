@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -116,15 +116,25 @@ class Form
      * @param string $alert_name
      * @return bool
      */
-    public function removeAlert(string $alert_name): bool
+    public function removeAlert(string $alert_name): Form
     {
         $alerts = $this->get('extra_alerts');
-        if (isset($alerts[$alert_name])) {
-            unset($alerts[$alert_name]);
-            return true;
+        if (in_array($alert_name, $alerts)) {
+            foreach($alerts AS $key => $alert) {
+                if($alert === $alert_name) {
+                    unset($alerts[$key]);
+                    break;
+                }
+            }
+
+            if(count($alerts) == 0) {
+                $alerts = null;
+            }
         }
 
-        return false;
+        $this->set('extra_alerts', $alerts);
+
+        return $this;
     }
 
     /**
