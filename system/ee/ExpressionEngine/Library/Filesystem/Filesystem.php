@@ -44,7 +44,12 @@ class Filesystem
             throw new FilesystemException("Cannot read file: {$path}");
         }
 
-        return $this->flysystem->read($this->normalize($path));
+        return $this->flysystem->read($this->removePathPrefix($this->normalize($path)));
+    }
+
+    public function readStream($path)
+    {
+        return $this->flysystem->readStream($this->removePathPrefix($path));
     }
 
     /**
@@ -105,6 +110,7 @@ class Filesystem
 
     public function writeStream($path, $resource, array $config = [])
     {
+        $path = $this->removePathPrefix($path);
         return $this->flysystem->writeStream($path, $resource, $config);
     }
 
@@ -393,7 +399,7 @@ class Filesystem
     {
         // We are intentionally not calling `$this->flysystem->has($path);` so that
         // we can handle calls to check the existence of the base path
-        $path = Flysystem\Util::normalizePath($path);
+        $path = $this->normalizeRelativePath($path);
         return (bool) $this->flysystem->getAdapter()->has($path);
     }
 
@@ -420,6 +426,7 @@ class Filesystem
      */
     public function getMimetype($path)
     {
+        $path = $this->normalizeRelativePath($path);
         return $this->flysystem->getMimetype($path);
     }
 
@@ -687,7 +694,7 @@ class Filesystem
         $dir = rtrim($dir, '/');
 
         if (! $this->isDir($dir)) {
-            throw new FilesystemException("Cannot add index file to non-existant directory: {$dir}");
+            throw new FilesystemException("Cannot add index file to non-existent directory: {$dir}");
         }
 
         if (! $this->isFile($dir . '/index.html')) {
@@ -702,7 +709,7 @@ class Filesystem
      *
      * @param String $path Path to ensure access to
      */
-    protected function ensureCorrectAccessMode($path)
+    public function ensureCorrectAccessMode($path)
     {
         // This function is only relevant to Local filesystems
         if(!$this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
@@ -732,6 +739,19 @@ class Filesystem
         }
 
         return $adapter->applyPathPrefix(Flysystem\Util::normalizePath($path));
+    }
+
+    protected function removePathPrefix($path)
+    {
+        $prefix = $this->flysystem->getAdapter()->getPathPrefix();
+        return (strpos($path, $prefix) === 0) ? str_replace($prefix, '', $path) : $path;
+        return $this->flysystem->getAdapter()->removePathPrefix($path);
+    }
+
+    protected function normalizeRelativePath($path)
+    {
+        $path = $this->normalizeAbsolutePath($path);
+        return $this->removePathPrefix($path);
     }
 
     /**

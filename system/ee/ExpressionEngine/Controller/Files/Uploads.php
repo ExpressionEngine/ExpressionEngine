@@ -998,6 +998,7 @@ class Uploads extends AbstractFilesController
                     $thumb_created = ee()->filemanager->create_thumb(
                         $this->_upload_dirs[$id]['server_path'] . $file['name'],
                         array(
+                            'directory' => $this->_upload_dirs[$id],
                             'server_path' => $this->_upload_dirs[$id]['server_path'],
                             'file_name' => $file['name'],
                             'dimensions' => $replace_sizes,
@@ -1016,6 +1017,7 @@ class Uploads extends AbstractFilesController
                 $thumb_created = ee()->filemanager->create_thumb(
                     $this->_upload_dirs[$id]['server_path'] . $file['name'],
                     array(
+                        'directory' => $this->_upload_dirs[$id],
                         'server_path' => $this->_upload_dirs[$id]['server_path'],
                         'file_name' => $file['name'],
                         'dimensions' => $missing_only_sizes,

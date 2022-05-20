@@ -44,6 +44,7 @@ class ThumbnailFactory
             $success = ee()->filemanager->create_thumb(
                 $file->getAbsolutePath(),
                 array(
+                    'directory' => $dir,
                     'server_path' => $dir->server_path,
                     'file_name' => $file->file_name,
                     'dimensions' => $dimensions->asArray()
