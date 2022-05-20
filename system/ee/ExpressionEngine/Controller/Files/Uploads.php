@@ -208,12 +208,12 @@ class Uploads extends AbstractFilesController
                             'nested' => true,
                             'attrs' => 'data-any="y"',
                             'choices' => [
-                                'all' => [
+                                '--' => [
                                     'name' => lang('type_all'),
                                     'children' => $allowed_types,
                                 ]
                             ],
-                            'value' => $upload_destination->allowed_types ?: 'img',
+                            'value' => $upload_destination->allowed_types ? ($upload_destination->allowed_types == 'all' ? '--' : $upload_destination->allowed_types): 'img',
                             'toggle_all' => false,
                         ),
                     )

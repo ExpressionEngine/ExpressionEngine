@@ -272,10 +272,6 @@ class Simple_commerce_mcp
         $vars['form_url'] = ee('CP/URL')->make('addons/settings/simple_commerce/add-items');
         $vars['base_url'] = $base_url;
 
-        ee()->cp->add_js_script(array(
-            'file' => array('cp/publish/entry-list'),
-        ));
-
         $vars['pagination'] = ee('CP/Pagination', $count)
             ->perPage($filter_values['perpage'])
             ->currentPage($page)

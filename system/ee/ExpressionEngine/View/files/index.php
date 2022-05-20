@@ -4,7 +4,6 @@ if (! AJAX_REQUEST) {
 }
 ?>
 
-
 <div class="box panel">
     <div class="tbl-ctrls f_manager-wrapper">
         <?=form_open($form_url)?>

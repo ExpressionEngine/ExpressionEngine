@@ -11,12 +11,15 @@
 use ExpressionEngine\Model\File\UploadDestination;
 use ExpressionEngine\Addons\FilePicker\FilePicker as Picker;
 use ExpressionEngine\Service\File\ViewType;
+use ExpressionEngine\Library\CP\FileManager\Traits\FileManagerTrait;
 
 /**
  * File Picker Module control panel
  */
 class Filepicker_mcp
 {
+    use FileManagerTrait;
+
     private $images = false;
 
     public function __construct()
@@ -253,9 +256,22 @@ class Filepicker_mcp
             ->currentPage($page)
             ->render($base_url);
 
+        //return ee('View')->make('filepicker:ModalView')->render($vars);
+
+        $vars = $this->listingsPage(null, $type, true);
+        $vars['viewtype'] = $type;
+        $vars['toolbar_items'] = [];
         $vars['cp_heading'] = $requested == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
-        return ee('View')->make('filepicker:ModalView')->render($vars);
+        if (!empty(ee('Request')->header('ACCEPT')) && strpos(ee('Request')->header('ACCEPT'), '/json') !== false) {
+            return json_encode([
+                'html' => ee('View')->make('ee:files/index')->render($vars),
+                'url' => $vars['form_url']->compile(),
+                'viewManager_saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => null, 'viewtype' => $vars['viewtype']])->compile()
+            ]);
+        }
+
+        return ee('View')->make('ee:files/index')->render($vars);
     }
 
     /**

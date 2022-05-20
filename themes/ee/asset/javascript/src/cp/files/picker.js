@@ -83,6 +83,8 @@
 					dataType: 'json'
 				});
 			}
+
+			return false;
 		});
 
 		$('.modal-file').on('click', '.filters a:not([href=""]), .filter-bar a:not([href=""]), .paginate a:not([href=""], .pagination a:not([href=""]), thead a:not([href=""])', function(e) {

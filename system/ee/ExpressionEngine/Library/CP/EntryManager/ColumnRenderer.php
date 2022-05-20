@@ -52,10 +52,10 @@ class ColumnRenderer
      * @param ChannelEntry Entry object we are basing the row on
      * @return array[string]
      */
-    public function getRenderedTableRowForEntry($entry, $viewtype = 'list')
+    public function getRenderedTableRowForEntry($entry, $viewtype = 'list', $pickerMode = false)
     {
-        return array_map(function ($column) use ($entry, $viewtype) {
-            return $column->renderTableCell(null, null, $entry, $viewtype);
+        return array_map(function ($column) use ($entry, $viewtype, $pickerMode) {
+            return $column->renderTableCell(null, null, $entry, $viewtype, $pickerMode);
         }, $this->columns);
     }
 }
