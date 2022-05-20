@@ -247,6 +247,10 @@ class Grid_parser
 
         $columns = ee()->grid_model->get_columns_for_field($field_id, $content_type);
 
+        // since the get_columns_for_field was passed a single filed ID and NOT
+        // an array we need to make it an array as pre_loop expects an array
+        $this->_pre_loop(array($columns));
+
         // Prepare the relationship data
         $relationships = array();
 
