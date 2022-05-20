@@ -58,7 +58,7 @@ class Thumbnail
             } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL();
                 $this->path = $file->getAbsoluteThumbnailPath();
-                $this->tag = '<img src="' . $this->url . '" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" /><span class="tooltip-img" style="background-image:url(' . $file->getAbsoluteURL() . ')"></span>';
+                $this->tag = '<img src="' . $this->url . '" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" />';
             } else {
                 switch ($file->mime_type) {
                     case 'text/plain':

@@ -34,25 +34,38 @@ class Manage extends EntryManager\Columns\Column
     {
         $toolbar = array(
             'edit' => array(
-                'href' => '',
-                'rel' => 'modal-view-file',
-                'class' => 'm-link',
+                'href' => ee('CP/URL')->make('files/file/view/' . $file->file_id),
+                // 'rel' => 'modal-view-file',
+                'class' => '',
                 'title' => lang('edit'),
                 'data-file-id' => $file->file_id
-            ),
-            'link' => array(
-                'href' => $file->getAbsoluteURL(),
-                'title' => lang('link'),
-                'target' => '_blank',
-            ),
-            'crop' => array(
-                'href' => ee('CP/URL')->make('files/file/crop/' . $file->file_id),
-                'title' => lang('crop'),
             ),
             'download' => array(
                 'href' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
                 'title' => lang('download'),
             ),
+            'link' => array(
+                'href' => $file->getAbsoluteURL(),
+                'title' => lang('copy_link'),
+                'target' => '_blank',
+            ),
+            'move' => array(
+                'href' => '',
+                'title' => lang('move'),
+            ),
+            'replace' => array(
+                'href' => '',
+                'title' => lang('replace_file'),
+            ),
+            'delete' => array(
+                'href' => '',
+                'class' => 'm-link',
+                'rel' => 'modal-confirm-delete-file',
+                'data-delete-file' => 'delete-trigger',
+                'data-file-id' => $file->file_id,
+                'data-file-name' => $file->file_name,
+                'title' => lang('delete'),
+            )
         );
 
         if (! ee('Permission')->can('edit_files') || ! $file->isEditableImage()) {
@@ -60,7 +73,8 @@ class Manage extends EntryManager\Columns\Column
         }
 
         return [
-            'toolbar_items' => $toolbar
+            'toolbar_items' => $toolbar,
+            'toolbar_type' => 'dropdown',
         ];
     }
 }

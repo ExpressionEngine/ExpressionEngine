@@ -60,6 +60,7 @@ $(document).ready(function () {
 				return EE.cp.BulkEdit.openForm(conditional_element.val(), checked)
 			}
 
+
 			if (checked.length < 6) {
 				checked.each(function() {
 					$(modalIs + " .checklist").append('<li>' + $(this).attr('data-confirm') + '</li>');
@@ -102,6 +103,34 @@ $(document).ready(function () {
 
 			modal.trigger('modal:open')
 		}
+	})
+
+	$('body').on('click', '*[data-delete-file]', function (e) {
+		var data_element = $(this).data('delete-file');
+		var ajax_url = $(this).data('confirm-ajax');
+		var file_id = $(this).data('file-id');
+		var file_name = $(this).parents('tr').find('input[type=checkbox]').attr('name');
+		var checkboxInput = $(this).parents('tr').find('input[type=checkbox]').attr('data-confirm');
+		e.preventDefault();
+
+		// First adjust the checklist
+		var modalIs = '.' + $(this).attr('rel');
+		var modal = $(modalIs+', [rel='+$(this).attr('rel')+']')
+		$(modalIs + " .checklist").html(''); // Reset it
+
+		$(modalIs + " .checklist").append('<li>' + checkboxInput + '</li>');
+		// Add hidden <input> elements
+		$(modalIs + " .checklist li:last").append(
+			$('<input/>').attr({
+				type: 'hidden',
+				name: file_name,
+				value: file_id
+			})
+		);
+
+		$(modalIs + " .checklist li:last").addClass('last');
+
+		modal.trigger('modal:open')
 	})
 });
 

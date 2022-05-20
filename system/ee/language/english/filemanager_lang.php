@@ -14,6 +14,8 @@ $lang = array(
 
     'btn_cancel_upload' => 'Cancel Upload',
 
+    'delete' => 'Delete',
+
     'delete_file' => 'Delete File',
 
     'btn_edit_file_meta' => 'Save',
@@ -25,6 +27,8 @@ $lang = array(
     'column_file_id' => 'ID#',
 
     'column_title' => 'Title',
+
+    'copy_link' => 'Copy link',
 
     'credit' => 'Credit',
 
@@ -110,6 +114,8 @@ $lang = array(
 
     'modified_by' => 'Modified By',
 
+    'move' => 'Move',
+
     'name' => 'File Name',
 
     'new_folder' => 'New Folder',
@@ -135,6 +141,8 @@ $lang = array(
     'rename' => 'Rename <strong>newer</strong> file',
 
     'replace' => 'Replace <strong>older</strong> file only <i>&mdash; destructive action</i>',
+
+    'replace_file' => 'Replace',
 
     'replace_no_metadata' => 'Only the file was replaced. The Title, Description, Credit, Location, and Categories were not updated.',
 

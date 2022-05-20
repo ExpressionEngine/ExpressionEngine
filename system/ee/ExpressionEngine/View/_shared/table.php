@@ -167,7 +167,7 @@
     									</div>
     								</td>
     							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
-    								<td class="app-listing__cell app-listing__cell--input text--center">
+    								<td class="app-listing__cell app-listing__cell--input text--center checkbox-column">
     									<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
     									<input
     										id="<?=$table_id . '-' . $i . '-' . $row_id?>"

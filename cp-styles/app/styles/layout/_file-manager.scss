@@ -61,6 +61,28 @@
       color: var(--ee-button-secondary-color);
     }
   }
+
+  td.checkbox-column {
+    width: 55px;
+  }
+
+  tr.app-listing__row {
+    .thumbnail_img {
+      max-width: 80px;
+    }
+
+    i.fa-folder {
+      color: var(--ee-secondary-sidebar-item-icon);
+    }
+  }
+
+  .dropdown {
+    a.edit,
+    a.download,
+    a.link {
+      &:before { display: none;}
+    }
+  }
 }
 
 .f_manager-table-breadcrumbs {
@@ -185,7 +207,8 @@
     width: 88%;
 
     img,
-    svg {
+    svg,
+    i.fa-folder {
       max-width: 100%;
       max-height: 100%;
       position: absolute;
@@ -193,6 +216,10 @@
       left: 50%;
       transform: translate(-50%, -50%);
       border-radius: 6px;
+    }
+
+    i.fa-folder {
+      color: var(--ee-secondary-sidebar-item-icon);
     }
 
     svg {
@@ -291,22 +318,6 @@
       background-color: var(--ee-bg-dropdown-hover);
     }
   }
-}
-
-.tooltip-img {
-  position: absolute;
-  display: none;
-  width: 200px;
-  height: 200px;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  transition: ease all 0.4s;
-  padding: 10px;
-  background-color: var(--ee-table-bg);
-  border-radius: 5px;
-  border: 2px solid var(--ee-table-border);
-  z-index: 200;
 }
 
 .file-edit-view {
