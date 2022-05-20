@@ -18,6 +18,12 @@ $(document).ready(function(){
 		}
 	});
 
+	$('body').on('click', '.secondary-sidebar-toggle .secondary-sidebar-toggle__target', function(e){
+		e.preventDefault();
+		$('.secondary-sidebar').toggleClass('secondary-sidebar__collapsed');
+		$(this).toggleClass('collapsed');
+	})
+
 	// =============================================
 	// For backwards compatibility: adding $.browser
 	// from: https://github.com/jquery/jquery-migrate

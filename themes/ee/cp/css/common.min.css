@@ -23651,6 +23651,13 @@ body[data-theme="dark"] {
 }
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fa-angle-right {
   right: 8px;
+  display: none;
+}
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target.collapsed .fa-angle-left {
+  display: none;
+}
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target.collapsed .fa-angle-right {
+  display: block;
 }
 
 @media (hover: none) and (pointer: coarse) {
