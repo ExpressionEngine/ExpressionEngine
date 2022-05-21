@@ -36,6 +36,8 @@ context('Design', () => {
 	})
 
 	after(function () {
+		cy.task('filesystem:delete', '../../system/user/templates/default_site/resources.group')
+		cy.task('filesystem:delete', '../../system/user/templates/second_site/resources.group')
 	})
 
 	beforeEach(function () {
@@ -68,4 +70,45 @@ context('Design', () => {
 			cy.get("#fourth").should('have.css', 'color', 'rgb(255, 255, 255)')
 		})
 	})
+
+  describe.only('loading of resources from updated templates', function () {
+    before(function () {
+      const files = [
+        '../../system/user/templates/default_site/resources.group/style.css',
+        '../../system/user/templates/default_site/resources.group/script.js',
+        '../../system/user/templates/second_site/resources.group/style.css',
+      ]
+      const replaceColors = {
+        'cyan': 'red',
+        'magenta': 'lime',
+        'yellow': 'blue',
+      }
+
+      files.forEach((file) => {
+        cy.readFile(file, (err, data) => {
+          if (err) {
+            return console.error(err);
+          };
+        }).then((data) => {
+          Object.keys(replaceColors).forEach((x)=> {
+            data = data.replace(x, replaceColors[x]);
+          })
+          cy.writeFile(file, data);
+        })
+      })
+    })
+
+    it('loads stylesheet resource template from the current site', function () {
+      cy.logFrontendPerformance()
+      cy.get("#first").should('have.css', 'background-color', 'rgb(255, 0, 0)')
+    })
+
+    it('loads script resource template from the current site', function () {
+      cy.get("#second").should('have.css', 'background-color', 'rgb(0, 255, 0)')
+    })
+
+    it('loads stylesheet resource template from a different MSM site', function () {
+      cy.get("#third").should('have.css', 'background-color', 'rgb(0, 0, 255)')
+    })
+  })
 })
