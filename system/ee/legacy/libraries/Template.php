@@ -3129,8 +3129,10 @@ class EE_Template
                             $basepath .= $row['group_name'] . '.group/' . $row['template_name'] . '.' . $row['template_type'];
 
                             if (is_file($basepath)) {
-                                $asset_versions[$version_key] =
-                                    $asset_versions[$row['site_name'] . ':' . $version_key] = filemtime($basepath);
+                                if (filemtime($basepath) > $row['edit_date']) {
+                                    $asset_versions[$version_key] =
+                                        $asset_versions[$row['site_name'] . ':' . $version_key] = filemtime($basepath);
+                                }
                             }
                         }
                     }
