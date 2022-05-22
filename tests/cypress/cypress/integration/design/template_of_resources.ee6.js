@@ -71,7 +71,7 @@ context('Design', () => {
 		})
 	})
 
-  describe.only('loading of resources from updated templates', function () {
+  describe('loading of resources from updated templates', function () {
     before(function () {
       const files = [
         '../../system/user/templates/default_site/resources.group/style.css',
