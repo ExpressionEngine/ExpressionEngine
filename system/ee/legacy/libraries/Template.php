@@ -3125,7 +3125,7 @@ class EE_Template
                             $asset_versions[$row['site_name'] . ':' . $version_key] = $row['edit_date'];
 
                         if (ee()->config->item('save_tmpl_files') == 'y') {
-                            $basepath = PATH_TMPL . ee()->config->item('site_short_name') . '/';
+                            $basepath = PATH_TMPL . $row['site_name'] . '/';
                             $basepath .= $row['group_name'] . '.group/' . $row['template_name'] . '.' . $row['template_type'];
 
                             if (is_file($basepath)) {
