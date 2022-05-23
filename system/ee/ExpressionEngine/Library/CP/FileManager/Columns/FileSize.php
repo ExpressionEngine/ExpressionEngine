@@ -24,6 +24,9 @@ class FileSize extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $file)
     {
+        if ($file->model_type == 'Directory') {
+            return '';
+        }
         $unit = 'Kb';
         $fileSize = $file->file_size / 1024;
         if ($fileSize >= 1000) {

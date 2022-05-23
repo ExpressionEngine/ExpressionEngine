@@ -165,6 +165,14 @@ class Uploads extends AbstractFilesController
             $allowed_types[$type] = lang('type_' . $type);
         }
 
+        $drivers = ['local'];
+        $driver_choices = [];
+        $driver_groups = [];
+        foreach ($drivers as $driver) {
+            $driver_choices[$driver] = lang($driver);
+            $driver_groups[$driver] = 'driver_' . $driver;
+        }
+
         $vars['sections'] = array(
             array(
                 array(
@@ -178,8 +186,21 @@ class Uploads extends AbstractFilesController
                     )
                 ),
                 array(
+                    'title' => 'filesystem_driver',
+                    'desc' => '',
+                    'fields' => array(
+                        'driver' => array(
+                            'type' => 'dropdown',
+                            'choices' => $driver_choices,
+                            'group_toggle' => $driver_groups,
+                            'value' => $upload_destination->driver
+                        )
+                    )
+                ),
+                array(
                     'title' => 'upload_url',
                     'desc' => 'upload_url_desc',
+                    'group' => 'driver_local',
                     'fields' => array(
                         'url' => array(
                             'type' => 'text',
@@ -191,6 +212,7 @@ class Uploads extends AbstractFilesController
                 array(
                     'title' => 'upload_path',
                     'desc' => 'upload_path_desc',
+                    'group' => 'driver_local',
                     'fields' => array(
                         'server_path' => array(
                             'type' => 'text',
@@ -213,7 +235,7 @@ class Uploads extends AbstractFilesController
                                     'children' => $allowed_types,
                                 ]
                             ],
-                            'value' => $upload_destination->allowed_types ? ($upload_destination->allowed_types == 'all' ? '--' : $upload_destination->allowed_types): 'img',
+                            'value' => $upload_destination->allowed_types ? (in_array('all', $upload_destination->allowed_types) ? ['--'] : $upload_destination->allowed_types): ['img'],
                             'toggle_all' => false,
                         ),
                     )
@@ -238,12 +260,12 @@ class Uploads extends AbstractFilesController
                     'title' => 'allow_subfolders',
                     'desc' => 'allow_subfolders_desc',
                     'fields' => array(
-                        'allow_file_subfolders' => array(
+                        'allow_subfolders' => array(
                             'type' => 'yes_no',
                             'group_toggle' => array(
                                 'y' => 'rel_subfolder',
                             ),
-                            'value' => ''
+                            'value' => $upload_destination->allow_subfolders
                         )
                     )
                 ),
@@ -263,9 +285,9 @@ class Uploads extends AbstractFilesController
                     'desc' => 'keep_subfolders_top_desc',
                     'group' => 'rel_subfolder',
                     'fields' => array(
-                        'keep_subfolders_on_top' => array(
+                        'subfolders_on_top' => array(
                             'type' => 'yes_no',
-                            'value' => ''
+                            'value' => $upload_destination->subfolders_on_top ?: false
                         )
                     )
                 ),

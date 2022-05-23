@@ -24,6 +24,9 @@ class FileType extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $file)
     {
+        if ($file->model_type == 'Directory') {
+            return lang('directory');
+        }
         return lang($file->file_type);
     }
 

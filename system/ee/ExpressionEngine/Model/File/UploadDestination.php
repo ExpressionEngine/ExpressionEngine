@@ -27,6 +27,10 @@ class UploadDestination extends StructureModel
     protected static $_primary_key = 'id';
     protected static $_table_name = 'upload_prefs';
 
+    protected static $_events = array(
+        'beforeSave',
+    );
+
     protected static $_relationships = array(
         'Site' => array(
             'type' => 'belongsTo'
@@ -64,12 +68,16 @@ class UploadDestination extends StructureModel
     protected static $_typed_columns = array(
         'server_path' => 'LocalPath',
         'allowed_types' => 'pipeDelimited',
+        'allow_subfolders' => 'boolString',
+        'subfolders_on_top' => 'boolString',
     );
 
     protected static $_validation_rules = array(
         'name' => 'required|xss|noHtml|unique[site_id]',
-        'server_path' => 'required|fileExists|writable',
+        //'server_path' => 'required|fileExists|writable',
         'url' => 'required|validateUrl',
+        'allow_subfolders' => 'enum[y,n]',
+        'subfolders_on_top' => 'enum[y,n]',
         'default_modal_view' => 'enum[list,thumb]',
         'max_size' => 'numeric|greaterThan[0]',
         'max_height' => 'isNatural',
@@ -81,9 +89,12 @@ class UploadDestination extends StructureModel
     protected $id;
     protected $site_id;
     protected $name;
+    protected $driver;
     protected $server_path;
     protected $url;
     protected $allowed_types;
+    protected $allow_subfolders;
+    protected $subfolders_on_top;
     protected $default_modal_view;
     protected $max_size;
     protected $max_height;
@@ -128,6 +139,13 @@ class UploadDestination extends StructureModel
         $value = parent::__get($name);
 
         return $this->fetchOverride($name, $value);
+    }
+
+    public function onBeforeSave()
+    {
+        if (in_array('--', $this->getProperty('allowed_types'))) {
+            $this->setProperty('allowed_types', ['all']);
+        }
     }
 
     /**

@@ -32,32 +32,52 @@ class Manage extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $file)
     {
-        $toolbar = array(
-            'edit' => array(
-                'href' => ee('CP/URL')->make('files/file/view/' . $file->file_id),
-                // 'rel' => 'modal-view-file',
-                'class' => '',
-                'title' => lang('edit'),
-                'data-file-id' => $file->file_id
-            ),
-            'download' => array(
+        $toolbar = [];
+        if ($file->model_type == 'Directory') {
+            $toolbar['open'] = array(
+                'href' => ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]),
+                'title' => lang('open'),
+            );
+            $toolbar['rename'] = array(
+                'href' => '#',
+                'title' => lang('rename'),
+            );
+            $toolbar['move'] = array(
+                'href' => '#',
+                'title' => lang('move'),
+            );
+        }
+        if ($file->model_type == 'File') {
+            if (ee('Permission')->can('edit_files')) {
+                $toolbar['edit'] = array(
+                    'href' => ee('CP/URL')->make('files/file/view/' . $file->file_id),
+                    // 'rel' => 'modal-view-file',
+                    'class' => '',
+                    'title' => lang('edit'),
+                    'data-file-id' => $file->file_id
+                );
+            }
+            $toolbar['download'] = array(
                 'href' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
                 'title' => lang('download'),
-            ),
-            'link' => array(
+            );
+            $toolbar['link'] = array(
                 'href' => $file->getAbsoluteURL(),
+                'class' => 'js-copy-url-button',
                 'title' => lang('copy_link'),
-                'target' => '_blank',
-            ),
-            'move' => array(
+            );
+            $toolbar['move'] = array(
                 'href' => '',
                 'title' => lang('move'),
-            ),
-            'replace' => array(
+            );
+            $toolbar['replace'] = array(
                 'href' => '',
                 'title' => lang('replace_file'),
-            ),
-            'delete' => array(
+            );
+        }
+
+        if (ee('Permission')->can('delete_files')) {
+            $toolbar['delete'] = [
                 'href' => '',
                 'class' => 'm-link',
                 'rel' => 'modal-confirm-delete-file',
@@ -65,11 +85,7 @@ class Manage extends EntryManager\Columns\Column
                 'data-file-id' => $file->file_id,
                 'data-file-name' => $file->file_name,
                 'title' => lang('delete'),
-            )
-        );
-
-        if (! ee('Permission')->can('edit_files') || ! $file->isEditableImage()) {
-            unset($toolbar['crop']);
+            ];
         }
 
         return [

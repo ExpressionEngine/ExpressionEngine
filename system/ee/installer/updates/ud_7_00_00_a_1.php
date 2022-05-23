@@ -195,6 +195,51 @@ class Updater
                 )
             )
         );
+
+        if (! ee()->db->field_exists('driver', 'upload_prefs')) {
+            ee()->smartforge->add_column(
+                'upload_prefs',
+                [
+                    'driver' => [
+                        'type' => 'varchar',
+                        'constraint' => 50,
+                        'default' => 'local',
+                        'null' => false
+                    ]
+                ],
+                'name'
+            );
+        }
+
+        if (! ee()->db->field_exists('subfolders_on_top', 'upload_prefs')) {
+            ee()->smartforge->add_column(
+                'upload_prefs',
+                [
+                    'subfolders_on_top' => [
+                        'type' => 'enum',
+                        'constraint' => "'y','n'",
+                        'default' => 'y',
+                        'null' => false
+                    ]
+                ],
+                'allowed_types'
+            );
+        }
+
+        if (! ee()->db->field_exists('allow_subfolders', 'upload_prefs')) {
+            ee()->smartforge->add_column(
+                'upload_prefs',
+                [
+                    'allow_subfolders' => [
+                        'type' => 'enum',
+                        'constraint' => "'y','n'",
+                        'default' => 'n',
+                        'null' => false
+                    ]
+                ],
+                'allowed_types'
+            );
+        }
     }
 
     private function addFileUsageTable()

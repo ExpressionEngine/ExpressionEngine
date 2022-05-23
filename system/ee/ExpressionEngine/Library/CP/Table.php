@@ -689,7 +689,13 @@ class Table
 
         if ((empty($this->config['sort_col']) && count($this->columns) > 0) or
             ! in_array($this->config['sort_col'], $search)) {
-            return isset($this->columns[0]) ? $this->columns[0]['label'] : null;
+            //grab the first column that can be used for sorting
+            foreach ($this->columns as $column) {
+                if ($column['sort'] === true) {
+                    return $column['label'];
+                }
+            }
+            return null;
         }
 
         return $this->config['sort_col'];

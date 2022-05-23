@@ -335,7 +335,7 @@ $lang = array(
 
     'create_watermark' => 'Create Watermark',
 
-    'default_modal_view' => 'Default modal view?',
+    'default_modal_view' => 'Default browser view?',
 
     'default_modal_view_desc' => 'How files should be displayed by default for this upload directory.',
 
@@ -372,6 +372,10 @@ $lang = array(
     'file_sync_desc' => '<b>%d</b> files',
 
     'file_sync_desc_images' => '<b>%d</b> <code>image</code> files',
+
+    'filesystem_driver' => 'Driver',
+
+    'local' => 'Local',
 
     'horizontal' => 'horizontal',
 

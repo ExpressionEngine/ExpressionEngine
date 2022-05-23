@@ -7,7 +7,7 @@
                 <div class="title-bar title-bar--large">
                     <h3 class="title-bar__title">
                         <?=$file->title?>
-                        <a class="button button--large filter-bar__button js-copy-url-button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_url')?>">
+                        <a class="button button--large filter-bar__button js-copy-url-button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_link')?>">
                             <i class="fas fa-link"></i>
                         </a>
                     </h3>

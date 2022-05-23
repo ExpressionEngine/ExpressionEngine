@@ -26,12 +26,12 @@ trait FileManagerTrait
 
         $controller = ! $filepickerMode ? 'files' : 'addons/settings/filepicker/modal';
 
-        if (empty($upload_location_id)) {
+        if (empty($uploadLocation)) {
             $base_url = ee('CP/URL')->make($controller);
             $model = 'File';
         } else {
             $base_url = ee('CP/URL')->make('files/directory/' . $upload_location_id);
-            $model = 'FileSystemEntity';
+            $model = $uploadLocation->allow_subfolders ? 'FileSystemEntity' : 'File';
         }
 
         $files = ee('Model')->get($model)
@@ -198,6 +198,11 @@ trait FileManagerTrait
 
         $table->setNoResultsHTML(ee('View')->make('ee:_shared/file/upload-widget')->render(['component' => $uploaderComponent]));
 
+        if (! empty($uploadLocation) && $uploadLocation->subfolders_on_top === true) {
+            $files->fields('model_type');
+            $files->order('model_type', 'desc');
+        }
+
         $sort_col = 'file_id';
         foreach ($table_columns as $table_column) {
             if ($table_column['label'] == $table->sort_col) {
@@ -291,6 +296,7 @@ trait FileManagerTrait
                 'cp/files/manager',
                 'cp/publish/entry-list',
                 'fields/file/file_field_drag_and_drop',
+                'cp/files/copy-url'
             ),
         ));
         return $vars;

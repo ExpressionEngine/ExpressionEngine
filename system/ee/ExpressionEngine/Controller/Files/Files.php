@@ -84,8 +84,7 @@ class Files extends AbstractFilesController
         $this->handleBulkActions(ee('CP/URL')->make('files/directory/' . $id, ee()->cp->get_url_state()));
 
         $viewTypeService = new ViewType();
-        $view_type = $viewTypeService->determineViewType('dir_' . $id);
-        //$dir->default_modal_view is not used here as it's not modal view
+        $view_type = $viewTypeService->determineViewType('dir_' . $id, $dir->default_modal_view);
 
         $vars = $this->listingsPage($dir, $view_type);
         $vars['viewtype'] = $view_type;

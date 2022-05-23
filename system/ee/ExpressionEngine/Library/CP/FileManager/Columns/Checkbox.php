@@ -30,7 +30,7 @@ class Checkbox extends EntryManager\Columns\Checkbox
             'data' => [
                 'title' => $title,
                 //'channel-id' => $entry->Channel->getId(),
-                'confirm' => lang('file') . ': <b>' . htmlentities($file->title, ENT_QUOTES, 'UTF-8') . '</b>'
+                'confirm' => lang(strtolower($file->model_type)) . ': <b>' . htmlentities($file->title, ENT_QUOTES, 'UTF-8') . '</b>'
             ]
         ];
     }
