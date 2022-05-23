@@ -14,7 +14,6 @@ function preventNavigateAway(e) {
 	}
 }
 $(document).ready(function () {
-
 	if(typeof isNavigatingAway === 'undefined') {
 		var isNavigatingAway
 	}
@@ -328,4 +327,6 @@ $(document).ready(function () {
 
 	// Everything's probably ready, re-enable publish buttons
 	$('[data-publish] .form-btns button:disabled').removeAttr('disabled');
+
+	new MutableSelectField('files_field', EE.fileManager.fileDirectory);
 });
