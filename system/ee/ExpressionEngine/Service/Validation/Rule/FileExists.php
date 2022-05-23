@@ -22,7 +22,14 @@ class FileExists extends ValidationRule
 
     public function validate($key, $value)
     {
-        if (ee('Filesystem')->exists(parse_config_variables($value, $this->all_values))) {
+        $filesystem = ee('Filesystem');
+
+        if(array_key_exists('filesystem', $this->all_values)) {
+            $filesystem = $this->all_values['filesystem'];
+            unset($this->all_values['filesystem']);
+        }
+
+        if ($filesystem->exists(parse_config_variables($value, $this->all_values))) {
             return true;
         }
 

@@ -196,7 +196,7 @@ class UploadDestination extends StructureModel
     }
 
     /**
-     * Returns the propety value using the overrides if present
+     * Returns the property value using the overrides if present
      *
      * @param str $name The name of the property to fetch
      * @return mixed The value of the property
@@ -271,6 +271,13 @@ class UploadDestination extends StructureModel
         }
 
         return $path;
+    }
+
+    public function getValidationData()
+    {
+        return array_merge(parent::getValidationData(), [
+            'filesystem' => $this->getFilesystem()
+        ]);
     }
 
     /**

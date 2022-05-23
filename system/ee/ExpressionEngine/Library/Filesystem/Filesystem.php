@@ -725,7 +725,11 @@ class Filesystem
 
     protected function normalizeAbsolutePath($path)
     {
-        return ((strpos($path, '/') === 0) ? '/' : '') . Flysystem\Util::normalizePath($path);
+        return implode([
+            in_array(substr($path, 0, 1), ['/', '\\']) ? '/' : '',
+            Flysystem\Util::normalizePath($path),
+            in_array(substr($path, -1), ['/', '\\']) ? '/' : ''
+        ]);
     }
 
     protected function ensurePrefixedPath($path)
