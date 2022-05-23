@@ -3,14 +3,11 @@
 	<?=form_open($form_url)?>
 
 	<div class="panel-heading">
+		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<div class="title-bar">
 			<h3 class="title-bar__title"><?=$cp_heading?></h3>
 		</div>
 	</div>
-	<div class="design-system-template-body">
-		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-	</div>
-
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php if (isset($pagination)) {
 			echo $pagination;
