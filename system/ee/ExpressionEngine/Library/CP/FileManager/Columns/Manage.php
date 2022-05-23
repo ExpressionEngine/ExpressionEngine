@@ -79,7 +79,7 @@ class Manage extends EntryManager\Columns\Column
         if (ee('Permission')->can('delete_files')) {
             $toolbar['delete'] = [
                 'href' => '',
-                'class' => 'm-link',
+                'class' => 'm-link with-divider',
                 'rel' => 'modal-confirm-delete-file',
                 'data-delete-file' => 'delete-trigger',
                 'data-file-id' => $file->file_id,

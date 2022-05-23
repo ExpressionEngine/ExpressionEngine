@@ -83,6 +83,23 @@
       &:before { display: none;}
     }
   }
+
+  th.app-listing__header {
+    input[type="checkbox"] {
+      &:after {
+        opacity: 1;
+        content: fa-content($fa-var-minus);
+        color: var(--ee-accent) !important;
+      }
+
+      &:checked, &.checkbox--checked {
+        &:after {
+          color: #fff !important;
+          content: fa-content($fa-var-check);
+        }
+      }
+    }
+  }
 }
 
 .f_manager-table-breadcrumbs {
@@ -152,6 +169,21 @@
 .file-grid__checkAll {
   margin-bottom: 10px;
   margin-top: -7px;
+
+  input[type="checkbox"] {
+    &:after {
+      opacity: 1;
+      content: fa-content($fa-var-minus);
+      color: var(--ee-accent) !important;
+    }
+
+    &:checked, &.checkbox--checked {
+      &:after {
+        color: #fff !important;
+        content: fa-content($fa-var-check);
+      }
+    }
+  }
 }
 
 .file-grid__wrapper {

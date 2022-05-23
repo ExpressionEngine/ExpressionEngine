@@ -56,6 +56,10 @@
 	width: 100%;
 	align-items: center;
 
+	&.with-divider {
+		border-top: 1px solid var(--ee-border);
+	}
+
 	a {
 		color: color(text-primary);
 	}
