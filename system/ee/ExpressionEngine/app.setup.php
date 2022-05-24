@@ -489,6 +489,10 @@ $setup = [
             return new Filesystem\Filesystem();
         },
 
+        'Filesystem/Adapter' => function ($ee) {
+            return new Filesystem\AdapterManager();
+        },
+
         'IpAddress' => function ($ee) {
             return new IpAddress\Factory();
         },

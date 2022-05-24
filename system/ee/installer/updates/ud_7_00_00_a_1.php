@@ -196,11 +196,11 @@ class Updater
             )
         );
 
-        if (! ee()->db->field_exists('driver', 'upload_prefs')) {
+        if (! ee()->db->field_exists('adapter', 'upload_prefs')) {
             ee()->smartforge->add_column(
                 'upload_prefs',
                 [
-                    'driver' => [
+                    'adapter' => [
                         'type' => 'varchar',
                         'constraint' => 50,
                         'default' => 'local',
@@ -208,6 +208,18 @@ class Updater
                     ]
                 ],
                 'name'
+            );
+
+            ee()->smartforge->add_column(
+                'upload_prefs',
+                [
+                    'adapter_settings' => [
+                        'type' => 'text',
+                        'default' => null,
+                        'null' => true
+                    ]
+                ],
+                'adapter'
             );
         }
 

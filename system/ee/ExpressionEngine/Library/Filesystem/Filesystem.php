@@ -36,6 +36,7 @@ class Filesystem
      */
     public function read($path)
     {
+        $path = $this->normalizeRelativePath($path);
         if (!$this->exists($path)) {
             throw new FilesystemException("File not found: {$path}");
         } elseif (!$this->isFile($path)) {
@@ -44,12 +45,13 @@ class Filesystem
             throw new FilesystemException("Cannot read file: {$path}");
         }
 
-        return $this->flysystem->read($this->removePathPrefix($this->normalize($path)));
+        return $this->flysystem->read($this->normalize($path));
     }
 
     public function readStream($path)
     {
-        return $this->flysystem->readStream($this->removePathPrefix($path));
+        $path = $this->normalizeRelativePath($path);
+        return $this->flysystem->readStream($path);
     }
 
     /**
@@ -110,7 +112,7 @@ class Filesystem
 
     public function writeStream($path, $resource, array $config = [])
     {
-        $path = $this->removePathPrefix($path);
+        $path = $this->normalizeRelativePath($path);
         return $this->flysystem->writeStream($path, $resource, $config);
     }
 
@@ -472,8 +474,10 @@ class Filesystem
      */
     public function isFile($path)
     {
+        $path = $this->normalizeRelativePath($path);
+
         if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
-            return is_file($this->normalize($path));
+            return is_file($this->ensurePrefixedPath($this->normalize($path)));
         }
 
         return !empty($this->extension($path)) && $this->flysystem->has($path);
@@ -491,7 +495,7 @@ class Filesystem
             return true; // or is `return $this->flysystem->has($path);` better?
         }
 
-        return is_readable($this->normalize($path));
+        return is_readable($this->ensurePrefixedPath($this->normalize($path)));
     }
 
     /**
@@ -689,9 +693,10 @@ class Filesystem
     /**
      * Add EE's default index file to a directory
      */
-    protected function addIndexHtml($dir)
+    public function addIndexHtml($dir)
     {
         $dir = rtrim($dir, '/');
+        $dir = $this->normalizeRelativePath($dir);
 
         if (! $this->isDir($dir)) {
             throw new FilesystemException("Cannot add index file to non-existent directory: {$dir}");
@@ -736,7 +741,7 @@ class Filesystem
     {
         $adapter = $this->flysystem->getAdapter();
         $normalized = $this->normalizeAbsolutePath($path);
-        $prefix = rtrim($adapter->getPathPrefix(), '\\/');
+        $prefix = rtrim($this->getPathPrefix(), '\\/');
 
         if (strpos($normalized, $prefix) === 0) {
             return $normalized;
@@ -745,9 +750,14 @@ class Filesystem
         return $adapter->applyPathPrefix(Flysystem\Util::normalizePath($path));
     }
 
+    protected function getPathPrefix()
+    {
+        return $this->normalizeAbsolutePath($this->flysystem->getAdapter()->getPathPrefix());
+    }
+
     protected function removePathPrefix($path)
     {
-        $prefix = $this->flysystem->getAdapter()->getPathPrefix();
+        $prefix = $this->getPathPrefix();
         return (strpos($path, $prefix) === 0) ? str_replace($prefix, '', $path) : $path;
         return $this->flysystem->getAdapter()->removePathPrefix($path);
     }

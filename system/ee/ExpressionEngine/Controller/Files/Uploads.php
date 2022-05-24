@@ -165,12 +165,24 @@ class Uploads extends AbstractFilesController
             $allowed_types[$type] = lang('type_' . $type);
         }
 
-        $drivers = ['local'];
-        $driver_choices = [];
-        $driver_groups = [];
-        foreach ($drivers as $driver) {
-            $driver_choices[$driver] = lang($driver);
-            $driver_groups[$driver] = 'driver_' . $driver;
+        $adapters = ee('Filesystem/Adapter')->all();
+        $settingsValues = array_merge([
+            'url' => $upload_destination->getConfigOverriddenProperty('url'),
+            'server_path' => $upload_destination->getConfigOverriddenProperty('server_path'),
+        ], $upload_destination->adapterSettings ?? []);
+
+        $adapter_groups = [];
+        $adapter_choices = [];
+        $adapter_settings = [];
+        foreach($adapters as $key => $adapter) {
+            $adapter_choices[$key] = $adapter['name'];
+            $adapter_groups[$key] = "adapter_{$key}";
+            $fields = ee('Filesystem/Adapter')->createSettingsFields($key, $settingsValues);
+            if(!empty($fields)) {
+                foreach($fields as $field) {
+                    $adapter_settings[] = array_merge($field, ['group' => "adapter_{$key}"]);
+                }
+            }
         }
 
         $vars['sections'] = array(
@@ -186,41 +198,18 @@ class Uploads extends AbstractFilesController
                     )
                 ),
                 array(
-                    'title' => 'filesystem_driver',
+                    'title' => 'filesystem_adapter',
                     'desc' => '',
                     'fields' => array(
-                        'driver' => array(
+                        'adapter' => array(
                             'type' => 'dropdown',
-                            'choices' => $driver_choices,
-                            'group_toggle' => $driver_groups,
-                            'value' => $upload_destination->driver
+                            'choices' => $adapter_choices,
+                            'group_toggle' => $adapter_groups,
+                            'value' => $upload_destination->adapter
                         )
                     )
                 ),
-                array(
-                    'title' => 'upload_url',
-                    'desc' => 'upload_url_desc',
-                    'group' => 'driver_local',
-                    'fields' => array(
-                        'url' => array(
-                            'type' => 'text',
-                            'value' => $upload_destination->getConfigOverriddenProperty('url') ?: '{base_url}',
-                            'required' => true
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'upload_path',
-                    'desc' => 'upload_path_desc',
-                    'group' => 'driver_local',
-                    'fields' => array(
-                        'server_path' => array(
-                            'type' => 'text',
-                            'value' => $upload_destination->getConfigOverriddenProperty('server_path') ?: '{base_path}',
-                            'required' => true
-                        )
-                    )
-                ),
+                ... $adapter_settings,
                 array(
                     'title' => 'upload_allowed_types',
                     'desc' => '',

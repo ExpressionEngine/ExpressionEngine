@@ -70,11 +70,12 @@ class UploadDestination extends StructureModel
         'allowed_types' => 'pipeDelimited',
         'allow_subfolders' => 'boolString',
         'subfolders_on_top' => 'boolString',
+        'adapter_settings' => 'json',
     );
 
     protected static $_validation_rules = array(
         'name' => 'required|xss|noHtml|unique[site_id]',
-        //'server_path' => 'required|fileExists|writable',
+        'server_path' => 'required|fileExists|writable',
         'url' => 'required|validateUrl',
         'allow_subfolders' => 'enum[y,n]',
         'subfolders_on_top' => 'enum[y,n]',
@@ -89,7 +90,8 @@ class UploadDestination extends StructureModel
     protected $id;
     protected $site_id;
     protected $name;
-    protected $driver;
+    protected $adapter;
+    protected $adapter_settings;
     protected $server_path;
     protected $url;
     protected $allowed_types;
@@ -299,7 +301,18 @@ class UploadDestination extends StructureModel
      */
     public function getFilesystem()
     {
-        $fs = ee('File')->getPath($this->parseConfigVars((string) $this->getProperty('server_path')));
+        // We should add a local cache of the filesystem object so we don't have
+        // to instantiate it multiple times during a request
+
+        // Do we want to allow variable replacement in adapters that aren't local?
+        $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
+        $adapterName = $this->adapter ?? 'local';
+        $adapterSettings = array_merge([
+            'path' => $path
+        ], $this->adapter_settings ?? []);
+
+        $adapter = ee('Filesystem/Adapter')->make($adapterName, $adapterSettings);
+        $fs = ee('File')->getPath($path, $adapter);
         $fs->setUrl($this->getProperty('url'));
 
         return $fs;
@@ -332,13 +345,10 @@ class UploadDestination extends StructureModel
     public function exists()
     {
         try {
-            // return $this->getFilesystem()->exists('/');
-            $this->getFilesystem();
-            return true;
-        }catch(\LogicException $e) {
+            return $this->getFilesystem()->exists('');
+        } catch (\LogicException $e) {
             return false;
         }
-        // return file_exists($this->parseConfigVars((string) $this->getProperty('server_path')));
     }
 
     /**
@@ -349,7 +359,6 @@ class UploadDestination extends StructureModel
     public function isWritable()
     {
         return $this->getFilesystem()->isWritable('');
-        // return is_writable($this->parseConfigVars((string) $this->getProperty('server_path')));
     }
 
     /**

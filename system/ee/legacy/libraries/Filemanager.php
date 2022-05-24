@@ -1176,7 +1176,7 @@ class Filemanager
             $resized_path = $img_path . '_' . $size['short_name'] . '/';
 
             if (! $filesystem->isDir($resized_path)) {
-                $filesystem->makeDir($resized_path);
+                $filesystem->mkDir($resized_path);
                 $filesystem->addIndexHtml($resized_path);
             } elseif (! $filesystem->isWritable($resized_path)) {
                 return false;

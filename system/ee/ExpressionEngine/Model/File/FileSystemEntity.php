@@ -19,9 +19,9 @@ use ExpressionEngine\Model\Content\ContentModel;
  * Since both files and directories are listed in same table in database
  * (because they need to be fetched together as one list)
  * so we have this models that allows to manipulate them together
- * 
+ *
  * ATTENTION: this model is build to only fetch the data, not create
- * 
+ *
  */
 class FileSystemEntity extends ContentModel
 {
@@ -260,7 +260,9 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteThumbnailURL()
     {
-        if (! file_exists($this->getAbsoluteThumbnailPath())) {
+        $filesystem = $this->UploadDestination->getFilesystem();
+
+        if (! $filesystem->exists($this->getAbsoluteThumbnailPath())) {
             return $this->getAbsoluteURL();
         }
 
@@ -274,22 +276,24 @@ class FileSystemEntity extends ContentModel
 
     public function onBeforeDelete()
     {
+        $filesystem = $this->UploadDestination->getFilesystem();
+
+        // Remove the file
         if ($this->exists()) {
-            // Remove the file
-            unlink($this->getAbsolutePath());
+            $filesystem->delete($this->getAbsolutePath());
         }
 
         // Remove the thumbnail if it exists
-        if (file_exists($this->getAbsoluteThumbnailPath())) {
-            unlink($this->getAbsoluteThumbnailPath());
+        if ($filesystem->exists($this->getAbsoluteThumbnailPath())) {
+            $filesystem->delete($this->getAbsoluteThumbnailPath());
         }
 
         // Remove any manipulated files as well
         foreach ($this->UploadDestination->FileDimensions as $file_dimension) {
             $file = rtrim($file_dimension->getAbsolutePath(), '/') . '/' . $this->file_name;
 
-            if (file_exists($file)) {
-                unlink($file);
+            if ($filesystem->exists($file)) {
+                $filesystem->delete($file);
             }
         }
 
@@ -301,9 +305,16 @@ class FileSystemEntity extends ContentModel
             $renamer = strrchr($basename, '_');
             $basename = ($renamer === false) ? $basename : substr($basename, 0, -strlen($renamer));
             $pattern = rtrim($this->UploadDestination->server_path, '/') . '/_' . $manipulation . '/' . $basename . '_*';
-
-            foreach (glob($pattern) as $file) {
-                unlink($file);
+            // Can't do a glob with flysys
+            // foreach (glob($pattern) as $file) {
+            //     $filesystem->delete($file);
+            // }
+            $files = $filesystem->getDirectoryContents(rtrim($this->UploadDestination->server_path, '/') . '/_' . $manipulation . '/');
+            $files = array_filter($files, function($file) use($basename){
+                return (strpos($file, "{$basename}_") === 0);
+            });
+            foreach($files as $file) {
+                $filesystem->delete($file);
             }
         }
     }
@@ -334,7 +345,8 @@ class FileSystemEntity extends ContentModel
      */
     public function exists()
     {
-        return file_exists($this->getAbsolutePath());
+        $filesystem = $this->UploadDestination->getFilesystem();
+        return $filesystem->exists($this->getAbsolutePath());
     }
 
     /**
@@ -344,7 +356,8 @@ class FileSystemEntity extends ContentModel
      */
     public function isWritable()
     {
-        return is_writable($this->getAbsolutePath());
+        $filesystem = $this->UploadDestination->getFilesystem();
+        return $filesystem->isWritable($this->getAbsolutePath());
     }
 
     /**

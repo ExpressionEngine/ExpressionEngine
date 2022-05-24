@@ -196,11 +196,12 @@ class EE_Image_lib
                     $full_dest_path = $this->new_image;
                 }
 
-                // Is there a file name?
-                if (is_file($full_dest_path)) {
+                // Are we writing to a temp file
+                if (strpos($full_dest_path, sys_get_temp_dir()) !== false) {
                     $this->dest_folder = dirname($full_dest_path) . '/';
                     $this->dest_image = basename($full_dest_path);
-                }else if (! preg_match("#\.(jpg|jpeg|gif|png|webp)$#i", $full_dest_path)) {
+                // Is there a file name?
+                } else if (! preg_match("#\.(jpg|jpeg|gif|png|webp)$#i", $full_dest_path)) {
                     $filenameInPathPosition = strrpos($full_dest_path, $this->source_image);
                     if ($filenameInPathPosition == (strlen($full_dest_path) - strlen($this->source_image))) {
                         $this->dest_folder = substr($full_dest_path, 0, $filenameInPathPosition);
