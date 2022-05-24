@@ -85,7 +85,7 @@
   }
 
   th.app-listing__header {
-    input[type="checkbox"] {
+    input[type="checkbox"].intermediate {
       &:after {
         opacity: 1;
         content: fa-content($fa-var-minus);
@@ -170,7 +170,7 @@
   margin-bottom: 10px;
   margin-top: -7px;
 
-  input[type="checkbox"] {
+  input[type="checkbox"].intermediate {
     &:after {
       opacity: 1;
       content: fa-content($fa-var-minus);

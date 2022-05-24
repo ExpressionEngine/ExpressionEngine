@@ -80,6 +80,18 @@
 
 		// show/hide bulk-action-bar for the File Manager page Table view
 		$('body').on('change', '.f_manager-wrapper table td:first-child input[type=checkbox], .f_manager-wrapper table th:first-child input[type=checkbox]', function() {
+			var allCheckboxesLength = $('.f_manager-wrapper table td:first-child input[type=checkbox]').length;
+			var selectedCheckboxes = [];
+			$('.f_manager-wrapper table td:first-child input[type=checkbox]:checked').each(function() {
+				selectedCheckboxes.push($(this));
+			});
+
+			if(selectedCheckboxes.length == 0 || selectedCheckboxes.length == allCheckboxesLength) {
+				$('.app-listing__header input[type=checkbox]').removeClass('intermediate');
+			} else {
+				$('.app-listing__header input[type=checkbox]').addClass('intermediate');
+			}
+
 			if ($(this).parents('form').find('.f_manager-action-part .bulk-action-bar').length > 0) {
 				if ($(this).parents('table').find('input:checked').length == 0) {
 					$(this).parents('.table-responsive').siblings('.f_manager-action-part').find('.bulk-action-bar').addClass('hidden');
@@ -91,6 +103,18 @@
 
 		// show/hide bulk-action-bar for the File Manager page Grid view
 		$('body').on('change', '.f_manager-wrapper .file-grid__wrapper input[type=checkbox], .f_manager-wrapper .file-grid__checkAll input[type=checkbox]', function() {
+			var allCheckboxesLength = $('.f_manager-wrapper .file-grid__wrapper input[type=checkbox]').length;
+			var selectedCheckboxes = [];
+			$('.f_manager-wrapper .file-grid__wrapper input[type=checkbox]:checked').each(function() {
+				selectedCheckboxes.push($(this));
+			});
+
+			if(selectedCheckboxes.length == 0 || selectedCheckboxes.length == allCheckboxesLength) {
+				$('.file-grid__checkAll input[type=checkbox]').removeClass('intermediate');
+			} else {
+				$('.file-grid__checkAll input[type=checkbox]').addClass('intermediate');
+			}
+
 			if ( $(this).parents('form').find('.f_manager-action-part .bulk-action-bar').length > 0) {
 				if ($('.file-grid__wrapper').find('input:checked').length == 0 ) {
 					$(this).parents('form').find('.f_manager-action-part .bulk-action-bar').addClass('hidden');
