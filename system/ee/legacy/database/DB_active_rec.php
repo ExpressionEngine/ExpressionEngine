@@ -283,9 +283,10 @@ class CI_DB_active_record extends CI_DB_driver
      * @param	string $table The table to join
      * @param	string $cond The condition to join on
      * @param	string $type the type of join (left, right, outer, inner, left outer, right outer)
+     * @param	string $alias give the join an alias
      * @return	CI_DB_active_record The active record object
      */
-    public function join($table, $cond, $type = '')
+    public function join($table, $cond, $type = '', $alias = '')
     {
         if ($type != '') {
             $type = strtoupper(trim($type));
@@ -302,15 +303,21 @@ class CI_DB_active_record extends CI_DB_driver
         $this->_track_aliases($table);
 
         // Strip apart the condition and protect the identifiers
-        if (preg_match('/([\w\.]+)([\W\s]+)(.+)/', $cond, $match)) {
+        if (preg_match('/([\w\.]+)([\W\s]+)(.+)/', $cond, $match) && !$alias) {
             $match[1] = $this->_protect_identifiers($match[1]);
             $match[3] = $this->_protect_identifiers($match[3]);
 
             $cond = $match[1] . $match[2] . $match[3];
         }
 
+        // If a join alias specified, extract it now
+        $join_alias = '';
+        if ($alias) {
+            $join_alias = ' '.$alias.' ';
+        }
+
         // Assemble the JOIN statement
-        $join = $type . 'JOIN ' . $this->_protect_identifiers($table, true, null, false) . ' ON ' . $cond;
+        $join = $type . 'JOIN ' . $this->_protect_identifiers($table, true, null, false) . $join_alias . ' ON ' . $cond;
 
         $this->ar_join[] = $join;
         if ($this->ar_caching === true) {
