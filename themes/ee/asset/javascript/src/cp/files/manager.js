@@ -80,6 +80,13 @@
 
 		// show/hide bulk-action-bar for the File Manager page Table view
 		$('body').on('change', '.f_manager-wrapper table td:first-child input[type=checkbox], .f_manager-wrapper table th:first-child input[type=checkbox]', function() {
+			if ($(this).parent('td').length) {
+				if($(this).is(':checked')) {
+					$(this).parents('tr').addClass('selected');
+				} else {
+					$(this).parents('tr').removeClass('selected');
+				}
+			}
 			var allCheckboxesLength = $('.f_manager-wrapper table td:first-child input[type=checkbox]').length;
 			var selectedCheckboxes = [];
 			$('.f_manager-wrapper table td:first-child input[type=checkbox]:checked').each(function() {
