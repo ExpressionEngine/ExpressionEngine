@@ -130,6 +130,13 @@ $(document).ready(function () {
 
 		$(modalIs + " .checklist li:last").addClass('last');
 
+		if (typeof ajax_url != 'undefined') {
+			$.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
+				$(modalIs + " .ajax").html(data);
+				SelectField.renderFields();
+			});
+		}
+
 		modal.trigger('modal:open')
 	})
 });

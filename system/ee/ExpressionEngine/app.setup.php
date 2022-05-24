@@ -596,7 +596,7 @@ $setup = [
         'FileSystemEntity' => 'Model\File\FileSystemEntity',
         'File' => 'Model\File\File',
         'Directory' => 'Model\File\Directory',
-        'FileField' => 'Model\File\FileField',
+        //'FileField' => 'Model\File\FileField',
         'Watermark' => 'Model\File\Watermark',
 
         // ..\Log

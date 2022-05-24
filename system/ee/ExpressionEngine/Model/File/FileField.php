@@ -99,10 +99,6 @@ class FileField extends FieldModel
         return 'file';
     }
 
-    protected function getForeignKey()
-    {
-        return 'cat_id';
-    }
 
     /**
      * New fields get appended
@@ -123,22 +119,10 @@ class FileField extends FieldModel
         }
     }
 
-    /**
-     * Update field formatting on existing categories
-     *
-     * @return void
-     */
-    public function updateFormattingOnExisting()
-    {
-        ee()->db->update(
-            $this->getDataStorageTable(),
-            array('field_ft_' . $this->field_id => $this->field_default_fmt)
-        );
-    }
 
     public function getStructure()
     {
-        return $this->getCategoryGroup();
+        return $this->getUploadDestination();
     }
 
     public function getDataTable()

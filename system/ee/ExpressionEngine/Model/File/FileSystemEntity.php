@@ -27,7 +27,7 @@ class FileSystemEntity extends ContentModel
 {
     protected static $_primary_key = 'file_id';
     protected static $_table_name = 'files';
-    protected static $_gateway_names = array('FileGateway', 'FileFieldDataGateway');
+    //protected static $_gateway_names = array('FileGateway', 'FileFieldDataGateway');
 
     protected static $_events = array(
         'beforeDelete'
@@ -82,11 +82,10 @@ class FileSystemEntity extends ContentModel
         ),
     );
 
-    protected static $_field_data = array(
+    /*protected static $_field_data = array(
         'field_model' => 'FileField',
-        'group_column' => 'group_id',
         'structure_model' => 'UploadDestination',
-    );
+    );*/
 
     protected static $_validation_rules = array(
         'title' => 'xss',
@@ -113,9 +112,9 @@ class FileSystemEntity extends ContentModel
     protected $modified_by_member_id;
     protected $modified_date;
     protected $file_hw_original;
+    protected $total_records;
 
     protected $_absolutePath;
-    protected $_usage_count;
 
     /**
      * A link back to the owning group object.
@@ -215,7 +214,18 @@ class FileSystemEntity extends ContentModel
     public function getAbsolutePath()
     {
         if (empty($this->_absolutePath)) {
-            $this->_absolutePath = rtrim($this->UploadDestination->server_path, '/') . '/' . $this->file_name;
+            $directory_id = $this->directory_id;
+            $subfolders = [];
+            while ($directory_id != 0) {
+                $parent = $this->getModelFacade()->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'file_name')->first();
+                if (!empty($parent)) {
+                    $directory_id = $parent->directory_id;
+                    array_unshift($subfolders, $parent->file_name . '/');
+                } else {
+                    $directory_id = 0;
+                }
+            }
+            $this->_absolutePath = rtrim($this->UploadDestination->server_path, '/') . '/' . implode($subfolders) . $this->file_name;
         }
         return $this->_absolutePath;
     }

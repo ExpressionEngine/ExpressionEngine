@@ -132,11 +132,15 @@ $lang = array(
 
     'not_an_image' => 'Selected file is not an image',
 
+    'open_cmd' => 'Open',
+
     'pixels' => 'pixels',
 
     'problem_downloading_file' => 'An error occurred when attempting to download the selected file. Please verify the file exists on the server.',
 
     'problem_downloading_files' => 'An error occurred when attempting to download the selected files. Please verify the files exist on the server.',
+
+    'rename_cmd' => 'Rename',
 
     'rename' => 'Rename <strong>newer</strong> file',
 
@@ -971,6 +975,18 @@ $lang = array(
     'wm_x_transp' => 'Transparency X Coordinate',
 
     'wm_y_transp' => 'Transparency Y Coordinate',
+
+    /* Removing */
+
+    'move_toggle_to_confirm_delete' => 'Move the toggle on to confirm deleting',
+
+    'folder_not_empty' => 'The directory is not empty',
+
+    'all_files_in_folder_will_be_deleted' => 'If you delete this folder, all files in it will be deleted as well.',
+
+    'file_is_in_use' => 'The file is being used in entries',
+
+    'confirmation_required' => 'You must confirm that you want to delete',
 
 );
 

@@ -36,11 +36,11 @@ class Manage extends EntryManager\Columns\Column
         if ($file->model_type == 'Directory') {
             $toolbar['open'] = array(
                 'href' => ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]),
-                'title' => lang('open'),
+                'title' => lang('open_cmd'),
             );
             $toolbar['rename'] = array(
                 'href' => '#',
-                'title' => lang('rename'),
+                'title' => lang('rename_cmd'),
             );
             $toolbar['move'] = array(
                 'href' => '#',
@@ -84,6 +84,7 @@ class Manage extends EntryManager\Columns\Column
                 'data-delete-file' => 'delete-trigger',
                 'data-file-id' => $file->file_id,
                 'data-file-name' => $file->file_name,
+                'data-confirm-ajax' => ee('CP/URL')->make('files/confirm'),
                 'title' => lang('delete'),
             ];
         }

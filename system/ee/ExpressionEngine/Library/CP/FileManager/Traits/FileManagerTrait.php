@@ -51,7 +51,7 @@ trait FileManagerTrait
             if (! empty(ee('Request')->get('directory_id'))) {
                 $breadcrumbs = [];
                 do {
-                    $directory = ee('Model')->get('FileSystemEntity', $directory_id)->fields('file_id', 'directory_id', 'title')->first();
+                    $directory = ee('Model')->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'title')->first();
                     $directory_id = $directory->directory_id;
                     $breadcrumbs[ee('CP/URL')->make('files/directory/' . $upload_location_id, ['directory_id' => $directory->file_id])->compile()] = $directory->title;
                 } while ($directory->directory_id != 0);

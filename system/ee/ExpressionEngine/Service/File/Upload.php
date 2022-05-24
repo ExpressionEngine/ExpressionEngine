@@ -31,17 +31,19 @@ class Upload
     {
         $html = '';
 
-        $dimensions = explode(" ", $file->file_hw_original);
-        $metadata = [
-            'name' => $file->file_name,
-            'size' => ee('Format')->make('Number', $file->file_size)->bytes(),
-            'file_type' => lang($file->file_type),
-            'dimensions' => (count($dimensions) > 1) ? $dimensions[0] . 'x' . $dimensions[1] . ' px' : '',
-            'uploaded_by' => ($file->uploaded_by_member_id && $file->UploadAuthor) ? $file->UploadAuthor->getMemberName() : '',
-            'date_added' => ee()->localize->human_time($file->upload_date),
-            'modified_by' => ($file->modified_by_member_id && $file->ModifyAuthor) ? $file->ModifyAuthor->getMemberName() : '',
-            'date_modified' => ee()->localize->human_time($file->modified_date)
-        ];
+        if (! $file->isNew()) {
+            $dimensions = explode(" ", $file->file_hw_original);
+            $metadata = [
+                'name' => $file->file_name,
+                'size' => ee('Format')->make('Number', $file->file_size)->bytes(),
+                'file_type' => lang($file->file_type),
+                'dimensions' => (count($dimensions) > 1) ? $dimensions[0] . 'x' . $dimensions[1] . ' px' : '',
+                'uploaded_by' => ($file->uploaded_by_member_id && $file->UploadAuthor) ? $file->UploadAuthor->getMemberName() : '',
+                'date_added' => ee()->localize->human_time($file->upload_date),
+                'modified_by' => ($file->modified_by_member_id && $file->ModifyAuthor) ? $file->ModifyAuthor->getMemberName() : '',
+                'date_modified' => ee()->localize->human_time($file->modified_date)
+            ];
+        }
 
         $sections = array(
             array(
@@ -59,7 +61,7 @@ class Upload
                     'fields' => array(
                         'f_metadata' => array(
                             'type' => 'html',
-                            'content' => ee('View')->make('ee:files/file-data')->render(['data' => $metadata])
+                            'content' => ! $file->isNew() ? ee('View')->make('ee:files/file-data')->render(['data' => $metadata]) : ''
                         )
                     )
                 ),

@@ -94,7 +94,8 @@ if (! AJAX_REQUEST) {
                     }
                     $this->embed('ee:_shared/form/bulk-action-bar', [
                         'options' => $options,
-                        'modal' => true
+                        'modal' => true,
+                        'ajax_url' => ee('CP/URL')->make('files/confirm')
                     ]);
                 }
                 ?>
@@ -106,6 +107,15 @@ if (! AJAX_REQUEST) {
 
 <?php 
 if (! AJAX_REQUEST) {
-    $this->embed('files/modals/_delete');
+    $modal_vars = array(
+        'name' => 'modal-confirm-delete-file',
+        'form_url' => $form_url,
+        'hidden' => array(
+            'bulk_action' => 'remove'
+        )
+    );
+    
+    $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
+    ee('CP/Modal')->addModal('delete-file', $modal);
 }
 ?>

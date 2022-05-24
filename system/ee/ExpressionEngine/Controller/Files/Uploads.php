@@ -270,17 +270,6 @@ class Uploads extends AbstractFilesController
                     )
                 ),
                 array(
-                    'title' => 'existing_subfolders',
-                    'desc' => 'existing_subfolders_desc',
-                    'group' => 'rel_subfolder',
-                    'fields' => array(
-                        'include_existing_subfolder' => array(
-                            'type' => 'yes_no',
-                            'value' => ''
-                        )
-                    )
-                ),
-                array(
                     'title' => 'keep_subfolders_top',
                     'desc' => 'keep_subfolders_top_desc',
                     'group' => 'rel_subfolder',
@@ -288,31 +277,6 @@ class Uploads extends AbstractFilesController
                         'subfolders_on_top' => array(
                             'type' => 'yes_no',
                             'value' => $upload_destination->subfolders_on_top ?: false
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'limit_subfolder_toggle',
-                    'desc' => 'limit_subfolders_toggle_desc',
-                    'group' => 'rel_subfolder',
-                    'fields' => array(
-                        'limit_subfolders_layers' => array(
-                            'type' => 'yes_no',
-                            'group_toggle' => array(
-                                'y' => 'rel_limit',
-                            ),
-                            'value' => ''
-
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'limit_subfolders',
-                    'desc' => 'limit_subfolders_desc',
-                    'group' => 'rel_limit',
-                    'fields' => array(
-                        'limit_subfolders_layers' => array(
-                            'type' => 'text'
                         )
                     )
                 ),

@@ -226,6 +226,60 @@ class Files extends AbstractFilesController
         ee()->cp->render('settings/form', $vars);
     }
 
+    /**
+     * Generate post re-assignment view if applicable
+     *
+     * @access public
+     * @return void
+     */
+    public function confirm()
+    {
+        $vars = array();
+        $selected = ee('Request')->post('selection');
+        $vars['selected'] = $selected;
+        $desc = lang('move_toggle_to_confirm_delete');
+
+        $files = ee('Model')->get('FileSystemEntity', $selected)
+            ->with('FileCategories')
+            ->with('FileEntries')
+            ->all();
+
+        $usageCount = 0;
+        foreach ($files as $file) {
+            if ($file->model_type == 'Directory') {
+                $countFiles = ee('db')->from('files')->where('directory_id', $file->file_id)->count();
+                if ($countFiles > 0) {
+                    $title = lang('folder_not_empty');
+                    $desc = lang('all_files_in_folder_will_be_deleted') . ' ' . $desc;
+                    continue;
+                }
+            }
+            $usageCount += $file->FileCategories->count() + $file->FileEntries->count();
+        }
+
+        if ($usageCount > 0) {
+            $title = lang('file_is_in_use');
+        }
+        
+        if (isset($title)) {
+            $vars['fieldset'] = [
+                'group' => 'delete-confirm',
+                'setting' => [
+                    'title' => $title,
+                    'desc' => $desc,
+                    'fields' => [
+                        'confirm' => [
+                            'type' => 'toggle',
+                            'value' => 0,
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        ee()->cp->render('files/delete_confirm', $vars);
+    }
+
     private function overwriteOrRename($file, $original_name)
     {
         $vars = array(

@@ -17,20 +17,16 @@ use ExpressionEngine\Library\CP\EntryManager;
  */
 class Usage extends EntryManager\Columns\Column
 {
-    public function getEntryManagerColumnModels()
-    {
-        return ['FileEntries'];
-    }
-
+    /*
     public function getEntryManagerColumnFields()
     {
         return ['COUNT(FileEntries.*) AS _usage_count'];
         //need to find a way to store this value in the File model
     }
-
+    */
     public function getEntryManagerColumnSortField()
     {
-        return 'modified_by_member_id';
+        return 'total_records';
     }
 
     public function getTableColumnLabel()
@@ -40,6 +36,6 @@ class Usage extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $file)
     {
-        return $file->_usage_count;
+        return $file->total_records;
     }
 }
