@@ -1,20 +1,25 @@
 <?=form_open($form_url, '', [])?>
 
-    <h2>New Folder</h2>
+    <h2><?= lang('new_folder') ?></h2>
 
-    <p>Create a folder in the following location:</p>
+    <p><?= lang('create_folder_location') ?></p>
 
-    <label for="upload_location">Location:</label>
+    <p>
+        <label for="upload_location"><?= lang('location') ?></label>
+    </p>
 
-    <select name="upload_location" id="upload_location">
-        <?php foreach ($destinations as $id => $name):?>
-        <option value='<?= $id ?>'><?= $name ?></option>
-        <?php endforeach;?>
-    </select>
+    <p>
+        <select name="upload_location" id="upload_location">
+            <?php foreach ($destinations as $id => $name):?>
+            <option value='<?= $id ?>'><?= $name ?></option>
+            <?php endforeach;?>
+        </select>
+    </p>
 
-
-    <label for="folder_name">Folder Name:</label>
-    <input type="text" name="folder_name">
+    <p>
+        <label for="folder_name"><?= lang('folder_name') ?></label>
+        <input type="text" name="folder_name">
+    </p>
 
     <input type="submit" name="Save">
 </form>

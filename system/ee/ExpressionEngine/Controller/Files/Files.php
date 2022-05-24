@@ -119,7 +119,7 @@ class Files extends AbstractFilesController
 
             // Generate the contents of the new folder modal
             $contents = ee('View')->make('files/modals/new_folder')->render([
-                'form_url'=> ee('CP/URL')->make('files/new_folder')->compile(),
+                'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
                 'destinations' => ee('Model')->get('UploadDestination')->fields('id', 'name')->all()->getDictionary('id', 'name')
             ]);
 
@@ -148,11 +148,41 @@ class Files extends AbstractFilesController
         ee()->cp->render('files/index', $vars);
     }
 
-    public function new_folder()
+    public function createSubdirectory()
     {
-        echo "<pre>";
-        var_dump($_POST);
-        exit;
+        // // TODO: add this permission
+        // if (! ee('Permission')->can('create_subdirectories')) {
+        //     show_error(lang('unauthorized_access'), 403);
+        // }
+
+        $dir_id = (int) ee('Request')->post('upload_location');
+        $subdir_name = ee('Request')->post('folder_name');
+
+        $uploadDirectory = ee('Model')->get('UploadDestination', $dir_id)->first();
+
+        // Check to see if the directory exists and if it doesnt, create it
+        if (! $uploadDirectory->getFilesystem()->exists($subdir_name)) {
+            $created = $uploadDirectory->getFilesystem()->mkDir($subdir_name);
+        } else {
+            // Error dir already exists
+            ee('CP/Alert')->makeInline('files-form')
+                ->asWarning()
+                ->withTitle(lang('subfolder_directory_already_exists'))
+                ->addToBody('dir exists')
+                ->defer();
+        }
+
+        if ($created) {
+            ee('CP/Alert')->makeInline('files-form')
+                ->asSuccess()
+                ->withTitle(lang('subfolder_directory_created'))
+                ->addToBody('created')
+                // ->addToBody(sprintf(lang('upload_directory_deleted_desc'), $dir->name))
+                ->defer();
+        } else {
+        }
+
+        ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $dir_id));
     }
 
     public function export()
@@ -251,6 +281,7 @@ class Files extends AbstractFilesController
                 if ($countFiles > 0) {
                     $title = lang('folder_not_empty');
                     $desc = lang('all_files_in_folder_will_be_deleted') . ' ' . $desc;
+
                     continue;
                 }
             }
@@ -260,7 +291,7 @@ class Files extends AbstractFilesController
         if ($usageCount > 0) {
             $title = lang('file_is_in_use');
         }
-        
+
         if (isset($title)) {
             $vars['fieldset'] = [
                 'group' => 'delete-confirm',
