@@ -286,7 +286,9 @@ EE.cp.validateLicense = function() {
 
 					},
 					error: function (data, textStatus, errorThrown) {
-						console.log('Error Data:', data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+						if(data.responseJSON) {
+							console.log('Error Data:', data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+						}
 					}
 				});
 			}
