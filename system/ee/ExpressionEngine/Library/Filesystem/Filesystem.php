@@ -23,8 +23,12 @@ class Filesystem
     public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = null)
     {
         if (is_null($adapter)) {
-            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath(ee()->config->item('base_path')));
+            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath(ee()->config->item('base_path') ?: $_SERVER['DOCUMENT_ROOT']));
+        }else{
+            // Fix prefixes
+            $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
         }
+
         $this->flysystem = new Flysystem\Filesystem($adapter, $config);
     }
 
@@ -91,6 +95,7 @@ class Filesystem
     public function write($path, $data, $overwrite = false, $append = false)
     {
         $path = $this->normalize($path);
+        $path = $this->normalizeRelativePath($path);
 
         if ($this->isDir($path)) {
             throw new FilesystemException("Cannot write file, path is a directory: {$path}");
