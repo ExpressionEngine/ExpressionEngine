@@ -23,7 +23,7 @@ class Filesystem
     public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = null)
     {
         if (is_null($adapter)) {
-            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath(SYSPATH));
+            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath(ee()->config->item('base_path')));
         }
         $this->flysystem = new Flysystem\Filesystem($adapter, $config);
     }
