@@ -153,6 +153,41 @@ $(document).ready(function () {
 
 		modal.trigger('modal:open')
 	})
+
+	$('body').on('click', '*[data-move-file]', function (e) {
+		var data_element = $(this).data('move-file');
+		var ajax_url = $(this).data('confirm-ajax');
+		var file_id = $(this).data('file-id');
+		var file_name = $(this).parents('tr').find('input[type=checkbox]').attr('name');
+		var checkboxInput = $(this).parents('tr').find('input[type=checkbox]').attr('data-confirm');
+		e.preventDefault();
+
+		// First adjust the checklist
+		var modalIs = '.' + $(this).attr('rel');
+		var modal = $(modalIs+', [rel='+$(this).attr('rel')+']')
+		$(modalIs + " .checklist").html(''); // Reset it
+
+		$(modalIs + " .checklist").append('<li>' + checkboxInput + '</li>');
+		// Add hidden <input> elements
+		$(modalIs + " .checklist li:last").append(
+			$('<input/>').attr({
+				type: 'hidden',
+				name: file_name,
+				value: file_id
+			})
+		);
+
+		$(modalIs + " .checklist li:last").addClass('last');
+
+		if (typeof ajax_url != 'undefined') {
+			$.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
+				$(modalIs + " .ajax").html(data);
+				SelectField.renderFields();
+			});
+		}
+
+		modal.trigger('modal:open')
+	})
 });
 
 EE.cp.Modal = {

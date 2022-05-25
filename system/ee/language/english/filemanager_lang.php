@@ -154,6 +154,8 @@ $lang = array(
 
     'security_failure' => 'The file type you are attempting to upload is not allowed.',
 
+    'select' => 'Select...',
+
     'show_all_files' => 'All %d files',
 
     'thumb_not_created' => 'Thumbnail could not be created for the image. Please make sure the thumbnail directory is writable.',

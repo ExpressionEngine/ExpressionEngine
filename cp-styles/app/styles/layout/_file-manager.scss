@@ -361,3 +361,34 @@
   margin: 5px auto;
   width: calc(100% - 10px);
 }
+
+.multilevel-select {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+    width: 100%;
+    text-align: left;
+  }
+
+  .dropdown {
+    width: calc(100% - 60px);
+
+    ul {
+      margin-top: 0;
+      list-style-type: none;
+
+      li {
+        a {
+          padding: 0 20px;
+          min-height: 30px;
+        }
+      }
+    }
+  }
+
+}

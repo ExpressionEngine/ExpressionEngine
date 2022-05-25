@@ -24342,6 +24342,30 @@ body[data-theme="dark"] {
   width: calc(100% - 10px);
 }
 
+.multilevel-select {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+.multilevel-select button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+}
+.multilevel-select .dropdown, .multilevel-select .select__dropdown {
+  width: calc(100% - 60px);
+}
+.multilevel-select .dropdown ul, .multilevel-select .select__dropdown ul {
+  margin-top: 0;
+  list-style-type: none;
+}
+.multilevel-select .dropdown ul li a, .multilevel-select .select__dropdown ul li a {
+  padding: 0 20px;
+  min-height: 30px;
+}
+
 .hidden {
   display: none;
 }

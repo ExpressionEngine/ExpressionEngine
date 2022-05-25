@@ -69,6 +69,11 @@ class Manage extends EntryManager\Columns\Column
             $toolbar['move'] = array(
                 'href' => '',
                 'title' => lang('move'),
+                'rel' => 'modal-confirm-move-file',
+                'data-move-file' => 'move-trigger',
+                'data-file-id' => $file->file_id,
+                'data-file-name' => $file->file_name,
+                'data-confirm-ajax' => ee('CP/URL')->make('files/confirm'),
             );
             $toolbar['replace'] = array(
                 'href' => '',
