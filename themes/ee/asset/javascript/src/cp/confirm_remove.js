@@ -19,6 +19,26 @@ $(document).ready(function () {
 			var conditional_element = $(select.options[select.selectedIndex]);
 		}
 
+		var checked = $(this).parents('form').find('th input:checked, td input:checked, li input:checked');
+
+		checked = checked.filter(function(i, el) {
+			return $(el).attr('value') !== undefined;
+		});
+
+		if (typeof($(conditional_element).data('action')) !== 'undefined') {
+			e.preventDefault();
+			if ($(conditional_element).data('action') == 'redirect') {
+				if (checked.length && typeof(checked.first().data('redirect-url') !== 'undefined')) {
+					window.location = checked.first().data('redirect-url');
+				}
+			} else if ($(conditional_element).data('action') == 'copy-link') {
+				if (checked.length && typeof(checked.first().data('link') !== 'undefined')) {
+					window.location = checked.first().data('link');
+				}
+			}
+			return;
+		}
+
 		if ($(conditional_element).data(data_element) &&
 			$(conditional_element).prop($(conditional_element).data(data_element))) {
 			e.preventDefault();
@@ -31,12 +51,6 @@ $(document).ready(function () {
 			if (typeof confirm_text != 'undefined') {
 				$(modalIs + " .checklist").append('<li>' + confirm_text + '</li>');
 			}
-
-			var checked = $(this).parents('form').find('th input:checked, td input:checked, li input:checked');
-
-			checked = checked.filter(function(i, el) {
-				return $(el).attr('value') !== undefined;
-			});
 
 			if (conditional_element.attr('rel') == 'modal-edit') {
 				var entryIds = $.map(checked, function(el) {

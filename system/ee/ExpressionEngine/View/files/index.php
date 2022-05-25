@@ -80,23 +80,27 @@ if (! AJAX_REQUEST) {
                             'value' => "",
                             'text' => '-- ' . lang('with_selected') . ' --'
                         ],
-                        [
+                    ];
+                    if (ee('Permission')->can('edit_files')) {
+                        $options[] = [
                             'value' => "edit",
-                            'text' => lang('edit')
-                        ],
-                        [
+                            'text' => lang('edit'),
+                            'attrs' => ' data-action="redirect"'
+                        ];
+                    }
+                    $options[] = [
                             'value' => "copy_link",
-                            'text' => lang('copy_link')
-                        ],
-                        [
+                            'text' => lang('copy_link'),
+                            'attrs' => ' data-action="copy-link"'
+                    ];
+                    $options[] = [
                             'value' => "move",
                             'text' => lang('move'),
                             'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-move-file"'
-                        ],
-                        [
+                    ];
+                    $options[] = [
                             'value' => "download",
                             'text' => lang('download')
-                        ]
                     ];
                     if (ee('Permission')->can('delete_files')) {
                         $options[] = [

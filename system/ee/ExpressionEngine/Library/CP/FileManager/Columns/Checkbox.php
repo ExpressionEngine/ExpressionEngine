@@ -21,7 +21,7 @@ class Checkbox extends EntryManager\Columns\Checkbox
     {
         $title = ee('Format')->make('Text', $file->title)->attributeSafe();
 
-        return [
+        $data = [
             'name' => 'selection[]',
             'value' => $file->getId(),
             //'disabled' => ! $this->canEdit($entry) && ! $this->canDelete($entry),
@@ -29,10 +29,14 @@ class Checkbox extends EntryManager\Columns\Checkbox
             'hidden' => $file->isDirectory(),
             'data' => [
                 'title' => $title,
-                //'channel-id' => $entry->Channel->getId(),
+                'link' => $file->getAbsoluteURL(),
                 'confirm' => lang(strtolower($file->model_type)) . ': <b>' . htmlentities($file->title, ENT_QUOTES, 'UTF-8') . '</b>'
             ]
         ];
+        if (ee('Permission')->can('edit_files')) {
+            $data['data']['redirect-url'] = ee('CP/URL')->make('files/file/view/' . $file->file_id)->compile();
+        }
+        return $data;
     }
 
     public function getEntryManagerColumnSortField()
