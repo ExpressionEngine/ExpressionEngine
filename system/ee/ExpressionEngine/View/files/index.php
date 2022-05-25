@@ -20,6 +20,13 @@ if (! AJAX_REQUEST) {
                 <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
             </div>
 
+            <div class="alert alert--success f_manager-alert">
+                <div class="alert__icon"><i class="fas fa-check-circle fa-fw"></i></div>
+                <div class="alert__content">
+                    <p class="alert__title">link copied</code></p>
+                </div>
+            </div>
+
             <div class="filter-search-bar">
                 <!-- All filters (not including search input) are contained within 'filter-search-bar__filter-row' -->
                 <div class="filter-search-bar__filter-row">
@@ -89,9 +96,13 @@ if (! AJAX_REQUEST) {
                         ];
                     }
                     $options[] = [
+                            'value' => "download",
+                            'text' => lang('download')
+                    ];
+                    $options[] = [
                             'value' => "copy_link",
                             'text' => lang('copy_link'),
-                            'attrs' => ' data-action="copy-link"'
+                            // 'attrs' => ' data-action="copy-link"'
                     ];
                     $options[] = [
                             'value' => "move",
@@ -99,8 +110,9 @@ if (! AJAX_REQUEST) {
                             'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-move-file"'
                     ];
                     $options[] = [
-                            'value' => "download",
-                            'text' => lang('download')
+                            'value' => "replace",
+                            'text' => lang('replace_file'),
+                            'attrs' => ''
                     ];
                     if (ee('Permission')->can('delete_files')) {
                         $options[] = [

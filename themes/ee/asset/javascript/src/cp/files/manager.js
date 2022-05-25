@@ -99,6 +99,20 @@
 				$('.app-listing__header input[type=checkbox]').addClass('intermediate');
 			}
 
+			if (selectedCheckboxes.length >= 2) {
+				$('.f_manager-action-part .bulk-action-bar select option').each(function(){
+					var el = $(this)
+					if($(this).val() == 'edit' || $(this).val() == 'copy_link' || $(this).val() == 'replace'){
+						el.attr('disabled', 'disabled');
+					}
+				});
+			} else {
+				$('.f_manager-action-part .bulk-action-bar select option').each(function(){
+					$(this).removeAttr('disabled');
+				});
+			}
+
+
 			if ($(this).parents('form').find('.f_manager-action-part .bulk-action-bar').length > 0) {
 				if ($(this).parents('table').find('input:checked').length == 0) {
 					$(this).parents('.table-responsive').siblings('.f_manager-action-part').find('.bulk-action-bar').addClass('hidden');
@@ -120,6 +134,19 @@
 				$('.file-grid__checkAll input[type=checkbox]').removeClass('intermediate');
 			} else {
 				$('.file-grid__checkAll input[type=checkbox]').addClass('intermediate');
+			}
+
+			if (selectedCheckboxes.length >= 2) {
+				$('.f_manager-action-part .bulk-action-bar select option').each(function(){
+					var el = $(this)
+					if($(this).val() == 'edit' || $(this).val() == 'copy_link' || $(this).val() == 'replace'){
+						el.attr('disabled', 'disabled');
+					}
+				});
+			} else {
+				$('.f_manager-action-part .bulk-action-bar select option').each(function(){
+					$(this).removeAttr('disabled');
+				});
 			}
 
 			if ( $(this).parents('form').find('.f_manager-action-part .bulk-action-bar').length > 0) {
