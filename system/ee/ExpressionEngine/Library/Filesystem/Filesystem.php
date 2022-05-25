@@ -164,6 +164,7 @@ class Filesystem
      */
     public function delete($path)
     {
+        $path = $this->normalizeRelativePath($path);
         return $this->flysystem->delete($path);
     }
 
@@ -174,6 +175,7 @@ class Filesystem
      */
     public function deleteFile($path)
     {
+        $path = $this->normalizeRelativePath($path);
         if (!$this->isFile($path)) {
             throw new FilesystemException("File does not exist {$path}");
         }
@@ -661,7 +663,7 @@ class Filesystem
             $uniqueName = $filename . '_' . $i . '.' . $extension;
         } while (in_array($uniqueName, $files));
 
-        return $dirname . DIRECTORY_SEPARATOR . $uniqueName;
+        return $dirname . '/' . $uniqueName;
     }
 
     /**
@@ -737,11 +739,11 @@ class Filesystem
 
     protected function normalizeAbsolutePath($path)
     {
-        return implode([
+        return str_replace('//', '/', implode([
             in_array(substr($path, 0, 1), ['/', '\\']) ? '/' : '',
             Flysystem\Util::normalizePath($path),
             in_array(substr($path, -1), ['/', '\\']) ? '/' : ''
-        ]);
+        ]));
     }
 
     protected function ensurePrefixedPath($path)
@@ -766,13 +768,12 @@ class Filesystem
     {
         $prefix = $this->getPathPrefix();
         return (strpos($path, $prefix) === 0) ? str_replace($prefix, '', $path) : $path;
-        return $this->flysystem->getAdapter()->removePathPrefix($path);
     }
 
     protected function normalizeRelativePath($path)
     {
         $path = $this->normalizeAbsolutePath($path);
-        return $this->removePathPrefix($path);
+        return ltrim($this->removePathPrefix($path), '\\/');
     }
 
     /**

@@ -225,7 +225,7 @@ class FileSystemEntity extends ContentModel
                     $directory_id = 0;
                 }
             }
-            $this->_absolutePath = rtrim($this->UploadDestination->server_path, '/') . '/' . implode($subfolders) . $this->file_name;
+            $this->_absolutePath = rtrim($this->UploadDestination->server_path, '\\/') . '/' . implode($subfolders) . $this->file_name;
         }
         return $this->_absolutePath;
     }
