@@ -18,12 +18,6 @@ $(document).ready(function(){
 		}
 	});
 
-	$('body').on('click', '.secondary-sidebar-toggle .secondary-sidebar-toggle__target', function(e){
-		e.preventDefault();
-		$('.secondary-sidebar').toggleClass('secondary-sidebar__collapsed');
-		$(this).toggleClass('collapsed');
-	})
-
 	// =============================================
 	// For backwards compatibility: adding $.browser
 	// from: https://github.com/jquery/jquery-migrate
@@ -328,6 +322,23 @@ $(document).ready(function(){
 			$('.sidebar-toggle i').removeClass('fa-angle-left').addClass('fa-angle-right');
 		}
 		$.get(EE.cp.collapseNavURL, {collapsed: (!isHidden ? 1 : 0)});
+	})
+
+	// Collapse navigation sidebar
+	// -------------------------------------------------------------------
+	$('body').on('click', '.secondary-sidebar-toggle .secondary-sidebar-toggle__target', function(e){
+		e.preventDefault();
+		let isSecondaryHidden = $('.secondary-sidebar').hasClass('secondary-sidebar__collapsed');
+
+		if (isSecondaryHidden) {
+			$('.secondary-sidebar').removeClass('secondary-sidebar__collapsed');
+			$(this).removeClass('collapsed');
+			$(this).find('i').removeClass('fa-angle-right').addClass('fa-angle-left');
+		} else {
+			$('.secondary-sidebar').addClass('secondary-sidebar__collapsed');
+			$(this).addClass('collapsed');
+			$(this).find('i').removeClass('fa-angle-left').addClass('fa-angle-right');
+		}
 	})
 
 	// Collapse navigation sidebar

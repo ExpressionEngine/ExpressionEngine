@@ -109,7 +109,6 @@
     <div class="secondary-sidebar-toggle">
       <a href="" class="secondary-sidebar-toggle__target" title="Toggle Sidebar">
       	<i class="fas fa-angle-left"></i>
-      	<i class="fas fa-angle-right"></i>
       </a>
     </div>
     <?php endif; ?>

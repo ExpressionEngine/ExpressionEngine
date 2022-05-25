@@ -112,16 +112,6 @@
       right: 9px;
       cursor: pointer;
     }
-
-    .fa-angle-right {
-      right: 8px;
-      display: none;
-    }
-
-    &.collapsed {
-      .fa-angle-left { display: none;}
-      .fa-angle-right { display: block;}
-    }
   }
 }
 
