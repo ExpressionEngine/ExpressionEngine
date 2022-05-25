@@ -413,6 +413,8 @@ class Filesystem
      */
     public function mtime($path)
     {
+        $path = $this->normalizeRelativePath($path);
+
         if (! $this->exists($path)) {
             throw new FilesystemException("File does not exist: {$path}");
         }
