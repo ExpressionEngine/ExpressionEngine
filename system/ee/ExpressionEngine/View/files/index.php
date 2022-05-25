@@ -79,11 +79,24 @@ if (! AJAX_REQUEST) {
                         [
                             'value' => "",
                             'text' => '-- ' . lang('with_selected') . ' --'
+                        ],
+                        [
+                            'value' => "edit",
+                            'text' => lang('edit')
+                        ],
+                        [
+                            'value' => "copy_link",
+                            'text' => lang('copy_link')
+                        ],
+                        [
+                            'value' => "move",
+                            'text' => lang('move'),
+                            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-move-file"'
+                        ],
+                        [
+                            'value' => "download",
+                            'text' => lang('download')
                         ]
-                    ];
-                    $options[] = [
-                        'value' => "download",
-                        'text' => lang('download')
                     ];
                     if (ee('Permission')->can('delete_files')) {
                         $options[] = [
@@ -117,5 +130,16 @@ if (! AJAX_REQUEST) {
     
     $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
     ee('CP/Modal')->addModal('delete-file', $modal);
+
+    $modal_vars = array(
+        'name' => 'modal-confirm-move-file',
+        'form_url' => $form_url,
+        'hidden' => array(
+            'bulk_action' => 'move'
+        )
+    );
+    
+    $modal = $this->make('ee:files/modals/move')->render($modal_vars);
+    ee('CP/Modal')->addModal('move-file', $modal);
 }
 ?>
