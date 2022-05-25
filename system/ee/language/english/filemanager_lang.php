@@ -988,6 +988,12 @@ $lang = array(
 
     'confirmation_required' => 'You must confirm that you want to delete',
 
+    /* Moving the files */
+
+    'move_file' => 'Move File',
+
+    'select_new_destinatin_for' => 'Select new destination for:',
+
 );
 
 // EOF
