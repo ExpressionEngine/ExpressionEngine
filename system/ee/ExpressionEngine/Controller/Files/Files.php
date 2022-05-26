@@ -159,30 +159,50 @@ class Files extends AbstractFilesController
         $subdir_name = ee('Request')->post('folder_name');
 
         $uploadDirectory = ee('Model')->get('UploadDestination', $dir_id)->first();
+        $return_url = ee('CP/URL')->make('files/directory/' . $dir_id);
 
-        // Check to see if the directory exists and if it doesnt, create it
-        if (! $uploadDirectory->getFilesystem()->exists($subdir_name)) {
-            $created = $uploadDirectory->getFilesystem()->mkDir($subdir_name);
-        } else {
+        // Check to see if the directory exists and if it does, return back with an error message
+        if ($uploadDirectory->getFilesystem()->exists($subdir_name)) {
             // Error dir already exists
             ee('CP/Alert')->makeInline('files-form')
                 ->asWarning()
                 ->withTitle(lang('subfolder_directory_already_exists'))
-                ->addToBody('dir exists')
+                ->addToBody(lang('dir exists'))
                 ->defer();
+
+            return ee()->functions->redirect($return_url);
         }
 
-        if ($created) {
+        // Directory doesnt exist, so attempt to create it
+        $created = $uploadDirectory->getFilesystem()->mkDir($subdir_name);
+
+        // We failed to create the directory, return with an error message
+        if (! $created) {
+            // Error dir already exists
             ee('CP/Alert')->makeInline('files-form')
-                ->asSuccess()
-                ->withTitle(lang('subfolder_directory_created'))
-                ->addToBody('created')
-                // ->addToBody(sprintf(lang('upload_directory_deleted_desc'), $dir->name))
+                ->asWarning()
+                ->withTitle(lang('subfolder_directory_already_exists'))
+                ->addToBody(lang('dir exists'))
                 ->defer();
-        } else {
+
+            return ee()->functions->redirect($return_url);
         }
 
-        ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $dir_id));
+        // The directory was created, so now lets create it in the DB
+        $subdir = ee('Model')->make('Directory');
+        $subdir->file_name = $subdir_name;
+        $subdir->upload_location_id = $dir_id;
+        $subdir->save();
+
+        // Show alert message that we created the directory successfully
+        ee('CP/Alert')->makeInline('files-form')
+            ->asSuccess()
+            ->withTitle(lang('subfolder_directory_created'))
+            ->addToBody('created')
+                // ->addToBody(sprintf(lang('upload_directory_deleted_desc'), $dir->name))
+            ->defer();
+
+        ee()->functions->redirect($return_url);
     }
 
     public function export()

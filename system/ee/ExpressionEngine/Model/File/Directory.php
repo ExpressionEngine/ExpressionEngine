@@ -16,7 +16,19 @@ namespace ExpressionEngine\Model\File;
  */
 class Directory extends FileSystemEntity
 {
+    protected static $_events = array(
+        'beforeInsert'
+    );
 
+    public function onBeforeInsert()
+    {
+        $this->setProperty('model_type', 'Directory');
+        $this->setProperty('upload_date', ee()->localize->now);
+        $this->setProperty('modified_date', ee()->localize->now);
+        $this->setProperty('uploaded_by_member_id', ee()->session->userdata('member_id'));
+        $this->setProperty('modified_by_member_id', ee()->session->userdata('member_id'));
+        $this->setProperty('title', $this->getProperty('file_name'));
+    }
 }
 
 // EOF
