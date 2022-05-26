@@ -17,13 +17,6 @@ use ExpressionEngine\Library\CP\EntryManager;
  */
 class Usage extends EntryManager\Columns\Column
 {
-    /*
-    public function getEntryManagerColumnFields()
-    {
-        return ['COUNT(FileEntries.*) AS _usage_count'];
-        //need to find a way to store this value in the File model
-    }
-    */
     public function getEntryManagerColumnSortField()
     {
         return 'total_records';

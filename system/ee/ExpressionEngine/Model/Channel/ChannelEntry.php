@@ -153,10 +153,15 @@ class ChannelEntry extends ContentModel
         'afterDelete',
         'afterInsert',
         'afterSave',
-        'afterUpdate'
+        'afterUpdate',
+        'afterAssociationsSave',
+        'beforeAssociationsBulkDelete',
+        'afterAssociationsBulkDelete'
     );
 
     protected $_default_fields;
+    protected $_existingEntryFiles = [];
+    protected static $_existingEntryFilesStatic = [];
 
     // Properties
     protected $entry_id;
@@ -459,6 +464,36 @@ class ChannelEntry extends ContentModel
         }
     }
 
+    public function onAfterAssociationsSave()
+    {
+        if (!empty($this->_existingEntryFiles)) {
+            $updateQuery = 'UPDATE exp_files SET total_records = (SELECT COUNT(exp_file_usage.file_id) FROM exp_file_usage WHERE exp_file_usage.file_id = exp_files.file_id AND exp_file_usage.file_id IN (' . implode(', ', $this->_existingEntryFiles) . '))';
+            ee('db')->query($updateQuery);
+        }
+    }
+
+    public static function onBeforeAssociationsBulkDelete($entry_ids = [])
+    {
+        if (!empty($entry_ids)) {
+            $key = implode('_', $entry_ids);
+            $existingEntryFilesQuery = ee('db')->select('file_id')->from('file_usage')->where_in('entry_id', $entry_ids)->get();
+            $existingEntryFiles = [];
+            foreach ($existingEntryFilesQuery->result_array() as $row) {
+                $existingEntryFiles[] = $row['file_id'];
+            }
+            self::$_existingEntryFilesStatic = [$key => $existingEntryFiles];
+        }
+    }
+
+    public static function onAfterAssociationsBulkDelete($entry_ids = [])
+    {
+        $key = implode('_', $entry_ids);
+        if (!empty(self::$_existingEntryFilesStatic) && isset(self::$_existingEntryFilesStatic[$key]) && !empty(self::$_existingEntryFilesStatic[$key])) {
+            $updateQuery = 'UPDATE exp_files SET total_records = (SELECT COUNT(exp_file_usage.file_id) FROM exp_file_usage WHERE exp_file_usage.file_id = exp_files.file_id AND exp_file_usage.file_id IN (' . implode(', ', self::$_existingEntryFilesStatic[$key]) . '))';
+            ee('db')->query($updateQuery);
+        }
+    }
+
     public function onAfterInsert()
     {
         parent::onAfterInsert();
@@ -717,7 +752,16 @@ class ChannelEntry extends ContentModel
                 }
             }
         });
-        
+
+        //just before we set relationship, grab existing records to find out what files need recount
+        if (! $this->isNew()) {
+            $existingEntryFiles = ee('db')->select('file_id')->from('file_usage')->where('entry_id', $this->getId())->get();
+            foreach ($existingEntryFiles->result_array() as $row) {
+                $this->_existingEntryFiles[] = $row['file_id'];
+            }
+        }
+        $this->_existingEntryFiles = array_unique(array_merge($this->_existingEntryFiles, array_keys($usage)));
+
         $entryFiles = ee('Model')->get('File', array_keys($usage))->all();
         $this->getAssociation('EntryFiles')->set($entryFiles);
     }
