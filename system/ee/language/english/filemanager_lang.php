@@ -120,6 +120,18 @@ $lang = array(
 
     'new_folder' => 'New Folder',
 
+    'folder_name' => 'Folder Name:',
+
+    'location' => 'Location:',
+
+    'create_folder_location' => 'Create a folder in the following location:',
+
+    'subfolder_directory_created' => 'Subfolder directory created',
+
+    'upload_directory_deleted_desc' => 'The upload directory <b>%s</b> has been deleted.',
+
+    'subfolder_already_exists' => 'Subfolder directory already exists',
+
     'no_file' => 'No file selected',
 
     'no_filename' => 'A new filename was not submitted.',
