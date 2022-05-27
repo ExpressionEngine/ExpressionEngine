@@ -26,7 +26,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 var FileField =
@@ -44,6 +44,7 @@ function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "setFile", function (response) {
       var fileField = _this.getFieldContainer();
 
+      console.log(fileField);
       EE.FileField.pickerCallback(response, {
         input_value: fileField.find('input.js-file-input'),
         input_img: fileField.find('img.js-file-image'),
@@ -79,7 +80,8 @@ function (_React$Component) {
   }, {
     key: "getFieldContainer",
     value: function getFieldContainer() {
-      // If in a grid, return that
+      console.log(this); // If in a grid, return that
+
       if ($(this.props.thisField).closest('.grid-file-upload').length) {
         return $(this.props.thisField).closest('.grid-file-upload');
       }
@@ -113,7 +115,9 @@ function (_React$Component) {
       $('div[data-file-field-react]', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('fileFieldReact')));
         props.thisField = $(this);
+        var files_field = props.thisField.data('input-value');
         ReactDOM.render(React.createElement(FileField, props, null), this);
+        new MutableSelectField(files_field, EE.fileManager.fileDirectory);
       });
     }
   }]);
