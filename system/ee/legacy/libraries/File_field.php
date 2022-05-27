@@ -905,7 +905,7 @@ class File_field
      * @param boolean $root_only
      * @return void
      */
-    private function _getDirectoriesRecursive($key_value, $path = '', $root_only = true)
+    private function _getDirectoriesRecursive($directory_id, $upload_location_id, $path = '', $root_only = true)
     {
         $children = [];
         $i = 0;
@@ -913,9 +913,9 @@ class File_field
         do {
             $directories = ee('Model')->get('Directory')->fields('file_id', 'upload_location_id', 'directory_id', 'file_name', 'title');
             if ($root_only) {
-                $directories = $directories->filter('upload_location_id', $key_value)->filter('directory_id', 0)->all();
+                $directories = $directories->filter('upload_location_id', $directory_id)->filter('directory_id', 0)->all();
             } else {
-                $directories = $directories->filter('directory_id', $key_value)->all();
+                $directories = $directories->filter('directory_id', $directory_id)->all();
             }
 
             $directoriesCount = count($directories);
@@ -927,7 +927,8 @@ class File_field
                         $children[$directory->getId()] = [
                             'label' => $directory->title,
                             'path' => $path,
-                            'children' => $this->_getDirectoriesRecursive($directory->file_id, $path, false)
+                            'upload_location_id' => $upload_location_id,
+                            'children' => $this->_getDirectoriesRecursive($directory->file_id, $upload_location_id, $path, false)
                         ];
                     }
                 }
@@ -951,10 +952,13 @@ class File_field
                 $upload_destinations[$upload_pref['id']] =[
                     'label' => $upload_pref['name'],
                     'path' => '',
-                    'children' => $this->_getDirectoriesRecursive($upload_pref['id'])
+                    'upload_location_id' => $upload_pref['id'],
+                    'children' => $this->_getDirectoriesRecursive($upload_pref['id'], $upload_pref['id'])
                 ];
             }
         }
+
+        var_dump(ee('View/Helpers')->normalizedChoices($upload_destinations));
 
         ee()->javascript->set_global([
             'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
