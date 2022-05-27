@@ -996,6 +996,8 @@ $lang = array(
 
     'select_new_destinatin_for' => 'Select new destination for:',
 
+    'destination' => 'Destination',
+
 );
 
 // EOF
