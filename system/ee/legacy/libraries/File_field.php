@@ -958,8 +958,6 @@ class File_field
             }
         }
 
-        var_dump(ee('View/Helpers')->normalizedChoices($upload_destinations));
-
         ee()->javascript->set_global([
             'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
             'lang.file_dnd_choose_file_directory' => lang('file_dnd_choose_file_directory'),
