@@ -238,7 +238,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteThumbnailPath()
     {
-        return rtrim($this->UploadDestination->server_path, '/') . '/_thumbs/' . $this->file_name;
+        return rtrim($this->UploadDestination->server_path, '\\/') . '/_thumbs/' . $this->file_name;
     }
 
     /**
@@ -249,7 +249,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteURL()
     {
-        return rtrim($this->UploadDestination->url, '/') . '/' . rawurlencode($this->file_name);
+        return $this->UploadDestination->getFilesystem()->getUrl(rawurlencode($this->file_name));
     }
 
     /**
@@ -266,7 +266,7 @@ class FileSystemEntity extends ContentModel
             return $this->getAbsoluteURL();
         }
 
-        return rtrim($this->UploadDestination->url, '/') . '/_thumbs/' . rawurlencode($this->file_name);
+        return $filesystem->getUrl('/_thumbs/' . rawurlencode($this->file_name));
     }
 
     public function getThumbnailUrl()

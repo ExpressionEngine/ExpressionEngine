@@ -111,6 +111,7 @@ class UploadDestination extends StructureModel
     protected $batch_location;
     protected $module_id;
 
+    private $filesystem = null;
     /**
      * Because of the 'upload_preferences' Config value, the data in the DB
      * is not always authoritative. So we will need to get any override data
@@ -301,8 +302,9 @@ class UploadDestination extends StructureModel
      */
     public function getFilesystem()
     {
-        // We should add a local cache of the filesystem object so we don't have
-        // to instantiate it multiple times during a request
+        if($this->filesystem) {
+            return $this->filesystem;
+        }
 
         // Do we want to allow variable replacement in adapters that aren't local?
         $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
@@ -312,10 +314,17 @@ class UploadDestination extends StructureModel
         ], $this->adapter_settings ?? []);
 
         $adapter = ee('Filesystem/Adapter')->make($adapterName, $adapterSettings);
-        $fs = ee('File')->getPath($path, $adapter);
-        $fs->setUrl($this->getProperty('url'));
 
-        return $fs;
+        $filesystem = ee('File')->getPath($path, $adapter);
+        $filesystem->setUrl($this->getProperty('url'));
+
+        // This will effectively eager load the directory and speed up checks
+        // for file existence, especially in remote filesystems.  This might
+        // make more sense to move into file listing controllers eventually
+        $filesystem->getDirectoryContents($path, true);
+        $this->filesystem = $filesystem;
+
+        return $this->filesystem;
     }
 
     /**

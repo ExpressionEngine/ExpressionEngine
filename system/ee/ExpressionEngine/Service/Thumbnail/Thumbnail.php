@@ -41,6 +41,13 @@ class Thumbnail
     protected $missing = false;
 
     /**
+     * Filesystem where the thumbnail is being stored
+     *
+     * @var ExpresionEngine\Library\Filesystem\Filesystem|null
+     */
+    protected $filesystem = null;
+
+    /**
      * Constructor: sets the url and path properties based on the arguments
      *
      * @param File $file (optional) A File entity from which we'll calculate the
@@ -72,6 +79,8 @@ class Thumbnail
                         break;
                 }
             }
+
+            $this->filesystem = $file->UploadDestination->getFilesystem();
         }
     }
 
@@ -115,7 +124,7 @@ class Thumbnail
      */
     public function exists()
     {
-        return file_exists($this->path);
+        return ($this->filesystem) ? $this->filesystem->exists($this->path) : false;
     }
 
     /**
@@ -125,7 +134,7 @@ class Thumbnail
      */
     public function isWritable()
     {
-        return is_writable($this->path);
+        return ($this->filesystem) ? $this->filesystem->isWritable($this->path) : false;
     }
 }
 

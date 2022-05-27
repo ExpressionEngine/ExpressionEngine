@@ -28,6 +28,9 @@ class Filesystem
             // Fix prefixes
             $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
         }
+        // Create the cache store
+        $cacheStore = new Flysystem\Cached\Storage\Memory();
+        $adapter = new Flysystem\Cached\CachedAdapter($adapter, $cacheStore);
 
         $this->flysystem = new Flysystem\Filesystem($adapter, $config);
     }
@@ -142,6 +145,7 @@ class Filesystem
     public function mkDir($path, $with_index = true)
     {
         $path = $this->normalize($path);
+        $path = $this->normalizeRelativePath($path);
         $result = $this->flysystem->createDir($path);
 
         if (!$result) {
@@ -220,6 +224,8 @@ class Filesystem
      */
     public function getDirectoryContents($path = '/', $recursive = false, $includeHidden = false)
     {
+        $path = $this->normalizeRelativePath($path);
+
         if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
             if (!$this->exists($path)) {
                 throw new FilesystemException('Cannot get contents of path, the path is invalid: ' . $path);
@@ -471,7 +477,7 @@ class Filesystem
         if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
             return is_dir($this->ensurePrefixedPath($path));
         }
-
+        $path = $this->normalizeRelativePath($path);
         return empty($this->extension($path)) && $this->exists($path);
     }
 
@@ -621,24 +627,24 @@ class Filesystem
 
         $i = 0;
         $extension = $this->extension($path);
-        $dirname =  $this->dirname($path);
+        $dirname =  $this->dirname($path) . DIRECTORY_SEPARATOR;
         $filename = $this->filename($path);
 
         // Glob only works with local filesytem but is more performant than filtering directory results
         if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
             $files = array_map(function($file) {
                 return $this->filename($file);
-            }, glob($dirname . DIRECTORY_SEPARATOR . $filename . '_*' . $extension));
+            }, glob($dirname . $filename . '_*' . $extension));
         }else{
             // Filter out any files that do not start with our filename
-            $files = array_column(array_filter($this->flysystem->listContents($dirname), function($file) use($filename) {
-                return strpos($file['filename'], "{$filename}_") === 0;
-            }), 'filename');
+            $files = array_filter($this->getDirectoryContents($dirname), function($file) use($filename) {
+                return strpos($file, "{$filename}_") === 0;
+            });
         }
 
         // If we do not have any matching files at this point it gets the _1 suffix
         if(empty($files)) {
-            return $dirname . DIRECTORY_SEPARATOR . "{$filename}_1.{$extension}";
+            return $dirname . "{$filename}_1.{$extension}";
         }
 
         // Try to figure out if we already have a file we've renamed, then
@@ -663,7 +669,7 @@ class Filesystem
             $uniqueName = $filename . '_' . $i . '.' . $extension;
         } while (in_array($uniqueName, $files));
 
-        return $dirname . '/' . $uniqueName;
+        return $dirname . $uniqueName;
     }
 
     /**
