@@ -188,6 +188,13 @@ $(document).ready(function () {
 
 		modal.trigger('modal:open')
 	})
+
+	$('.modal-confirm-delete-file form').on('submit', function(e) {
+		if( $(this).find('.ajax').length && $(this).find('button').hasClass('off') ) {
+			$('.modal-confirm-delete-file .ajax .fieldset-invalid').show();
+			e.preventDefault();
+		}
+	});
 });
 
 EE.cp.Modal = {
