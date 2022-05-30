@@ -705,11 +705,11 @@ $lang = array(
 
     'delete_upload_preference' => 'Delete Upload Preference',
 
-    'dir_name' => 'Upload Directory Name',
+    'dir_name' => 'Upload Location Name',
 
-    'directory' => 'Directory',
+    'directory' => 'Upload Location',
 
-    'directory_manager' => 'Upload Directory Manager',
+    'directory_manager' => 'Upload Location Manager',
 
     'disallow_image' => 'Disallow Image',
 

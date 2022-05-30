@@ -114,7 +114,7 @@ class Thumbnail
         $this->missing = true;
         $this->url = PATH_CP_GBL_IMG . 'missing.jpg';
         $this->path = PATH_THEMES . 'asset/img/missing.jpg';
-        $this->tag = '<i class="fas fa-lg fa-exclamation-triangle"></i>';
+        $this->tag = '<i class="fas fa-exclamation-triangle fa-3x"></i>';
     }
 
     /**

@@ -63,7 +63,7 @@ if (! AJAX_REQUEST) {
                     <?php foreach($breadcrumbs as $url => $name) : ?>
                         <?php $i++; ?>
                         <?php if ($i < count($breadcrumbs)) : ?>
-                        <li><a href="<?=$url?>"><i class="fas fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
+                        <li><a href="<?=$url?>" data-filter-url="<?=$url?>"><i class="fas fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
                         <?php else : ?>
                         <li><span><i class="fas fa-folder"></i><?=$name?></span></li>
                         <?php endif; ?>

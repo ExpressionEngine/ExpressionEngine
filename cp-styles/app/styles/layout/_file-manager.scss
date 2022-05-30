@@ -71,7 +71,7 @@
       max-width: 80px;
     }
 
-    i.fa-folder {
+    i.fas {
       color: var(--ee-secondary-sidebar-item-icon);
     }
   }
@@ -240,7 +240,7 @@
 
     img,
     svg,
-    i.fa-folder {
+    i.fas {
       max-width: 100%;
       max-height: 100%;
       position: absolute;
@@ -250,7 +250,7 @@
       border-radius: 6px;
     }
 
-    i.fa-folder {
+    i.fas {
       color: var(--ee-secondary-sidebar-item-icon);
     }
 

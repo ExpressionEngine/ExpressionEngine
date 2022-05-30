@@ -171,7 +171,7 @@ class FileSystemEntity extends ContentModel
      */
     public function isImage()
     {
-        return (strpos($this->mime_type, 'image/') === 0);
+        return ($this->isFile() && strpos($this->mime_type, 'image/') === 0);
     }
 
     /**
@@ -202,7 +202,7 @@ class FileSystemEntity extends ContentModel
      */
     public function isSVG()
     {
-        return (strpos($this->mime_type, 'image/svg') === 0);
+        return ($this->isFile() && strpos($this->mime_type, 'image/svg') === 0);
     }
 
     /**
