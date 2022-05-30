@@ -1147,6 +1147,7 @@ $(document).ready(function(){
         	});
         }
 
+    // check and remove unused for desktop screen size grid column
     function checkScreenSize() {
     	if (window.innerWidth > 767) {
     		$('.grid-field').each(function() {
