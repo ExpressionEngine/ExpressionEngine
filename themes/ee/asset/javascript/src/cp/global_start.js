@@ -286,14 +286,16 @@ EE.cp.validateLicense = function() {
 
 					},
 					error: function (data, textStatus, errorThrown) {
-						console.log('Error Data:', data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+						console.log('Error Data:', (typeof(data.responseJSON.message) !== 'undefined') ? data.responseJSON.message : data.responseJSON.error, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+						return true;
 					}
 				});
 			}
 		},
 
 		error: function(data, textStatus, errorThrown) {
-			console.log('Error Data:', data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+			console.log('Error Data:', (typeof(data.responseJSON.message) !== 'undefined') ? data.responseJSON.message : data.responseJSON.error, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+			return true;
 		}
 	});
 }
