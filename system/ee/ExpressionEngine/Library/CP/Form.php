@@ -219,8 +219,8 @@ class Form
     public function removeHiddenField(string $name): bool
     {
         $tmp_name = $this->buildTmpName($name, 'hf');
-        if (isset($this->buttons[$tmp_name])) {
-            unset($this->buttons[$tmp_name]);
+        if (isset($this->hidden_fields[$tmp_name])) {
+            unset($this->hidden_fields[$tmp_name]);
             return true;
         }
 
