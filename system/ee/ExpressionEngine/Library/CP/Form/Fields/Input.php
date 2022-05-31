@@ -28,7 +28,7 @@ class Input extends Html
             'value' => set_value($this->getName(), $this->getValue())
         ];
 
-        if($this->custom_params) {
+        if ($this->custom_params) {
             $defaults = array_merge($defaults, $this->custom_params);
         }
 

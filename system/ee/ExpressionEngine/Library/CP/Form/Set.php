@@ -99,7 +99,7 @@ class Set
             return $this->structure[$tmp_name];
         }
 
-        if(!$type) {
+        if (!$type) {
             $type = 'text';
         }
 

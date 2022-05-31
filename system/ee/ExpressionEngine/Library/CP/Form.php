@@ -356,7 +356,7 @@ class Form
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getSaveBtnTextWorking(): ?string
     {
@@ -374,7 +374,7 @@ class Form
     }
 
     /**
-     * @return mixed
+     * @return bool|null
      */
     public function getAjaxValidate(): ?bool
     {
@@ -392,7 +392,7 @@ class Form
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getAlertsName(): ?string
     {
@@ -409,7 +409,7 @@ class Form
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
     public function getCpPageTitleAlt(): ?string
     {

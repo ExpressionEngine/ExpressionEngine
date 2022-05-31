@@ -40,7 +40,7 @@ class Grid extends Table
         $grid->setColumns($this->getColumns());
 
         $no_results = $this->getNoResultsText();
-        if(is_array($no_results)) {
+        if (is_array($no_results)) {
             $grid->setNoResultsText($no_results['text'], $no_results['action_text'], $no_results['action_link'], $no_results['external']);
         }
 
@@ -57,17 +57,17 @@ class Grid extends Table
     {
         $return = [];
         $default_rows = $this->get('row_definition');
-        if(!$default_rows) {
+        if (!$default_rows) {
             return $return;
         }
 
-        foreach($default_rows AS $column) {
-            $method = 'generate'.ucfirst($column['type']).'Input';
+        foreach ($default_rows as $column) {
+            $method = 'generate' . ucfirst($column['type']) . 'Input';
             $choices = isset($column['choices']) ? $column['choices'] : [];
-            if(method_exists($this, $method)) {
+            if (method_exists($this, $method)) {
                 $return[] = $this->$method($column['name'], $column);
             } else {
-                $return[] = $column['type'].' INVALID';
+                $return[] = $column['type'] . ' INVALID';
             }
         }
 
@@ -81,25 +81,25 @@ class Grid extends Table
     {
         $return = [];
         $data = $this->getData();
-        if(!$data) {
+        if (!$data) {
             return $return;
         }
 
         $row_prototype = $this->get('row_definition');
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = $this->convertPostData();
         }
 
-        foreach($data AS $key => $value) {
+        foreach ($data as $key => $value) {
             $row_data = [];
-            foreach($row_prototype AS $proto_key => $proto_value) {
-                if(isset($value[$proto_value['name']])) {
-                    $method = 'generate'.ucfirst($proto_value['type']).'Input';
-                    if(method_exists($this, $method)) {
+            foreach ($row_prototype as $proto_key => $proto_value) {
+                if (isset($value[$proto_value['name']])) {
+                    $method = 'generate' . ucfirst($proto_value['type']) . 'Input';
+                    if (method_exists($this, $method)) {
                         $proto_value['value'] = $value[$proto_value['name']];
                         $row_data[] = $this->$method($proto_value['name'], $proto_value);
                     } else {
-                        $row_data[] = $proto_value['type'].' INVALID';
+                        $row_data[] = $proto_value['type'] . ' INVALID';
                     }
                 }
             }
@@ -128,11 +128,11 @@ class Grid extends Table
         $post_data = $_POST[$this->getName()]['rows'];
         $row_prototype = $this->get('row_definition');
         $return = [];
-        foreach($post_data AS $row_id => $row) {
+        foreach ($post_data as $row_id => $row) {
             $data = [];
-            foreach($row_prototype As $k => $v) {
+            foreach ($row_prototype as $k => $v) {
                 $data[$v['name']] = '';
-                if(isset($row[$v['name']])) {
+                if (isset($row[$v['name']])) {
                     $data[$v['name']] = $row[$v['name']];
                 }
             }

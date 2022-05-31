@@ -12,7 +12,7 @@ namespace ExpressionEngine\Library\CP\Form;
 
 use ExpressionEngine\Service\Validation\ValidationAware;
 use ExpressionEngine\Service\Validation\Validator;
-use ExpressionEngine\Service\Validation\Result AS ValidateResult;
+use ExpressionEngine\Service\Validation\Result as ValidateResult;
 
 abstract class AbstractForm implements ValidationAware
 {
@@ -154,7 +154,7 @@ abstract class AbstractForm implements ValidationAware
             ->first();
 
         if ($member instanceof \ExpressionEngine\Model\Member\Member) {
-            if($member->isSuperAdmin()) {
+            if ($member->isSuperAdmin()) {
                 return true;
             }
         }

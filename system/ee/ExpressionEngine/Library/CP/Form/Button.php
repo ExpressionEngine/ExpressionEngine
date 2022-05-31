@@ -161,7 +161,7 @@ class Button
     public function setType(string $type): Button
     {
         $types = ['button', 'reset', 'submit'];
-        if(!in_array($type, $types)) {
+        if (!in_array($type, $types)) {
             $type = 'button';
         }
 

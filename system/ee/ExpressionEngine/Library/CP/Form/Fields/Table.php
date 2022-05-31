@@ -140,7 +140,7 @@ class Table extends Html
         $table->setColumns($this->getColumns());
 
         $no_results = $this->getNoResultsText();
-        if(is_array($no_results)) {
+        if (is_array($no_results)) {
             $table->setNoResultsText($no_results['text'], $no_results['action_text'], $no_results['action_link'], $no_results['external']);
         }
 
