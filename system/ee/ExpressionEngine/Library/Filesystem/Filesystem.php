@@ -415,6 +415,13 @@ class Filesystem
         // We are intentionally not calling `$this->flysystem->has($path);` so that
         // we can handle calls to check the existence of the base path
         $path = $this->normalizeRelativePath($path);
+
+        // If the path is the root of this filesystem it must exist or the 
+        // filesystem would have thrown an exception during construction
+        if($path === '') {
+            return true;
+        }
+
         return (bool) $this->flysystem->getAdapter()->has($path);
     }
 

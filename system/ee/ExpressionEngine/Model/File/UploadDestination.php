@@ -279,7 +279,7 @@ class UploadDestination extends StructureModel
     public function getValidationData()
     {
         return array_merge(parent::getValidationData(), [
-            'filesystem' => $this->getFilesystem()
+            'filesystem_provider' => $this,
         ]);
     }
 
@@ -312,11 +312,18 @@ class UploadDestination extends StructureModel
         $adapterSettings = array_merge([
             'path' => $path
         ], $this->adapter_settings ?? []);
-
+        // $adapterName = 's3';
+        // $adapterSettings = array_merge($adapterSettings, [
+        //     'key' => 'AKIAVU4CSJCQOUU5XR7X',
+        //     'secret' => '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',
+        //     'region' => 'us-east-1',
+        //     'bucket' => 'My-S3-Bucket-for-SH-tests'
+        // ]);
         $adapter = ee('Filesystem/Adapter')->make($adapterName, $adapterSettings);
 
         $filesystem = ee('File')->getPath($path, $adapter);
         $filesystem->setUrl($this->getProperty('url'));
+        // $filesystem->setUrl('https://s3.amazonaws.com/My-S3-Bucket-for-SH-tests/ee7-test');
 
         // This will effectively eager load the directory and speed up checks
         // for file existence, especially in remote filesystems.  This might

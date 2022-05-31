@@ -24,9 +24,14 @@ class Writable extends ValidationRule
     {
         $filesystem = ee('Filesystem');
 
-        if (array_key_exists('filesystem', $this->all_values)) {
-            $filesystem = $this->all_values['filesystem'];
-            unset($this->all_values['filesystem']);
+        if (array_key_exists('filesystem_provider', $this->all_values)) {
+            try {
+                $provider = $this->all_values['filesystem_provider'];
+                $filesystem = $provider->getFilesystem();
+                unset($this->all_values['filesystem_provider']);
+            } catch (\Exception $e) {
+                $this->stop();
+            }
         }
 
         return $filesystem->isWritable(parse_config_variables($value, $this->all_values));
