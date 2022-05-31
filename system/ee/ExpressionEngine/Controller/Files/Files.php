@@ -120,7 +120,9 @@ class Files extends AbstractFilesController
             // Generate the contents of the new folder modal
             $contents = ee('View')->make('files/modals/new_folder')->render([
                 'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
-                'destinations' => ee('Model')->get('UploadDestination')->fields('id', 'name')->all()->getDictionary('id', 'name')
+                'destinations' => ee('Model')->get('UploadDestination')->filter('module_id', 0)->fields('id', 'name')->all()->getDictionary('id', 'name'),
+                'dir_id' => $id,
+                'sub_dir_id' => '',
             ]);
 
             $modal_html = ee('View')->make('ee:_shared/modal')->render([

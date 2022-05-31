@@ -11,7 +11,7 @@
     <p>
         <select name="upload_location" id="upload_location">
             <?php foreach ($destinations as $id => $name):?>
-            <option value='<?= $id ?>'><?= $name ?></option>
+                <option <?= ($id == $dir_id) ? 'selected' : '' ?> value='<?= $id ?>'><?= $name ?></option>
             <?php endforeach;?>
         </select>
     </p>
