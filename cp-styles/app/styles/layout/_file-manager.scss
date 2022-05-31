@@ -210,6 +210,10 @@
     -moz-transition: background-color .15s ease-in-out;
     -o-transition: background-color .15s ease-in-out;
 
+    &.missing {
+      background-color: color(warning-light);
+    }
+
 
     &:hover,
     &.selected {

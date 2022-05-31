@@ -24229,6 +24229,9 @@ body[data-theme="dark"] {
   -moz-transition: background-color 0.15s ease-in-out;
   -o-transition: background-color 0.15s ease-in-out;
 }
+.file-grid__wrapper .file-grid__file.missing {
+  background-color: var(--ee-warning-light);
+}
 .file-grid__wrapper .file-grid__file:hover, .file-grid__wrapper .file-grid__file.selected {
   background-color: var(--ee-accent-light);
   color: var(--ee-text-normal);

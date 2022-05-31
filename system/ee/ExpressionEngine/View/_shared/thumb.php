@@ -29,7 +29,7 @@ if (count($data)) {
     <div class="file-grid__wrapper">
         <?php 
         foreach ($data as $row_id => $row) : 
-            $row['attrs']['class'] = 'file-grid__file filepicker-item';
+            $row['attrs']['class'] .= ' file-grid__file filepicker-item';
         ?>
             <a<?php foreach ($row['attrs'] as $key => $value) :?> <?=$key?>="<?=$value?>"<?php endforeach; ?> data-file-id="<?=$row['attrs']['file_id']?>">
 

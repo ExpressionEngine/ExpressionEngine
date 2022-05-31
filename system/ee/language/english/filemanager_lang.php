@@ -379,7 +379,7 @@ $lang = array(
 
     'file_sync_desc_images' => '<b>%d</b> <code>image</code> files',
 
-    'filesystem_driver' => 'Driver',
+    'filesystem_adapter' => 'Adapter',
 
     'local' => 'Local',
 
@@ -707,7 +707,7 @@ $lang = array(
 
     'dir_name' => 'Upload Location Name',
 
-    'directory' => 'Upload Location',
+    'directory' => 'Directory',
 
     'directory_manager' => 'Upload Location Manager',
 
@@ -881,6 +881,8 @@ $lang = array(
     'total_dir_size' => 'Total Directory Size:',
 
     'upload_dir_dropdown' => '%s (%s files)',
+
+    'upload_location' => 'Upload Location',
 
     'upload_pref_deleted' => 'Upload Preference Deleted:',
 
