@@ -169,7 +169,7 @@ class Uploads extends AbstractFilesController
         $settingsValues = array_merge([
             'url' => $upload_destination->getConfigOverriddenProperty('url'),
             'server_path' => $upload_destination->getConfigOverriddenProperty('server_path'),
-        ], $upload_destination->adapterSettings ?? []);
+        ], $upload_destination->adapter_settings ?? []);
 
         $adapter_groups = [];
         $adapter_choices = [];
@@ -209,7 +209,7 @@ class Uploads extends AbstractFilesController
                         )
                     )
                 ),
-                ... $adapter_settings,
+                ... $adapter_settings, // this is PHP 7.4 are we okay with that?
                 array(
                     'title' => 'upload_allowed_types',
                     'desc' => '',
@@ -593,6 +593,14 @@ class Uploads extends AbstractFilesController
      */
     private function validateUploadPreferences($upload_destination)
     {
+
+        if(isset($_POST['adapter'], $_POST['adapter_settings'])) {
+            $_POST['adapter_settings'] = ee('Filesystem/Adapter')->filterInputForAdapter(
+                $_POST['adapter'],
+                $_POST['adapter_settings']
+            );
+        }
+
         $upload_destination->set($_POST);
         $cat_group = ee()->input->post('cat_group');
 

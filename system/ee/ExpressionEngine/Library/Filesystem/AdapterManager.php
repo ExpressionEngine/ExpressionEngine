@@ -78,6 +78,20 @@ class AdapterManager
         return is_callable($adapter['settings']) ? $adapter['settings']($values) : $adapter['settings'];
     }
 
+    public function filterInputForAdapter($key, $input = [])
+    {
+        $fields = array_map(function($field) {
+            return str_replace(['adapter_settings[', ']'], '', $field);    
+        }, array_reduce($this->createSettingsFields($key), function($carry, $row) {
+            if(array_key_exists('fields', $row)) {
+                $carry = array_merge($carry, array_keys($row['fields']));
+            }
+            return $carry;
+        }, []));
+
+        return array_intersect_key($input, array_flip($fields));
+    }
+
     public function registerAdapter($key, $data)
     {
         if(!array_key_exists('class', $data) || !class_exists($data['class'])) {
