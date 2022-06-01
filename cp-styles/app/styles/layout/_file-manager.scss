@@ -69,6 +69,7 @@
   tr.app-listing__row {
     .thumbnail_img {
       max-width: 80px;
+      display: inline-block;
     }
 
     i.fas {
@@ -394,5 +395,17 @@
       }
     }
   }
+}
 
+#preview {
+  position:absolute;
+  border:2px solid var(--ee-button-default-border);
+  background:var(--ee-button-default-bg);
+  padding:5px;
+  border-radius: 4px;
+  display:none;
+  width: 200px;
+  height: 200px;
+  align-items: center;
+  justify-content: center;
 }
