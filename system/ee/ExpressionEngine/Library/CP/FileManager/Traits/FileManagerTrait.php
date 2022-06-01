@@ -356,7 +356,7 @@ trait FileManagerTrait
             $options[$destination->getId()] = htmlspecialchars($destination->name, ENT_QUOTES, 'UTF-8');
         }
 
-        $filter = ee('CP/Filter')->make('requested_directory', lang('directory'), $options);
+        $filter = ee('CP/Filter')->make('requested_directory', lang('upload_location'), $options);
         $filter->useListFilter();
 
         return $filter;

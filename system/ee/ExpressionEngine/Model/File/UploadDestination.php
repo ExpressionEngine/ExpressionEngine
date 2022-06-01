@@ -335,6 +335,71 @@ class UploadDestination extends StructureModel
     }
 
     /**
+     * Gets the map of upload location directories and files as nested array
+     *
+     * @param boolean $includeHiddenFiles
+     * @param boolean $includeHiddenFolders
+     * @param boolean $includeIndex
+     * @param boolean $ignoreAllowedTypes
+     * @return array
+     */
+    public function getDirectoryMap($path = '/', $fullPathAsKey = false, $includeHiddenFiles = false, $includeHiddenFolders = false, $includeIndex = false, $ignoreAllowedTypes = false)
+    {
+        if (! $this->getFilesystem()->isReadable($path)) {
+            return [];
+        }
+
+        $map = array();
+        $indexFiles = array('index.html', 'index.htm', 'index.php');
+
+        foreach($this->getFilesystem()->getDirectoryContents($path) as $filePath) {
+            $pathInfo = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $filePath));
+            $fileName = array_pop($pathInfo);
+            $isDir = $this->getFilesystem()->isDir($filePath);
+
+            if (empty(trim($fileName, '.')))
+            {
+                continue;
+            }
+
+            if (! $includeHiddenFiles && substr($fileName, 0, 1) == '.') {
+                continue;
+            }
+
+            if (! $includeHiddenFolders && $isDir && substr($fileName, 0, 1) == '_') {
+                continue;
+            }
+
+            if (! $includeIndex && in_array($fileName, $indexFiles)) {
+                continue;
+            }
+
+            if (! $isDir && ! $ignoreAllowedTypes && ! in_array('all', $this->allowed_types)) {
+                $isOfAllowedMimeType = false;
+                foreach ($this->allowed_types as $allowed_type) {
+                    if (ee('MimeType')->isOfKind($this->getFilesystem()->getMimetype($filePath), $allowed_type)) {
+                        $isOfAllowedMimeType = true;
+                        break;
+                    }
+                }
+                if (! $isOfAllowedMimeType) {
+                    continue;
+                }
+            }
+
+            $key = $fullPathAsKey ? $filePath : $fileName;
+
+            if ($isDir) {
+                $map[$key] = $this->getDirectoryMap($filePath, $fullPathAsKey, $includeHiddenFiles, $includeHiddenFolders, $includeIndex, $ignoreAllowedTypes);
+            } else {
+                $map[$key] = $fileName;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
      * Determines if the member has access permission to this
      * upload destination.
      *

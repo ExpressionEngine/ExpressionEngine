@@ -705,6 +705,19 @@ class Uploads extends AbstractFilesController
         return empty($this->upload_errors);
     }
 
+    private function flattenDirectoryMap(&$flatMap = [], $nestedMap = [], $keyPrefix = '/')
+    {
+        foreach ($nestedMap as $key => $val) {
+            $flatKey = rtrim($keyPrefix . $key, '/');
+            if (! isset($flatMap[$flatKey])) {
+                $flatMap[$flatKey] = $flatKey;
+            }
+            if (is_array($val)) {
+                $flatMap[$flatKey] = $this->flattenDirectoryMap($flatMap, $val, $flatKey . '/');
+            }
+        }
+    }
+
     /**
      * Sync upload directory
      *
@@ -738,25 +751,18 @@ class Uploads extends AbstractFilesController
         }
 
         // Get a listing of raw files in the directory
-        ee()->load->library('filemanager');
-        $files = ee()->filemanager->directory_files_map(
-            $upload_destination->getFilesystem(),
-            1,
-            false,
-            $upload_destination->allowed_types
-        );
-        $files_count = count($files);
+        $directoryMap = $upload_destination->getDirectoryMap();
+        $flatDirectoryMap = [];
+        $this->flattenDirectoryMap($flatDirectoryMap, $directoryMap);
+        $files = array_keys($flatDirectoryMap);
 
-        // Change the decription of this first field depending on the
-        // type of files allowed
-        $file_sync_desc = ($upload_destination->allowed_types == 'all')
-            ? lang('file_sync_desc') : lang('file_sync_desc_images');
+        $files_count = count($files, COUNT_RECURSIVE);
 
         $vars['sections'] = array(
             array(
                 array(
                     'title' => 'file_sync',
-                    'desc' => sprintf($file_sync_desc, $files_count),
+                    'desc' => sprintf(lang('file_sync_desc'), $files_count),
                     'fields' => array(
                         'progress' => array(
                             'type' => 'html',

@@ -1564,7 +1564,7 @@ class Filemanager
      * @access	private
      * @return	mixed	directory list
      */
-    public function _directories($params = array())
+    private function _directories($params = array())
     {
         $dirs = array();
         $ignore_site_id = (isset($params['ignore_site_id']) && $params['ignore_site_id'] == false) ? false : true;
@@ -1574,7 +1574,12 @@ class Filemanager
             $directories->filter('site_id', ee()->config->item('site_id'));
         }
 
-        return $directories->all()->indexBy('id');
+        $dirs = $directories->all()->indexBy('id');
+        foreach ($dirs as $i => $dir) {
+            $dirs[$i] = $dir->toArray();
+        }
+
+        return $dirs;
     }
 
     /**

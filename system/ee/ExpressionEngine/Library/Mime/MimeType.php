@@ -20,6 +20,7 @@ use ExpressionEngine\Dependency\League\MimeTypeDetection;
 class MimeType
 {
     protected $whitelist = array();
+    protected $kinds = array();
     protected $images = array();
 
     /**
@@ -57,7 +58,7 @@ class MimeType
      * @param string $mime The mime type to add to the whitelist
      * @return void
      */
-    public function addMimeType($mime)
+    public function addMimeType($mime, $kind = null)
     {
         if (! is_string($mime)) {
             throw new InvalidArgumentException("addMimeType only accepts strings; " . gettype($mime) . " found instead.");
@@ -69,6 +70,13 @@ class MimeType
 
         if (! in_array($mime, $this->whitelist)) {
             $this->whitelist[] = $mime;
+
+            if (! empty($kind)) {
+                if (! isset($this->kinds[$kind])) {
+                    $this->kinds[$kind] = [];
+                }
+                $this->kinds[$kind][] = $mime;
+            }
 
             if (strpos($mime, 'image/') === 0) {
                 $this->images[] = $mime;
@@ -82,13 +90,13 @@ class MimeType
      * @param array $mimes An array of MIME types to add to the whitelist
      * @return void
      */
-    public function addMimeTypes(array $mimes)
+    public function addMimeTypes(array $mimes, $kind = null)
     {
-        foreach ($mimes as $mime) {
+        foreach ($mimes as $group => $mime) {
             if (is_array($mime)) {
-                return $this->addMimeTypes($mime);
+                return $this->addMimeTypes($mime, $group);
             }
-            $this->addMimeType($mime);
+            $this->addMimeType($mime, $kind);
         }
     }
 
@@ -100,6 +108,18 @@ class MimeType
     public function getWhitelist()
     {
         return $this->whitelist;
+    }
+
+    /**
+     * Checks whether mime belongs to one of supported types
+     *
+     * @param [type] $mime
+     * @param [type] $mimeTypeKind
+     * @return boolean
+     */
+    public function isOfKind($mime, $mimeTypeKind)
+    {
+        return (isset($this->kinds[$mimeTypeKind]) && in_array($mime, $this->kinds[$mimeTypeKind]));
     }
 
     /**

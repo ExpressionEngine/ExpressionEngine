@@ -375,7 +375,7 @@ $lang = array(
 
     'file_sync' => 'File sync',
 
-    'file_sync_desc' => '<b>%d</b> files',
+    'file_sync_desc' => '<b>%d</b> files and folders',
 
     'file_sync_desc_images' => '<b>%d</b> <code>image</code> files',
 
