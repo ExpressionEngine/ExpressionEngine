@@ -27,7 +27,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var SelectList =
@@ -493,7 +493,9 @@ function (_React$Component) {
             parent: parent ? parent : null,
             component: items[key].component != undefined ? items[key].component : null,
             sectionLabel: currentSection,
-            entry_id: items[key].entry_id ? items[key].entry_id : ''
+            entry_id: items[key].entry_id ? items[key].entry_id : '',
+            upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
+            path: items[key].path ? items[key].path : ''
           };
 
           if (items[key].children) {

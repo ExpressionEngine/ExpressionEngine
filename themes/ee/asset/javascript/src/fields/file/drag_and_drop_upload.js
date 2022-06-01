@@ -24,7 +24,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 var DragAndDropUpload =
@@ -38,6 +38,18 @@ function (_React$Component) {
     _classCallCheck(this, DragAndDropUpload);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(DragAndDropUpload).call(this, props));
+
+    _defineProperty(_assertThisInitialized(_this), "checkChildDirectory", function (items, directory) {
+      return items.forEach(function (item) {
+        if (item.value == directory) {
+          directory = item;
+        } else if (item.value != directory && item.children.length) {
+          _this.checkChildDirectory(item.children, directory);
+        }
+
+        return directory;
+      });
+    });
 
     _defineProperty(_assertThisInitialized(_this), "handleDroppedFiles", function (droppedFiles) {
       _this.setState({
@@ -173,9 +185,10 @@ function (_React$Component) {
     key: "getDirectoryName",
     value: function getDirectoryName(directory) {
       if (directory == 'all') return null;
-      directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
-        return thisDirectory.value == directory;
-      });
+      this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory); // directory = EE.dragAndDrop.uploadDesinations.find(
+      //   thisDirectory => thisDirectory.value == directory
+      // )
+
       return directory.label;
     }
   }, {

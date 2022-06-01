@@ -157,8 +157,8 @@
 				}
 			}
 		});
-
-		new MutableSelectField('files_field', EE.fileManager.fileDirectory);
+		
+		// new MutableSelectField('files_field', EE.fileManager.fileDirectory);
 
 		$('.f_manager-wrapper .imgpreview').hover(function(){
 			var path = $(this).data('url');

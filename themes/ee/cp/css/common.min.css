@@ -15303,6 +15303,14 @@ input[type=button].btn-block {
   max-height: 260px;
   overflow-y: auto;
 }
+.dropdown__scroll ul {
+  margin-top: 0;
+  list-style-type: none;
+}
+.dropdown__scroll ul a {
+  padding: 0 20px;
+  min-height: 30px;
+}
 
 .dropdown__scroll--small {
   max-height: 180px;
