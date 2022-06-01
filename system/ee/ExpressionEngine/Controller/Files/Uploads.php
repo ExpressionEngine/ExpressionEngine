@@ -43,8 +43,10 @@ class Uploads extends AbstractFilesController
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $this->stdHeader();
-        $this->generateSidebar(null);
+        if (! AJAX_REQUEST) {
+            $this->stdHeader();
+            $this->generateSidebar(null);
+        }
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('files')->compile() => lang('files'),
@@ -66,8 +68,10 @@ class Uploads extends AbstractFilesController
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $this->stdHeader($upload_id);
-        $this->generateSidebar($upload_id);
+        if (! AJAX_REQUEST) {
+            $this->stdHeader();
+            $this->generateSidebar(null);
+        }
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('files')->compile() => lang('files'),
@@ -407,6 +411,10 @@ class Uploads extends AbstractFilesController
                 'working' => 'btn_saving'
             ]
         ];
+
+        if (AJAX_REQUEST) {
+            return ee()->cp->render('_shared/form', $vars);
+        }
 
         ee()->cp->render('settings/form', $vars);
     }
