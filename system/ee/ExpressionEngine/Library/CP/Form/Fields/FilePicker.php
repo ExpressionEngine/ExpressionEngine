@@ -31,7 +31,7 @@ class FilePicker extends Html
      */
     public function asAny(): FilePicker
     {
-        $this->set('_image_filed', false);
+        $this->set('_image_field', false);
         return $this;
     }
 
