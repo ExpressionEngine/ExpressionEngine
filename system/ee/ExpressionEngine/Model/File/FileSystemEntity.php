@@ -114,7 +114,9 @@ class FileSystemEntity extends ContentModel
     protected $file_hw_original;
     protected $total_records;
 
-    protected $_absolutePath;
+    protected $_baseServerPath;
+    protected $_baseUrl;
+    protected $_subfolderPath;
 
     /**
      * A link back to the owning group object.
@@ -206,24 +208,53 @@ class FileSystemEntity extends ContentModel
     }
 
     /**
-     * Get the subfolder path to the give file
+     * Get the subfolder path to the given file
      *
      * @return string
      */
-    private function subfolders()
+    private function getSubfoldersPath()
     {
-        $directory_id = $this->directory_id;
-        $subfolders = [];
-        while ($directory_id != 0) {
-            $parent = $this->getModelFacade()->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'file_name')->first();
-            if (!empty($parent)) {
-                $directory_id = $parent->directory_id;
-                array_unshift($subfolders, $parent->file_name . '/');
-            } else {
-                $directory_id = 0;
+        if (empty($this->_subfolderPath)) {
+            $directory_id = $this->directory_id;
+            $subfolders = [];
+            while ($directory_id != 0) {
+                $parent = $this->getModelFacade()->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'file_name')->first();
+                if (!empty($parent)) {
+                    $directory_id = $parent->directory_id;
+                    array_unshift($subfolders, $parent->file_name . '/');
+                } else {
+                    $directory_id = 0;
+                }
             }
+            $this->_subfolderPath = implode($subfolders);
         }
-        return implode($subfolders);
+        return $this->_subfolderPath;
+    }
+
+    /**
+     * Get base server path for file's upload location
+     *
+     * @return string
+     */
+    private function getBaseServerPath()
+    {
+        if (empty($this->_baseServerPath)) {
+            $this->_baseServerPath = rtrim($this->UploadDestination->server_path, '\\/') . '/';
+        }
+        return $this->_baseServerPath;
+    }
+
+    /**
+     * Get base url for upload location
+     *
+     * @return string
+     */
+    private function getBaseUrl()
+    {
+        if (empty($this->_baseUrl)) {
+            $this->_baseUrl = rtrim($this->UploadDestination->url, '\\/') . '/';
+        }
+        return $this->_baseUrl;
     }
 
     /**
@@ -234,10 +265,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsolutePath()
     {
-        if (empty($this->_absolutePath)) {
-            $this->_absolutePath = rtrim($this->UploadDestination->server_path, '\\/') . '/' . $this->subfolders() . $this->file_name;
-        }
-        return $this->_absolutePath;
+        return $this->getBaseServerPath() . $this->getSubfoldersPath() . $this->file_name;
     }
 
     /**
@@ -248,7 +276,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteThumbnailPath()
     {
-        return rtrim($this->UploadDestination->server_path, '\\/') . '/_thumbs/' . $this->subfolders() . $this->file_name;
+        return $this->getBaseServerPath() . '_thumbs/' . $this->getSubfoldersPath() . $this->file_name;
     }
 
     /**
@@ -259,7 +287,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteURL()
     {
-        return $this->UploadDestination->getFilesystem()->getUrl($this->subfolders() . rawurlencode($this->file_name));
+        return $this->getBaseUrl() . $this->getSubfoldersPath() . $this->file_name;
     }
 
     /**
@@ -276,7 +304,7 @@ class FileSystemEntity extends ContentModel
             return $this->getAbsoluteURL();
         }
 
-        return $filesystem->getUrl('/_thumbs/' . $this->subfolders() . rawurlencode($this->file_name));
+        return $this->getBaseUrl() . '_thumbs/' . $this->getSubfoldersPath() . $this->file_name;
     }
 
     public function getThumbnailUrl()

@@ -39,6 +39,7 @@ class Filesystem
         $config = array_merge($defaults, $config);
 
         $this->flysystem = new Flysystem\Filesystem($adapter, $config);
+        $this->flysystem->addPlugin(new Flysystem\Plugin\GetWithMetadata());
     }
 
     /**
@@ -254,6 +255,19 @@ class Filesystem
         }
 
         return $contents_array;
+    }
+
+    /**
+     * Get the file with metadata info
+     *
+     * @param string $path
+     * @param array $metadata
+     * @return array|false metadata
+     */
+    public function getWithMetadata($path, $metadata = [])
+    {
+        $path = $this->normalizeRelativePath($path);
+        return $this->flysystem->getWithMetadata($this->normalize($path), $metadata);
     }
 
     /**
