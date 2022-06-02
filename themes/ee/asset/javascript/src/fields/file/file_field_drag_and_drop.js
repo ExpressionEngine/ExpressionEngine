@@ -80,7 +80,7 @@ function (_React$Component) {
   }, {
     key: "getFieldContainer",
     value: function getFieldContainer() {
-      //console.log(this); // If in a grid, return that
+      console.log(this); // If in a grid, return that
 
       if ($(this.props.thisField).closest('.grid-file-upload').length) {
         return $(this.props.thisField).closest('.grid-file-upload');
