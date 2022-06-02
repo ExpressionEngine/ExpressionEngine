@@ -115,7 +115,7 @@ abstract class Field
      * @param string $class
      * @return $this
      */
-    public function setClass(string $class): Set
+    public function setClass(string $class): Field
     {
         $this->set('class', $class);
         return $this;
@@ -202,7 +202,7 @@ abstract class Field
     }
 
     /**
-     * @param string $disabled
+     * @param bool $disabled
      * @return $this
      */
     public function setDisabled(bool $disabled): Field
@@ -274,7 +274,7 @@ abstract class Field
     }
 
     /**
-     * @param string $required
+     * @param bool $required
      * @return $this
      */
     public function setRequired(bool $required): Field
@@ -292,7 +292,7 @@ abstract class Field
     }
 
     /**
-     * @param $placeholder
+     * @param string $placeholder
      * @return $this
      */
     public function setPlaceholder(string $placeholder): Field
@@ -302,7 +302,7 @@ abstract class Field
     }
 
     /**
-     * @return mixed
+     * @return int|null
      */
     public function getMaxlength(): ?int
     {
@@ -310,10 +310,10 @@ abstract class Field
     }
 
     /**
-     * @param $placeholder
+     * @param int $maxlength
      * @return $this
      */
-    public function setmaxlength(int $maxlength): Field
+    public function setMaxlength(int $maxlength): Field
     {
         $this->set('maxlength', $maxlength);
         return $this;

@@ -238,15 +238,6 @@ class Form
     }
 
     /**
-     * @return array
-     */
-    public function toArray(): array
-    {
-        $data = $this->compile();
-        return $data;
-    }
-
-    /**
      * @param string $name
      * @param mixed $value
      * @return $this
@@ -271,7 +262,7 @@ class Form
     /**
      * @return array
      */
-    protected function compile(): array
+    public function toArray(): array
     {
         $return = [];
         foreach ($this->prototype as $key => $value) {
