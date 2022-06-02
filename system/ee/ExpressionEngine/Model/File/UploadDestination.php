@@ -392,6 +392,36 @@ class UploadDestination extends StructureModel
     }
 
     /**
+     * Give the file relative path, returns File mode
+     *
+     * @param string $filePath
+     * @return File
+     */
+    public function getFileByPath($filePath)
+    {
+        $pathInfo = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $filePath));
+        $depth = count($pathInfo) - 1;
+        $directory_id = 0;
+        foreach ($pathInfo as $i => $fileOrDirName)
+        {
+            if (empty($fileOrDirName)) {
+                continue;
+            }
+            $model = ($i == $depth) ? 'File' : 'Directory';
+            $file = ee('Model')
+                ->get($model)
+                ->filter('upload_location_id', $this->getId())
+                ->filter('directory_id', $directory_id)
+                ->filter('file_name', $fileOrDirName)
+                ->first();
+            if (! empty($file)) {
+                $directory_id = $file->file_id;
+            }
+        }
+        return $file;
+    }
+
+    /**
      * Determines if the member has access permission to this
      * upload destination.
      *
