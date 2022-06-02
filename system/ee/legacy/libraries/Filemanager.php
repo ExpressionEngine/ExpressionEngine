@@ -326,6 +326,10 @@ class Filemanager
      */
     public function save_file($file_path, $directory, $prefs = array(), $check_permissions = true)
     {
+        if(is_int($directory)) {
+            $directory = $this->fetch_upload_dirs()[$directory];
+        }
+
         if (! $file_path or ! $directory) {
             return $this->_save_file_response(false, lang('no_path_or_dir'));
         }
@@ -1395,12 +1399,8 @@ class Filemanager
      * @param	bool $ignore_site_id If TRUE, returns upload destinations for all sites
      * @return string URL to the thumbnail
      */
-    public function get_thumb($file, $directory, $ignore_site_id = false)
+    public function get_thumb($file, $directory_id, $ignore_site_id = false)
     {
-        if(is_int($directory)) {
-            $directory = ee('Model')->get('UploadDestination')->filter('id', $directory)->first();
-        }
-
         $thumb_info = array(
             'thumb' => PATH_CP_GBL_IMG . 'missing.jpg',
             'thumb_path' => '',
@@ -1411,7 +1411,7 @@ class Filemanager
             return $thumb_info;
         }
 
-        $prefs = $this->fetch_upload_dir_prefs($directory->id, $ignore_site_id);
+        $prefs = $this->fetch_upload_dir_prefs($directory_id, $ignore_site_id);
 
         // If the raw file name was passed in, figure out the mime_type
         if (! is_array($file) or ! isset($file['mime_type'])) {
@@ -1419,7 +1419,7 @@ class Filemanager
 
             $file = array(
                 'file_name' => $file,
-                'mime_type' => $directory->getFilesystem()->getMimetype($file)
+                'mime_type' => $prefs['directory']->getFilesystem()->getMimetype($file)
             );
         }
 
@@ -1900,7 +1900,7 @@ class Filemanager
             );
         }
 
-        $thumb_info = $this->get_thumb($file['file_name'], $dir['upload_destination']);
+        $thumb_info = $this->get_thumb($file['file_name'], $dir['id']);
 
         // Build list of information to save and return
         $file_data = array(
@@ -2337,11 +2337,11 @@ class Filemanager
      */
     public function fetch_upload_dirs($params = array())
     {
-        if (! empty($this->_upload_dirs)) {
-            return $this->_upload_dirs;
+        if (empty($this->_upload_dirs)) {
+            $this->_upload_dirs = $this->_directories($params);
         }
 
-        return $this->_directories($params);
+        return $this->_upload_dirs;
     }
 
     /**
