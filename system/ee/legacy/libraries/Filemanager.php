@@ -326,7 +326,7 @@ class Filemanager
      */
     public function save_file($file_path, $directory, $prefs = array(), $check_permissions = true)
     {
-        if(is_int($directory)) {
+        if (is_numeric($directory)) {
             $directory = $this->fetch_upload_dirs()[$directory];
         }
 

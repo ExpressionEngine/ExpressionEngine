@@ -934,9 +934,10 @@ class Uploads extends AbstractFilesController
         }
 
         foreach ($current_files as $filePath) {
-            $fileInfo = $uploadDestination->getFilesystem()->getWithMetadata($filePath, ['mimetype']);
+            $fileInfo = $uploadDestination->getFilesystem()->getWithMetadata($filePath);
+            $mime = $uploadDestination->getFilesystem()->getMimetype($filePath);
 
-            if (! $fileInfo['mimetype']) {
+            if (empty($mime)) {
                 $errors[$fileInfo['basename']] = lang('invalid_mime');
 
                 continue;
@@ -993,9 +994,9 @@ class Uploads extends AbstractFilesController
                         array(
                             'directory' => $uploadDestination,
                             'server_path' => $uploadDestination->server_path,
-                            'file_name' => $file['name'],
+                            'file_name' => $fileInfo['basename'],
                             'dimensions' => $replace_sizes,
-                            'mime_type' => $file['mime']
+                            'mime_type' => $mime
                         ),
                         true,	// Create thumb
                         false	// Overwrite existing thumbs
@@ -1012,9 +1013,9 @@ class Uploads extends AbstractFilesController
                     array(
                         'directory' => $uploadDestination,
                         'server_path' => $uploadDestination->server_path,
-                        'file_name' => $file['name'],
+                        'file_name' => $fileInfo['basename'],
                         'dimensions' => $missing_only_sizes,
-                        'mime_type' => $file['mime']
+                        'mime_type' => $mime
                     ),
                     true, 	// Create thumb
                     true 	// Don't overwrite existing thumbs
@@ -1036,7 +1037,7 @@ class Uploads extends AbstractFilesController
                 'model_type' => ($fileInfo['type'] == 'file') ? 'File' : 'Directory',
                 'mime_type' => $fileInfo['mimetype'],
                 'file_name' => $fileInfo['basename'],
-                'file_size' => isset($fileInfo['size']) ? $fileInfo['size'] : '',
+                'file_size' => isset($fileInfo['size']) ? $fileInfo['size'] : 0,
                 'uploaded_by_member_id' => ee()->session->userdata('member_id'),
                 'modified_by_member_id' => ee()->session->userdata('member_id'),
                 'upload_date' => $fileInfo['timestamp'],
@@ -1065,7 +1066,7 @@ class Uploads extends AbstractFilesController
                 );
 
             if (! $saved['status']) {
-                $errors[$file['basename']] = $saved['message'];
+                $errors[$fileInfo['basename']] = $saved['message'];
             }
         }
 
