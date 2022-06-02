@@ -363,7 +363,7 @@ class File_field
         $filedir = $directory_input ? $directory_input : $hidden_dir;
 
         foreach ($upload_directories as $row) {
-            $allowed_dirs[] = $row['id'];
+            $allowed_dirs[] = $row->id;
         }
 
         // Upload or maybe just a path in the hidden field?
@@ -675,6 +675,7 @@ class File_field
         }
 
         $upload_dir = $upload_dir[$file['upload_location_id']];
+        $filesystem = $upload_dir->getFilesystem();
 
         // save the file name for use in the file system as well as the URL
         $fs_file_name = $file['file_name'];
@@ -683,10 +684,16 @@ class File_field
         // Set additional data based on what we've gathered
         $file['raw_output'] = $data;
         $file['raw_content'] = $data;
-        $file['path'] = (isset($upload_dir['url'])) ? $upload_dir['url'] : '';
         $file['extension'] = substr(strrchr($file['file_name'], '.'), 1);
         $file['filename'] = basename($file['file_name'], '.' . $file['extension']); // backwards compatibility
-        $file['url'] = $file['path'] . $file['file_name'];
+
+        try {
+            $file['path'] = $filesystem->getUrl();
+            $file['url'] = $filesystem->getUrl($file['file_name']);
+        }catch(\Exception $e){
+            $file['path'] = '';
+            $file['url'] = $file['file_name'];
+        }
 
         $dimensions = explode(" ", $file['file_hw_original']);
 
@@ -694,20 +701,20 @@ class File_field
         $file['height'] = isset($dimensions[0]) ? $dimensions[0] : '';
 
         // Pre and post formatting
-        $file['image_pre_format'] = $upload_dir['pre_format'];
-        $file['image_post_format'] = $upload_dir['post_format'];
-        $file['file_pre_format'] = $upload_dir['file_pre_format'];
-        $file['file_post_format'] = $upload_dir['file_post_format'];
+        $file['image_pre_format'] = $upload_dir->pre_format;
+        $file['image_post_format'] = $upload_dir->post_format;
+        $file['file_pre_format'] = $upload_dir->file_pre_format;
+        $file['file_post_format'] = $upload_dir->file_post_format;
 
         // Image/file properties
-        $file['image_properties'] = $upload_dir['properties'];
-        $file['file_properties'] = $upload_dir['file_properties'];
+        $file['image_properties'] = $upload_dir->properties;
+        $file['file_properties'] = $upload_dir->file_properties;
 
         $file['file_size:human'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes();
         $file['file_size:human_long'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes(false);
 
         $file['directory_id'] = $file['upload_location_id'];
-        $file['directory_title'] = $upload_dir['name'];
+        $file['directory_title'] = $upload_dir->name;
 
         $manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
@@ -760,11 +767,12 @@ class File_field
                 $files = ee('Model')->get('File', $file_ids)->fields('file_id', 'upload_location_id', 'file_name')->all();
                 $this->_get_upload_prefs();
                 foreach ($files as $file) {
-                    $data = str_replace('{file:' . $file->file_id . ':url}', $this->_upload_prefs[$file->upload_location_id]['url'] . $file->file_name, $data);
+                    $filesystem = $this->_upload_prefs[$file->upload_location_id]->getFilesystem();
+                    $data = str_replace('{file:' . $file->file_id . ':url}', $filesystem->getUrl($file->file_name), $data);
                 }
             }
         }
-        
+
         $pattern = ($parse_encoded)
             ? '/(?:{|&#123;)filedir_(\d+)(?:}|&#125;)/'
             : '/{filedir_(\d+)}/';
@@ -793,13 +801,7 @@ class File_field
     private function _get_upload_prefs()
     {
         if (empty($this->_upload_prefs)) {
-            ee()->load->model('file_upload_preferences_model');
-
-            $this->_upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(
-                null,
-                null,
-                true
-            );
+            $this->_upload_prefs = $directories = ee('Model')->get('UploadDestination')->all()->indexBy('id');
         }
 
         return $this->_upload_prefs;
@@ -947,13 +949,13 @@ class File_field
 
         $upload_destinations = [];
         foreach ($upload_prefs as $upload_pref) {
-            if ($upload_pref['site_id'] == ee()->config->item('site_id') &&
-                $upload_pref['module_id'] == 0) {
-                $upload_destinations[$upload_pref['id']] =[
-                    'label' => $upload_pref['name'],
+            if ($upload_pref->site_id == ee()->config->item('site_id') &&
+                $upload_pref->module_id == 0) {
+                $upload_destinations[$upload_pref->id] = [
+                    'label' => $upload_pref->name,
                     'path' => '',
-                    'upload_location_id' => $upload_pref['id'],
-                    'children' => $this->_getDirectoriesRecursive($upload_pref['id'], $upload_pref['id'])
+                    'upload_location_id' => $upload_pref->id,
+                    'children' => $this->_getDirectoriesRecursive($upload_pref->id, $upload_pref->id)
                 ];
             }
         }
