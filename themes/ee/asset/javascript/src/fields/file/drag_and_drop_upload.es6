@@ -17,13 +17,17 @@ class DragAndDropUpload extends React.Component {
   constructor (props) {
     super(props)
 
-    let directoryName = this.getDirectoryName(props.allowedDirectory)
+    let directoryName = this.getDirectoryName(props.allowedDirectory);
+    let list;
+
     this.state = {
       files: [],
       directory: directoryName ? props.allowedDirectory : 'all',
       directoryName: directoryName,
       pendingFiles: null,
-      error: null
+      error: null,
+      path: '',
+      parentId: null
     }
     this.queue = new ConcurrencyQueue({concurrency: this.props.concurrency})
   }
@@ -57,22 +61,21 @@ class DragAndDropUpload extends React.Component {
   getDirectoryName(directory) {
     if (directory == 'all') return null;
 
-    this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+    var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
     return directory.label
   }
 
   checkChildDirectory = (items, directory) => {
-    return (
-      items.forEach(item => {
-        if (item.value == directory) {
-          directory = item;
-        } else if(item.value != directory && item.children.length) {
-          this.checkChildDirectory(item.children, directory);
-        }
+    items.map(item => {
+      if (item.value == directory) {
+        return list = item;
+      }else if(item.value != directory && item.children.length) {
+        this.checkChildDirectory(item.children, directory);
+      }
+    })
 
-        return directory;
-      })
-    )
+    return list;
   }
 
   bindDragAndDropEvents() {
@@ -155,11 +158,14 @@ class DragAndDropUpload extends React.Component {
   }
 
   makeUploadPromise(file) {
+
     return new Promise((resolve, reject) => {
       let formData = new FormData()
       formData.append('directory', this.state.directory)
       formData.append('file', file)
       formData.append('csrf_token', EE.CSRF_TOKEN)
+      formData.append('parentId', this.state.parentId)
+      formData.append('path', this.state.path)
 
       let xhr = new XMLHttpRequest()
       xhr.open('POST', EE.dragAndDrop.endpoint, true)
@@ -229,8 +235,12 @@ class DragAndDropUpload extends React.Component {
   }
 
   setDirectory = (directory) => {
+    var item = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
     this.setState({
-      directory: directory || 'all'
+      directory: directory || 'all',
+      path: item.path || '',
+      parentId: item.upload_location_id || null
     })
   }
 

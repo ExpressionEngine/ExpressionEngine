@@ -40,15 +40,14 @@ function (_React$Component) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(DragAndDropUpload).call(this, props));
 
     _defineProperty(_assertThisInitialized(_this), "checkChildDirectory", function (items, directory) {
-      return items.forEach(function (item) {
+      items.map(function (item) {
         if (item.value == directory) {
-          directory = item;
+          return list = item;
         } else if (item.value != directory && item.children.length) {
           _this.checkChildDirectory(item.children, directory);
         }
-
-        return directory;
       });
+      return list;
     });
 
     _defineProperty(_assertThisInitialized(_this), "handleDroppedFiles", function (droppedFiles) {
@@ -101,8 +100,12 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "setDirectory", function (directory) {
+      var item = _this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
       _this.setState({
-        directory: directory || 'all'
+        directory: directory || 'all',
+        path: item.path || '',
+        parentId: item.upload_location_id || null
       });
     });
 
@@ -140,12 +143,16 @@ function (_React$Component) {
 
     var directoryName = _this.getDirectoryName(props.allowedDirectory);
 
+    var _list;
+
     _this.state = {
       files: [],
       directory: directoryName ? props.allowedDirectory : 'all',
       directoryName: directoryName,
       pendingFiles: null,
-      error: null
+      error: null,
+      path: '',
+      parentId: null
     };
     _this.queue = new ConcurrencyQueue({
       concurrency: _this.props.concurrency
@@ -185,10 +192,7 @@ function (_React$Component) {
     key: "getDirectoryName",
     value: function getDirectoryName(directory) {
       if (directory == 'all') return null;
-      this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory); // directory = EE.dragAndDrop.uploadDesinations.find(
-      //   thisDirectory => thisDirectory.value == directory
-      // )
-
+      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
       return directory.label;
     }
   }, {
@@ -243,6 +247,8 @@ function (_React$Component) {
         formData.append('directory', _this3.state.directory);
         formData.append('file', file);
         formData.append('csrf_token', EE.CSRF_TOKEN);
+        formData.append('parentId', _this3.state.parentId);
+        formData.append('path', _this3.state.path);
         var xhr = new XMLHttpRequest();
         xhr.open('POST', EE.dragAndDrop.endpoint, true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
