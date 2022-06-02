@@ -471,7 +471,15 @@ class Filesystem
     public function getMimetype($path)
     {
         $path = $this->normalizeRelativePath($path);
-        return $this->flysystem->getMimetype($path);
+        $mime = $this->flysystem->getMimetype($path);
+
+        // try another method to get mime
+        if ($mime == 'application/octet-stream') {    
+            $opening = fread($this->flysystem->readStream($path), 50);
+            $mime = ee('MimeType')->guessOctetStream($opening);
+        }
+
+        return $mime;
     }
 
     /**

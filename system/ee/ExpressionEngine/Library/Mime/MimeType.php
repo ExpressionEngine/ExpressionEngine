@@ -143,13 +143,7 @@ class MimeType
 
         // try another method to get mime
         if ($mime == 'application/octet-stream') {
-            if (strpos($file_opening, 'RIFF') === 0 && strpos($file_opening, 'WEBPVP8') !== false) {
-                $mime = 'image/webp';
-                // PDF files start with "%PDF" (25 50 44 46) or " %PDF"
-                // @see https://en.wikipedia.org/wiki/Magic_number_%28programming%29#Examples
-            } else if (strpos($file_opening, '%PDF') !== false) {
-                $mime = 'application/pdf';
-            }
+            $mime = $this->guessOctetStream($file_opening);
         }
 
         return $mime;
@@ -170,7 +164,29 @@ class MimeType
             return $default;
         }
 
-        return $this->detector->detectMimeTypeFromBuffer((string) $buffer) ?: $default;
+        $mime = $this->detector->detectMimeTypeFromBuffer((string) $buffer) ?: $default;
+
+        // try another method to get mime
+        if ($mime == 'application/octet-stream') {
+            $mime = $this->guessOctetStream((string) $buffer);
+        }
+
+        return $mime;
+    }
+
+    public function guessOctetStream($contents)
+    {
+        $mime = 'application/octet-stream';
+
+        if (strpos($contents, 'RIFF') === 0 && strpos($contents, 'WEBPVP8') !== false) {
+            $mime = 'image/webp';
+            // PDF files start with "%PDF" (25 50 44 46) or " %PDF"
+            // @see https://en.wikipedia.org/wiki/Magic_number_%28programming%29#Examples
+        } else if (strpos($contents, '%PDF') !== false) {
+            $mime = 'application/pdf';
+        }
+
+        return $mime;
     }
 
     /**

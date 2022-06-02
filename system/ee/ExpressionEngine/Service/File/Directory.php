@@ -49,7 +49,11 @@ class Directory extends Filesystem
     public function getUrl($filename = null)
     {
         if (! isset($this->url)) {
-            throw new \Exception('No directory URL given.');
+            if(!method_exists($this->getAdapter(), 'getBaseUrl')) {
+                throw new \Exception('No directory URL given.');
+            }
+
+            $this->url = $this->getAdapter()->getBaseUrl();
         }
 
         $url = rtrim($this->url, '/') . '/';
