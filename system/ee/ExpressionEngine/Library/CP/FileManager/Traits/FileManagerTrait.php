@@ -46,8 +46,8 @@ trait FileManagerTrait
         }
 
         $files = ee('Model')->get($model)
-            ->with('UploadDestination')
-            ->fields($model . '.*', 'UploadDestination.server_path', 'UploadDestination.url');
+            // ->fields($model . '.*', 'UploadDestination.server_path', 'UploadDestination.url');
+            ->with('UploadDestination');
         if (empty($upload_location_id)) {
             $files->filter('UploadDestination.module_id', 0)
                 ->filter('site_id', ee()->config->item('site_id'));
@@ -198,11 +198,11 @@ trait FileManagerTrait
                 if (!empty($column->getEntryManagerColumnFields())) {
                     foreach ($column->getEntryManagerColumnFields() as $field) {
                         if (!empty($field)) {
-                            $files->fields($field);
+                            // $files->fields($field);
                         }
                     }
                 } else {
-                    $files->fields($column->getTableColumnIdentifier());
+                    // $files->fields($column->getTableColumnIdentifier());
                 }
             }
         }
@@ -222,7 +222,7 @@ trait FileManagerTrait
         $table->setNoResultsHTML(ee('View')->make('ee:_shared/file/upload-widget')->render(['component' => $uploaderComponent]));
 
         if (! empty($uploadLocation) && $uploadLocation->subfolders_on_top === true) {
-            $files->fields('model_type');
+            // $files->fields('model_type');
             $files->order('model_type', 'desc');
         }
 

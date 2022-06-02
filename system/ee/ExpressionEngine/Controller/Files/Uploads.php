@@ -181,9 +181,19 @@ class Uploads extends AbstractFilesController
         foreach($adapters as $key => $adapter) {
             $adapter_choices[$key] = $adapter['name'];
             $adapter_groups[$key] = "adapter_{$key}";
-            $fields = ee('Filesystem/Adapter')->createSettingsFields($key, $settingsValues);
+            $fields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->adapter == $key) ? $settingsValues : []);
             if(!empty($fields)) {
                 foreach($fields as $field) {
+                    // Prefix all field names for the adapter
+                    foreach($field['fields'] as $input_name => $input) {
+                        $prefixed_name = implode('', [
+                            "_for_adapter[{$key}]",
+                            (strpos($input_name, '[') !== false) ? '['. str_replace('[', '][', $input_name) : "[{$input_name}]"
+                        ]);
+                        $field['fields'][$prefixed_name] = $input;
+                        unset($field['fields'][$input_name]);
+                    }
+
                     $adapter_settings[] = array_merge($field, ['group' => "adapter_{$key}"]);
                 }
             }
@@ -601,13 +611,10 @@ class Uploads extends AbstractFilesController
      */
     private function validateUploadPreferences($upload_destination)
     {
-
-        if(isset($_POST['adapter'], $_POST['adapter_settings'])) {
-            $_POST['adapter_settings'] = ee('Filesystem/Adapter')->filterInputForAdapter(
-                $_POST['adapter'],
-                $_POST['adapter_settings']
-            );
-        }
+        // Pull adapter specific configuration into the root $_POST array
+        $forAdapter = $_POST['_for_adapter'][$_POST['adapter']];
+        unset($_POST['_for_adapter']);
+        $_POST = array_merge($_POST, $forAdapter);
 
         $upload_destination->set($_POST);
         $cat_group = ee()->input->post('cat_group');

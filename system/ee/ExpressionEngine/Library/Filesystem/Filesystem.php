@@ -20,7 +20,7 @@ class Filesystem
 {
     protected $flysystem;
 
-    public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = null)
+    public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = [])
     {
         if (is_null($adapter)) {
             $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath(ee()->config->item('base_path') ?: $_SERVER['DOCUMENT_ROOT']));
@@ -31,6 +31,12 @@ class Filesystem
         // Create the cache store
         $cacheStore = new Flysystem\Cached\Storage\Memory();
         $adapter = new Flysystem\Cached\CachedAdapter($adapter, $cacheStore);
+
+        $defaults = [
+            'visibility' => Flysystem\AdapterInterface::VISIBILITY_PUBLIC
+        ];
+
+        $config = array_merge($defaults, $config);
 
         $this->flysystem = new Flysystem\Filesystem($adapter, $config);
     }

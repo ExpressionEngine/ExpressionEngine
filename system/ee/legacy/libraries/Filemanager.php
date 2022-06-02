@@ -330,20 +330,20 @@ class Filemanager
             return $this->_save_file_response(false, lang('no_path_or_dir'));
         }
 
-        if ($check_permissions === true and ! $this->_check_permissions($directory->id)) {
+        if ($check_permissions === true and ! $this->_check_permissions($directory['id'])) {
             // This person does not have access, error?
             return $this->_save_file_response(false, lang('no_permission'));
         }
 
         // fetch preferences & merge with passed in prefs
-        $dir_prefs = $this->fetch_upload_dir_prefs($directory->id, true);
+        $dir_prefs = $this->fetch_upload_dir_prefs($directory['id'], true);
 
         if (! $dir_prefs) {
             // something went way wrong!
             return $this->_save_file_response(false, lang('invalid_directory'));
         }
 
-        $prefs['upload_location_id'] = $directory->id;
+        $prefs['upload_location_id'] = $directory['id'];
 
         $prefs = array_merge($prefs, $dir_prefs);
 
@@ -352,7 +352,7 @@ class Filemanager
         }
 
         // Figure out the mime type
-        $mime = $this->security_check($file_path, $prefs, $directory);
+        $mime = $this->security_check($file_path, $prefs, $directory['upload_destination']);
 
         if ($mime === false) {
             // security check failed
@@ -1576,7 +1576,7 @@ class Filemanager
 
         $dirs = $directories->all()->indexBy('id');
         foreach ($dirs as $i => $dir) {
-            $dirs[$i] = $dir->toArray();
+            $dirs[$i] = array_merge($dir->toArray(), ['upload_destination' => $dir]);
         }
 
         return $dirs;
@@ -1829,19 +1829,19 @@ class Filemanager
         $original_filename = $_FILES[$field]['name'];
         $clean_filename = basename($this->clean_filename(
             $_FILES[$field]['name'],
-            $dir->id,
+            $dir['id'],
             array('ignore_dupes' => true)
         ));
 
         $config = array(
-            'upload_destination' => $dir,
+            'upload_destination' => $dir['upload_destination'],
             'file_name' => $clean_filename,
-            'upload_path' => $dir->server_path,
-            'max_size' => round((int) $dir->max_size, 3)
+            'upload_path' => $dir['server_path'],
+            'max_size' => round((int) $dir['max_size'], 3)
         );
 
         // Restricted upload directory?
-        if ($dir->allowed_types == 'img') {
+        if ($dir['allowed_types'] == 'img') {
             $config['is_image'] = true;
         }
 
@@ -1863,7 +1863,7 @@ class Filemanager
         if (bool_config_item('channel_form_overwrite')) {
             $original = ee('Model')->get('File')
                 ->filter('file_name', $clean_filename)
-                ->filter('upload_location_id', $dir->id)
+                ->filter('upload_location_id', $dir['id'])
                 ->first();
 
             if ($original && $original->uploaded_by_member_id == ee()->session->userdata('member_id')) {
@@ -1895,16 +1895,16 @@ class Filemanager
                 lang('invalid_mime'),
                 array(
                     'file_name' => $file['file_name'],
-                    'directory_id' => $dir->id
+                    'directory_id' => $dir['id']
                 )
             );
         }
 
-        $thumb_info = $this->get_thumb($file['file_name'], $dir);
+        $thumb_info = $this->get_thumb($file['file_name'], $dir['upload_destination']);
 
         // Build list of information to save and return
         $file_data = array(
-            'upload_location_id' => $dir->id,
+            'upload_location_id' => $dir['id'],
             'site_id' => ee()->config->item('site_id'),
 
             'file_name' => $file['file_name'],
@@ -1924,8 +1924,8 @@ class Filemanager
             'file_height' => $file['image_height'],
             'file_width' => $file['image_width'],
             'file_hw_original' => $file['image_height'] . ' ' . $file['image_width'],
-            'max_width' => $dir->max_width,
-            'max_height' => $dir->max_height
+            'max_width' => $dir['max_width'],
+            'max_height' => $dir['max_height']
         );
 
         /* -------------------------------------------
@@ -1953,7 +1953,7 @@ class Filemanager
                     lang('exceeds_max_dimensions'),
                     array(
                         'file_name' => $file['file_name'],
-                        'directory_id' => $dir->id
+                        'directory_id' => $dir['id']
                     )
                 );
             }
@@ -1968,7 +1968,7 @@ class Filemanager
                 $saved['message'],
                 array(
                     'file_name' => $file['file_name'],
-                    'directory_id' => $dir->id
+                    'directory_id' => $dir['id']
                 )
             );
         }
@@ -1978,7 +1978,7 @@ class Filemanager
 
         // Stash upload directory prefs in case
         $file_data['upload_directory_prefs'] = $dir;
-        $file_data['directory'] = $dir->id;
+        $file_data['directory'] = $dir['id'];
 
         // Change file size to human readable
         ee()->load->helper('number');
