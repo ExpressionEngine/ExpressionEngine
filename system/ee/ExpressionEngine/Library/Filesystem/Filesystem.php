@@ -202,7 +202,8 @@ class Filesystem
      */
     public function deleteDir($path, $leave_empty = false)
     {
-        $path = rtrim($path, '/');
+        $path = $this->normalize($path);
+        $path = $this->normalizeRelativePath(rtrim($path, '/'));
 
         if (!$this->isDir($path)) {
             throw new FilesystemException("Directory does not exist {$path}.");
@@ -215,7 +216,7 @@ class Filesystem
         $this->flysystem->deleteDir($path);
 
         if ($leave_empty) {
-            $this->flysystem->createDir($this->normalize($path));
+            $this->flysystem->createDir($path);
         }
 
         return true;
@@ -327,6 +328,9 @@ class Filesystem
      */
     public function rename($source, $dest)
     {
+        $source = $this->normalizeRelativePath($source);
+        $dest = $this->normalizeRelativePath($dest);
+
         if (! $this->exists($source)) {
             throw new FilesystemException("Cannot rename non-existent path: {$source}");
         } elseif ($this->exists($dest)) {
@@ -347,6 +351,9 @@ class Filesystem
      */
     public function copy($source, $dest)
     {
+        $source = $this->normalizeRelativePath($source);
+        $dest = $this->normalizeRelativePath($dest);
+
         if (! $this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
         }
@@ -436,7 +443,7 @@ class Filesystem
         // we can handle calls to check the existence of the base path
         $path = $this->normalizeRelativePath($path);
 
-        // If the path is the root of this filesystem it must exist or the 
+        // If the path is the root of this filesystem it must exist or the
         // filesystem would have thrown an exception during construction
         if($path === '') {
             return true;
@@ -474,7 +481,7 @@ class Filesystem
         $mime = $this->flysystem->getMimetype($path);
 
         // try another method to get mime
-        if ($mime == 'application/octet-stream') {    
+        if ($mime == 'application/octet-stream') {
             $opening = fread($this->flysystem->readStream($path), 50);
             $mime = ee('MimeType')->guessOctetStream($opening);
         }
@@ -490,6 +497,8 @@ class Filesystem
      */
     public function touch($path, $time = null)
     {
+        $path = $this->normalizeRelativePath($path);
+
         if (! $this->exists($path)) {
             throw new FilesystemException("Touching non-existent files is not supported: {$path}");
         }
@@ -827,6 +836,13 @@ class Filesystem
     protected function normalize($path)
     {
         return $path;
+    }
+
+    public function getBaseAdapter()
+    {
+        $adapter = $this->flysystem->getAdapter();
+
+        return ($adapter instanceof Flysystem\Cached\CachedAdapter) ? $adapter->getAdapter() : $adapter;
     }
 }
 
