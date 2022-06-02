@@ -287,7 +287,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteURL()
     {
-        return $this->getBaseUrl() . $this->getSubfoldersPath() . $this->file_name;
+        return $this->UploadDestination->getFilesystem()->getUrl($this->getSubfoldersPath() . $this->file_name);
     }
 
     /**
@@ -304,7 +304,7 @@ class FileSystemEntity extends ContentModel
             return $this->getAbsoluteURL();
         }
 
-        return $this->getBaseUrl() . '_thumbs/' . $this->getSubfoldersPath() . $this->file_name;
+        return $filesystem->getUrl('_thumbs/' . $this->getSubfoldersPath() . $this->file_name);
     }
 
     public function getThumbnailUrl()
