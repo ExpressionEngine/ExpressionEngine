@@ -901,46 +901,6 @@ class File_field
     }
 
     /**
-     * Get the subdirectories nested array
-     *
-     * @param [type] $key_value
-     * @param boolean $root_only
-     * @return void
-     */
-    private function _getDirectoriesRecursive($directory_id, $upload_location_id, $path = '', $root_only = true)
-    {
-        $children = [];
-        $i = 0;
-        $directoriesCount = 0;
-        do {
-            $directories = ee('Model')->get('Directory')->fields('file_id', 'upload_location_id', 'directory_id', 'file_name', 'title');
-            if ($root_only) {
-                $directories = $directories->filter('upload_location_id', $directory_id)->filter('directory_id', 0)->all();
-            } else {
-                $directories = $directories->filter('directory_id', $directory_id)->all();
-            }
-
-            $directoriesCount = count($directories);
-            if ($directoriesCount > 0) {
-                foreach ($directories as $i => $directory) {
-                    $i++;
-                    if (!empty($directory)) {
-                        $path = $path . urlencode($directory->file_name) . '/';
-                        $children[$directory->getId()] = [
-                            'label' => $directory->title,
-                            'path' => $path,
-                            'upload_location_id' => $upload_location_id,
-                            'children' => $this->_getDirectoriesRecursive($directory->file_id, $upload_location_id, $path, false)
-                        ];
-                    }
-                }
-            }
-        } while ($directoriesCount > ($i+1));
-        
-        return $children;
-    }
-
-    /**
      * Loads proper JavaScript for drag and drop uploading
      */
     public function loadDragAndDropAssets()
@@ -955,7 +915,7 @@ class File_field
                     'label' => $upload_pref->name,
                     'path' => '',
                     'upload_location_id' => $upload_pref->id,
-                    'children' => $this->_getDirectoriesRecursive($upload_pref->id, $upload_pref->id)
+                    'children' => $upload_pref->buildDirectoriesDropdown($upload_pref->getId())
                 ];
             }
         }

@@ -53,10 +53,19 @@
 						<?php endif ?>
 
 						<div class="dropdown__scroll">
-						<?php foreach ($header['action_button']['choices'] as $link => $text): ?>
-							<a href="<?=$link?>" class="dropdown__link">
-								<i class="fas fa-hdd"></i>
-								<?=$text?></a>
+						<?php foreach ($header['action_button']['choices'] as $key => $data): ?>
+							<?php if (! is_array($data)) : ?>
+							<a href="<?=$key?>" class="dropdown__link"><?=$data?></a>
+							<?php elseif (isset($data['upload_location_id'])): ?>
+								<a href="#" data-upload_location_id="<?=$data['upload_location_id']?>" class="dropdown__link"><?=$data['label']?></a>
+								<?php
+									if (! empty($data['children'])) {
+										echo '<ul>';
+										$this->embed('files/subfolder-dropdown', ['data' => $data['children']]);
+										echo '</ul>';
+									}
+								?>
+							<?php endif; ?>
 						<?php endforeach ?>
 						</div>
 					</div>

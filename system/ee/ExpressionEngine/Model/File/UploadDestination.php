@@ -422,6 +422,46 @@ class UploadDestination extends StructureModel
     }
 
     /**
+     * Get the subdirectories nested array
+     *
+     * @param [type] $key_value
+     * @param boolean $root_only
+     * @return array
+     */
+    public function buildDirectoriesDropdown($directory_id, $path = '', $root_only = true)
+    {
+        $children = [];
+        $i = 0;
+        $directoriesCount = 0;
+        do {
+            $directories = ee('Model')->get('Directory')->fields('file_id', 'upload_location_id', 'directory_id', 'file_name', 'title');
+            if ($root_only) {
+                $directories = $directories->filter('upload_location_id', $directory_id)->filter('directory_id', 0)->all();
+            } else {
+                $directories = $directories->filter('directory_id', $directory_id)->all();
+            }
+
+            $directoriesCount = count($directories);
+            if ($directoriesCount > 0) {
+                foreach ($directories as $i => $directory) {
+                    $i++;
+                    if (!empty($directory)) {
+                        $path = $path . urlencode($directory->file_name) . '/';
+                        $children[$directory->getId()] = [
+                            'label' => $directory->title,
+                            'path' => $path,
+                            'upload_location_id' => $this->getId(),
+                            'children' => $this->buildDirectoriesDropdown($directory->file_id, $path, false)
+                        ];
+                    }
+                }
+            }
+        } while ($directoriesCount > ($i+1));
+        
+        return $children;
+    }
+
+    /**
      * Determines if the member has access permission to this
      * upload destination.
      *

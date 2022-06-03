@@ -1035,7 +1035,7 @@ class Uploads extends AbstractFilesController
                 'upload_location_id' => $uploadDestination->getId(),
                 'site_id' => ee()->config->item('site_id'),
                 'model_type' => ($fileInfo['type'] == 'file') ? 'File' : 'Directory',
-                'mime_type' => $fileInfo['mimetype'],
+                'mime_type' => $mime,
                 'file_name' => $fileInfo['basename'],
                 'file_size' => isset($fileInfo['size']) ? $fileInfo['size'] : 0,
                 'uploaded_by_member_id' => ee()->session->userdata('member_id'),
