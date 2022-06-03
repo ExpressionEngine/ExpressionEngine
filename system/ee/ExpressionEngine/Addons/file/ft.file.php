@@ -564,7 +564,6 @@ JSC;
 
             // Clean up temporary files
             fclose($new_file);
-            fclose($new_file_path);
             fclose($source_file);
         }
 
