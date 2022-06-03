@@ -448,7 +448,7 @@ class UploadDestination extends StructureModel
                     if (!empty($directory)) {
                         $path = $path . urlencode($directory->file_name) . '/';
                         $children[$directory->getId()] = [
-                            'label' => $directory->title,
+                            'label' => '<i class="fas fa-folder"></i>' . $directory->title,
                             'path' => $path,
                             'upload_location_id' => $this->getId(),
                             'children' => $this->buildDirectoriesDropdown($directory->file_id, $path, false)
