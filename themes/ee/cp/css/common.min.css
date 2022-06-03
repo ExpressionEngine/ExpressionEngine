@@ -24446,8 +24446,8 @@ body[data-theme="dark"] {
   padding: 5px;
   border-radius: 4px;
   display: none;
-  width: 200px;
-  height: 200px;
+  max-width: 200px;
+  max-height: 200px;
   align-items: center;
   justify-content: center;
 }

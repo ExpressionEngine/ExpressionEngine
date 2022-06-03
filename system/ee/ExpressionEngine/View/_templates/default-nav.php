@@ -53,13 +53,16 @@
 						<?php endif ?>
 
 						<div class="dropdown__scroll">
+							<input type="file" class="f_open-filepicker" data-upload_location_id='' data-path='' style="display: none;">
 							<ul>
 							<?php foreach ($header['action_button']['choices'] as $key => $data): ?>
 								<li>
 								<?php if (! is_array($data)) : ?>
 									<a href="<?=$key?>" class="dropdown__link"><?=$data?></a>
 								<?php elseif (isset($data['upload_location_id'])): ?>
-									<a href="#" data-upload_location_id="<?=$data['upload_location_id']?>" class="dropdown__link"><?=$data['label']?></a>
+									<a href="#" data-upload_location_id="<?=$data['upload_location_id']?>" class="dropdown__link">
+										<?=$data['label']?>
+									</a>
 									<?php
 										if (! empty($data['children'])) {
 											echo '<ul>';
