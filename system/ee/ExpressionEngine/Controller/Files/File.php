@@ -76,7 +76,11 @@ class File extends AbstractFilesController
             }
 
             ee()->load->library('image_lib');
-            $info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), true);
+            // we should really be storing the image properties in the db during file upload
+            $info = $file->actLocally(function($path) {
+                return ee()->image_lib->get_image_properties($path, true);
+            });
+        
             ee()->image_lib->error_msg = array(); // Reset any erorrs
         }
 
@@ -189,7 +193,9 @@ class File extends AbstractFilesController
             }
 
             ee()->load->library('image_lib');
-            $info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), true);
+            $info = $file->actLocally(function ($path) {
+                return ee()->image_lib->get_image_properties($path, true);
+            });
             ee()->image_lib->error_msg = array(); // Reset any erorrs
         }
 
