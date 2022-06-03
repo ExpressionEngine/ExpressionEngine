@@ -42,12 +42,12 @@ function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "checkChildDirectory", function (items, directory) {
       items.map(function (item) {
         if (item.value == directory) {
-          return list = item;
+          return window.list = item;
         } else if (item.value != directory && item.children.length) {
           _this.checkChildDirectory(item.children, directory);
         }
       });
-      return list;
+      return window.list;
     });
 
     _defineProperty(_assertThisInitialized(_this), "handleDroppedFiles", function (droppedFiles) {
@@ -141,9 +141,9 @@ function (_React$Component) {
       });
     });
 
-    var directoryName = _this.getDirectoryName(props.allowedDirectory);
+    window.list;
 
-    var _list;
+    var directoryName = _this.getDirectoryName(props.allowedDirectory);
 
     _this.state = {
       files: [],
@@ -192,7 +192,10 @@ function (_React$Component) {
     key: "getDirectoryName",
     value: function getDirectoryName(directory) {
       if (directory == 'all') return null;
-      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory); // directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
+      //   return thisDirectory.value == directory;
+      // });
+
       return directory.label;
     }
   }, {
