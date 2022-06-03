@@ -21,7 +21,7 @@
                 endif ?>
             </ul>
 
-            <h3>Destination</h3>
+            <h3><?=lang('destination')?></h3>
             <?php $this->embed('ee:files/multilevel-select'); ?>
 
             <div class="ajax"><?=isset($ajax_default) ? $ajax_default : '' ?></div>

@@ -6,8 +6,17 @@ if (isset($table_attrs['id'])) {
 } else {
     $table_id = uniqid('tbl_');
 }
+$hasCheckboxColumn = false;
+if (count($data)) {
+    foreach ($data[0]['columns'] as $column) {
+        if ($column['type'] == Table::COL_CHECKBOX) {
+            $hasCheckboxColumn = true;
+            continue;
+        }
+    }
+}
 ?>
-    <?php if (count($data)): ?>
+    <?php if ($hasCheckboxColumn): ?>
     <div class="file-grid__checkAll">
       <label for="<?=$table_id?>-select-all" class="checkbox-label">
           <input id="<?=$table_id?>-select-all" type="checkbox" title="<?=lang('select_all_files')?>" />
@@ -15,11 +24,14 @@ if (isset($table_attrs['id'])) {
       </label>
     </div><!-- /file-grid__select-all -->
     <?php endif; ?>
-
+    
+    <!-- Add class "file-grid__wrapper-large" for larger thumbnails: -->
     <div class="file-grid__wrapper">
-        <?php foreach ($data as $row_id => $row): ?>
-            <!-- Add class "file-grid__wrapper-large" for larger thumbnails: -->
-            <a href="<?=$row['attrs']['href']?>" data-file-id="<?=$row['attrs']['file_id']?>" class="file-grid__file" title="<?=$row['attrs']['title']?>">
+        <?php 
+        foreach ($data as $row_id => $row) : 
+            $row['attrs']['class'] .= ' file-grid__file filepicker-item';
+        ?>
+            <a<?php foreach ($row['attrs'] as $key => $value) :?> <?=$key?>="<?=$value?>"<?php endforeach; ?> data-file-id="<?=$row['attrs']['file_id']?>">
 
             <?php
             $i = 0;

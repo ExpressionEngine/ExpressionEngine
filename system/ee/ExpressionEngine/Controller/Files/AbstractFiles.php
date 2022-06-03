@@ -131,8 +131,13 @@ abstract class AbstractFiles extends CP_Controller
             }
 
             $choices = [];
-            foreach ($upload_destinations as $upload) {
-                $choices[ee('CP/URL')->make('files/upload/' . $upload->getId())->compile()] = $upload->name;
+            foreach ($upload_destinations as $upload_pref) {
+                $choices[$upload_pref->getId()] = [
+                    'label' => '<i class="fas fa-hdd"></i>' . $upload_pref->name,
+                    'path' => '',
+                    'upload_location_id' => $upload_pref->id,
+                    'children' => $upload_pref->buildDirectoriesDropdown($upload_pref->getId())
+                ];
             }
         }
 

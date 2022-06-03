@@ -4,8 +4,6 @@ $lang = array(
 
     'add_file' => 'Add File',
 
-    'directory' => 'Directory',
-
     'directory_no_access' => 'You do not have access to the directory specified for this field',
 
     'file_undo_remove' => 'Undo Remove',

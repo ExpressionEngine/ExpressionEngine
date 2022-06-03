@@ -43,8 +43,10 @@ class Uploads extends AbstractFilesController
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $this->stdHeader();
-        $this->generateSidebar(null);
+        if (! AJAX_REQUEST) {
+            $this->stdHeader();
+            $this->generateSidebar(null);
+        }
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('files')->compile() => lang('files'),
@@ -66,8 +68,10 @@ class Uploads extends AbstractFilesController
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $this->stdHeader($upload_id);
-        $this->generateSidebar($upload_id);
+        if (! AJAX_REQUEST) {
+            $this->stdHeader();
+            $this->generateSidebar(null);
+        }
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('files')->compile() => lang('files'),
@@ -169,7 +173,7 @@ class Uploads extends AbstractFilesController
         $settingsValues = array_merge([
             'url' => $upload_destination->getConfigOverriddenProperty('url'),
             'server_path' => $upload_destination->getConfigOverriddenProperty('server_path'),
-        ], $upload_destination->adapterSettings ?? []);
+        ], $upload_destination->adapter_settings ?? []);
 
         $adapter_groups = [];
         $adapter_choices = [];
@@ -177,9 +181,19 @@ class Uploads extends AbstractFilesController
         foreach($adapters as $key => $adapter) {
             $adapter_choices[$key] = $adapter['name'];
             $adapter_groups[$key] = "adapter_{$key}";
-            $fields = ee('Filesystem/Adapter')->createSettingsFields($key, $settingsValues);
+            $fields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->adapter == $key) ? $settingsValues : []);
             if(!empty($fields)) {
                 foreach($fields as $field) {
+                    // Prefix all field names for the adapter
+                    foreach($field['fields'] as $input_name => $input) {
+                        $prefixed_name = implode('', [
+                            "_for_adapter[{$key}]",
+                            (strpos($input_name, '[') !== false) ? '['. str_replace('[', '][', $input_name) : "[{$input_name}]"
+                        ]);
+                        $field['fields'][$prefixed_name] = $input;
+                        unset($field['fields'][$input_name]);
+                    }
+
                     $adapter_settings[] = array_merge($field, ['group' => "adapter_{$key}"]);
                 }
             }
@@ -209,7 +223,7 @@ class Uploads extends AbstractFilesController
                         )
                     )
                 ),
-                ... $adapter_settings,
+                ... $adapter_settings, // this is PHP 7.4 are we okay with that?
                 array(
                     'title' => 'upload_allowed_types',
                     'desc' => '',
@@ -408,6 +422,10 @@ class Uploads extends AbstractFilesController
             ]
         ];
 
+        if (AJAX_REQUEST) {
+            return ee()->cp->render('_shared/form', $vars);
+        }
+
         ee()->cp->render('settings/form', $vars);
     }
 
@@ -593,6 +611,11 @@ class Uploads extends AbstractFilesController
      */
     private function validateUploadPreferences($upload_destination)
     {
+        // Pull adapter specific configuration into the root $_POST array
+        $forAdapter = $_POST['_for_adapter'][$_POST['adapter']];
+        unset($_POST['_for_adapter']);
+        $_POST = array_merge($_POST, $forAdapter);
+
         $upload_destination->set($_POST);
         $cat_group = ee()->input->post('cat_group');
 
@@ -689,6 +712,19 @@ class Uploads extends AbstractFilesController
         return empty($this->upload_errors);
     }
 
+    private function flattenDirectoryMap(&$flatMap = [], $nestedMap = [], $keyPrefix = '/')
+    {
+        foreach ($nestedMap as $key => $val) {
+            $flatKey = rtrim($keyPrefix . $key, '/');
+            if (! isset($flatMap[$flatKey])) {
+                $flatMap[$flatKey] = $flatKey;
+            }
+            if (is_array($val)) {
+                $flatMap[$flatKey] = $this->flattenDirectoryMap($flatMap, $val, $flatKey . '/');
+            }
+        }
+    }
+
     /**
      * Sync upload directory
      *
@@ -722,25 +758,18 @@ class Uploads extends AbstractFilesController
         }
 
         // Get a listing of raw files in the directory
-        ee()->load->library('filemanager');
-        $files = ee()->filemanager->directory_files_map(
-            $upload_destination->getFilesystem(),
-            1,
-            false,
-            $upload_destination->allowed_types
-        );
-        $files_count = count($files);
+        $directoryMap = $upload_destination->getDirectoryMap();
+        $flatDirectoryMap = [];
+        $this->flattenDirectoryMap($flatDirectoryMap, $directoryMap);
+        $files = array_keys($flatDirectoryMap);
 
-        // Change the decription of this first field depending on the
-        // type of files allowed
-        $file_sync_desc = ($upload_destination->allowed_types == 'all')
-            ? lang('file_sync_desc') : lang('file_sync_desc_images');
+        $files_count = count($files, COUNT_RECURSIVE);
 
         $vars['sections'] = array(
             array(
                 array(
                     'title' => 'file_sync',
-                    'desc' => sprintf($file_sync_desc, $files_count),
+                    'desc' => sprintf(lang('file_sync_desc'), $files_count),
                     'fields' => array(
                         'progress' => array(
                             'type' => 'html',
@@ -834,6 +863,8 @@ class Uploads extends AbstractFilesController
      */
     public function doSyncFiles()
     {
+        ee()->load->library('filemanager');
+
         $type = 'insert';
         $errors = array();
         $file_data = array();
@@ -859,16 +890,9 @@ class Uploads extends AbstractFilesController
             return false;
         }
 
-        ee()->load->library('filemanager');
-        ee()->load->model('file_model');
+        $uploadDestination = ee('Model')->get('UploadDestination', $id)->first();
 
-        $upload_dirs = ee()->filemanager->fetch_upload_dirs(array('ignore_site_id' => false));
-
-        foreach ($upload_dirs as $row) {
-            $this->_upload_dirs[$row['id']] = $row;
-        }
-
-        if (! isset($this->_upload_dirs[$id])) {
+        if (empty($uploadDestination)) {
             return ee()->output->send_ajax_response([
                 'message_type' => 'failure',
                 'errors' => lang('unauthorized_access'),
@@ -891,11 +915,9 @@ class Uploads extends AbstractFilesController
             return;
         }
 
-        $dir_data = $this->_upload_dirs[$id];
-
-        ee()->filemanager->xss_clean_off();
+        /*ee()->filemanager->xss_clean_off();
         $dir_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
-        ee()->filemanager->set_upload_dir_prefs($id, $dir_data);
+        ee()->filemanager->set_upload_dir_prefs($id, $dir_data);*/
 
         // Now for everything NOT forcably replaced
 
@@ -911,29 +933,27 @@ class Uploads extends AbstractFilesController
             }
         }
 
-        // @todo, bail if there are no files in the directory!  :D
+        foreach ($current_files as $filePath) {
+            $fileInfo = $uploadDestination->getFilesystem()->getWithMetadata($filePath);
+            $mime = $uploadDestination->getFilesystem()->getMimetype($filePath);
 
-        $files = ee()->filemanager->fetch_files($id, $current_files, true);
-
-        // Setup data for batch insert
-        foreach ($files->files[$id] as $file) {
-            if (! $file['mime']) {
-                $errors[$file['name']] = lang('invalid_mime');
+            if (empty($mime)) {
+                $errors[$fileInfo['basename']] = lang('invalid_mime');
 
                 continue;
             }
 
             // Clean filename
-            $clean_filename = basename(ee()->filemanager->clean_filename(
-                $file['name'],
+            /*$clean_filename = basename(ee()->filemanager->clean_filename(
+                $fileInfo['path'],
                 $id,
                 array('convert_spaces' => false)
             ));
 
-            if ($file['name'] != $clean_filename) {
+            if ($fileInfo['path'] != $clean_filename) {
                 // It is just remotely possible the new clean filename already exists
                 // So we check for that and increment if such is the case
-                if (file_exists($this->_upload_dirs[$id]['server_path'] . $clean_filename)) {
+                if (file_exists($uploadDestination->server_path . $clean_filename)) {
                     $clean_filename = basename(ee()->filemanager->clean_filename(
                         $clean_filename,
                         $id,
@@ -946,7 +966,7 @@ class Uploads extends AbstractFilesController
 
                 // Rename the file
                 if (! @copy(
-                    $this->_upload_dirs[$id]['server_path'] . $file['name'],
+                    $this->_upload_dirs[$id]['server_path'] . $fileInfo['name'],
                     $this->_upload_dirs[$id]['server_path'] . $clean_filename
                 )) {
                     $errors[$file['name']] = lang('invalid_filename');
@@ -956,108 +976,97 @@ class Uploads extends AbstractFilesController
 
                 unlink($this->_upload_dirs[$id]['server_path'] . $file['name']);
                 $file['name'] = $clean_filename;
-            }
+            }*/
 
-            // Does it exist in DB?
-            $query = ee()->file_model->get_files_by_name($file['name'], $id);
+            $file = $uploadDestination->getFileByPath($filePath);
 
-            if ($query->num_rows() > 0) {
+            if (! empty($file)) {
                 // It exists, but do we need to change sizes or add a missing thumb?
 
-                if (! ee()->filemanager->is_editable_image($this->_upload_dirs[$id]['server_path'] . $file['name'], $file['mime'])) {
+                if (! $file->isEditableImage()) {
                     continue;
                 }
 
                 // Note 'Regular' batch needs to check if file exists- and then do something if so
                 if (! empty($replace_sizes)) {
                     $thumb_created = ee()->filemanager->create_thumb(
-                        $this->_upload_dirs[$id]['server_path'] . $file['name'],
+                        $file->getAbsolutePath(),
                         array(
-                            'directory' => $this->_upload_dirs[$id],
-                            'server_path' => $this->_upload_dirs[$id]['server_path'],
-                            'file_name' => $file['name'],
+                            'directory' => $uploadDestination,
+                            'server_path' => $uploadDestination->server_path,
+                            'file_name' => $fileInfo['basename'],
                             'dimensions' => $replace_sizes,
-                            'mime_type' => $file['mime']
+                            'mime_type' => $mime
                         ),
                         true,	// Create thumb
                         false	// Overwrite existing thumbs
                     );
 
                     if (! $thumb_created) {
-                        $errors[$file['name']] = lang('thumb_not_created');
+                        $errors[$fileInfo['basename']] = lang('thumb_not_created');
                     }
                 }
 
                 // Now for anything that wasn't forcably replaced- we make sure an image exists
                 $thumb_created = ee()->filemanager->create_thumb(
-                    $this->_upload_dirs[$id]['server_path'] . $file['name'],
+                    $file->getAbsolutePath(),
                     array(
-                        'directory' => $this->_upload_dirs[$id],
-                        'server_path' => $this->_upload_dirs[$id]['server_path'],
-                        'file_name' => $file['name'],
+                        'directory' => $uploadDestination,
+                        'server_path' => $uploadDestination->server_path,
+                        'file_name' => $fileInfo['basename'],
                         'dimensions' => $missing_only_sizes,
-                        'mime_type' => $file['mime']
+                        'mime_type' => $mime
                     ),
                     true, 	// Create thumb
                     true 	// Don't overwrite existing thumbs
                 );
 
-                $file_path_name = $this->_upload_dirs[$id]['server_path'] . $file['name'];
-
                 // Update dimensions
-                $image_dimensions = ee()->filemanager->get_image_dimensions($file_path_name);
-
-                $file_data = array(
-                    'file_id' => $query->row('file_id'),
-                    'file_size' => filesize($file_path_name),
-                    'file_hw_original' => $image_dimensions['height'] . ' ' . $image_dimensions['width']
-                );
-
-                ee()->file_model->save_file($file_data);
+                $image_dimensions = ee()->filemanager->get_image_dimensions($file->getAbsolutePath());
+                $file->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
+                $file->file_size = $fileInfo['size'];
+                $file->save();
 
                 continue;
             }
 
-            $file_location = reduce_double_slashes(
-                $dir_data['url'] . '/' . $file['name']
-            );
-
-            $file_path = reduce_double_slashes(
-                $dir_data['server_path'] . '/' . $file['name']
-            );
-
-            $file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
-
-            $image_dimensions = ee()->filemanager->get_image_dimensions($file_path);
-
-            // This may not be an image, in which case
-            $imageDimensionsToWrite = is_array($image_dimensions)
-                        ? $image_dimensions['height'] . ' ' . $image_dimensions['width']
-                        : ' ';
-
-            $file_data = array(
-                'upload_location_id' => $id,
+            $file = ee('Model')->make('File');
+            $file_data = [
+                'upload_location_id' => $uploadDestination->getId(),
                 'site_id' => ee()->config->item('site_id'),
-                'mime_type' => $file['mime'],
-                'file_name' => $file['name'],
-                'file_size' => $file['size'],
+                'model_type' => ($fileInfo['type'] == 'file') ? 'File' : 'Directory',
+                'mime_type' => $mime,
+                'file_name' => $fileInfo['basename'],
+                'file_size' => isset($fileInfo['size']) ? $fileInfo['size'] : 0,
                 'uploaded_by_member_id' => ee()->session->userdata('member_id'),
                 'modified_by_member_id' => ee()->session->userdata('member_id'),
-                'file_hw_original' => $imageDimensionsToWrite,
-                'upload_date' => $file['date'],
-                'modified_date' => $file['date']
-            );
+                'upload_date' => $fileInfo['timestamp'],
+                'modified_date' => $fileInfo['timestamp']
+            ];
+            $pathInfo = explode('/', trim(str_replace(DIRECTORY_SEPARATOR, '/', $filePath), '/'));
+            if (count($pathInfo) > 1) {
+                array_pop($pathInfo);
+                $directory = $uploadDestination->getFileByPath(implode('/', $pathInfo));
+                $file_data['directory_id'] = $directory->getId();
+            }
+            $file->set($file_data);
+            if ($file->isEditableImage()) {
+                $image_dimensions = ee()->filemanager->get_image_dimensions($file->getAbsolutePath());
+                $file_data['file_hw_original'] =  $image_dimensions['height'] . ' ' . $image_dimensions['width'];
+                $file->setRawProperty('file_hw_original', $file_data['file_hw_original']);
+            }
+            //$file->save(); need to fallback to old saving because of the checks
 
             $saved = ee()->filemanager
                 ->save_file(
-                    $this->_upload_dirs[$id]['server_path'] . $file['name'],
+                    $file->getAbsolutePath(),
                     $id,
                     $file_data,
                     false
                 );
 
             if (! $saved['status']) {
-                $errors[$file['name']] = $saved['message'];
+                $errors[$fileInfo['basename']] = $saved['message'];
             }
         }
 

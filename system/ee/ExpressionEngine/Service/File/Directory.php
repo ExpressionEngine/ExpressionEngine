@@ -48,19 +48,28 @@ class Directory extends Filesystem
 
     public function getUrl($filename = null)
     {
-        if (! isset($this->url)) {
-            throw new \Exception('No directory URL given.');
+        if (empty($this->url)) {
+            if(!method_exists($this->getBaseAdapter(), 'getBaseUrl')) {
+                throw new \Exception('No directory URL given.');
+            }
+
+            $this->url = $this->getBaseAdapter()->getBaseUrl();
         }
+
+        $url = rtrim($this->url, '/') . '/';
 
         if (! isset($filename)) {
-            return $this->url;
+            return $url;
         }
 
-        if (! $this->exists($filename)) {
-            throw new \Exception('File does not exist.');
-        }
+        // We have places that are avoiding calling this method because of the
+        // possible exception when file does not exist.  This may affect other
+        // code (though initial searches suggest not) so leaving this comment.
+        // if (! $this->exists($filename)) {
+        //     throw new \Exception('File does not exist.');
+        // }
 
-        return rtrim($this->url, '/') . '/' . $filename;
+        return  $url . ltrim($filename, '/');
     }
 
     public function getPath($path)

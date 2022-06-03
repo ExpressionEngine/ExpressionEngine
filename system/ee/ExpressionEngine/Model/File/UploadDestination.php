@@ -111,6 +111,7 @@ class UploadDestination extends StructureModel
     protected $batch_location;
     protected $module_id;
 
+    private $filesystem = null;
     /**
      * Because of the 'upload_preferences' Config value, the data in the DB
      * is not always authoritative. So we will need to get any override data
@@ -278,7 +279,7 @@ class UploadDestination extends StructureModel
     public function getValidationData()
     {
         return array_merge(parent::getValidationData(), [
-            'filesystem' => $this->getFilesystem()
+            'filesystem_provider' => $this,
         ]);
     }
 
@@ -301,8 +302,9 @@ class UploadDestination extends StructureModel
      */
     public function getFilesystem()
     {
-        // We should add a local cache of the filesystem object so we don't have
-        // to instantiate it multiple times during a request
+        if($this->filesystem) {
+            return $this->filesystem;
+        }
 
         // Do we want to allow variable replacement in adapters that aren't local?
         $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
@@ -310,12 +312,153 @@ class UploadDestination extends StructureModel
         $adapterSettings = array_merge([
             'path' => $path
         ], $this->adapter_settings ?? []);
-
         $adapter = ee('Filesystem/Adapter')->make($adapterName, $adapterSettings);
-        $fs = ee('File')->getPath($path, $adapter);
-        $fs->setUrl($this->getProperty('url'));
 
-        return $fs;
+        $filesystem = ee('File')->getPath($adapterSettings['path'], $adapter);
+        $filesystem->setUrl($this->getProperty('url'));
+
+        // This will effectively eager load the directory and speed up checks
+        // for file existence, especially in remote filesystems.  This might
+        // make more sense to move into file listing controllers eventually
+        $filesystem->getDirectoryContents($path, true);
+        $this->filesystem = $filesystem;
+
+        return $this->filesystem;
+    }
+
+    /**
+     * Gets the map of upload location directories and files as nested array
+     *
+     * @param boolean $includeHiddenFiles
+     * @param boolean $includeHiddenFolders
+     * @param boolean $includeIndex
+     * @param boolean $ignoreAllowedTypes
+     * @return array
+     */
+    public function getDirectoryMap($path = '/', $fullPathAsKey = false, $includeHiddenFiles = false, $includeHiddenFolders = false, $includeIndex = false, $ignoreAllowedTypes = false)
+    {
+        if (! $this->getFilesystem()->isReadable($path)) {
+            return [];
+        }
+
+        $map = array();
+        $indexFiles = array('index.html', 'index.htm', 'index.php');
+
+        foreach($this->getFilesystem()->getDirectoryContents($path) as $filePath) {
+            $pathInfo = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $filePath));
+            $fileName = array_pop($pathInfo);
+            $isDir = $this->getFilesystem()->isDir($filePath);
+
+            if (empty(trim($fileName, '.')))
+            {
+                continue;
+            }
+
+            if (! $includeHiddenFiles && substr($fileName, 0, 1) == '.') {
+                continue;
+            }
+
+            if (! $includeHiddenFolders && $isDir && substr($fileName, 0, 1) == '_') {
+                continue;
+            }
+
+            if (! $includeIndex && in_array($fileName, $indexFiles)) {
+                continue;
+            }
+
+            if (! $isDir && ! $ignoreAllowedTypes && ! in_array('all', $this->allowed_types)) {
+                $isOfAllowedMimeType = false;
+                foreach ($this->allowed_types as $allowed_type) {
+                    if (ee('MimeType')->isOfKind($this->getFilesystem()->getMimetype($filePath), $allowed_type)) {
+                        $isOfAllowedMimeType = true;
+                        break;
+                    }
+                }
+                if (! $isOfAllowedMimeType) {
+                    continue;
+                }
+            }
+
+            $key = $fullPathAsKey ? $filePath : $fileName;
+
+            if ($isDir) {
+                $map[$key] = $this->getDirectoryMap($filePath, $fullPathAsKey, $includeHiddenFiles, $includeHiddenFolders, $includeIndex, $ignoreAllowedTypes);
+            } else {
+                $map[$key] = $fileName;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * Give the file relative path, returns File mode
+     *
+     * @param string $filePath
+     * @return File
+     */
+    public function getFileByPath($filePath)
+    {
+        $pathInfo = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $filePath));
+        $depth = count($pathInfo) - 1;
+        $directory_id = 0;
+        foreach ($pathInfo as $i => $fileOrDirName)
+        {
+            if (empty($fileOrDirName)) {
+                continue;
+            }
+            $model = ($i == $depth) ? 'File' : 'Directory';
+            $file = ee('Model')
+                ->get($model)
+                ->filter('upload_location_id', $this->getId())
+                ->filter('directory_id', $directory_id)
+                ->filter('file_name', $fileOrDirName)
+                ->first();
+            if (! empty($file)) {
+                $directory_id = $file->file_id;
+            }
+        }
+        return $file;
+    }
+
+    /**
+     * Get the subdirectories nested array
+     *
+     * @param [type] $key_value
+     * @param boolean $root_only
+     * @return array
+     */
+    public function buildDirectoriesDropdown($directory_id, $path = '', $root_only = true)
+    {
+        $children = [];
+        $i = 0;
+        $directoriesCount = 0;
+        do {
+            $directories = ee('Model')->get('Directory')->fields('file_id', 'upload_location_id', 'directory_id', 'file_name', 'title');
+            if ($root_only) {
+                $directories = $directories->filter('upload_location_id', $directory_id)->filter('directory_id', 0)->all();
+            } else {
+                $directories = $directories->filter('directory_id', $directory_id)->all();
+            }
+
+            $directoriesCount = count($directories);
+            if ($directoriesCount > 0) {
+                foreach ($directories as $i => $directory) {
+                    $i++;
+                    if (!empty($directory)) {
+                        $path = $path . urlencode($directory->file_name) . '/';
+                        $children[$directory->getId()] = [
+                            'label' => $directory->title,
+                            'path' => $path,
+                            'upload_location_id' => $this->getId(),
+                            'children' => $this->buildDirectoriesDropdown($directory->file_id, $path, false)
+                        ];
+                    }
+                }
+            }
+        } while ($directoriesCount > ($i+1));
+        
+        return $children;
     }
 
     /**

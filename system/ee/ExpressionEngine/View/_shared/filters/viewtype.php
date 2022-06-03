@@ -1,4 +1,4 @@
-<div class="">
+<div class="filter__viewtype">
 	<?php foreach ($options as $option => $info): ?>
 	<?php switch ($option) {
 		case 'bigthumb':

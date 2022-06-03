@@ -25,6 +25,7 @@ class ThumbnailFactory
         // the thumbnail now
         if (! $thumb->exists()
             && $file
+            && $file->isFile()
             && $file->exists()
             && $file->isImage()) {
             $thumb = $this->make($file);

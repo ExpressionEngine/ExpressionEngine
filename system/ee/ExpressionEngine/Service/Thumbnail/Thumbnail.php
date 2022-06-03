@@ -41,6 +41,13 @@ class Thumbnail
     protected $missing = false;
 
     /**
+     * Filesystem where the thumbnail is being stored
+     *
+     * @var ExpresionEngine\Library\Filesystem\Filesystem|null
+     */
+    protected $filesystem = null;
+
+    /**
      * Constructor: sets the url and path properties based on the arguments
      *
      * @param File $file (optional) A File entity from which we'll calculate the
@@ -72,6 +79,8 @@ class Thumbnail
                         break;
                 }
             }
+
+            $this->filesystem = $file->UploadDestination->getFilesystem();
         }
     }
 
@@ -105,7 +114,7 @@ class Thumbnail
         $this->missing = true;
         $this->url = PATH_CP_GBL_IMG . 'missing.jpg';
         $this->path = PATH_THEMES . 'asset/img/missing.jpg';
-        $this->tag = '<i class="fas fa-lg fa-exclamation-triangle"></i>';
+        $this->tag = '<i class="fas fa-exclamation-triangle fa-3x"></i>';
     }
 
     /**
@@ -115,7 +124,7 @@ class Thumbnail
      */
     public function exists()
     {
-        return file_exists($this->path);
+        return ($this->filesystem) ? $this->filesystem->exists($this->path) : false;
     }
 
     /**
@@ -125,7 +134,7 @@ class Thumbnail
      */
     public function isWritable()
     {
-        return is_writable($this->path);
+        return ($this->filesystem) ? $this->filesystem->isWritable($this->path) : false;
     }
 }
 

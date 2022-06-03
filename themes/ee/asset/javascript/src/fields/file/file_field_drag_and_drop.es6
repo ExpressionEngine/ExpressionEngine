@@ -19,7 +19,9 @@
     $('div[data-file-field-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('fileFieldReact')))
       props.thisField = $(this)
+      let files_field = props.thisField.data('input-value');
       ReactDOM.render(React.createElement(FileField, props, null), this)
+      new MutableSelectField(files_field, EE.fileManager.fileDirectory);
     })
   }
 

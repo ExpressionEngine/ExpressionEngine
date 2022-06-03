@@ -375,11 +375,11 @@ $lang = array(
 
     'file_sync' => 'File sync',
 
-    'file_sync_desc' => '<b>%d</b> files',
+    'file_sync_desc' => '<b>%d</b> files and folders',
 
     'file_sync_desc_images' => '<b>%d</b> <code>image</code> files',
 
-    'filesystem_driver' => 'Driver',
+    'filesystem_adapter' => 'Adapter',
 
     'local' => 'Local',
 
@@ -705,11 +705,11 @@ $lang = array(
 
     'delete_upload_preference' => 'Delete Upload Preference',
 
-    'dir_name' => 'Upload Directory Name',
+    'dir_name' => 'Upload Location Name',
 
     'directory' => 'Directory',
 
-    'directory_manager' => 'Upload Directory Manager',
+    'directory_manager' => 'Upload Location Manager',
 
     'disallow_image' => 'Disallow Image',
 
@@ -882,6 +882,8 @@ $lang = array(
 
     'upload_dir_dropdown' => '%s (%s files)',
 
+    'upload_location' => 'Upload Location',
+
     'upload_pref_deleted' => 'Upload Preference Deleted:',
 
     'upload_pref_name' => 'Descriptive name of upload directory',
@@ -995,6 +997,8 @@ $lang = array(
     'move_file' => 'Move File',
 
     'select_new_destinatin_for' => 'Select new destination for:',
+
+    'destination' => 'Destination',
 
 );
 

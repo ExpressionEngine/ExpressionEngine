@@ -157,7 +157,23 @@
 				}
 			}
 		});
+		
+		// new MutableSelectField('files_field', EE.fileManager.fileDirectory);
 
-		new MutableSelectField('files_field', EE.fileManager.fileDirectory);
+		$('.f_manager-wrapper .imgpreview').hover(function(){
+			var path = $(this).data('url');
+			var alt = $(this).attr('alt');
+			var parent = $(this).parent();
+			var top = $(this).offset().top;
+			var left = $(this).offset().left;
+			parent.append("<p id='preview'><img src='"+ path +"' alt='"+ alt +"' /></p>");
+			$("#preview").css({
+				'top': (top + 20) + "px",
+				'left': (left - 200) + "px",
+				'display': 'flex',
+			}).fadeIn();
+		}, function(){
+			$("#preview").remove();
+		});
 	});
 })(jQuery);

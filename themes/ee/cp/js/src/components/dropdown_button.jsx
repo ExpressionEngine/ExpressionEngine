@@ -1,4 +1,3 @@
-
 class DropDownButton extends React.Component {
     constructor(props) {
         super(props)
@@ -35,9 +34,27 @@ class DropDownButton extends React.Component {
         event.preventDefault()
     }
 
+    dropdownRecursion = (items) => {
+        return (
+            <React.Fragment>
+            <ul>
+            {items.map(item => (
+
+                <li>
+                    <a href="#" key={item.value} className={"dropdown__link " + this.props.itemClass} rel={this.props.rel} onClick={(e) => this.selectItem(e, item)}>
+                    {item.path.trim() == "" ? <i class="fas fa-hdd"></i> : <i class="fas fa-folder"></i>}
+                    {item.label}
+                    </a>
+                    {item.children && item.children.length ? this.dropdownRecursion(item.children) : null}
+                </li>
+            ))}
+            </ul>
+            </React.Fragment>
+        )
+    }
+
     render() {
         let dropdownItems = this.state.items.filter(el => el != this.state.selected)
-
         return (
             <>
                 <button type="button" className={"button js-dropdown-toggle has-sub " + this.props.buttonClass} onClick={this.toggle}>{this.state.selected ? this.state.selected.label : this.props.title}</button>
@@ -59,9 +76,7 @@ class DropDownButton extends React.Component {
                         }
                     </> }
                     <div className="dropdown__scroll">
-                        {dropdownItems.map(item =>
-                            <a href="#" key={item.value} className={"dropdown__link " + this.props.itemClass} rel={this.props.rel} onClick={(e) => this.selectItem(e, item)}>{item.label}</a>
-                        )}
+                        {this.dropdownRecursion(dropdownItems)}
                     </div>
                     {this.props.createNewDirectory &&
                         <p className="create_new_direction">

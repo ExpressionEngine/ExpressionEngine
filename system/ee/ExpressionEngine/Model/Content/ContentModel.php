@@ -527,6 +527,20 @@ abstract class ContentModel extends VariableColumnModel
 
         return $this;
     }
+
+    /**
+     * Recount stats for file usage
+     *
+     * @param array $file_ids
+     * @return void
+     */
+    protected static function updateFilesTotalRecords($file_ids = [])
+    {
+        if (!empty($file_ids)) {
+            $updateQuery = 'UPDATE exp_files SET total_records = (SELECT COUNT(exp_file_usage.file_id) FROM exp_file_usage WHERE exp_file_usage.file_id = exp_files.file_id AND exp_file_usage.file_id IN (' . implode(', ', $file_ids) . '))';
+            ee('db')->query($updateQuery);
+        }
+    }
 }
 
 // EOF

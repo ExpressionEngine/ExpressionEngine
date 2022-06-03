@@ -20,7 +20,7 @@ class Filesystem
 {
     protected $flysystem;
 
-    public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = null)
+    public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = [])
     {
         if (is_null($adapter)) {
             $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath(ee()->config->item('base_path') ?: $_SERVER['DOCUMENT_ROOT']));
@@ -28,8 +28,18 @@ class Filesystem
             // Fix prefixes
             $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
         }
+        // Create the cache store
+        $cacheStore = new Flysystem\Cached\Storage\Memory();
+        $adapter = new Flysystem\Cached\CachedAdapter($adapter, $cacheStore);
+
+        $defaults = [
+            'visibility' => Flysystem\AdapterInterface::VISIBILITY_PUBLIC
+        ];
+
+        $config = array_merge($defaults, $config);
 
         $this->flysystem = new Flysystem\Filesystem($adapter, $config);
+        $this->flysystem->addPlugin(new Flysystem\Plugin\GetWithMetadata());
     }
 
     /**
@@ -142,6 +152,7 @@ class Filesystem
     public function mkDir($path, $with_index = true)
     {
         $path = $this->normalize($path);
+        $path = $this->normalizeRelativePath($path);
         $result = $this->flysystem->createDir($path);
 
         if (!$result) {
@@ -191,7 +202,8 @@ class Filesystem
      */
     public function deleteDir($path, $leave_empty = false)
     {
-        $path = rtrim($path, '/');
+        $path = $this->normalize($path);
+        $path = $this->normalizeRelativePath(rtrim($path, '/'));
 
         if (!$this->isDir($path)) {
             throw new FilesystemException("Directory does not exist {$path}.");
@@ -204,7 +216,7 @@ class Filesystem
         $this->flysystem->deleteDir($path);
 
         if ($leave_empty) {
-            $this->flysystem->createDir($this->normalize($path));
+            $this->flysystem->createDir($path);
         }
 
         return true;
@@ -220,6 +232,8 @@ class Filesystem
      */
     public function getDirectoryContents($path = '/', $recursive = false, $includeHidden = false)
     {
+        $path = $this->normalizeRelativePath($path);
+
         if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
             if (!$this->exists($path)) {
                 throw new FilesystemException('Cannot get contents of path, the path is invalid: ' . $path);
@@ -242,6 +256,19 @@ class Filesystem
         }
 
         return $contents_array;
+    }
+
+    /**
+     * Get the file with metadata info
+     *
+     * @param string $path
+     * @param array $metadata
+     * @return array|false metadata
+     */
+    public function getWithMetadata($path, $metadata = [])
+    {
+        $path = $this->normalizeRelativePath($path);
+        return $this->flysystem->getWithMetadata($this->normalize($path), $metadata);
     }
 
     /**
@@ -301,6 +328,9 @@ class Filesystem
      */
     public function rename($source, $dest)
     {
+        $source = $this->normalizeRelativePath($source);
+        $dest = $this->normalizeRelativePath($dest);
+
         if (! $this->exists($source)) {
             throw new FilesystemException("Cannot rename non-existent path: {$source}");
         } elseif ($this->exists($dest)) {
@@ -321,6 +351,9 @@ class Filesystem
      */
     public function copy($source, $dest)
     {
+        $source = $this->normalizeRelativePath($source);
+        $dest = $this->normalizeRelativePath($dest);
+
         if (! $this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
         }
@@ -409,6 +442,13 @@ class Filesystem
         // We are intentionally not calling `$this->flysystem->has($path);` so that
         // we can handle calls to check the existence of the base path
         $path = $this->normalizeRelativePath($path);
+
+        // If the path is the root of this filesystem it must exist or the
+        // filesystem would have thrown an exception during construction
+        if($path === '') {
+            return true;
+        }
+
         return (bool) $this->flysystem->getAdapter()->has($path);
     }
 
@@ -438,7 +478,15 @@ class Filesystem
     public function getMimetype($path)
     {
         $path = $this->normalizeRelativePath($path);
-        return $this->flysystem->getMimetype($path);
+        $mime = $this->flysystem->getMimetype($path);
+
+        // try another method to get mime
+        if ($mime == 'application/octet-stream') {
+            $opening = fread($this->flysystem->readStream($path), 50);
+            $mime = ee('MimeType')->guessOctetStream($opening);
+        }
+
+        return $mime;
     }
 
     /**
@@ -449,6 +497,8 @@ class Filesystem
      */
     public function touch($path, $time = null)
     {
+        $path = $this->normalizeRelativePath($path);
+
         if (! $this->exists($path)) {
             throw new FilesystemException("Touching non-existent files is not supported: {$path}");
         }
@@ -471,7 +521,7 @@ class Filesystem
         if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
             return is_dir($this->ensurePrefixedPath($path));
         }
-
+        $path = $this->normalizeRelativePath($path);
         return empty($this->extension($path)) && $this->exists($path);
     }
 
@@ -621,24 +671,24 @@ class Filesystem
 
         $i = 0;
         $extension = $this->extension($path);
-        $dirname =  $this->dirname($path);
+        $dirname =  $this->dirname($path) . DIRECTORY_SEPARATOR;
         $filename = $this->filename($path);
 
         // Glob only works with local filesytem but is more performant than filtering directory results
         if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
             $files = array_map(function($file) {
                 return $this->filename($file);
-            }, glob($dirname . DIRECTORY_SEPARATOR . $filename . '_*' . $extension));
+            }, glob($dirname . $filename . '_*' . $extension));
         }else{
             // Filter out any files that do not start with our filename
-            $files = array_column(array_filter($this->flysystem->listContents($dirname), function($file) use($filename) {
-                return strpos($file['filename'], "{$filename}_") === 0;
-            }), 'filename');
+            $files = array_filter($this->getDirectoryContents($dirname), function($file) use($filename) {
+                return strpos($file, "{$filename}_") === 0;
+            });
         }
 
         // If we do not have any matching files at this point it gets the _1 suffix
         if(empty($files)) {
-            return $dirname . DIRECTORY_SEPARATOR . "{$filename}_1.{$extension}";
+            return $dirname . "{$filename}_1.{$extension}";
         }
 
         // Try to figure out if we already have a file we've renamed, then
@@ -663,7 +713,7 @@ class Filesystem
             $uniqueName = $filename . '_' . $i . '.' . $extension;
         } while (in_array($uniqueName, $files));
 
-        return $dirname . '/' . $uniqueName;
+        return $dirname . $uniqueName;
     }
 
     /**
@@ -786,6 +836,13 @@ class Filesystem
     protected function normalize($path)
     {
         return $path;
+    }
+
+    public function getBaseAdapter()
+    {
+        $adapter = $this->flysystem->getAdapter();
+
+        return ($adapter instanceof Flysystem\Cached\CachedAdapter) ? $adapter->getAdapter() : $adapter;
     }
 }
 

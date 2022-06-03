@@ -160,8 +160,8 @@ class ChannelEntry extends ContentModel
     );
 
     protected $_default_fields;
-    protected $_existingEntryFiles = [];
-    protected static $_existingEntryFilesStatic = [];
+    protected $_filesNeedTotalRecordsRecount = [];
+    protected static $_filesNeedTotalRecordsRecountStatic = [];
 
     // Properties
     protected $entry_id;
@@ -466,10 +466,7 @@ class ChannelEntry extends ContentModel
 
     public function onAfterAssociationsSave()
     {
-        if (!empty($this->_existingEntryFiles)) {
-            $updateQuery = 'UPDATE exp_files SET total_records = (SELECT COUNT(exp_file_usage.file_id) FROM exp_file_usage WHERE exp_file_usage.file_id = exp_files.file_id AND exp_file_usage.file_id IN (' . implode(', ', $this->_existingEntryFiles) . '))';
-            ee('db')->query($updateQuery);
-        }
+        self::updateFilesTotalRecords($this->_filesNeedTotalRecordsRecount);
     }
 
     public static function onBeforeAssociationsBulkDelete($entry_ids = [])
@@ -481,16 +478,16 @@ class ChannelEntry extends ContentModel
             foreach ($existingEntryFilesQuery->result_array() as $row) {
                 $existingEntryFiles[] = $row['file_id'];
             }
-            self::$_existingEntryFilesStatic = [$key => $existingEntryFiles];
+            self::$_filesNeedTotalRecordsRecountStatic = [$key => $existingEntryFiles];
         }
     }
 
     public static function onAfterAssociationsBulkDelete($entry_ids = [])
     {
         $key = implode('_', $entry_ids);
-        if (!empty(self::$_existingEntryFilesStatic) && isset(self::$_existingEntryFilesStatic[$key]) && !empty(self::$_existingEntryFilesStatic[$key])) {
-            $updateQuery = 'UPDATE exp_files SET total_records = (SELECT COUNT(exp_file_usage.file_id) FROM exp_file_usage WHERE exp_file_usage.file_id = exp_files.file_id AND exp_file_usage.file_id IN (' . implode(', ', self::$_existingEntryFilesStatic[$key]) . '))';
-            ee('db')->query($updateQuery);
+        if (!empty(self::$_filesNeedTotalRecordsRecountStatic) && isset(self::$_filesNeedTotalRecordsRecountStatic[$key]) && !empty(self::$_filesNeedTotalRecordsRecountStatic[$key])) {
+            self::updateFilesTotalRecords(self::$_filesNeedTotalRecordsRecountStatic[$key]);
+            unset(self::$_filesNeedTotalRecordsRecountStatic[$key]);
         }
     }
 
@@ -757,10 +754,10 @@ class ChannelEntry extends ContentModel
         if (! $this->isNew()) {
             $existingEntryFiles = ee('db')->select('file_id')->from('file_usage')->where('entry_id', $this->getId())->get();
             foreach ($existingEntryFiles->result_array() as $row) {
-                $this->_existingEntryFiles[] = $row['file_id'];
+                $this->_filesNeedTotalRecordsRecount[] = $row['file_id'];
             }
         }
-        $this->_existingEntryFiles = array_unique(array_merge($this->_existingEntryFiles, array_keys($usage)));
+        $this->_filesNeedTotalRecordsRecount = array_unique(array_merge($this->_filesNeedTotalRecordsRecount, array_keys($usage)));
 
         $entryFiles = ee('Model')->get('File', array_keys($usage))->all();
         $this->getAssociation('EntryFiles')->set($entryFiles);

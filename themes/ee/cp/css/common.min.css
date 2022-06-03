@@ -15303,6 +15303,14 @@ input[type=button].btn-block {
   max-height: 260px;
   overflow-y: auto;
 }
+.dropdown__scroll ul {
+  margin-top: 0;
+  list-style-type: none;
+}
+.dropdown__scroll ul a {
+  padding: 0 20px;
+  min-height: 30px;
+}
 
 .dropdown__scroll--small {
   max-height: 180px;
@@ -24110,8 +24118,20 @@ body[data-theme="dark"] {
 }
 .f_manager-wrapper tr.app-listing__row .thumbnail_img {
   max-width: 80px;
+  display: inline-block;
 }
-.f_manager-wrapper tr.app-listing__row i.fa-folder {
+.f_manager-wrapper tr.app-listing__row i.fas, .f_manager-wrapper tr.app-listing__row i.column-sort::after, .f_manager-wrapper tr.app-listing__row i.app-notice__icon::before, .f_manager-wrapper tr.app-listing__row i.app-notice__dismiss::before, .f_manager-wrapper tr.app-listing__row i.m-close:before, .f_manager-wrapper tr.app-listing__row i.sidebar__link.remove:after, .f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-remove:before, .tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
+.f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-on:before,
+.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-on:before,
+.f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-off:before,
+.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i.dropdown__link--selected::before, .f_manager-wrapper tr.app-listing__row i[class^=widget-icon--],
+.f_manager-wrapper tr.app-listing__row i[class*=" widget-icon--"], .f_manager-wrapper tr.app-listing__row i.widget--support::before, .f_manager-wrapper tr.app-listing__row i.checkbox:after, .f_manager-wrapper tr.app-listing__row i.checkbox--large:after, .f_manager-wrapper tr.app-listing__row i.checkbox--small:after, .f_manager-wrapper tr.app-listing__row i.sub-arrow:before, .f_manager-wrapper tr.app-listing__row i.select__button-label::after, .f_manager-wrapper tr.app-listing__row i.select-popup:not([multiple])::after, .f_manager-wrapper tr.app-listing__row i.layout-item__handle::after, .f_manager-wrapper tr.app-listing__row i.icon-reorder, .f_manager-wrapper tr.app-listing__row i[class^=icon--],
+.f_manager-wrapper tr.app-listing__row i[class*=" icon--"], .f_manager-wrapper tr.app-listing__row i.icon-settings,
+.f_manager-wrapper tr.app-listing__row i.icon--settings, .f_manager-wrapper tr.app-listing__row i.has-sub::after, .f_manager-wrapper tr.app-listing__row .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .f_manager-wrapper tr.app-listing__row i.has-sub::before, .f_manager-wrapper tr.app-listing__row .tbl-list i.reorder:before, .tbl-list .f_manager-wrapper tr.app-listing__row i.reorder:before, .f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
+.f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-on:before,
+.tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-on:before,
+.f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-off:before,
+.tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i[class*=fields-grid-tool-]:before {
   color: var(--ee-secondary-sidebar-item-icon);
 }
 .f_manager-wrapper .dropdown a.edit:before, .f_manager-wrapper .select__dropdown a.edit:before,
@@ -24218,6 +24238,9 @@ body[data-theme="dark"] {
   -moz-transition: background-color 0.15s ease-in-out;
   -o-transition: background-color 0.15s ease-in-out;
 }
+.file-grid__wrapper .file-grid__file.missing {
+  background-color: var(--ee-warning-light);
+}
 .file-grid__wrapper .file-grid__file:hover, .file-grid__wrapper .file-grid__file.selected {
   background-color: var(--ee-accent-light);
   color: var(--ee-text-normal);
@@ -24242,7 +24265,46 @@ body[data-theme="dark"] {
 }
 .file-grid__wrapper .file-thumbnail img,
 .file-grid__wrapper .file-thumbnail svg,
-.file-grid__wrapper .file-thumbnail i.fa-folder {
+.file-grid__wrapper .file-thumbnail i.fas,
+.file-grid__wrapper .file-thumbnail i.column-sort::after,
+.file-grid__wrapper .file-thumbnail i.app-notice__icon::before,
+.file-grid__wrapper .file-thumbnail i.app-notice__dismiss::before,
+.file-grid__wrapper .file-thumbnail i.m-close:before,
+.file-grid__wrapper .file-thumbnail i.sidebar__link.remove:after,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-remove:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-off:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before,
+.file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before,
+.file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" widget-icon--"],
+.file-grid__wrapper .file-thumbnail i.widget--support::before,
+.file-grid__wrapper .file-thumbnail i.checkbox:after,
+.file-grid__wrapper .file-thumbnail i.checkbox--large:after,
+.file-grid__wrapper .file-thumbnail i.checkbox--small:after,
+.file-grid__wrapper .file-thumbnail i.sub-arrow:before,
+.file-grid__wrapper .file-thumbnail i.select__button-label::after,
+.file-grid__wrapper .file-thumbnail i.select-popup:not([multiple])::after,
+.file-grid__wrapper .file-thumbnail i.layout-item__handle::after,
+.file-grid__wrapper .file-thumbnail i.icon-reorder,
+.file-grid__wrapper .file-thumbnail i[class^=icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" icon--"],
+.file-grid__wrapper .file-thumbnail i.icon-settings,
+.file-grid__wrapper .file-thumbnail i.icon--settings,
+.file-grid__wrapper .file-thumbnail i.has-sub::after,
+.file-grid__wrapper .file-thumbnail .menu-wrap .develop i.has-sub::before,
+.menu-wrap .develop .file-grid__wrapper .file-thumbnail i.has-sub::before,
+.file-grid__wrapper .file-thumbnail .tbl-list i.reorder:before,
+.tbl-list .file-grid__wrapper .file-thumbnail i.reorder:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-remove:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-on:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-off:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-off:before,
+.file-grid__wrapper .file-thumbnail i[class*=fields-grid-tool-]:before {
   max-width: 100%;
   max-height: 100%;
   position: absolute;
@@ -24251,7 +24313,18 @@ body[data-theme="dark"] {
   transform: translate(-50%, -50%);
   border-radius: 6px;
 }
-.file-grid__wrapper .file-thumbnail i.fa-folder {
+.file-grid__wrapper .file-thumbnail i.fas, .file-grid__wrapper .file-thumbnail i.column-sort::after, .file-grid__wrapper .file-thumbnail i.app-notice__icon::before, .file-grid__wrapper .file-thumbnail i.app-notice__dismiss::before, .file-grid__wrapper .file-thumbnail i.m-close:before, .file-grid__wrapper .file-thumbnail i.sidebar__link.remove:after, .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-remove:before, .tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-off:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before, .file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" widget-icon--"], .file-grid__wrapper .file-thumbnail i.widget--support::before, .file-grid__wrapper .file-thumbnail i.checkbox:after, .file-grid__wrapper .file-thumbnail i.checkbox--large:after, .file-grid__wrapper .file-thumbnail i.checkbox--small:after, .file-grid__wrapper .file-thumbnail i.sub-arrow:before, .file-grid__wrapper .file-thumbnail i.select__button-label::after, .file-grid__wrapper .file-thumbnail i.select-popup:not([multiple])::after, .file-grid__wrapper .file-thumbnail i.layout-item__handle::after, .file-grid__wrapper .file-thumbnail i.icon-reorder, .file-grid__wrapper .file-thumbnail i[class^=icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" icon--"], .file-grid__wrapper .file-thumbnail i.icon-settings,
+.file-grid__wrapper .file-thumbnail i.icon--settings, .file-grid__wrapper .file-thumbnail i.has-sub::after, .file-grid__wrapper .file-thumbnail .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .file-grid__wrapper .file-thumbnail i.has-sub::before, .file-grid__wrapper .file-thumbnail .tbl-list i.reorder:before, .tbl-list .file-grid__wrapper .file-thumbnail i.reorder:before, .file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-on:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-off:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i[class*=fields-grid-tool-]:before {
   color: var(--ee-secondary-sidebar-item-icon);
 }
 .file-grid__wrapper .file-thumbnail svg {
@@ -24364,6 +24437,19 @@ body[data-theme="dark"] {
 .multilevel-select .dropdown ul li a, .multilevel-select .select__dropdown ul li a {
   padding: 0 20px;
   min-height: 30px;
+}
+
+#preview {
+  position: absolute;
+  border: 2px solid var(--ee-button-default-border);
+  background: var(--ee-button-default-bg);
+  padding: 5px;
+  border-radius: 4px;
+  display: none;
+  width: 200px;
+  height: 200px;
+  align-items: center;
+  justify-content: center;
 }
 
 .hidden {

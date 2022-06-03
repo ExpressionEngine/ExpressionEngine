@@ -50,7 +50,7 @@
 		$('.modal-file').off('click', '.filepicker-item, tbody > tr:not(.tbl-action)');
 		$('.modal-file').on('click', '.filepicker-item, tbody > tr:not(.tbl-action)', function(e) {
 
-			if ($(e.target).is('a[rel=external]')) {
+			if ($(e.target).is('a[rel=external]') || $(this).is('[data-filter-url]')) {
 				return true;
 			}
 

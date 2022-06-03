@@ -19,21 +19,22 @@ use ExpressionEngine\Model\Content\StructureModel;
  */
 class FileManagerColumns extends Columns
 {
-
-    public function __construct(array $columns = array(), StructureModel $uploadLocation = null, $view_id = null)
+    //view_id might hold view type here
+    public function __construct(array $columns = array(), StructureModel $uploadLocation = null, $view_id_or_type = null)
     {
-        parent::__construct($columns, $uploadLocation, $view_id);
+        parent::__construct($columns, $uploadLocation, $view_id_or_type);
 
         $this->default_value = ['title', 'file_name', 'file_type', 'upload_date', 'file_size'];
     }
 
     // get columns from view
+    // 
     public function value()
     {
         $value = '';
 
         $upload_id = !empty(ee()->uri->segment(4)) ? (int) ee()->uri->segment(4) : 0;
-        $viewtype = in_array(ee()->input->get('viewtype'), ['thumb', 'list']) ? ee()->input->get('viewtype') : 'list';
+        $viewtype = in_array($this->view_id, ['thumb', 'list']) ? $this->view_id : 'list';
 
         $query = ee('Model')->get('FileManagerView')
             ->filter('member_id', ee()->session->userdata('member_id'))
