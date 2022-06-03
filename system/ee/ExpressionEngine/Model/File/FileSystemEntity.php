@@ -121,8 +121,8 @@ class FileSystemEntity extends ContentModel
     /**
      * A link back to the owning group object.
      *
-     * @return	Structure	A link back to the Structure object that defines
-     *						this Content's structure.
+     * @return  Structure   A link back to the Structure object that defines
+     *                      this Content's structure.
      */
     public function getStructure()
     {
@@ -228,6 +228,7 @@ class FileSystemEntity extends ContentModel
             }
             $this->_subfolderPath = implode($subfolders);
         }
+
         return $this->_subfolderPath;
     }
 
@@ -241,6 +242,7 @@ class FileSystemEntity extends ContentModel
         if (empty($this->_baseServerPath)) {
             $this->_baseServerPath = rtrim($this->UploadDestination->server_path, '\\/') . '/';
         }
+
         return $this->_baseServerPath;
     }
 
@@ -254,6 +256,7 @@ class FileSystemEntity extends ContentModel
         if (empty($this->_baseUrl)) {
             $this->_baseUrl = rtrim($this->UploadDestination->url, '\\/') . '/';
         }
+
         return $this->_baseUrl;
     }
 
@@ -266,6 +269,43 @@ class FileSystemEntity extends ContentModel
     public function getAbsolutePath()
     {
         return $this->getBaseServerPath() . $this->getSubfoldersPath() . $this->file_name;
+    }
+
+    /**
+     * Uses the file's upload destination's server path to compute the absolute
+     * path of the file
+     *
+     * @return string The absolute path to the file
+     */
+    public function getFilesystem()
+    {
+        // If we have already set $this->filesystem, returned cached version of it
+        if ($this->filesystem) {
+            return $this->filesystem;
+        }
+
+        // If this isnt a directory, return the upload path filesystem
+        if (! $this->isDirectory()) {
+            // Cache this filesystem
+            $this->filesystem = $this->UploadDestination->getFilesystem();
+
+            return $this->filesystem;
+        }
+
+        // Do we want to allow variable replacement in adapters that aren't local?
+        $path = $this->getAbsolutePath();
+        $adapter = $this->UploadDestination->getFilesystemAdapter();
+
+        $filesystem = ee('File')->getPath($path, $adapter);
+        $filesystem->setUrl($this->getAbsoluteUrl());
+
+        // This will effectively eager load the directory and speed up checks
+        // for file existence, especially in remote filesystems.  This might
+        // make more sense to move into file listing controllers eventually
+        $filesystem->getDirectoryContents($path, true);
+        $this->filesystem = $filesystem;
+
+        return $this->filesystem;
     }
 
     /**
@@ -348,10 +388,10 @@ class FileSystemEntity extends ContentModel
             //     $filesystem->delete($file);
             // }
             $files = $filesystem->getDirectoryContents(rtrim($this->UploadDestination->server_path, '/') . '/_' . $manipulation . '/');
-            $files = array_filter($files, function($file) use($basename){
+            $files = array_filter($files, function ($file) use ($basename) {
                 return (strpos($file, "{$basename}_") === 0);
             });
-            foreach($files as $file) {
+            foreach ($files as $file) {
                 $filesystem->delete($file);
             }
         }
@@ -384,6 +424,7 @@ class FileSystemEntity extends ContentModel
     public function exists()
     {
         $filesystem = $this->UploadDestination->getFilesystem();
+
         return $filesystem->exists($this->getAbsolutePath());
     }
 
@@ -395,6 +436,7 @@ class FileSystemEntity extends ContentModel
     public function isWritable()
     {
         $filesystem = $this->UploadDestination->getFilesystem();
+
         return $filesystem->isWritable($this->getAbsolutePath());
     }
 

@@ -28,6 +28,25 @@ class Directory extends FileSystemEntity
         $this->setProperty('uploaded_by_member_id', ee()->session->userdata('member_id'));
         $this->setProperty('modified_by_member_id', ee()->session->userdata('member_id'));
         $this->setProperty('title', $this->getProperty('file_name'));
+        $this->setProperty('mime_type', 'directory');
+    }
+
+    public function geSubdirectoryTree()
+    {
+        $tree = [];
+        $directories = ee('Model')->get('Directory')
+            ->filter('directory_id', $this->file_id)
+            ->filter('model_type', 'Directory')
+            ->all();
+
+        foreach ($directories as $directory) {
+            $tree[$directory->file_name] = [
+                'id' => $directory->file_id,
+                'subdirectories' => $directory->geSubdirectoryTree()
+            ];
+        }
+
+        return $tree;
     }
 }
 

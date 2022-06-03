@@ -117,12 +117,13 @@ class Files extends AbstractFilesController
                 'content' => lang('upload'),
             ];
 
+            $destinations = [];
             // Generate the contents of the new folder modal
             $contents = ee('View')->make('files/modals/new_folder')->render([
                 'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
-                'destinations' => ee('Model')->get('UploadDestination')->filter('module_id', 0)->fields('id', 'name')->all()->getDictionary('id', 'name'),
+                'destinations' => $destinations,
                 'dir_id' => $id,
-                'sub_dir_id' => '',
+                'sub_dir_id' => (int) ee('Request')->post('upload_location') ?: null,
             ]);
 
             $modal_html = ee('View')->make('ee:_shared/modal')->render([
@@ -157,14 +158,30 @@ class Files extends AbstractFilesController
         //     show_error(lang('unauthorized_access'), 403);
         // }
 
-        $dir_id = (int) ee('Request')->post('upload_location');
+        $dir_ids = explode('-', ee('Request')->post('upload_location'));
+        $upload_destination_id = (int) $dir_ids[0];
+        $subdirectory_id = isset($dir_ids[1]) ? (int) $dir_ids[1] : 0;
+        // TODO validate this
         $subdir_name = ee('Request')->post('folder_name');
 
-        $uploadDirectory = ee('Model')->get('UploadDestination', $dir_id)->first();
-        $return_url = ee('CP/URL')->make('files/directory/' . $dir_id);
+        $uploadDirectory = ee('Model')->get('UploadDestination', $upload_destination_id)->first();
+        $return_url = ee('CP/URL')->make('files/directory/' . $upload_destination_id);
+
+        if ($subdirectory_id !== 0) {
+            $return_url = $return_url->setQueryStringVariable('directory_id', $subdirectory_id);
+
+            $directory = ee('Model')->get('Directory', $subdirectory_id)
+                ->filter('upload_location_id', $upload_destination_id)
+                ->filter('model_type', 'Directory')
+                ->first();
+
+            $filesystem = $directory->getFilesystem();
+        } else {
+            $filesystem = $uploadDirectory->getFilesystem();
+        }
 
         // Check to see if the directory exists and if it does, return back with an error message
-        if ($uploadDirectory->getFilesystem()->exists($subdir_name)) {
+        if ($filesystem->exists($subdir_name)) {
             // Error dir already exists
             ee('CP/Alert')->makeInline('files-form')
                 ->asWarning()
@@ -176,15 +193,15 @@ class Files extends AbstractFilesController
         }
 
         // Directory doesnt exist, so attempt to create it
-        $created = $uploadDirectory->getFilesystem()->mkDir($subdir_name);
+        $created = $filesystem->mkDir($subdir_name);
 
         // We failed to create the directory, return with an error message
         if (! $created) {
             // Error dir already exists
             ee('CP/Alert')->makeInline('files-form')
                 ->asWarning()
-                ->withTitle(lang('subfolder_directory_already_exists'))
-                ->addToBody(lang('dir exists'))
+                ->withTitle(lang('error creating directory'))
+                ->addToBody(lang(''))
                 ->defer();
 
             return ee()->functions->redirect($return_url);
@@ -193,7 +210,8 @@ class Files extends AbstractFilesController
         // The directory was created, so now lets create it in the DB
         $subdir = ee('Model')->make('Directory');
         $subdir->file_name = $subdir_name;
-        $subdir->upload_location_id = $dir_id;
+        $subdir->upload_location_id = $upload_destination_id;
+        $subdir->directory_id = $subdirectory_id;
         $subdir->save();
 
         // Show alert message that we created the directory successfully
@@ -201,7 +219,6 @@ class Files extends AbstractFilesController
             ->asSuccess()
             ->withTitle(lang('subfolder_directory_created'))
             ->addToBody('created')
-                // ->addToBody(sprintf(lang('upload_directory_deleted_desc'), $dir->name))
             ->defer();
 
         ee()->functions->redirect($return_url);

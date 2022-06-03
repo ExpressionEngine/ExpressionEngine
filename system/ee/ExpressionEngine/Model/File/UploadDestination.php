@@ -298,14 +298,10 @@ class UploadDestination extends StructureModel
     }
 
     /**
-     * Get the backing filesystem for this upload destination
+     * Get the backing filesystem adapter for this upload destination
      */
-    public function getFilesystem()
+    public function getFilesystemAdapter()
     {
-        if($this->filesystem) {
-            return $this->filesystem;
-        }
-
         // Do we want to allow variable replacement in adapters that aren't local?
         $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
         $adapterName = $this->adapter ?? 'local';
@@ -314,7 +310,23 @@ class UploadDestination extends StructureModel
         ], $this->adapter_settings ?? []);
         $adapter = ee('Filesystem/Adapter')->make($adapterName, $adapterSettings);
 
-        $filesystem = ee('File')->getPath($adapterSettings['path'], $adapter);
+        return $adapter;
+    }
+
+    /**
+     * Get the backing filesystem for this upload destination
+     */
+    public function getFilesystem()
+    {
+        if ($this->filesystem) {
+            return $this->filesystem;
+        }
+
+        // Do we want to allow variable replacement in adapters that aren't local?
+        $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
+        $adapter = $this->getFilesystemAdapter();
+
+        $filesystem = ee('File')->getPath($path, $adapter);
         $filesystem->setUrl($this->getProperty('url'));
 
         // This will effectively eager load the directory and speed up checks
@@ -324,6 +336,25 @@ class UploadDestination extends StructureModel
         $this->filesystem = $filesystem;
 
         return $this->filesystem;
+    }
+
+    public function geSubdirectoryTree()
+    {
+        $tree = [];
+        $directories = ee('Model')->get('Directory')
+            ->filter('upload_location_id', $this->id)
+            ->filter('model_type', 'Directory')
+            ->filter('directory_id', 0)
+            ->all();
+
+        foreach ($directories as $directory) {
+            $tree[$directory->file_name] = [
+                'id' => $directory->file_id,
+                'subdirectories' => $directory->geSubdirectoryTree()
+            ];
+        }
+
+        return $tree;
     }
 
     /**
@@ -344,13 +375,12 @@ class UploadDestination extends StructureModel
         $map = array();
         $indexFiles = array('index.html', 'index.htm', 'index.php');
 
-        foreach($this->getFilesystem()->getDirectoryContents($path) as $filePath) {
+        foreach ($this->getFilesystem()->getDirectoryContents($path) as $filePath) {
             $pathInfo = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $filePath));
             $fileName = array_pop($pathInfo);
             $isDir = $this->getFilesystem()->isDir($filePath);
 
-            if (empty(trim($fileName, '.')))
-            {
+            if (empty(trim($fileName, '.'))) {
                 continue;
             }
 
@@ -371,6 +401,7 @@ class UploadDestination extends StructureModel
                 foreach ($this->allowed_types as $allowed_type) {
                     if (ee('MimeType')->isOfKind($this->getFilesystem()->getMimetype($filePath), $allowed_type)) {
                         $isOfAllowedMimeType = true;
+
                         break;
                     }
                 }
@@ -402,8 +433,7 @@ class UploadDestination extends StructureModel
         $pathInfo = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $filePath));
         $depth = count($pathInfo) - 1;
         $directory_id = 0;
-        foreach ($pathInfo as $i => $fileOrDirName)
-        {
+        foreach ($pathInfo as $i => $fileOrDirName) {
             if (empty($fileOrDirName)) {
                 continue;
             }
@@ -418,6 +448,7 @@ class UploadDestination extends StructureModel
                 $directory_id = $file->file_id;
             }
         }
+
         return $file;
     }
 
@@ -456,8 +487,8 @@ class UploadDestination extends StructureModel
                     }
                 }
             }
-        } while ($directoriesCount > ($i+1));
-        
+        } while ($directoriesCount > ($i + 1));
+
         return $children;
     }
 
