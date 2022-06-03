@@ -499,19 +499,19 @@ JSC;
         // We need to get a temporary local copy of the file in case it's stored
         // on another filesystem.
         $source_file = tmpfile();
-        // $source_file_path = stream_get_meta_data($source_file)['uri'];
+        $source_file_path = stream_get_meta_data($source_file)['uri'];
         fwrite($source_file, $data['filesystem']->read($data['source_image']));
 
         $new_file = tmpfile();
         $new_file_path = stream_get_meta_data($new_file)['uri'];
 
         $destination_path = $new_image_dir . $new_image;
-        $destination_url = rtrim($data['directory_url'], '/') . '/_' . $function . '/' . rawurlencode($new_image);
+        $destination_url = $data['filesystem']->getUrl("_{$function}/" . rawurlencode($new_image));
         if (!$data['filesystem']->exists($destination_path)) {
             $imageLibConfig = array(
                 'image_library' => ee()->config->item('image_resize_protocol'),
                 'library_path' => ee()->config->item('image_library_path'),
-                'source_image' => $source_file,
+                'source_image' => $source_file_path,
                 'new_image' => $new_file_path,
                 'maintain_ratio' => isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
                 'master_dim' => (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
@@ -557,6 +557,15 @@ JSC;
 
                 return ee()->TMPL->no_results();
             }
+
+            // Write transformed file into correct location
+            $data['filesystem']->writeStream($destination_path, fopen($new_file_path, 'r+'));
+            $data['filesystem']->ensureCorrectAccessMode($destination_path);
+
+            // Clean up temporary files
+            fclose($new_file);
+            fclose($new_file_path);
+            fclose($source_file);
         }
 
         if (!$tagdata) {
