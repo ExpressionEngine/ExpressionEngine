@@ -111,4 +111,24 @@ class FilepickerTest extends TestCase
         $field->withDir(5);
         $this->assertFalse($field->isAll());
     }
+
+    public function testGetValueReturnsAccurately(): FilePicker
+    {
+        $field = new FilePicker('test-field');
+        $field->setValue('bad');
+        $this->assertEquals('bad', $field->getValue());
+        return $field;
+    }
+
+    /**
+     * @depends testGetValueReturnsAccurately
+     * @param FilePicker $field
+     * @return void
+     */
+    public function testGetValueTakesPostIntoAccount(FilePicker $field)
+    {
+
+        $_POST[$field->getName()] = 'good';
+        $this->assertEquals('good', $field->getValue());
+    }
 }
