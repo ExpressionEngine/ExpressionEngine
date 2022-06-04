@@ -42,6 +42,7 @@ class Directory extends FileSystemEntity
         foreach ($directories as $directory) {
             $tree[$directory->file_name] = [
                 'id' => $directory->file_id,
+                'name' => $directory->file_name,
                 'subdirectories' => $directory->geSubdirectoryTree()
             ];
         }

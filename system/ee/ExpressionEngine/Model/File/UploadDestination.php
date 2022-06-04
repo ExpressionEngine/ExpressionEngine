@@ -350,11 +350,45 @@ class UploadDestination extends StructureModel
         foreach ($directories as $directory) {
             $tree[$directory->file_name] = [
                 'id' => $directory->file_id,
+                'name' => $directory->file_name,
                 'subdirectories' => $directory->geSubdirectoryTree()
             ];
         }
 
         return $tree;
+    }
+
+    public function getSelectFromSubdirectories($subDirectories = null, $depth = 1)
+    {
+        // If this is null, it is the start of the recursion, so we get the subdirectories
+        if (is_null($subDirectories)) {
+            $subDirectories = $this->geSubdirectoryTree();
+        }
+
+        $destinations = [];
+        foreach ($subDirectories as $subDirectory) {
+            $value = $subDirectory['name'];
+
+            // Prefix value according to depth
+            foreach (range(1, $depth) as $i) {
+                $value = ' - ' . $value;
+            }
+
+            $destinations[] = [
+                'id' => $subDirectory['id'],
+                'value' => $value,
+                'depth' => $depth,
+            ];
+
+            if (!empty($subDirectory['subdirectories'])) {
+                $destinations = array_merge(
+                    $destinations,
+                    $this->getSelectFromSubdirectories($subDirectory['subdirectories'], ($depth + 1))
+                );
+            }
+        }
+
+        return $destinations;
     }
 
     /**

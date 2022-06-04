@@ -57,7 +57,7 @@ class Files extends AbstractFilesController
         ee()->cp->render('files/index', $vars);
     }
 
-    public function directory($id)
+    public function directory(int $id)
     {
         $dir = ee('Model')->get('UploadDestination', $id)
             ->filter('site_id', ee()->config->item('site_id'))
@@ -118,12 +118,32 @@ class Files extends AbstractFilesController
             ];
 
             $destinations = [];
+            $sub_dir_id = (int) ee('Request')->get('directory_id') ?: null;
+
+            // Compile the list of subdirectories for the new folder drop down
+            $uploadDestinations = ee('Model')->get('UploadDestination')->filter('module_id', 0)->fields('id', 'name')->all();
+            foreach ($uploadDestinations as $uploadDestination) {
+                $destinations[] = [
+                    'id' => $uploadDestination->id,
+                    'value' => $uploadDestination->name,
+                    'selected' => ($id === $uploadDestination->id && is_null($sub_dir_id)),
+                ];
+
+                // Get our subfolders from the upload destination
+                $subDestinations = $uploadDestination->getSelectFromSubdirectories();
+
+                foreach ($subDestinations as &$subDestination) {
+                    $subDestination['selected'] = (($id === $uploadDestination->id) && ($sub_dir_id === $subDestination['id']));
+                    $subDestination['id'] = $uploadDestination->id . '-' . $subDestination['id'];
+                }
+
+                $destinations = array_merge($destinations, $subDestinations);
+            }
+
             // Generate the contents of the new folder modal
             $contents = ee('View')->make('files/modals/new_folder')->render([
                 'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
                 'destinations' => $destinations,
-                'dir_id' => $id,
-                'sub_dir_id' => (int) ee('Request')->post('upload_location') ?: null,
             ]);
 
             $modal_html = ee('View')->make('ee:_shared/modal')->render([

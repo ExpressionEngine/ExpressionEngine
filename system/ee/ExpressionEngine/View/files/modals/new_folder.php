@@ -10,8 +10,8 @@
 
     <p>
         <select name="upload_location" id="upload_location">
-            <?php foreach ($destinations as $id => $name):?>
-                <option <?= ($id == $dir_id) ? 'selected' : '' ?> value='<?= $id ?>'><?= $name ?></option>
+            <?php foreach ($destinations as $destination):?>
+                <option <?= ($destination['selected']) ? 'selected' : '' ?> value='<?= $destination['id'] ?>'><?=  $destination['value'] ?></option>
             <?php endforeach;?>
         </select>
     </p>
