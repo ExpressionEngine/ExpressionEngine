@@ -12,6 +12,9 @@ class _slider_field extends Slider
     }
 }
 
+/**
+ * @covers \ExpressionEngine\Library\CP\Form\Fields\Slider
+ */
 class SliderTest extends TestCase
 {
     /**

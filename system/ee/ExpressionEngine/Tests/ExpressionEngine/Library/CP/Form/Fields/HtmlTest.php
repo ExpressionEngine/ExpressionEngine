@@ -12,6 +12,9 @@ class _html extends Html
     }
 }
 
+/**
+ * @covers \ExpressionEngine\Library\CP\Form\Fields\Html
+ */
 class HtmlTest extends TestCase
 {
     /**

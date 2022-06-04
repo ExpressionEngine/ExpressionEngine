@@ -4,6 +4,9 @@ namespace ExpressionEngine\Tests\Library\CP\Form\Fields;
 use ExpressionEngine\Library\CP\Form\Fields\FilePicker;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \ExpressionEngine\Library\CP\Form\Fields\FilePicker
+ */
 class FilepickerTest extends TestCase
 {
     /**

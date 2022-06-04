@@ -32,6 +32,9 @@ class _field extends Field
 
 }
 
+/**
+ * @covers \ExpressionEngine\Library\CP\Form\Field
+ */
 class FieldTest extends TestCase
 {
     /**

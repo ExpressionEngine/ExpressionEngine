@@ -22,6 +22,9 @@ class _set extends Set
     }
 }
 
+/**
+ * @covers \ExpressionEngine\Library\CP\Form\Set
+ */
 class SetTest extends TestCase
 {
     /**

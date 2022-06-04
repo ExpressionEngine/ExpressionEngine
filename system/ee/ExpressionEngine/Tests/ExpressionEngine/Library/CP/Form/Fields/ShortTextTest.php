@@ -12,6 +12,9 @@ class _short_text extends ShortText
     }
 }
 
+/**
+ * @covers \ExpressionEngine\Library\CP\Form\Fields\ShortText
+ */
 class ShortTextTest extends TestCase
 {
     /**

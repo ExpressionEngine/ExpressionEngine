@@ -12,6 +12,9 @@ class _textarea_field extends Textarea
     }
 }
 
+/**
+ * @covers \ExpressionEngine\Library\CP\Form\Fields\Textarea
+ */
 class TexareaTest extends TestCase
 {
     /**
