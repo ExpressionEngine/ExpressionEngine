@@ -43,6 +43,16 @@ class Filesystem
     }
 
     /**
+     * Determine if this filesystem is local
+     *
+     * @return boolean
+     */
+    public function isLocal()
+    {
+        return $this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local;
+    }
+
+    /**
      * Read a file from disk
      *
      * @param String $path File to read
@@ -62,6 +72,12 @@ class Filesystem
         return $this->flysystem->read($this->normalize($path));
     }
 
+    /**
+     * Read the contents of a file as a stream
+     *
+     * @param string $path
+     * @return stream
+     */
     public function readStream($path)
     {
         $path = $this->normalizeRelativePath($path);
@@ -111,7 +127,7 @@ class Filesystem
             throw new FilesystemException("Cannot write file, path is a directory: {$path}");
         } elseif ($this->isFile($path) && $overwrite == false && $append == false) {
             throw new FilesystemException("File already exists: {$path}");
-        } elseif ($append && !($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local)) {
+        } elseif ($append && !($this->isLocal())) {
             throw new FilesystemException("Appending to file not supported by adapter '" . get_class($this->flysystem->getAdapter()) . "'");
         }
 
@@ -125,6 +141,14 @@ class Filesystem
         $this->ensureCorrectAccessMode($path);
     }
 
+    /**
+     * Write a stream to the file path
+     *
+     * @param string $path
+     * @param stream $resource
+     * @param array $config
+     * @return bool
+     */
     public function writeStream($path, $resource, array $config = [])
     {
         $path = $this->normalizeRelativePath($path);
@@ -234,7 +258,7 @@ class Filesystem
     {
         $path = $this->normalizeRelativePath($path);
 
-        if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+        if ($this->isLocal()) {
             if (!$this->exists($path)) {
                 throw new FilesystemException('Cannot get contents of path, the path is invalid: ' . $path);
             }
@@ -295,7 +319,7 @@ class Filesystem
      */
     protected function attemptFastDelete($path)
     {
-        if (!$this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+        if (!$this->isLocal()) {
             return false;
         }
 
@@ -503,7 +527,7 @@ class Filesystem
             throw new FilesystemException("Touching non-existent files is not supported: {$path}");
         }
 
-        if (isset($time) && $this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+        if (isset($time) && $this->isLocal()) {
             touch($this->flysystem->getAdapter()->applyPathPrefix($this->normalize($path)), $time);
         } else {
             $this->write($this->normalize($path), '');
@@ -518,7 +542,7 @@ class Filesystem
      */
     public function isDir($path = '/')
     {
-        if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+        if ($this->isLocal()) {
             return is_dir($this->ensurePrefixedPath($path));
         }
         $path = $this->normalizeRelativePath($path);
@@ -535,7 +559,7 @@ class Filesystem
     {
         $path = $this->normalizeRelativePath($path);
 
-        if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+        if ($this->isLocal()) {
             return is_file($this->ensurePrefixedPath($this->normalize($path)));
         }
 
@@ -550,7 +574,7 @@ class Filesystem
      */
     public function isReadable($path = '')
     {
-        if (!$this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+        if (!$this->isLocal()) {
             return true; // or is `return $this->flysystem->has($path);` better?
         }
 
@@ -578,7 +602,7 @@ class Filesystem
      */
     public function isWritable($path = '/')
     {
-        if(! $this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+        if(! $this->isLocal()) {
             return true;
         }
 
@@ -636,7 +660,7 @@ class Filesystem
      */
     public function getFreeDiskSpace($path = '/')
     {
-        if(!$this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+        if(!$this->isLocal()) {
             return null;
         }
 
@@ -675,7 +699,7 @@ class Filesystem
         $filename = $this->filename($path);
 
         // Glob only works with local filesytem but is more performant than filtering directory results
-        if ($this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+        if ($this->isLocal()) {
             $files = array_map(function($file) {
                 return $this->filename($file);
             }, glob($dirname . $filename . '_*' . $extension));
@@ -776,7 +800,7 @@ class Filesystem
     public function ensureCorrectAccessMode($path)
     {
         // This function is only relevant to Local filesystems
-        if(!$this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local) {
+        if(!$this->isLocal()) {
             return;
         }
 
@@ -787,6 +811,45 @@ class Filesystem
         }
     }
 
+    /**
+     * Copy the contents of a file to a new temporary file
+     *
+     * @param string $path
+     * @return array
+     */
+    public function copyToTempFile($path)
+    {
+        $path = $this->normalizeRelativePath($path);
+
+        if(!$this->isFile($path)) {
+            throw new \Exception("Cannot create a temp file from path: $path");
+        }
+
+        $tmp = $this->createTempFile();
+        fwrite($tmp['file'], $this->read($path));
+
+        return $tmp;
+    }
+
+    /**
+     * Create a temporary file on the local filesystem
+     *
+     * @return array
+     */
+    public function createTempFile()
+    {
+        $file = tmpfile();
+        $path = stream_get_meta_data($file)['uri'];
+
+        return compact('file', 'path');
+    }
+
+    /**
+     * Normalize a path and return the complete path address
+     *
+     * @param string $path
+     * @return string
+     */
     protected function normalizeAbsolutePath($path)
     {
         return str_replace('//', '/', implode([
@@ -796,6 +859,12 @@ class Filesystem
         ]));
     }
 
+    /**
+     * Make sure the given path has the filesystem's prefix
+     *
+     * @param string $path
+     * @return string
+     */
     protected function ensurePrefixedPath($path)
     {
         $adapter = $this->flysystem->getAdapter();
@@ -809,17 +878,34 @@ class Filesystem
         return $adapter->applyPathPrefix(Flysystem\Util::normalizePath($path));
     }
 
+    /**
+     * Get the path prefix.
+     *
+     * @return string|null
+     */
     protected function getPathPrefix()
     {
         return $this->normalizeAbsolutePath($this->flysystem->getAdapter()->getPathPrefix());
     }
 
+    /**
+     * Remove the prefix from a path if present
+     *
+     * @param string $path
+     * @return string
+     */
     protected function removePathPrefix($path)
     {
         $prefix = $this->getPathPrefix();
         return (strpos($path, $prefix) === 0) ? str_replace($prefix, '', $path) : $path;
     }
 
+    /**
+     * Normalize a path and return the relative address
+     *
+     * @param string $path
+     * @return string
+     */
     protected function normalizeRelativePath($path)
     {
         $path = $this->normalizeAbsolutePath($path);
@@ -838,6 +924,11 @@ class Filesystem
         return $path;
     }
 
+    /**
+     * Get the base adapter for the filesystem
+     *
+     * @return void
+     */
     public function getBaseAdapter()
     {
         $adapter = $this->flysystem->getAdapter();

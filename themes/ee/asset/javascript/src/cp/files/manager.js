@@ -160,20 +160,37 @@
 		
 		// new MutableSelectField('files_field', EE.fileManager.fileDirectory);
 
-		$('.f_manager-wrapper .imgpreview').hover(function(){
-			var path = $(this).data('url');
-			var alt = $(this).attr('alt');
-			var parent = $(this).parent();
-			var top = $(this).offset().top;
-			var left = $(this).offset().left;
-			parent.append("<p id='preview'><img src='"+ path +"' alt='"+ alt +"' /></p>");
-			$("#preview").css({
-				'top': (top + 20) + "px",
-				'left': (left - 200) + "px",
-				'display': 'flex',
-			}).fadeIn();
-		}, function(){
-			$("#preview").remove();
+		$('body').on({
+			mouseenter: function () {
+				var path = $(this).data('url');
+				var alt = $(this).attr('alt');
+				var parent = $(this).parent();
+				var top = $(this).offset().top;
+				var left = $(this).offset().left;
+				parent.append("<p id='preview'><img src='"+ path +"' alt='"+ alt +"' /></p>");
+				$("#preview").css({
+					'top': (top + 20) + "px",
+					'left': (left - 200) + "px",
+					'display': 'flex',
+				}).fadeIn();
+			}, mouseleave: function () {
+				$("#preview").remove();
+			}
+		}, '.f_manager-wrapper .imgpreview');
+
+		$('.main-nav__toolbar').on('click', 'a.dropdown__link', function(e){
+			e.preventDefault();
+			var path = $(this).data('path');
+			var upload_location_id = $(this).data('upload_location_id');
+
+			if (!path) {
+				path = '';
+			}
+
+			$('.main-nav__toolbar .dropdown__scroll .f_open-filepicker').attr('data-upload_location_id', upload_location_id);
+			$('.main-nav__toolbar .dropdown__scroll .f_open-filepicker').attr('data-path', path);
+
+			$('.main-nav__toolbar .dropdown__scroll .f_open-filepicker').trigger('click');
 		});
 	});
 })(jQuery);

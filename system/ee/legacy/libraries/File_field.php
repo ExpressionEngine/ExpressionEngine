@@ -598,11 +598,18 @@ class File_field
             }
 
             // If we got here, we need to query for the file
-            ee()->load->model('file_model');
-
             // Query based on file ID
             if (is_numeric($file_reference)) {
-                $file = ee()->file_model->get_files_by_id($file_reference)->row_array();
+                $query = ee('Model')->get('File')
+                ->with('UploadDestination')
+                ->filter('file_id', '=', $file_reference);
+
+                if($dir_id) {
+                    $query->filter('upload_location_id', '=', $dir_id);
+                }
+
+                $file = $query->first();
+                $file = array_merge($file->toArray(), array('model_object' => $file));
             }
             // Query based on file name and directory ID
             else {

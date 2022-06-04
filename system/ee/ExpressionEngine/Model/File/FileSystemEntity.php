@@ -147,7 +147,9 @@ class FileSystemEntity extends ContentModel
     {
         if (empty($this->file_hw_original)) {
             ee()->load->library('filemanager');
-            $image_dimensions = ee()->filemanager->get_image_dimensions($this->getAbsolutePath());
+            $image_dimensions = $this->actLocally(function($path) {
+                return ee()->filemanager->get_image_dimensions($path);
+            });
             if ($image_dimensions !== false) {
                 $this->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
             }
@@ -156,11 +158,21 @@ class FileSystemEntity extends ContentModel
         return $this->file_hw_original;
     }
 
+    /**
+     * Determine whether or not this entity represents a file
+     *
+     * @return boolean
+     */
     public function isFile()
     {
         return $this->model_type === 'File';
     }
 
+    /**
+     * Determine whether or not this entity represents a directory
+     *
+     * @return boolean
+     */
     public function isDirectory()
     {
         return $this->model_type === 'Directory';
@@ -258,6 +270,29 @@ class FileSystemEntity extends ContentModel
         }
 
         return $this->_baseUrl;
+    }
+
+    /**
+     * Perform some action on the file in a local context
+     *
+     * @param callable $callback
+     * @return mixed
+     */
+    public function actLocally(callable $callback)
+    {
+        $filesystem = $this->getUploadDestination()->getFilesystem();
+        $path = $this->getAbsolutePath();
+
+        if($filesystem->isLocal()) {
+            return $callback($path);
+        }
+
+        $tmp = $filesystem->copyToTempFile($path);
+        $result = $callback($tmp['path']);
+
+        fclose($tmp['file']);
+        
+        return $result;
     }
 
     /**

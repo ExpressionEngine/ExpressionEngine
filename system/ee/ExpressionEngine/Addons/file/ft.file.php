@@ -498,21 +498,19 @@ JSC;
 
         // We need to get a temporary local copy of the file in case it's stored
         // on another filesystem.
-        $source_file = tmpfile();
-        // $source_file_path = stream_get_meta_data($source_file)['uri'];
-        fwrite($source_file, $data['filesystem']->read($data['source_image']));
-
-        $new_file = tmpfile();
-        $new_file_path = stream_get_meta_data($new_file)['uri'];
+        $source = $data['filesystem']->copyToTempFile($data['source_image']);
+        $new = $data['filesystem']->createTempFile();
 
         $destination_path = $new_image_dir . $new_image;
-        $destination_url = rtrim($data['directory_url'], '/') . '/_' . $function . '/' . rawurlencode($new_image);
+        $destination_url = $data['filesystem']->getUrl("_{$function}/" . rawurlencode($new_image));
+        $props = null;
+
         if (!$data['filesystem']->exists($destination_path)) {
             $imageLibConfig = array(
                 'image_library' => ee()->config->item('image_resize_protocol'),
                 'library_path' => ee()->config->item('image_library_path'),
-                'source_image' => $source_file,
-                'new_image' => $new_file_path,
+                'source_image' => $source['path'],
+                'new_image' => $new['path'],
                 'maintain_ratio' => isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
                 'master_dim' => (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
 
@@ -557,6 +555,17 @@ JSC;
 
                 return ee()->TMPL->no_results();
             }
+
+            // Write transformed file into correct location
+            $data['filesystem']->writeStream($destination_path, fopen($new['path'], 'r+'));
+            $data['filesystem']->ensureCorrectAccessMode($destination_path);
+
+            // Get image properties before we destroy local file
+            $props = ee()->image_lib->get_image_properties($new['path'], true);
+
+            // Clean up temporary files
+            fclose($new['file']);
+            fclose($source['file']);
         }
 
         if (!$tagdata) {
@@ -566,7 +575,11 @@ JSC;
 
             return ($return_as_path ? $destination_path : $destination_url);
         } else {
-            $props = ee()->image_lib->get_image_properties($destination_path, true);
+            if(!$props) {
+                $tmp = $data['filesystem']->copyToTempFile($destination_path);
+                $props = ee()->image_lib->get_image_properties($tmp['path'], true);
+                fclose($tmp['file']);
+            }
             $vars = [
                 'url' => $destination_url,
                 'width' => $props['width'],

@@ -17,8 +17,9 @@ class DragAndDropUpload extends React.Component {
   constructor (props) {
     super(props)
 
+    window.list;
+
     let directoryName = this.getDirectoryName(props.allowedDirectory);
-    let list;
 
     this.state = {
       files: [],
@@ -62,6 +63,9 @@ class DragAndDropUpload extends React.Component {
     if (directory == 'all') return null;
 
     var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+    // directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
+    //   return thisDirectory.value == directory;
+    // });
 
     return directory.label
   }
@@ -69,13 +73,13 @@ class DragAndDropUpload extends React.Component {
   checkChildDirectory = (items, directory) => {
     items.map(item => {
       if (item.value == directory) {
-        return list = item;
+        return window.list = item;
       }else if(item.value != directory && item.children.length) {
         this.checkChildDirectory(item.children, directory);
       }
     })
 
-    return list;
+    return window.list;
   }
 
   bindDragAndDropEvents() {

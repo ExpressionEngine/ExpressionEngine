@@ -1118,22 +1118,20 @@ class Filemanager
         // We need to get a temporary local copy of the file in case it's stored on
         // another filesystem. This seems a little wasteful for uploaded files
         // since there is a temporary file already in the $_FILES super global
-        $tmp_file = tmpfile();
-        $tmp_path = stream_get_meta_data($tmp_file)['uri'];
-        fwrite($tmp_file, $filesystem->read($file_path));
-
+        $tmp = $filesystem->copyToTempFile($file_path);
+        
         if (! isset($prefs['mime_type'])) {
             // Figure out the mime type
             $prefs['mime_type'] = $filesystem->getMimetype($file_path);
         }
 
-        if (! $this->is_editable_image($tmp_path, $prefs['mime_type'])) {
+        if (! $this->is_editable_image($tmp['path'], $prefs['mime_type'])) {
             return false;
         }
 
         // Make sure we have enough memory to process
         try {
-            ee('Memory')->setMemoryForImageManipulation($tmp_path);
+            ee('Memory')->setMemoryForImageManipulation($tmp['path']);
         } catch (\Exception $e) {
             log_message('error', $e->getMessage() . ': ' . $file_path);
 
@@ -1158,7 +1156,7 @@ class Filemanager
 
         // Make sure height and width are set
         if (! isset($prefs['height']) or ! isset($prefs['width'])) {
-            $dim = $this->get_image_dimensions($tmp_path);
+            $dim = $this->get_image_dimensions($tmp['path']);
 
             if ($dim == false) {
                 return false;
@@ -1218,11 +1216,10 @@ class Filemanager
 
             // Resize
             // $destination = $resized_path . $prefs['file_name'];
-            $new_file = tmpfile();
-            $new_file_path = stream_get_meta_data($new_file)['uri'];
+            $new = $filesystem->createTempFile();
 
-            $config['source_image'] = $tmp_path;
-            $config['new_image'] = $new_file_path;
+            $config['source_image'] = $tmp['path'];
+            $config['new_image'] = $new['path'];
             $config['maintain_ratio'] = true;
             $config['image_library'] = $protocol;
             $config['library_path'] = $lib_path;
@@ -1324,11 +1321,11 @@ class Filemanager
             $filesystem->ensureCorrectAccessMode($destination);
 
             // Clean up newly created temporary file
-            fclose($new_file);
+            fclose($new['file']);
         }
 
         // Clean up source temporary file
-        fclose($tmp_file);
+        fclose($tmp['file']);
 
         return true;
     }
@@ -2793,7 +2790,7 @@ class Filemanager
             }
         }
 
-        $reponse = array();
+        $response = array();
 
         if (isset($errors)) {
             $response['errors'] = $errors;
