@@ -17,6 +17,12 @@ class _short_text extends ShortText
  */
 class ShortTextTest extends TestCase
 {
+    public function testFieldInstanceFieldObj()
+    {
+        $field = new ShortText;
+        $this->assertInstanceOf('ExpressionEngine\Library\CP\Form\Field', $field);
+    }
+
     /**
      * @return ShortText
      */

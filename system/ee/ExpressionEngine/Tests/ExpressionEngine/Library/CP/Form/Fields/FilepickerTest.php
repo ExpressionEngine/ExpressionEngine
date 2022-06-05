@@ -9,6 +9,13 @@ use PHPUnit\Framework\TestCase;
  */
 class FilepickerTest extends TestCase
 {
+
+    public function testFieldInstanceFieldObj()
+    {
+        $field = new FilePicker;
+        $this->assertInstanceOf('ExpressionEngine\Library\CP\Form\Field', $field);
+    }
+
     /**
      * @return FilePicker
      */

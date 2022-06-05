@@ -17,6 +17,12 @@ class _input_field extends Input
  */
 class InputTest extends TestCase
 {
+    public function testFieldInstanceFieldObj()
+    {
+        $field = new Input;
+        $this->assertInstanceOf('ExpressionEngine\Library\CP\Form\Field', $field);
+    }
+
     /**
      * @return Input
      */

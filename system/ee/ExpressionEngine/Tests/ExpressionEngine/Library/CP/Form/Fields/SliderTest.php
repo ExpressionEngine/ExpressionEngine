@@ -17,6 +17,12 @@ class _slider_field extends Slider
  */
 class SliderTest extends TestCase
 {
+    public function testFieldInstanceFieldObj()
+    {
+        $field = new Slider;
+        $this->assertInstanceOf('ExpressionEngine\Library\CP\Form\Field', $field);
+    }
+
     /**
      * @return Slider
      */

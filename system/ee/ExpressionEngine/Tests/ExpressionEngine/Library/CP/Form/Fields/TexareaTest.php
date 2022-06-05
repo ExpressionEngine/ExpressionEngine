@@ -17,6 +17,12 @@ class _textarea_field extends Textarea
  */
 class TexareaTest extends TestCase
 {
+    public function testFieldInstanceFieldObj()
+    {
+        $field = new Textarea;
+        $this->assertInstanceOf('ExpressionEngine\Library\CP\Form\Field', $field);
+    }
+
     /**
      * @return Textarea
      */

@@ -17,6 +17,12 @@ class _action_button extends ActionButton
  */
 class ActionButtonTest extends TestCase
 {
+    public function testFieldInstanceFieldObj()
+    {
+        $field = new ActionButton;
+        $this->assertInstanceOf('ExpressionEngine\Library\CP\Form\Field', $field);
+    }
+
     /**
      * @return ActionButton
      */

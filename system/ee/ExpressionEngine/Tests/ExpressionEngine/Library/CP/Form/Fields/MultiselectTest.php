@@ -6,6 +6,11 @@ use PHPUnit\Framework\TestCase;
 
 class MultiselectTest extends TestCase
 {
+    public function testFieldInstanceFieldObj()
+    {
+        $field = new Multiselect;
+        $this->assertInstanceOf('ExpressionEngine\Library\CP\Form\OptionsField', $field);
+    }
 
     /**
      * @return Multiselect

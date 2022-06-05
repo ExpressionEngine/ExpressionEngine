@@ -17,6 +17,12 @@ class _html extends Html
  */
 class HtmlTest extends TestCase
 {
+    public function testFieldInstanceFieldObj()
+    {
+        $field = new Html;
+        $this->assertInstanceOf('ExpressionEngine\Library\CP\Form\Field', $field);
+    }
+
     /**
      * @return Html
      */
