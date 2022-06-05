@@ -2,14 +2,13 @@
 namespace ExpressionEngine\Tests\Library\CP\Form\Fields;
 
 use ExpressionEngine\Library\CP\Form\Fields\Multiselect;
-use PhpParser\Node\Expr\AssignOp\Mul;
 use PHPUnit\Framework\TestCase;
 
 class MultiselectTest extends TestCase
 {
 
     /**
-     * @return Field
+     * @return Multiselect
      */
     public function testBaseInstance(): Multiselect
     {
