@@ -95,7 +95,7 @@ class Files extends AbstractFilesController
         ee()->view->cp_page_title = lang('file_manager');
         $vars['cp_heading'] = sprintf($dir->name);
 
-        $this->stdHeader();
+        $headerVars = $this->stdHeader();
 
         $vars['toolbar_items'] = [];
         if (ee('Permission')->can('upload_new_files') && $dir->memberHasAccess(ee()->session->getMember())) {
@@ -106,12 +106,14 @@ class Files extends AbstractFilesController
                 'title' => lang('sync'),
                 'class' => 'button--secondary icon--sync'
             ];
-            $vars['toolbar_items']['new_folder'] = [
-                'href' => '#',
-                'rel' => 'modal-new-folder',
-                'class' => 'm-link',
-                'content' => lang('new_folder'),
-            ];
+            if ($dir->allow_subfolders) {
+                $vars['toolbar_items']['new_folder'] = [
+                    'href' => '#',
+                    'rel' => 'modal-new-folder',
+                    'class' => 'm-link',
+                    'content' => lang('new_folder'),
+                ];
+            }
             $vars['toolbar_items']['upload'] = [
                 'href' => '#',
                 'content' => lang('upload'),
@@ -141,18 +143,17 @@ class Files extends AbstractFilesController
             }
 
             // Generate the contents of the new folder modal
-            $contents = ee('View')->make('files/modals/new_folder')->render([
+            $new_folder_modal = ee('View')->make('files/modals/new_folder')->render([
+                'name' => 'modal-new-folder',
                 'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
                 'destinations' => $destinations,
-            ]);
-
-            $modal_html = ee('View')->make('ee:_shared/modal')->render([
-                'name' => 'modal-new-folder',
-                'contents' => $contents
+                'choices' => $headerVars['uploadLocationsAndDirectoriesDropdownChoices'],
+                'selected' => !empty(ee('Request')->get('directory_id')) ? ee('Request')->get('directory_id') : $uploadDestination->getId(),
+                'selected_subfolder' => ee('Request')->get('directory_id')
             ]);
 
             // Add the modal to the DOM
-            ee('CP/Modal')->addModal('modal-new-folder', $modal_html);
+            ee('CP/Modal')->addModal('modal-new-folder', $new_folder_modal);
         }
 
         ee()->view->cp_breadcrumbs = array(
@@ -173,11 +174,6 @@ class Files extends AbstractFilesController
 
     public function createSubdirectory()
     {
-        // // TODO: add this permission
-        // if (! ee('Permission')->can('create_subdirectories')) {
-        //     show_error(lang('unauthorized_access'), 403);
-        // }
-
         $dir_ids = explode('-', ee('Request')->post('upload_location'));
         $upload_destination_id = (int) $dir_ids[0];
         $subdirectory_id = isset($dir_ids[1]) ? (int) $dir_ids[1] : 0;
@@ -186,6 +182,10 @@ class Files extends AbstractFilesController
 
         $uploadDirectory = ee('Model')->get('UploadDestination', $upload_destination_id)->first();
         $return_url = ee('CP/URL')->make('files/directory/' . $upload_destination_id);
+
+        if (!ee('Permission')->can('upload_new_files') || !$uploadDirectory->memberHasAccess(ee()->session->getMember()) || !$uploadDirectory->allow_subfolders) {
+            show_error(lang('unauthorized_access'), 403);
+        }
 
         if ($subdirectory_id !== 0) {
             $return_url = $return_url->setQueryStringVariable('directory_id', $subdirectory_id);
@@ -200,13 +200,39 @@ class Files extends AbstractFilesController
             $filesystem = $uploadDirectory->getFilesystem();
         }
 
+        $subdir = ee('Model')->make('Directory');
+        $subdir->file_name = $subdir_name;
+        $subdir->upload_location_id = $upload_destination_id;
+        $subdir->directory_id = $subdirectory_id;
+
+        //validate before saving on filesystem
+        $validation = $subdir->validate();
+
+        if (! $validation->isValid()) {
+            $validationErrors = [];
+            foreach ($validation->getAllErrors() as $field => $errors) {
+                if ($field == 'file_name') {
+                    $field = 'folder_name';
+                }
+                foreach ($errors as $error) {
+                    $validationErrors[] = '<b>' . lang($field) . ':</b> ' . $error;
+                }
+            }
+            ee('CP/Alert')->makeInline('files-form')
+                ->asWarning()
+                ->withTitle(lang('error_creating_directory'))
+                ->addToBody($validationErrors)
+                ->defer();
+            return ee()->functions->redirect($return_url);
+        }
+
         // Check to see if the directory exists and if it does, return back with an error message
         if ($filesystem->exists($subdir_name)) {
             // Error dir already exists
             ee('CP/Alert')->makeInline('files-form')
                 ->asWarning()
                 ->withTitle(lang('subfolder_directory_already_exists'))
-                ->addToBody(lang('dir exists'))
+                ->addToBody(lang('subfolder_directory_already_exists_desc'))
                 ->defer();
 
             return ee()->functions->redirect($return_url);
@@ -220,25 +246,19 @@ class Files extends AbstractFilesController
             // Error dir already exists
             ee('CP/Alert')->makeInline('files-form')
                 ->asWarning()
-                ->withTitle(lang('error creating directory'))
-                ->addToBody(lang(''))
+                ->withTitle(lang('error_creating_directory'))
                 ->defer();
 
             return ee()->functions->redirect($return_url);
         }
 
         // The directory was created, so now lets create it in the DB
-        $subdir = ee('Model')->make('Directory');
-        $subdir->file_name = $subdir_name;
-        $subdir->upload_location_id = $upload_destination_id;
-        $subdir->directory_id = $subdirectory_id;
         $subdir->save();
 
         // Show alert message that we created the directory successfully
         ee('CP/Alert')->makeInline('files-form')
             ->asSuccess()
             ->withTitle(lang('subfolder_directory_created'))
-            ->addToBody('created')
             ->defer();
 
         ee()->functions->redirect($return_url);

@@ -120,7 +120,7 @@ $lang = array(
 
     'new_folder' => 'New Folder',
 
-    'folder_name' => 'Folder Name:',
+    'folder_name' => 'Folder Name',
 
     'location' => 'Location:',
 
@@ -1011,6 +1011,16 @@ $lang = array(
     'select_new_destinatin_for' => 'Select new destination for:',
 
     'destination' => 'Destination',
+
+    /* Subfolders */
+
+    'subfolder_directory_already_exists' => 'Subfolder already exists',
+
+    'subfolder_directory_already_exists_desc' => 'Directory with this name already exists on the file system',
+
+    'error_creating_directory' => 'Could not create folder',
+
+    'subfolder_directory_created' => 'Folder created',
 
 );
 

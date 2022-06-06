@@ -20,6 +20,14 @@ class Directory extends FileSystemEntity
         'beforeInsert'
     );
 
+    protected static $_validation_rules = array(
+        'title' => 'xss',
+        'description' => 'xss',
+        'credit' => 'xss',
+        'location' => 'xss',
+        'file_name' => 'required|xss|alphaDash|unique[upload_location_id,directory_id]'
+    );
+
     public function onBeforeInsert()
     {
         $this->setProperty('model_type', 'Directory');
@@ -29,6 +37,11 @@ class Directory extends FileSystemEntity
         $this->setProperty('modified_by_member_id', ee()->session->userdata('member_id'));
         $this->setProperty('title', $this->getProperty('file_name'));
         $this->setProperty('mime_type', 'directory');
+    }
+
+    public function get__file_hw_original()
+    {
+        return null;
     }
 
     public function geSubdirectoryTree()

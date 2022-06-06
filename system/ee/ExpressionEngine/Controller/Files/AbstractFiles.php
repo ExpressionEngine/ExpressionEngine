@@ -115,6 +115,7 @@ abstract class AbstractFiles extends CP_Controller
     protected function stdHeader($active = null)
     {
         $upload_destinations = [];
+        $uploadLocationsAndDirectoriesDropdownChoices = [];
         if (ee('Permission')->can('upload_new_files')) {
             $upload_destinations = ee('Model')->get('UploadDestination')
                 ->fields('id', 'name')
@@ -130,9 +131,8 @@ abstract class AbstractFiles extends CP_Controller
                 });
             }
 
-            $choices = [];
             foreach ($upload_destinations as $upload_pref) {
-                $choices[$upload_pref->getId()] = [
+                $uploadLocationsAndDirectoriesDropdownChoices[$upload_pref->getId()] = [
                     'label' => '<i class="fas fa-hdd"></i>' . $upload_pref->name,
                     'path' => '',
                     'upload_location_id' => $upload_pref->id,
@@ -149,10 +149,14 @@ abstract class AbstractFiles extends CP_Controller
             'action_button' => ee('Permission')->can('upload_new_files') && $upload_destinations->count() ? [
                 'text' => '<i class="fas fa-cloud-upload-alt icon-left"></i>' . lang('upload'),
                 'filter_placeholder' => lang('filter_upload_directories'),
-                'choices' => count($choices) > 1 ? $choices : null,
+                'choices' => count($uploadLocationsAndDirectoriesDropdownChoices) > 1 ? $uploadLocationsAndDirectoriesDropdownChoices : null,
                 'href' => ee('CP/URL')->make('files/upload/' . $upload_destinations->first()->getId())->compile()
             ] : null
         );
+
+        return [
+            'uploadLocationsAndDirectoriesDropdownChoices' => $uploadLocationsAndDirectoriesDropdownChoices
+        ];
     }
 
     protected function validateFile(File $file)

@@ -92,6 +92,7 @@ class FileSystemEntity extends ContentModel
         'description' => 'xss',
         'credit' => 'xss',
         'location' => 'xss',
+        'file_name' => 'required'
     );
 
     protected $file_id;
