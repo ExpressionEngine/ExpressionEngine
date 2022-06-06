@@ -352,7 +352,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteThumbnailPath()
     {
-        return $this->getBaseServerPath() . '_thumbs/' . $this->getSubfoldersPath() . $this->file_name;
+        return $this->getBaseServerPath() . $this->getSubfoldersPath(). '_thumbs/' . $this->file_name;
     }
 
     /**
@@ -380,7 +380,7 @@ class FileSystemEntity extends ContentModel
             return $this->getAbsoluteURL();
         }
 
-        return $filesystem->getUrl('_thumbs/' . $this->getSubfoldersPath() . $this->file_name);
+        return $filesystem->getUrl($this->getSubfoldersPath() . '_thumbs/'  . $this->file_name);
     }
 
     public function getThumbnailUrl()
