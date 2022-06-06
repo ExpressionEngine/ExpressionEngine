@@ -143,7 +143,7 @@ class Files extends AbstractFilesController
             }
 
             // Generate the contents of the new folder modal
-            $new_folder_modal = ee('View')->make('files/modals/new_folder')->render([
+            $new_folder_modal = ee('View')->make('files/modals/folder')->render([
                 'name' => 'modal-new-folder',
                 'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
                 'destinations' => $destinations,

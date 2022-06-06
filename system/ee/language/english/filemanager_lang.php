@@ -122,7 +122,7 @@ $lang = array(
 
     'folder_name' => 'Folder Name',
 
-    'location' => 'Location:',
+    'location' => 'Location',
 
     'create_folder_location' => 'Create a folder in the following location:',
 

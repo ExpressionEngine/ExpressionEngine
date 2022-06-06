@@ -8,7 +8,7 @@
         </div>
 
         <div class="dialog__body">
-            <?=lang('create_folder_location')?>
+            <?=isset($alert) ? $alert : lang('create_folder_location')?>
 
             <p>
                 <label for="upload_location"><?= lang('location') ?></label>
@@ -55,7 +55,7 @@
 
             <p>
                 <label for="folder_name"><?= lang('folder_name') ?></label>
-                <input type="text" name="folder_name">
+                <input type="text" name="folder_name" autocomplete="off">
             </p>
         </div>
 
