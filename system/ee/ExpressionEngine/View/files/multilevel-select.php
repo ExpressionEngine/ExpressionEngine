@@ -7,104 +7,23 @@
     <div class="dropdown">
         <div class="dropdown__scroll">
             <ul>
-                <li>
-                    <a href="#" class="dropdown__link">
-                        <i class="fas fa-hdd"></i>
-                        Blog
-                    </a>
-
-                    <ul>
-                        <li>
-                            <a href="#" class="dropdown__link">
-                                <i class="fas fa-folder"></i>
-                                Book Covers
-                            </a>
-
-                            <ul>
-                                <li>
-                                    <a href="#" class="dropdown__link">
-                                        <i class="fas fa-folder"></i>
-                                        Front Covers
-                                    </a>
-
-                                    <ul>
-                                        <li>
-                                            <a href="#" class="dropdown__link">
-                                                <i class="fas fa-folder"></i>
-                                                Finals
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-
-                            <ul>
-                                <li>
-                                    <a href="#" class="dropdown__link">
-                                        <i class="fas fa-folder"></i>
-                                        Back Covers
-                                    </a>
-
-                                    <ul>
-                                        <li>
-                                            <a href="#" class="dropdown__link">
-                                                <i class="fas fa-folder"></i>
-                                                Finals
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="#" class="dropdown__link">
-                        <i class="fas fa-hdd"></i>
-                        Common
-                    </a>
-
-                    <ul>
-                        <li>
-                            <a href="#" class="dropdown__link">
-                                <i class="fas fa-folder"></i>
-                                Portaraits
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="#" class="dropdown__link">
-                        <i class="fas fa-hdd"></i>
-                        Home
-                    </a>
-
-                    <ul>
-                        <li>
-                            <a href="#" class="dropdown__link">
-                                <i class="fas fa-folder"></i>
-                                Hero Backgrounds
-                            </a>
-
-                            <ul>
-                                <li>
-                                    <a href="#" class="dropdown__link">
-                                        <i class="fas fa-folder"></i>
-                                        Outdoors
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="dropdown__link">
-                                        <i class="fas fa-folder"></i>
-                                        Indoors
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
+                <?php foreach ($choices as $key => $data): ?>
+                    <li>
+                        <a href="#" data-upload_location_id="<?=$data['upload_location_id']?>" class="dropdown__link">
+                            <?=$data['label']?><?php if ($key == $current_subfolder) : ?> (current)<?php endif; ?>
+                        </a>
+                        <?php
+                            if (! empty($data['children'])) {
+                                echo '<ul>';
+                                $this->embed('ee:files/subfolder-dropdown', [
+                                    'data' => $data['children'],
+                                    'current_subfolder' => $current_subfolder,
+                                ]);
+                                echo '</ul>';
+                            }
+                        ?>
+                    </li>
+                <?php endforeach ?>
             </ul>
         </div>
     </div>

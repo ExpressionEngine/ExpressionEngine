@@ -41,10 +41,18 @@ class Manage extends EntryManager\Columns\Column
             $toolbar['rename'] = array(
                 'href' => '#',
                 'title' => lang('rename_cmd'),
+                'rel' => 'modal-confirm-rename-folder',
+                'data-file-id' => $file->file_id,
+                'data-file-name' => $file->file_name,
             );
             $toolbar['move'] = array(
                 'href' => '#',
                 'title' => lang('move'),
+                'rel' => 'modal-confirm-move-file',
+                'data-move-file' => 'move-trigger',
+                'data-file-id' => $file->file_id,
+                'data-file-name' => $file->file_name,
+                'data-confirm-ajax' => ee('CP/URL')->make('files/confirm'),
             );
         }
         if ($file->model_type == 'File') {

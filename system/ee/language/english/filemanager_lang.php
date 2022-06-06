@@ -1020,6 +1020,8 @@ $lang = array(
 
     'error_creating_directory' => 'Could not create folder',
 
+    'error_moving_directory_directory_already_exists' => 'Could not move folder because a folder with that name already exists.',
+
     'subfolder_directory_created' => 'Folder created',
 
 );

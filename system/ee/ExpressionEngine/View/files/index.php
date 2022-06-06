@@ -1,6 +1,6 @@
-<?php 
+<?php
 if (! AJAX_REQUEST) {
-    $this->extend('_templates/default-nav'); 
+    $this->extend('_templates/default-nav');
 }
 ?>
 
@@ -96,23 +96,23 @@ if (! AJAX_REQUEST) {
                         ];
                     }
                     $options[] = [
-                            'value' => "download",
-                            'text' => lang('download')
+                        'value' => "download",
+                        'text' => lang('download')
                     ];
                     $options[] = [
-                            'value' => "copy_link",
-                            'text' => lang('copy_link'),
-                            // 'attrs' => ' data-action="copy-link"'
+                        'value' => "copy_link",
+                        'text' => lang('copy_link'),
+                        // 'attrs' => ' data-action="copy-link"'
                     ];
                     $options[] = [
-                            'value' => "move",
-                            'text' => lang('move'),
-                            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-move-file"'
+                        'value' => "move",
+                        'text' => lang('move'),
+                        'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-move-file"'
                     ];
                     $options[] = [
-                            'value' => "replace",
-                            'text' => lang('replace_file'),
-                            'attrs' => ''
+                        'value' => "replace",
+                        'text' => lang('replace_file'),
+                        'attrs' => ''
                     ];
                     if (ee('Permission')->can('delete_files')) {
                         $options[] = [
@@ -134,8 +134,9 @@ if (! AJAX_REQUEST) {
     </div>
 </div>
 
-<?php 
+<?php
 if (! AJAX_REQUEST) {
+    // Remove modal
     $modal_vars = array(
         'name' => 'modal-confirm-delete-file',
         'form_url' => $form_url,
@@ -143,18 +144,21 @@ if (! AJAX_REQUEST) {
             'bulk_action' => 'remove'
         )
     );
-    
+
     $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
     ee('CP/Modal')->addModal('delete-file', $modal);
 
+    // Move file modal
     $modal_vars = array(
         'name' => 'modal-confirm-move-file',
         'form_url' => $form_url,
         'hidden' => array(
             'bulk_action' => 'move'
-        )
+        ),
+        'choices' => $uploadLocationsAndDirectoriesDropdownChoices,
+        'current_subfolder' => $current_subfolder,
     );
-    
+
     $modal = $this->make('ee:files/modals/move')->render($modal_vars);
     ee('CP/Modal')->addModal('move-file', $modal);
 }
