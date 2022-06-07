@@ -60,7 +60,7 @@
 								<?php if (! is_array($data)) : ?>
 									<a href="<?=$key?>" class="dropdown__link"><?=$data?></a>
 								<?php elseif (isset($data['upload_location_id'])): ?>
-									<a href="#" data-upload_location_id="<?=$data['upload_location_id']?>" class="dropdown__link">
+									<a href="#" data-upload_location_id="<?=$data['upload_location_id']?>" data-directory_id="0" class="dropdown__link">
 										<?=$data['label']?>
 									</a>
 									<?php

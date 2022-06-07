@@ -212,7 +212,7 @@ trait FileManagerTrait
         $table->setColumns($table_columns);
 
         $uploaderComponent = [
-            'allowedDirectory' => $upload_location_id ?: 'all',
+            'allowedDirectory' => 'all',
             'contentType' => 'image',
             'file' => null,
             'showActionButtons' => false,
@@ -221,7 +221,7 @@ trait FileManagerTrait
             'addInput' => false,
         ];
 
-        $table->setNoResultsHTML(ee('View')->make('ee:_shared/file/upload-widget')->render(['component' => $uploaderComponent]));
+        $table->setNoResultsHTML(ee('View')->make('ee:_shared/file/upload-widget')->render(['component' => $uploaderComponent]), 'file-upload-widget');
 
         if (! empty($uploadLocation) && $uploadLocation->subfolders_on_top === true) {
             // $files->fields('model_type');
@@ -324,7 +324,7 @@ trait FileManagerTrait
         ee()->javascript->set_global([
             'file_view_url' => ee('CP/URL')->make('files/file/view/###')->compile(),
             'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
-            'lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>',
+            'lang.remove_confirm' => lang('file') . ': <b>### ' . lang('files') . '</b>',
             'viewManager.saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => $upload_location_id, 'viewtype' => $view_type])->compile()
         ]);
         

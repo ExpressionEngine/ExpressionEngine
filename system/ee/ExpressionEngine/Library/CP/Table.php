@@ -735,10 +735,13 @@ class Table
         );
     }
 
-    public function setNoResultsHTML($html)
+    public function setNoResultsHTML($html, $class='')
     {
         $this->config['no_results'] = $this->setNoResultsText('');
         $this->config['no_results']['html'] = $html;
+        if (!empty($class)) {
+            $this->config['no_results']['class'] = $class;
+        }
     }
 
     /**

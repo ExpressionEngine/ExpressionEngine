@@ -4,11 +4,11 @@
 
 <?php /* Table */ if (!$grid_input): ?>
 
-<?php if(empty($data) && !empty($no_results['html'])) : ?>
-	<div class="no-results">
+<?php if (!empty($no_results['html'])) : ?>
+	<div class="no-results<?php if (!empty($data)) :?> hidden<?php endif;?><?=(isset($no_results['class']) ? ' ' . $no_results['class'] : '')?>">
 		<?=$no_results['html']?>
 	</div>
-<?php else: ?>
+<?php endif; ?>
 
 
     <?php if ($wrap): ?>
@@ -219,7 +219,6 @@
     <?php if ($wrap): ?>
     	</div>
     <?php endif ?>
-<?php endif; ?>
 
 
 <?php /* End table */

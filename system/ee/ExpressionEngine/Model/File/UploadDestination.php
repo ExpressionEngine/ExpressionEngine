@@ -519,8 +519,9 @@ class UploadDestination extends StructureModel
                         $path = $path . urlencode($directory->file_name) . '/';
                         $children[$directory->getId()] = [
                             'label' => $folder_icon,
-                            'path' => $path,
                             'upload_location_id' => $this->getId(),
+                            'path' => $path,
+                            'directory_id' => $directory->getId(),
                             'children' => $this->buildDirectoriesDropdown($directory->file_id, $icon, $path, false)
                         ];
                     }
