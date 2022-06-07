@@ -35,12 +35,16 @@ class Files extends AbstractFilesController
         $vars['viewtype'] = $view_type;
 
         $this->generateSidebar();
-        $this->stdHeader();
+        $headerVars = $this->stdHeader();
         ee()->view->cp_page_title = lang('file_manager');
 
         $vars['cp_heading'] = lang('all_files');
 
         $vars['toolbar_items'] = [];
+
+        // Add upload locations to the vars
+        $vars['uploadLocationsAndDirectoriesDropdownChoices'] = $headerVars['uploadLocationsAndDirectoriesDropdownChoices'];
+        $vars['current_subfolder'] = ee('Request')->get('directory_id');
 
         ee()->view->cp_breadcrumbs = array(
             '' => lang('files')

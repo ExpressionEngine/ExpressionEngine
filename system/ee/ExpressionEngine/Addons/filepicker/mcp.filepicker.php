@@ -295,7 +295,7 @@ class Filepicker_mcp
 
     public function ajaxUpload()
     {
-        $dir_id = ee('Request')->post('directory');
+        $dir_id = ee('Request')->post('directory') ?: ee('Request')->post('upload_location_id');
 
         if (empty($dir_id)) {
             show_404();
@@ -341,6 +341,7 @@ class Filepicker_mcp
                         // Inconsistent casing for backwards compatibility
                         'status' => 'success',
                         'title' => $file->file_name,
+                        'file_id' => $file->getId(),
                         'file_name' => $file->file_name,
                         'isImage' => $file->isImage(),
                         'isSVG' => $file->isSVG(),
