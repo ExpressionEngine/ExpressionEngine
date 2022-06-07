@@ -695,7 +695,7 @@ class Filesystem
 
         $i = 0;
         $extension = $this->extension($path);
-        $dirname =  $this->dirname($path) . DIRECTORY_SEPARATOR;
+        $dirname =  $this->dirname($path) . '/';
         $filename = $this->filename($path);
 
         // Glob only works with local filesytem but is more performant than filtering directory results
