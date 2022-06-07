@@ -932,7 +932,12 @@ class Uploads extends AbstractFilesController
                 unset($missing_only_sizes[$resize_id]);
             }
         }
-
+        
+        // Filter out any folders, these should look like files that are missing an extension
+        $current_files = array_filter($current_files, function($file) {
+            return strpos($file, '.') !== false;
+        });
+        
         foreach ($current_files as $filePath) {
             $fileInfo = $uploadDestination->getFilesystem()->getWithMetadata($filePath);
             $mime = $uploadDestination->getFilesystem()->getMimetype($filePath);
@@ -1022,7 +1027,9 @@ class Uploads extends AbstractFilesController
                 );
 
                 // Update dimensions
-                $image_dimensions = ee()->filemanager->get_image_dimensions($file->getAbsolutePath());
+                $image_dimensions = $file->actLocally(function($path) {
+                    return ee()->filemanager->get_image_dimensions($path);
+                });
                 $file->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
                 $file->file_size = $fileInfo['size'];
                 $file->save();

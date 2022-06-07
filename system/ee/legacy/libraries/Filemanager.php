@@ -1112,6 +1112,11 @@ class Filemanager
         ee()->load->helper('file');
 
         $img_path = rtrim($prefs['server_path'], '/') . '/';
+        $dirname = rtrim(dirname($file_path), '/') . '/';
+        if(strpos($dirname, $img_path) === 0) {
+            $img_path = $dirname;
+        }
+
         $source = $file_path;
         $filesystem = $prefs['directory']->getFilesystem();
 
@@ -1234,7 +1239,7 @@ class Filemanager
                     ($prefs['width'] < $size['width'] && $prefs['height'] < $size['height'])
                 ) or
                 $size['resize_type'] == 'none') {
-                $filesystem->copy($source, $destination);
+                $config['new_image'] = $config['source_image'];
             } elseif (isset($size['resize_type']) and $size['resize_type'] == 'crop') {
                 // Scale the larger dimension up so only one dimension of our
                 // image fits within the desired dimension

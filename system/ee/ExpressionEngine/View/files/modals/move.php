@@ -22,7 +22,13 @@
             </ul>
 
             <h3><?=lang('destination')?></h3>
-            <?php $this->embed('ee:files/multilevel-select'); ?>
+            <?php $this->embed(
+                    'ee:files/multilevel-select',
+                    [
+                        'choices' => $choices,
+                        'current_subfolder' => $current_subfolder,
+                    ]
+                ); ?>
 
             <div class="ajax"><?=isset($ajax_default) ? $ajax_default : '' ?></div>
         </div>
@@ -30,9 +36,9 @@
         <div class="dialog__actions <?php if (isset($secure_form_ctrls)): ?>dialog__actions--with-bg<?php endif ?>">
             <?php if (isset($secure_form_ctrls)): ?>
                 <?php $this->embed(
-                'ee:_shared/form/fieldset',
-                ['setting' => $secure_form_ctrls, 'group' => false]
-            ); ?>
+                    'ee:_shared/form/fieldset',
+                    ['setting' => $secure_form_ctrls, 'group' => false]
+                ); ?>
             <?php endif ?>
             <div class="dialog__buttons">
                 <button class="button button--primary button--danger" type="submit" value="<?=lang('save'); ?>" data-submit-text="<?=lang('save'); ?>" data-work-text="<?=lang('btn_confirm_and_save_working'); ?>"><?=lang('save'); ?></button>

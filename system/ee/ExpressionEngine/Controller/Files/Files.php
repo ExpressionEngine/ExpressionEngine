@@ -97,6 +97,29 @@ class Files extends AbstractFilesController
 
         $headerVars = $this->stdHeader();
 
+        $vars['destinations'] = [];
+        $sub_dir_id = (int) ee('Request')->get('directory_id') ?: null;
+
+        // Compile the list of subdirectories for the new folder drop down
+        $uploadDestinations = ee('Model')->get('UploadDestination')->filter('module_id', 0)->fields('id', 'name')->all();
+        foreach ($uploadDestinations as $uploadDestination) {
+            $vars['destinations'][] = [
+                'id' => $uploadDestination->id,
+                'value' => $uploadDestination->name,
+                'selected' => ($id === $uploadDestination->id && is_null($sub_dir_id)),
+            ];
+
+            // Get our subfolders from the upload destination
+            $subDestinations = $uploadDestination->getSelectFromSubdirectories();
+
+            foreach ($subDestinations as &$subDestination) {
+                $subDestination['selected'] = (($id === $uploadDestination->id) && ($sub_dir_id === $subDestination['id']));
+                $subDestination['id'] = $uploadDestination->id . '-' . $subDestination['id'];
+            }
+
+            $vars['destinations'] = array_merge($vars['destinations'], $subDestinations);
+        }
+
         $vars['toolbar_items'] = [];
         if (ee('Permission')->can('upload_new_files') && $dir->memberHasAccess(ee()->session->getMember())) {
             $new_folder_modal_name = 'modal_new_folder';
@@ -119,34 +142,11 @@ class Files extends AbstractFilesController
                 'content' => lang('upload'),
             ];
 
-            $destinations = [];
-            $sub_dir_id = (int) ee('Request')->get('directory_id') ?: null;
-
-            // Compile the list of subdirectories for the new folder drop down
-            $uploadDestinations = ee('Model')->get('UploadDestination')->filter('module_id', 0)->fields('id', 'name')->all();
-            foreach ($uploadDestinations as $uploadDestination) {
-                $destinations[] = [
-                    'id' => $uploadDestination->id,
-                    'value' => $uploadDestination->name,
-                    'selected' => ($id === $uploadDestination->id && is_null($sub_dir_id)),
-                ];
-
-                // Get our subfolders from the upload destination
-                $subDestinations = $uploadDestination->getSelectFromSubdirectories();
-
-                foreach ($subDestinations as &$subDestination) {
-                    $subDestination['selected'] = (($id === $uploadDestination->id) && ($sub_dir_id === $subDestination['id']));
-                    $subDestination['id'] = $uploadDestination->id . '-' . $subDestination['id'];
-                }
-
-                $destinations = array_merge($destinations, $subDestinations);
-            }
-
             // Generate the contents of the new folder modal
             $new_folder_modal = ee('View')->make('files/modals/folder')->render([
                 'name' => 'modal-new-folder',
                 'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
-                'destinations' => $destinations,
+                'destinations' => $vars['destinations'],
                 'choices' => $headerVars['uploadLocationsAndDirectoriesDropdownChoices'],
                 'selected' => !empty(ee('Request')->get('directory_id')) ? ee('Request')->get('directory_id') : $uploadDestination->getId(),
                 'selected_subfolder' => ee('Request')->get('directory_id')
@@ -155,6 +155,10 @@ class Files extends AbstractFilesController
             // Add the modal to the DOM
             ee('CP/Modal')->addModal('modal-new-folder', $new_folder_modal);
         }
+
+        // Add upload locations to the vars
+        $vars['uploadLocationsAndDirectoriesDropdownChoices'] = $headerVars['uploadLocationsAndDirectoriesDropdownChoices'];
+        $vars['current_subfolder'] = ee('Request')->get('directory_id');
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('files')->compile() => lang('files'),
@@ -223,6 +227,7 @@ class Files extends AbstractFilesController
                 ->withTitle(lang('error_creating_directory'))
                 ->addToBody($validationErrors)
                 ->defer();
+
             return ee()->functions->redirect($return_url);
         }
 
@@ -468,6 +473,52 @@ class Files extends AbstractFilesController
         } else {
             $this->overwriteOrRename($result['params']['file'], $result['params']['name']);
         }
+    }
+
+    public function move()
+    {
+        // We are going to move Folder2/test/testing123 to Folder/test2/testing123
+
+        // subdirectory 37 is currently located here:
+        // Folder2/test/testing123
+        $subdirectory_id = 37;
+
+        // subdirectory 34 is currently located here:
+        // Folder/test2
+        $move_to_directory_id = 34;
+        // $move_to_directory_id = 36; // move it back
+
+        $directory = ee('Model')->get('Directory', $subdirectory_id)
+            ->filter('model_type', 'Directory')
+            ->first();
+
+        $moveToDir = ee('Model')->get('Directory', $move_to_directory_id)
+            ->filter('model_type', 'Directory')
+            ->first();
+
+        $return_url = ee('CP/URL')->make('files/directory/' . $directory->upload_location_id)
+            ->setQueryStringVariable('directory_id', $directory->file_id);
+
+        if ($moveToDir->getFilesystem()->exists($directory->file_name)) {
+            // Error dir already exists
+            ee('CP/Alert')->makeInline('files-form')
+                ->asWarning()
+                ->withTitle(lang('error_moving_directory_directory_already_exists'))
+                ->defer();
+
+            return ee()->functions->redirect($return_url);
+        }
+
+        // mvoe the folder
+        ee('Filesystem')->rename(
+            $directory->getAbsolutePath(),
+            $moveToDir->getAbsolutePath() . '/' . $directory->file_name
+        );
+
+        $directory->directory_id = $moveToDir->file_id;
+        $directory->save();
+
+        return ee()->functions->redirect($return_url);
     }
 
     public function rmdir()
