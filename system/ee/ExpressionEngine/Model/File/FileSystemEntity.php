@@ -92,7 +92,6 @@ class FileSystemEntity extends ContentModel
         'description' => 'xss',
         'credit' => 'xss',
         'location' => 'xss',
-        'file_name' => 'required'
     );
 
     protected $file_id;
@@ -146,7 +145,7 @@ class FileSystemEntity extends ContentModel
 
     public function get__file_hw_original()
     {
-        if (empty($this->file_hw_original)) {
+        if (empty($this->file_hw_original) && !empty($this->file_name)) {
             ee()->load->library('filemanager');
             $image_dimensions = $this->actLocally(function($path) {
                 return ee()->filemanager->get_image_dimensions($path);

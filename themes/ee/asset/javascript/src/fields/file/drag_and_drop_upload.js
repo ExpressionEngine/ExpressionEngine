@@ -285,7 +285,12 @@ function (_React$Component) {
                 break;
 
               default:
-                file.error = EE.lang.file_dnd_unexpected_error;
+                if (typeof _response.message !== 'undefined') {
+                  file.error = _response.message;
+                } else {
+                  file.error = EE.lang.file_dnd_unexpected_error;
+                }
+
                 console.error(xhr);
                 reject(file);
                 break;
@@ -299,6 +304,8 @@ function (_React$Component) {
 
                 if (typeof response.error != 'undefined') {
                   file.error = response.error;
+                } else if (typeof response.message !== 'undefined') {
+                  file.error = response.message;
                 }
               } catch (err) {}
 

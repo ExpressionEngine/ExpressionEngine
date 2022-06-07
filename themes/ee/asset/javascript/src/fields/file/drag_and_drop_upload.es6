@@ -200,7 +200,11 @@ class DragAndDropUpload extends React.Component {
               reject(file)
               break
             default:
-              file.error = EE.lang.file_dnd_unexpected_error
+              if (typeof(response.message) !== 'undefined') {
+                file.error = response.message;
+              } else {
+                file.error = EE.lang.file_dnd_unexpected_error;
+              }
               console.error(xhr)
               reject(file)
               break
@@ -213,6 +217,8 @@ class DragAndDropUpload extends React.Component {
             var response = JSON.parse(xhr.responseText);
             if (typeof(response.error) != 'undefined') {
               file.error = response.error;
+            } else if (typeof(response.message) !== 'undefined') {
+              file.error = response.message;
             }
           } catch(err) {}
           console.error(xhr)
