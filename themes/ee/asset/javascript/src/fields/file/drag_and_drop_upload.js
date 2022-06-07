@@ -102,8 +102,17 @@ function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "setDirectory", function (directory) {
       var item = _this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
 
+      var directory_id;
+
+      if (directory == item.upload_location_id) {
+        directory_id = 0;
+      } else {
+        directory_id = directory;
+      }
+
       _this.setState({
         directory: directory || 'all',
+        directory_id: directory_id,
         path: item.path || '',
         upload_location_id: item.upload_location_id || null
       });
@@ -121,8 +130,17 @@ function (_React$Component) {
       var that = _assertThisInitialized(_this);
 
       var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      var directory_id;
+
+      if (directory == item.upload_location_id) {
+        directory_id = 0;
+      } else {
+        directory_id = directory;
+      }
+
       that.setState({
         directory: directory || 'all',
+        directory_id: directory_id,
         path: item.path || '',
         upload_location_id: item.upload_location_id || null
       });
@@ -164,7 +182,10 @@ function (_React$Component) {
       pendingFiles: null,
       error: null,
       path: '',
-      upload_location_id: null
+      upload_location_id: null,
+      //main folder ID
+      directory_id: 0 //subfolder ID
+
     };
     _this.queue = new ConcurrencyQueue({
       concurrency: _this.props.concurrency
@@ -256,7 +277,7 @@ function (_React$Component) {
 
       return new Promise(function (resolve, reject) {
         var formData = new FormData();
-        formData.append('directory', _this3.state.directory);
+        formData.append('directory_id', _this3.state.directory_id);
         formData.append('file', file);
         formData.append('csrf_token', EE.CSRF_TOKEN);
         formData.append('upload_location_id', _this3.state.upload_location_id);

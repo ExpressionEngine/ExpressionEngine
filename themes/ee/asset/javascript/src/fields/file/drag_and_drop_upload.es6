@@ -28,7 +28,8 @@ class DragAndDropUpload extends React.Component {
       pendingFiles: null,
       error: null,
       path: '',
-      upload_location_id: null
+      upload_location_id: null, //main folder ID
+      directory_id: 0 //subfolder ID
     }
     this.queue = new ConcurrencyQueue({concurrency: this.props.concurrency})
   }
@@ -161,7 +162,7 @@ class DragAndDropUpload extends React.Component {
   makeUploadPromise(file) {
     return new Promise((resolve, reject) => {
       let formData = new FormData()
-      formData.append('directory', this.state.directory)
+      formData.append('directory_id', this.state.directory_id)
       formData.append('file', file)
       formData.append('csrf_token', EE.CSRF_TOKEN)
       formData.append('upload_location_id', this.state.upload_location_id)
@@ -242,9 +243,15 @@ class DragAndDropUpload extends React.Component {
 
   setDirectory = (directory) => {
     var item = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
-
+    var directory_id;
+    if (directory == item.upload_location_id) {
+      directory_id = 0;
+    } else {
+      directory_id = directory;
+    }
     this.setState({
       directory: directory || 'all',
+      directory_id: directory_id,
       path: item.path || '',
       upload_location_id: item.upload_location_id || null
     })
@@ -260,8 +267,17 @@ class DragAndDropUpload extends React.Component {
     // this.presentFilepicker(url, true)
     var that = this;
     var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+    var directory_id;
+
+    if (directory == item.upload_location_id) {
+      directory_id = 0;
+    } else {
+      directory_id = directory;
+    }
+
     that.setState({
       directory: directory || 'all',
+      directory_id: directory_id,
       path: item.path || '',
       upload_location_id: item.upload_location_id || null
     })
