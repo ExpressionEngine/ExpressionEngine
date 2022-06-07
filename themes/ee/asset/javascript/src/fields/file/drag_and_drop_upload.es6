@@ -63,9 +63,6 @@ class DragAndDropUpload extends React.Component {
     if (directory == 'all') return null;
 
     var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
-    // directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
-    //   return thisDirectory.value == directory;
-    // });
 
     return directory.label
   }

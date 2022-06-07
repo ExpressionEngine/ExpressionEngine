@@ -192,10 +192,7 @@ function (_React$Component) {
     key: "getDirectoryName",
     value: function getDirectoryName(directory) {
       if (directory == 'all') return null;
-      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory); // directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
-      //   return thisDirectory.value == directory;
-      // });
-
+      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
       return directory.label;
     }
   }, {

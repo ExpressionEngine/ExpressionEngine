@@ -216,7 +216,7 @@ trait FileManagerTrait
             'contentType' => 'image',
             'file' => null,
             'showActionButtons' => false,
-            'createNewDirectory' => true
+            'createNewDirectory' => false
         ];
 
         $table->setNoResultsHTML(ee('View')->make('ee:_shared/file/upload-widget')->render(['component' => $uploaderComponent]));

@@ -136,7 +136,7 @@ abstract class AbstractFiles extends CP_Controller
                     'label' => '<i class="fas fa-hdd"></i>' . $upload_pref->name,
                     'path' => '',
                     'upload_location_id' => $upload_pref->id,
-                    'children' => $upload_pref->buildDirectoriesDropdown($upload_pref->getId())
+                    'children' => $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true)
                 ];
             }
         }

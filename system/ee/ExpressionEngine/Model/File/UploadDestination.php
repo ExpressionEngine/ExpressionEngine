@@ -493,7 +493,7 @@ class UploadDestination extends StructureModel
      * @param boolean $root_only
      * @return array
      */
-    public function buildDirectoriesDropdown($directory_id, $path = '', $root_only = true)
+    public function buildDirectoriesDropdown($directory_id, $icon = false, $path = '', $root_only = true)
     {
         $children = [];
         $i = 0;
@@ -511,12 +511,17 @@ class UploadDestination extends StructureModel
                 foreach ($directories as $i => $directory) {
                     $i++;
                     if (!empty($directory)) {
+                        $folder_icon = $directory->title;
+                        if ($icon) {
+                            $folder_icon = '<i class="fas fa-folder"></i>' . $directory->title;
+                            $icon = true;
+                        }
                         $path = $path . urlencode($directory->file_name) . '/';
                         $children[$directory->getId()] = [
-                            'label' => '<i class="fas fa-folder"></i>' . $directory->title,
+                            'label' => $folder_icon,
                             'path' => $path,
                             'upload_location_id' => $this->getId(),
-                            'children' => $this->buildDirectoriesDropdown($directory->file_id, $path, false)
+                            'children' => $this->buildDirectoriesDropdown($directory->file_id, $icon, $path, false)
                         ];
                     }
                 }
