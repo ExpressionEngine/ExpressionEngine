@@ -109,7 +109,7 @@ class Uploads extends AbstractFilesController
         if (! empty($_POST)) {
             $validate = $this->validateUploadPreferences($upload_destination);
 
-            if (AJAX_REQUEST) {
+            if (AJAX_REQUEST && !empty(ee()->input->post('ee_fv_field'))) {
                 $field = ee()->input->post('ee_fv_field');
 
                 // We may be validating a field in a Grid
