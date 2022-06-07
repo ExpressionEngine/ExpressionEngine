@@ -105,7 +105,7 @@ function (_React$Component) {
       _this.setState({
         directory: directory || 'all',
         path: item.path || '',
-        parentId: item.upload_location_id || null
+        upload_location_id: item.upload_location_id || null
       });
     });
 
@@ -116,9 +116,21 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "uploadNew", function (directory) {
-      var url = _this.props.uploadEndpoint + '&directory=' + directory;
+      // let url = this.props.uploadEndpoint+'&directory='+directory
+      // this.presentFilepicker(url, true)
+      var that = _assertThisInitialized(_this);
 
-      _this.presentFilepicker(url, true);
+      var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      that.setState({
+        directory: directory || 'all',
+        path: item.path || '',
+        upload_location_id: item.upload_location_id || null
+      });
+      $('.f_open-filepicker').trigger('click');
+      $('.f_open-filepicker').change(function (e) {
+        var files = e.target.files;
+        that.handleDroppedFiles(files);
+      });
     });
 
     _defineProperty(_assertThisInitialized(_this), "assignDropZoneRef", function (dropZone) {
@@ -152,7 +164,7 @@ function (_React$Component) {
       pendingFiles: null,
       error: null,
       path: '',
-      parentId: null
+      upload_location_id: null
     };
     _this.queue = new ConcurrencyQueue({
       concurrency: _this.props.concurrency
@@ -247,7 +259,7 @@ function (_React$Component) {
         formData.append('directory', _this3.state.directory);
         formData.append('file', file);
         formData.append('csrf_token', EE.CSRF_TOKEN);
-        formData.append('parentId', _this3.state.parentId);
+        formData.append('upload_location_id', _this3.state.upload_location_id);
         formData.append('path', _this3.state.path);
         var xhr = new XMLHttpRequest();
         xhr.open('POST', EE.dragAndDrop.endpoint, true);
@@ -395,7 +407,11 @@ function (_React$Component) {
         ref: function ref(dropZone) {
           return _this5.assignDropZoneRef(dropZone);
         }
-      }, this.state.files.length == 0 && React.createElement(React.Fragment, null, React.createElement("div", {
+      }, !this.props.showActionButtons && React.createElement("p", {
+        "class": "file-field_upload-icon"
+      }, React.createElement("i", {
+        "class": "fas fa-cloud-upload-alt"
+      })), this.state.files.length == 0 && React.createElement(React.Fragment, null, React.createElement("div", {
         className: "file-field__dropzone-title"
       }, heading), React.createElement("div", {
         "class": "file-field__dropzone-button"
@@ -411,7 +427,9 @@ function (_React$Component) {
           return _this5.setDirectory(directory);
         },
         buttonClass: "button--default button--small",
-        createNewDirectory: this.props.createNewDirectory
+        createNewDirectory: this.props.createNewDirectory,
+        ignoreChild: false,
+        addInput: false
       })), React.createElement("div", {
         "class": "file-field__dropzone-icon"
       }, React.createElement("i", {
@@ -463,7 +481,9 @@ function (_React$Component) {
         rel: "modal-file",
         itemClass: "m-link",
         buttonClass: "button--default button--small",
-        createNewDirectory: this.props.createNewDirectory
+        createNewDirectory: false,
+        ignoreChild: true,
+        addInput: false
       }), React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_upload_new,
         action: true,
@@ -474,10 +494,10 @@ function (_React$Component) {
         onSelect: function onSelect(directory) {
           return _this5.uploadNew(directory);
         },
-        rel: "modal-file",
-        itemClass: "m-link",
         buttonClass: "button--default button--small",
-        createNewDirectory: this.props.createNewDirectory
+        createNewDirectory: this.props.createNewDirectory,
+        ignoreChild: false,
+        addInput: true
       }))));
     }
   }]);

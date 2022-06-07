@@ -45,7 +45,7 @@ class DropDownButton extends React.Component {
                     {item.path.trim() == "" ? <i class="fas fa-hdd"></i> : <i class="fas fa-folder"></i>}
                     {item.label}
                     </a>
-                    {item.children && item.children.length ? this.dropdownRecursion(item.children) : null}
+                    {item.children && !this.props.ignoreChild && item.children.length ? this.dropdownRecursion(item.children) : null}
                 </li>
             ))}
             </ul>
@@ -76,11 +76,14 @@ class DropDownButton extends React.Component {
                         }
                     </> }
                     <div className="dropdown__scroll">
+                        {this.props.addInput && 
+                            <input type="file" className="f_open-filepicker" style={{display: 'none'}} data-upload_location_id={''} data-path={''} />
+                        }
                         {this.dropdownRecursion(dropdownItems)}
                     </div>
                     {this.props.createNewDirectory &&
                         <p className="create_new_direction">
-                            <a href="#" rel="add_new" class='js-modal-link--side submit'><i class="fas fa-plus icon-left"></i> {EE.lang.file_dnd_create_directory}</a>
+                            <a href="#" rel="add_new" className='js-modal-link--side submit'><i className="fas fa-plus icon-left"></i> {EE.lang.file_dnd_create_directory}</a>
                         </p>
                     }
                 </div>

@@ -28,7 +28,7 @@ class DragAndDropUpload extends React.Component {
       pendingFiles: null,
       error: null,
       path: '',
-      parentId: null
+      upload_location_id: null
     }
     this.queue = new ConcurrencyQueue({concurrency: this.props.concurrency})
   }
@@ -159,13 +159,12 @@ class DragAndDropUpload extends React.Component {
   }
 
   makeUploadPromise(file) {
-
     return new Promise((resolve, reject) => {
       let formData = new FormData()
       formData.append('directory', this.state.directory)
       formData.append('file', file)
       formData.append('csrf_token', EE.CSRF_TOKEN)
-      formData.append('parentId', this.state.parentId)
+      formData.append('upload_location_id', this.state.upload_location_id)
       formData.append('path', this.state.path)
 
       let xhr = new XMLHttpRequest()
@@ -241,7 +240,7 @@ class DragAndDropUpload extends React.Component {
     this.setState({
       directory: directory || 'all',
       path: item.path || '',
-      parentId: item.upload_location_id || null
+      upload_location_id: item.upload_location_id || null
     })
   }
 
@@ -251,8 +250,21 @@ class DragAndDropUpload extends React.Component {
   }
 
   uploadNew = (directory) => {
-    let url = this.props.uploadEndpoint+'&directory='+directory
-    this.presentFilepicker(url, true)
+    // let url = this.props.uploadEndpoint+'&directory='+directory
+    // this.presentFilepicker(url, true)
+    var that = this;
+    var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+    that.setState({
+      directory: directory || 'all',
+      path: item.path || '',
+      upload_location_id: item.upload_location_id || null
+    })
+
+    $('.f_open-filepicker').trigger('click');
+    $('.f_open-filepicker').change(function(e){
+      var files = e.target.files;
+      that.handleDroppedFiles(files)
+    });
   }
 
   presentFilepicker(url, iframe) {
@@ -338,6 +350,9 @@ class DragAndDropUpload extends React.Component {
       <React.Fragment>
         <div className={"file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')} >
           <div style={{display: this.state.files.length == 0 ? 'block' : 'none'}} className="file-field__dropzone" ref={(dropZone) => this.assignDropZoneRef(dropZone)}>
+          {!this.props.showActionButtons && 
+              <p class="file-field_upload-icon"><i class="fas fa-cloud-upload-alt"></i></p>
+          }
           {this.state.files.length == 0 && <>
             <div className="file-field__dropzone-title">{heading}</div>
             <div class="file-field__dropzone-button">
@@ -356,6 +371,8 @@ class DragAndDropUpload extends React.Component {
                         onSelect={(directory) => this.setDirectory(directory)}
                         buttonClass="button--default button--small"
                         createNewDirectory={this.props.createNewDirectory}
+                        ignoreChild={false}
+                        addInput={false}
                     />
                 }
             </div>
@@ -404,7 +421,9 @@ class DragAndDropUpload extends React.Component {
               rel="modal-file"
               itemClass="m-link"
               buttonClass="button--default button--small"
-              createNewDirectory={this.props.createNewDirectory}
+              createNewDirectory={false}
+              ignoreChild={true}
+              addInput={false}
             />
 
             <DropDownButton key={EE.lang.file_dnd_upload_new}
@@ -414,10 +433,10 @@ class DragAndDropUpload extends React.Component {
               placeholder={EE.lang.file_dnd_filter_directories}
               items={EE.dragAndDrop.uploadDesinations}
               onSelect={(directory) => this.uploadNew(directory)}
-              rel="modal-file"
-              itemClass="m-link"
               buttonClass="button--default button--small"
               createNewDirectory={this.props.createNewDirectory}
+              ignoreChild={false}
+              addInput={true}
             />
           </div>
         )}

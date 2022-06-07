@@ -72,7 +72,7 @@ function (_React$Component) {
           "class": "fas fa-hdd"
         }) : React.createElement("i", {
           "class": "fas fa-folder"
-        }), item.label), item.children && item.children.length ? _this.dropdownRecursion(item.children) : null);
+        }), item.label), item.children && !_this.props.ignoreChild && item.children.length ? _this.dropdownRecursion(item.children) : null);
       })));
     });
 
@@ -120,14 +120,22 @@ function (_React$Component) {
         className: "dropdown__divider"
       })), React.createElement("div", {
         className: "dropdown__scroll"
-      }, this.dropdownRecursion(dropdownItems)), this.props.createNewDirectory && React.createElement("p", {
+      }, this.props.addInput && React.createElement("input", {
+        type: "file",
+        className: "f_open-filepicker",
+        style: {
+          display: 'none'
+        },
+        "data-upload_location_id": '',
+        "data-path": ''
+      }), this.dropdownRecursion(dropdownItems)), this.props.createNewDirectory && React.createElement("p", {
         className: "create_new_direction"
       }, React.createElement("a", {
         href: "#",
         rel: "add_new",
-        "class": "js-modal-link--side submit"
+        className: "js-modal-link--side submit"
       }, React.createElement("i", {
-        "class": "fas fa-plus icon-left"
+        className: "fas fa-plus icon-left"
       }), " ", EE.lang.file_dnd_create_directory))));
     }
   }]);
