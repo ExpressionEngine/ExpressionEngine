@@ -348,6 +348,25 @@ class Files extends AbstractFilesController
     }
 
     /**
+     * Rename a file/folder
+     *
+     * @access public
+     * @return void
+     */
+    public function rename()
+    {
+        echo "<pre>";
+        var_dump('rename file/dir');
+        exit;
+
+        // TODO:
+        // Validate the rename
+        // Rename the folder on the filesystem
+        // update database
+        // redirect
+    }
+
+    /**
      * Generate post re-assignment view if applicable
      *
      * @access public

@@ -5,6 +5,11 @@
                 <h2 class="dialog__title"><?=isset($title) ? $title : lang('rename_folder') ?></h2>
                 <div class="dialog__close js-modal-close"><i class="fas fa-times"></i></div>
             </div>
+
+            <div class="dialog__body">
+                <input type="select" name="new_name">
+                <input type="submit" name="submit">
+            </div>
         </form>
     </div>
 </div>

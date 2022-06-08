@@ -42,6 +42,7 @@ class Manage extends EntryManager\Columns\Column
                 'href' => '#',
                 'title' => lang('rename_cmd'),
                 'rel' => 'modal-confirm-rename-folder',
+                'class' => 'm-link',
                 'data-file-id' => $file->file_id,
                 'data-file-name' => $file->file_name,
             );
