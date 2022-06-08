@@ -25,7 +25,7 @@ class Directory extends FileSystemEntity
         'description' => 'xss',
         'credit' => 'xss',
         'location' => 'xss',
-        'file_name' => 'required|xss|alphaDash|unique[upload_location_id,directory_id]'
+        'file_name' => 'required|xss|alphaDash|notStartsWith[_]|unique[upload_location_id,directory_id]'
     );
 
     public function onBeforeInsert()

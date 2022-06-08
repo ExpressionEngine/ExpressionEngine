@@ -328,10 +328,10 @@ class EE_Upload
          */
         $result = true;
 
-        if($this->upload_destination) {
+        if ($this->upload_destination) {
             $stream = fopen($this->file_temp, 'r+');
             $result = $this->upload_destination->getFilesystem()->writeStream($this->file_name, $stream);
-        }else if (! @copy($this->file_temp, $this->upload_path . $this->file_name)) {
+        } else if (! @copy($this->file_temp, $this->upload_path . $this->file_name)) {
             if (! @move_uploaded_file($this->file_temp, $this->upload_path . $this->file_name)) {
                 $this->set_error('upload_destination_error');
 
@@ -339,7 +339,7 @@ class EE_Upload
             }
         }
 
-        if(!$this->upload_destination || $this->upload_destination->getFilesystem() instanceof Local) {
+        if (!$this->upload_destination || $this->upload_destination->getFilesystem() instanceof Local) {
             @chmod($this->upload_path . $this->file_name, FILE_WRITE_MODE);
         }
 

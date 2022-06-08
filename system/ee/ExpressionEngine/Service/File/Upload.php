@@ -253,29 +253,31 @@ class Upload
         return $sections;
     }
 
-    public function uploadTo($dir_id)
+    public function uploadTo($upload_location_id, $directory_id = 0)
     {
-        $dir = ee('Model')->get('UploadDestination', $dir_id)
+        $uploadLocation = ee('Model')->get('UploadDestination', $upload_location_id)
             ->filter('site_id', ee()->config->item('site_id'))
             ->first();
 
-        if (! $dir) {
+        if (! $uploadLocation) {
             show_error(lang('no_upload_destination'));
         }
 
-        if (! $dir->memberHasAccess(ee()->session->getMember())) {
+        // check EE permissions on upload location
+        if (! $uploadLocation->memberHasAccess(ee()->session->getMember())) {
             show_error(lang('unauthorized_access'), 403);
         }
 
-        if (! $dir->exists()) {
+        // check upload location exists
+        if (! $uploadLocation->exists()) {
             if (AJAX_REQUEST) {
                 show_error(lang('invalid_upload_destination'), 404);
             }
-            $upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
+            $upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $uploadLocation->id);
             ee('CP/Alert')->makeStandard()
                 ->asIssue()
                 ->withTitle(lang('file_not_found'))
-                ->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
+                ->addToBody(sprintf(lang('directory_not_found'), $uploadLocation->name))
                 ->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
                 ->now();
 
@@ -284,17 +286,33 @@ class Upload
 
         $posted = false;
 
-        // Check permissions on the directory
-        if (! $dir->isWritable()) {
+        // Check file system permissions on upload location
+        if (! $uploadLocation->isWritable()) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
                 ->withTitle(lang('dir_not_writable'))
-                ->addToBody(sprintf(lang('dir_not_writable_desc'), $dir->server_path))
+                ->addToBody(sprintf(lang('dir_not_writable_desc'), $uploadLocation->name))
                 ->now();
         }
 
+        // check subfolder permissions
+        if ($directory_id != 0) {
+            $directory = ee('Model')->get('Directory', $directory_id)->filter('upload_location_id', $uploadLocation->id)->first();
+            if (! $directory) {
+                show_error(lang('invalid_subfolder'));
+            }
+
+            if (! $directory->exists()) {
+                show_error(lang('subfolder_not_exists'));
+            }
+
+            if (! $directory->isWritable()) {
+                show_error(lang('subfolder_not_writable'));
+            }
+        }
+
         $file = ee('Model')->make('File');
-        $file->UploadDestination = $dir;
+        $file->UploadDestination = $uploadLocation;
 
         $result = $this->validateFile($file);
 
@@ -309,7 +327,7 @@ class Upload
 
                 // PUNT! @TODO Break away from the old Filemanger Library
                 ee()->load->library('filemanager');
-                $upload_response = ee()->filemanager->upload_file($dir_id, 'file');
+                $upload_response = ee()->filemanager->upload_file($upload_location_id, 'file', false, $directory_id);
                 if (isset($upload_response['error'])) {
                     ee('CP/Alert')->makeInline('shared-form')
                         ->asIssue()
@@ -320,7 +338,8 @@ class Upload
                     $uploaded = true;
                     $file = ee('Model')->get('File', $upload_response['file_id'])->first();
 
-                    $file->upload_location_id = $dir_id;
+                    $file->upload_location_id = $upload_location_id;
+                    $file->directory_id = $directory_id;
                     $file->site_id = ee()->config->item('site_id');
 
                     // Validate handles setting properties...

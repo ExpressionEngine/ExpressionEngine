@@ -1034,7 +1034,7 @@ class Filemanager
      * @param 	boolean $image_only	Override to restrict uploads to images
      * @return	mixed	uploaded file info
      */
-    public function upload_file($dir_id = '', $field = false, $image_only = false)
+    public function upload_file($dir_id = '', $field = false, $image_only = false, $subfolder_id = 0)
     {
         // Fetches all info and is site_id independent
         $dir = $this->directory($dir_id, false, true, true);
@@ -1045,7 +1045,7 @@ class Filemanager
 
         // Override the allowed types of the dir if we're restricting to images
         if ($image_only) {
-            $dir->allowed_types = 'img';
+            $dir->allowed_types = ['img'];
         }
 
         $data = array('error' => 'No File');
@@ -1061,7 +1061,7 @@ class Filemanager
             // If we actually found the image, go ahead and send it to the
             // callback, most likely _upload_file
             if (isset($_FILES[$field])) {
-                $data = call_user_func($this->config['upload_file_callback'], $dir, $field);
+                $data = call_user_func($this->config['upload_file_callback'], $dir, $field, $subfolder_id);
             }
         }
 
@@ -1800,7 +1800,7 @@ class Filemanager
      * @param	string	$field_name	Provide the field name in case it's a custom field
      * @return 	array 	Array of file_data sent to Filemanager->save_file
      */
-    private function _upload_file($dir, $field_name)
+    private function _upload_file($dir, $field_name, $directory_id = 0)
     {
         // --------------------------------------------------------------------
         // Make sure the file is allowed
@@ -1843,7 +1843,7 @@ class Filemanager
         );
 
         // Restricted upload directory?
-        if ($dir['allowed_types'] == 'img') {
+        if ($dir['allowed_types'] == ['img']) {
             $config['is_image'] = true;
         }
 

@@ -295,7 +295,8 @@ class Filepicker_mcp
 
     public function ajaxUpload()
     {
-        $dir_id = ee('Request')->post('directory') ?: ee('Request')->post('upload_location_id');
+        $dir_id = ee('Request')->post('upload_location_id') ?: ee('Request')->post('directory');
+        $subfolder_id = (int) ee('Request')->post('directory_id');
 
         if (empty($dir_id)) {
             show_404();
@@ -303,7 +304,7 @@ class Filepicker_mcp
 
         $errors = null;
 
-        $result = ee('File')->makeUpload()->uploadTo($dir_id);
+        $result = ee('File')->makeUpload()->uploadTo($dir_id, $subfolder_id);
 
         $file = $result['file'];
 

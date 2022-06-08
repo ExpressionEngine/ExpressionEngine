@@ -1024,6 +1024,12 @@ $lang = array(
 
     'subfolder_directory_created' => 'Folder created',
 
+    'invalid_subfolder' => 'Selected subfolder does not exist in this upload location',
+
+    'subfolder_not_exists' => 'Selected subfolder does not exist on the server',
+
+    'subfolder_not_writable' => 'Selected subfolder is not writable',
+
 );
 
 // EOF
