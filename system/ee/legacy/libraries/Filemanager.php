@@ -330,7 +330,7 @@ class Filemanager
             $directory = $this->fetch_upload_dirs()[$directory];
         }
 
-        if (! $file_path or ! $directory) {
+        if (! $file_path || ! $directory) {
             return $this->_save_file_response(false, lang('no_path_or_dir'));
         }
 
@@ -366,7 +366,7 @@ class Filemanager
         $prefs['mime_type'] = $mime;
 
         // Check to see if its an editable image, if it is, try and create the thumbnail
-        if ($this->is_editable_image($file_path, $mime)) {
+        if ($this->is_editable_image($prefs['temp_file'] ?: $file_path, $mime)) {
             // Check to see if we have GD and can resize images
             if (! (extension_loaded('gd') && function_exists('gd_info'))) {
                 return $this->_save_file_response(false, lang('gd_not_installed'));
@@ -1124,7 +1124,7 @@ class Filemanager
         // another filesystem. This seems a little wasteful for uploaded files
         // since there is a temporary file already in the $_FILES super global
         $tmp = $filesystem->copyToTempFile($file_path);
-        
+
         if (! isset($prefs['mime_type'])) {
             // Figure out the mime type
             $prefs['mime_type'] = $filesystem->getMimetype($file_path);
@@ -1908,6 +1908,7 @@ class Filemanager
         $file_data = array(
             'upload_location_id' => $dir['id'],
             'site_id' => ee()->config->item('site_id'),
+            'temp_file' => $_FILES[$field]['tmp_name'] ?? null,
 
             'file_name' => $file['file_name'],
             'orig_name' => $original_filename, // name before any upload library processing
@@ -1985,6 +1986,7 @@ class Filemanager
         // Change file size to human readable
         ee()->load->helper('number');
         $file_data['file_size'] = byte_format($file_data['file_size']);
+        unset($file_data['temp_file']);
 
         return $file_data;
     }
