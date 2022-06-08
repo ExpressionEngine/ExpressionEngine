@@ -66,6 +66,19 @@
                                         <?php if (!$field->publishLayoutCollapseIsHidden()): ?>
 										<label class="field-option-collapse"><input class="checkbox checkbox--small" type="checkbox"<?php if ($field->isCollapsed()):?> checked="checked"<?php endif ?>><?=lang('collapse')?></label>
                                         <?php endif; ?>
+                    <div class="layout-item__field-width">
+                      <div class="field-control">
+                        <i class="fas fa-arrows-h"></i>
+                        <select class="select-popup button--xsmall">
+                          <option value="100%">100%</option>
+                          <option value="75%">75%</option>
+                          <option value="66.66%">66%</option>
+                          <option value="50%">50%</option>
+                          <option value="33.33%">33%</option>
+                          <option value="25%">25%</option>
+                        </select>
+                      </div>
+                    </div>
 									</div>
 								</div>
 							</div>

@@ -171,6 +171,15 @@
 	display: none;
 }
 
+// Adjust margins on Publish form
+.panel-body__publish {
+  .tab {
+    margin-left: -15px;
+    margin-right: -15px;
+    font-size: 0; // allow fields side-by-side
+  }
+}
+
 .tab-open {
 	display: block;
 }

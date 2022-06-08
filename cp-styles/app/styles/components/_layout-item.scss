@@ -60,6 +60,7 @@
 	font-size: 0.9em;
 	// margin-top: $s-xs;
 	padding-top: $s-xs;
+  position: relative;
 	border-top: 1px solid color(border);
 
 	label {
@@ -72,4 +73,23 @@
 			top: 3px;
 		}
 	}
+
+  .layout-item__field-width {
+    position: absolute;
+    bottom: -4px;
+    right: 0px;
+
+    .field-control {
+      position: relative;
+    }
+
+    i, .fas {
+      font-size: 12px;
+      color: color(text-secondary);
+      position: absolute;
+      left: -15px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
 }
