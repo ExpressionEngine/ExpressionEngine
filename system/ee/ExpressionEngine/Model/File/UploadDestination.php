@@ -471,7 +471,7 @@ class UploadDestination extends StructureModel
             if (empty($fileOrDirName)) {
                 continue;
             }
-            $model = ($i == $depth) ? 'File' : 'Directory';
+            $model = ($i == $depth) ? 'FileSystemEntity' : 'Directory';
             $file = ee('Model')
                 ->get($model)
                 ->filter('upload_location_id', $this->getId())
