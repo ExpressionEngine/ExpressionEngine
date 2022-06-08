@@ -100,6 +100,8 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "setDirectory", function (directory) {
+      if (directory == 'all') return null;
+
       var item = _this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
 
       var directory_id;
@@ -125,8 +127,6 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "uploadNew", function (directory) {
-      // let url = this.props.uploadEndpoint+'&directory='+directory
-      // this.presentFilepicker(url, true)
       var that = _assertThisInitialized(_this);
 
       var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
@@ -175,16 +175,18 @@ function (_React$Component) {
 
     var directoryName = _this.getDirectoryName(props.allowedDirectory);
 
+    var _item = _this.getDirectoryItem(props.allowedDirectory);
+
     _this.state = {
       files: [],
       directory: directoryName ? props.allowedDirectory : 'all',
       directoryName: directoryName,
       pendingFiles: null,
       error: null,
-      path: '',
-      upload_location_id: null,
+      path: _item.path,
+      upload_location_id: _item.upload_location_id,
       //main folder ID
-      directory_id: 0 //subfolder ID
+      directory_id: _item.directory_id //subfolder ID
 
     };
     _this.queue = new ConcurrencyQueue({
@@ -227,6 +229,27 @@ function (_React$Component) {
       if (directory == 'all') return null;
       var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
       return directory.label;
+    }
+  }, {
+    key: "getDirectoryItem",
+    value: function getDirectoryItem(directory) {
+      if (directory == 'all') {
+        var directory = {
+          upload_location_id: null,
+          path: '',
+          directory_id: 0
+        };
+      } else {
+        var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
+        if (directory.value == directory.upload_location_id) {
+          directory.directory_id = 0;
+        } else {
+          directory.directory_id = directory.value;
+        }
+      }
+
+      return directory;
     }
   }, {
     key: "bindDragAndDropEvents",

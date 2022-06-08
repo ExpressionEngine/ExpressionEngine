@@ -211,8 +211,11 @@ trait FileManagerTrait
         $table_columns = $column_renderer->getTableColumnsConfig();
         $table->setColumns($table_columns);
 
+        $directory_id = (int) ee('Request')->get('directory_id');
+        $folderId = $directory_id ? $directory_id : $upload_location_id;
+
         $uploaderComponent = [
-            'allowedDirectory' => 'all',
+            'allowedDirectory' => $folderId ?: 'all',
             'contentType' => 'all',
             'file' => null,
             'showActionButtons' => false,

@@ -21,16 +21,19 @@ class DragAndDropUpload extends React.Component {
 
     let directoryName = this.getDirectoryName(props.allowedDirectory);
 
+    let item  = this.getDirectoryItem(props.allowedDirectory);
+
     this.state = {
       files: [],
       directory: directoryName ? props.allowedDirectory : 'all',
       directoryName: directoryName,
       pendingFiles: null,
       error: null,
-      path: '',
-      upload_location_id: null, //main folder ID
-      directory_id: 0 //subfolder ID
+      path: item.path,
+      upload_location_id: item.upload_location_id, //main folder ID
+      directory_id: item.directory_id //subfolder ID
     }
+    
     this.queue = new ConcurrencyQueue({concurrency: this.props.concurrency})
   }
 
@@ -66,6 +69,25 @@ class DragAndDropUpload extends React.Component {
     var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
 
     return directory.label
+  }
+
+  getDirectoryItem(directory) {
+    if (directory == 'all') {
+      var directory = {
+        upload_location_id: null,
+        path: '',
+        directory_id: 0
+      }
+    } else {
+      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
+      if (directory.value == directory.upload_location_id) {
+        directory.directory_id = 0
+      } else {
+        directory.directory_id = directory.value
+      }
+    }
+    return directory
   }
 
   checkChildDirectory = (items, directory) => {
@@ -242,13 +264,17 @@ class DragAndDropUpload extends React.Component {
   }
 
   setDirectory = (directory) => {
+    if (directory == 'all') return null;
+
     var item = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
     var directory_id;
     if (directory == item.upload_location_id) {
       directory_id = 0;
     } else {
       directory_id = directory;
     }
+
     this.setState({
       directory: directory || 'all',
       directory_id: directory_id,
@@ -263,8 +289,6 @@ class DragAndDropUpload extends React.Component {
   }
 
   uploadNew = (directory) => {
-    // let url = this.props.uploadEndpoint+'&directory='+directory
-    // this.presentFilepicker(url, true)
     var that = this;
     var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
     var directory_id;
