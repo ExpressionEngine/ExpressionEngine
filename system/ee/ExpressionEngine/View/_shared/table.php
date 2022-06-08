@@ -10,7 +10,7 @@
 	</div>
 <?php endif; ?>
 
-
+<?php if (!empty($data)) :?>
     <?php if ($wrap): ?>
         <div class="table-responsive table-responsive--collapsible">
     <?php endif ?>
@@ -219,6 +219,7 @@
     <?php if ($wrap): ?>
     	</div>
     <?php endif ?>
+<?php endif; ?>
 
 
 <?php /* End table */

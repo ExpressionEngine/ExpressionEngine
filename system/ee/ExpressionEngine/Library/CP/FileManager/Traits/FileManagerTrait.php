@@ -213,7 +213,7 @@ trait FileManagerTrait
 
         $uploaderComponent = [
             'allowedDirectory' => 'all',
-            'contentType' => 'image',
+            'contentType' => 'all',
             'file' => null,
             'showActionButtons' => false,
             'createNewDirectory' => false,
