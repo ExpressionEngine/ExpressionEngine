@@ -129,35 +129,6 @@ class FileSystemEntity extends ContentModel
         return $this->UploadDestination;
     }
 
-    public function get__width()
-    {
-        $dimensions = explode(" ", $this->getProperty('file_hw_original'));
-
-        return $dimensions[1];
-    }
-
-    public function get__height()
-    {
-        $dimensions = explode(" ", $this->getProperty('file_hw_original'));
-
-        return $dimensions[0];
-    }
-
-    public function get__file_hw_original()
-    {
-        if (empty($this->file_hw_original) && !empty($this->file_name)) {
-            ee()->load->library('filemanager');
-            $image_dimensions = $this->actLocally(function($path) {
-                return ee()->filemanager->get_image_dimensions($path);
-            });
-            if ($image_dimensions !== false) {
-                $this->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
-            }
-        }
-
-        return $this->file_hw_original;
-    }
-
     /**
      * Determine whether or not this entity represents a file
      *

@@ -78,7 +78,7 @@ class Site extends Model
             'model' => 'Comment'
         ),
         'Files' => array(
-            'model' => 'File',
+            'model' => 'FileSystemEntity',
             'type' => 'hasMany'
         ),
         'UploadDestinations' => array(

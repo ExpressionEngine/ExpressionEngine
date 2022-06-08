@@ -83,13 +83,13 @@ class Member extends ContentModel
         ),
         'UploadedFiles' => array(
             'type' => 'hasMany',
-            'model' => 'File',
+            'model' => 'FileSystemEntity',
             'to_key' => 'uploaded_by_member_id',
             'weak' => true
         ),
         'ModifiedFiles' => array(
             'type' => 'hasMany',
-            'model' => 'File',
+            'model' => 'FileSystemEntity',
             'to_key' => 'modified_by_member_id',
             'weak' => true
         ),
