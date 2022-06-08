@@ -143,6 +143,9 @@ class Files extends AbstractFilesController
             }
             $vars['toolbar_items']['upload'] = [
                 'href' => '#',
+                'rel' => 'trigger-upload-to-current-location',
+                'data-upload_location_id' => $id,
+                'data-directory_id' => (int) ee('Request')->get('directory_id'),
                 'content' => lang('upload'),
             ];
 
