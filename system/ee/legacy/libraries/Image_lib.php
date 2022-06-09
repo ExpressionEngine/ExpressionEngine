@@ -197,7 +197,7 @@ class EE_Image_lib
                 }
 
                 // Are we writing to a temp file
-                if (stripos($full_dest_path, str_replace(DIRECTORY_SEPARATOR, '/', sys_get_temp_dir())) !== false) {
+                if (stripos($full_dest_path, str_replace(DIRECTORY_SEPARATOR, '/', sys_get_temp_dir())) === 0) {
                     $this->dest_folder = dirname($full_dest_path) . '/';
                     $this->dest_image = basename($full_dest_path);
                 // Is there a file name?
