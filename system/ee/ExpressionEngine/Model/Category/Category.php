@@ -41,7 +41,7 @@ class Category extends ContentModel
         ),
         'Files' => array(
             'type' => 'hasAndBelongsToMany',
-            'model' => 'File',
+            'model' => 'FileSystemEntity',
             'pivot' => array(
                 'table' => 'file_categories',
                 'left' => 'cat_id',
@@ -60,7 +60,7 @@ class Category extends ContentModel
         ),
         'CategoryFiles' => array(
             'type' => 'hasAndBelongsToMany',
-            'model' => 'File',
+            'model' => 'FileSystemEntity',
             'pivot' => array(
                 'table' => 'file_usage',
             ),

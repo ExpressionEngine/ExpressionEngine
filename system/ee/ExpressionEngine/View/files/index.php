@@ -144,5 +144,15 @@ if (! AJAX_REQUEST) {
 
     $modal = $this->make('ee:files/modals/move')->render($modal_vars);
     ee('CP/Modal')->addModal('move-file', $modal);
+
+
+    // Rename modal
+    $renameModal = ee('View')->make('files/modals/rename')->render([
+        'name' => 'modal-confirm-rename-folder',
+        'form_url'=> ee('CP/URL')->make('files/rename')->compile(),
+    ]);
+
+    // Add the modal to the DOM
+    ee('CP/Modal')->addModal('modal-confirm-rename-folder', $renameModal);
 }
 ?>

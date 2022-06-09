@@ -348,6 +348,25 @@ class Files extends AbstractFilesController
     }
 
     /**
+     * Rename a file/folder
+     *
+     * @access public
+     * @return void
+     */
+    public function rename()
+    {
+        echo "<pre>";
+        var_dump('rename file/dir');
+        exit;
+
+        // TODO:
+        // Validate the rename
+        // Rename the folder on the filesystem
+        // update database
+        // redirect
+    }
+
+    /**
      * Generate post re-assignment view if applicable
      *
      * @access public
@@ -368,7 +387,7 @@ class Files extends AbstractFilesController
         $usageCount = 0;
         foreach ($files as $file) {
             if ($file->model_type == 'Directory') {
-                $countFiles = ee('db')->from('files')->where('directory_id', $file->file_id)->count();
+                $countFiles = ee('db')->from('files')->where('directory_id', $file->file_id)->count_all_results();
                 if ($countFiles > 0) {
                     $title = lang('folder_not_empty');
                     $desc = lang('all_files_in_folder_will_be_deleted') . ' ' . $desc;
@@ -666,7 +685,7 @@ class Files extends AbstractFilesController
 
         $member = ee()->session->getMember();
 
-        $files = ee('Model')->get('File', $file_ids)
+        $files = ee('Model')->get('FileSystemEntity', $file_ids)
             ->filter('site_id', ee()->config->item('site_id'))
             ->all()
             ->filter(function ($file) use ($member) {

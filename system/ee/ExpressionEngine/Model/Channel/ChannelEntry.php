@@ -118,7 +118,7 @@ class ChannelEntry extends ContentModel
         ),
         'EntryFiles' => array(
             'type' => 'hasAndBelongsToMany',
-            'model' => 'File',
+            'model' => 'FileSystemEntity',
             'pivot' => array(
                 'table' => 'file_usage',
             ),
