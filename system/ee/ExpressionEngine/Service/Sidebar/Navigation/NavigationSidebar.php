@@ -56,7 +56,7 @@ class NavigationSidebar extends AbstractSidebar
                 $list = $section->addList(lang('menu_entries'));
 
                 if (count($channels->all())) {
-                    $list->addItem('<i class="fas fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
+                    $list->addItem('<i class="fal fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
                 }
 
                 foreach ($channels->all() as $channel) {

@@ -34,7 +34,7 @@ $checkbox-size: 15px;
 		opacity: 0;
 
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 		@extend .fa-fw;
 		font-size: math.div($checkbox-size, 1.6);
 

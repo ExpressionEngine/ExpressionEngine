@@ -16,7 +16,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
       <img src="../app/assets/images/ee-logotype-white.svg" class="logotype beta-slide-in-top" alt="ExpressionEngine">
       <span class="beta-intro beta-slide-in-bottom">Welcome to the beta!</span>
     </div>
-    <i class="fas fa-times beta-banner-close"></i>
+    <i class="fal fa-times beta-banner-close"></i>
   </a>
 
   <div class="dashboard__item dashboard__item--full widget widget--chart">
@@ -24,8 +24,8 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 			<h2 class="widget__title">Analytics</h2>
 
 			<div class="button-group button-group-small">
-				<a href="admin.php?/cp/publish/edit" class="button button--default">Visitors <i class="fas fa-sm fa-chevron-down"></i></a>
-				<a href="admin.php?/cp/publish/edit" class="button button--default"><i class="fas fa-calendar-alt"></i></a>
+				<a href="admin.php?/cp/publish/edit" class="button button--default">Visitors <i class="fal fa-sm fa-chevron-down"></i></a>
+				<a href="admin.php?/cp/publish/edit" class="button button--default"><i class="fal fa-calendar-alt"></i></a>
 			</div>
 		</div>
 
@@ -74,13 +74,13 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 				<div class="list-item list-item--action">
 					<a href="" class="list-item__content">
 						<b>208</b> Members
-						<i class="fas fa-chevron-right float-right" style="margin-top: 2px;"></i>
+						<i class="fal fa-chevron-right float-right" style="margin-top: 2px;"></i>
 					</a>
 				</div>
 				<div class="list-item list-item--action">
 					<a href="" class="list-item__content">
 						<b>4</b> Banned Members
-						<i class="fas fa-chevron-right float-right" style="margin-top: 2px;"></i>
+						<i class="fal fa-chevron-right float-right" style="margin-top: 2px;"></i>
 					</a>
 				</div>
 			</div> -->
@@ -147,7 +147,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 			<div class="list-item list-item--action">
 				<a href="" class="list-item__content">
 					<b>4</b> comments awaiting moderation
-					<i class="fas fa-chevron-right float-right" style="margin-top: 2px;"></i>
+					<i class="fal fa-chevron-right float-right" style="margin-top: 2px;"></i>
 				</a>
 			</div> -->
 
@@ -276,7 +276,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 				<div class="list-item list-item--action">
 					<a href="" class="list-item__content">
 						There are <b>2</b> items are in the spam queue
-						<i class="fas fa-chevron-right float-right" style="margin-top: 2px;"></i>
+						<i class="fal fa-chevron-right float-right" style="margin-top: 2px;"></i>
 					</a>
 				</div>
 			</div>

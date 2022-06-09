@@ -744,13 +744,13 @@ body[data-theme=pink] .file-card__info {
 
 .fa,
 .fas,
-.ee-debugger .tab-bar--editable .tab-remove:before,
-.ee-debugger .tab-bar--editable .tab-on:before,
-.ee-debugger .tab-bar--editable .tab-off:before,
 .fa-solid,
 .far,
 .fa-regular,
 .fal,
+.ee-debugger .tab-bar--editable .tab-remove:before,
+.ee-debugger .tab-bar--editable .tab-on:before,
+.ee-debugger .tab-bar--editable .tab-off:before,
 .fa-light,
 .fat,
 .fa-thin,
@@ -17565,22 +17565,22 @@ readers do not read off random characters that represent icons */
  * Copyright 2022 Fonticons, Inc.
  */
 :root, :host {
-  --fa-font-solid: normal 900 1em/1 "Font Awesome 6 Pro";
+  --fa-font-light: normal 300 1em/1 "Font Awesome 6 Pro";
 }
 
 @font-face {
   font-family: "Font Awesome 6 Pro";
   font-style: normal;
-  font-weight: 900;
+  font-weight: 300;
   font-display: block;
-  src: url("../../webfonts/fa-solid-900.woff2") format("woff2"), url("../../webfonts/fa-solid-900.ttf") format("truetype");
+  src: url("../../webfonts/fa-light-300.woff2") format("woff2"), url("../../webfonts/fa-light-300.ttf") format("truetype");
 }
-.fas, .ee-debugger .tab-bar--editable .tab-remove:before,
+.fal, .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .tab-off:before,
-.fa-solid {
+.fa-light {
   font-family: "Font Awesome 6 Pro";
-  font-weight: 900;
+  font-weight: 300;
 }
 
 .hljs {

@@ -72,7 +72,7 @@
 
 	&::after {
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 
 		content: fa-content($fa-var-angle-down);
 

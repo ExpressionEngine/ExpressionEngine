@@ -56,7 +56,7 @@ $widget-padding-x: 20px;
 [class^='widget-icon--'],
 [class*=' widget-icon--'] {
 	@extend %fa-icon;
-	@extend .fas;
+	@extend .fal;
 }
 
 .widget-icon--reorder {
@@ -111,7 +111,7 @@ $widget-padding-x: 20px;
 
 	&::before {
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 
 		content: fa-content($fa-var-life-ring);
 

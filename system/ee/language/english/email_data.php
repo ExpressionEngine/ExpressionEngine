@@ -911,7 +911,7 @@ if (! function_exists('post_install_message_template')) {
 
   		<div class="alert alert--attention">
             <div class="alert__icon">
-              <i class="fas fa-info-circle fa-fw"></i>
+              <i class="fal fa-info-circle fa-fw"></i>
             </div>
             <div class="alert__content">
     			<p>If you are site owner, please login into your Control Panel and create your first template.</p>
@@ -919,7 +919,7 @@ if (! function_exists('post_install_message_template')) {
   		</div>
   		<div class="alert alert--attention">
             <div class="alert__icon">
-              <i class="fas fa-info-circle fa-fw"></i>
+              <i class="fal fa-info-circle fa-fw"></i>
             </div>
             <div class="alert__content">
     			<p>If this is your first time using ExpressionEngine CMS, make sure to <a href="https://docs.expressionengine.com/latest/getting-started/the-big-picture.html">check out the documentation</a> to get started.</p>

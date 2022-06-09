@@ -239,7 +239,7 @@
 
 .icon-reorder {
 	@extend %fa-icon;
-	@extend .fas;
+	@extend .fal;
 
 	color: color(text-secondary);
 	content: fa-content($fa-var-bars);

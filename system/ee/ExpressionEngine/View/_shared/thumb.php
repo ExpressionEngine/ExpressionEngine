@@ -5,7 +5,7 @@
 					<div class="file-card__preview">
 					<?php if ($missing): ?>
 						<div class="file-card__preview-icon">
-							<i class="fas fa-lg fa-exclamation-triangle"></i>
+							<i class="fal fa-lg fa-exclamation-triangle"></i>
 							<div class="file-card__preview-icon-text"><?=lang('file_not_found')?></div>
 						</div>
 					<?php else: ?>
@@ -16,11 +16,11 @@
 						<?php else: ?>
 							<div class="file-card__preview-icon">
 								<?php if ($file->mime_type == 'text/plain'): ?>
-									<i class="fas fa-file-alt fa-3x"></i>
+									<i class="fal fa-file-alt fa-3x"></i>
 								<?php elseif ($file->mime_type == 'application/zip'): ?>
-									<i class="fas fa-file-archive fa-3x"></i>
+									<i class="fal fa-file-archive fa-3x"></i>
 								<?php else: ?>
-									<i class="fas fa-file fa-3x"></i>
+									<i class="fal fa-file fa-3x"></i>
 								<?php endif; ?>
 							</div>
 						<?php endif; ?>

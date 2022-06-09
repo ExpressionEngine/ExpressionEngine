@@ -29,7 +29,7 @@
 
 	&::after {
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 		content: fa-content($fa-var-bars);
 		color: color(text-secondary);
 		cursor: move;

@@ -33,11 +33,11 @@
 							<img src="<?=ee('Thumbnail')->get($file)->url?>" alt="<?=$file->file_name?>">
 						<?php else: ?>
 							<?php if ($file->mime_type == 'text/plain'): ?>
-								<i class="fas fa-file-alt fa-5x"></i>
+								<i class="fal fa-file-alt fa-5x"></i>
 							<?php elseif ($file->mime_type == 'application/zip'): ?>
-								<i class="fas fa-file-archive fa-5x"></i>
+								<i class="fal fa-file-archive fa-5x"></i>
 							<?php else: ?>
-								<i class="fas fa-file fa-5x"></i>
+								<i class="fal fa-file fa-5x"></i>
 							<?php endif; ?>
 							<span class="file-thumb"><b><?=$file->file_name?></b></span>
 						<?php endif; ?>
@@ -54,10 +54,10 @@
       <?php $this->embed('ee:_shared/table', $table); ?>
     <?php endif; ?>
 
-	<?php 
+	<?php
 	if (! empty($pagination)) {
     	echo $pagination;
-	} 
+	}
 	?>
 	<?php if (! empty($upload) && is_numeric($dir)): ?>
 		<div class="panel-footer">

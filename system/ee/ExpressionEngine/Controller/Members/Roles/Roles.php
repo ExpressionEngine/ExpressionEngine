@@ -416,7 +416,7 @@ class Roles extends AbstractRolesController
     private function setWithPost(Role $role)
     {
         $site_id = ee()->config->item('site_id');
-        
+
         $role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
 
         $role->name = ee('Request')->post('name');
@@ -426,7 +426,7 @@ class Roles extends AbstractRolesController
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
         unset($settings['id'], $settings['role_id'], $settings['site_id']);
-        
+
         foreach (array_keys($settings) as $key) {
             if (ee('Request')->post($key) !== null) {
                 $settings[$key] = ee('Request')->post($key);
@@ -1412,7 +1412,7 @@ class Roles extends AbstractRolesController
             foreach ($templates as $template) {
                 $template_name = $template->template_name;
                 if ($template->enable_http_auth == 'y') {
-                    $template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
+                    $template_name = '<i class="fal fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
                 }
                 $children[$template->getId()] = $template_name;
             }

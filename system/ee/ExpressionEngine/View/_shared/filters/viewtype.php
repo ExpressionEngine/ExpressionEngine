@@ -3,9 +3,9 @@
 	<?php if ($value != $option): ?>
 		<a class="filter-bar__button button button--default button--small" href="<?=$info['url']?>" title="<?=lang('view_as') . $info['label']?>">
 			<?php if ($option == 'list'): ?>
-				<i class="fas fa-fw fa-list"></i>
+				<i class="fal fa-fw fa-list"></i>
 			<?php else: ?>
-				<i class="fas fa-fw fa-grip-horizontal"></i>
+				<i class="fal fa-fw fa-grip-horizontal"></i>
 			<?php endif; ?>
 		</a>
 	<?php endif; ?>
