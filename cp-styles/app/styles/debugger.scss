@@ -9,8 +9,8 @@
 @import 'abstracts/_theme-helpers';
 @import 'abstracts/_mixins';
 
-@import 'vendor/fontawesome/scss/_fontawesome';
-@import 'vendor/fontawesome/scss/_solid';
+@import 'vendor/fontawesome/scss/fontawesome';
+@import 'vendor/fontawesome/scss/solid';
 
 // TODO: These styles overwrite sites that are also using highlight js.
 @import 'vendor/_hljs-theme';
