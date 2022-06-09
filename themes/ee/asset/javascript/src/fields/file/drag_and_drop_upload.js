@@ -52,7 +52,7 @@ function (_React$Component) {
 
         if (value == directory) {
           return window.list = item;
-        } else if (item.value != directory && item.children.length) {
+        } else if (value != directory && item.children.length) {
           _this.checkChildDirectory(item.children, directory);
         }
       });
@@ -111,6 +111,12 @@ function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "setDirectory", function (directory) {
       if (directory == 'all') return null;
 
+      if (typeof directory == 'number') {
+        directory = directory;
+      } else {
+        directory = parseInt(directory.substr(directory.indexOf('.') + 1));
+      }
+
       var item = _this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
 
       var directory_id;
@@ -137,6 +143,12 @@ function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "uploadNew", function (directory) {
       var that = _assertThisInitialized(_this);
+
+      if (typeof directory == 'number') {
+        directory = directory;
+      } else {
+        directory = parseInt(directory.substr(directory.indexOf('.') + 1));
+      }
 
       var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
       var directory_id;
@@ -254,7 +266,7 @@ function (_React$Component) {
         if (directory.value == directory.upload_location_id) {
           directory.directory_id = 0;
         } else {
-          directory.directory_id = directory.value;
+          directory.directory_id = parseInt(directory.value.substr(directory.value.indexOf('.') + 1));
         }
       }
 

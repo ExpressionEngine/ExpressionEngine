@@ -81,11 +81,10 @@ class DragAndDropUpload extends React.Component {
       }
     } else {
       var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
-
       if (directory.value == directory.upload_location_id) {
         directory.directory_id = 0
       } else {
-        directory.directory_id = directory.value
+        directory.directory_id = parseInt(directory.value.substr(directory.value.indexOf('.') + 1))
       }
     }
     return directory
@@ -102,7 +101,7 @@ class DragAndDropUpload extends React.Component {
       }
       if (value == directory) {
         return window.list = item;
-      }else if(item.value != directory && item.children.length) {
+      }else if(value != directory && item.children.length) {
         this.checkChildDirectory(item.children, directory);
       }
     })
@@ -274,8 +273,13 @@ class DragAndDropUpload extends React.Component {
   setDirectory = (directory) => {
     if (directory == 'all') return null;
 
-    var item = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+    if (typeof directory == 'number') {
+      directory = directory
+    } else {
+      directory = parseInt(directory.substr(directory.indexOf('.') + 1))
+    }
 
+    var item = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
     var directory_id;
     if (directory == item.upload_location_id) {
       directory_id = 0;
@@ -298,6 +302,13 @@ class DragAndDropUpload extends React.Component {
 
   uploadNew = (directory) => {
     var that = this;
+
+    if (typeof directory == 'number') {
+      directory = directory
+    } else {
+      directory = parseInt(directory.substr(directory.indexOf('.') + 1))
+    }
+    
     var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
     var directory_id;
 
