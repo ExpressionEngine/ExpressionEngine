@@ -364,7 +364,11 @@ class FileSystemEntity extends ContentModel
 
         // Remove the file
         if ($this->exists()) {
-            $filesystem->delete($this->getAbsolutePath());
+            if ($this->isDirectory()) {
+                $filesystem->deleteDir($this->getAbsolutePath());
+            } else {
+                $filesystem->delete($this->getAbsolutePath());
+            }
         }
 
         // Remove the thumbnail if it exists
@@ -459,6 +463,9 @@ class FileSystemEntity extends ContentModel
 
     public function set__title($value)
     {
+        if (empty($value)) {
+            $value = $this->getProperty('file_name');
+        }
         $this->setRawProperty('title', $this->stripAndTrim($value));
     }
 

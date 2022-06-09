@@ -401,11 +401,11 @@ class Filemanager
         }
 
         if (! isset($prefs['modified_by_member_id'])) {
-            $prefs['modified_by_member_id'] = $this->session->userdata('member_id');
+            $prefs['modified_by_member_id'] = ee()->session->userdata('member_id');
         }
 
         if (! isset($prefs['modified_date'])) {
-            $prefs['modified_date'] = $this->localize->now;
+            $prefs['modified_date'] = ee()->localize->now;
         }
 
         if (isset($prefs['file_name']) or isset($prefs['title'])) {
