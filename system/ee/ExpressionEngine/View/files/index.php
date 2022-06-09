@@ -39,23 +39,6 @@ if (! AJAX_REQUEST) {
                 </div>
             </div>
 
-            <!-- Display while file upload is in progress: -->
-            <div class="file-upload-progress__main-wrapper">
-                <div class="file-upload-progress__wrapper">
-                    <label>Uploading <strong>3</strong> files...</label>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 75%"></div>
-                    </div>
-                </div><!-- /file-upload-progress__wrapper -->
-
-                <div class="file-upload-progress__wrapper">
-                    <label>Uploading <strong>1</strong> file...</label>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 25%"></div>
-                    </div>
-                </div><!-- /file-upload-progress__wrapper -->
-            </div>
-
             <?php if (isset($breadcrumbs) && !empty($breadcrumbs)) : ?>
             <?php $i = 0; ?>
             <div class="f_manager-table-breadcrumbs">
