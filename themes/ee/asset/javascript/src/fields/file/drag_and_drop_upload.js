@@ -189,6 +189,7 @@ function (_React$Component) {
       directory_id: _item.directory_id //subfolder ID
 
     };
+    console.log('props', props);
     _this.queue = new ConcurrencyQueue({
       concurrency: _this.props.concurrency
     });
@@ -226,8 +227,10 @@ function (_React$Component) {
   }, {
     key: "getDirectoryName",
     value: function getDirectoryName(directory) {
+      console.log('111', directory);
       if (directory == 'all') return null;
       var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      console.log('222', directory);
       return directory.label;
     }
   }, {

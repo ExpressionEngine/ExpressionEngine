@@ -33,6 +33,8 @@ class DragAndDropUpload extends React.Component {
       upload_location_id: item.upload_location_id, //main folder ID
       directory_id: item.directory_id //subfolder ID
     }
+
+    console.log('props', props);
     
     this.queue = new ConcurrencyQueue({concurrency: this.props.concurrency})
   }
@@ -64,10 +66,12 @@ class DragAndDropUpload extends React.Component {
   }
 
   getDirectoryName(directory) {
+    console.log('111', directory);
     if (directory == 'all') return null;
 
     var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
 
+    console.log('222', directory);
     return directory.label
   }
 
