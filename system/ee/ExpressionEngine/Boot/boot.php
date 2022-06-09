@@ -136,6 +136,7 @@
  *  is relying on that instead of get_instance()
  * ------------------------------------------------------
  */
+    global $CI;
     $CI = $core->getLegacyApp()->getFacade();
 
     function get_instance()
@@ -158,6 +159,10 @@
         }
 
         return $facade;
+    }
+
+    if(defined('BOOT_CORE_ONLY')) {
+        return $core;
     }
 
 /*
