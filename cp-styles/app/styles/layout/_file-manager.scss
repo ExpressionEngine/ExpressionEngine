@@ -111,7 +111,7 @@
     li {
       a, span {
         border-radius: 0;
-        text-transform: capitalize;
+        text-transform: none;
         padding: 5px;
 
         i {
@@ -370,28 +370,28 @@
 .multilevel-select {
   display: block;
   width: 100%;
-  margin-top: 10px;
+  margin: 10px 0;
 
-  button {
-    display: flex;
-    align-items: center;
-    justify-content:space-between;
+  .select__button {
     width: 100%;
     text-align: left;
+
+    label {
+      display: block;
+      width: 100%;
+
+      span i { display: none;}
+    }
   }
 
-  .dropdown {
+  .select__dropdown {
     width: calc(100% - 60px);
 
-    ul {
+    .select__dropdown-item-parent {
       margin-top: 0;
-      list-style-type: none;
 
-      li {
-        a {
-          padding: 0 20px;
-          min-height: 30px;
-        }
+      .select__dropdown-item-parent {
+        padding-left: 20px;
       }
     }
   }

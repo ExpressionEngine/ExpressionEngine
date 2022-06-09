@@ -24165,7 +24165,7 @@ body[data-theme="dark"] {
 }
 .f_manager-table-breadcrumbs .breadcrumb li a, .f_manager-table-breadcrumbs .breadcrumb li span {
   border-radius: 0;
-  text-transform: capitalize;
+  text-transform: none;
   padding: 5px;
 }
 .f_manager-table-breadcrumbs .breadcrumb li a i, .f_manager-table-breadcrumbs .breadcrumb li span i {
@@ -24426,25 +24426,27 @@ body[data-theme="dark"] {
 .multilevel-select {
   display: block;
   width: 100%;
-  margin-top: 10px;
+  margin: 10px 0;
 }
-.multilevel-select button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.multilevel-select .select__button {
   width: 100%;
   text-align: left;
 }
-.multilevel-select .dropdown, .multilevel-select .select__dropdown {
+.multilevel-select .select__button label {
+  display: block;
+  width: 100%;
+}
+.multilevel-select .select__button label span i {
+  display: none;
+}
+.multilevel-select .select__dropdown {
   width: calc(100% - 60px);
 }
-.multilevel-select .dropdown ul, .multilevel-select .select__dropdown ul {
+.multilevel-select .select__dropdown .select__dropdown-item-parent {
   margin-top: 0;
-  list-style-type: none;
 }
-.multilevel-select .dropdown ul li a, .multilevel-select .select__dropdown ul li a {
-  padding: 0 20px;
-  min-height: 30px;
+.multilevel-select .select__dropdown .select__dropdown-item-parent .select__dropdown-item-parent {
+  padding-left: 20px;
 }
 
 #preview {

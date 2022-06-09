@@ -67,6 +67,22 @@ function (_React$Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "selectRecursion", function (items) {
+      return React.createElement(React.Fragment, null, items.map(function (item) {
+        return React.createElement("div", {
+          className: "select__dropdown-item-parent"
+        }, React.createElement(DropdownItem, {
+          key: item.value ? item.value : item.section,
+          item: item,
+          selected: _this.state.selected && item.value == _this.state.selected.value,
+          onClick: function onClick(e) {
+            return _this.selectionChanged(item);
+          },
+          name: _this.props.name
+        }), item.children && item.children.length ? _this.selectRecursion(item.children) : null);
+      }));
+    });
+
     _this.state = {
       selected: _this.getItemForSelectedValue(props.selected),
       open: false
@@ -149,17 +165,7 @@ function (_React$Component) {
         text: this.props.noResults
       }), this.state.loading && React.createElement(Loading, {
         text: EE.lang.loading
-      }), this.props.items.map(function (item) {
-        return React.createElement(DropdownItem, {
-          key: item.value ? item.value : item.section,
-          item: item,
-          selected: _this2.state.selected && item.value == _this2.state.selected.value,
-          onClick: function onClick(e) {
-            return _this2.selectionChanged(item);
-          },
-          name: _this2.props.name
-        });
-      }))));
+      }), this.selectRecursion(this.props.items))));
     }
   }], [{
     key: "renderFields",

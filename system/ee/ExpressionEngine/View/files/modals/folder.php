@@ -23,34 +23,13 @@
             </p>
 
             <div class="button-toolbar toolbar multilevel-select">
-                <button type="button" class="js-dropdown-toggle button button--default button--small" title="folders modal">
-                    <?=lang('select'); ?>
-                    <i class="fas fa-angle-down"></i>
-                </button>
-
-                <div class="dropdown">
-                    <div class="dropdown__scroll">
-                        <ul>
-                            <?php foreach ($choices as $key => $data): ?>
-                                <li>
-                                    <a href="#" data-upload_location_id="<?=$data['upload_location_id']?>" class="dropdown__link">
-                                        <?=$data['label']?><?php if (empty($selected_subfolder) && $key == $selected) : ?> (selected)<?php endif; ?>
-                                    </a>
-                                    <?php
-                                        if (! empty($data['children'])) {
-                                            echo '<ul>';
-                                            $this->embed('ee:files/subfolder-dropdown', [
-                                                'data' => $data['children'],
-                                                'selected_subfolder' => $selected_subfolder,
-                                            ]);
-                                            echo '</ul>';
-                                        }
-                                    ?>
-                                </li>
-                            <?php endforeach ?>
-                        </ul>
-                    </div>
-                </div>
+                <?php
+                    echo ee('View')->make('ee:_shared/form/fields/dropdown')->render([
+                        'field_name' => 'upload_location',
+                        'choices' => $choices,
+                        'value' => 0,
+                    ]);
+                ?>
             </div>
 
             <p>
