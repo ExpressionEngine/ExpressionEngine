@@ -27,7 +27,7 @@ class FileType extends EntryManager\Columns\Column
         if ($file->model_type == 'Directory') {
             return lang('directory');
         }
-        return lang($file->file_type);
+        return lang('type_' . $file->file_type);
     }
 
     public function getEntryManagerColumnFields()

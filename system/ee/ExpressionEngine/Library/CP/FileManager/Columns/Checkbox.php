@@ -30,7 +30,7 @@ class Checkbox extends EntryManager\Columns\Checkbox
             'data' => [
                 'title' => $title,
                 'link' => $file->getAbsoluteURL(),
-                'confirm' => lang(strtolower($file->model_type)) . ': <b>' . htmlentities($file->title, ENT_QUOTES, 'UTF-8') . '</b>'
+                'confirm' => lang(strtolower($file->model_type)) . ': <b>' . htmlentities((string) $file->title, ENT_QUOTES, 'UTF-8') . '</b>'
             ]
         ];
         if (ee('Permission')->can('edit_files')) {

@@ -181,9 +181,9 @@ class Uploads extends AbstractFilesController
         foreach($adapters as $key => $adapter) {
             $adapter_choices[$key] = $adapter['name'];
             $adapter_groups[$key] = "adapter_{$key}";
-            $fields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->adapter == $key) ? $settingsValues : []);
-            if(!empty($fields)) {
-                foreach($fields as $field) {
+            $adapterFields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->adapter == $key) ? $settingsValues : []);
+            if(!empty($adapterFields)) {
+                foreach($adapterFields as $field) {
                     // Prefix all field names for the adapter
                     foreach($field['fields'] as $input_name => $input) {
                         $prefixed_name = implode('', [
@@ -217,6 +217,7 @@ class Uploads extends AbstractFilesController
                     'fields' => array(
                         'adapter' => array(
                             'type' => 'dropdown',
+                            'required' => true,
                             'choices' => $adapter_choices,
                             'group_toggle' => $adapter_groups,
                             'value' => $upload_destination->adapter
@@ -932,12 +933,7 @@ class Uploads extends AbstractFilesController
                 unset($missing_only_sizes[$resize_id]);
             }
         }
-        
-        // Filter out any folders, these should look like files that are missing an extension
-        $current_files = array_filter($current_files, function($file) {
-            return strpos($file, '.') !== false;
-        });
-        
+
         foreach ($current_files as $filePath) {
             $fileInfo = $uploadDestination->getFilesystem()->getWithMetadata($filePath);
             $mime = $uploadDestination->getFilesystem()->getMimetype($filePath);
@@ -1037,11 +1033,11 @@ class Uploads extends AbstractFilesController
                 continue;
             }
 
-            $file = ee('Model')->make('File');
+            $file = ee('Model')->make('FileSystemEntity');
             $file_data = [
                 'upload_location_id' => $uploadDestination->getId(),
                 'site_id' => ee()->config->item('site_id'),
-                'model_type' => ($fileInfo['type'] == 'file') ? 'File' : 'Directory',
+                'model_type' => ($mime == 'directory') ? 'Directory' : 'File',
                 'mime_type' => $mime,
                 'file_name' => $fileInfo['basename'],
                 'file_size' => isset($fileInfo['size']) ? $fileInfo['size'] : 0,

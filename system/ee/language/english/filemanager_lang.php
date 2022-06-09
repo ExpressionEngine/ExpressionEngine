@@ -28,6 +28,8 @@ $lang = array(
 
     'column_title' => 'Title',
 
+    'column_categories' => 'Categories',
+
     'copy_link' => 'Copy link',
 
     'credit' => 'Credit',
@@ -455,11 +457,11 @@ $lang = array(
 
     'type_all' => 'All file types',
 
-    'type_img' => 'Images',
+    'type_img' => 'Image',
 
-    'type_doc' => 'Documents',
+    'type_doc' => 'Document',
 
-    'type_video' => 'Videos',
+    'type_video' => 'Video',
 
     'type_audio' => 'Audio',
 

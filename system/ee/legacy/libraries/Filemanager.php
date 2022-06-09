@@ -366,7 +366,7 @@ class Filemanager
         $prefs['mime_type'] = $mime;
 
         // Check to see if its an editable image, if it is, try and create the thumbnail
-        if ($this->is_editable_image($prefs['temp_file'] ?: $file_path, $mime)) {
+        if (isset($prefs['temp_file']) && $this->is_editable_image($prefs['temp_file'] ?: $file_path, $mime)) {
             // Check to see if we have GD and can resize images
             if (! (extension_loaded('gd') && function_exists('gd_info'))) {
                 return $this->_save_file_response(false, lang('gd_not_installed'));
@@ -391,10 +391,31 @@ class Filemanager
         }
 
         // Insert the file metadata into the database
-        ee()->load->model('file_model');
+        $file = null;
+        $model = ($prefs['mime_type'] == 'directory') ? 'Directory' : 'File';
+        if (isset($data['file_id'])) {
+            $file = ee('Model')->get($model, $data['file_id'])->first();
+        }
+        if (empty($file)) {
+            $file = ee('Model')->make($model);
+        }
 
-        if ($file_id = ee()->file_model->save_file($prefs)) {
-            $response = $this->_save_file_response(true, $file_id);
+        if (! isset($prefs['modified_by_member_id'])) {
+            $prefs['modified_by_member_id'] = $this->session->userdata('member_id');
+        }
+
+        if (! isset($prefs['modified_date'])) {
+            $prefs['modified_date'] = $this->localize->now;
+        }
+
+        if (isset($prefs['file_name']) or isset($prefs['title'])) {
+            $prefs['title'] = (! isset($prefs['title'])) ? $prefs['file_name'] : $prefs['title'];
+        }
+
+        $file->set($prefs);
+
+        if ($file->save()) {
+            $response = $this->_save_file_response(true, $file->getId());
         } else {
             $response = $this->_save_file_response(false, lang('file_not_added_to_db'));
         }

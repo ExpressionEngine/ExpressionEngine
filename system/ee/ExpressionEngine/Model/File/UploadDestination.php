@@ -51,7 +51,7 @@ class UploadDestination extends StructureModel
         ),
         'Files' => array(
             'type' => 'hasMany',
-            'model' => 'FileSystemEntity',
+            'model' => 'File',
             'to_key' => 'upload_location_id'
         ),
         'FileDimensions' => array(
