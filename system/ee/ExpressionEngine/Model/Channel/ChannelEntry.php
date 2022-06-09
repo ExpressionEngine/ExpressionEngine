@@ -124,6 +124,14 @@ class ChannelEntry extends ContentModel
             ),
             'weak' => true
         ),
+        'EntryFileFolders' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Directory',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
     );
 
     protected static $_field_data = array(

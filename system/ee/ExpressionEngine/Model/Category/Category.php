@@ -48,6 +48,15 @@ class Category extends ContentModel
                 'right' => 'file_id'
             )
         ),
+        'FileFolders' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Directory',
+            'pivot' => array(
+                'table' => 'file_categories',
+                'left' => 'cat_id',
+                'right' => 'file_id'
+            )
+        ),
         'Parent' => array(
             'type' => 'belongsTo',
             'model' => 'Category',
@@ -61,6 +70,14 @@ class Category extends ContentModel
         'CategoryFiles' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'File',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
+        'CategoryFileFolders' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Directory',
             'pivot' => array(
                 'table' => 'file_usage',
             ),

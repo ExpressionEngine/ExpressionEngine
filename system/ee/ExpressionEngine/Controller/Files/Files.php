@@ -155,8 +155,7 @@ class Files extends AbstractFilesController
                 'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
                 'destinations' => $vars['destinations'],
                 'choices' => $headerVars['uploadLocationsAndDirectoriesDropdownChoices'],
-                'selected' => !empty(ee('Request')->get('directory_id')) ? ee('Request')->get('directory_id') : $uploadDestination->getId(),
-                'selected_subfolder' => ee('Request')->get('directory_id')
+                'selected' => $id . '.' . (int) ee('Request')->get('directory_id'),
             ]);
 
             // Add the modal to the DOM
@@ -695,7 +694,11 @@ class Files extends AbstractFilesController
         $names = array();
         foreach ($files as $file) {
             $names[] = $file->title;
-            $file->delete();
+            if ($file->isDirectory()) {
+                ee('Model')->get('Directory', $file->getId())->delete();
+            } else {
+                ee('Model')->get('File', $file->getId())->delete();
+            }
         }
 
         ee('CP/Alert')->makeInline('files-form')

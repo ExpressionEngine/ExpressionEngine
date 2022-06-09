@@ -17,7 +17,8 @@ namespace ExpressionEngine\Model\File;
 class Directory extends FileSystemEntity
 {
     protected static $_events = array(
-        'beforeInsert'
+        'beforeInsert',
+        'beforeDelete',
     );
 
     protected static $_validation_rules = array(

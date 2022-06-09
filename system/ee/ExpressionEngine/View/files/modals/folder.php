@@ -14,20 +14,12 @@
                 <label for="upload_location"><?= lang('location') ?></label>
             </p>
 
-            <p>
-                <select name="upload_location" id="upload_location">
-                    <?php foreach ($destinations as $destination):?>
-                        <option <?= ($destination['selected']) ? 'selected' : '' ?> value='<?= $destination['id'] ?>'><?=  $destination['value'] ?></option>
-                    <?php endforeach;?>
-                </select>
-            </p>
-
             <div class="button-toolbar toolbar multilevel-select">
                 <?php
                     echo ee('View')->make('ee:_shared/form/fields/dropdown')->render([
                         'field_name' => 'upload_location',
                         'choices' => $choices,
-                        'value' => 0,
+                        'value' => $selected,
                     ]);
                 ?>
             </div>
