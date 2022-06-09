@@ -114,45 +114,40 @@ if (! AJAX_REQUEST) {
                 <?=$pagination?>
             </div>
         <?=form_close()?>
+
+        <?php
+            // Remove modal
+            $modal_vars = array(
+                'name' => 'modal-confirm-delete-file',
+                'form_url' => $form_url,
+                'hidden' => array(
+                    'bulk_action' => 'remove'
+                )
+            );
+
+            $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
+            echo $modal;
+
+            // Move file modal
+            $modal_vars = array(
+                'name' => 'modal-confirm-move-file',
+                'form_url' => $form_url,
+                'hidden' => array(
+                    'bulk_action' => 'move'
+                ),
+                'choices' => $uploadLocationsAndDirectoriesDropdownChoices,
+                'current_subfolder' => $current_subfolder,
+            );
+
+            $modal = $this->make('ee:files/modals/move')->render($modal_vars);
+            echo $modal;
+
+            // Rename modal
+            $renameModal = ee('View')->make('files/modals/rename')->render([
+                'name' => 'modal-confirm-rename-folder',
+                'form_url'=> ee('CP/URL')->make('files/rename')->compile(),
+            ]);
+            echo $renameModal;
+        ?>
     </div>
 </div>
-
-<?php
-if (! AJAX_REQUEST) {
-    // Remove modal
-    $modal_vars = array(
-        'name' => 'modal-confirm-delete-file',
-        'form_url' => $form_url,
-        'hidden' => array(
-            'bulk_action' => 'remove'
-        )
-    );
-
-    $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
-    ee('CP/Modal')->addModal('delete-file', $modal);
-
-    // Move file modal
-    $modal_vars = array(
-        'name' => 'modal-confirm-move-file',
-        'form_url' => $form_url,
-        'hidden' => array(
-            'bulk_action' => 'move'
-        ),
-        'choices' => $uploadLocationsAndDirectoriesDropdownChoices,
-        'current_subfolder' => $current_subfolder,
-    );
-
-    $modal = $this->make('ee:files/modals/move')->render($modal_vars);
-    ee('CP/Modal')->addModal('move-file', $modal);
-
-
-    // Rename modal
-    $renameModal = ee('View')->make('files/modals/rename')->render([
-        'name' => 'modal-confirm-rename-folder',
-        'form_url'=> ee('CP/URL')->make('files/rename')->compile(),
-    ]);
-
-    // Add the modal to the DOM
-    ee('CP/Modal')->addModal('modal-confirm-rename-folder', $renameModal);
-}
-?>
