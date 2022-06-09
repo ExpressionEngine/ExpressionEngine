@@ -146,6 +146,9 @@ if (! AJAX_REQUEST) {
             $renameModal = ee('View')->make('files/modals/rename')->render([
                 'name' => 'modal-confirm-rename-folder',
                 'form_url'=> ee('CP/URL')->make('files/rename')->compile(),
+                'hidden' => [
+                    'file_id' => '',
+                ],
             ]);
             echo $renameModal;
         ?>

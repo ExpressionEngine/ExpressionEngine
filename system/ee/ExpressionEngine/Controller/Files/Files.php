@@ -354,15 +354,65 @@ class Files extends AbstractFilesController
      */
     public function rename()
     {
-        echo "<pre>";
-        var_dump('rename file/dir');
-        exit;
+        // using default id of 35 for now, not passing id via js yet
+        // replace with: ee('Request')->post('file_id')
+        $directory = ee('Model')->get('Directory', 35)
+            ->filter('model_type', 'Directory')
+            ->first();
 
-        // TODO:
-        // Validate the rename
-        // Rename the folder on the filesystem
-        // update database
-        // redirect
+        $return_url = $_SERVER['HTTP_REFERER'] ??  ee('CP/URL')->make('files/directory/' . $directory->upload_destination_id);
+        $source = $directory->getAbsolutePath();
+        $directory->file_name = ee('Request')->post('folder_name');
+        $directory->title = ee('Request')->post('folder_name');
+        $destination = $directory->getAbsolutePath();
+
+        //validate before saving on filesystem
+        $validation = $directory->validate();
+
+        if (!$validation->isValid()) {
+            $validationErrors = [];
+            foreach ($validation->getAllErrors() as $field => $errors) {
+                if ($field == 'file_name') {
+                    $field = 'folder_name';
+                }
+                foreach ($errors as $error) {
+                    $validationErrors[] = '<b>' . lang($field) . ':</b> ' . $error;
+                }
+            }
+            ee('CP/Alert')->makeInline('files-form')
+                ->asWarning()
+                ->withTitle(lang('error_renaming_directory'))
+                ->addToBody($validationErrors)
+                ->defer();
+
+            return ee()->functions->redirect($return_url);
+        }
+
+        // Check to see if the directory exists and if it does, return back with an error message
+        if ($directory->UploadDestination->getFilesystem()->exists($destination)) {
+            // Error dir already exists
+            ee('CP/Alert')->makeInline('files-form')
+                ->asWarning()
+                ->withTitle(lang('subfolder_directory_already_exists'))
+                ->addToBody(lang('subfolder_directory_already_exists_desc'))
+                ->defer();
+
+            return ee()->functions->redirect($return_url);
+        }
+
+        $directory->UploadDestination->getFilesystem()->rename($source, $destination);
+
+        // The directory was created, so now lets create it in the DB
+        $directory->save();
+
+        // Show alert message that we created the directory successfully
+        ee('CP/Alert')->makeInline('files-form')
+            ->asSuccess()
+            ->withTitle(lang('subfolder_directory_renamed'))
+            ->defer();
+
+        ee()->functions->redirect($return_url);
+
     }
 
     /**

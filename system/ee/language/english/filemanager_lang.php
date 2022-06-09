@@ -130,6 +130,8 @@ $lang = array(
 
     'subfolder_directory_created' => 'Subfolder directory created',
 
+    'subfolder_directory_renamed' => 'Subfolder directory renamed',
+
     'upload_directory_deleted_desc' => 'The upload directory <b>%s</b> has been deleted.',
 
     'subfolder_already_exists' => 'Subfolder directory already exists',
@@ -1022,6 +1024,8 @@ $lang = array(
 
     'error_creating_directory' => 'Could not create folder',
 
+    'error_renaming_directory' => 'Could not rename folder',
+
     'error_moving_directory_directory_already_exists' => 'Could not move folder because a folder with that name already exists.',
 
     'subfolder_directory_created' => 'Folder created',
@@ -1031,6 +1035,8 @@ $lang = array(
     'subfolder_not_exists' => 'Selected subfolder does not exist on the server',
 
     'subfolder_not_writable' => 'Selected subfolder is not writable',
+
+    'rename_folder' => 'Rename Folder',
 
 );
 
