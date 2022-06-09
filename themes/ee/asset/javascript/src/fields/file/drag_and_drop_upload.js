@@ -41,7 +41,16 @@ function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "checkChildDirectory", function (items, directory) {
       items.map(function (item) {
-        if (item.value == directory) {
+        var value;
+
+        if (typeof item.value == 'number') {
+          value = item.value;
+        } else {
+          value = item.value.substr(item.value.indexOf('.') + 1);
+          value = parseInt(value);
+        }
+
+        if (value == directory) {
           return window.list = item;
         } else if (item.value != directory && item.children.length) {
           _this.checkChildDirectory(item.children, directory);
@@ -189,7 +198,6 @@ function (_React$Component) {
       directory_id: _item.directory_id //subfolder ID
 
     };
-    console.log('props', props);
     _this.queue = new ConcurrencyQueue({
       concurrency: _this.props.concurrency
     });
@@ -227,10 +235,8 @@ function (_React$Component) {
   }, {
     key: "getDirectoryName",
     value: function getDirectoryName(directory) {
-      console.log('111', directory);
       if (directory == 'all') return null;
       var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
-      console.log('222', directory);
       return directory.label;
     }
   }, {
