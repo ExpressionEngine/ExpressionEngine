@@ -34659,7 +34659,6 @@ ul.field-reorder-drag,
   background-color: var(--ee-bg-0);
   border-color: var(--ee-border);
   border-radius: 5px;
-  padding: 5px 10px;
   cursor: move;
   height: auto !important;
   pointer-events: none;
