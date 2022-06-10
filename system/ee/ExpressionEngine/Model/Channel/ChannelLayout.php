@@ -91,6 +91,7 @@ class ChannelLayout extends Model implements LayoutInterface
                 }
 
                 $field_id = $field_info['field'];
+                
 
                 // Looking for a field that is not there...skip it for now
                 if (! array_key_exists($field_id, $fields)) {
@@ -98,6 +99,14 @@ class ChannelLayout extends Model implements LayoutInterface
                 }
 
                 $field = $fields[$field_id];
+
+                //set the width of a field
+                //if width isn't set then default is 100%
+                if (isset($field_info['width'])) {
+                    $field->setWidth($field_info['width']);
+                } else {
+                    $field->setWidth(100);
+                }
 
                 // Fields can be configured to start collapsed or expaned, but
                 // a layout should always override it.
