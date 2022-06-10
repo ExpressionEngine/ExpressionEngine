@@ -44,25 +44,6 @@ class Directory extends FileSystemEntity
     {
         return null;
     }
-
-    public function geSubdirectoryTree()
-    {
-        $tree = [];
-        $directories = ee('Model')->get('Directory')
-            ->filter('directory_id', $this->file_id)
-            ->filter('model_type', 'Directory')
-            ->all();
-
-        foreach ($directories as $directory) {
-            $tree[$directory->file_name] = [
-                'id' => $directory->file_id,
-                'name' => $directory->file_name,
-                'subdirectories' => $directory->geSubdirectoryTree()
-            ];
-        }
-
-        return $tree;
-    }
 }
 
 // EOF

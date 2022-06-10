@@ -998,15 +998,17 @@ $lang = array(
 
     /* Removing */
 
-    'move_toggle_to_confirm_delete' => 'Move the toggle on to confirm deleting',
+    'move_toggle_to_confirm' => 'Move the toggle <b>on</b> to confirm.',
 
     'folder_not_empty' => 'The directory is not empty',
 
     'all_files_in_folder_will_be_deleted' => 'If you delete this folder, all files in it will be deleted as well.',
 
+    'all_files_in_folder_will_be_moved' => 'All files in folder will be moved with it.',
+
     'file_is_in_use' => 'The file is being used in entries',
 
-    'confirmation_required' => 'You must confirm that you want to delete',
+    'confirmation_toggle_required' => 'You must confirm this action with the toggle',
 
     /* Moving the files */
 
@@ -1015,6 +1017,16 @@ $lang = array(
     'select_new_destinatin_for' => 'Select new destination for:',
 
     'destination' => 'Destination',
+
+    'error_moving_need_same_upload_location' => 'The files can be moved only within their upload location',
+
+    'error_moving_already_there' => 'The file is already in target destination',
+
+    'files_moved' => 'The files have been moved',
+
+    'some_files_not_moved' => 'Could not move some files',
+
+    'error_moving_directory_cannot_be_own_child' => 'Directory cannot be moved to this position',
 
     /* Subfolders */
 
@@ -1026,7 +1038,7 @@ $lang = array(
 
     'error_renaming_directory' => 'Could not rename folder',
 
-    'error_moving_directory_directory_already_exists' => 'Could not move folder because a folder with that name already exists.',
+    'error_moving_already_exists' => 'Could not move because file or folder with that name already exists',
 
     'subfolder_directory_created' => 'Folder created',
 

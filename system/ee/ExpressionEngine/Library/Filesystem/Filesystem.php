@@ -362,9 +362,11 @@ class Filesystem
         }
 
         // Suppressing potential warning when renaming a directory to one that already exists.
-        @$this->flysystem->rename($this->normalize($source), $this->normalize($dest));
+        $renamed = @$this->flysystem->rename($this->normalize($source), $this->normalize($dest));
 
         $this->ensureCorrectAccessMode($dest);
+
+        return $renamed;
     }
 
     /**

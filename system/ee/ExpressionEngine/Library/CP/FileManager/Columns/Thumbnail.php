@@ -39,7 +39,7 @@ class Thumbnail extends EntryManager\Columns\Column
         if ($viewtype == 'list') {
             if ($file->isDirectory()) {
                 $url = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]);
-                $file_thumbnail = '<a href="' . $url . '" data-filter-url="' . $url . '">' . $file_thumbnail . '</a>';
+                $file_thumbnail = '<a href="' . $url . '">' . $file_thumbnail . '</a>';
             } elseif (ee('Permission')->can('edit_files')) {
                 $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" class="imgpreview" data-url="' . $file_url . '">' . $file_thumbnail . '</a>';
             }

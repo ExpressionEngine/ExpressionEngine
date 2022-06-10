@@ -87,16 +87,18 @@ if (! AJAX_REQUEST) {
                         'text' => lang('copy_link'),
                         // 'attrs' => ' data-action="copy-link"'
                     ];
-                    $options[] = [
-                        'value' => "move",
-                        'text' => lang('move'),
-                        'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-move-file"'
-                    ];
-                    $options[] = [
-                        'value' => "replace",
-                        'text' => lang('replace_file'),
-                        'attrs' => ''
-                    ];
+                    if (ee('Permission')->can('edit_files')) {
+                        $options[] = [
+                            'value' => "move",
+                            'text' => lang('move'),
+                            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-move-file"'
+                        ];
+                        $options[] = [
+                            'value' => "replace",
+                            'text' => lang('replace_file'),
+                            'attrs' => ''
+                        ];
+                    }
                     if (ee('Permission')->can('delete_files')) {
                         $options[] = [
                             'value' => "remove",
@@ -129,14 +131,20 @@ if (! AJAX_REQUEST) {
             echo $modal;
 
             // Move file modal
+            $moveChoices = $uploadLocationsAndDirectoriesDropdownChoices;
+            $selected = null;
+            if (isset($dir_id) && !empty($dir_id) && isset($uploadLocationsAndDirectoriesDropdownChoices[$dir_id . '.0'])) {
+                $moveChoices = [$dir_id . '.0' => $uploadLocationsAndDirectoriesDropdownChoices[$dir_id . '.0']];
+                $selected = $dir_id . '.' . (int) ee('Request')->get('directory_id');
+            }
             $modal_vars = array(
                 'name' => 'modal-confirm-move-file',
                 'form_url' => $form_url,
                 'hidden' => array(
                     'bulk_action' => 'move'
                 ),
-                'choices' => $uploadLocationsAndDirectoriesDropdownChoices,
-                'current_subfolder' => $current_subfolder,
+                'choices' => $moveChoices,
+                'selected' => $selected,
             );
 
             $modal = $this->make('ee:files/modals/move')->render($modal_vars);

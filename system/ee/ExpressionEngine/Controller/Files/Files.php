@@ -101,29 +101,6 @@ class Files extends AbstractFilesController
 
         $headerVars = $this->stdHeader();
 
-        $vars['destinations'] = [];
-        $sub_dir_id = (int) ee('Request')->get('directory_id') ?: null;
-
-        // Compile the list of subdirectories for the new folder drop down
-        $uploadDestinations = ee('Model')->get('UploadDestination')->filter('module_id', 0)->fields('id', 'name')->all();
-        foreach ($uploadDestinations as $uploadDestination) {
-            $vars['destinations'][] = [
-                'id' => $uploadDestination->id,
-                'value' => $uploadDestination->name,
-                'selected' => ($id === $uploadDestination->id && is_null($sub_dir_id)),
-            ];
-
-            // Get our subfolders from the upload destination
-            $subDestinations = $uploadDestination->getSelectFromSubdirectories();
-
-            foreach ($subDestinations as &$subDestination) {
-                $subDestination['selected'] = (($id === $uploadDestination->id) && ($sub_dir_id === $subDestination['id']));
-                $subDestination['id'] = $uploadDestination->id . '-' . $subDestination['id'];
-            }
-
-            $vars['destinations'] = array_merge($vars['destinations'], $subDestinations);
-        }
-
         $vars['toolbar_items'] = [];
         if (ee('Permission')->can('upload_new_files') && $dir->memberHasAccess(ee()->session->getMember())) {
             $new_folder_modal_name = 'modal_new_folder';
@@ -153,7 +130,6 @@ class Files extends AbstractFilesController
             $newFolderModal = ee('View')->make('files/modals/folder')->render([
                 'name' => 'modal-new-folder',
                 'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
-                'destinations' => $vars['destinations'],
                 'choices' => $headerVars['uploadLocationsAndDirectoriesDropdownChoices'],
                 'selected' => $id . '.' . (int) ee('Request')->get('directory_id'),
             ]);
@@ -184,10 +160,10 @@ class Files extends AbstractFilesController
 
     public function createSubdirectory()
     {
-        $dir_ids = explode('-', ee('Request')->post('upload_location'));
+        $dir_ids = explode('.', ee('Request')->post('upload_location'));
         $upload_destination_id = (int) $dir_ids[0];
         $subdirectory_id = isset($dir_ids[1]) ? (int) $dir_ids[1] : 0;
-        // TODO validate this
+
         $subdir_name = ee('Request')->post('folder_name');
 
         $uploadDirectory = ee('Model')->get('UploadDestination', $upload_destination_id)->first();
@@ -204,6 +180,10 @@ class Files extends AbstractFilesController
                 ->filter('upload_location_id', $upload_destination_id)
                 ->filter('model_type', 'Directory')
                 ->first();
+
+            if (empty($directory)) {
+                show_error(lang('unauthorized_access'), 403);
+            }
 
             $filesystem = $directory->getFilesystem();
         } else {
@@ -426,7 +406,7 @@ class Files extends AbstractFilesController
         $vars = array();
         $selected = ee('Request')->post('selection');
         $vars['selected'] = $selected;
-        $desc = lang('move_toggle_to_confirm_delete');
+        $desc = lang('move_toggle_to_confirm');
 
         $files = ee('Model')->get('FileSystemEntity', $selected)
             ->with('FileCategories')
@@ -439,7 +419,11 @@ class Files extends AbstractFilesController
                 $countFiles = ee('db')->from('files')->where('directory_id', $file->file_id)->count_all_results();
                 if ($countFiles > 0) {
                     $title = lang('folder_not_empty');
-                    $desc = lang('all_files_in_folder_will_be_deleted') . ' ' . $desc;
+                    if (ee('Request')->post('bulk_action') == 'move') {
+                        $desc = lang('all_files_in_folder_will_be_moved') . BR . $desc;
+                    } else {
+                        $desc = lang('all_files_in_folder_will_be_deleted') . BR . $desc;
+                    }
 
                     continue;
                 }
@@ -552,48 +536,106 @@ class Files extends AbstractFilesController
 
     public function move()
     {
-        // We are going to move Folder2/test/testing123 to Folder/test2/testing123
+        $dir_ids = explode('.', ee('Request')->post('upload_location'));
+        $upload_destination_id = (int) $dir_ids[0];
+        $subdirectory_id = isset($dir_ids[1]) ? (int) $dir_ids[1] : 0;
+        $selected = ee('Request')->post('selection');
 
-        // subdirectory 37 is currently located here:
-        // Folder2/test/testing123
-        $subdirectory_id = 37;
+        //do they have access to target destination and subfolder exists?
+        $target = $targetUploadLocation = ee('Model')->get('UploadDestination', $upload_destination_id)->first();
+        if (empty($targetUploadLocation) || ! ee('Permission')->can('edit_files') || ! $targetUploadLocation->memberHasAccess(ee()->session->getMember())) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+        $targetPath = $target->server_path;
 
-        // subdirectory 34 is currently located here:
-        // Folder/test2
-        $move_to_directory_id = 34;
-        // $move_to_directory_id = 36; // move it back
-
-        $directory = ee('Model')->get('Directory', $subdirectory_id)
-            ->filter('model_type', 'Directory')
-            ->first();
-
-        $moveToDir = ee('Model')->get('Directory', $move_to_directory_id)
-            ->filter('model_type', 'Directory')
-            ->first();
-
-        $return_url = ee('CP/URL')->make('files/directory/' . $directory->upload_location_id)
-            ->setQueryStringVariable('directory_id', $directory->file_id);
-
-        if ($moveToDir->getFilesystem()->exists($directory->file_name)) {
-            // Error dir already exists
-            ee('CP/Alert')->makeInline('files-form')
-                ->asWarning()
-                ->withTitle(lang('error_moving_directory_directory_already_exists'))
-                ->defer();
-
-            return ee()->functions->redirect($return_url);
+        if ($subdirectory_id != 0) {
+            $target = $targetDirectory = ee('Model')->get('Directory', $subdirectory_id)
+                ->filter('upload_location_id', $targetUploadLocation->getId())
+                ->first();
+            if (empty($targetDirectory)) {
+                show_error(lang('unauthorized_access'), 403);
+            }
+            $targetPath = $target->getAbsolutePath();
+            
         }
 
-        // mvoe the folder
-        ee('Filesystem')->rename(
-            $directory->getAbsolutePath(),
-            $moveToDir->getAbsolutePath() . '/' . $directory->file_name
-        );
+        //directory cannot become child of itself - prepare the data
+        $subdirectoryParents = [];
+        $parentDirectoryId = $subdirectory_id;
+        while ($parentDirectoryId != 0) {
+            $parentDirectory = ee('Model')->get('Directory', $parentDirectoryId)->fields('file_id', 'directory_id')->first();
+            $parentDirectoryId = $parentDirectory->directory_id;
+            $subdirectoryParents[] = $parentDirectoryId;
+        }
 
-        $directory->directory_id = $moveToDir->file_id;
-        $directory->save();
+        $files = ee('Model')->get('FileSystemEntity', $selected)->all();
+        $names = array();
+        $errors = array();
+        foreach ($files as $file) {
+            //are they on same upload destination?
+            if ($file->upload_location_id != $upload_destination_id) {
+                $errors[$file->file_name] = lang('error_moving_need_same_upload_location');
+                continue;
+            }
 
-        return ee()->functions->redirect($return_url);
+            //are they not in target place already?
+            if ($file->directory_id == $subdirectory_id) {
+                $errors[$file->file_name] = lang('error_moving_already_there');
+                continue;
+            }
+
+            //does the file with same name already exist?
+            if ($target->getFilesystem()->exists($file->file_name)) {
+                $errors[$file->file_name] = lang('error_moving_already_exists');
+                continue;
+            }
+
+            //moving to self?
+            if ($file->isDirectory() && $file->file_id == $subdirectory_id) {
+                $errors[$file->file_name] = lang('error_moving_directory_cannot_be_own_child');
+                continue;
+            }
+
+            //avoid recursion - the directory cannot become child of itself
+            if ($file->isDirectory() && in_array($file->file_id, $subdirectoryParents)) {
+                $errors[$file->file_name] = lang('error_moving_directory_cannot_be_own_child');
+                continue;
+            }
+
+            $renamed = ee('Filesystem')->rename(
+                $file->getAbsolutePath(),
+                $targetPath . '/' . $file->file_name
+            );
+            if ($renamed) {
+                $file->directory_id = $subdirectory_id;
+                $file->save();
+                $names[] = $file->title;
+            } else {
+                $errors[$file->file_name] = lang('unexpected_error');
+            }
+        }
+
+        if (! empty($names)) {
+            ee('CP/Alert')->makeInline('files-form')
+                ->asSuccess()
+                ->withTitle(lang('files_moved'))
+                ->addToBody($names)
+                ->defer();
+        }
+
+        if (! empty($errors)) {
+            ee('CP/Alert')->makeInline('files-form-errors')
+                ->asWarning()
+                ->withTitle(lang('some_files_not_moved'))
+                ->addToBody($errors)
+                ->defer();
+        }
+
+        /*$return_url = ee('CP/URL')->make('files/directory/' . $targetUploadLocation->getId());
+        if (! empty($subdirectory_id)) {
+            $return_url->setQueryStringVariable('directory_id', $subdirectory_id);
+        }
+        return ee()->functions->redirect($return_url);*/
     }
 
     public function rmdir()
@@ -645,12 +687,18 @@ class Files extends AbstractFilesController
     {
         $action = ee()->input->post('bulk_action');
 
-        if (! $action) {
-            return;
-        } elseif ($action == 'remove') {
-            $this->remove(ee()->input->post('selection'));
-        } elseif ($action == 'download') {
-            $this->exportFiles(ee()->input->post('selection'));
+        switch ($action) {
+            case 'remove':
+                $this->remove(ee()->input->post('selection'));
+                break;
+            case 'move':
+                $this->move(ee()->input->post('selection'));
+                break;
+            case 'download':
+                $this->exportFiles(ee()->input->post('selection'));
+                break;
+            default:
+                return;
         }
 
         ee()->functions->redirect($redirect_url);

@@ -21,14 +21,19 @@
                 endif ?>
             </ul>
 
-            <h3><?=lang('destination')?></h3>
-            <?php $this->embed(
-                    'ee:files/multilevel-select',
-                    [
+            <p>
+                <label for="upload_location"><?= lang('destination') ?></label>
+            </p>
+
+            <div class="button-toolbar toolbar multilevel-select">
+                <?php
+                    echo ee('View')->make('ee:_shared/form/fields/dropdown')->render([
+                        'field_name' => 'upload_location',
                         'choices' => $choices,
-                        'current_subfolder' => $current_subfolder,
-                    ]
-                ); ?>
+                        'value' => $selected,
+                    ]);
+                ?>
+            </div>
 
             <div class="ajax"><?=isset($ajax_default) ? $ajax_default : '' ?></div>
         </div>
@@ -41,8 +46,7 @@
                 ); ?>
             <?php endif ?>
             <div class="dialog__buttons">
-                <button class="button button--primary button--danger" type="submit" value="<?=lang('save'); ?>" data-submit-text="<?=lang('save'); ?>" data-work-text="<?=lang('btn_confirm_and_save_working'); ?>"><?=lang('save'); ?></button>
-                <button class="button button--primary button--danger" type="submit" value="<?=lang('cancel'); ?>" data-submit-text="<?=lang('cancel'); ?>" data-work-text="<?=lang('btn_canceling'); ?>"><?=lang('cancel'); ?></button>
+                <button class="button button--primary button--danger" type="submit" value="<?=lang('save'); ?>" data-submit-text="<?=lang('btn_confirm_and_move'); ?>" data-work-text="<?=lang('btn_confirm_and_save_working'); ?>"><?=lang('btn_confirm_and_move'); ?></button>
             </div>
         </div>
         </form>
