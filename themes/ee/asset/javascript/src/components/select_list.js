@@ -669,7 +669,7 @@ function (_React$Component3) {
       return React.createElement("div", {
         className: "lots-of-checkboxes__selection"
       }, React.createElement("i", {
-        className: "fas fa-check-circle"
+        className: "fal fa-check-circle"
       }), " ", label, props.selectionRemovable && React.createElement("a", {
         className: "button button--default float-right",
         href: "",

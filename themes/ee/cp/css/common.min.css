@@ -26449,6 +26449,7 @@ input[type=button].btn-block {
   border-radius: 0;
   width: 100%;
   text-align: left;
+  box-shadow: none;
 }
 
 /*
@@ -27249,6 +27250,7 @@ input[type=button].btn-block {
   border-bottom: 1px solid var(--ee-border);
   padding: 0px 20px 0px 30px;
   margin-bottom: 30px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
 }
 .ee-main-header.entries {
   margin-bottom: 5px;
@@ -29430,6 +29432,7 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
 .lots-of-checkboxes {
   border: 1px solid var(--ee-lots-of-checkboxes-border);
   border-radius: 5px;
+  box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
 }
 .lots-of-checkboxes .checkbox-label__text {
   border-radius: 0;
@@ -29437,7 +29440,6 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
 
 .lots-of-checkboxes__search {
   padding: 10px;
-  margin-bottom: 10px;
   background: var(--ee-bg-0);
   border-bottom: 1px solid var(--ee-border);
   border-radius: 5px 5px 0 0;
@@ -29477,7 +29479,7 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
 }
 
 .lots-of-checkboxes .lots-of-checkboxes__items {
-  padding: 0px 15px 15px;
+  padding: 5px 15px 15px;
 }
 
 .lots-of-checkboxes__items--too-many {
@@ -32652,6 +32654,7 @@ a.ck.ck-button.ck-on {
   background: var(--ee-bg-0);
   border-radius: 5px;
   transition: background 200ms ease, border 200ms ease;
+  box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
 }
 
 .list-item--action:hover {

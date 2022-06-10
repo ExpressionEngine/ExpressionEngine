@@ -82,7 +82,7 @@ class Columns extends Filter
         }
         $options = array_merge($options, $this->options);
         $filter = array(
-            'label' => '<i class=\'fas fa-columns\'></i>',
+            'label' => '<i class=\'fal fa-columns\'></i>',
             'value' => '',
             'available_columns' => $options,
             'selected_columns' => $selected

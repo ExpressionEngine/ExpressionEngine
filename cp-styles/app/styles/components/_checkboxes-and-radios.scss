@@ -213,6 +213,7 @@ $radio-size: 15px;
 .lots-of-checkboxes {
 	border: 1px solid color(lots-of-checkboxes-border);
 	border-radius: $border-radius-base;
+  @include shadow-input;
 
 	.checkbox-label__text {
 		border-radius: 0;
@@ -221,7 +222,6 @@ $radio-size: 15px;
 
 .lots-of-checkboxes__search {
 	padding: $s-s;
-	margin-bottom: $s-s;
 	background: color(bg-0);
   border-bottom: 1px solid color(border);
   border-radius: $border-radius-base $border-radius-base 0 0;
@@ -273,7 +273,7 @@ $radio-size: 15px;
 }
 
 .lots-of-checkboxes .lots-of-checkboxes__items {
-  padding: 0px 15px 15px;
+  padding: 5px 15px 15px;
 }
 
 .lots-of-checkboxes__items--too-many {
