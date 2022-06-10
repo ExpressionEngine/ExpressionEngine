@@ -27832,6 +27832,12 @@ input[type=button].btn-block {
   cursor: pointer;
   padding-left: 1px;
 }
+.filter-bar .filter-search-bar__item.in-use i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 .filter-bar--collapsed {
   display: none;
@@ -30921,7 +30927,7 @@ fieldset .field-control #eye {
   width: 100%;
 }
 .grid-field .table-responsive {
-  box-shadow: none;
+  box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
   border: 1px solid var(--ee-border);
 }
 
