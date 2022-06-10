@@ -30231,8 +30231,8 @@ fieldset .eye,
 fieldset #eye {
   cursor: pointer;
   position: absolute;
-  right: 25px;
-  top: 46px;
+  right: 15px;
+  top: 48px;
 }
 fieldset .field-control .eye,
 fieldset .field-control #eye {
