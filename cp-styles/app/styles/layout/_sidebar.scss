@@ -65,38 +65,32 @@
 	display: flex;
 	flex-direction: column;
 	flex: 0 0 $ee-sidebar-width;
-
-	// position: -webkit-sticky;
-	// position: sticky;
-	// top: 0;
-	// max-height: 100vh;
 	min-height: 100vh;
   padding-bottom: 80px;
-	// overflow-y: auto;
   overflow-x: hidden;
 	z-index: 10;
   position: relative;
-	// padding-top: 30px;
-
-	// min-width: $ee-sidebar-width;
-	// max-width: $ee-sidebar-width;
-    // width: $ee-sidebar-width;
 	background-color: color(sidebar-bg);
+  border-right: 1px solid color(sidebar-border);
 }
 
 .ee-sidebar__title {
-	color: color(sidebar-text-primary);
+	color: color(sidebar-title-text);
   height: 70px;
   min-height: 70px;
   display: flex;
   align-items: center;
   background-color: color(sidebar-title-bg);
-	// font-size: 1.1em;
+  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.03);
 	padding: 0px 20px;
 	margin-bottom: 20px;
+  border-bottom: 1px solid color(border);
   -webkit-transition: background-color 0.15s ease-in-out;
   -moz-transition: background-color 0.15s ease-in-out;
   -o-transition: background-color 0.15s ease-in-out;
+  -webkit-transition: color 0.15s ease-in-out;
+  -moz-transition: color 0.15s ease-in-out;
+  -o-transition: color 0.15s ease-in-out;
 
 	cursor: pointer;
 
@@ -171,12 +165,14 @@
 	transition: background $t-speed ease, color $t-speed ease;
 
 	display: block;
-	// padding: 12px 30px;
 	height: 35px;
 	line-height: 35px;
 	padding: 0 20px;
-	// margin-bottom: 4px;
+	margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 2px;
 	color: color(sidebar-text);
+  border-radius: $border-radius-base;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -212,6 +208,10 @@
     }
 	}
 
+  &:last-child {
+    margin-bottom: 0;
+  }
+
 	@include focus-visible {
 		@include focus-outline-inset;
 	}
@@ -225,8 +225,8 @@
 	color: color(sidebar-text-faded);
 	font-size: 0.83em;
 	position: relative;
-	// bottom: -10px;
-	// margin-top: -10px;
+	margin-left: 0;
+  margin-right: 0;
 	white-space: nowrap;
 	text-align: center;
   // margin-top: 15px;
@@ -236,9 +236,13 @@
   -webkit-transition: background-color 0.15s ease-in-out;
   -moz-transition: background-color 0.15s ease-in-out;
   -o-transition: background-color 0.15s ease-in-out;
+  -webkit-transition: color 0.15s ease-in-out;
+  -moz-transition: color 0.15s ease-in-out;
+  -o-transition: color 0.15s ease-in-out;
 
   &:hover {
     background-color: color(sidebar-version-bg-hover);
+    color: color(sidebar-text-primary);
   }
 
 	.ee-sidebar__version-number {
@@ -333,7 +337,9 @@
   left: 0;
   width: $ee-sidebar-width;
   background-color: color(sidebar-title-bg);
-  box-shadow: 0 -2px 3px rgba(0,0,0,.10);
+  border-top: 1px solid color(sidebar-border);
+  border-right: 1px solid color(sidebar-border);
+  box-shadow: 0 -2px 2px 0 rgba(0,0,0,0.03);
 
   .ee-pro__indicator-badge-wrapper {
     position: absolute;
@@ -364,7 +370,7 @@
       background-color: var(--ee-brand-warning);
     }
 
-    i, .fas {
+    i, .fas, .fal {
       opacity: 0.5;
     }
   }
@@ -376,17 +382,19 @@
   height: 26px;
   position: fixed;
   top: 22px;
-  left: calc(#{$ee-sidebar-width} - 15px);
+  left: calc(#{$ee-sidebar-width} - 13px);
   cursor: pointer;
   text-align: right;
   border-radius: $border-radius-full;
   color: color(sidebar-text);
   background-color: color(sidebar-bg);
+  border: 1px solid color(button-default-border);
   font-size: 12px;
   line-height: 29px;
   padding: 0;
   z-index: 10;
   display: none;
+  @include shadow-button;
 
   &:hover {
     color: color(sidebar-text);
@@ -395,8 +403,10 @@
 
   .fas, .fal, .far {
     position: absolute;
-    top: 7px;
-    right: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
   }
 
   // Adjust position of sidebar-toggle when collapsed
@@ -440,6 +450,14 @@
   // Add this class to all elements that should be hidden in collapsed sidebar
   .ee-sidebar__collapsed-hidden {
     display: none;
+  }
+
+  // Remove ellipsis from hidden elements in collapsed sidebar
+  .ee-sidebar__item {
+    text-overflow: inherit;
+    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   // Show EE Logomark when sidebar is collapsed

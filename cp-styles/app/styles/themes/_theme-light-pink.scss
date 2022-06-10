@@ -186,10 +186,12 @@ $pink-theme: (
   sidebar-icon-active: #ffffff,
   sidebar-bg-active: darken($gray-70, 15%),
   sidebar-bg: $gray-70,
+  sidebar-title-text: $gray-30,
   sidebar-title-bg: lighten($gray-70, 5%),
   sidebar-title-bg-hover: lighten($gray-70, 7%),
   sidebar-version-bg: lighten($gray-70, 5%),
   sidebar-version-bg-hover: lighten($gray-70, 7%),
+  sidebar-border: $gray-0,
 
   secondary-sidebar-item-bg: $gray-5,
   secondary-sidebar-item-icon: $text-secondary,

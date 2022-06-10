@@ -189,10 +189,12 @@ $dark-theme: (
   sidebar-icon-active: #ffffff,
   sidebar-bg-active: $gray-0,
   sidebar-bg: $gray-5,
+  sidebar-title-text: $gray-50,
   sidebar-title-bg: lighten($gray-5, 4%),
   sidebar-title-bg-hover: lighten($gray-5, 6%),
   sidebar-version-bg: lighten($gray-5, 4%),
   sidebar-version-bg-hover: lighten($gray-5, 6%),
+  sidebar-border: $gray-0,
 
   secondary-sidebar-item-bg: $gray-5,
   secondary-sidebar-item-icon: $text-secondary,

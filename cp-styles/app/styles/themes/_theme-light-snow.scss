@@ -1,18 +1,16 @@
-// Default Light Theme
+// Snow Light Theme
 // -------------------------------------------------------------------
 
-// Base Variables - Default Light Theme
+// Base Variables - Snow Light Theme
 
-// Base Colors - Default Light Theme
-// To create a new Light theme simply update these Base Colors. Your changes will automatically update all the other colors in the theme accordingly.
+// Base Colors - Snow Light Theme
 $brand-primary: #5D63F1;
 $brand-success: #00C571;
 $brand-warning: #FFB40B;
 $brand-danger: #FA5252;
 
-// Base Grays - Default Light Theme
+// Base Grays - Snow Light Theme
 $gray-blank: #FFFFFF;
-// Adjust the saturation and lightness of $gray-0 as needed based on your chosen $brand-primary color:
 $gray-0: desaturate(lighten($brand-primary, 32), 52);
 $gray-5: darken($gray-0, 3);
 $gray-10: darken($gray-0, 7);
@@ -23,7 +21,7 @@ $gray-50: desaturate(darken($gray-0, 55), 15);
 $gray-60: desaturate(darken($gray-0, 80), 15);
 $gray-70: darken($gray-0, 90);
 
-// Base Text - Default Light Theme
+// Base Text - Snow Light Theme
 $text-primary: $gray-70;
 $text-normal: $gray-70;
 $text-secondary: $gray-40;
@@ -34,8 +32,8 @@ $text-selection-bg: lighten($brand-primary, 25%);
 $link: $brand-primary;
 $link-hover: darken($link, 15%);
 
-// #Details - Default Light Theme
-$light-theme: (
+// #Details - Snow Light Theme
+$snow-theme: (
 
   brand-primary: $brand-primary,
   brand-success: $brand-success,
@@ -181,19 +179,19 @@ $light-theme: (
   input-jump-bg: $gray-blank,
 
   // Sidebar
-  sidebar-text: $gray-30,
-  sidebar-text-primary: #ffffff,
-  sidebar-text-faded: darken($gray-30, 10%),
-  sidebar-text-active: #ffffff,
-  sidebar-icon-active: #ffffff,
-  sidebar-bg-active: darken($gray-60, 6%),
-  sidebar-bg: $gray-60,
-  sidebar-title-text: $gray-30,
-  sidebar-title-bg: lighten($gray-60, 4%),
-  sidebar-title-bg-hover: lighten($gray-60, 6%),
-  sidebar-version-bg: lighten($gray-60, 4%),
-  sidebar-version-bg-hover: lighten($gray-60, 6%),
-  sidebar-border: $gray-0,
+  sidebar-text: $text-tertiary,
+  sidebar-text-primary: $text-normal,
+  sidebar-text-faded: $text-secondary,
+  sidebar-text-active: $link,
+  sidebar-icon-active: $link,
+  sidebar-bg-active: $gray-0,
+  sidebar-bg: $gray-blank,
+  sidebar-title-text: $text-tertiary,
+  sidebar-title-bg: $gray-blank,
+  sidebar-title-bg-hover: $gray-blank,
+  sidebar-version-bg: $gray-blank,
+  sidebar-version-bg-hover: $gray-blank,
+  sidebar-border: $gray-10,
 
   secondary-sidebar-item-bg: $gray-5,
   secondary-sidebar-item-icon: $text-secondary,

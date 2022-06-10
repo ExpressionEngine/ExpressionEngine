@@ -615,7 +615,7 @@ function (_React$Component2) {
         href: "",
         className: "button button--default flyout-edit flyout-edit-icon"
       }, React.createElement("i", {
-        "class": "fas fa-pencil-alt"
+        "class": "fal fa-pencil-alt"
       })), props.removable && React.createElement("a", {
         href: "",
         className: "button button--default js-button-delete",
@@ -623,7 +623,7 @@ function (_React$Component2) {
           return props.handleRemove(e, props.item);
         }
       }, React.createElement("i", {
-        "class": "fas fa-fw fa-trash-alt"
+        "class": "fal fa-fw fa-trash-alt"
       })))));
 
       if (props.nested) {

@@ -21,12 +21,12 @@
 			body {
 				--ee-sidebar-title-bg: #<?=ee()->config->item('site_color')?>;
 				--ee-sidebar-title-bg-hover: #<?=ee()->config->item('site_color')?>;
-				--ee-sidebar-text-faded: #FFFFFF;
+				--ee-sidebar-title-text: #FFFFFF;
 			}
-			.ee-sidebar__title, .ee-sidebar__items-bottom, .ee-sidebar__title:hover {
+			.ee-sidebar__title, .ee-sidebar__title:hover {
 				background-color: #<?=ee()->config->item('site_color')?>;
 			}
-			.ee-sidebar__title-down-arrow, .ee-sidebar__items .ee-sidebar__version {
+			.ee-sidebar__title, .ee-sidebar__title-down-arrow {
 				color: #FFFFFF;
 			}
 		</style>
