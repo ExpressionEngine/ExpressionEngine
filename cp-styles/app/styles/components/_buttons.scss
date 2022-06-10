@@ -64,6 +64,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  @include shadow-button;
   @include button-size($padding-base-vertical, $padding-base-horizontal-extra, $font-size-normal, $line-height-normal, $border-radius-base);
 
   &,

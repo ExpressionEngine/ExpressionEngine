@@ -205,10 +205,14 @@ $dark-theme: (
   // Panels
   panel-bg: $gray-5,
   panel-border: $gray-20,
+  panel-border-outer: $gray-20,
 
   // Shadows
   shadow-modal: rgba($gray-blank, 0.5),
   shadow-dropdown: rgba($gray-blank, 0.5),
+  shadow-panel: rgba($gray-blank, 0.5),
+  shadow-input: rgba($gray-blank, 0.5),
+  shadow-button: rgba($gray-blank, 0.5),
 
   // Fieldtypes
   note-fieldtype-bg: $gray-0,

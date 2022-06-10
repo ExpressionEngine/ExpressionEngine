@@ -79,7 +79,7 @@
 	}
 
 	@include focus-visible {
-		@include focus-outline-inset;
+		//@include focus-outline-inset;
 	}
 }
 

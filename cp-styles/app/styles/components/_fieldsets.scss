@@ -191,6 +191,10 @@ fieldset {
 		.c-colorpicker-input{
 			border: 1px solid color(error);
 			// box-shadow: 0 0 0 1px color(error);
+
+      &:focus {
+        @include focus-outline-validation;
+    	}
 		}
 
 		.field-drop-choices{

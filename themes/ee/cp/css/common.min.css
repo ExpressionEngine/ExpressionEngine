@@ -137,8 +137,12 @@ html.color-theme-in-transition *:after {
   --ee-table-border: #dfe0ef;
   --ee-panel-bg: #FFFFFF;
   --ee-panel-border: #dfe0ef;
+  --ee-panel-border-outer: transparent;
   --ee-shadow-modal: rgba(69, 68, 85, 0.2);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.1);
+  --ee-shadow-panel: rgba(0, 0, 0, 0.1);
+  --ee-shadow-input: rgba(0, 0, 0, 0.05);
+  --ee-shadow-button: rgba(0, 0, 0, 0.05);
   --ee-note-fieldtype-bg: #f7f7fb;
   --ee-note-fieldtype-color: #8f90b0;
   --ee-note-fieldtype-icon-bg: #ecedf5;
@@ -293,8 +297,12 @@ html.color-theme-in-transition *:after {
   --ee-table-border: #383838;
   --ee-panel-bg: #1f1f1f;
   --ee-panel-border: #383838;
+  --ee-panel-border-outer: #383838;
   --ee-shadow-modal: rgba(0, 0, 0, 0.5);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.5);
+  --ee-shadow-panel: rgba(0, 0, 0, 0.5);
+  --ee-shadow-input: rgba(0, 0, 0, 0.5);
+  --ee-shadow-button: rgba(0, 0, 0, 0.5);
   --ee-note-fieldtype-bg: #121212;
   --ee-note-fieldtype-color: #6b6b6b;
   --ee-note-fieldtype-icon-bg: #000000;
@@ -449,8 +457,12 @@ body[data-theme=dark] .inverted-theme {
   --ee-table-border: #dfe0ef;
   --ee-panel-bg: #FFFFFF;
   --ee-panel-border: #dfe0ef;
+  --ee-panel-border-outer: transparent;
   --ee-shadow-modal: rgba(69, 68, 85, 0.2);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.1);
+  --ee-shadow-panel: rgba(0, 0, 0, 0.1);
+  --ee-shadow-input: rgba(0, 0, 0, 0.05);
+  --ee-shadow-button: rgba(0, 0, 0, 0.05);
   --ee-note-fieldtype-bg: #f7f7fb;
   --ee-note-fieldtype-color: #8f90b0;
   --ee-note-fieldtype-icon-bg: #ecedf5;
@@ -605,8 +617,12 @@ body[data-theme=light] .inverted-theme {
   --ee-table-border: #383838;
   --ee-panel-bg: #1f1f1f;
   --ee-panel-border: #383838;
+  --ee-panel-border-outer: #383838;
   --ee-shadow-modal: rgba(0, 0, 0, 0.5);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.5);
+  --ee-shadow-panel: rgba(0, 0, 0, 0.5);
+  --ee-shadow-input: rgba(0, 0, 0, 0.5);
+  --ee-shadow-button: rgba(0, 0, 0, 0.5);
   --ee-note-fieldtype-bg: #121212;
   --ee-note-fieldtype-color: #6b6b6b;
   --ee-note-fieldtype-icon-bg: #000000;
@@ -761,8 +777,12 @@ body[data-theme=pink] {
   --ee-table-border: #f2e0e4;
   --ee-panel-bg: #FFFFFF;
   --ee-panel-border: #f2e0e4;
+  --ee-panel-border-outer: transparent;
   --ee-shadow-modal: rgba(69, 68, 85, 0.2);
   --ee-shadow-dropdown: rgba(23, 27, 40, 0.1);
+  --ee-shadow-panel: rgba(23, 27, 40, 0.1);
+  --ee-shadow-input: rgba(23, 27, 40, 0.05);
+  --ee-shadow-button: rgba(23, 27, 40, 0.05);
   --ee-note-fieldtype-bg: #fcf9fa;
   --ee-note-fieldtype-color: #b98a95;
   --ee-note-fieldtype-icon-bg: #f8eef0;
@@ -21695,6 +21715,7 @@ input[type=url] {
   -webkit-appearance: none;
   border: 1px solid var(--ee-input-border);
   border-radius: 5px;
+  box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
 }
 textarea:focus,
 input[type=text]:focus,
@@ -21703,6 +21724,8 @@ input[type=number]:focus,
 input[type=password]:focus,
 input[type=url]:focus {
   border-color: var(--ee-input-focus-border);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
 }
 textarea:disabled,
 input[type=text]:disabled,
@@ -23714,6 +23737,7 @@ select,
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  box-shadow: 0 1px 2px 0 var(--ee-shadow-button);
   padding: 8px 20px !important;
   font-size: 1rem;
   line-height: 1.6;
@@ -23853,6 +23877,7 @@ select:focus,
 .filter-bar__button:focus,
 .markItUpHeader ul a:focus {
   outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
 }
 .btn:focus:not(:focus-visible),
 .button:focus:not(:focus-visible),
@@ -26619,6 +26644,7 @@ input[type=button].btn-block {
 }
 .main-nav__account-icon:focus, .account-menu__icon:focus {
   outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
 }
 .main-nav__account-icon:focus:not(:focus-visible), .account-menu__icon:focus:not(:focus-visible) {
   outline: none;
@@ -27090,6 +27116,7 @@ input[type=button].btn-block {
 }
 .sidebar__link:focus, .add-on-layout .secondary-sidebar .sidebar__section-title a:focus:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) {
   outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
   border-radius: 5px;
 }
 .sidebar__link:focus:not(:focus-visible), .add-on-layout .secondary-sidebar .sidebar__section-title a:focus:not(:focus-visible):not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) {
@@ -27109,6 +27136,7 @@ input[type=button].btn-block {
 }
 .sidebar__link--parent a:focus {
   outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
   border-radius: 5px;
 }
 .sidebar__link--parent a:focus:not(:focus-visible) {
@@ -27601,6 +27629,7 @@ input[type=button].btn-block {
 }
 .filter-bar__button:focus {
   outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
 }
 .filter-bar__button:focus:not(:focus-visible) {
   outline: none;
@@ -28155,10 +28184,6 @@ input[type=button].btn-block {
 .tab-bar--editable .button__within-dropdown .tab-off:before, .dropdown__link .far, .select__dropdown-item .far, .button__within-dropdown .far {
   margin-right: 5px;
   color: var(--ee-text-secondary);
-}
-.dropdown__link:focus, .select__dropdown-item:focus, .button__within-dropdown:focus {
-  outline: none;
-  box-shadow: inset 0 0 0 2px var(--ee-keyboard-focus);
 }
 .dropdown__link:focus:not(:focus-visible), .select__dropdown-item:focus:not(:focus-visible), .button__within-dropdown:focus:not(:focus-visible) {
   outline: none;
@@ -28889,9 +28914,10 @@ input[type=button].btn-block {
 }
 .widget {
   background-color: var(--ee-bg-blank);
-  border: 1px solid var(--ee-border);
+  border: 1px solid var(--ee-panel-border-outer);
   border-radius: 6px;
   padding: 12px 20px;
+  box-shadow: 0 1px 3px 0 var(--ee-shadow-panel), 0 1px 2px -1px var(--ee-shadow-panel);
 }
 .widget .title-bar {
   margin-bottom: 10px;
@@ -29093,6 +29119,7 @@ input[type=button].btn-block {
 }
 .toggle-btn:focus {
   outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
   border: 1px solid var(--ee-input-focus-border);
 }
 
@@ -29134,10 +29161,11 @@ input[type=button].btn-block {
   content: "";
   display: block;
   position: absolute;
-  top: 20%;
-  left: 8%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   opacity: 0;
-  font-size: 9.375px;
+  font-size: 11.5384615385px;
   margin: 0 !important;
   color: #fff !important;
   content: "\f00c";
@@ -29155,6 +29183,14 @@ input[type=button].btn-block {
 }
 .checkbox:focus, input[type=checkbox]:focus {
   border-color: var(--ee-input-focus-border);
+}
+.checkbox:focus:focus, input[type=checkbox]:focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
+}
+.checkbox:focus:focus:not(:focus-visible), input[type=checkbox]:focus:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .checkbox:active:not(:disabled), input[type=checkbox]:active:not(:disabled) {
   transform: scale(0.9);
@@ -29182,10 +29218,11 @@ input[type=checkbox].checkbox--large:after {
   content: "";
   display: block;
   position: absolute;
-  top: 20%;
-  left: 8%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   opacity: 0;
-  font-size: 12.5px;
+  font-size: 15.3846153846px;
   margin: 0 !important;
   color: #fff !important;
   content: "\f00c";
@@ -29210,6 +29247,16 @@ input[type=checkbox].checkbox--large.checkbox--disabled {
 .checkbox--large:focus,
 input[type=checkbox].checkbox--large:focus {
   border-color: var(--ee-input-focus-border);
+}
+.checkbox--large:focus:focus,
+input[type=checkbox].checkbox--large:focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
+}
+.checkbox--large:focus:focus:not(:focus-visible),
+input[type=checkbox].checkbox--large:focus:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .checkbox--large:active:not(:disabled),
 input[type=checkbox].checkbox--large:active:not(:disabled) {
@@ -29238,10 +29285,11 @@ input[type=checkbox].checkbox--small:after {
   content: "";
   display: block;
   position: absolute;
-  top: 20%;
-  left: 8%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   opacity: 0;
-  font-size: 7.5px;
+  font-size: 9.2307692308px;
   margin: 0 !important;
   color: #fff !important;
   content: "\f00c";
@@ -29266,6 +29314,16 @@ input[type=checkbox].checkbox--small.checkbox--disabled {
 .checkbox--small:focus,
 input[type=checkbox].checkbox--small:focus {
   border-color: var(--ee-input-focus-border);
+}
+.checkbox--small:focus:focus,
+input[type=checkbox].checkbox--small:focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
+}
+.checkbox--small:focus:focus:not(:focus-visible),
+input[type=checkbox].checkbox--small:focus:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .checkbox--small:active:not(:disabled),
 input[type=checkbox].checkbox--small:active:not(:disabled) {
@@ -29312,8 +29370,15 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   opacity: 0.5;
 }
 .radio:focus, input[type=radio]:focus {
-  outline: none;
   border-color: var(--ee-input-focus-border);
+}
+.radio:focus:focus, input[type=radio]:focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
+}
+.radio:focus:focus:not(:focus-visible), input[type=radio]:focus:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .radio:active:not(:disabled), input[type=radio]:active:not(:disabled) {
   transform: scale(0.9);
@@ -29644,6 +29709,17 @@ fieldset.hide-block {
 .fieldset-invalid > .field-control > div > textarea,
 .fieldset-invalid > .field-control .c-colorpicker-input {
   border: 1px solid var(--ee-error);
+}
+.fieldset-invalid > .field-control > input:focus,
+.fieldset-invalid > .field-control > textarea:focus,
+.fieldset-invalid > .field-control .fields-select:focus,
+.fieldset-invalid > .field-control .field-drop-selected:focus,
+.fieldset-invalid > .field-control .field-drop-choices:focus,
+.fieldset-invalid > .field-control > div > input:focus,
+.fieldset-invalid > .field-control > div > textarea:focus,
+.fieldset-invalid > .field-control .c-colorpicker-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ee-error-light);
 }
 .fieldset-invalid > .field-control .field-drop-choices {
   border-width: 0 1px 1px;
@@ -30749,6 +30825,7 @@ fieldset .field-control #eye {
 
 .select--focus {
   outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
 }
 
 .select--resizable .select__dropdown-items {
@@ -30856,6 +30933,7 @@ fieldset .field-control #eye {
 }
 .select-popup:focus, select:focus {
   outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
 }
 .select-popup:focus:not(:focus-visible), select:focus:not(:focus-visible) {
   outline: none;
@@ -31635,8 +31713,9 @@ body[data-theme=dark] .select-popup {
 .panel, .add-on-layout .table-responsive {
   margin-bottom: 20px;
   background-color: var(--ee-panel-bg);
-  border: 1px solid var(--ee-panel-border);
+  border: 1px solid var(--ee-panel-border-outer);
   border-radius: 6px;
+  box-shadow: 0 1px 3px 0 var(--ee-shadow-panel), 0 1px 2px -1px var(--ee-shadow-panel);
 }
 
 .panel-body {

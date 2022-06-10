@@ -328,7 +328,7 @@ class Relationship extends React.Component {
                                         <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={EE.relationship.lang.search} />
                                     </div>
                                 </div>
-                                {props.channels.length > 1 && 
+                                {props.channels.length > 1 &&
                                 <div className="filter-bar__item">
                                     <DropDownButton
                                         keepSelectedState={true}
@@ -346,7 +346,7 @@ class Relationship extends React.Component {
                                     }
                                     {props.channels.length > 1 &&
                                     <div>
-                                    <button type="button" className="js-dropdown-toggle button button--primary button--small">New Entry <i class="fal fa-caret-down icon-right"></i></button>
+                                    <button type="button" className="js-dropdown-toggle button button--primary button--small">New Entry <i class="fal fa-chevron-down icon-right"></i></button>
                                     <div className="dropdown">
                                         {props.channels.map((channel) => {
                                             return (

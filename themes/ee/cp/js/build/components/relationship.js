@@ -439,7 +439,7 @@ function (_React$Component) {
         type: "button",
         className: "js-dropdown-toggle button button--primary button--small"
       }, "New Entry ", React.createElement("i", {
-        "class": "fal fa-caret-down icon-right"
+        "class": "fal fa-chevron-down icon-right"
       })), React.createElement("div", {
         className: "dropdown"
       }, props.channels.map(function (channel) {

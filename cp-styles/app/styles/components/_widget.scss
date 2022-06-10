@@ -4,9 +4,10 @@ $widget-padding-x: 20px;
 
 .widget {
 	background-color: color(bg-blank);
-  border: 1px solid color(border);
+  border: 1px solid color(panel-border-outer);
 	border-radius: $border-radius-large;
 	padding: $widget-padding-y $widget-padding-x;
+  @include shadow-panel;
 
 	.title-bar {
 		 margin-bottom: $s-s;

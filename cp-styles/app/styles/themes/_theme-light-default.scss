@@ -204,10 +204,14 @@ $light-theme: (
   // Panels
   panel-bg: $gray-blank,
   panel-border: $gray-10,
+  panel-border-outer: transparent,
 
   // Shadows
   shadow-modal: rgba(69, 68, 85, 0.2),
   shadow-dropdown: rgba(0, 0, 0, 0.1),
+  shadow-panel: rgb(0, 0, 0, 0.1),
+  shadow-input: rgb(0, 0, 0, 0.05),
+  shadow-button: rgb(0, 0, 0, 0.05),
 
   // Fieldtypes
   note-fieldtype-bg: $gray-0,

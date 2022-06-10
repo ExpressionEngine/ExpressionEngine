@@ -202,10 +202,14 @@ $pink-theme: (
   // Panels
   panel-bg: $gray-blank,
   panel-border: $gray-10,
+  panel-border-outer: transparent,
 
   // Shadows
   shadow-modal: rgba(69, 68, 85, 0.2),
   shadow-dropdown: rgba(23, 27, 40, 0.1),
+  shadow-panel: rgba(23, 27, 40, 0.1),
+  shadow-input: rgba(23, 27, 40, 0.05),
+  shadow-button: rgba(23, 27, 40, 0.05),
 
   // Fieldtypes
   note-fieldtype-bg: $gray-0,

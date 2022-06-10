@@ -7,8 +7,9 @@
 .panel {
   margin-bottom: 20px;
   background-color: color(panel-bg);
-  border: 1px solid color(panel-border);
+  border: 1px solid color(panel-border-outer);
   border-radius: $border-radius-large;
+  @include shadow-panel;
 }
 
 // Panel contents
