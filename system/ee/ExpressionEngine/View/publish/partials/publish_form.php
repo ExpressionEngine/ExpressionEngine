@@ -103,9 +103,9 @@
                 }
             ?>
             <?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid'): ?>
-            <div class="fieldset-faux <?=$field_class?>"  data-field_id="<?=$field->getId()?>" style="width:<?php echo $field->getWidth()?>%">
+            <div class="fieldset-faux <?=$field_class?>"  data-field_id="<?=$field->getId()?>" <?php if (!isset($pro_class)) : ?> style="width:<?php echo $field->getWidth()?>%" <?php endif; ?>>
             <?php else: ?>
-            <fieldset class="<?=$field_class?>" data-field_id="<?=$field->getId()?>" style="width:<?php echo $field->getWidth()?>%">
+            <fieldset class="<?=$field_class?>" data-field_id="<?=$field->getId()?>" <?php if (!isset($pro_class)) : ?> style="width:<?php echo $field->getWidth()?>%" <?php endif; ?>>
             <?php endif; ?>
                 <div class="field-instruct">
                     <?php if (! $field->titleIsHidden()):?>
