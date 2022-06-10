@@ -119,14 +119,14 @@ html.color-theme-in-transition *:after {
   --ee-input-toggle-active-fg: #ffffff;
   --ee-input-disabled-bg: #f7f7fb;
   --ee-input-jump-bg: #FFFFFF;
-  --ee-sidebar-text: #5a5b7f;
+  --ee-sidebar-text: #8082a5;
   --ee-sidebar-text-primary: #0d0d19;
   --ee-sidebar-text-faded: #8f90b0;
   --ee-sidebar-text-active: #5D63F1;
   --ee-sidebar-icon-active: #5D63F1;
   --ee-sidebar-bg-active: #f7f7fb;
   --ee-sidebar-bg: #FFFFFF;
-  --ee-sidebar-title-text: #5a5b7f;
+  --ee-sidebar-title-text: #8082a5;
   --ee-sidebar-title-bg: #FFFFFF;
   --ee-sidebar-title-bg-hover: #FFFFFF;
   --ee-sidebar-version-bg: #FFFFFF;
@@ -28805,9 +28805,9 @@ input[type=button].btn-block {
 }
 
 .bulk-action-bar, .tbl-bulk-act {
-  display: inline-block;
   margin-bottom: 0;
   padding: 20px 0px 20px 25px;
+  border-top: 1px solid var(--ee-border);
 }
 .bulk-action-bar.hidden, .hidden.tbl-bulk-act {
   display: none;
@@ -28821,8 +28821,13 @@ input[type=button].btn-block {
 }
 
 .panel-body .bulk-action-bar, .panel-body .tbl-bulk-act {
-  padding-left: 0px;
+  padding-left: 0;
+  padding-right: 0;
   padding-bottom: 0px;
+  border-top: none;
+}
+.panel-body .pagination + .bulk-action-bar, .panel-body .pagination + .tbl-bulk-act {
+  padding-top: 0;
 }
 
 .app-about {
@@ -29863,6 +29868,57 @@ ul.field-nested ul li ul::before {
 }
 .field-nested li.nestable-item > ul.field-nested .checkbox-label__text-editable:before {
   border-radius: 0;
+}
+
+#fieldset-statuses .checkbox-label {
+  background-color: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
+  border-radius: 5px;
+  position: relative;
+  margin-bottom: 8px;
+}
+#fieldset-statuses .checkbox-label .checkbox-label__text {
+  height: 45px;
+  position: relative;
+}
+#fieldset-statuses .checkbox-label input[type=checkbox] {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 40px;
+}
+#fieldset-statuses .checkbox-label .icon-reorder {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 15px;
+}
+#fieldset-statuses .checkbox-label .status-tag, #fieldset-statuses .checkbox-label .st-spam,
+#fieldset-statuses .checkbox-label .st-error,
+#fieldset-statuses .checkbox-label .st-closed,
+#fieldset-statuses .checkbox-label .st-banned,
+#fieldset-statuses .checkbox-label .st-open,
+#fieldset-statuses .checkbox-label .st-draft,
+#fieldset-statuses .checkbox-label .st-pending,
+#fieldset-statuses .checkbox-label .st-info,
+#fieldset-statuses .checkbox-label .st-note,
+#fieldset-statuses .checkbox-label .st-warning,
+#fieldset-statuses .checkbox-label .st-locked,
+#fieldset-statuses .checkbox-label .st-unlocked,
+#fieldset-statuses .checkbox-label .st-enable,
+#fieldset-statuses .checkbox-label .st-disable,
+#fieldset-statuses .checkbox-label .st-status {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 67px;
+}
+#fieldset-statuses .checkbox-label .button-group.button-group-flyout-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 15px;
 }
 
 .fieldset-group {
@@ -31784,6 +31840,7 @@ body[data-theme=dark] .select-popup {
   border-radius: 5px;
   display: flex;
   background: var(--ee-bg-0);
+  box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
 }
 .layout-item__handle {
   flex: 0 0;
@@ -33346,7 +33403,7 @@ table .field-no-results {
 
 .pagination {
   list-style-type: none;
-  padding: 20px 25px;
+  padding: 20px 25px 10px;
   border-top: 1px solid var(--ee-border);
 }
 .pagination:after {
@@ -33360,6 +33417,11 @@ table .field-no-results {
 .pagination .panel-body .pagination {
   padding: 20px 0px;
   border-top: none;
+}
+
+.bulk-action-bar:not(.hidden) + .pagination, .tbl-bulk-act:not(.hidden) + .pagination {
+  border-top: none;
+  padding-top: 0;
 }
 
 .pagination__item {
@@ -33403,6 +33465,12 @@ table .field-no-results {
 .pagination__divider i {
   position: relative;
   top: 1px;
+}
+
+.panel-body .pagination {
+  border-top: none;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .badge {
@@ -34572,22 +34640,26 @@ ul.field-reorder-drop,
 .field-inputs label.field-reorder-placeholder,
 .field-inputs label.field-reorder-drag,
 .field-inputs label.field-reorder-drop {
-  border: 2px dashed;
+  border: 1px dashed;
 }
 
 ul.field-reorder-placeholder,
 .field-inputs li.field-reorder-placeholder,
 .field-inputs label.field-reorder-placeholder {
-  background-color: #f9f9f9;
-  border-color: #ccc;
-  padding: 15px;
+  background-color: var(--ee-bg-0);
+  border-color: var(--ee-border);
+  padding: 20px;
+  width: 100%;
+  border-radius: 5px;
 }
 
 ul.field-reorder-drag,
 .field-inputs li.field-reorder-drag,
 .field-inputs label.field-reorder-drag {
-  background-color: #fefff3;
-  border-color: #fc0;
+  background-color: var(--ee-bg-0);
+  border-color: var(--ee-border);
+  border-radius: 5px;
+  padding: 5px 10px;
   cursor: move;
   height: auto !important;
   pointer-events: none;
@@ -34598,20 +34670,20 @@ ul.field-reorder-drag,
 ul.field-reorder-drag .icon-reorder:before,
 .field-inputs li.field-reorder-drag .icon-reorder:before,
 .field-inputs label.field-reorder-drag .icon-reorder:before {
-  color: #009ae1;
+  color: var(--ee-accent);
 }
 
 ul.field-reorder-drop,
 .field-inputs li.field-reorder-drop,
 .field-inputs label.field-reorder-drop {
-  background-color: #f5fefb;
-  border-color: #01bf75;
+  background-color: var(--ee-bg-0);
+  border-color: var(--ee-border);
 }
 
 .drag-placeholder .none {
   background-color: var(--ee-bg-0);
-  border: 1px dashed var(--ee-border-dark);
-  padding: 10px;
+  border: 1px dashed var(--ee-border);
+  padding: 20px;
   border-radius: 5px;
 }
 .drag-placeholder fieldset {
@@ -34793,7 +34865,7 @@ ul.field-reorder-drop,
 .st-disable,
 .st-status {
   display: inline-block;
-  padding: 3px 10px;
+  padding: 2px 10px 4px;
   color: var(--ee-text-secondary);
   background-color: var(--ee-bg-10);
   border: 1px solid transparent;
@@ -36819,7 +36891,7 @@ body[data-theme="dark"] {
   letter-spacing: 1px;
   font-size: 85%;
   color: var(--ee-sidebar-text);
-  opacity: 0.5;
+  opacity: 0.6;
   font-weight: 500;
   padding: 0 20px;
   display: block;
@@ -37106,6 +37178,7 @@ body[data-theme="dark"] {
   border-radius: 0;
   margin-left: 0;
   margin-right: 0;
+  margin-bottom: 0;
 }
 .ee-sidebar.ee-sidebar__collapsed .ee-logomark {
   display: inherit;

@@ -10,6 +10,7 @@
 	border-radius: $border-radius-base;
 	display: flex;
 	background: color(bg-0);
+  @include shadow-input;
 
 	&:hover {
 		// border-color: color(accent);

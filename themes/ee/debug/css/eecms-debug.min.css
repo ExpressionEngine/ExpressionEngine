@@ -126,14 +126,14 @@ html.color-theme-in-transition *:after {
   --ee-input-toggle-active-fg: #ffffff;
   --ee-input-disabled-bg: #f7f7fb;
   --ee-input-jump-bg: #FFFFFF;
-  --ee-sidebar-text: #5a5b7f;
+  --ee-sidebar-text: #8082a5;
   --ee-sidebar-text-primary: #0d0d19;
   --ee-sidebar-text-faded: #8f90b0;
   --ee-sidebar-text-active: #5D63F1;
   --ee-sidebar-icon-active: #5D63F1;
   --ee-sidebar-bg-active: #f7f7fb;
   --ee-sidebar-bg: #FFFFFF;
-  --ee-sidebar-title-text: #5a5b7f;
+  --ee-sidebar-title-text: #8082a5;
   --ee-sidebar-title-bg: #FFFFFF;
   --ee-sidebar-title-bg-hover: #FFFFFF;
   --ee-sidebar-version-bg: #FFFFFF;

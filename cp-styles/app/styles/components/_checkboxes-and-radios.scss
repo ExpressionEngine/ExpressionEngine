@@ -395,3 +395,48 @@ ul.field-nested ul {
 		}
 	}
 }
+
+// Custom styling for Statuses checkbox lists
+#fieldset-statuses {
+  .checkbox-label {
+    background-color: color(bg-0);
+    border: 1px solid color(border);
+    @include shadow-input;
+    border-radius: $border-radius-base;
+    position: relative;
+    margin-bottom: 8px;
+
+    .checkbox-label__text {
+      height: 45px;
+      position: relative;
+    }
+
+    input[type="checkbox"] {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 40px;
+    }
+
+    .icon-reorder {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 15px;
+    }
+
+    .status-tag {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 67px;
+    }
+
+    .button-group.button-group-flyout-right {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 15px;
+    }
+  }
+}

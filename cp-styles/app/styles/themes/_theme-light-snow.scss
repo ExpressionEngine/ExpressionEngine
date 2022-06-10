@@ -179,14 +179,14 @@ $snow-theme: (
   input-jump-bg: $gray-blank,
 
   // Sidebar
-  sidebar-text: $text-tertiary,
+  sidebar-text: desaturate(darken($gray-0, 40), 15),
   sidebar-text-primary: $text-normal,
   sidebar-text-faded: $text-secondary,
   sidebar-text-active: $link,
   sidebar-icon-active: $link,
   sidebar-bg-active: $gray-0,
   sidebar-bg: $gray-blank,
-  sidebar-title-text: $text-tertiary,
+  sidebar-title-text: desaturate(darken($gray-0, 40), 15),
   sidebar-title-bg: $gray-blank,
   sidebar-title-bg-hover: $gray-blank,
   sidebar-version-bg: $gray-blank,

@@ -155,7 +155,7 @@
   letter-spacing: 1px;
   font-size: 85%;
   color: color(sidebar-text);
-  opacity: 0.5;
+  opacity: 0.6;
   font-weight: 500;
   padding: 0 20px;
   display: block;
@@ -458,6 +458,7 @@
     border-radius: 0;
     margin-left: 0;
     margin-right: 0;
+    margin-bottom: 0;
   }
 
   // Show EE Logomark when sidebar is collapsed
