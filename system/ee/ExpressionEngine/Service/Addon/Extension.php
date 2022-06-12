@@ -19,8 +19,8 @@ class Extension extends Controller
             throw new ControllerException("Your Controller Namespace isn't seutp yet!");
         }
 
-        $object = '\\'.$this->getRouteNamespace().'\\Extension\\';
-        $object .= 'Routes\\'. Str::studly($method);
+        $object = '\\'.$this->getRouteNamespace().'\\Extensions\\';
+        $object .= Str::studly($method);
 
         return $object;
     }
