@@ -46,4 +46,16 @@ class McpTest extends TestCase
         $this->assertObjectHasAttribute('id', $controller);
         return $controller;
     }
+
+    /**
+     * @depends testMcpHasIdProperty
+     * @param Mcp $controller
+     * @return void
+     * @throws \ExpressionEngine\Service\Addon\Exceptions\ControllerException
+     */
+    public function testProcessReturnsNullOnBadDomain(Mcp $controller)
+    {
+        $this->expectException('ExpressionEngine\Service\Addon\Exceptions\ControllerException');
+        $controller->route('does-not-exist');
+    }
 }

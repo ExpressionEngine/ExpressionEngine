@@ -41,4 +41,44 @@ class ControllerTest extends TestCase
         $this->assertObjectHasAttribute('addon_name', $controller);
         $this->assertEquals('', $controller->getAddonNameProperty());
     }
+
+    /**
+     * @return Controller
+     */
+    public function testSetAddonNameReturnInstance(): Controller
+    {
+        $controller = new Controller();
+        $this->assertInstanceOf('ExpressionEngine\Service\Addon\Controllers\Controller', $controller->setAddonName('test-addon'));
+        return $controller;
+    }
+
+    /**
+     * @depends testSetAddonNameReturnInstance
+     * @param Controller $controller
+     * @return void
+     */
+    public function testSetAddonNameValue(Controller $controller)
+    {
+        $this->assertEquals('test-addon', $controller->getAddonName());
+    }
+
+    /**
+     * @return Controller
+     */
+    public function testSetRouteNamespaceReturnInstance(): Controller
+    {
+        $controller = new Controller();
+        $this->assertInstanceOf('ExpressionEngine\Service\Addon\Controllers\Controller', $controller->setRouteNamespace('test-route-namespace'));
+        return $controller;
+    }
+
+    /**
+     * @depends testSetRouteNamespaceReturnInstance
+     * @param Controller $controller
+     * @return void
+     */
+    public function testSetRouteNamespaceValue(Controller $controller)
+    {
+        $this->assertEquals('test-route-namespace', $controller->getRouteNamespace());
+    }
 }

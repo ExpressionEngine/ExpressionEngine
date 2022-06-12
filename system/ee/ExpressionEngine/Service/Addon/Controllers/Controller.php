@@ -10,6 +10,9 @@
 
 namespace ExpressionEngine\Service\Addon\Controllers;
 
+use ExpressionEngine\Service\Addon\Exceptions\ControllerException;
+use ExpressionEngine\Service\Addon\Addon;
+
 class Controller
 {
     /**
@@ -36,11 +39,16 @@ class Controller
 
     /**
      * @return string
+     * @throws ControllerException
      */
     public function getRouteNamespace(): string
     {
         if ($this->route_namespace == '') {
             $addon = ee('Addon')->get($this->getAddonName());
+            if (!$addon instanceof Addon) {
+                throw new ControllerException("Your addon_name property hasn't been setup!");
+            }
+
             $provider = $addon->getProvider();
             $this->setRouteNamespace($provider->get('namespace'));
         }
