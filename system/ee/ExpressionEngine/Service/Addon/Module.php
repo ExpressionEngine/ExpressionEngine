@@ -70,18 +70,18 @@ class Module extends Controller
      */
     protected function buildObject(string $method, bool $action = false): string
     {
-        if ($this->getRouteNamespace() == '') {
+        if(!$this->getRouteNamespace()){
             throw new ControllerException("Your Controller Namespace isn't setup yet!");
         }
 
-        $object = '\\'.$this->getRouteNamespace().'\\';
+        $object = '\\'.$this->getRouteNamespace().'\\Module\\';
         if($action) {
-            $object .= 'Action\\';
+            $object .= 'Actions\\';
         } else {
-            $object .= 'Tag\\';
+            $object .= 'Tags\\';
         }
 
-        $object .= 'Routes\\'. Str::studly($method);
+        $object .= Str::studly($method);
 
         return $object;
     }
