@@ -1,4 +1,13 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
+
 namespace ExpressionEngine\Service\Addon;
 
 use ExpressionEngine\Service\Addon\Controllers\Controller;
@@ -8,6 +17,8 @@ use ExpressionEngine\Service\Addon\Exceptions\ControllerException;
 
 class Extension extends Controller
 {
+    public $version = '';
+
     /**
      * @param $method
      * @return string
@@ -19,7 +30,7 @@ class Extension extends Controller
             throw new ControllerException("Your Controller Namespace isn't seutp yet!");
         }
 
-        $object = '\\'.$this->getRouteNamespace().'\\Extensions\\';
+        $object = '\\' . $this->getRouteNamespace() . '\\Extensions\\';
         $object .= Str::studly($method);
 
         return $object;
@@ -38,7 +49,7 @@ class Extension extends Controller
 
             $controller = new $object();
             if ($controller instanceof AbstractRoute) {
-                if(method_exists($controller, 'process')) {
+                if (method_exists($controller, 'process')) {
                     return call_user_func_array([$controller, 'process'], $params);
                 }
             }

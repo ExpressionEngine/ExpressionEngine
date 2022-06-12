@@ -36,7 +36,7 @@ class Factory
      */
     public function get($name)
     {
-        if (! $this->app->has($name)) {
+        if (!$this->app->has($name)) {
             return null;
         }
 

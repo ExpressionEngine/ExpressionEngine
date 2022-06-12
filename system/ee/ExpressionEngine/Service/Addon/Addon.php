@@ -153,7 +153,7 @@ class Addon
         if ($this->isInstalled()) {
             $version = $this->getInstalledVersion();
 
-            if (! is_null($version)) {
+            if (!is_null($version)) {
                 return version_compare($this->getVersion(), $version, '>');
             }
         }
@@ -168,7 +168,7 @@ class Addon
      */
     public function getInstalledVersion()
     {
-        if (! $this->isInstalled()) {
+        if (!$this->isInstalled()) {
             return null;
         }
 
@@ -494,7 +494,7 @@ class Addon
         $files = $this->getFilesMatching('ft.*.php');
         $this->requireFieldtypes($files);
 
-        return ! empty($files);
+        return !empty($files);
     }
 
     /**
@@ -607,7 +607,7 @@ class Addon
     {
         // Preflight: if we have any consents that match there's been a problem.
         $requests = $this->getInstalledConsentRequests();
-        if (! empty($requests)) {
+        if (!empty($requests)) {
             throw new \Exception();
         }
 
@@ -622,7 +622,7 @@ class Addon
 
     private function hasConsentRequestInstalled($name)
     {
-        return (bool) ee('Model')->get('ConsentRequest')
+        return (bool)ee('Model')->get('ConsentRequest')
             ->filter('consent_name', $name)
             ->count();
     }
@@ -657,7 +657,7 @@ class Addon
 
         foreach ($requests as $name => $values) {
             $consent_name = $prefix . ':' . $name;
-            if (! $this->hasConsentRequestInstalled($consent_name)) {
+            if (!$this->hasConsentRequestInstalled($consent_name)) {
                 $this->makeConsentRequest($consent_name, $values);
             }
         }
@@ -674,7 +674,7 @@ class Addon
             $consent_names[] = $prefix . ':' . $name;
         }
 
-        if (! empty($consent_names)) {
+        if (!empty($consent_names)) {
             ee('Model')->get('ConsentRequest')
                 ->filter('consent_name', 'IN', $consent_names)
                 ->delete();
@@ -733,11 +733,11 @@ class Addon
     }
 
     /**
-    * Get icon URL
-    *
-    * @param string default icon file name
-    * @return string URL for add-on's icon, or generic one
-    */
+     * Get icon URL
+     *
+     * @param string default icon file name
+     * @return string URL for add-on's icon, or generic one
+     */
     public function getIconUrl($default = null)
     {
         $masks = [
@@ -796,7 +796,7 @@ class Addon
 
         $json = ee('Encrypt')->decode($cache, ee()->config->item('session_crypt_key'));
 
-        if (empty($json) || ! $data = json_decode($json, true)) {
+        if (empty($json) || !$data = json_decode($json, true)) {
             $this->logLicenseError('license_error_file_broken');
             return false;
         }

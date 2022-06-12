@@ -1,7 +1,16 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
+
 namespace ExpressionEngine\Service\Addon\Controllers\Mcp;
 
-use ExpressionEngine\Service\Addon\Controllers\AbstractRoute AS CoreAbstractRoute;
+use ExpressionEngine\Service\Addon\Controllers\AbstractRoute as CoreAbstractRoute;
 use ExpressionEngine\Service\Addon\Exceptions\Controllers\Mcp\RouteException;
 
 abstract class AbstractRoute extends CoreAbstractRoute
@@ -51,7 +60,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
 
     public function __construct()
     {
-        if($this->sidebar_data) {
+        if ($this->sidebar_data) {
             $this->generateSidebar();
         }
     }
@@ -95,7 +104,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     public function setBody(string $view, array $variables = []): AbstractRoute
     {
         $variables = $this->prepareBodyVars($variables);
-        $this->body = ee('View')->make($this->addon_name.':'.$view)->render($variables);
+        $this->body = ee('View')->make($this->addon_name . ':' . $view)->render($variables);
         return $this;
     }
 
@@ -149,7 +158,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     protected function url(string $path, bool $with_base = true, array $query = []): string
     {
         if ($with_base) {
-            $path = $this->getBaseUrl().'/'.$path;
+            $path = $this->getBaseUrl() . '/' . $path;
         }
 
         return ee('CP/URL')->make($path, $query)->compile();
@@ -178,7 +187,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
             throw new RouteException("Your route_path property isn't setup in your Route object!");
         }
 
-        return $this->route_path. ($id !== false && $id != '' ? '/'.$id : '');
+        return $this->route_path . ($id !== false && $id != '' ? '/' . $id : '');
     }
 
     /**
@@ -187,7 +196,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     public function getBaseUrl(): string
     {
         if ($this->base_url == '') {
-            $this->base_url = 'addons/settings/'.$this->getAddonName();
+            $this->base_url = 'addons/settings/' . $this->getAddonName();
         }
 
         return $this->base_url;
@@ -200,8 +209,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     {
         $this->sidebar = ee('CP/Sidebar')->make();
         $active = false;
-        foreach($this->sidebar_data AS $title => $sidebar)
-        {
+        foreach ($this->sidebar_data as $title => $sidebar) {
             if ($sidebar['path'] != '') {
 
                 $subsHeader = $this->sidebar
@@ -211,15 +219,13 @@ abstract class AbstractRoute extends CoreAbstractRoute
                 $subsHeader = $this->sidebar
                     ->addHeader(lang($title));
             }
-            if(isset($sidebar['list']) && is_array($sidebar['list'])) {
+            if (isset($sidebar['list']) && is_array($sidebar['list'])) {
                 $subsHeaderList = $subsHeader->addBasicList();
-                foreach($sidebar['list'] AS $title => $url)
-                {
-                    if($this->active_sidebar == $url && !$active) {
+                foreach ($sidebar['list'] as $title => $url) {
+                    if ($this->active_sidebar == $url && !$active) {
                         $subsHeaderList->addItem(lang($title), $this->url($url))->isActive();
                         $active = true;
-                    }
-                    else if($url == $this->getRoutePath() && !$active) {
+                    } else if ($url == $this->getRoutePath() && !$active) {
                         $subsHeaderList->addItem(lang($title), $this->url($url))->isActive();
                         $active = true;
                     } else {

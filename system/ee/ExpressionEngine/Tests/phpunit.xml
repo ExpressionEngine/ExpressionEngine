@@ -8,11 +8,11 @@
 		 convertNoticesToExceptions="true"
 		 convertWarningsToExceptions="true"
 		 processIsolation="false"
-		 stopOnFailure="true"
+		 stopOnFailure="false"
 >
 	<testsuites>
 		<testsuite name="ExpressionEngine Test Suite">
-			<directory suffix=".php">./ExpressionEngine/</directory>
+			<directory suffix=".php">./ExpressionEngine/Service/Addon</directory>
 		</testsuite>
 	</testsuites>
 

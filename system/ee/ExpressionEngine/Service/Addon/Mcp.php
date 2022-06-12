@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Service\Addon;
 
@@ -21,8 +29,9 @@ class Mcp extends Controller
     /**
      * @param string $domain
      * @return Controllers\Mcp\AbstractRoute|null
+     * @throws ControllerException
      */
-    protected function process(string $domain): ? Controllers\Mcp\AbstractRoute
+    protected function process(string $domain): ?Controllers\Mcp\AbstractRoute
     {
         $object = $this->buildObject($domain);
         if (class_exists($object)) {
@@ -39,6 +48,7 @@ class Mcp extends Controller
      * @param string $domain
      * @param array $params
      * @return array|void
+     * @throws ControllerException
      */
     public function route(string $domain, array $params = [])
     {
@@ -58,7 +68,7 @@ class Mcp extends Controller
     protected function parseParams(array $params): Mcp
     {
         if (!empty($params['0'])) {
-            if(!is_numeric($params['0'])) {
+            if (!is_numeric($params['0'])) {
                 $this->action = $params['0'];
             } else {
                 $this->id = $params['0'];
@@ -83,12 +93,12 @@ class Mcp extends Controller
             throw new ControllerException("Your Controller Namespace isn't setup yet!");
         }
 
-        $object = '\\'.$this->getRouteNamespace().'\\Mcp\\' . Str::studly($domain);
+        $object = '\\' . $this->getRouteNamespace() . '\\Mcp\\' . Str::studly($domain);
 
         if ($this->action) {
             $stub = '\\' . Str::studly($this->action);
-            if(class_exists($object.$stub)) {
-                $object = $object.$stub;
+            if (class_exists($object . $stub)) {
+                $object = $object . $stub;
             } else {
                 $this->id = $this->action;
                 $this->action = null;

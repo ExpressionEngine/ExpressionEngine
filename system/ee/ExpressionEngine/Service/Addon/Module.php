@@ -1,9 +1,18 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
+
 namespace ExpressionEngine\Service\Addon;
 
 use ExpressionEngine\Service\Addon\Controllers\Controller;
-use ExpressionEngine\Service\Addon\Controllers\Action\AbstractRoute AS ActionRoute;
-use ExpressionEngine\Service\Addon\Controllers\Tag\AbstractRoute AS TagRoute;
+use ExpressionEngine\Service\Addon\Controllers\Action\AbstractRoute as ActionRoute;
+use ExpressionEngine\Service\Addon\Controllers\Tag\AbstractRoute as TagRoute;
 use ExpressionEngine\Service\Addon\Exceptions\ControllerException;
 use ExpressionEngine\Library\String\Str;
 
@@ -70,12 +79,12 @@ class Module extends Controller
      */
     protected function buildObject(string $method, bool $action = false): string
     {
-        if(!$this->getRouteNamespace()){
+        if (!$this->getRouteNamespace()) {
             throw new ControllerException("Your Controller Namespace isn't setup yet!");
         }
 
-        $object = '\\'.$this->getRouteNamespace().'\\Module\\';
-        if($action) {
+        $object = '\\' . $this->getRouteNamespace() . '\\Module\\';
+        if ($action) {
             $object .= 'Actions\\';
         } else {
             $object .= 'Tags\\';
