@@ -28,7 +28,7 @@ class Mcp extends Controller
         if (class_exists($object)) {
             $controller = new $object();
             if ($controller instanceof Controllers\Mcp\AbstractRoute) {
-                return $controller->process($this->id);
+                return $controller->setAddonName($this->getAddonName())->process($this->id);
             }
         }
 
@@ -45,7 +45,7 @@ class Mcp extends Controller
         $this->parseParams($params);
         $route = $this->process($domain);
         if ($route instanceof Controllers\Mcp\AbstractRoute) {
-            return $route->setAddonName($this->getAddonName())->toArray();
+            return $route->toArray();
         }
 
         show_404();
