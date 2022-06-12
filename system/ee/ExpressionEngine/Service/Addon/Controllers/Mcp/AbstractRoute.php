@@ -97,7 +97,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     public function setBody(string $view, array $variables = []): AbstractRoute
     {
         $variables = $this->prepareBodyVars($variables);
-        $this->body = ee('View')->make($this->module_name.':'.$view)->render($variables);
+        $this->body = ee('View')->make($this->addon_name.':'.$view)->render($variables);
         return $this;
     }
 
@@ -143,7 +143,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     }
 
     /**
-     * @param $path
+     * @param string $path
      * @param bool $with_base
      * @param array $query
      * @return mixed
@@ -170,7 +170,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     }
 
     /**
-     * @param string $id
+     * @param mixed $id
      * @return string
      * @throws RouteException
      */
