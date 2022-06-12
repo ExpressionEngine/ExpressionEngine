@@ -51,7 +51,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
 
     public function __construct()
     {
-        $this->base_url = 'addons/settings/'.$this->getModuleName();
+        $this->base_url = 'addons/settings/'.$this->getAddonName();
 
         if($this->sidebar_data) {
             $this->generateSidebar();
@@ -176,8 +176,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
      */
     protected function getRoutePath($id = ''): string
     {
-        if ($this->route_path == '')
-        {
+        if ($this->route_path == '') {
             throw new RouteException("Your route_path property isn't setup in your Route object!");
         }
 
