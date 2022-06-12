@@ -51,8 +51,6 @@ abstract class AbstractRoute extends CoreAbstractRoute
 
     public function __construct()
     {
-        $this->base_url = 'addons/settings/'.$this->getAddonName();
-
         if($this->sidebar_data) {
             $this->generateSidebar();
         }
@@ -109,7 +107,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     {
         return array_merge([
             'cp_page_title' => $this->getHeading(),
-            'base_url' => $this->base_url,
+            'base_url' => $this->getBaseUrl(),
         ], $variables);
     }
 
@@ -128,7 +126,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
      */
     protected function addBreadcrumb(string $url, string $text): AbstractRoute
     {
-        $this->breadcrumbs[$url] = lang($text);
+        $this->breadcrumbs[$this->url($url, true)] = lang($text);
         return $this;
     }
 
@@ -151,7 +149,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     protected function url(string $path, bool $with_base = true, array $query = []): string
     {
         if ($with_base) {
-            $path = $this->base_url.'/'.$path;
+            $path = $this->getBaseUrl().'/'.$path;
         }
 
         return ee('CP/URL')->make($path, $query)->compile();
@@ -181,6 +179,18 @@ abstract class AbstractRoute extends CoreAbstractRoute
         }
 
         return $this->route_path. ($id !== false && $id != '' ? '/'.$id : '');
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseUrl(): string
+    {
+        if ($this->base_url == '') {
+            $this->base_url = 'addons/settings/'.$this->getAddonName();
+        }
+
+        return $this->base_url;
     }
 
     /**
