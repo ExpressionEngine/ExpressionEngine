@@ -13,6 +13,34 @@ namespace ExpressionEngine\Tests\Service\Addon;
 use PHPUnit\Framework\TestCase;
 use ExpressionEngine\Service\Addon\Mcp;
 
+class __stub_mcp extends Mcp
+{
+    public function forceParseParams(array $params)
+    {
+        $this->parseParams($params);
+    }
+
+    public function forceBuildObject(string $domain)
+    {
+        return $this->buildObject($domain);
+    }
+
+    public function forceProcess(string $domain)
+    {
+        return $this->process($domain);
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getAction()
+    {
+        return $this->action;
+    }
+}
+
 class McpTest extends TestCase
 {
     /**
@@ -57,5 +85,71 @@ class McpTest extends TestCase
     {
         $this->expectException('ExpressionEngine\Service\Addon\Exceptions\ControllerException');
         $controller->route('does-not-exist');
+    }
+
+    /**
+     * @return Mcp
+     */
+    public function testParseParams(): Mcp
+    {
+        $controller = new __stub_mcp;
+        $controller->forceParseParams(['action', 34]);
+        $this->assertEquals(34, $controller->getId());
+        $this->assertEquals('action', $controller->getAction());
+        return $controller;
+    }
+
+    public function testParseParamsWithActionOnly(): Mcp
+    {
+        $controller = new __stub_mcp;
+        $controller->forceParseParams(['action']);
+        $this->assertEquals('', $controller->getId());
+        $this->assertEquals('action', $controller->getAction());
+        return $controller;
+    }
+
+    public function testParamsIdDetection(): Mcp
+    {
+        $controller = new __stub_mcp;
+        $controller->forceParseParams([500]);
+        $this->assertEquals(500, $controller->getId());
+        $this->assertEquals('', $controller->getAction());
+        return $controller;
+    }
+
+    public function testBuildObjectThrowsExceptionOnMissingNamespace(): Mcp
+    {
+        $this->expectException('ExpressionEngine\Service\Addon\Exceptions\ControllerException');
+        $controller = new __stub_mcp;
+        $controller->forceBuildObject('foo');
+        return $controller;
+    }
+
+    public function testBuildObjectWithActionDeciphersActionAndId(): Mcp
+    {
+        $controller = new __stub_mcp;
+        $controller->setRouteNamespace('TestAddon');
+        $controller->forceParseParams(['my-action']);
+        $this->assertEquals('\\TestAddon\\Mcp\\TestDomain', $controller->forceBuildObject('test-domain'));
+        return $controller;
+    }
+
+    public function testBuildObjectCreatesBasicNamespaceString(): Mcp
+    {
+        $controller = new __stub_mcp;
+        $controller->setRouteNamespace('TestAddon');
+        $this->assertEquals('\\TestAddon\\Mcp\\TestDomain', $controller->forceBuildObject('test-domain'));
+        return $controller;
+    }
+
+    /**
+     * @depends testBuildObjectCreatesBasicNamespaceString
+     * @param __stub_mcp $controller
+     * @return Mcp
+     */
+    public function testNonExistentNamespaceReturnsNullOnBuild(__stub_mcp $controller): Mcp
+    {
+        $this->assertNull($controller->forceProcess('my-domain'));
+        return $controller;
     }
 }
