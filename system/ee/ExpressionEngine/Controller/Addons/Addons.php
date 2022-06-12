@@ -13,6 +13,7 @@ namespace ExpressionEngine\Controller\Addons;
 use CP_Controller;
 use Michelf\MarkdownExtra;
 use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Service\Addon\Mcp;
 
 /**
  * Addons Controller
@@ -1472,6 +1473,7 @@ class Addons extends CP_Controller
 
         // its possible that a module will try to call a method that does not exist
         // either by accident (ie: a missed function) or by deliberate user url hacking
+
         if (! method_exists($mod, $method)) {
             // 3.0 introduced camel-cased method names that are translated from a URL
             // segment separated by dashes or underscores
@@ -1482,11 +1484,17 @@ class Addons extends CP_Controller
             $method .= implode('', $words);
 
             if (! method_exists($mod, $method)) {
-                show_404();
+                if (! $mod instanceof Mcp) {
+                    show_404();
+                }
             }
         }
 
-        $_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
+        if ($mod instanceof Mcp && ! method_exists($mod, $method)) {
+            $_module_cp_body = $mod->route($method, $parameters);
+        } else {
+            $_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
+        }
 
         // unset reference
         ee()->remove('_mcp_reference');
