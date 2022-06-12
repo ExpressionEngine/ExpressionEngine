@@ -45,7 +45,7 @@ class Mcp extends Controller
         $this->parseParams($params);
         $route = $this->process($domain);
         if ($route instanceof Controllers\Mcp\AbstractRoute) {
-            return $route->toArray();
+            return $route->setAddonName($this->getAddonName())->toArray();
         }
 
         show_404();
@@ -75,14 +75,15 @@ class Mcp extends Controller
     /**
      * @param string $domain
      * @return string
+     * @throws ControllerException
      */
     protected function buildObject(string $domain): string
     {
         if ($this->getRouteNamespace() == '') {
-            throw new ControllerException("Your Controller Namespace isn't seutp yet!");
+            throw new ControllerException("Your Controller Namespace isn't setup yet!");
         }
 
-        $object = '\\'.$this->getRouteNamespace().'\\Mcp\\Routes\\' . Str::studly($domain);
+        $object = '\\'.$this->getRouteNamespace().'\\Mcp\\' . Str::studly($domain);
 
         if ($this->action) {
             $stub = '\\' . Str::studly($this->action);
