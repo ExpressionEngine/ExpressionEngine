@@ -1491,7 +1491,7 @@ class Addons extends CP_Controller
         }
 
         if ($mod instanceof Mcp && ! method_exists($mod, $method)) {
-            $_module_cp_body = $mod->route($method, $parameters);
+            $_module_cp_body = $mod->setAddonName($addon)->route($method, $parameters);
         } else {
             $_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
         }
