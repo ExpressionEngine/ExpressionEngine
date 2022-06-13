@@ -19,7 +19,7 @@ $(document).ready(function () {
 			var conditional_element = $(select.options[select.selectedIndex]);
 		}
 
-		var checked = $(this).parents('form').find('th input:checked, td input:checked, li input:checked');
+		var checked = $(this).parents('form').find('th input:checked, td input:checked, li input:checked, .file-grid__file input:checked, .file-grid__checkAll input:checked');
 
 		checked = checked.filter(function(i, el) {
 			return $(el).attr('value') !== undefined;
@@ -42,7 +42,6 @@ $(document).ready(function () {
 		if ($(conditional_element).data(data_element) &&
 			$(conditional_element).prop($(conditional_element).data(data_element))) {
 			e.preventDefault();
-
 			// First adjust the checklist
 			var modalIs = '.' + $(conditional_element).attr('rel');
 			var modal = $(modalIs+', [rel='+$(conditional_element).attr('rel')+']')
@@ -114,7 +113,7 @@ $(document).ready(function () {
 					SelectField.renderFields();
 				});
 			}
-
+			Dropdown.renderFields();
 			modal.trigger('modal:open')
 		}
 	})
