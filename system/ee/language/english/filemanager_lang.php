@@ -1036,8 +1036,6 @@ $lang = array(
 
     'error_creating_directory' => 'Could not create folder',
 
-    'error_renaming_directory' => 'Could not rename folder',
-
     'error_moving_already_exists' => 'Could not move because file or folder with that name already exists',
 
     'subfolder_directory_created' => 'Folder created',
@@ -1049,6 +1047,18 @@ $lang = array(
     'subfolder_not_writable' => 'Selected subfolder is not writable',
 
     'rename_folder' => 'Rename Folder',
+
+    'could_not_rename' => 'Could not rename',
+
+    'one_rename_at_a_time' => 'It is only possible to rename one file/folder at a time',
+
+    'new_name' => 'New name',
+
+    'error_renaming_already_exists' => 'Could not rename because file or folder with that name already exists',
+
+    'rename_success' => 'Successully renamed',
+
+    'rename_success_desc' => '<code>%s</code> has been renamed to <code>%s</code>',
 
 );
 

@@ -152,10 +152,10 @@ if (! AJAX_REQUEST) {
 
             // Rename modal
             $renameModal = ee('View')->make('files/modals/rename')->render([
-                'name' => 'modal-confirm-rename-folder',
-                'form_url'=> ee('CP/URL')->make('files/rename')->compile(),
+                'name' => 'modal-confirm-rename-file',
+                'form_url'=> $form_url,
                 'hidden' => [
-                    'file_id' => '',
+                    'bulk_action' => 'rename'
                 ],
             ]);
             echo $renameModal;
