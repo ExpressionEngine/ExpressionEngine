@@ -21,11 +21,6 @@ namespace ExpressionEngine\Model\File;
  */
 class File extends FileSystemEntity
 {
-    protected static $_events = array(
-        'beforeDelete',
-        'beforeInsert'
-    );
-
     public function get__width()
     {
         $dimensions = explode(" ", $this->getProperty('file_hw_original'));
@@ -57,6 +52,7 @@ class File extends FileSystemEntity
 
     public function onBeforeInsert()
     {
+        parent::onBeforeInsert();
         // file_type is set based on mime_type on initial upload
         // and cannot be changed
         $mimes = ee()->config->loadFile('mimes');

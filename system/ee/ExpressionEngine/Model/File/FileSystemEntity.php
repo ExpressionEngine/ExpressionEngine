@@ -30,7 +30,9 @@ class FileSystemEntity extends ContentModel
     //protected static $_gateway_names = array('FileGateway', 'FileFieldDataGateway');
 
     protected static $_events = array(
-        'beforeDelete'
+        'beforeDelete',
+        'beforeInsert',
+        'beforeSave'
     );
     protected static $_binary_comparisons = array(
         'file_name'
@@ -405,6 +407,18 @@ class FileSystemEntity extends ContentModel
                 $filesystem->delete($file);
             }
         }
+    }
+
+    public function onBeforeSave()
+    {
+        $this->setProperty('modified_date', ee()->localize->now);
+        $this->setProperty('modified_by_member_id', ee()->session->userdata('member_id'));
+    }
+
+    public function onBeforeInsert()
+    {
+        $this->setProperty('upload_date', ee()->localize->now);
+        $this->setProperty('uploaded_by_member_id', ee()->session->userdata('member_id'));
     }
 
     /**

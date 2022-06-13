@@ -805,7 +805,6 @@ $lang = array(
 
     'dashboard_needs_some_widgets' => 'Please enable at least one widget',
 
-
     'unexpected_error' => 'Unexpected error',
 
 );

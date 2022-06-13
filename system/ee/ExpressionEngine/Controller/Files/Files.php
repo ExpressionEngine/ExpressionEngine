@@ -327,75 +327,6 @@ class Files extends AbstractFilesController
     }
 
     /**
-     * Rename a file/folder
-     *
-     * @access public
-     * @return void
-     */
-    public function rename()
-    {
-        // using default id of 35 for now, not passing id via js yet
-        // replace with: ee('Request')->post('file_id')
-        $directory = ee('Model')->get('Directory', 35)
-            ->filter('model_type', 'Directory')
-            ->first();
-
-        $return_url = $_SERVER['HTTP_REFERER'] ??  ee('CP/URL')->make('files/directory/' . $directory->upload_destination_id);
-        $source = $directory->getAbsolutePath();
-        $directory->file_name = ee('Request')->post('folder_name');
-        $directory->title = ee('Request')->post('folder_name');
-        $destination = $directory->getAbsolutePath();
-
-        //validate before saving on filesystem
-        $validation = $directory->validate();
-
-        if (!$validation->isValid()) {
-            $validationErrors = [];
-            foreach ($validation->getAllErrors() as $field => $errors) {
-                if ($field == 'file_name') {
-                    $field = 'folder_name';
-                }
-                foreach ($errors as $error) {
-                    $validationErrors[] = '<b>' . lang($field) . ':</b> ' . $error;
-                }
-            }
-            ee('CP/Alert')->makeInline('files-form')
-                ->asWarning()
-                ->withTitle(lang('error_renaming_directory'))
-                ->addToBody($validationErrors)
-                ->defer();
-
-            return ee()->functions->redirect($return_url);
-        }
-
-        // Check to see if the directory exists and if it does, return back with an error message
-        if ($directory->UploadDestination->getFilesystem()->exists($destination)) {
-            // Error dir already exists
-            ee('CP/Alert')->makeInline('files-form')
-                ->asWarning()
-                ->withTitle(lang('subfolder_directory_already_exists'))
-                ->addToBody(lang('subfolder_directory_already_exists_desc'))
-                ->defer();
-
-            return ee()->functions->redirect($return_url);
-        }
-
-        $directory->UploadDestination->getFilesystem()->rename($source, $destination);
-
-        // The directory was created, so now lets create it in the DB
-        $directory->save();
-
-        // Show alert message that we created the directory successfully
-        ee('CP/Alert')->makeInline('files-form')
-            ->asSuccess()
-            ->withTitle(lang('subfolder_directory_renamed'))
-            ->defer();
-
-        ee()->functions->redirect($return_url);
-
-    }
-
-    /**
      * Generate post re-assignment view if applicable
      *
      * @access public
@@ -534,7 +465,113 @@ class Files extends AbstractFilesController
         }
     }
 
-    public function move()
+    /**
+     * Rename a file/folder
+     *
+     * @access public
+     * @return void
+     */
+    private function rename()
+    {
+        $selected = ee('Request')->post('selection');
+        //can only rename one file at a time
+        if (count($selected) != 1) {
+            ee('CP/Alert')->makeInline('files-form-errors')
+                ->asWarning()
+                ->withTitle(lang('could_not_rename'))
+                ->addToBody(lang('one_rename_at_a_time'))
+                ->defer();
+            return false;
+        }
+
+        $file = ee('Model')->get('Directory', $selected[0])->first();
+        if (empty($file)) {
+            ee('CP/Alert')->makeInline('files-form-errors')
+                ->asWarning()
+                ->withTitle(lang('could_not_rename'))
+                ->addToBody(lang('file_not_found'))
+                ->defer();
+            return false;
+        }
+
+        //do they have access to target destination?
+        $target = $targetUploadLocation = ee('Model')->get('UploadDestination', $file->upload_destination_id)->first();
+        if (empty($targetUploadLocation) || ! ee('Permission')->can('edit_files') || ! $targetUploadLocation->memberHasAccess(ee()->session->getMember())) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        if ($file->directory_id != 0) {
+            $target = $targetDirectory = ee('Model')->get('Directory', $file->directory_id)
+                ->filter('upload_location_id', $targetUploadLocation->getId())
+                ->first();
+            if (empty($targetDirectory)) {
+                show_error(lang('unauthorized_access'), 403);
+            }
+        }
+
+        $oldPath = $file->getAbsolutePath();
+        $oldName = $file->file_name;
+        $file->file_name = ee('Request')->post('new_name');
+        $file->title = ee('Request')->post('new_name');
+
+        //validate before saving on filesystem
+        $validation = $file->validate();
+
+        if (!$validation->isValid()) {
+            $validationErrors = [];
+            foreach ($validation->getAllErrors() as $field => $errors) {
+                if ($field == 'file_name') {
+                    $field = 'folder_name';
+                }
+                foreach ($errors as $error) {
+                    $validationErrors[] = '<b>' . lang($field) . ':</b> ' . $error;
+                }
+            }
+            ee('CP/Alert')->makeInline('files-form')
+                ->asWarning()
+                ->withTitle(lang('could_not_rename'))
+                ->addToBody($validationErrors)
+                ->defer();
+
+            return false;
+        }
+
+        //does the file with same name already exist?
+        if ($target->getFilesystem()->exists($file->file_name)) {
+            ee('CP/Alert')->makeInline('files-form')
+                ->asWarning()
+                ->withTitle(lang('could_not_rename'))
+                ->addToBody(lang('error_renaming_already_exists'))
+                ->defer();
+            return false;
+        }
+
+        $renamed = ee('Filesystem')->rename(
+            $oldPath,
+            $file->getAbsolutePath()
+        );
+        if ($renamed) {
+            $file->save();
+            ee('CP/Alert')->makeInline('files-form')
+                ->asSuccess()
+                ->withTitle(lang('rename_success'))
+                ->addToBody(sprintf(lang('rename_success_desc'), $oldName, $file->file_name))
+                ->defer();
+        } else {
+            ee('CP/Alert')->makeInline('files-form-errors')
+                ->asWarning()
+                ->withTitle(lang('could_not_rename'))
+                ->addToBody(lang('unexpected_error'))
+                ->defer();
+        }
+    }
+
+    /**
+     * Move the file or folder to another subdirectory
+     *
+     * @return void
+     */
+    private function move()
     {
         $dir_ids = explode('.', ee('Request')->post('upload_location'));
         $upload_destination_id = (int) $dir_ids[0];
@@ -688,6 +725,9 @@ class Files extends AbstractFilesController
         $action = ee()->input->post('bulk_action');
 
         switch ($action) {
+            case 'rename':
+                $this->rename(ee()->input->post('selection'));
+                break;
             case 'remove':
                 $this->remove(ee()->input->post('selection'));
                 break;
