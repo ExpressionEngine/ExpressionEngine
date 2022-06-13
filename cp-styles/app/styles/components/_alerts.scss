@@ -216,12 +216,10 @@ $alert-padding-x: 20px;
 
 	p {
 		margin: 0;
-    color: color(text-primary);
-    opacity: 0.6;
+    color: color(text-tertiary);
 
     &.alert__title {
       color: color(text-primary);
-      opacity: 1.0;
     }
 	}
 

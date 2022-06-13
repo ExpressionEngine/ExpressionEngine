@@ -22675,13 +22675,11 @@ tr.selected td {
 .app-notice__content p,
 .alert__content p {
   margin: 0;
-  color: var(--ee-text-primary);
-  opacity: 0.6;
+  color: var(--ee-text-tertiary);
 }
 .app-notice__content p.alert__title,
 .alert__content p.alert__title {
   color: var(--ee-text-primary);
-  opacity: 1;
 }
 .app-notice__content ol, .app-notice__content ul,
 .alert__content ol,
