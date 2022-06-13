@@ -204,7 +204,8 @@
 		}
 
     .ee-sidebar__item-custom-icon {
-      background: color(sidebar-icon-active);
+      border-color: color(sidebar-icon-active);
+      color: color(sidebar-text-active);
     }
 	}
 
@@ -312,8 +313,7 @@
 
 .ee-sidebar__item-custom-icon {
   width: 18.75px;
-  background-color: color(sidebar-text);
-  color: color(sidebar-bg);
+  color: color(sidebar-text);
   border-radius: $border-radius-xsmall;
   font-size: 10px;
   font-weight: bold;
@@ -325,6 +325,7 @@
   margin-right: 10px;
   top: -1px;
   position: relative;
+  border: 1px solid color(sidebar-text);
   transition: background $t-speed ease, color $t-speed ease;
 }
 
