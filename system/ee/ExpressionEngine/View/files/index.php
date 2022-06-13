@@ -118,6 +118,8 @@ if (! AJAX_REQUEST) {
         <?=form_close()?>
 
         <?php
+        //we only need these on filemanager pages, not filepicker
+        if (isset($uploadLocationsAndDirectoriesDropdownChoices)) {
             // Remove modal
             $modal_vars = array(
                 'name' => 'modal-confirm-delete-file',
@@ -159,6 +161,7 @@ if (! AJAX_REQUEST) {
                 ],
             ]);
             echo $renameModal;
+        }
         ?>
     </div>
 </div>
