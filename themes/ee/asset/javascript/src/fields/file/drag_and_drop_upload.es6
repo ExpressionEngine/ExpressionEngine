@@ -101,7 +101,7 @@ class DragAndDropUpload extends React.Component {
       }
       if (value == directory) {
         return window.list = item;
-      }else if(value != directory && item.children.length) {
+      }else if(value != directory && (Array.isArray(item.children) && item.children.length)) {
         this.checkChildDirectory(item.children, directory);
       }
     })

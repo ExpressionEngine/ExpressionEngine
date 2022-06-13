@@ -31,6 +31,7 @@
                         'field_name' => 'upload_location',
                         'choices' => $choices,
                         'value' => $selected,
+                        'fileManager' => true,
                     ]);
                 ?>
             </div>

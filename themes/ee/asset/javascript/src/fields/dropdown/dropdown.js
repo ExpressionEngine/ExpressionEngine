@@ -67,6 +67,17 @@ function (_React$Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "checkChildDirectory", function (items, value) {
+      items.map(function (item) {
+        if (item.value == value) {
+          return window.selectedEl = item;
+        } else if (item.value != value && Array.isArray(item.children) && item.children.length) {
+          _this.checkChildDirectory(item.children, value);
+        }
+      });
+      return window.selectedEl;
+    });
+
     _defineProperty(_assertThisInitialized(_this), "selectRecursion", function (items) {
       return React.createElement(React.Fragment, null, items.map(function (item) {
         return React.createElement("div", {
@@ -83,8 +94,19 @@ function (_React$Component) {
       }));
     });
 
+    window.selectedEl;
+
+    var _selected; // use different function for file manager part and other site pages
+
+
+    if (props.fileManager) {
+      _selected = _this.checkChildDirectory(_this.props.initialItems, props.selected);
+    } else {
+      _selected = _this.getItemForSelectedValue(props.selected);
+    }
+
     _this.state = {
-      selected: _this.getItemForSelectedValue(props.selected),
+      selected: _selected,
       open: false
     };
     return _this;

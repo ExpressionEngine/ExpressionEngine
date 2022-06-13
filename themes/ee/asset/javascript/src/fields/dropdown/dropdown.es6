@@ -15,8 +15,17 @@ class Dropdown extends React.Component {
   constructor (props) {
     super(props)
 
+    window.selectedEl;
+    var selected;
+
+    // use different function for file manager part and other site pages
+    if(props.fileManager) {
+      selected = this.checkChildDirectory(this.props.initialItems, props.selected);
+    } else {
+      selected = this.getItemForSelectedValue(props.selected)
+    }
     this.state = {
-      selected: this.getItemForSelectedValue(props.selected),
+      selected: selected,
       open: false
     }
   }
@@ -84,6 +93,18 @@ class Dropdown extends React.Component {
     return this.props.initialItems.find(item => {
       return String(item.value) == String(value)
     })
+  }
+
+  checkChildDirectory = (items, value) => {
+    items.map(item => {
+      if (item.value == value) {
+        return window.selectedEl = item;
+      } else if(item.value != value && (Array.isArray(item.children) && item.children.length)) {
+        this.checkChildDirectory(item.children, value);
+      }
+    })
+
+    return window.selectedEl;
   }
 
   handleSearch(searchTerm) {
