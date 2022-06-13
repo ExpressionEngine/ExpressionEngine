@@ -15,6 +15,8 @@ if (! isset($alerts_name)) {
 ?>
 <?=form_open($base_url, $attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
+<?=form_hidden('action')?>
+
 <div class="file-edit-view">
     <div class="panel">
         <div class="panel-heading">
@@ -36,12 +38,16 @@ if (! isset($alerts_name)) {
             </div>
       </div>
 
-    <div class="alert alert--success f_manager-alert">
+        <div class="entry-pannel-notice-wrap">
+            <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+        </div>
+    
+      <div class="alert alert--success f_manager-alert">
         <div class="alert__icon"><i class="fas fa-check-circle fa-fw"></i></div>
         <div class="alert__content">
             <p class="alert__title">link copied</code></p>
         </div>
-    </div>
+      </div>
 
       <div class="panel-body file-preview-modal">
             <div class="file-preview-modal__preview">
@@ -56,27 +62,26 @@ if (! isset($alerts_name)) {
                 <div class="form-standard">
                     <div class="">
                         <?php if (isset($tabs)):?>
-                            <?php $active_tab = (isset($active_tab)) ? $active_tab : 0; ?>
+                            <?php $active_tab = (isset($active_tab)) ? $active_tab : array_key_first($tabs); ?>
                             <div class="tab-wrap">
                                 <div class="tab-bar">
                                     <div class="tab-bar__tabs">
-                                    <?php foreach (array_keys($tabs) as $i => $name):
+                                    <?php foreach (array_keys($tabs) as $key):
                                         $class = '';
-                                        if ($i == $active_tab) {
+                                        if ($key == $active_tab) {
                                             $class = 'active';
                                         }
 
-                                        if (strpos($tabs[$name], 'class="ee-form-error-message"') !== false) {
+                                        if (strpos($tabs[$key], 'class="ee-form-error-message"') !== false) {
                                             $class .= ' invalid';
                                         }
                                     ?>
-                                        <button type="button" class="js-tab-button tab-bar__tab <?=$class?>" rel="t-<?=$i?>"><?=lang($name)?></button>
+                                        <button type="button" class="js-tab-button tab-bar__tab <?=$class?>" data-action="<?=$key?>" rel="t-<?=$key?>"><?=lang($key)?></button>
                                     <?php endforeach; ?>
                                     </div>
                                 </div>
                             <?php endif; ?>
 
-                            <?=ee('CP/Alert')->get($alerts_name)?>
                             <?php
                             if (isset($extra_alerts)) {
                                 foreach ($extra_alerts as $alert) {
@@ -84,9 +89,9 @@ if (! isset($alerts_name)) {
                                 }
                             }
                             if (isset($tabs)):
-                                foreach (array_values($tabs) as $i => $html):
+                                foreach ($tabs as $key => $html):
                             ?>
-                            <div class="tab t-<?=$i?><?php if ($i == $active_tab) { echo ' tab-open'; }?>"><?=$html?></div>
+                            <div class="tab t-<?=$key?><?php if ($key == $active_tab) { echo ' tab-open'; }?>"><?=$html?></div>
                                 <?php
                                     endforeach;
                                 endif;

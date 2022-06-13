@@ -517,6 +517,14 @@ $(document).ready(function(){
 			// Open the new tab
 			_this.addClass(active_class);
 			$('.'+active_group_class+' .tab.'+tabClassIs).addClass('tab-open');
+
+			//set the hidden input if needed
+			if (typeof(_this.data('action')) !== 'undefined') {
+				var _hiddenAction = _this.parents('form').find('input[type=hidden][name=action]');
+				if (_hiddenAction.length) {
+					_hiddenAction.val(_this.data('action'));
+				}
+			}
 		}
 
 

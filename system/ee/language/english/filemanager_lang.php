@@ -48,15 +48,15 @@ $lang = array(
 
     'download' => 'Download',
 
-    'edit_file_metadata' => 'Edit File Meta Data',
+    'edit_file_metadata' => 'Edit File Data',
 
-    'edit_file_metadata_error' => 'Cannot Update File Meta Data',
+    'edit_file_metadata_error' => 'Cannot Update File Data',
 
-    'edit_file_metadata_error_desc' => 'We were unable to update the meta data, please review and fix errors below.',
+    'edit_file_metadata_error_desc' => 'We were unable to update the file data, please review and fix errors below.',
 
-    'edit_file_metadata_success' => 'File Meta Data Updated',
+    'edit_file_metadata_success' => 'File Data Updated',
 
-    'edit_file_metadata_success_desc' => 'The meta data for the file <b>%s</b> has been updated.',
+    'edit_file_metadata_success_desc' => 'The data for the file <b>%s</b> has been updated.',
 
     'exceeds_max_dimensions' => 'File exceeds maximum dimensions and is not resizable.',
 

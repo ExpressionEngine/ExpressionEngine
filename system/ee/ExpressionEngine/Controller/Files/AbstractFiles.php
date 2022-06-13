@@ -160,22 +160,9 @@ abstract class AbstractFiles extends CP_Controller
         ];
     }
 
-    protected function validateFile(File $file)
-    {
-        return ee('File')->makeUpload()->validateFile($file);
-    }
-
     protected function saveFileAndRedirect(File $file, $is_new = false, $sub_alert = null)
     {
         $action = ($is_new) ? 'upload_filedata' : 'edit_file_metadata';
-
-        if ($file->isNew()) {
-            $file->uploaded_by_member_id = ee()->session->userdata('member_id');
-            $file->upload_date = ee()->localize->now;
-        }
-
-        $file->modified_by_member_id = ee()->session->userdata('member_id');
-        $file->modified_date = ee()->localize->now;
 
         $file->save();
 
@@ -194,7 +181,15 @@ abstract class AbstractFiles extends CP_Controller
             ee()->session->set_flashdata('file_id', $file->file_id);
         }
 
-        ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
+        if (ee()->input->post('submit') == 'save_and_close') {
+            $params = [];
+            if ($file->directory_id != 0) {
+                $params['directory_id'] = $file->directory_id;
+            }
+            ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id, $params));
+        } else {
+            ee()->functions->redirect(ee('CP/URL')->make('files/file/view/' . $file->getId()));
+        }
     }
 
 }
