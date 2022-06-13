@@ -23660,6 +23660,10 @@ tr.selected td {
   margin-left: 5px;
 }
 
+.toolbar-wrap .button-toolbar {
+  vertical-align: middle;
+}
+
 .button-group > .button:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle), .button-group > .pagination__link:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle), .no-results .button-group > a:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle),
 .field-no-results .button-group > a:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle), .button-group > .select-popup:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle), .button-group > select:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle), .button-group > .select__button:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle), .button-group > .license-status-badge:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle), .button-group > .filter-bar__button:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle), .markItUpHeader ul .button-group > a:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle) {
   border-radius: 0;
@@ -30791,6 +30795,7 @@ fieldset .field-control #eye {
   align-items: center;
   width: 100%;
   padding: 20px 20px 18px 20px;
+  box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
 }
 @media (max-width: 549px) {
   .add-on-card {
