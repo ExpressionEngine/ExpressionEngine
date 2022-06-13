@@ -394,6 +394,37 @@ class Filesystem
     }
 
     /**
+     * Copy a file or directory
+     *
+     * @param String $source File or directory to copy
+     * @param Stirng $dest Path to the duplicate
+     */
+    public function forceCopy($source, $dest)
+    {
+        $source = $this->normalizeRelativePath($source);
+        $dest = $this->normalizeRelativePath($dest);
+        $destBackup = "$dest.backup";
+
+        if (!$this->exists($source)) {
+            throw new FilesystemException("Cannot copy non-existent path: {$source}");
+        }
+
+        if($this->exists($dest)) {
+            $this->rename($dest, $destBackup);
+        }
+
+        try {
+            $this->copy($source, $dest);
+        }catch(\Exception $e) {
+            $this->rename($destBackup, $dest);
+            throw $e;
+        }
+
+        $this->delete($destBackup);
+
+    }
+
+    /**
      * Copies a directory to another directory by recursively iterating over its files
      *
      * @param String $source Directory to copy

@@ -393,8 +393,8 @@ class Filemanager
         // Insert the file metadata into the database
         $file = null;
         $model = ($prefs['mime_type'] == 'directory') ? 'Directory' : 'File';
-        if (isset($data['file_id'])) {
-            $file = ee('Model')->get($model, $data['file_id'])->first();
+        if (isset($prefs['file_id'])) {
+            $file = ee('Model')->get($model, $prefs['file_id'])->first();
         }
         if (empty($file)) {
             $file = ee('Model')->make($model);
@@ -2044,13 +2044,10 @@ class Filemanager
      */
     public function rename_file($file_id, $new_file_name, $replace_file_name = '')
     {
-        ee()->load->model(array('file_upload_preferences_model', 'file_model'));
-
         $replace = false;
 
         // Get the file data form the database
-        $previous_data = ee()->file_model->get_files_by_id($file_id);
-        $previous_data = $previous_data->row();
+        $previous_data = ee('Model')->get('File', $file_id)->first();
 
         // If the new name is the same as the previous, get out of here
         if ($new_file_name == $previous_data->file_name) {
@@ -2061,19 +2058,18 @@ class Filemanager
             );
         }
 
-        // This could be a relationship if $previous_data wasn't a legacy model
-        $directory = ee('Model')->get('UploadDestination')->filter('id', $previous_data->upload_location_id)->first();
         $old_file_name = $previous_data->file_name;
-        $upload_directory = $this->fetch_upload_dir_prefs($directory->id);
+        $upload_directory = $previous_data->UploadDestination;
 
         // If they renamed, we need to be sure the NEW name doesn't conflict
         if ($replace_file_name != '' && $new_file_name != $replace_file_name) {
-            if (file_exists($upload_directory['server_path'] . $new_file_name)) {
-                $replace_data = ee()->file_model->get_files_by_name($new_file_name, $directory->id);
+            if ($upload_directory->getFilesystem()->exists($new_file_name)) {
+                $replace_data = ee('Model')->get('File')
+                    ->filter('file_name', $new_file_name)
+                    ->filter('upload_location_id', $upload_directory->id)
+                    ->first();
 
-                if ($replace_data->num_rows() > 0) {
-                    $replace_data = $replace_data->row();
-
+                if ($replace_data) {
                     return array(
                         'success' => false,
                         'error' => 'retry',
@@ -2091,26 +2087,26 @@ class Filemanager
         }
 
         // Check to see if a file with that name already exists
-        if (file_exists($upload_directory['server_path'] . $new_file_name)) {
+        if ($upload_directory->getFilesystem()->exists($new_file_name)) {
             // If it does, delete the old files and remove the new file
             // record in the database
 
             $replace = true;
-            $previous_data = $this->_replace_file($previous_data, $new_file_name, $directory->id);
+            $previous_data = $this->_replace_file($previous_data, $new_file_name, $upload_directory->id);
             $file_id = $previous_data->file_id;
         }
 
         // Delete the thumbnails
-        ee()->file_model->delete_raw_file($old_file_name, $directory->id, true);
+        $upload_directory->deleteGeneratedFiles($old_file_name);
 
         // Rename the actual file
         $file_path = $this->_rename_raw_file(
             $old_file_name,
             $new_file_name,
-            $directory->id
+            $upload_directory->id
         );
 
-        $new_file_name = str_replace($upload_directory['server_path'], '', $file_path);
+        $new_file_name = str_replace($upload_directory->server_path, '', $file_path);
 
         // If renaming the file sparked an error return it
         if (is_array($file_path)) {
@@ -2133,7 +2129,7 @@ class Filemanager
 
         $file = $this->save_file(
             $file_path,
-            $directory,
+            $upload_directory->id,
             $updated_data
         );
 
@@ -2156,11 +2152,14 @@ class Filemanager
     public function _replace_file($new_file, $file_name, $directory_id)
     {
         // Get the ID of the existing file
-        $existing_file = ee()->file_model->get_files_by_name($file_name, $directory_id);
-        $existing_file = $existing_file->row();
+        $existing_file = ee('Model')->get('File')
+            ->filter('file_name', '=', $file_name)
+            ->filter('upload_location_id', '=', $directory_id)
+            ->first();
 
         // Delete the existing file's raw files, but leave the database record
-        ee()->file_model->delete_raw_file($file_name, $directory_id);
+        $upload_directory = $this->fetch_upload_dir_prefs($directory_id);
+        $upload_directory->deleteFiles($file_name);
 
         // It is possible the file exists but is NOT in the DB yet
         if (empty($existing_file)) {
@@ -2170,7 +2169,8 @@ class Filemanager
         }
 
         // Delete the new file's database record, but leave the files
-        ee()->file_model->delete_files($new_file->file_id, false);
+        // ee()->file_model->delete_files($new_file->file_id, false);
+        $existing_file->delete(); // This won't leave the files due to events
 
         // Update file_hw_original, filesize, modified date and modified user
         ee()->file_model->save_file(array(
@@ -2207,22 +2207,16 @@ class Filemanager
 
         // If this directory doesn't exist then we can't do anything
         if (! $upload_directory) {
-            return array('error' => lang('no_known_file'));
+            return ['error' => lang('no_known_file')];
         }
 
-        // Rename the file
-        $config = array(
-            'upload_path' => $upload_directory['server_path'],
-            'allowed_types' => (ee('Permission')->isSuperAdmin()) ? 'all' : $upload_directory['allowed_types'],
-            'max_size' => round((int) $upload_directory['max_size'] * 1024, 3),
-            'max_width' => $upload_directory['max_width'],
-            'max_height' => $upload_directory['max_height']
-        );
+        // Check to make sure the file doesn't already exist
+        if ($upload_directory['directory']->getFilesystem()->exists($new_file_name)) {
+            return ['error' => lang('file_exists') ?? 'file_exists'];
+        }
 
-        ee()->load->library('upload', $config);
-
-        if (! ee()->upload->file_overwrite($old_file_name, $new_file_name)) {
-            return array('error' => ee()->upload->display_errors());
+        if(!$upload_directory['directory']->getFilesystem()->rename($old_file_name, $new_file_name)) {
+            return ['error' => lang('copy_error') ?? 'copy_error'];
         }
 
         return $upload_directory['server_path'] . $new_file_name;

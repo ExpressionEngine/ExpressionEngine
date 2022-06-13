@@ -264,7 +264,7 @@ class FileSystemEntity extends ContentModel
         $result = $callback($tmp['path']);
 
         fclose($tmp['file']);
-        
+
         return $result;
     }
 
@@ -360,53 +360,27 @@ class FileSystemEntity extends ContentModel
         return $this->getAbsoluteThumbnailURL();
     }
 
-    public function onBeforeDelete()
+    public function deleteOriginalFile()
+    {
+         $this->UploadDestination->deleteOriginalFiles($this->getAbsolutePath());
+    }
+
+    public function deleteGeneratedFiles()
     {
         $filesystem = $this->UploadDestination->getFilesystem();
-
-        // Remove the file
-        if ($this->exists()) {
-            if ($this->isDirectory()) {
-                $filesystem->deleteDir($this->getAbsolutePath());
-            } else {
-                $filesystem->delete($this->getAbsolutePath());
-            }
-        }
 
         // Remove the thumbnail if it exists
         if ($filesystem->exists($this->getAbsoluteThumbnailPath())) {
             $filesystem->delete($this->getAbsoluteThumbnailPath());
         }
 
-        // Remove any manipulated files as well
-        foreach ($this->UploadDestination->FileDimensions as $file_dimension) {
-            $file = rtrim($file_dimension->getAbsolutePath(), '/') . '/' . $this->file_name;
+        $this->UploadDestination->deleteGeneratedFiles($this->getAbsolutePath());
+    }
 
-            if ($filesystem->exists($file)) {
-                $filesystem->delete($file);
-            }
-        }
-
-        // Remove front-end manipulations
-        $manipulations = ['resize', 'crop', 'rotate', 'webp'];
-        foreach ($manipulations as $manipulation) {
-            $ext = strrchr($this->file_name, '.');
-            $basename = ($ext === false) ? $this->file_name : substr($this->file_name, 0, -strlen($ext));
-            $renamer = strrchr($basename, '_');
-            $basename = ($renamer === false) ? $basename : substr($basename, 0, -strlen($renamer));
-            $pattern = rtrim($this->UploadDestination->server_path, '/') . '/_' . $manipulation . '/' . $basename . '_*';
-            // Can't do a glob with flysys
-            // foreach (glob($pattern) as $file) {
-            //     $filesystem->delete($file);
-            // }
-            $files = $filesystem->getDirectoryContents(rtrim($this->UploadDestination->server_path, '/') . '/_' . $manipulation . '/');
-            $files = array_filter($files, function ($file) use ($basename) {
-                return (strpos($file, "{$basename}_") === 0);
-            });
-            foreach ($files as $file) {
-                $filesystem->delete($file);
-            }
-        }
+    public function deleteAllFiles()
+    {
+        $this->deleteOriginalFile();
+        $this->deleteGeneratedFiles();
     }
 
     public function onBeforeSave()
@@ -419,6 +393,11 @@ class FileSystemEntity extends ContentModel
     {
         $this->setProperty('upload_date', ee()->localize->now);
         $this->setProperty('uploaded_by_member_id', ee()->session->userdata('member_id'));
+    }
+
+    public function onBeforeDelete()
+    {
+        $this->deleteAllFiles();
     }
 
     /**

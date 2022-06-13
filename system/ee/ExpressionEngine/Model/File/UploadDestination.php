@@ -531,6 +531,57 @@ class UploadDestination extends StructureModel
     {
         return [];
     }
+
+    public function deleteOriginalFiles($path)
+    {
+        $filesystem = $this->getFilesystem();
+
+        // Remove the file
+        if ($this->exists($path)) {
+            if ($this->isDirectory($path)) {
+                $filesystem->deleteDir($path);
+            } else {
+                $filesystem->delete($path);
+            }
+        }
+    }
+
+    public function deleteGeneratedFiles($path)
+    {
+        $filesystem = $this->getFilesystem();
+        $filename = $filesystem->filename($path);
+        $dirname = $filesystem->dirname($path);
+        $basename = $filesystem->basename($path);
+
+        // Remove the thumbnail if it exists
+        if ($filesystem->exists("{$dirname}/_thumbs/{$filename}")) {
+            $filesystem->delete("{$dirname}/_thumbs/{$filename}");
+        }
+
+        // Remove any manipulated files as well
+        foreach ($this->FileDimensions as $file_dimension) {
+            $file = rtrim($file_dimension->getAbsolutePath(), '/') . '/' . $filename;
+
+            if ($filesystem->exists($file)) {
+                $filesystem->delete($file);
+            }
+        }
+
+        // Remove front-end manipulations
+        $manipulations = ['resize', 'crop', 'rotate', 'webp'];
+        $renamer = strrchr($basename, '_');
+        $basename = ($renamer === false) ? $basename : substr($basename, 0, -strlen($renamer));
+
+        foreach ($manipulations as $manipulation) {
+            $files = $filesystem->getDirectoryContents("{$dirname}/_{$manipulation}/");
+            $files = array_filter($files, function ($file) use ($basename) {
+                return (strpos($file, "{$basename}_") === 0);
+            });
+            foreach ($files as $file) {
+                $filesystem->delete($file);
+            }
+        }
+    }
 }
 
 // EOF
