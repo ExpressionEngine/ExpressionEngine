@@ -25,6 +25,7 @@
 			}
 			.ee-sidebar__title, .ee-sidebar__title:hover {
 				background-color: #<?=ee()->config->item('site_color')?>;
+        color: #ffffff;
 			}
 			.ee-sidebar__title, .ee-sidebar__title-down-arrow {
 				color: #FFFFFF;
