@@ -16,6 +16,20 @@ if (count($data)) {
     }
 }
 ?>
+<?php if (isset($no_results)): ?>
+    <div class="tbl-row no-results<?=!empty($data) ? ' hidden' : ''?><?=(isset($no_results['class']) ? ' ' . $no_results['class'] : '')?>">
+        <div class="none">
+            <?php if (isset($no_results['html'])) : ?>
+
+                <?=$no_results['html']?>
+
+            <?php else: ?>
+                <p><?=$no_results['text']?><?php if (isset($no_results['href'])): ?> <a href="<?=$no_results['href']?>"><?=lang('add_new')?></a><?php endif ?></p>
+            <?php endif; ?>
+        </div>
+    </div>
+<?php endif ?>
+<div class="panel-body">
     <?php if ($hasCheckboxColumn): ?>
     <div class="file-grid__checkAll">
       <label for="<?=$table_id?>-select-all" class="checkbox-label">
@@ -25,6 +39,7 @@ if (count($data)) {
     </div><!-- /file-grid__select-all -->
     <?php endif; ?>
     
+    <?php if (!empty($data)) : ?>
     <!-- Add class "file-grid__wrapper-large" for larger thumbnails: -->
     <div class="file-grid__wrapper">
         <?php 
@@ -94,16 +109,5 @@ if (count($data)) {
                 </a>
         <?php endforeach; ?>
     </div>
-    <?php if (empty($data) && isset($no_results)): ?>
-        <div class="tbl-row no-results">
-            <div class="none">
-                <?php if (isset($no_results['html'])) : ?>
-
-                    <?=$no_results['html']?>
-
-                <?php else: ?>
-                    <p><?=$no_results['text']?><?php if (isset($no_results['href'])): ?> <a href="<?=$no_results['href']?>"><?=lang('add_new')?></a><?php endif ?></p>
-                <?php endif; ?>
-            </div>
-        </div>
-    <?php endif ?>
+    <?php endif; ?>
+</div>

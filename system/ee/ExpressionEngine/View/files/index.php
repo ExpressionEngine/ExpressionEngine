@@ -56,11 +56,9 @@ if (! AJAX_REQUEST) {
             <?php endif; ?>
 
             <?php if ($viewtype == 'thumb') : ?>
-                <div class="panel-body">
                 <?php $this->embed('_shared/thumb', $table); ?>
-                </div>
             <?php else : ?>
-            <?php $this->embed('_shared/table', $table); ?>
+                <?php $this->embed('_shared/table', $table); ?>
             <?php endif; ?>
 
             <div class="f_manager-action-part">
