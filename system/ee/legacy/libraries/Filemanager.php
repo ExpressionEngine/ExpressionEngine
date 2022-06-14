@@ -293,16 +293,24 @@ class Filemanager
      * @param	string	$file_path	The full path to the file to check
      * @return	mixed	False if function not available, associative array otherwise
      */
-    public function get_image_dimensions($file_path)
+    public function get_image_dimensions($file_path, $filesystem = null)
     {
-        if (! file_exists($file_path)) {
+        if(!$filesystem) {
+            // Set the filesystem to basedir of $file_path to accommodate tmp dir
+            $adapter = new \ExpressionEngine\Library\Filesystem\Adapter\Local(['path' => dirname($file_path)]);
+            $filesystem = new \ExpressionEngine\Library\Filesystem\Filesystem($adapter);
+        }
+
+        if (! $filesystem->exists($file_path)) {
             return false;
         }
 
         // PHP7.4 does not come with GD JPEG processing by default
         // So, we need to run this check.
         if (function_exists('getimagesize')) {
-            $imageSize = @getimagesize($file_path);
+            $imageSize = $filesystem->actLocally($file_path, function($path) {
+                return @getimagesize($path);
+            });
 
             if ($imageSize && is_array($imageSize)) {
                 $imageSizeParsed = [
@@ -525,7 +533,9 @@ class Filemanager
 
         // Make sure height and width are set
         if (! isset($prefs['height']) or ! isset($prefs['width'])) {
-            $dim = $this->get_image_dimensions($file_path);
+            $upload_dir = $this->fetch_upload_dirs()[$prefs['upload_location_id']];
+            $filesystem = $upload_dir['upload_destination']->getFilesystem();
+            $dim = $this->get_image_dimensions($file_path, $filesystem);
 
             if ($dim == false) {
                 return false;
@@ -1856,11 +1866,20 @@ class Filemanager
             array('ignore_dupes' => true)
         ));
 
+        $upload_path = $dir['server_path'];
+
+        if($directory_id != 0) {
+            $upload_path = ee('Model')->get('Directory', $directory_id)->first()->getAbsolutePath();
+        }
+
         $config = array(
             'upload_destination' => $dir['upload_destination'],
             'file_name' => $clean_filename,
-            'upload_path' => $dir['server_path'],
-            'max_size' => round((int) $dir['max_size'], 3)
+            'upload_path' => $upload_path,
+            'max_size' => round((int) $dir['max_size'], 3),
+            // @todo If we put these here we don't need to do a dimension check later...
+            // 'max_width' => '',
+            // 'max_height' => '',
         );
 
         // Restricted upload directory?
@@ -1928,6 +1947,7 @@ class Filemanager
         // Build list of information to save and return
         $file_data = array(
             'upload_location_id' => $dir['id'],
+            'directory_id' => $directory_id,
             'site_id' => ee()->config->item('site_id'),
             'temp_file' => $_FILES[$field]['tmp_name'] ?? null,
 
@@ -1962,6 +1982,7 @@ class Filemanager
         }
 
         // Check to see if its an editable image, if it is, check max h/w
+        // @todo remove - This is already done in Upload Library Line 250
         if ($this->is_editable_image($file['full_path'], $file['file_type'])) {
             // Check and fix orientation
             $orientation = $this->orientation_check($file['full_path'], $file_data);

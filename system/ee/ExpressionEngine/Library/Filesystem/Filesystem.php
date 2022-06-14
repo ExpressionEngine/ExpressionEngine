@@ -49,7 +49,7 @@ class Filesystem
      */
     public function isLocal()
     {
-        return $this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local;
+        return $this->getBaseAdapter() instanceof Flysystem\Adapter\Local;
     }
 
     /**
@@ -875,6 +875,27 @@ class Filesystem
         $path = stream_get_meta_data($file)['uri'];
 
         return compact('file', 'path');
+    }
+
+    /**
+     * Perform some action on a file in a local context
+     *
+     * @param string $path
+     * @param callable $callback
+     * @return mixed
+     */
+    public function actLocally($path, callable $callback)
+    {
+        if ($this->isLocal()) {
+            return $callback($path);
+        }
+
+        $tmp = $this->copyToTempFile($path);
+        $result = $callback($tmp['path']);
+
+        fclose($tmp['file']);
+
+        return $result;
     }
 
     /**

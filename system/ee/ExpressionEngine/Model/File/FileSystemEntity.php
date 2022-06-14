@@ -256,16 +256,7 @@ class FileSystemEntity extends ContentModel
         $filesystem = $this->getUploadDestination()->getFilesystem();
         $path = $this->getAbsolutePath();
 
-        if($filesystem->isLocal()) {
-            return $callback($path);
-        }
-
-        $tmp = $filesystem->copyToTempFile($path);
-        $result = $callback($tmp['path']);
-
-        fclose($tmp['file']);
-
-        return $result;
+        return $filesystem->actLocally($path, $callback);
     }
 
     /**
