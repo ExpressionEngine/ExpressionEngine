@@ -1029,19 +1029,28 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                 )
             ),
-            'systemSettingsHitTracking' => array(
+            'systemSettingsTracking' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings hit_tracking    ',
+                'command' => 'system_settings tracking    ',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'settings/hit-tracking',
+                'target' => 'settings/tracking',
                 'permission' => 'can_access_sys_prefs',
                 'anchors' => array(
+                    // Enable tracking cookie?
+                    'fieldset-enable_tracking_cookie' => array(
+                        'trail' => [
+                            'settings',
+                            'tracking'
+                        ],
+                        'command' => 'enable_tracking_cookie enable_tracking_cookie_desc',
+                        'command_title' => 'enable_tracking_cookie'
+                    ),
                     // Enable online user tracking?
                     'fieldset-enable_online_user_tracking' => array(
                         'trail' => [
                             'settings',
-                            'hit_tracking'
+                            'tracking'
                         ],
                         'command' => 'enable_online_user_tracking enable_online_user_tracking_desc',
                         'command_title' => 'enable_online_user_tracking'
@@ -1050,7 +1059,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-enable_hit_tracking' => array(
                         'trail' => [
                             'settings',
-                            'hit_tracking'
+                            'tracking'
                         ],
                         'command' => 'enable_hit_tracking enable_hit_tracking_desc',
                         'command_title' => 'enable_hit_tracking'
@@ -1059,7 +1068,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-enable_entry_view_tracking' => array(
                         'trail' => [
                             'settings',
-                            'hit_tracking'
+                            'tracking'
                         ],
                         'command' => 'enable_entry_view_tracking enable_entry_view_tracking_desc',
                         'command_title' => 'enable_entry_view_tracking'
@@ -1068,7 +1077,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-dynamic_tracking_disabling' => array(
                         'trail' => [
                             'settings',
-                            'hit_tracking'
+                            'tracking'
                         ],
                         'command' => 'dynamic_tracking_disabling dynamic_tracking_disabling_desc',
                         'command_title' => 'dynamic_tracking_disabling'

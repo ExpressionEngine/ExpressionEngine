@@ -36,6 +36,8 @@ class EE_Channel_preparser
     protected $_single_data;
     protected $_once_data;
 
+    protected $_disabledFeatures = [];
+
     /**
      * The Preparser
      *
@@ -92,11 +94,11 @@ class EE_Channel_preparser
 
         $tagdata = $this->_tagdata;
         $components = $parser->components();
-        $disabled = isset($config['disable']) ? $config['disable'] : array();
+        $this->_disabledFeatures = isset($config['disable']) ? $config['disable'] : array();
 
         foreach (array('pair', 'once', 'single') as $fn) {
             foreach ($components->$fn() as $k => $component) {
-                $skip = (bool) $component->disabled($disabled, $this);
+                $skip = (bool) $component->disabled($this->_disabledFeatures, $this);
                 $obj_key = spl_object_hash($component);
 
                 $var = '_' . $fn . '_data';
@@ -211,6 +213,17 @@ class EE_Channel_preparser
     public function parser()
     {
         return $this->_parser;
+    }
+
+    /**
+     * Check if template tag has certain 'disable' param
+     *
+     * @param string $param
+     * @return boolean
+     */
+    public function disabledFeatures()
+    {
+        return $this->_disabledFeatures;
     }
 
     /**

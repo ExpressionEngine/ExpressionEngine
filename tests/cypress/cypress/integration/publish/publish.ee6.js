@@ -411,6 +411,8 @@ context('Publish Page - Create', () => {
           fluid_field.check_content(index)
         })
         cy.logCPPerformance()
+
+        cy.visit('index.php/entries/complex-w-fluid')
       })
 
       it('adds repeat fields', () => {

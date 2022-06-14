@@ -26,6 +26,7 @@ class EE_Template
     public $final_template        = '';            // The finalized template
     public $fl_tmpl               = '';           // 'Floating' copy of the template.  Used as a temporary "work area".
     public $cache_hash            = '';            // md5 checksum of the template name.  Used as title of cache file.
+    public $cache_prefix          = '';          // prefix for cache file. Defaults to current URL, but can be set to custom string for shared cache
     public $cache_status          = '';          // Status of page cache (NO_CACHE, CURRENT, EXPIRED)
     public $tag_cache_status      = '';          // Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
     public $cache_timestamp       = '';
@@ -205,6 +206,11 @@ class EE_Template
         // Do not use a reference!
 
         $this->cache_status = 'NO_CACHE';
+
+        //if the template is not embedded, ensure the cache is restricted to current URI
+        if (!$is_embed) {
+            $this->cache_prefix = '';
+        }
 
         $this->template = ($template_group != '' and $template != '') ?
             $this->fetch_template($template_group, $template, false, $site_id) :
@@ -449,11 +455,13 @@ class EE_Template
         // ee()->session->_age_flashdata();
 
         // If we have any errors from the submit, display those inline.
-        if (preg_match("/{if errors}(.+?){\/if}/s", $this->template, $match)) {
+        if (strpos($this->template, "{if errors}") !== false) {
             // If we have field errors, remove the template conditional and leave the error tags,
             // otherwise, remove the conditional and error tags completely.
             if (!empty($errors)) {
-                $this->template = preg_replace("/{if errors}.+?{\/if}/s", $match['1'], $this->template);
+                if (preg_match("/{if errors}(.+?){\/if}/s", $this->template, $match)) {
+                    $this->template = preg_replace("/{if errors}.+?{\/if}/s", $match['1'], $this->template);
+                }
             } else {
                 $this->template = preg_replace("/{if errors}.+?{\/if}/s", '', $this->template);
             }
@@ -612,6 +620,11 @@ class EE_Template
             // to reinsert that tag at the beginning of template before caching
             if (!empty($layout)) {
                 $cache_template = $layout[0] . "\n" . $this->template;
+            }
+
+            //if the template is not embedded, ensure the cache is restricted to current URI
+            if (!$is_embed) {
+                $this->cache_prefix = '';
             }
 
             $this->write_cache_file($this->cache_hash, $cache_template, 'template');
@@ -804,7 +817,7 @@ class EE_Template
         $layout = null;
         $first_tag = strpos($this->template, LD . 'exp:');
 
-        if (preg_match('/(' . LD . 'layout\s*=)(.*?)' . RD . '/s', $this->template, $match)) {
+        if (strpos($this->template, LD . 'layout') !== false && preg_match('/(' . LD . 'layout\s*=)(.*?)' . RD . '/s', $this->template, $match)) {
             $tag_pos = strpos($this->template, $match[0]);
             $error = '';
 
@@ -1009,7 +1022,7 @@ class EE_Template
         // Match all {embed=bla/bla} tags
         $matches = array();
 
-        if (!preg_match_all("/(" . LD . "embed\s*=)(.*?)" . RD . "/s", $parent_template, $matches)) {
+        if (strpos($parent_template, LD . 'embed') === false || !preg_match_all("/(" . LD . "embed\s*=)(.*?)" . RD . "/s", $parent_template, $matches)) {
             return $parent_template;
         }
 
@@ -1048,6 +1061,8 @@ class EE_Template
             if ($this->embed_vars === false) {
                 $this->embed_vars = array();
             }
+
+            $this->cache_prefix = (isset($this->embed_vars['cache_prefix'])) ? $this->embed_vars['cache_prefix'] : '';
 
             // Extract the information we need to fetch the subtemplate
             $fetch_data = $this->_get_fetch_data($parts[0]);
@@ -1245,12 +1260,6 @@ class EE_Template
 
                 $cur_tag_close = LD . '/' . $tag . RD;
 
-                // Deprecate "weblog" tags, but allow them to work until 2.1, then remove this.
-                if (strpos($tag, ':weblog:') !== false or strpos($tag, ' weblog=') !== false) {
-                    $tag = str_replace(array(':weblog:', ' weblog='), array(':channel:', ' channel='), $tag);
-                    $this->log_item("WARNING: Deprecated 'weblog' tag used, please change to 'channel'");
-                }
-
                 // -----------------------------------------
                 // Grab the class name and method names contained in the tag
 
@@ -1377,7 +1386,7 @@ class EE_Template
                 $this->tag_data[$this->loop_count]['params'] = $args;
                 $this->tag_data[$this->loop_count]['chunk'] = $chunk; // Matched data block - including opening/closing tags
                 $this->tag_data[$this->loop_count]['block'] = $block; // Matched data block - no tags
-                $this->tag_data[$this->loop_count]['cache'] = $args;
+                $this->tag_data[$this->loop_count]['cache'] = 'NO_CACHE';
                 $this->tag_data[$this->loop_count]['cfile'] = $cfile;
                 $this->tag_data[$this->loop_count]['no_results'] = $no_results;
                 $this->tag_data[$this->loop_count]['no_results_block'] = $no_results_block;
@@ -1454,7 +1463,8 @@ class EE_Template
 
         for ($i = 0, $ctd = count($this->tag_data); $i < $ctd; $i++) {
             // Check the tag cache file
-            $cache_contents = $this->fetch_cache_file($this->tag_data[$i]['cfile'], 'tag', $this->tag_data[$i]['cache']);
+            $this->cache_prefix = (isset($this->tag_data[$i]['params']['cache_prefix'])) ? $this->tag_data[$i]['params']['cache_prefix'] : '';
+            $cache_contents = $this->fetch_cache_file($this->tag_data[$i]['cfile'], 'tag', $this->tag_data[$i]['params']);
 
             // Set cache status for final processing
             $this->tag_data[$i]['cache'] = $this->tag_cache_status;
@@ -1482,12 +1492,12 @@ class EE_Template
                             }
 
                             $error = ee()->lang->line('error_tag_syntax');
-                            $error .= '<br /><br />';
+                            $error .= '<br /><br /><code>';
                             $error .= htmlspecialchars(LD);
                             $error .= 'exp:' . implode(':', $this->tag_data[$i]['tagparts']);
                             $error .= htmlspecialchars(RD);
-                            $error .= '<br /><br />';
-                            $error .= ee()->lang->line('error_fix_syntax');
+                            $error .= '</code><br /><br />';
+                            $error .= str_replace('%x', $this->tag_data[$i]['class'], ee()->lang->line('error_fix_install_addon'));
 
                             ee()->output->fatal_error($error);
                         } else {
@@ -1771,6 +1781,7 @@ class EE_Template
                 // Write cache file if needed
 
                 if ($this->tag_data[$i]['cache'] == 'EXPIRED') {
+                    $this->cache_prefix = (isset($this->tag_data[$i]['params']['cache_prefix'])) ? $this->tag_data[$i]['params']['cache_prefix'] : '';
                     $this->write_cache_file($this->tag_data[$i]['cfile'], $return_data);
                 }
 
@@ -2037,10 +2048,10 @@ class EE_Template
         $language = ee()->session->get_language();
 
         if (ee()->uri->uri_string != '') {
-            return md5(ee()->functions->fetch_site_index() . $language . ee()->uri->uri_string);
+            return md5(ee()->functions->fetch_site_index() . $language . ($this->cache_prefix ?: ee()->uri->uri_string));
         }
 
-        return md5(ee()->config->item('site_url') . 'index' . $language . ee()->uri->query_string);
+        return md5(ee()->config->item('site_url') . 'index' . $language . ($this->cache_prefix ?: ee()->uri->query_string));
     }
 
     /**
@@ -2139,6 +2150,7 @@ class EE_Template
         // Is only the pagination showing in the URI?
         elseif (
             count(ee()->uri->segments) == 1 &&
+            strpos(ee()->uri->segment(1), 'P') === 0 &&
             preg_match("#^(P\d+)$#", ee()->uri->segment(1), $match)
         ) {
             ee()->uri->query_string = $match['1'];
@@ -2582,7 +2594,7 @@ class EE_Template
         $row = $query->row_array();
 
         // Is PHP allowed in this template?
-        if (ee('Config')->getFile()->getBoolean('allow_php') && $row['allow_php'] == 'y') {
+        if ($row['allow_php'] == 'y' && bool_config_item('allow_php')) {
             $this->parse_php = true;
 
             $this->php_parse_location = ($row['php_parse_location'] == 'i') ? 'input' : 'output';
@@ -2879,7 +2891,11 @@ class EE_Template
      */
     public function no_results()
     {
-        if (!preg_match("/" . LD . "redirect\s*=\s*(\042|\047)([^\\1]*?)\\1" . RD . "/si", $this->no_results, $match)) {
+        if (strpos($this->no_results, LD . "redirect") === false) {
+            $this->log_item("Returning No Results Content");
+
+            return $this->no_results;
+        } elseif (!preg_match("/" . LD . "redirect\s*=\s*(\042|\047)([^\\1]*?)\\1" . RD . "/si", $this->no_results, $match)) {
             $this->log_item("Returning No Results Content");
 
             return $this->no_results;
@@ -2973,14 +2989,12 @@ class EE_Template
         foreach ($addons as $name => $info) {
             if ($info->hasModule()) {
                 $this->modules[] = $name;
+                if ($info->isInstalled()) {
+                    $this->module_data[ucfirst($name)] = $name;
+                }
+            } elseif ($info->hasPlugin() && $info->isInstalled()) {
+                $this->plugins[] = $name;
             }
-        }
-
-        // Fetch a list of installed plugins
-        $plugins = ee('Model')->get('Plugin')->all();
-
-        if ($plugins->count() > 0) {
-            $this->plugins = $plugins->pluck('plugin_package');
         }
     }
 
@@ -3546,7 +3560,7 @@ class EE_Template
         // Match {switch="foo|bar"} variables
         $switch = array();
 
-        if (preg_match_all("/" . LD . "(switch\s*=.+?)" . RD . "/i", $tagdata, $matches, PREG_SET_ORDER)) {
+        if (strpos($tagdata, LD . "switch") !== false && preg_match_all("/" . LD . "(switch\s*=.+?)" . RD . "/i", $tagdata, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
 
@@ -3990,7 +4004,7 @@ class EE_Template
      */
     public function parse_encode_email($str)
     {
-        if (preg_match_all("/" . LD . "encode=(.+?)" . RD . "/i", $str, $matches)) {
+        if (strpos($str, LD . "encode=") !== false && preg_match_all("/" . LD . "encode=(.+?)" . RD . "/i", $str, $matches)) {
             for ($j = 0; $j < count($matches[0]); $j++) {
                 $str = preg_replace('/' . preg_quote($matches['0'][$j], '/') . '/', ee()->functions->encode_email($matches[1][$j]), $str, 1);
             }
@@ -4121,7 +4135,7 @@ class EE_Template
     private function replace_special_group_conditional($str)
     {
         // Member Group in_group('1') function, Super Secret!  Shhhhh!
-        if (preg_match_all("/in_group\(([^\)]+)\)/", $str, $matches)) {
+        if (strpos($str, 'in_group') !== false && preg_match_all("/in_group\(([^\)]+)\)/", $str, $matches)) {
             // Template pattern used to match against pipe, comma, or space
             // delimited member groups.
             // By rewriting the pattern instead of trying to evaluate it here,
@@ -4156,7 +4170,7 @@ class EE_Template
     public function wrapInContextAnnotations($var_content, $var_context, $current_context = null)
     {
         $is_multiline = (bool) substr_count($var_content, "\n");
-        $has_ifs = (bool) preg_match('/\{if(:elseif)?/i', $var_content);
+        $has_ifs = (strpos($var_content, '{if') !== false) && (bool) preg_match('/\{if(:elseif)?/i', $var_content);
 
         if (!$has_ifs) {
             if (!$is_multiline) {
@@ -4382,13 +4396,13 @@ class EE_Template
             }
 
             if (!ee()->session->getMember()) {
-                $role = ee('Model')->get('Role', 3)->first();
+                $role = ee('Model')->get('Role', 3)->fields('role_id', 'short_name')->first();
                 $roles = array($role);
                 $assigned_role_ids = array(3);
             } else {
                 $member = ee()->session->getMember();
                 $assigned_role_ids = $member->getAllRoles()->pluck('role_id');
-                $roles = ee('Model')->get('Role')->all();
+                $roles = ee('Model')->get('Role')->fields('role_id', 'short_name')->all();
             }
 
             foreach ($roles as $role) {

@@ -86,23 +86,22 @@ abstract class FileSyncedModel extends Model
      */
     public function onAfterLoad()
     {
-        $fs = new Filesystem();
         $path = $this->getFilePath();
 
         if (! isset($path)) {
             return;
         }
 
-        if (! $fs->exists($path)) {
+        if (! ee('Filesystem')->exists($path)) {
             $this->writeToFile();
 
             return;
         }
 
-        $mtime = $fs->mtime($path);
+        $mtime = ee('Filesystem')->mtime($path);
 
         if ($mtime > $this->getModificationTime()) {
-            $this->unserializeFileData($fs->read($path));
+            $this->unserializeFileData(ee('Filesystem')->read($path));
             $this->setModificationTime($mtime);
 
             $this->_skip_next_write = true;
@@ -138,12 +137,11 @@ abstract class FileSyncedModel extends Model
      */
     public function onAfterUpdate($previous)
     {
-        $fs = new Filesystem();
         $path = $this->getFilePath();
         $old_path = $this->getPreviousFilePath($previous);
 
-        if ($path != $old_path && $fs->exists($old_path)) {
-            $fs->delete($old_path);
+        if ($path != $old_path && ee('Filesystem')->exists($old_path)) {
+            ee('Filesystem')->delete($old_path);
         }
     }
 
@@ -152,11 +150,10 @@ abstract class FileSyncedModel extends Model
      */
     public function onAfterDelete()
     {
-        $fs = new Filesystem();
         $path = $this->getFilePath();
 
-        if (isset($path) && $fs->exists($path)) {
-            $fs->delete($path);
+        if (isset($path) && ee('Filesystem')->exists($path)) {
+            ee('Filesystem')->delete($path);
         }
     }
 
@@ -165,11 +162,10 @@ abstract class FileSyncedModel extends Model
      */
     protected function writeToFile()
     {
-        $fs = new Filesystem();
         $path = $this->getFilePath();
 
-        if (isset($path) && $fs->exists($fs->dirname($path))) {
-            $fs->write($path, $this->serializeFileData(), true);
+        if (isset($path) && ee('Filesystem')->exists(ee('Filesystem')->dirname($path))) {
+            ee('Filesystem')->write($path, $this->serializeFileData(), true);
         }
     }
 }

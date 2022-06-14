@@ -16,5 +16,6 @@ define('FCPATH', __DIR__.'/');
 define('BOOT_ONLY', TRUE);
 include_once SYSPATH.'ee/ExpressionEngine/Boot/boot.php';
 
+ee()->load->library('core');
 ee()->load->library('session');
 ee()->load->library('functions');
