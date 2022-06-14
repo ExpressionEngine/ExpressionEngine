@@ -445,6 +445,28 @@ class Filesystem
     }
 
     /**
+     * Transform a path into an absolute path
+     *
+     * @param String $path Absolute or relative path
+     * @return String absolute path
+     */
+    public function absolute($path)
+    {
+        return $this->ensurePrefixedPath($path);
+    }
+
+    /**
+     * Transform a path into a relative path
+     *
+     * @param String $path Absolute or relative path
+     * @return String relative path
+     */
+    public function relative($path)
+    {
+        return $this->normalizeRelativePath($path);
+    }
+
+    /**
      * Get the path to the parent directory
      *
      * @param String $path Path to extract dirname from
@@ -453,6 +475,17 @@ class Filesystem
     public function dirname($path)
     {
         return pathinfo($this->normalize($path), PATHINFO_DIRNAME);
+    }
+
+    /**
+     * Get the subdirectory path for a given path
+     *
+     * @param String $path Path to extract subdirectory from
+     * @return String Path of the subdirectory
+     */
+    public function subdirectory($path)
+    {
+        return pathinfo($this->normalizeRelativePath($path), PATHINFO_DIRNAME);
     }
 
     /**

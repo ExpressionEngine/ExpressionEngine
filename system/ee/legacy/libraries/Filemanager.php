@@ -381,13 +381,13 @@ class Filemanager
             }
 
             // Check and fix orientation
-            $orientation = $this->orientation_check($file_path, $prefs);
+            $orientation = $this->orientation_check($prefs['temp_file'] ?: $file_path, $prefs);
 
             if (! empty($orientation)) {
                 $prefs = $orientation;
             }
 
-            $prefs = $this->max_hw_check($file_path, $prefs);
+            $prefs = $this->max_hw_check($prefs['temp_file'] ?: $file_path, $prefs);
 
             if (! $prefs) {
                 return $this->_save_file_response(false, lang('image_exceeds_max_size'));
@@ -1445,14 +1445,15 @@ class Filemanager
         }
 
         $prefs = $this->fetch_upload_dir_prefs($directory_id, $ignore_site_id);
+        $filesystem = $prefs['directory']->getFilesystem();
 
         // If the raw file name was passed in, figure out the mime_type
         if (! is_array($file) or ! isset($file['mime_type'])) {
             ee()->load->helper('file');
 
             $file = array(
-                'file_name' => $file,
-                'mime_type' => $prefs['directory']->getFilesystem()->getMimetype($file)
+                'file_name' => $filesystem->relative($file),
+                'mime_type' => $filesystem->getMimetype($file)
             );
         }
 
@@ -1460,8 +1461,11 @@ class Filemanager
         if ($this->is_image($file['mime_type'])) {
             $site_url = str_replace('index.php', '', ee()->config->site_url());
 
-            $thumb_info['thumb'] = $prefs['url'] . '_thumbs/' . $file['file_name'];
-            $thumb_info['thumb_path'] = $prefs['server_path'] . '_thumbs/' . $file['file_name'];
+            $subdir = $filesystem->subdirectory($file['file_name']);
+            $path = str_replace("$subdir/", "$subdir/_thumbs/", $file['file_name']);
+
+            $thumb_info['thumb'] = $prefs['url'] . $path;
+            $thumb_info['thumb_path'] = $filesystem->absolute($path);
             $thumb_info['thumb_class'] = 'image';
         }
 
@@ -1802,12 +1806,12 @@ class Filemanager
     {
         ee()->load->model('file_model');
 
-        $file_info = ee()->file_model->get_files_by_id($file_id);
-        $file_info = $file_info->row_array();
+        $file = ee('Model')->get('File', $file_id)->first();
+        $file_info = $file->toArray();
 
-        $file_info['is_image'] = (strncmp('image', $file_info['mime_type'], '5') == 0) ? true : false;
+        $file_info['is_image'] = $file->isImage();
 
-        $thumb_info = $this->get_thumb($file_info['file_name'], $file_info['upload_location_id']);
+        $thumb_info = $this->get_thumb($file->getAbsolutePath(), $file_info['upload_location_id']);
         $file_info['thumb'] = $thumb_info['thumb'];
 
         return $file_info;
@@ -1942,7 +1946,7 @@ class Filemanager
             );
         }
 
-        $thumb_info = $this->get_thumb($file['file_name'], $dir['id']);
+        $thumb_info = $this->get_thumb($file['full_path'], $dir['id']);
 
         // Build list of information to save and return
         $file_data = array(
@@ -1952,6 +1956,7 @@ class Filemanager
             'temp_file' => $_FILES[$field]['tmp_name'] ?? null,
 
             'file_name' => $file['file_name'],
+            'relative_path' => $dir['upload_destination']->getFilesystem()->relative($file['full_path']),
             'orig_name' => $original_filename, // name before any upload library processing
             'file_data_orig_name' => $file['orig_name'], // name after upload lib but before duplicate checks
 
@@ -2005,7 +2010,7 @@ class Filemanager
         }
 
         // Save file to database
-        $saved = $this->save_file($file['file_name'], $dir, $file_data);
+        $saved = $this->save_file($file_data['relative_path'], $dir, $file_data);
 
         // Return errors from the filemanager
         if (! $saved['status']) {
