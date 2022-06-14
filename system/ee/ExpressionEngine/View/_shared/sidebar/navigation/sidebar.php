@@ -48,7 +48,7 @@
                             </svg>
                             <span class="ee-sidebar__collapsed-hidden">ExpressionEngine <span class="ee-sidebar__version-number"><?=ee()->view->formatted_version?></span></span>
                         </a>
-            <?php if (IS_PRO): ?>
+
               <div class="ee-pro__indicator-badge-wrapper">
                 <?php if (ee()->view->pro_license_status == 'valid'): ?>
 
@@ -60,6 +60,6 @@
                 <?php endif; ?>
 
               </div>
-            <?php endif; ?>
+
                     </div>
                 </div>

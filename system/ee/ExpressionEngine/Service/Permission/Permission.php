@@ -110,9 +110,9 @@ class Permission
         if ($this->isSuperAdmin()) {
             return true;
         }
-        
-        //currently. anyone with CP access 
-        //if the future, inject into Permissions service
+
+        // currently. anyone with CP access
+        // if the future, inject into Permissions service
         if ($this->has('can_access_cp')) {
             $assigned_modules = ee()->session->getMember()->getAssignedModules()->pluck('module_name');
             if (in_array('Pro', $assigned_modules)) {
@@ -128,8 +128,8 @@ class Permission
      *
      * Member access validation
      *
-     * @param	string  single permission name
-     * @return	bool    TRUE if member has permission
+     * @param   string  single permission name
+     * @return  bool    TRUE if member has permission
      */
     public function has()
     {
@@ -157,8 +157,8 @@ class Permission
      *
      * Member access validation
      *
-     * @param	mixed   array or any number of permission names
-     * @return	bool    TRUE if member has all permissions
+     * @param   mixed   array or any number of permission names
+     * @return  bool    TRUE if member has all permissions
      */
     public function hasAll()
     {
@@ -187,8 +187,8 @@ class Permission
      *
      * Member access validation
      *
-     * @param	mixed   array or any number of permission names
-     * @return	bool    TRUE if member has any permissions in the set
+     * @param   mixed   array or any number of permission names
+     * @return  bool    TRUE if member has any permissions in the set
      */
     public function hasAny()
     {
@@ -278,9 +278,9 @@ class Permission
      *
      * Member access validation
      *
-     * @param	string $which any number of permission names
-     * @return	mixed    False if the requested userdata array key doesn't exist
-     *							otherwise returns the key's value
+     * @param   string $which any number of permission names
+     * @return  mixed    False if the requested userdata array key doesn't exist
+     *                          otherwise returns the key's value
      */
     protected function getUserdatum($which)
     {

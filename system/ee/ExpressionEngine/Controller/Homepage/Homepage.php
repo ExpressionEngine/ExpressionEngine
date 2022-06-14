@@ -41,7 +41,7 @@ class Homepage extends CP_Controller
             'dashboard' => $dashboard_layout->generateDashboardHtml()
         ];
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee('pro:Access')->hasRequiredLicense()) {
             $vars['header']['toolbar_items'] = array(
                 'settings' => array(
                     'href' => ee('CP/URL')->make('pro/dashboard/layout/' . $member->member_id),

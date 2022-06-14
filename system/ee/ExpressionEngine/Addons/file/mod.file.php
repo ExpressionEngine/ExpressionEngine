@@ -506,7 +506,7 @@ class File
     {
         ee()->load->library('mime_type');
 
-        if (IS_PRO && ee()->input->get('prolet')) {
+        if (ee()->input->get('prolet')) {
             $prolet = ee('Model')->get('pro:Prolet', (int) ee()->input->get('prolet'))->first();
             if (!empty($prolet)) {
                 $path = $prolet->icon;

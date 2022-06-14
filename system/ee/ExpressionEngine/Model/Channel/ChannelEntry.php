@@ -410,7 +410,7 @@ class ChannelEntry extends ContentModel
     public function onAfterSave()
     {
         parent::onAfterSave();
-        if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
+        if (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
             foreach ($this->Autosaves as $autosave) {
                 $deleteThisAutosave = true;
                 $autosavedEntryData = $autosave->entry_data;
@@ -422,6 +422,7 @@ class ChannelEntry extends ContentModel
                 foreach ($autosavedEntryData as $key => $val) {
                     if ($key == 'title' || strpos($key, 'field_id_') === 0) {
                         $deleteThisAutosave = false;
+
                         break;
                     }
                 }
@@ -791,7 +792,6 @@ class ChannelEntry extends ContentModel
                     $this->getCustomField($name)->setHidden('n');
                 }
             }
-            
         }
 
         parent::setDataOnCustomFields($data);
@@ -1347,7 +1347,7 @@ class ChannelEntry extends ContentModel
 
     public function isLivePreviewable()
     {
-        if ($this->Channel->preview_url && $this->Channel->allow_preview =='y') {
+        if ($this->Channel->preview_url && $this->Channel->allow_preview == 'y') {
             return true;
         }
 
@@ -1365,9 +1365,10 @@ class ChannelEntry extends ContentModel
 
     public function livePreviewAllowed()
     {
-        if ($this->Channel->allow_preview =='y') {
+        if ($this->Channel->allow_preview == 'y') {
             return true;
         }
+
         return false;
     }
 }
