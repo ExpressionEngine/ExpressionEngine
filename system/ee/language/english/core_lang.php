@@ -495,7 +495,7 @@ If you made these changes, please accept the modifications on the control panel 
 
     'cp' => 'Control Panel',
 
-    
+    'adapter_local' => 'Local',
 
 );
 

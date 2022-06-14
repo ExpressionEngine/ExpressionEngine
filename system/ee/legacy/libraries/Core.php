@@ -132,12 +132,16 @@ class EE_Core
             define('IS_PRO', false);
         }
 
+        //register local filesystem adapter
+        ee('Filesystem/Adapter')->registerAdapter('ExpressionEngine\Library\Filesystem\Adapter\Local');
+
         // setup cookie settings for all providers
-        if (REQ == 'CP') {
-            $providers = ee('App')->getProviders();
-            foreach ($providers as $provider) {
+        $providers = ee('App')->getProviders();
+        foreach ($providers as $provider) {
+            if (REQ == 'CP') {
                 $provider->registerCookiesSettings();
             }
+            $provider->registerFilesystemAdapters();
         }
         if (REQ != 'CLI') {
             ee('CookieRegistry')->loadCookiesSettings();

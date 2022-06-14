@@ -19,36 +19,7 @@ class AdapterManager
 
     public function __construct()
     {
-        $this->registerAdapter('local', [
-            'name' => 'Local',
-            'class' => Adapter\Local::class,
-            'settings' => function($values) {
-                return [
-                    [
-                        'title' => 'upload_url',
-                        'desc' => 'upload_url_desc',
-                        'fields' => [
-                            'url' => [
-                                'type' => 'text',
-                                'value' => $values['url'] ?? '{base_url}',
-                                'required' => true
-                            ]
-                        ]
-                    ],
-                    [
-                        'title' => 'upload_path',
-                        'desc' => 'upload_path_desc',
-                        'fields' => [
-                            'server_path' => [
-                                'type' => 'text',
-                                'value' => $values['server_path'] ?? '{base_path}',
-                                'required' => true
-                            ]
-                        ]
-                    ]
-                ];
-            }
-        ]);
+
     }
 
     public function get($key)
@@ -64,27 +35,27 @@ class AdapterManager
     {
         $adapter = $this->get($key);
 
-        return new $adapter['class']($settings);
+        return new $adapter($settings);
     }
 
     public function createSettingsFields($key, $values = [])
     {
         $adapter = $this->get($key);
 
-        if(!array_key_exists('settings', $adapter)) {
-            return [];
-        }
-
-        return is_callable($adapter['settings']) ? $adapter['settings']($values) : $adapter['settings'];
+        return $adapter::getSettingsForm($values);
     }
 
-    public function registerAdapter($key, $data)
+    public function registerAdapter($adapterClass)
     {
-        if(!array_key_exists('class', $data) || !class_exists($data['class'])) {
-            // throw new \Exception("This adapter [$key] does not have a valid implementation.");
+        $interfaces = class_implements($adapterClass);
+        if (! isset($interfaces[Adapter\AdapterInterface::class])) {
+            return;
         }
 
-        $this->adapters[$key] = $data;
+        $reflection = new \ReflectionClass($adapterClass);
+        $key = strtolower($reflection->getShortName());
+
+        $this->adapters[$key] = $adapterClass;
     }
 
     public function all()

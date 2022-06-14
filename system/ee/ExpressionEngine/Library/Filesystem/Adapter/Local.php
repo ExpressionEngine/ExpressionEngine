@@ -3,8 +3,16 @@
 namespace ExpressionEngine\Library\Filesystem\Adapter;
 
 use ExpressionEngine\Dependency\League\Flysystem;
+use ExpressionEngine\Service\Validation\ValidationAware;
 
-class Local extends Flysystem\Adapter\Local {
+class Local extends Flysystem\Adapter\Local implements AdapterInterface, ValidationAware
+{
+    use AdapterTrait;
+
+    protected $_validation_rules = [
+        'server_path' => 'required|fileExists|writable',
+        'url' => 'required|validateUrl',
+    ];
 
     /**
      * Constructor.
@@ -18,6 +26,7 @@ class Local extends Flysystem\Adapter\Local {
      */
     public function __construct($settings)
     {
+        $this->settings = $settings;
         $root = $settings['path'];
         $writeFlags = \LOCK_EX;
         $linkHandling = self::DISALLOW_LINKS;
@@ -30,12 +39,54 @@ class Local extends Flysystem\Adapter\Local {
         // $this->ensureDirectory($root);
 
         if (!\is_dir($root) || !\is_readable($root)) {
-            throw new \LogicException('The root path ' . $root . ' is not readable.');
+            //throw new \LogicException('The root path ' . $root . ' is not readable.');
         }
         $this->setPathPrefix($root);
         $this->writeFlags = $writeFlags;
         $this->linkHandling = $linkHandling;
 
+    }
+
+    public static function getSettingsForm($settings)
+    {
+        return [
+            [
+                'title' => 'upload_url',
+                'desc' => 'upload_url_desc',
+                'fields' => [
+                    'url' => [
+                        'type' => 'text',
+                        'value' => $settings['url'] ?? '{base_url}',
+                        'required' => true
+                    ]
+                ]
+            ],
+            [
+                'title' => 'upload_path',
+                'desc' => 'upload_path_desc',
+                'fields' => [
+                    'server_path' => [
+                        'type' => 'text',
+                        'value' => $settings['server_path'] ?? '{base_path}',
+                        'required' => true
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Make sure URL is not submitted with the default value
+     */
+    public function validateUrl($key, $value, $params, $rule)
+    {
+        if ($value == 'http://') {
+            $rule->stop();
+
+            return lang('valid_url');
+        }
+
+        return true;
     }
 
 }

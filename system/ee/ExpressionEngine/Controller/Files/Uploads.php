@@ -179,7 +179,7 @@ class Uploads extends AbstractFilesController
         $adapter_choices = [];
         $adapter_settings = [];
         foreach($adapters as $key => $adapter) {
-            $adapter_choices[$key] = $adapter['name'];
+            $adapter_choices[$key] = lang('adapter_' . $key);
             $adapter_groups[$key] = "adapter_{$key}";
             $adapterFields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->adapter == $key) ? $settingsValues : []);
             if(!empty($adapterFields)) {
@@ -612,12 +612,13 @@ class Uploads extends AbstractFilesController
      */
     private function validateUploadPreferences($upload_destination)
     {
-        // Pull adapter specific configuration into the root $_POST array
-        $forAdapter = $_POST['_for_adapter'][$_POST['adapter']];
-        unset($_POST['_for_adapter']);
-        $_POST = array_merge($_POST, $forAdapter);
-
         $upload_destination->set($_POST);
+        // Pull adapter specific configuration
+        if (isset($_POST['_for_adapter']) && isset($_POST['_for_adapter'][$_POST['adapter']])) {
+            $adapterSettings = $_POST['_for_adapter'][$_POST['adapter']];
+            $upload_destination->set($adapterSettings);
+        }
+
         $cat_group = ee()->input->post('cat_group');
 
         if (! empty($cat_group)) {
@@ -644,6 +645,21 @@ class Uploads extends AbstractFilesController
         }
 
         $result = $upload_destination->validate();
+
+        if (!empty($upload_destination->adapter)) {
+            //validate adapter settings
+            $adapterValidation = ee('Validation')->make()->validate($upload_destination->getFilesystemAdapter());
+            if (! $adapterValidation->isValid()) {
+                foreach ($adapterValidation->getFailed() as $field_name => $rules) {
+                    if (property_exists($upload_destination, $field_name)) {
+                        $field = '_for_adapter[' . $upload_destination->adapter . '][' . $field_name . ']';
+                    } else {
+                        $field = '_for_adapter[' . $upload_destination->adapter . '][adapter_settings][' . $field_name . ']';
+                    }
+                    $result->addFailed($field, $rules[0]);
+                }
+            }
+        }
 
         if (! $result->isValid()) {
             $this->upload_errors = $result->renderErrors();

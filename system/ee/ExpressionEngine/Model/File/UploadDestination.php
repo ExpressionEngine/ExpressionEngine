@@ -75,8 +75,7 @@ class UploadDestination extends StructureModel
 
     protected static $_validation_rules = array(
         'name' => 'required|xss|noHtml|unique[site_id]',
-        'server_path' => 'required|fileExists|writable',
-        'url' => 'required|validateUrl',
+        'adapter' => 'required',
         'allow_subfolders' => 'enum[y,n]',
         'subfolders_on_top' => 'enum[y,n]',
         'default_modal_view' => 'enum[list,thumb]',
@@ -284,20 +283,6 @@ class UploadDestination extends StructureModel
     }
 
     /**
-     * Make sure URL is not submitted with the default value
-     */
-    public function validateUrl($key, $value, $params, $rule)
-    {
-        if ($value == 'http://') {
-            $rule->stop();
-
-            return lang('valid_url');
-        }
-
-        return true;
-    }
-
-    /**
      * Get the backing filesystem adapter for this upload destination
      */
     public function getFilesystemAdapter()
@@ -306,7 +291,9 @@ class UploadDestination extends StructureModel
         $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
         $adapterName = $this->adapter ?? 'local';
         $adapterSettings = array_merge([
-            'path' => $path
+            'path' => $path,
+            'server_path' => $this->server_path,
+            'url' => $this->url
         ], $this->adapter_settings ?? []);
         $adapter = ee('Filesystem/Adapter')->make($adapterName, $adapterSettings);
 
