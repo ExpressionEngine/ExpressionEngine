@@ -467,7 +467,7 @@ class Upload
                 $file->file_name = $original_name;
                 $file->save();
 
-                ee('Filesystem')->copy($src, $file->getAbsolutePath());
+                $file->getFilesystem()->forceCopy($src, $file->getAbsolutePath());
             } else {
                 if (($file->description && ($file->description != $original->description))
                     || ($file->credit && ($file->credit != $original->credit))
@@ -476,10 +476,10 @@ class Upload
                     $result['warning'] = lang('replace_no_metadata');
                 }
 
-                ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());
+                $file->getFilesystem()->forceCopy($file->getAbsolutePath(), $original->getAbsolutePath());
 
-                if (file_exists($file->getAbsoluteThumbnailPath())) {
-                    ee('Filesystem')->copy($file->getAbsoluteThumbnailPath(), $original->getAbsoluteThumbnailPath());
+                if ($file->getFilesystem()->exists($file->getAbsoluteThumbnailPath())) {
+                    $file->getFilesystem()->forceCopy($file->getAbsoluteThumbnailPath(), $original->getAbsoluteThumbnailPath());
                 }
 
                 foreach ($file->UploadDestination->FileDimensions as $fd) {
@@ -487,8 +487,8 @@ class Upload
                     $dest = $fd->getAbsolutePath() . $original->file_name;
 
                     // non-image files will not have manipulations
-                    if (ee('Filesystem')->exists($src)) {
-                        ee('Filesystem')->copy($src, $dest);
+                    if ($file->getFilesystem()->exists($src)) {
+                        $file->getFilesystem()->forceCopy($src, $dest);
                     }
                 }
 

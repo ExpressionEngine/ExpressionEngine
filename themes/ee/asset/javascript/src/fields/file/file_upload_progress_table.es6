@@ -70,7 +70,7 @@ class ResolveFilenameConflict extends React.Component {
     iframe.attr('src', url)
     modal.find('div.box').html(iframe)
 
-    iframe.load(() => {
+    iframe.on('load', () => {
       let response = iframe.contents().find('body').text()
       try {
         response = JSON.parse(response)

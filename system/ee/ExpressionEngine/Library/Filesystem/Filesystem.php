@@ -49,7 +49,7 @@ class Filesystem
      */
     public function isLocal()
     {
-        return $this->flysystem->getAdapter() instanceof Flysystem\Adapter\Local;
+        return $this->getBaseAdapter() instanceof Flysystem\Adapter\Local;
     }
 
     /**
@@ -391,6 +391,37 @@ class Filesystem
         }
 
         $this->ensureCorrectAccessMode($dest);
+    }
+
+    /**
+     * Copy a file or directory
+     *
+     * @param String $source File or directory to copy
+     * @param Stirng $dest Path to the duplicate
+     */
+    public function forceCopy($source, $dest)
+    {
+        $source = $this->normalizeRelativePath($source);
+        $dest = $this->normalizeRelativePath($dest);
+        $destBackup = "$dest.backup";
+
+        if (!$this->exists($source)) {
+            throw new FilesystemException("Cannot copy non-existent path: {$source}");
+        }
+
+        if($this->exists($dest)) {
+            $this->rename($dest, $destBackup);
+        }
+
+        try {
+            $this->copy($source, $dest);
+        }catch(\Exception $e) {
+            $this->rename($destBackup, $dest);
+            throw $e;
+        }
+
+        $this->delete($destBackup);
+
     }
 
     /**
@@ -844,6 +875,27 @@ class Filesystem
         $path = stream_get_meta_data($file)['uri'];
 
         return compact('file', 'path');
+    }
+
+    /**
+     * Perform some action on a file in a local context
+     *
+     * @param string $path
+     * @param callable $callback
+     * @return mixed
+     */
+    public function actLocally($path, callable $callback)
+    {
+        if ($this->isLocal()) {
+            return $callback($path);
+        }
+
+        $tmp = $this->copyToTempFile($path);
+        $result = $callback($tmp['path']);
+
+        fclose($tmp['file']);
+
+        return $result;
     }
 
     /**
