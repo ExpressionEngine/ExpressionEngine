@@ -114,44 +114,18 @@ abstract class AbstractFiles extends CP_Controller
 
     protected function stdHeader($active = null)
     {
-        $upload_destinations = [];
-        $uploadLocationsAndDirectoriesDropdownChoices = [];
-        if (ee('Permission')->can('upload_new_files')) {
-            $upload_destinations = ee('Model')->get('UploadDestination')
-                ->fields('id', 'name')
-                ->filter('site_id', ee()->config->item('site_id'))
-                ->filter('module_id', 0)
-                ->order('name', 'asc')
-                ->all();
-
-            if (! ee('Permission')->isSuperAdmin()) {
-                $member = ee()->session->getMember();
-                $upload_destinations = $upload_destinations->filter(function ($dir) use ($member) {
-                    return $dir->memberHasAccess($member);
-                });
-            }
-
-            foreach ($upload_destinations as $upload_pref) {
-                $uploadLocationsAndDirectoriesDropdownChoices[$upload_pref->getId() . '.0'] = [
-                    'label' => '<i class="fas fa-hdd"></i>' . $upload_pref->name,
-                    'upload_location_id' => $upload_pref->id,
-                    'directory_id' => 0,
-                    'path' => '',
-                    'children' => $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true)
-                ];
-            }
-        }
+        $uploadLocationsAndDirectoriesDropdownChoices = $this->getUploadLocationsAndDirectoriesDropdownChoices();
 
         $toolbar_items = [];
 
         ee()->view->header = array(
             'title' => lang('file_manager'),
             'toolbar_items' => $toolbar_items,
-            'action_button' => ee('Permission')->can('upload_new_files') && $upload_destinations->count() ? [
+            'action_button' => ee('Permission')->can('upload_new_files') && !empty($uploadLocationsAndDirectoriesDropdownChoices) ? [
                 'text' => '<i class="fas fa-cloud-upload-alt icon-left"></i>' . lang('upload'),
                 'filter_placeholder' => lang('filter_upload_directories'),
                 'choices' => count($uploadLocationsAndDirectoriesDropdownChoices) > 1 ? $uploadLocationsAndDirectoriesDropdownChoices : null,
-                'href' => ee('CP/URL')->make('files/upload/' . $upload_destinations->first()->getId())->compile()
+                'href' => '#'
             ] : null
         );
 

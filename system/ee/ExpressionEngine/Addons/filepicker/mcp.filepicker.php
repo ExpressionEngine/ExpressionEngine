@@ -145,15 +145,25 @@ class Filepicker_mcp
             }
         }
 
+        // Generate the contents of the new folder modal
+        $newFolderModal = ee('View')->make('files/modals/folder')->render([
+            'name' => 'modal-new-folder',
+            'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
+            'choices' => $this->getUploadLocationsAndDirectoriesDropdownChoices(),
+            'selected' => (int) ee('Request')->get('directory_id'),
+        ]);
+
+        $html = ee('View')->make('ee:files/index')->render($vars) . $newFolderModal;
+
         if (!empty(ee('Request')->header('ACCEPT')) && strpos(ee('Request')->header('ACCEPT'), '/json') !== false) {
             return json_encode([
-                'html' => ee('View')->make('ee:files/index')->render($vars),
+                'html' => $html,
                 'url' => $vars['form_url']->compile(),
                 'viewManager_saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => null, 'viewtype' => $vars['viewtype']])->compile()
             ]);
         }
 
-        return ee('View')->make('ee:files/index')->render($vars);
+        return $html;
     }
 
     /**
