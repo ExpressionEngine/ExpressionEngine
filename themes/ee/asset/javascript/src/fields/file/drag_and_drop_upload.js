@@ -469,6 +469,11 @@ function (_React$Component) {
     value: function resolveConflict(file, response) {
       this.removeFile(file);
       this.props.onFileUploadSuccess(response);
+
+      if ($('.file-upload-widget').length) {
+        $('.file-upload-widget').hide();
+        $('body .f_manager-wrapper > form').submit();
+      }
     }
   }, {
     key: "showErrorWithInvalidState",

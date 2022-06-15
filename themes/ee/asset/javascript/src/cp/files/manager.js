@@ -193,13 +193,13 @@
 			$('.main-nav__toolbar .dropdown__scroll .f_open-filepicker').trigger('click');
 		});
 
-		$('body').on('click', '.title-bar a.upload', function(e){
-		  e.preventDefault();
-		  var uploadLocationId = $(this).attr('data-upload_location_id');
-		  var directoryId = $(this).attr('data-directory_id');
-		  $('.imitation_button').attr('data-upload_location_id', uploadLocationId);
-		  $('.imitation_button').attr('data-directory_id', directoryId);
-		  $('.imitation_button')[0].click();
+		$('body').on('click', '.title-bar a.upload, .main-nav__toolbar a.dropdown__link', function(e){
+			e.preventDefault();
+			var uploadLocationId = $(this).attr('data-upload_location_id');
+			var directoryId = $(this).attr('data-directory_id');
+			$('.imitation_button').attr('data-upload_location_id', uploadLocationId);
+			$('.imitation_button').attr('data-directory_id', directoryId);
+			$('.imitation_button')[0].click();
 		})
 	});
 })(jQuery);

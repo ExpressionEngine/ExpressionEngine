@@ -76,6 +76,9 @@ class ResolveFilenameConflict extends React.Component {
         response = JSON.parse(response)
         modal.trigger('modal:close')
         if (response.cancel) {
+          if( $('.file-upload-widget').length) {
+            $('.file-upload-widget').hide();
+          }
           return this.props.onFileUploadCancel(e, file)
         }
         return this.props.onResolveConflict(file, response)

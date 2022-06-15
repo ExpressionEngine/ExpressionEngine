@@ -398,6 +398,10 @@ class DragAndDropUpload extends React.Component {
   resolveConflict(file, response) {
     this.removeFile(file)
     this.props.onFileUploadSuccess(response)
+    if( $('.file-upload-widget').length) {
+      $('.file-upload-widget').hide();
+      $('body .f_manager-wrapper > form').submit();
+    }
   }
 
   showErrorWithInvalidState(error) {
