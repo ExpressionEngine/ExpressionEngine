@@ -552,6 +552,10 @@ function (_React$Component) {
           e.preventDefault();
 
           _this5.removeFile(file);
+
+          if ($('.file-upload-widget').length && $('.file-upload-widget').hasClass('hidden')) {
+            $('.file-upload-widget').hide();
+          }
         },
         onResolveConflict: function onResolveConflict(file, response) {
           return _this5.resolveConflict(file, response);
