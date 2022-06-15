@@ -37,9 +37,10 @@ $component = [
     'allowedDirectory' => $allowed_directory,
     'contentType' => $content_type,
     'file' => $file,
-    'createNewDirectory' => true,
+    'createNewDirectory' => false,
     'ignoreChild' => false,
-    'addInput' => false
+    'addInput' => false,
+    'imitationButton' => false
 ];
 ?>
 
