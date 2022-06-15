@@ -224,7 +224,10 @@ class Uploads extends AbstractFilesController
                         )
                     )
                 ),
-                ... $adapter_settings, // this is PHP 7.4 are we okay with that?
+            )
+        );
+        $vars['sections'][0] = array_merge($vars['sections'][0], $adapter_settings);
+        $vars['sections'][0] = array_merge($vars['sections'][0], array(
                 array(
                     'title' => 'upload_allowed_types',
                     'desc' => '',
@@ -244,7 +247,9 @@ class Uploads extends AbstractFilesController
                         ),
                     )
                 ),
-            ),
+            )
+        );
+        $vars['sections'] = array_merge($vars['sections'], array(
             'browser_behavior' => array(
                 array(
                     'title' => 'default_modal_view',
@@ -257,30 +262,6 @@ class Uploads extends AbstractFilesController
                                 'thumb' => lang('default_modal_view_thumbnails')
                             ),
                             'value' => $upload_destination->default_modal_view ?: 'list'
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'allow_subfolders',
-                    'desc' => 'allow_subfolders_desc',
-                    'fields' => array(
-                        'allow_subfolders' => array(
-                            'type' => 'yes_no',
-                            'group_toggle' => array(
-                                'y' => 'rel_subfolder',
-                            ),
-                            'value' => $upload_destination->allow_subfolders
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'keep_subfolders_top',
-                    'desc' => 'keep_subfolders_top_desc',
-                    'group' => 'rel_subfolder',
-                    'fields' => array(
-                        'subfolders_on_top' => array(
-                            'type' => 'yes_no',
-                            'value' => $upload_destination->subfolders_on_top ?: false
                         )
                     )
                 ),
@@ -317,7 +298,36 @@ class Uploads extends AbstractFilesController
                     )
                 )
             )
-        );
+        ));
+
+        if (!bool_config_item('file_manager_compatibility_mode')) {
+            $vars['sections']['browser_behavior'] = array_merge($vars['sections']['browser_behavior'], array(
+                array(
+                    'title' => 'allow_subfolders',
+                    'desc' => 'allow_subfolders_desc',
+                    'fields' => array(
+                        'allow_subfolders' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'rel_subfolder',
+                            ),
+                            'value' => $upload_destination->allow_subfolders
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'keep_subfolders_top',
+                    'desc' => 'keep_subfolders_top_desc',
+                    'group' => 'rel_subfolder',
+                    'fields' => array(
+                        'subfolders_on_top' => array(
+                            'type' => 'yes_no',
+                            'value' => $upload_destination->subfolders_on_top ?: false
+                        )
+                    )
+                ),
+            ));
+        }
 
         // Image manipulations Grid
         $grid = $this->getImageSizesGrid($upload_destination);

@@ -30,7 +30,7 @@ trait FileManagerTrait
         if (empty($uploadLocation)) {
             $model = 'File';
         } else {
-            $model = $uploadLocation->allow_subfolders ? 'FileSystemEntity' : 'File';
+            $model = (!bool_config_item('file_manager_compatibility_mode') && $uploadLocation->allow_subfolders) ? 'FileSystemEntity' : 'File';
         }
         if ($filepickerMode) {
             $field_upload_locations = ee('Request')->get('field_upload_locations') ?: (ee('Request')->get('directory') ?: 'all');
@@ -508,7 +508,7 @@ trait FileManagerTrait
                     'upload_location_id' => $upload_pref->id,
                     'directory_id' => 0,
                     'path' => '',
-                    'children' => $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true)
+                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true) : []
                 ];
             }
         }

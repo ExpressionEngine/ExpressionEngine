@@ -922,7 +922,7 @@ class File_field
                     'label' => $upload_pref->name,
                     'path' => '',
                     'upload_location_id' => $upload_pref->id,
-                    'children' => $upload_pref->buildDirectoriesDropdown($upload_pref->getId())
+                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->buildDirectoriesDropdown($upload_pref->getId()) : []
                 ];
             }
         }

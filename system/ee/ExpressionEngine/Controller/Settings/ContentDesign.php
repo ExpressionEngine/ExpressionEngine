@@ -57,6 +57,15 @@ class ContentDesign extends Settings
                     )
                 )
             ),
+            'file_manager' => array(
+                array(
+                    'title' => 'file_manager_compatibility_mode',
+                    'desc' => 'file_manager_compatibility_mode_desc',
+                    'fields' => array(
+                        'file_manager_compatibility_mode' => array('type' => 'yes_no')
+                    )
+                )
+            ),
             'image_resizing' => array(
                 array(
                     'title' => 'image_resize_protocol',

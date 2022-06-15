@@ -121,6 +121,8 @@ If you made these changes, please accept the modifications on the control panel 
 
     'file_not_found' => 'File %s does not exist.',
 
+    'file_manager' => 'File Manager',
+
     'general_error' => 'The following errors were encountered',
 
     'generic_fatal_error' => 'Something has gone wrong and this URL cannot be processed at this time.',

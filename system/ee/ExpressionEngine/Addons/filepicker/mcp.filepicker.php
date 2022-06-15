@@ -129,7 +129,7 @@ class Filepicker_mcp
         $vars['cp_heading'] = $field_upload_locations == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
         if ($requested_directory != 'all') {
-            if ($dir->allow_subfolders) {
+            if (!bool_config_item('file_manager_compatibility_mode') && $dir->allow_subfolders) {
                 $vars['toolbar_items']['new_folder'] = [
                     'href' => '#',
                     'rel' => 'modal-new-folder',

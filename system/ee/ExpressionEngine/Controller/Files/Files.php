@@ -110,7 +110,7 @@ class Files extends AbstractFilesController
                 'title' => lang('sync'),
                 'class' => 'button--secondary icon--sync'
             ];
-            if ($dir->allow_subfolders) {
+            if (!bool_config_item('file_manager_compatibility_mode') && $dir->allow_subfolders) {
                 $vars['toolbar_items']['new_folder'] = [
                     'href' => '#',
                     'rel' => 'modal-new-folder',
@@ -169,7 +169,7 @@ class Files extends AbstractFilesController
         $uploadDirectory = ee('Model')->get('UploadDestination', $upload_destination_id)->first();
         $return_url = ee('CP/URL')->make('files/directory/' . $upload_destination_id);
 
-        if (!ee('Permission')->can('upload_new_files') || !$uploadDirectory->memberHasAccess(ee()->session->getMember()) || !$uploadDirectory->allow_subfolders) {
+        if (!ee('Permission')->can('upload_new_files') || !$uploadDirectory->memberHasAccess(ee()->session->getMember()) || bool_config_item('file_manager_compatibility_mode') || !$uploadDirectory->allow_subfolders) {
             show_error(lang('unauthorized_access'), 403);
         }
 

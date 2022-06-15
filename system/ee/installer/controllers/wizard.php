@@ -1693,6 +1693,7 @@ class Wizard extends CI_Controller
             'auto_convert_high_ascii' => 'n',
             'new_posts_clear_caches' => 'y',
             'auto_assign_cat_parents' => 'y',
+            'file_manager_compatibility_mode' => 'n',
             'new_version_check' => 'y',
             'enable_throttling' => 'n',
             'banish_masked_ips' => 'y',

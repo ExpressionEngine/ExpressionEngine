@@ -380,7 +380,7 @@ class UploadDestination extends StructureModel
 
             $key = $fullPathAsKey ? $filePath : $fileName;
 
-            if ($isDir) {
+            if ($isDir && !bool_config_item('file_manager_compatibility_mode')) {
                 $map[$key] = $this->getDirectoryMap($filePath, $fullPathAsKey, $includeHiddenFiles, $includeHiddenFolders, $includeIndex, $ignoreAllowedTypes);
             } else {
                 $map[$key] = $fileName;

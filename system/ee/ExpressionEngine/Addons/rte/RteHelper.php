@@ -74,8 +74,8 @@ class RteHelper
     {
         $tags = static::_getFileTags();
         $data = str_replace($tags[1], $tags[0], $data);
-
-        if (strpos($data, '{filedir_') !== false) {
+        
+        if (!bool_config_item('file_manager_compatibility_mode') && strpos($data, '{filedir_') !== false) {
             if (preg_match_all('/{filedir_(\d+)}(.*)\"/', $data, $matches, PREG_SET_ORDER)) {
                 $dirsAndFiles = [];
                 foreach ($matches as $match) {

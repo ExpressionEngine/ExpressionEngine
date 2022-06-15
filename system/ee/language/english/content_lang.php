@@ -393,8 +393,6 @@ $lang = array(
 
     'file_exists_warning' => 'File Exists Warning',
 
-    'file_manager' => 'File Manager',
-
     'file_saved' => 'File Saved',
 
     'file_type' => 'File Type',
