@@ -117,6 +117,10 @@ function (_React$Component) {
           modal.trigger('modal:close');
 
           if (response.cancel) {
+            if ($('.file-upload-widget').length) {
+              $('.file-upload-widget').hide();
+            }
+
             return _this.props.onFileUploadCancel(e, file);
           }
 

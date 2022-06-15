@@ -45,6 +45,10 @@
 					selected.parents('tr').addClass('selected');
 				}
 			}
+
+			if ($('div[data-file-field-react]').length) {
+				FileField.renderFields();
+			}
 		});
 
 		$('.modal-file').off('click', '.filepicker-item, tbody > tr:not(.tbl-action)');

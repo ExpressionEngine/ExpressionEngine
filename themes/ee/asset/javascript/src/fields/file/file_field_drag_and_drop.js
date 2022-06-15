@@ -44,7 +44,6 @@ function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "setFile", function (response) {
       var fileField = _this.getFieldContainer();
 
-      console.log(fileField);
       EE.FileField.pickerCallback(response, {
         input_value: fileField.find('input.js-file-input'),
         input_img: fileField.find('img.js-file-image'),
@@ -80,8 +79,7 @@ function (_React$Component) {
   }, {
     key: "getFieldContainer",
     value: function getFieldContainer() {
-      console.log(this); // If in a grid, return that
-
+      // If in a grid, return that
       if ($(this.props.thisField).closest('.grid-file-upload').length) {
         return $(this.props.thisField).closest('.grid-file-upload');
       }

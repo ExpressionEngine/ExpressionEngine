@@ -33,9 +33,9 @@
 			})
 		});
 
-		$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
-			cursor: "move"
-		})
+		// $('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
+		// 	cursor: "move"
+		// })
 
 		// Select images if Grid view
 		$('body').on('change', '.file-metadata__wrapper input:checkbox', function () {

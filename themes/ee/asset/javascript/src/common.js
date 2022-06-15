@@ -1141,28 +1141,38 @@ $(document).ready(function(){
 
 		// Check the Entry page for existence and compliance with the conditions
 		// to show or hide fields depending on conditions
-        if(window.EE) {
-            EE.cp.hide_show_entries_fields = function(idArr) {
-                var hide_block = $('.hide-block');
+		if(window.EE) {
+			EE.cp.hide_show_entries_fields = function(idArr) {
+				var hide_block = $('.hide-block');
 
-                $(hide_block).removeClass('hide-block');
+				$(hide_block).removeClass('hide-block');
 
-                $.each(idArr, function(index, id) {
-                    $('[data-field_id="'+id+'"]').each(function(){
-                        $(this).addClass('hide-block').removeClass('fieldset-invalid');
-                    })
-                });
-            }
-        }
+				$.each(idArr, function(index, id) {
+					$('[data-field_id="'+id+'"]').each(function(){
+						$(this).addClass('hide-block').removeClass('fieldset-invalid');
+					})
+				});
+			}
+		}
 
-        if ($('.range-slider').length) {
+		if ($('.range-slider').length) {
+			$('.range-slider').each(function() {
+				var minValue = $(this).find('input[type="range"]').attr('min');
+				var maxValue = $(this).find('input[type="range"]').attr('max');
 
-        	$('.range-slider').each(function() {
-	        	var minValue = $(this).find('input[type="range"]').attr('min');
-	        	var maxValue = $(this).find('input[type="range"]').attr('max');
+				$(this).attr('data-min', minValue);
+				$(this).attr('data-max', maxValue);
+			});
+		}
 
-	        	$(this).attr('data-min', minValue);
-	        	$(this).attr('data-max', maxValue);
-        	});
-        }
+
+		$('body').on('click', '.title-bar a.upload, .main-nav__toolbar a.dropdown__link', function(e){
+			e.preventDefault();
+			console.log('111');
+			var uploadLocationId = $(this).attr('data-upload_location_id');
+			var directoryId = $(this).attr('data-directory_id');
+			$('.imitation_button').attr('data-upload_location_id', uploadLocationId);
+			$('.imitation_button').attr('data-directory_id', directoryId);
+			$('.imitation_button')[0].click();
+		})
 }); // close (document).ready

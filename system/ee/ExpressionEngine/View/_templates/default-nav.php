@@ -53,7 +53,6 @@
 						<?php endif ?>
 
 						<div class="dropdown__scroll">
-							<input type="file" class="f_open-filepicker" data-upload_location_id='' data-path='' style="display: none;">
 							<ul>
 							<?php foreach ($header['action_button']['choices'] as $key => $data): ?>
 								<li>
