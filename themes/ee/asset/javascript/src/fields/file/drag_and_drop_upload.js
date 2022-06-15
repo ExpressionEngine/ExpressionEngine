@@ -379,6 +379,7 @@ function (_React$Component) {
 
                 if ($('.file-upload-widget').length) {
                   $('.file-upload-widget').hide();
+                  $('body .f_manager-wrapper > form').submit();
                 }
 
                 break;
