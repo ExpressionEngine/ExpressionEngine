@@ -35,6 +35,10 @@ trait FileManagerTrait
         if ($filepickerMode) {
             $field_upload_locations = ee('Request')->get('field_upload_locations') ?: (ee('Request')->get('directory') ?: 'all');
             $requested_directory = ee()->input->get('requested_directory') ?: ee()->input->get('directories');
+            if (ee()->input->get('requested_directory') != $requested_directory) {
+                //set the old variable name to make the filter work
+                $_GET['requested_directory'] = $requested_directory;
+            }
             $base_url->addQueryStringVariables([
                 'field_upload_locations' => $field_upload_locations,
             ]);
@@ -477,5 +481,37 @@ trait FileManagerTrait
         }
 
         return $column_choices;
+    }
+
+    public function getUploadLocationsAndDirectoriesDropdownChoices()
+    {
+        $upload_destinations = [];
+        $uploadLocationsAndDirectoriesDropdownChoices = [];
+        if (ee('Permission')->can('upload_new_files')) {
+            $upload_destinations = ee('Model')->get('UploadDestination')
+                ->fields('id', 'name')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('module_id', 0)
+                ->order('name', 'asc')
+                ->all();
+
+            if (! ee('Permission')->isSuperAdmin()) {
+                $member = ee()->session->getMember();
+                $upload_destinations = $upload_destinations->filter(function ($dir) use ($member) {
+                    return $dir->memberHasAccess($member);
+                });
+            }
+
+            foreach ($upload_destinations as $upload_pref) {
+                $uploadLocationsAndDirectoriesDropdownChoices[$upload_pref->getId() . '.0'] = [
+                    'label' => '<i class="fas fa-hdd"></i>' . $upload_pref->name,
+                    'upload_location_id' => $upload_pref->id,
+                    'directory_id' => 0,
+                    'path' => '',
+                    'children' => $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true)
+                ];
+            }
+        }
+        return $uploadLocationsAndDirectoriesDropdownChoices;
     }
 }
