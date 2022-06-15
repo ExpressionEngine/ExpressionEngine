@@ -387,7 +387,7 @@ class Filemanager
                 $prefs = $orientation;
             }
 
-            $prefs = $this->max_hw_check($prefs['temp_file'] ?: $file_path, $prefs);
+            $prefs = $this->max_hw_check($file_path, $prefs);
 
             if (! $prefs) {
                 return $this->_save_file_response(false, lang('image_exceeds_max_size'));
