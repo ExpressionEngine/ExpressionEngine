@@ -1776,7 +1776,7 @@ class EE_Template
 
                 // Replace the temporary markers we added earlier with the fully parsed data
 
-                $this->template = str_replace('M' . $i . $this->marker, $return_data, $this->template);
+                $this->template = str_replace('M' . $i . $this->marker,  $return_data ?? '', $this->template);
 
                 // Initialize data in case there are susequent loops
 
