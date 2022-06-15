@@ -186,7 +186,7 @@ class EE_Image_lib
             $this->dest_image = $this->source_image;
             $this->dest_folder = $this->source_folder;
         } else {
-            if (strpos($this->new_image, DIRECTORY_SEPARATOR) === false) {
+            if (strpos($this->new_image, DIRECTORY_SEPARATOR) === false && strpos($this->new_image, '/') === false) {
                 $this->dest_folder = $this->source_folder;
                 $this->dest_image = $this->new_image;
             } else {
