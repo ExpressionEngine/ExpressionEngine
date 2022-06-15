@@ -160,13 +160,38 @@ function (_React$Component) {
       }
 
       that.setState({
-        directory: directory || 'all',
         directory_id: directory_id,
         path: item.path || '',
         upload_location_id: item.upload_location_id || null
       });
       $('.f_open-filepicker').trigger('click');
       $('.f_open-filepicker').change(function (e) {
+        var files = e.target.files;
+        that.handleDroppedFiles(files);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "hiddenUpload", function (el) {
+      var that = _assertThisInitialized(_this);
+
+      var upload_location_id = el.target.getAttribute('data-upload_location_id');
+      var directory_id = el.target.getAttribute('data-directory_id');
+      var directory;
+
+      if (directory_id == 0) {
+        directory = upload_location_id;
+      } else {
+        directory = directory_id;
+      }
+
+      var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      that.setState({
+        directory_id: directory_id,
+        path: item.path || '',
+        upload_location_id: upload_location_id
+      });
+      $('.file-field__buttons .f_open-filepicker').trigger('click');
+      $('.file-field__buttons .f_open-filepicker').change(function (e) {
         var files = e.target.files;
         that.handleDroppedFiles(files);
       });
@@ -330,6 +355,10 @@ function (_React$Component) {
         xhr.open('POST', EE.dragAndDrop.endpoint, true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.upload.addEventListener('progress', function (e) {
+          if ($('.file-upload-widget').length && $('.file-upload-widget').hasClass('hidden')) {
+            $('.file-upload-widget').show();
+          }
+
           file.progress = e.loaded * 100.0 / e.total || 100;
 
           _this3.setState({
@@ -347,6 +376,11 @@ function (_React$Component) {
                 _this3.props.onFileUploadSuccess(JSON.parse(xhr.responseText));
 
                 resolve(file);
+
+                if ($('.file-upload-widget').length) {
+                  $('.file-upload-widget').hide();
+                }
+
                 break;
 
               case 'duplicate':
@@ -570,6 +604,24 @@ function (_React$Component) {
         createNewDirectory: this.props.createNewDirectory,
         ignoreChild: false,
         addInput: true
+      })), this.props.imitationButton && React.createElement(React.Fragment, null, React.createElement("a", {
+        href: "#",
+        style: {
+          display: 'none'
+        },
+        onClick: function onClick(el) {
+          return _this5.hiddenUpload(el);
+        },
+        "data-upload_location_id": '',
+        "data-directory_id": '',
+        "data-path": '',
+        className: "imitation_button"
+      }, "Imitation"), React.createElement("input", {
+        type: "file",
+        className: "f_open-filepicker",
+        style: {
+          display: 'none'
+        }
       }))));
     }
   }]);

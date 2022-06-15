@@ -222,6 +222,7 @@ trait FileManagerTrait
             'createNewDirectory' => false,
             'ignoreChild' => false,
             'addInput' => false,
+            'imitationButton' => true
         ];
 
         $table->setNoResultsHTML(ee('View')->make('ee:_shared/file/upload-widget')->render(['component' => $uploaderComponent]), 'file-upload-widget');

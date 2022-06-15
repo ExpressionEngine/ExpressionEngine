@@ -54,7 +54,7 @@ $(document).ready(function () {
 		if (type != 'GET') {
 			data = $('input[name!="columns[]"]', _form).serialize();
 		}
-		
+
 		searching = $.ajax({
 			url: url,
 			type: type,
@@ -67,9 +67,9 @@ $(document).ready(function () {
 				searching = null;
 				replaceData(response);
 				sortableColumns();
-				$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
-					cursor: "move"
-				})
+				// $('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
+				// 	cursor: "move"
+				// })
 			}
 		});
 	}

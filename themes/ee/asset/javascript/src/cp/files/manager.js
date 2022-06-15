@@ -33,9 +33,9 @@
 			})
 		});
 
-		$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
-			cursor: "move"
-		})
+		// $('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
+		// 	cursor: "move"
+		// })
 
 		// Select images if Grid view
 		$('body').on('change', '.file-metadata__wrapper input:checkbox', function () {
@@ -192,5 +192,14 @@
 
 			$('.main-nav__toolbar .dropdown__scroll .f_open-filepicker').trigger('click');
 		});
+
+		$('body').on('click', '.title-bar a.upload', function(e){
+		  e.preventDefault();
+		  var uploadLocationId = $(this).attr('data-upload_location_id');
+		  var directoryId = $(this).attr('data-directory_id');
+		  $('.imitation_button').attr('data-upload_location_id', uploadLocationId);
+		  $('.imitation_button').attr('data-directory_id', directoryId);
+		  $('.imitation_button')[0].click();
+		})
 	});
 })(jQuery);
