@@ -383,7 +383,7 @@ class EE_Upload
     public function set_upload_path($path)
     {
         // Make sure it has a trailing slash
-        $this->upload_path = rtrim($path, '/') . '/';
+        $this->upload_path = (empty($path)) ? $path : rtrim($path, '/') . '/';
     }
 
     /**
@@ -897,14 +897,16 @@ class EE_Upload
             }
         }
 
-        if ($this->upload_path == '') {
-            $this->set_error('upload_no_filepath');
+        if($this->upload_destination->getFilesystem()->isLocal()) {
+            if ($this->upload_path == '') {
+                $this->set_error('upload_no_filepath');
 
-            return false;
-        }
+                return false;
+            }
 
-        if (function_exists('realpath') && @realpath($this->upload_path) !== false) {
-            $this->upload_path = str_replace("\\", "/", realpath($this->upload_path));
+            if (function_exists('realpath') && @realpath($this->upload_path) !== false) {
+                $this->upload_path = str_replace("\\", "/", realpath($this->upload_path));
+            }
         }
 
         // if (! $this->upload_destination->getFilesystem()->isDir()) {

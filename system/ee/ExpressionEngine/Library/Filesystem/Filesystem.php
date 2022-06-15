@@ -939,6 +939,10 @@ class Filesystem
      */
     protected function normalizeAbsolutePath($path)
     {
+        if(empty($path)) {
+            return '';
+        }
+
         return str_replace('//', '/', implode([
             in_array(substr($path, 0, 1), ['/', '\\']) ? '/' : '',
             Flysystem\Util::normalizePath($path),
