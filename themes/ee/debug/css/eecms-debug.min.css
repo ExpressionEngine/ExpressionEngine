@@ -170,11 +170,11 @@ html.color-theme-in-transition *:after {
   --ee-fluid-item-border: #dfe0ef;
   --ee-slider-value-bg: #eaebfd;
   --ee-ee-update: #5D63F1;
-  --ee-ee-update-bg: #0a0f78;
+  --ee-ee-update-bg: #FFFFFF;
   --ee-ee-update-dev: #FFB40B;
-  --ee-ee-update-dev-bg: #3e2b00;
+  --ee-ee-update-dev-bg: #FFFFFF;
   --ee-ee-update-vital: #FA5252;
-  --ee-ee-update-vital-bg: #640303;
+  --ee-ee-update-vital-bg: #FFFFFF;
   --ee-modal-overlay-bg: #f7f7fb;
 }
 

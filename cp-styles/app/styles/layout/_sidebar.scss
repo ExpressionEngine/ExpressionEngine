@@ -110,7 +110,12 @@
 	}
 
 	&.ee-sidebar__title--needs-name {
-		background: color(success);
+		background-color: color(success);
+    color: #ffffff;
+
+    .ee-sidebar__title-down-arrow {
+      color: #ffffff;
+    }
 	}
 
   .ee-sidebar__title-name {

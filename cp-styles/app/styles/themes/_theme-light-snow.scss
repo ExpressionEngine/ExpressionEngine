@@ -236,11 +236,11 @@ $snow-theme: (
 
   // EE Update Indicators
   ee-update: $brand-primary,
-  ee-update-bg: darken($brand-primary, 40%),
+  ee-update-bg: $gray-blank,
   ee-update-dev: $brand-warning,
-  ee-update-dev-bg: darken($brand-warning, 40%),
+  ee-update-dev-bg: $gray-blank,
   ee-update-vital: $brand-danger,
-  ee-update-vital-bg: darken($brand-danger, 45%),
+  ee-update-vital-bg: $gray-blank,
 
 	// LEGACY
 	modal-overlay-bg: $gray-0,

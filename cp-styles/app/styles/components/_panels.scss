@@ -12,6 +12,11 @@
   @include shadow-panel;
 }
 
+[data-theme="light"] .panel,
+[data-theme="snow"] .panel {
+  border-width: 0px;
+}
+
 // Panel contents
 .panel-body {
   @include clearfix;
