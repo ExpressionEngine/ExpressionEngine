@@ -145,26 +145,28 @@ class Access
                     break;
 
                 case 'trial':
-                    $this->logLicenseError('pro_license_error_trial', $showAlert);
+                    // In the case of a trial, the license will be marked as valid, since we want users
+                    // to still have access to all features, but we're still going to throw a banner up
                     static::$hasValidLicense = true;
+                    $this->logLicenseError('pro_license_error_trial', $showAlert);
 
                     break;
 
                 case 'na':
-                    $this->logLicenseError('pro_license_error_na', $showAlert);
                     static::$hasValidLicense = false;
+                    $this->logLicenseError('pro_license_error_na', $showAlert);
 
                     break;
 
                 case 'invalid':
-                    $this->logLicenseError('pro_license_error_invalid', $showAlert);
                     static::$hasValidLicense = false;
+                    $this->logLicenseError('pro_license_error_invalid', $showAlert);
 
                     break;
 
                 case 'expired':
-                    $this->logLicenseError('pro_license_error_expired', $showAlert);
                     static::$hasValidLicense = false;
+                    $this->logLicenseError('pro_license_error_expired', $showAlert);
 
                     break;
 
@@ -213,13 +215,27 @@ class Access
         ee()->load->library('logger');
         ee()->lang->load('addons');
         ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-        $message = sprintf(lang('pro_license_check_instructions'), lang($message), ee('CP/URL')->make('settings/general', [], ee()->config->item('cp_url'))->compile() . '#fieldset-site_license_key');
+
+        if (! $this->hasValidLicense()) {
+            $message = sprintf(
+                lang('pro_license_check_instructions'),
+                lang($message),
+                ee('CP/URL')->make('settings/general', [], ee()->config->item('cp_url'))->compile() . '#fieldset-site_license_key'
+            );
+        } else {
+            $message = sprintf(
+                lang('pro_license_check_trial_instructions'),
+                lang($message),
+                ee('CP/URL')->make('settings/general', [], ee()->config->item('cp_url'))->compile() . '#fieldset-site_license_key'
+            );
+        }
+
         ee()->logger->developer($message, true);
         if (REQ == 'CP' && $showAlert) {
             ee('CP/Alert')->makeBanner('pro-license-error')
                 ->asIssue()
                 ->canClose()
-                ->withTitle(lang('license_error'))
+                ->withTitle(lang('pro_license_error'))
                 ->addToBody($message)
                 ->now();
         }

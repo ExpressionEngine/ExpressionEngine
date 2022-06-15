@@ -95,10 +95,14 @@ $lang = array(
     'mfa_wrong_code_desc' => 'The verification code you have entered is not valid',
     'mfa_not_available' => 'Multi-Factor Authentication is not available',
 
+    'pro_license_error' => 'ExpressionEngine Pro License Error',
+    'pro_license_error_trial' => 'This site is using ExpressionEngine Pro. Please buy a license before launching. Thanks!',
     'pro_license_error_na' => 'The ExpressionEngine Pro license state is unknown',
     'pro_license_error_invalid' => 'The ExpressionEngine Pro license is not valid for this site',
     'pro_license_error_expired' => 'The ExpressionEngine Pro license has expired',
 
-    'pro_license_check_instructions' => 'You cannot access <b>ExpressionEngine Pro</b> features because %s.<br>Please verify your <a href="%s">Site License Key</a> and visit <a href="https://expressionengine.com/store/licenses" target="_blank">Licenses</a> section at ExpressionEngine.com',
+    'pro_license_check_instructions' => 'You cannot access <b>ExpressionEngine Pro</b> features because %s.<br><br>Please verify your <a href="%s">Site License Key</a> and visit <a href="https://expressionengine.com/store/licenses" target="_blank">Licenses</a> section at ExpressionEngine.com',
+
+    'pro_license_check_trial_instructions' => '%s.<br><br>Please verify your <a href="%s">Site License Key</a> and visit <a href="https://expressionengine.com/store/licenses" target="_blank">Licenses</a> section at ExpressionEngine.com',
 
 );
