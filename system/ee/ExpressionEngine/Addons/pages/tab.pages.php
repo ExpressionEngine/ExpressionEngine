@@ -127,7 +127,7 @@ class Pages_tab
      * @param array $values An associative array of field => value
      * @return array $values modified array of values
      */
-    public function clone(ChannelEntry $entry, $values)
+    public function cloneData(ChannelEntry $entry, $values)
     {
         if ($values['pages_uri'] == '') {
             return $values;

@@ -24,7 +24,7 @@ class Fluid_field_ft extends EE_Fieldtype
     private $errors;
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */
