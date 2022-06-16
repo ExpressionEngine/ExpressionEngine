@@ -197,46 +197,6 @@ class Filemanager
     }
 
     /**
-     * Checks the uploaded file to make sure it's both allowed and passes
-     *	XSS filtering
-     *
-     * @param	string	$file_path	The path to the file
-     * @param	array	$prefs		File preferences containing allowed_types
-     * @return	mixed	Returns the mime type if everything passes, FALSE otherwise
-     */
-    public function security_check($file_path, $prefs, $directory)
-    {
-        ee()->load->helper(array('file', 'xss'));
-
-        $is_image = false;
-        $allowed = $prefs['allowed_types'];
-        $mime = $directory->getFilesystem()->getMimetype($file_path);
-
-        if ($allowed == 'all' or $allowed == '*') {
-            return ee('MimeType')->isSafeForUpload($mime) ? $mime : false;
-        }
-
-        if ($allowed == 'img') {
-            if (! ee('MimeType')->isImage($mime)) {
-                return false;
-            }
-
-            $is_image = true;
-        }
-
-        // We need to be able to turn this off!
-
-        //Apply XSS Filtering to uploaded files?
-        if ($this->_xss_on and
-            xss_check() and
-            ! ee('Security/XSS')->clean($file_path, $is_image)) {
-            return false;
-        }
-
-        return $mime;
-    }
-
-    /**
      * Turn XSS cleaning on
      */
     public function xss_clean_on()
@@ -364,9 +324,44 @@ class Filemanager
         }
 
         // Figure out the mime type
-        $mime = $this->security_check($file_path, $prefs, $directory['upload_destination']);
+        ee()->load->helper(array('file', 'xss'));
 
-        if ($mime === false) {
+        $safeForUpload = false;
+        $mime = $directory['upload_destination']->getFilesystem()->getMimetype($file_path);
+        if (empty($mime)) {
+            //S3 return false as mime for dirs, need to check that
+            $fileInfo = $directory['upload_destination']->getFilesystem()->getWithMetadata($file_path);
+            if ($fileInfo['type'] == 'dir' && $directory['upload_destination']->allow_subfolders && !bool_config_item('file_manager_compatibility_mode')) {
+                $mime = 'directory';
+                $safeForUpload = true;
+            } else {
+                return $this->_save_file_response(false, lang('security_failure'));
+            }
+        }
+
+        if (! $safeForUpload) {
+            if (in_array('all', $prefs['allowed_types'])) {
+                $safeForUpload = ee('MimeType')->isSafeForUpload($mime) ? $mime : false;
+            } else {
+                foreach ($prefs['allowed_types'] as $allowed_type) {
+                    if (ee('MimeType')->isOfKind($mime, $allowed_type)) {
+                        $safeForUpload = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // We need to be able to turn this off!
+
+        //Apply XSS Filtering to uploaded files?
+        if ($this->_xss_on and
+            xss_check() and
+            ! ee('Security/XSS')->clean($file_path, ee('MimeType')->isImage($mime))) {
+            $safeForUpload = false;
+        }
+
+        if ($safeForUpload === false) {
             // security check failed
             return $this->_save_file_response(false, lang('security_failure'));
         }

@@ -962,7 +962,7 @@ class Uploads extends AbstractFilesController
 
         foreach ($current_files as $filePath) {
             $fileInfo = $uploadDestination->getFilesystem()->getWithMetadata($filePath);
-            $mime = $uploadDestination->getFilesystem()->getMimetype($filePath);
+            $mime = ($fileInfo['type'] != 'dir') ? $uploadDestination->getFilesystem()->getMimetype($filePath) : 'directory';
 
             if (empty($mime)) {
                 $errors[$fileInfo['basename']] = lang('invalid_mime');
