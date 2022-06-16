@@ -110,7 +110,7 @@ $(document).ready(function () {
 			if (typeof ajax_url != 'undefined') {
 				$.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
 					$(modalIs + " .ajax").html(data);
-					SelectField.renderFields();
+					Dropdown.renderFields();
 				});
 			}
 			Dropdown.renderFields();
@@ -145,7 +145,7 @@ $(document).ready(function () {
 		if (typeof ajax_url != 'undefined') {
 			$.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
 				$(modalIs + " .ajax").html(data);
-				SelectField.renderFields();
+				Dropdown.renderFields();
 			});
 		}
 
