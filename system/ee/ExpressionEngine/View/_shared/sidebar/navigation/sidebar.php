@@ -52,7 +52,7 @@
               <div class="ee-pro__indicator-badge-wrapper">
                 <?php if (ee()->view->pro_license_status == 'valid'): ?>
 
-                    <a href="<?= ee('CP/URL')->make('addons/settings/pro/general') ?>" class="ee-pro__indicator-badge">Pro</a>
+                    <a href="<?= ee('CP/URL')->make('settings/pro/general') ?>" class="ee-pro__indicator-badge">Pro</a>
 
                 <?php else: ?>
 

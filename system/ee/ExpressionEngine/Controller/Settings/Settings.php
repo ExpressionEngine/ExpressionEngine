@@ -128,7 +128,9 @@ class Settings extends CP_Controller
             $list = $sidebar->addHeader(lang('pro_settings'))
                 ->addBasicList();
 
+            $sidebar->addItem(lang('pro_settings'), ee('CP/URL')->make('settings/pro/general'));
             $sidebar->addItem(lang('cookie_settings'), ee('CP/URL')->make('settings/pro/cookies'));
+            $sidebar->addItem(lang('branding_settings'), ee('CP/URL')->make('settings/pro/branding'));
         }
     }
 
