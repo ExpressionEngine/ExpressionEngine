@@ -794,7 +794,13 @@ $(document).ready(function(){
 
 		// listen for clicks on the element with a class of overlay
 		$('body').on('click', '.m-close, .js-modal-close', function(e) {
-			$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+			var thisModal = $(this).closest('.modal-wrap, .modal-form-wrap, .app-modal');
+			var thisModalParent = thisModal.parents('.modal-wrap, .modal-form-wrap, .app-modal');
+			if (thisModalParent.length) {
+				thisModal.hide();
+			} else {
+				$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+			}
 
 			// stop THIS from reloading the source window
 			e.preventDefault();
