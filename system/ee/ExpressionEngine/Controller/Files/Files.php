@@ -639,7 +639,7 @@ class Files extends AbstractFilesController
                 continue;
             }
 
-            $renamed = ee('Filesystem')->rename(
+            $renamed = $file->getFilesystem()->rename(
                 $file->getAbsolutePath(),
                 $targetPath . '/' . $file->file_name
             );

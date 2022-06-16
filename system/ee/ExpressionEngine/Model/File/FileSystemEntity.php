@@ -292,7 +292,7 @@ class FileSystemEntity extends ContentModel
         }
 
         // Do we want to allow variable replacement in adapters that aren't local?
-        $path = $this->getAbsolutePath();
+        $path = rtrim($this->getAbsolutePath(), '/') .'/';
         $adapter = $this->UploadDestination->getFilesystemAdapter();
 
         $filesystem = ee('File')->getPath($path, $adapter);
