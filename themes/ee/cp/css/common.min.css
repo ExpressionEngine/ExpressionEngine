@@ -17908,6 +17908,166 @@ fieldset .field-control #eye {
   display: none;
 }
 
+.grid-field__item-fieldset {
+  display: none;
+}
+.grid-field__item-fieldset .grid-field__column-label {
+  display: block;
+}
+.grid-field__item-fieldset .grid-field__item-tools {
+  transition: opacity 100ms ease;
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+.grid-field__item-fieldset .grid-field__item-tools.has-open-dropdown {
+  z-index: 200;
+}
+.grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-block;
+  padding: 0px;
+  margin-left: 5px;
+  background: transparent;
+  border: none;
+  line-height: 1 !important;
+  cursor: pointer;
+  color: var(--ee-text-secondary);
+}
+.grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool:hover {
+  color: var(--ee-link);
+}
+.grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool .dropdown, .grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool .select__dropdown {
+  max-height: 90vh;
+  overflow-y: auto;
+  white-space: nowrap;
+}
+.grid-field__item-fieldset .field-instruct {
+  padding-right: 55px;
+  margin-bottom: 5px;
+}
+.grid-field__item-fieldset .field-instruct label {
+  margin-right: 5px;
+  color: var(--ee-text-secondary);
+  display: inline-block;
+  font-size: 1rem;
+  margin-bottom: 0 !important;
+  margin-left: -5px;
+}
+.grid-field__item-fieldset .field-instruct button {
+  border: none;
+  background: none;
+  color: inherit;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.grid-field__item-fieldset tr.grid__item--collapsed {
+  padding-bottom: 0 !important;
+}
+.grid-field__item-fieldset tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+  display: none !important;
+}
+.grid-field__item-fieldset tr.grid__item--collapsed td.grid-field__item-fieldset {
+  border-bottom: none !important;
+}
+.grid-field__item-fieldset tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  transform: rotate(180deg);
+}
+
+.grid-field.vertical-layout {
+  padding: 10px;
+  background: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  border-radius: 5px;
+}
+.grid-field.vertical-layout .table-responsive {
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  overflow: inherit;
+}
+.grid-field.vertical-layout .grid-field__table {
+  display: block;
+}
+.grid-field.vertical-layout .grid-field__table thead {
+  display: none;
+}
+.grid-field.vertical-layout .grid-field__table tbody {
+  display: block;
+  border: none;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid var(--ee-border);
+  margin-bottom: 10px;
+  padding-bottom: 15px;
+  background-color: var(--ee-bg-blank);
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td {
+  border-right: none;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  border-bottom: none;
+  padding: 10px 15px 10px 15px;
+  padding-bottom: 0;
+  font-size: 1rem;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools {
+  text-align: left;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .pagination__link, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .no-results a, .no-results .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a,
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .field-no-results a,
+.field-no-results .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .select-popup, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools select, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .select__button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .filter-bar__button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .license-status-badge {
+  margin-bottom: 0;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.no-results {
+  padding: 0px;
+  background-color: transparent;
+  border: none;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.no-results td {
+  padding-top: 0;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed {
+  padding-bottom: 0 !important;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+  display: none !important;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
+  border-bottom: none !important;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  transform: rotate(180deg);
+}
+.grid-field.vertical-layout .grid-field__item-fieldset {
+  padding: 10px 15px 5px 15px;
+  border-bottom: 1px solid var(--ee-border) !important;
+  position: relative;
+}
+.grid-field.vertical-layout .grid-field__item-fieldset .field-instruct label {
+  font-size: 1rem;
+}
+.grid-field.vertical-layout .grid-field__item-fieldset .field-instruct label button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.grid-field.vertical-layout .grid-field__column--tools {
+  display: none !important;
+}
+.grid-field.vertical-layout .grid-field__column-label {
+  display: inherit;
+}
+
 @media (max-width: 767px) {
   .grid-field__column-label {
     display: block;
@@ -17917,6 +18077,7 @@ fieldset .field-control #eye {
     box-shadow: none;
     border: none;
     border-radius: 0;
+    overflow: inherit;
   }
 
   .grid-field__table, .grid-field__table tbody, .grid-field__table th, .grid-field__table td, .grid-field__table tr {
@@ -17937,21 +18098,32 @@ fieldset .field-control #eye {
     position: relative;
     border: 1px solid var(--ee-border);
     margin-bottom: 10px;
-    border-radius: 8px;
     padding-bottom: 15px;
+    background-color: var(--ee-bg-blank);
   }
   .grid-field__table tr.no-results {
-    border: 1px solid var(--ee-border);
-    padding-bottom: 18px;
+    padding: 0px;
   }
   .grid-field__table tr.no-results td {
     padding-top: 0;
   }
   .grid-field__table td {
     display: block;
-    border-bottom: none !important;
+    border-bottom: none;
     padding: 10px 15px 10px 15px;
     padding-bottom: 0;
+  }
+  .grid-field__table tr.grid__item--collapsed {
+    padding-bottom: 0 !important;
+  }
+  .grid-field__table tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+    display: none !important;
+  }
+  .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset {
+    border-bottom: none !important;
+  }
+  .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+    transform: rotate(180deg);
   }
 
   .grid-field__column--tools {
@@ -17961,6 +18133,22 @@ fieldset .field-control #eye {
 .grid-field__column--tools .field-no-results a,
 .field-no-results .grid-field__column--tools a, .grid-field__column--tools .select-popup, .grid-field__column--tools select, .grid-field__column--tools .select__button, .grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field__column--tools a, .grid-field__column--tools .filter-bar__button, .grid-field__column--tools .license-status-badge {
     margin-bottom: 0;
+  }
+
+  .entry-grid, .vertical-layout {
+    padding: 10px;
+    background: var(--ee-bg-0);
+    border: 1px solid var(--ee-border);
+    border-radius: 5px;
+  }
+  .entry-grid .grid-field__item-fieldset, .vertical-layout .grid-field__item-fieldset {
+    display: block;
+    position: relative;
+    border-bottom: 1px solid var(--ee-border) !important;
+    font-size: 1rem;
+  }
+  .entry-grid td.grid-field__column--tools, .vertical-layout td.grid-field__column--tools {
+    display: none !important;
   }
 }
 .select {
