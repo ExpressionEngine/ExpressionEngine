@@ -495,7 +495,7 @@ class Files extends AbstractFilesController
         }
 
         //do they have access to target destination?
-        $target = $targetUploadLocation = ee('Model')->get('UploadDestination', $file->upload_destination_id)->first();
+        $target = $targetUploadLocation = ee('Model')->get('UploadDestination', $file->upload_location_id)->first();
         if (empty($targetUploadLocation) || ! ee('Permission')->can('edit_files') || ! $targetUploadLocation->memberHasAccess(ee()->session->getMember())) {
             show_error(lang('unauthorized_access'), 403);
         }
@@ -546,10 +546,11 @@ class Files extends AbstractFilesController
             return false;
         }
 
-        $renamed = ee('Filesystem')->rename(
+        $renamed = $file->UploadDestination->getFilesystem()->rename(
             $oldPath,
             $file->getAbsolutePath()
         );
+
         if ($renamed) {
             $file->save();
             ee('CP/Alert')->makeInline('files-form')
@@ -639,7 +640,7 @@ class Files extends AbstractFilesController
                 continue;
             }
 
-            $renamed = $file->getFilesystem()->rename(
+            $renamed = $file->UploadDestination->getFilesystem()->rename(
                 $file->getAbsolutePath(),
                 $targetPath . '/' . $file->file_name
             );

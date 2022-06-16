@@ -349,6 +349,7 @@ class Filesystem
      *
      * @param String $source File or directory to rename
      * @param String $dest New location for the file or directory
+     * @return bool
      */
     public function rename($source, $dest)
     {
@@ -361,12 +362,44 @@ class Filesystem
             throw new FilesystemException("Cannot rename, destination already exists: {$dest}");
         }
 
+        // if renaming directory not on local driver...
+        if(!$this->isFile($source) && !$this->isLocal()) {
+            return $this->renameFolder($this->normalize($source), $this->normalize($dest));
+        }
+
         // Suppressing potential warning when renaming a directory to one that already exists.
         $renamed = @$this->flysystem->rename($this->normalize($source), $this->normalize($dest));
 
         $this->ensureCorrectAccessMode($dest);
 
         return $renamed;
+    }
+
+
+    /**
+     * Rename a folder and all of the files and folders contained within
+     *
+     * @param string $source
+     * @param string $dest
+     * @return bool
+     */
+    private function renameFolder($source, $dest)
+    {
+        $success = true;
+        $this->mkDir($dest, false);
+
+        $contents = $this->getDirectoryContents($source);
+        foreach($contents as $path) {
+            $toPath = str_replace($source, $dest, $path);
+            $result = ($this->isFile($path)) ? $this->flysystem->rename($path, $toPath) : $this->renameFolder($path, $toPath);
+            $success = $success && $result;
+        }
+
+        if($success) {
+            $this->deleteDir($source);
+        }
+
+        return $success;
     }
 
     /**
