@@ -14020,6 +14020,10 @@ input[type=button].btn-block {
   padding-top: 45px;
   padding-bottom: 45px;
 }
+.modal-wrap.modal-new-folder .modal {
+  padding: 0;
+  margin: 0;
+}
 
 .modal--no-padding {
   padding: 0;

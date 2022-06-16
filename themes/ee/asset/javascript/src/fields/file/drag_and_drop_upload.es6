@@ -329,8 +329,8 @@ class DragAndDropUpload extends React.Component {
       upload_location_id: item.upload_location_id || null
     })
 
-    $('.f_open-filepicker').trigger('click');
-    $('.f_open-filepicker').change(function(e){
+    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
+    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').change(function(e){
       var files = e.target.files;
       that.handleDroppedFiles(files)
     });
@@ -338,6 +338,7 @@ class DragAndDropUpload extends React.Component {
 
   hiddenUpload = (el) => {
     var that = this;
+
     var upload_location_id = el.target.getAttribute('data-upload_location_id');
     var directory_id = el.target.getAttribute('data-directory_id');
     var directory;
@@ -355,8 +356,8 @@ class DragAndDropUpload extends React.Component {
       upload_location_id: upload_location_id
     })
 
-    $('.file-field__buttons .f_open-filepicker').trigger('click');
-    $('.file-field__buttons .f_open-filepicker').change(function(e){
+    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
+    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').on('change', function(e){
       var files = e.target.files;
       that.handleDroppedFiles(files)
     });
@@ -386,6 +387,8 @@ class DragAndDropUpload extends React.Component {
     this.setState({
       files: this.state.files
     })
+
+    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').val('');
   }
 
   warningsExist() {

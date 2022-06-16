@@ -646,6 +646,10 @@ $(document).ready(function(){
 				}
 			}
 
+				if ($(this).find('div[data-dropdown-react]').length) {
+					Dropdown.renderFields();
+				}
+
 			// reveal the modal
 			if ($(this).hasClass('modal-wrap')) {
 				$(this).fadeIn('slow');
@@ -1168,7 +1172,6 @@ $(document).ready(function(){
 
 		$('body').on('click', '.title-bar a.upload, .main-nav__toolbar a.dropdown__link', function(e){
 			e.preventDefault();
-			console.log('111');
 			var uploadLocationId = $(this).attr('data-upload_location_id');
 			var directoryId = $(this).attr('data-directory_id');
 			$('.imitation_button').attr('data-upload_location_id', uploadLocationId);

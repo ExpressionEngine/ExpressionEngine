@@ -177,20 +177,5 @@
 				$("#preview").remove();
 			}
 		}, '.f_manager-wrapper .imgpreview');
-
-		$('.main-nav__toolbar').on('click', 'a.dropdown__link', function(e){
-			e.preventDefault();
-			var path = $(this).data('path');
-			var upload_location_id = $(this).data('upload_location_id');
-
-			if (!path) {
-				path = '';
-			}
-
-			$('.main-nav__toolbar .dropdown__scroll .f_open-filepicker').attr('data-upload_location_id', upload_location_id);
-			$('.main-nav__toolbar .dropdown__scroll .f_open-filepicker').attr('data-path', path);
-
-			$('.main-nav__toolbar .dropdown__scroll .f_open-filepicker').trigger('click');
-		});
 	});
 })(jQuery);

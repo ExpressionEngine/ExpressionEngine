@@ -164,8 +164,8 @@ function (_React$Component) {
         path: item.path || '',
         upload_location_id: item.upload_location_id || null
       });
-      $('.f_open-filepicker').trigger('click');
-      $('.f_open-filepicker').change(function (e) {
+      $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
+      $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').change(function (e) {
         var files = e.target.files;
         that.handleDroppedFiles(files);
       });
@@ -190,8 +190,8 @@ function (_React$Component) {
         path: item.path || '',
         upload_location_id: upload_location_id
       });
-      $('.file-field__buttons .f_open-filepicker').trigger('click');
-      $('.file-field__buttons .f_open-filepicker').change(function (e) {
+      $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
+      $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').on('change', function (e) {
         var files = e.target.files;
         that.handleDroppedFiles(files);
       });
@@ -215,6 +215,8 @@ function (_React$Component) {
       _this.setState({
         files: _this.state.files
       });
+
+      $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').val('');
     });
 
     window.list;
