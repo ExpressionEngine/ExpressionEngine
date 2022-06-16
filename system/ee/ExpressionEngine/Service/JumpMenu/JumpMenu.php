@@ -881,6 +881,15 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'auto_assign_cat_parents auto_assign_cat_parents_desc',
                         'command_title' => 'auto_assign_cat_parents'
                     ),
+                    // Assign category parents?
+                    'fieldset-file_manager_compatibility_mode' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'file_manager_compatibility_mode',
+                        'command_title' => 'file_manager_compatibility_mode'
+                    ),
                     // Image Resizing -- Protocol
                     'fieldset-image_resize_protocol' => array(
                         'trail' => [
@@ -1737,6 +1746,14 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/reindex',
+                'permission' => 'can_access_data'
+            ),
+            'systemUtilitiesFileUsage' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities update_file_usage',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/file-usage',
                 'permission' => 'can_access_data'
             ),
             'systemUtilitiesStatistics' => array(

@@ -75,24 +75,26 @@ class RteHelper
         $tags = static::_getFileTags();
         $data = str_replace($tags[1], $tags[0], $data);
         
-        if (!bool_config_item('file_manager_compatibility_mode') && strpos($data, '{filedir_') !== false) {
+        if (!bool_config_item('file_manager_compatibility_mode') && strpos((string) $data, '{filedir_') !== false) {
+            $dirsAndFiles = [];
             if (preg_match_all('/{filedir_(\d+)}(.*)\"/', $data, $matches, PREG_SET_ORDER)) {
-                $dirsAndFiles = [];
                 foreach ($matches as $match) {
                     $dirsAndFiles[$match[1]][] = $match[2];
                 }
             }
-            $files = ee('Model')
-                ->get('File')
-                ->fields('file_id', 'upload_location_id', 'file_name');
-            foreach ($dirsAndFiles as $dir_id => $file_names) {
-                $files->orFilterGroup()
-                    ->filter('upload_location_id', $dir_id)
-                    ->filter('file_name', 'IN', $file_names)
-                    ->endFilterGroup();
-            }
-            foreach ($files->all() as $file) {
-                $data = str_replace('{filedir_' . $file->upload_location_id . '}' . $file->file_name, '{file:' . $file->file_id . ':url}', $data);
+            if (!empty($dirsAndFiles)) {
+                $files = ee('Model')
+                    ->get('File')
+                    ->fields('file_id', 'upload_location_id', 'file_name');
+                foreach ($dirsAndFiles as $dir_id => $file_names) {
+                    $files->orFilterGroup()
+                        ->filter('upload_location_id', $dir_id)
+                        ->filter('file_name', 'IN', $file_names)
+                        ->endFilterGroup();
+                }
+                foreach ($files->all() as $file) {
+                    $data = str_replace('{filedir_' . $file->upload_location_id . '}' . $file->file_name, '{file:' . $file->file_id . ':url}', $data);
+                }
             }
         }
         

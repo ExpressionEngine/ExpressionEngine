@@ -99,7 +99,9 @@ class File extends AbstractFilesController
             $tabs['rotate'] = $this->renderRotateForm($file);
             $tabs['resize'] = $this->renderResizeForm($file, $info);
         }
-        $tabs['usage'] = $this->renderUsageForm($file);
+        if (! bool_config_item('file_manager_compatibility_mode')) {
+            $tabs['usage'] = $this->renderUsageForm($file);
+        }
 
         $vars = [
             'file' => $file,

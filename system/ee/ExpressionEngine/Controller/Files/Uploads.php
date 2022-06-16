@@ -169,7 +169,11 @@ class Uploads extends AbstractFilesController
             $allowed_types[$type] = lang('type_' . $type);
         }
 
-        $adapters = ee('Filesystem/Adapter')->all();
+        if (! bool_config_item('file_manager_compatibility_mode')) {
+            $adapters = ee('Filesystem/Adapter')->all();
+        } else {
+            $adapters = ['local' => ee('Filesystem/Adapter')->get('local')];
+        }
         $settingsValues = array_merge([
             'url' => $upload_destination->getConfigOverriddenProperty('url'),
             'server_path' => $upload_destination->getConfigOverriddenProperty('server_path'),

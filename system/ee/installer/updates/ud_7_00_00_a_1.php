@@ -32,7 +32,8 @@ class Updater
                 'addFilesTableColumns',
                 'addFileUsageTable',
                 'modifyUploadPrefsTable',
-                //'addEntryManagerViewsKeys'
+                'addEntryManagerViewsKeys',
+                'setFileManagerCompatibilityMode',
             ]
         );
 
@@ -294,6 +295,15 @@ class Updater
     private function addEntryManagerViewsKeys()
     {
         ee()->smartforge->add_key('entry_manager_views', ['channel_id', 'member_id']);
+    }
+
+    private function setFileManagerCompatibilityMode()
+    {
+        ee('Model')->make('Config', [
+            'site_id' => 0,
+            'key' => 'file_manager_compatibility_mode',
+            'value' => 'y'
+        ])->save();
     }
 
 }
