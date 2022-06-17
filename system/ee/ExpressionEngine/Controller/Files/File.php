@@ -114,6 +114,7 @@ class File extends AbstractFilesController
             'save_btn_text' => 'btn_edit_file_meta',
             'save_btn_text_working' => 'btn_saving',
             'tabs' => $tabs,
+            'usage_count' => $file->total_records,
             'buttons' => [
                 [
                     'name' => 'submit',

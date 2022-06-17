@@ -406,12 +406,6 @@ class Uploads extends AbstractFilesController
             )
         );
 
-        $vars['sections']['field_options'][] = array(
-            'title' => 'custom_fields',
-            'desc' => '',
-            'fields' => array()
-        );
-
         ee()->view->ajax_validate = true;
         ee()->view->buttons = [
             [
@@ -968,6 +962,11 @@ class Uploads extends AbstractFilesController
             $fileInfo = $uploadDestination->getFilesystem()->getWithMetadata($filePath);
             $mime = ($fileInfo['type'] != 'dir') ? $uploadDestination->getFilesystem()->getMimetype($filePath) : 'directory';
 
+            if ($mime == 'directory' && (!$uploadDestination->allow_subfolders || bool_config_item('file_manager_compatibility_mode'))) {
+                //sinlently continue on subfolders if those are not allowed
+                continue;
+            }
+
             if (empty($mime)) {
                 $errors[$fileInfo['basename']] = lang('invalid_mime');
 
@@ -1077,7 +1076,11 @@ class Uploads extends AbstractFilesController
                 'modified_date' => $fileInfo['timestamp']
             ];
             $pathInfo = explode('/', trim(str_replace(DIRECTORY_SEPARATOR, '/', $filePath), '/'));
+            //get the subfolder info, but at the same time, skip if no subfolder are allowed
             if (count($pathInfo) > 1) {
+                if (!$uploadDestination->allow_subfolders || bool_config_item('file_manager_compatibility_mode')) {
+                    continue;
+                }
                 array_pop($pathInfo);
                 $directory = $uploadDestination->getFileByPath(implode('/', $pathInfo));
                 $file_data['directory_id'] = $directory->getId();

@@ -117,6 +117,10 @@ trait FileManagerTrait
             $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
         }
 
+        if (! empty($type_filter) && $type_filter->value()) {
+            $files->filter('file_type', $type_filter->value());
+        }
+
         if ($category_filter->value()) {
             $files->with('Categories')
                 ->filter('Categories.cat_id', $category_filter->value());

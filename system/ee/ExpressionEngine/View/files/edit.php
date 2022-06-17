@@ -30,7 +30,6 @@ if (! isset($alerts_name)) {
                     </h3>
 
                     <div class="title-bar__extra-tools">
-                        <a class="btn button button--secondary" href="#">Replace</a>
                         <a class="btn button button--secondary" href="<?=$download_url?>" title="<?=lang('download')?>"><?=lang('download')?></a>
                         <?php $this->embed('ee:_shared/form/buttons'); ?>
                     </div>
@@ -40,14 +39,15 @@ if (! isset($alerts_name)) {
 
         <div class="entry-pannel-notice-wrap">
             <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+
+            <div class="alert alert--success f_manager-alert">
+                <div class="alert__icon"><i class="fas fa-check-circle fa-fw"></i></div>
+                <div class="alert__content">
+                    <?=lang('link_copied')?>
+                </div>
+            </div>
+
         </div>
-    
-      <div class="alert alert--success f_manager-alert">
-        <div class="alert__icon"><i class="fas fa-check-circle fa-fw"></i></div>
-        <div class="alert__content">
-            <p class="alert__title">link copied</code></p>
-        </div>
-      </div>
 
       <div class="panel-body file-preview-modal">
             <div class="file-preview-modal__preview">
@@ -76,7 +76,12 @@ if (! isset($alerts_name)) {
                                             $class .= ' invalid';
                                         }
                                     ?>
-                                        <button type="button" class="js-tab-button tab-bar__tab <?=$class?>" data-action="<?=$key?>" rel="t-<?=$key?>"><?=lang($key)?></button>
+                                        <button type="button" class="js-tab-button tab-bar__tab <?=$class?>" data-action="<?=$key?>" rel="t-<?=$key?>">
+                                        <?=lang($key)?>
+                                            <?php if ($key == 'usage') : ?>
+                                                <span class="tab-bar__tab-notification tab-notification-generic"><?=$usage_count?></span>
+                                            <?php endif; ?>
+                                        </button>
                                     <?php endforeach; ?>
                                     </div>
                                 </div>

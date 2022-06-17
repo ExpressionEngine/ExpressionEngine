@@ -333,10 +333,13 @@ class Filemanager
             $fileInfo = $directory['upload_destination']->getFilesystem()->getWithMetadata($file_path);
             if ($fileInfo['type'] == 'dir' && $directory['upload_destination']->allow_subfolders && !bool_config_item('file_manager_compatibility_mode')) {
                 $mime = 'directory';
-                $safeForUpload = true;
             } else {
                 return $this->_save_file_response(false, lang('security_failure'));
             }
+        }
+
+        if ($mime == 'directory' && $directory['upload_destination']->allow_subfolders && !bool_config_item('file_manager_compatibility_mode')) {
+            $safeForUpload = true;
         }
 
         if (! $safeForUpload) {

@@ -431,6 +431,8 @@ $lang = array(
 
     'image_options' => 'Image Options',
 
+    'link_copied' => 'Link to file has been copied',
+
     'left' => 'Left',
 
     'middle' => 'Middle',
@@ -470,6 +472,8 @@ $lang = array(
     'type_archive' => 'Archive',
 
     'type_other' => 'Other',
+
+    'type_directory' => 'Folder',
 
     'upload_btn_edit' => 'edit',
 

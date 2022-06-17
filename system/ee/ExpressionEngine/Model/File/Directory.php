@@ -30,6 +30,7 @@ class Directory extends FileSystemEntity
         $this->setProperty('model_type', 'Directory');
         $this->setProperty('title', $this->getProperty('file_name'));
         $this->setProperty('mime_type', 'directory');
+        $this->setProperty('file_type', 'directory');
     }
 
     public function get__file_hw_original()
