@@ -104,7 +104,7 @@ function (_React$Component) {
       return React.createElement(DragAndDropUpload, _extends({}, this.props, {
         onFileUploadSuccess: this.setFile,
         marginTop: false,
-        multiFile: false
+        multiFile: true
       }));
     }
   }], [{

@@ -146,7 +146,7 @@
 				});
 			}
 
-			frame.load(function (e) {
+			frame.on('load', function (e) {
 				
 				$(modal).off('modal:close', cancelOnClose);
 

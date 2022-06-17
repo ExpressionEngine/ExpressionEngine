@@ -633,7 +633,8 @@ function (_React$Component) {
         className: "f_open-filepicker",
         style: {
           display: 'none'
-        }
+        },
+        multiple: "multiple"
       }))));
     }
   }]);

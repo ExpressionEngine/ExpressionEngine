@@ -80,7 +80,7 @@
       {...this.props}
       onFileUploadSuccess={this.setFile}
       marginTop={false}
-      multiFile={false}
+      multiFile={true}
     />
   }
 }

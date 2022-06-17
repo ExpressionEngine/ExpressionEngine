@@ -548,7 +548,7 @@ class DragAndDropUpload extends React.Component {
         {this.props.imitationButton && (
           <React.Fragment>
           <a href="#" style={{display: 'none'}} onClick={(el) => this.hiddenUpload(el)} data-upload_location_id={''} data-directory_id={''} data-path={''} className='imitation_button'>Imitation</a>
-          <input type="file" className="f_open-filepicker" style={{display: 'none'}} />
+          <input type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
           </React.Fragment>
         )}
         </div>
