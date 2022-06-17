@@ -137,9 +137,12 @@ class Filepicker_mcp
                     'content' => lang('new_folder'),
                 ];
             }
-            if (ee('Permission')->can('upload_new_files')) {
+            if (ee('Permission')->can('upload_new_files') && isset($dir)) {
                 $vars['toolbar_items']['upload'] = [
                     'href' => '#',
+                    'rel' => 'trigger-upload-to-current-location',
+                    'data-upload_location_id' => $dir->getId(),
+                    'data-directory_id' => (int) ee('Request')->get('directory_id'),
                     'content' => lang('upload'),
                 ];
             }
