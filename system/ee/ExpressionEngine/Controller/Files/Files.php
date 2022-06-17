@@ -208,6 +208,9 @@ class Files extends AbstractFilesController
                     $validationErrors[] = '<b>' . lang($field) . ':</b> ' . $error;
                 }
             }
+            if (AJAX_REQUEST) {
+                ee()->output->send_ajax_response(array('error' => implode('<br>', $validationErrors)));
+            }
             ee('CP/Alert')->makeInline('files-form')
                 ->asWarning()
                 ->withTitle(lang('error_creating_directory'))
@@ -220,6 +223,9 @@ class Files extends AbstractFilesController
         // Check to see if the directory exists and if it does, return back with an error message
         if ($filesystem->exists($subdir_name)) {
             // Error dir already exists
+            if (AJAX_REQUEST) {
+                ee()->output->send_ajax_response(array('error' => lang('subfolder_directory_already_exists_desc')));
+            }
             ee('CP/Alert')->makeInline('files-form')
                 ->asWarning()
                 ->withTitle(lang('subfolder_directory_already_exists'))
@@ -235,6 +241,9 @@ class Files extends AbstractFilesController
         // We failed to create the directory, return with an error message
         if (! $created) {
             // Error dir already exists
+            if (AJAX_REQUEST) {
+                ee()->output->send_ajax_response(array('error' => lang('error_creating_directory')));
+            }
             ee('CP/Alert')->makeInline('files-form')
                 ->asWarning()
                 ->withTitle(lang('error_creating_directory'))
@@ -244,13 +253,17 @@ class Files extends AbstractFilesController
         }
 
         // The directory was created, so now lets create it in the DB
-        $subdir->save();
+        if ($subdir->save()) {
+            // Show alert message that we created the directory successfully
+            ee('CP/Alert')->makeInline('files-form')
+                ->asSuccess()
+                ->withTitle(lang('subfolder_directory_created'))
+                ->defer();
+        }
 
-        // Show alert message that we created the directory successfully
-        ee('CP/Alert')->makeInline('files-form')
-            ->asSuccess()
-            ->withTitle(lang('subfolder_directory_created'))
-            ->defer();
+        if (AJAX_REQUEST) {
+            ee()->output->send_ajax_response(['success']);
+        }
 
         ee()->functions->redirect($return_url);
     }
