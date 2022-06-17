@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '6.4.0'; // The version being installed
+    public $version = '7.0.0-a.1'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -141,7 +141,7 @@ class Wizard extends CI_Controller
 
         // retain in case third-party add-ons expect IS_CORE to be defined
         define('IS_CORE', false);
-        define('IS_PRO', false);
+        define('IS_PRO', true);
 
         define('USERNAME_MAX_LENGTH', 75);
         define('PASSWORD_MAX_LENGTH', 72);

@@ -517,7 +517,7 @@ class Edit extends AbstractPublishController
             $vars['layout']->setIsInModalContext(true);
             ee()->output->enable_profiler(false);
 
-            if (IS_PRO && ee('Request')->get('hide_closer') == 'y') {
+            if (ee('Request')->get('hide_closer') == 'y') {
                 ee()->cp->add_js_script(array(
                     'pro_file' => array(
                         'iframe-listener'
@@ -624,7 +624,7 @@ class Edit extends AbstractPublishController
                     $entry->Site->save();
                 }
             }
-            
+
             $entries->delete();
         }
 

@@ -121,9 +121,5 @@ system/ee/installer/updater/ExpressionEngine/Updater/Service/Logger/File.php
 system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/Logger.php
 system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/Verifier.php
 
-# Pro files
-system/ee/ExpressionEngine/Addons/pro
-themes/ee/pro
-
 #
 *.code-workspace

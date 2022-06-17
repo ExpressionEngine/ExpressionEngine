@@ -217,8 +217,9 @@
 <?php /* End table */
 
 else: ?>
-
-	<div class="grid-field" id="<?=$grid_field_name?>">
+	<div
+		class="grid-field <?php if (isset($vertical_layout) && $vertical_layout) : echo 'vertical-layout' ; elseif (isset($vertical_layout)) : echo 'entry-grid'; endif; ?>"
+		id="<?=$grid_field_name?>">
 
 	<div class="table-responsive">
 	<table class="grid-field__table"<?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
@@ -329,6 +330,35 @@ else: ?>
                     }
                 ?>
 					<tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+						<?php if (isset($vertical_layout)):?>
+						<td class="grid-field__item-fieldset">
+							<div class="grid-field__item-tools grid-field__item-tools--item-open">
+								<a href class="grid-field__item-tool js-toggle-grid-item">
+									<span class="sr-only"><?=lang('collapse')?></span>
+									<i class="fas fa-caret-square-up fa-fw"></i>
+								</a>
+
+								<button type="button" data-dropdown-offset="0px, -30px" data-dropdown-pos="bottom-end" class="grid-field__item-tool js-dropdown-toggle"><i class="fas fa-fw fa-cog"></i></button>
+
+								<div class="dropdown">
+									<a href class="dropdown__link js-hide-all-grid-field-items"><?=lang('collapse_all')?></a>
+									<a href class="dropdown__link js-show-all-grid-field-items"><?=lang('expand_all')?></a>
+									<div class="dropdown__divider"></div>
+									<a href class="dropdown__link dropdown__link--danger js-grid-field-remove" rel="remove_row"><i class="fas fa-fw fa-trash-alt"></i> <?=lang('delete')?></a>
+								</div>
+							</div>
+
+							<div class="field-instruct">
+								<label>
+									<?php if ($reorder): ?>
+									<button type="button" class="js-grid-reorder-handle">
+										<i class="icon--reorder reorder"></i>
+									</button>
+									<?php endif ?>
+								</label>
+							</div>
+						</td>
+						<?php endif; ?>
 
 						<?php foreach ($row['columns'] as $key => $column):
                             $column_name = $columns[$key]['label'];

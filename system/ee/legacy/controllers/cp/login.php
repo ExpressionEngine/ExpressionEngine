@@ -63,7 +63,7 @@ class Login extends CP_Controller
             if (strpos($return_path, '{') === 0) {
                 $uri_elements = json_decode($return_path, true);
                 $return_path = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments'])->compile();
-                if (IS_PRO && isset($uri_elements['arguments']['hide_closer']) && $uri_elements['arguments']['hide_closer'] == 'y') {
+                if (isset($uri_elements['arguments']['hide_closer']) && $uri_elements['arguments']['hide_closer'] == 'y') {
                     $this->view->hide_topbar = true;
                     $this->view->pro_class = 'pro-frontend-modal';
                 }
@@ -72,7 +72,7 @@ class Login extends CP_Controller
         if (empty($return_path)) {
             $return_path = ee()->session->getMember()->getCPHomepageURL();
         }
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
+        if (!ee('pro:Access')->hasRequiredLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
             $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
 
             // If there is a URL= parameter in the return URL folks could end up anywhere
@@ -173,7 +173,7 @@ class Login extends CP_Controller
         $member = ee()->session->getMember();
         $return_path = $member->getCPHomepageURL();
 
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
+        if (!ee('pro:Access')->hasRequiredLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
             $this->functions->redirect($return_path);
         }
 
@@ -389,7 +389,7 @@ class Login extends CP_Controller
             $this->view->return_path = ee('Security/XSS')->clean($return);
 
             $return = json_decode(ee('Encrypt')->decode(str_replace(' ', '+', ee()->input->get('return'))));
-            if (IS_PRO && isset($return->arguments->hide_closer) && $return->arguments->hide_closer == 'y') {
+            if (isset($return->arguments->hide_closer) && $return->arguments->hide_closer == 'y') {
                 $view = 'pro:account/login';
                 $this->view->hide_topbar = true;
                 $this->view->pro_class = 'pro-frontend-modal';
@@ -616,14 +616,14 @@ class Login extends CP_Controller
 
         // Load it up with the information needed
         $data = array(
-                'val_type' => 'new',
-                'fetch_lang' => true,
-                'require_cpw' => false,
-                'enable_log' => false,
-                'username' => $new_un,
-                'password' => $new_pw,
-                'password_confirm' => $new_pwc,
-                'cur_password' => $this->input->post('password')
+            'val_type' => 'new',
+            'fetch_lang' => true,
+            'require_cpw' => false,
+            'enable_log' => false,
+            'username' => $new_un,
+            'password' => $new_pw,
+            'password_confirm' => $new_pwc,
+            'cur_password' => $this->input->post('password')
         );
 
         $un_exists = false;
@@ -978,7 +978,6 @@ class Login extends CP_Controller
         if (form_error('password_confirm')) {
             $alert->addToBody(strip_tags(form_error('password_confirm')))->now();
         }
-
 
         $this->view->cp_page_title = lang('enter_new_password');
         $this->view->resetcode = $resetcode;

@@ -281,10 +281,10 @@ class Roles extends AbstractRolesController
         }
 
         ee()->javascript->output('
-			$("input[name=name]").bind("keyup keydown", function() {
-				$(this).ee_url_title("input[name=short_name]");
-			});
-		');
+            $("input[name=name]").bind("keyup keydown", function() {
+                $(this).ee_url_title("input[name=short_name]");
+            });
+        ');
 
         ee()->view->cp_page_title = lang('create_new_role');
 
@@ -417,7 +417,7 @@ class Roles extends AbstractRolesController
     private function setWithPost(Role $role)
     {
         $site_id = ee()->config->item('site_id');
-        
+
         $role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
 
         $role->name = ee('Request')->post('name');
@@ -427,7 +427,7 @@ class Roles extends AbstractRolesController
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
         unset($settings['id'], $settings['role_id'], $settings['site_id']);
-        
+
         foreach (array_keys($settings) as $key) {
             if (ee('Request')->post($key) !== null) {
                 $settings[$key] = ee('Request')->post($key);
@@ -454,6 +454,7 @@ class Roles extends AbstractRolesController
         //We don't allow much editing for SuperAdmin role, so just enforce it's locked and return here
         if ($role->getId() == 1) {
             $role->is_locked = 'y';
+
             return $role;
         }
         $role->is_locked = ee('Request')->post('is_locked');
@@ -652,7 +653,7 @@ class Roles extends AbstractRolesController
             ]
         ];
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee('pro:Access')->hasRequiredLicense()) {
             ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $section = array_merge($section, [
                 [
@@ -1903,7 +1904,7 @@ class Roles extends AbstractRolesController
      *
      * Warning message shown when you try to delete a role
      *
-     * @return	mixed
+     * @return  mixed
      */
     public function confirm()
     {

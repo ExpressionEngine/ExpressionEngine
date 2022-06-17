@@ -75,7 +75,7 @@ class EE_Core
         // application constants
         define('APP_NAME', 'ExpressionEngine');
         define('APP_BUILD', '20220428');
-        define('APP_VER', '6.4.0');
+        define('APP_VER', '7.0.0-a.1');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -125,12 +125,8 @@ class EE_Core
         ee('App')->setupAddons(SYSPATH . 'ee/ExpressionEngine/Addons/');
         ee('App')->setupAddons(PATH_THIRD);
 
-        //is this pro version?
-        if (ee('Addon')->get('pro') && ee('Addon')->get('pro')->isInstalled()) {
-            define('IS_PRO', true);
-        } else {
-            define('IS_PRO', false);
-        }
+        // EE7 is always pro, but we're leaving this constant in case add-on devs are still using it
+        define('IS_PRO', true);
 
         // setup cookie settings for all providers
         if (REQ == 'CP') {
@@ -265,10 +261,10 @@ class EE_Core
      * This method is a setter for the $cache class variable.
      * Note, this is not persistent across requests
      *
-     * @param 	string 	Super Class/Unique Identifier
-     * @param 	string 	Key for cached item
-     * @param 	mixed 	item to put in the cache
-     * @return 	object
+     * @param   string  Super Class/Unique Identifier
+     * @param   string  Key for cached item
+     * @param   mixed   item to put in the cache
+     * @return  object
      */
     public function set_cache($class, $key, $val)
     {
@@ -286,10 +282,10 @@ class EE_Core
      *
      * This method extracts a value from the session cache.
      *
-     * @param 	string 	Super Class/Unique Identifier
-     * @param 	string 	Key to extract from the cache.
-     * @param 	mixed 	Default value to return if key doesn't exist
-     * @return 	mixed
+     * @param   string  Super Class/Unique Identifier
+     * @param   string  Key to extract from the cache.
+     * @param   mixed   Default value to return if key doesn't exist
+     * @return  mixed
      */
     public function cache($class, $key, $default = false)
     {
@@ -411,7 +407,7 @@ class EE_Core
         }
 
         // Is MFA required?
-        if (REQ == 'PAGE' && ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (REQ == 'PAGE' && ee()->session->userdata('mfa_flag') != 'skip' && ee('pro:Access')->hasRequiredLicense()) {
             if (ee()->session->userdata('mfa_flag') == 'show') {
                 ee('pro:Mfa')->invokeMfaDialog();
             }
@@ -539,7 +535,7 @@ class EE_Core
             ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
         }
 
-        if (ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee()->session->userdata('mfa_flag') != 'skip' && ee('pro:Access')->hasValidLicense()) {
             //only allow MFA code page
             if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset', 'logout'])) && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
@@ -555,18 +551,17 @@ class EE_Core
         }
 
         //is member role forced to use MFA?
-        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true && ee('pro:Access')->hasValidLicense()) {
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
                 ee('CP/Alert')->makeInline('shared-form')
-                        ->asIssue()
-                        ->withTitle(lang('mfa_required'))
-                        ->addToBody(lang('mfa_required_desc'))
-                        ->defer();
+                    ->asIssue()
+                    ->withTitle(lang('mfa_required'))
+                    ->addToBody(lang('mfa_required_desc'))
+                    ->defer();
                 ee()->functions->redirect(ee('CP/URL')->make('members/profile/pro/mfa'));
             }
         }
-
 
         // Load common helper files
         ee()->load->helper(array('url', 'form', 'quicktab', 'file'));

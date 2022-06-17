@@ -625,7 +625,7 @@ class Template extends AbstractDesignController
         if (! ee()->input->post('route')) {
             // before erasing the route,
             // make sure is was not assigned after template was opened
-            if (ee()->input->post('orig_route') !== '' ) {
+            if (ee()->input->post('orig_route') !== '') {
                 $template->TemplateRoute = null;
             }
 
@@ -903,7 +903,7 @@ class Template extends AbstractDesignController
             )
         );
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee('pro:Access')->hasRequiredLicense()) {
             ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $sections['pro_settings'][] = array(
                 'title' => 'enable_frontedit',
