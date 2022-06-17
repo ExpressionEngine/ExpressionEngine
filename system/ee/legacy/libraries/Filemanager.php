@@ -78,41 +78,25 @@ class Filemanager
         $parameters = array_merge($default_parameters, $parameters);
 
         $prefs = $this->fetch_upload_dir_prefs($dir_id, true);
+        $filesystem = $prefs['directory']->getFilesystem();
 
-        $i = 1;
-        $ext = '';
-        $path = $prefs['server_path'];
+        $basename = $filesystem->basename($filename);
+        $dirname = ($filesystem->dirname($filename) !== '.') ? $filesystem->dirname($filename) . '/' : '';
+
 
         // clean up the filename
         if ($parameters['convert_spaces'] === true) {
-            $filename = preg_replace("/\s+/", "_", $filename);
+            $basename = preg_replace("/\s+/", "_", $basename);
         }
 
-        $filename = ee()->security->sanitize_filename($filename);
+        $basename = ee()->security->sanitize_filename($basename);
+        $filename = $dirname . $basename;
 
-        if (strpos($filename, '.') !== false) {
-            $parts = explode('.', $filename);
-            $ext = array_pop($parts);
-
-            // @todo prevent security issues with multiple extensions
-            // http://httpd.apache.org/docs/1.3/mod/mod_mime.html#multipleext
-            $filename = implode('.', $parts);
+        if($parameters['ignore_dupes'] === false) {
+            $filename = $prefs['directory']->getFilesystem()->getUniqueFilename($filename);
         }
 
-        if (!empty($ext)) {
-            $ext = '.' . $ext;
-        }
-
-        // Figure out a unique filename
-        if ($parameters['ignore_dupes'] === false) {
-            $basename = $filename;
-
-            while (file_exists($path . $filename . $ext)) {
-                $filename = $basename . '_' . $i++;
-            }
-        }
-
-        return $path . $filename . $ext;
+        return $filename;
     }
 
     public function set_upload_dir_prefs($dir_id, array $prefs)
@@ -390,6 +374,9 @@ class Filemanager
             if (! $prefs) {
                 return $this->_save_file_response(false, lang('image_exceeds_max_size'));
             }
+
+            // It is important to use the same upload destination object because of filesystem caching
+            $prefs['directory'] = $directory['upload_destination'];
 
             if (! $this->create_thumb($file_path, $prefs)) {
                 return $this->_save_file_response(false, lang('thumb_not_created'));
@@ -1178,10 +1165,10 @@ class Filemanager
             $dimensions[] = array(
                 'short_name' => 'thumbs',
                 'width' => 380, //73,
-                'height' => 367, //60
+                'height' => 380, //60
                 'quality' => 90,
                 'watermark_id' => 0,
-                'resize_type' => 'crop'
+                'resize_type' => 'resize'
             );
         }
 
@@ -1236,6 +1223,14 @@ class Filemanager
             // If the size doesn't have a valid height and width, skip resize
             if ($size['width'] <= 0 && $size['height'] <= 0) {
                 $size['resize_type'] = 'none';
+            }
+
+            if($size['short_name'] == 'thumbs') {
+                if($prefs['width'] > $prefs['height']) {
+                    $size['height'] = 0;
+                }else{
+                    $size['width'] = 0;
+                }
             }
 
             // If either h/w unspecified, calculate the other here
@@ -1430,7 +1425,7 @@ class Filemanager
      * @param	bool $ignore_site_id If TRUE, returns upload destinations for all sites
      * @return string URL to the thumbnail
      */
-    public function get_thumb($file, $directory_id, $ignore_site_id = false)
+    public function get_thumb($file, $directory_id, $ignore_site_id = false, $filesystem = null)
     {
         $thumb_info = array(
             'thumb' => PATH_CP_GBL_IMG . 'missing.jpg',
@@ -1443,7 +1438,7 @@ class Filemanager
         }
 
         $prefs = $this->fetch_upload_dir_prefs($directory_id, $ignore_site_id);
-        $filesystem = $prefs['directory']->getFilesystem();
+        $filesystem = ($filesystem) ?: $prefs['directory']->getFilesystem();
 
         // If the raw file name was passed in, figure out the mime_type
         if (! is_array($file) or ! isset($file['mime_type'])) {
@@ -1802,8 +1797,6 @@ class Filemanager
      */
     private function _file_info($file_id)
     {
-        ee()->load->model('file_model');
-
         $file = ee('Model')->get('File', $file_id)->first();
         $file_info = $file->toArray();
 
@@ -1944,7 +1937,7 @@ class Filemanager
             );
         }
 
-        $thumb_info = $this->get_thumb($file['full_path'], $dir['id']);
+        $thumb_info = $this->get_thumb($file['full_path'], $dir['id'], false, $dir['upload_destination']->getFilesystem());
 
         // Build list of information to save and return
         $file_data = array(
@@ -2022,7 +2015,9 @@ class Filemanager
         }
 
         // Merge in information from database
-        $file_data = array_merge($file_data, $this->_file_info($saved['file_id']));
+        // This is already populated above
+        $file_info = ee('Model')->get('File', $saved['file_id'])->first()->toArray();
+        $file_data = array_merge($file_data, $file_info);
 
         // Stash upload directory prefs in case
         $file_data['upload_directory_prefs'] = $dir;

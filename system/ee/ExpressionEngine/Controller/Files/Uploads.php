@@ -958,12 +958,14 @@ class Uploads extends AbstractFilesController
             }
         }
 
+        $filesystem = $uploadDestination->getFilesystem();
+
         foreach ($current_files as $filePath) {
-            $fileInfo = $uploadDestination->getFilesystem()->getWithMetadata($filePath);
-            $mime = ($fileInfo['type'] != 'dir') ? $uploadDestination->getFilesystem()->getMimetype($filePath) : 'directory';
+            $fileInfo = $filesystem->getWithMetadata($filePath);
+            $mime = ($fileInfo['type'] != 'dir') ? $filesystem->getMimetype($filePath) : 'directory';
 
             if ($mime == 'directory' && (!$uploadDestination->allow_subfolders || bool_config_item('file_manager_compatibility_mode'))) {
-                //sinlently continue on subfolders if those are not allowed
+                //silently continue on subfolders if those are not allowed
                 continue;
             }
 
@@ -973,42 +975,29 @@ class Uploads extends AbstractFilesController
                 continue;
             }
 
+            $file = $uploadDestination->getFileByPath($filePath);
+
             // Clean filename
-            /*$clean_filename = basename(ee()->filemanager->clean_filename(
-                $fileInfo['path'],
-                $id,
-                array('convert_spaces' => false)
+            $clean_filename = ee()->filemanager->clean_filename($fileInfo['path'], $id, array(
+                'convert_spaces' => false,
+                'ignore_dupes' => true
             ));
 
             if ($fileInfo['path'] != $clean_filename) {
-                // It is just remotely possible the new clean filename already exists
-                // So we check for that and increment if such is the case
-                if (file_exists($uploadDestination->server_path . $clean_filename)) {
-                    $clean_filename = basename(ee()->filemanager->clean_filename(
-                        $clean_filename,
-                        $id,
-                        array(
-                            'convert_spaces' => false,
-                            'ignore_dupes' => false
-                        )
-                    ));
-                }
-
+                // Make sure clean filename is unique
+                $clean_filename = ee()->filemanager->clean_filename($clean_filename, $id, array(
+                    'convert_spaces' => false,
+                    'ignore_dupes' => false
+                ));
                 // Rename the file
-                if (! @copy(
-                    $this->_upload_dirs[$id]['server_path'] . $fileInfo['name'],
-                    $this->_upload_dirs[$id]['server_path'] . $clean_filename
-                )) {
-                    $errors[$file['name']] = lang('invalid_filename');
-
+                if (! $filesystem->rename($fileInfo['path'], $clean_filename)) {
+                    $errors[$fileInfo['path']] = lang('invalid_filename');
                     continue;
                 }
 
-                unlink($this->_upload_dirs[$id]['server_path'] . $file['name']);
-                $file['name'] = $clean_filename;
-            }*/
-
-            $file = $uploadDestination->getFileByPath($filePath);
+                $filesystem->delete($fileInfo['path']);
+                $fileInfo['basename'] = $filesystem->basename($clean_filename);
+            }
 
             if (! empty($file)) {
                 // It exists, but do we need to change sizes or add a missing thumb?

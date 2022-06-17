@@ -613,6 +613,24 @@ class Filesystem
     }
 
     /**
+     * Get the filesize of a given path
+     *
+     * @param string $path
+     * @return int
+     */
+    public function getSize($path)
+    {
+        $size = 0;
+        $path = $this->normalizeRelativePath($path);
+
+        try {
+            $size = $this->flysystem->getSize($path);
+        }catch(\Exception $e){}
+
+        return $size;
+    }
+
+    /**
      * Touch a file or directory
      *
      * @param String $path File/directory to touch
@@ -794,14 +812,14 @@ class Filesystem
 
         $i = 0;
         $extension = $this->extension($path);
-        $dirname =  $this->dirname($path) . '/';
+        $dirname =  ($this->dirname($path) !== '.') ? $this->dirname($path) . '/' : '';
         $filename = $this->filename($path);
 
         // Glob only works with local filesytem but is more performant than filtering directory results
         if ($this->isLocal()) {
             $files = array_map(function($file) {
                 return $this->filename($file);
-            }, glob($dirname . $filename . '_*' . $extension));
+            }, glob($this->absolute($dirname . $filename) . '_*' . $extension));
         }else{
             // Filter out any files that do not start with our filename
             $files = array_filter($this->getDirectoryContents($dirname), function($file) use($filename) {
