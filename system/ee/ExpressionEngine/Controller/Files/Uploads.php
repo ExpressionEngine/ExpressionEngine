@@ -1087,7 +1087,9 @@ class Uploads extends AbstractFilesController
             }
             $file->set($file_data);
             if ($file->isEditableImage()) {
-                $image_dimensions = ee()->filemanager->get_image_dimensions($file->getAbsolutePath());
+                $image_dimensions = $file->actLocally(function ($path) {
+                    return ee()->filemanager->get_image_dimensions($path);
+                });
                 $file_data['file_hw_original'] =  $image_dimensions['height'] . ' ' . $image_dimensions['width'];
                 $file->setRawProperty('file_hw_original', $file_data['file_hw_original']);
             }
