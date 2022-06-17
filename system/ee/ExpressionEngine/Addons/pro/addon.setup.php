@@ -8,8 +8,9 @@ return array(
     'version'        => '2.0.0',
     'namespace'      => 'ExpressionEngine\Addons\Pro',
     'settings_exist' => true,
+    'built_in' => true,
     'requires'       => [
-        'php'   => '7.1.0',
+        'php'   => '7.2.0',
         'ee'    => '7.0.0-a.1'
     ],
     'cookies.functionality' => [
