@@ -182,15 +182,6 @@ class Homepage extends CP_Controller
 
         ee()->output->send_ajax_response(['success']);
     }
-
-    public function dismissBanner()
-    {
-        $member = ee()->session->getMember();
-        $member->dismissed_pro_banner = 'y';
-        $member->save();
-
-        ee()->output->send_ajax_response(['success']);
-    }
 }
 
 // EOF

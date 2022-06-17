@@ -64,7 +64,6 @@ for ($n = $start; $n < $total; $n++) {
             'accept_messages' => 'y',
             'accept_admin_email' => 'y',
             'accept_user_email' => 'y',
-            'dismissed_pro_banner' => 'n',
             'display_signatures' => 'y',
             'enable_mfa' => 'n',
             'in_authorlist' => 'n',

@@ -41,8 +41,10 @@ class Updater
 
     private function removeDismissedProBannerSetting()
     {
-        // TODO:
-        // Remove database flag for this
+        // Remove the dismissed_pro_banner field
+        if (ee()->db->field_exists('dismissed_pro_banner', 'members')) {
+            ee()->smartforge->drop_column('members', 'dismissed_pro_banner');
+        }
     }
 
     private function installPro()
