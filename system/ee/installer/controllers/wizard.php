@@ -58,7 +58,8 @@ class Wizard extends CI_Controller
         'file',
         'filepicker',
         'relationship',
-        'search'
+        'search',
+        'pro',
     );
 
     public $theme_required_modules = array();

@@ -323,14 +323,6 @@ $(document).ready(function(){
 		$.get(EE.cp.collapseNavURL, {collapsed: (!isHidden ? 1 : 0)});
 	})
 
-	// Collapse navigation sidebar
-	// -------------------------------------------------------------------
-	$('.banner-dismiss').on('click', function (e) {
-		e.preventDefault();
-		$(this).parent().remove();
-		$.get(EE.cp.dismissBannerURL);
-	})
-
 	// Toggle Developer Menu
 	// -------------------------------------------------------------------
 
