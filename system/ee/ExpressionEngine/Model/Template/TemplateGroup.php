@@ -103,8 +103,7 @@ class TemplateGroup extends Model
             $new_path = $this->getFolderPath();
 
             if ($old_path !== null && $new_path !== null) {
-                $fs = new Filesystem();
-                $fs->rename($old_path, $new_path);
+                ee('Filesystem')->rename($old_path, $new_path);
             }
         }
 
@@ -138,11 +137,10 @@ class TemplateGroup extends Model
      */
     public function ensureFolderExists()
     {
-        $fs = new Filesystem();
         $path = $this->getFolderPath();
 
-        if (isset($path) && ! $fs->isDir($path)) {
-            $fs->mkDir($path, false);
+        if (isset($path) && ! ee('Filesystem')->isDir($path)) {
+            ee('Filesystem')->mkDir($path, false);
         }
     }
 
@@ -162,15 +160,13 @@ class TemplateGroup extends Model
         }
 
         // Cache the sites as we query
-        if (!isset(ee()->session) || ! $site = ee()->session->cache('site/id/' . $this->site_id, 'site')) {
+        if (! $site = ee()->session->cache('site/id/' . $this->site_id, 'site')) {
             $site = $this->getModelFacade()->get('Site')
                 ->fields('site_name')
                 ->filter('site_id', $this->site_id)
                 ->first();
 
-            if (isset(ee()->session)) {
-                ee()->session->set_cache('site/id/' . $this->site_id, 'site', $site);
-            }
+            ee()->session->set_cache('site/id/' . $this->site_id, 'site', $site);
         }
 
         return $basepath . $site->site_name . '/' . $this->group_name . '.group';
@@ -181,11 +177,10 @@ class TemplateGroup extends Model
      */
     public function onAfterDelete()
     {
-        $fs = new Filesystem();
         $path = $this->getFolderPath();
 
-        if (isset($path) && $fs->isDir($path)) {
-            $fs->deleteDir($path);
+        if (isset($path) && ee('Filesystem')->isDir($path)) {
+            ee('Filesystem')->deleteDir($path);
         }
     }
 

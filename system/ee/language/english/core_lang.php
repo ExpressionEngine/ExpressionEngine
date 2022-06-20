@@ -179,6 +179,8 @@ If you made these changes, please accept the modifications on the control panel 
     /* Template.php */
     'error_fix_module_processing' => 'Please check that the \'%x\' module is installed and that \'%y\' is an available method of the module',
 
+    'error_fix_install_addon' => 'Please check that the \'%x\' add-on is installed.',
+
     'error_fix_syntax' => 'Please correct the syntax in your template.',
 
     'error_invalid_conditional' => 'You have an invalid conditional in your template. Please review your conditionals for an unclosed string, invalid operators, a missing }, or a missing {/if}.',
@@ -196,6 +198,8 @@ If you made these changes, please accept the modifications on the control panel 
     'template_load_order' => 'Template load order',
 
     'template_loop' => 'You have caused a template loop due to improperly nested sub-templates (\'%s\' recursively called)',
+
+    'route_not_found' => 'Template route not found.',
 
     /* Email */
     'error_sending_email' => 'Unable to send email at this time.',

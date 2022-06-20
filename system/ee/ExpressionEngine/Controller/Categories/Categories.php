@@ -559,6 +559,7 @@ class Categories extends AbstractCategoriesController
 
         // Reset the categories they already have selected
         $selected_cats = ee('Model')->get('Category')
+            ->fields('cat_id')
             ->filter('cat_id', 'IN', $selected['cat_group_id_' . $group_id])
             ->all();
         $field->setData(implode('|', $selected_cats->pluck('cat_id')));
