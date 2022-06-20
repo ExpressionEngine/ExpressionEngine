@@ -334,9 +334,8 @@ class EE_Output
 
         // --------------------------------------------------------------------
         // Include PRO stuff
-        $installMode = (getenv('EE_INSTALL_MODE') === 'TRUE') ?: false;
-        $inInstallMode = is_dir(SYSPATH . 'ee/installer/') && $installMode;
-        if (!$inInstallMode) {
+        $inEEInstallMode = is_dir(SYSPATH . 'ee/installer/') && (! defined('INSTALL_MODE') or INSTALL_MODE != false);
+        if (! $inEEInstallMode) {
             $output = ee('pro:Dock')->buildOutput($output);
         }
         if (REQ == 'PAGE' || (REQ == 'ACTION' && ee('LivePreview')->hasEntryData())) {

@@ -433,12 +433,8 @@ class ChannelEntry extends ContentModel
     public function onAfterSave()
     {
         parent::onAfterSave();
-<<<<<<< HEAD
-        if (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
-=======
         //front-end editing needs to treat autosaves in a special way
-        if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
->>>>>>> feature/6.x/file-manager
+        if (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
             foreach ($this->Autosaves as $autosave) {
                 $deleteThisAutosave = true;
                 $autosavedEntryData = $autosave->entry_data;

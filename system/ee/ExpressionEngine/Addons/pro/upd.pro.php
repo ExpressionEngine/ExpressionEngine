@@ -208,7 +208,7 @@ class Pro_upd extends Installer
                 $tmpl_group_data = [
                     'group_name' => 'pro-dashboard-widgets',
                     'is_site_default' => 'n',
-                    'site_id' => ee()->config->item('site_id')
+                    'site_id' => ee()->config->item('site_id') ?: 1
                 ];
                 $group = ee('Model')->make('TemplateGroup', $tmpl_group_data)->save();
 
@@ -220,7 +220,7 @@ class Pro_upd extends Installer
                     'template_type' => 'webpage',
                     'last_author_id' => 0,
                     'edit_date' => time(),
-                    'site_id' => ee()->config->item('site_id')
+                    'site_id' => ee()->config->item('site_id') ?: 1
                 ];
 
                 $template = ee('Model')->make('Template', $tmpl_info)->save();
@@ -250,6 +250,13 @@ class Pro_upd extends Installer
             ];
 
             $bundledAddonsInstalled = [];
+
+            $inEEInstallMode = is_dir(SYSPATH . 'ee/installer/') && (! defined('INSTALL_MODE') or INSTALL_MODE != false);
+
+            //bundled add-ons will be handled separately, skip if installing with EE
+            if ($inEEInstallMode) {
+                return $installed;
+            }
 
             foreach ($bundledAddons as $addonName => $addonReadableName) {
                 if (!$fs->exists(PATH_THIRD . $addonName)) {

@@ -145,9 +145,14 @@ class UploadDestination extends StructureModel
 
     public function onBeforeSave()
     {
-        if (in_array('--', $this->getProperty('allowed_types'))) {
-            $this->setProperty('allowed_types', ['all']);
+        $allowed_types = $this->getProperty('allowed_types');
+        if (! is_array($allowed_types)) {
+            $allowed_types = [$allowed_types];
         }
+        if (in_array('--', $allowed_types)) {
+            $allowed_types =  ['all'];
+        }
+        $this->setProperty('allowed_types', $allowed_types);
     }
 
     /**
