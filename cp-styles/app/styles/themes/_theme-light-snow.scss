@@ -1,0 +1,247 @@
+// Snow Light Theme
+// -------------------------------------------------------------------
+
+// Base Variables - Snow Light Theme
+
+// Base Colors - Snow Light Theme
+$brand-primary: #5D63F1;
+$brand-success: #00C571;
+$brand-warning: #FFB40B;
+$brand-danger: #FA5252;
+
+// Base Grays - Snow Light Theme
+$gray-blank: #FFFFFF;
+$gray-0: desaturate(lighten($brand-primary, 32), 52);
+$gray-5: darken($gray-0, 3);
+$gray-10: darken($gray-0, 7);
+$gray-20: desaturate(darken($gray-0, 15), 15);
+$gray-30: desaturate(darken($gray-0, 25), 15);
+$gray-40: desaturate(darken($gray-0, 35), 15);
+$gray-50: desaturate(darken($gray-0, 55), 15);
+$gray-60: desaturate(darken($gray-0, 80), 15);
+$gray-70: darken($gray-0, 90);
+
+// Base Text - Snow Light Theme
+$text-primary: $gray-70;
+$text-normal: $gray-70;
+$text-secondary: $gray-40;
+$text-tertiary: $gray-50;
+$text-placeholder: $gray-30;
+$text-selection: inherit;
+$text-selection-bg: lighten($brand-primary, 25%);
+$link: $brand-primary;
+$link-hover: darken($link, 15%);
+
+// #Details - Snow Light Theme
+$snow-theme: (
+
+  brand-primary: $brand-primary,
+  brand-success: $brand-success,
+  brand-warning: $brand-warning,
+  brand-danger: $brand-danger,
+
+  accent: $brand-primary,
+  accent-dark: darken($brand-primary, 15%),
+	accent-medium: lighten($brand-primary, 20%),
+	accent-light: lighten($brand-primary, 30%),
+
+  // Grays
+  gray-blank: $gray-blank,
+  gray-0: $gray-0,
+  gray-5: $gray-5,
+  gray-10: $gray-10,
+  gray-20: $gray-20,
+  gray-30: $gray-30,
+  gray-40: $gray-40,
+  gray-50: $gray-50,
+  gray-60: $gray-60,
+  gray-70: $gray-70,
+
+	// Semantic
+	success-dark: darken($brand-success, 15%),
+  success: $brand-success,
+  success-light: lighten($brand-success, 55%),
+  warning-dark: darken($brand-warning, 15%),
+  warning: $brand-warning,
+	warning-light: lighten($brand-warning, 42%),
+  error-dark: darken($brand-danger, 15%),
+	error: $brand-danger,
+	error-light: lighten($brand-danger, 30%),
+	security-caution: $brand-warning,
+	danger: $brand-danger,
+	keyboard-focus: lighten($brand-primary, 20%),
+	notification: #fa5252,
+
+  // Text
+  text-primary: $text-primary,
+  text-normal: $text-normal,
+  text-secondary: $text-secondary,
+  text-tertiary: $text-tertiary,
+  text-placeholder: $text-placeholder,
+  text-selection: $text-selection,
+  text-selection-bg: $text-selection-bg,
+  link: $link,
+  link-hover: $link-hover,
+
+	// Background
+	main-bg: $gray-0,
+	dashboard-bg: $gray-0, // deprecated - use main-bg
+  bg-blank: $gray-blank,
+  bg-0: $gray-0,
+	bg-5: $gray-5,
+	bg-10: $gray-10,
+	bg-15: $gray-20,
+	bg-25: $gray-30,
+
+	bg-neutral-light: #ededed,
+	bg-neutral-dark: #434249,
+
+  // Dropdowns
+  bg-dropdown: $gray-blank,
+  bg-dropdown-hover: $gray-0,
+  bg-dropdown-selected: lighten($brand-primary, 30%),
+  dropdown-border: $gray-10,
+
+	// Borders
+	border: $gray-10,
+	border-dark: $gray-20,
+
+	// Buttons
+  button-default-color: $text-primary,
+  button-default-bg: $gray-blank,
+  button-default-border: $gray-20,
+  button-default-hover-bg: $gray-0,
+  button-default-hover-border: $gray-20,
+
+  button-primary-color: #ffffff,
+	button-primary-bg: $brand-primary,
+  button-primary-border: $brand-primary,
+	button-primary-hover-bg: darken($brand-primary, 10%),
+  button-primary-hover-border: darken($brand-primary, 10%),
+
+  button-secondary-color: $brand-primary,
+	button-secondary-bg: lighten($brand-primary, 28%),
+  button-secondary-border: lighten($brand-primary, 28%),
+	button-secondary-hover-bg: lighten($brand-primary, 24%),
+  button-secondary-hover-border: lighten($brand-primary, 24%),
+
+  // deprecated - replaced by button--default
+  button-secondary-alt-color: $text-primary,
+	button-secondary-alt-bg: $gray-blank,
+	button-secondary-alt-border: $gray-20,
+	button-secondary-alt-hover-bg: $gray-0,
+  button-secondary-alt-hover-border: $gray-20,
+	// button-secondary-alt-shadow: 0 1px 0 #eee,
+
+  button-success-color: #ffffff,
+  button-success-bg: $brand-success,
+  button-success-border: $brand-success,
+  button-success-hover-bg: darken($brand-success, 10%),
+  button-success-hover-border: darken($brand-success, 10%),
+
+  // deprecated - replaced by button--success
+  button-action-color: #ffffff,
+  button-action-bg: $brand-success,
+  button-action-border: $brand-success,
+  button-action-hover-bg: darken($brand-success, 10%),
+  button-action-hover-border: darken($brand-success, 10%),
+
+  button-warning-color: #ffffff,
+	button-warning-bg: $brand-warning,
+  button-warning-border: $brand-warning,
+	button-warning-hover-bg: darken($brand-warning, 10%),
+  button-warning-hover-border: darken($brand-warning, 10%),
+
+	button-danger-color: #ffffff,
+	button-danger-bg: $brand-danger,
+  button-danger-border: $brand-danger,
+	button-danger-hover-bg: darken($brand-danger, 10%),
+  button-danger-hover-border: darken($brand-danger, 10%),
+
+  // Inputs
+  input-color: $text-primary,
+  input-bg: $gray-blank,
+	input-placeholder: $text-placeholder,
+	input-border: $gray-20,
+	input-border-accent: $gray-5,
+	input-focus-border: $brand-primary,
+	input-focus-shadow: (0 3px 6px -3px rgba(#AE97FF, 0.14), 0 5px 10px -3px rgba(rgb(97, 114, 242), 0.05)),
+
+	input-toggle-bg: $gray-20,
+	input-toggle-fg: #ffffff,
+	input-toggle-shadow: rgba(120, 119, 140, 0.077),
+
+	input-toggle-active-bg: $brand-primary,
+	input-toggle-active-fg: #ffffff,
+
+  input-disabled-bg: $gray-0,
+
+  input-jump-bg: $gray-blank,
+
+  // Sidebar
+  sidebar-text: desaturate(darken($gray-0, 40), 15),
+  sidebar-text-primary: $text-normal,
+  sidebar-text-faded: $text-secondary,
+  sidebar-text-active: $link,
+  sidebar-icon-active: $link,
+  sidebar-bg-active: $gray-0,
+  sidebar-bg: $gray-blank,
+  sidebar-title-text: desaturate(darken($gray-0, 40), 15),
+  sidebar-title-bg: $gray-blank,
+  sidebar-bottom-bg: $gray-blank,
+  sidebar-title-bg-hover: $gray-blank,
+  sidebar-version-bg: $gray-blank,
+  sidebar-version-bg-hover: $gray-blank,
+  sidebar-border: $gray-10,
+
+  secondary-sidebar-item-bg: $gray-5,
+  secondary-sidebar-item-icon: $text-secondary,
+  secondary-sidebar-item-bg-active: $gray-5,
+
+  // Tables
+  table-bg: $gray-blank,
+  table-border: $gray-10,
+
+  // Panels
+  panel-bg: $gray-blank,
+  panel-border: $gray-10,
+  panel-border-outer: transparent,
+
+  // Shadows
+  shadow-modal: rgba(69, 68, 85, 0.2),
+  shadow-dropdown: rgba(0, 0, 0, 0.1),
+  shadow-panel: rgb(0, 0, 0, 0.1),
+  shadow-input: rgb(0, 0, 0, 0.05),
+  shadow-button: rgb(0, 0, 0, 0.05),
+
+  // Fieldtypes
+  note-fieldtype-bg: $gray-0,
+  note-fieldtype-color: $text-secondary,
+  note-fieldtype-icon-bg: $gray-5,
+  note-fieldtype-icon-color: $text-secondary,
+  note-fieldtype-blockquote-border: $gray-5,
+
+  // Other Colors
+	mark-bg: lighten($brand-warning, 45%),
+  form-section-title-border: $gray-10,
+  key-border: $gray-10,
+  list-item-border: $gray-10,
+  tab-bar-border: $gray-10,
+  code-border: $gray-10,
+  add-on-card-border: $gray-10,
+  lots-of-checkboxes-border: $gray-10,
+  layout-item-border: $gray-10,
+  fluid-item-border: $gray-10,
+  slider-value-bg: lighten($brand-primary, 30%),
+
+  // EE Update Indicators
+  ee-update: $brand-primary,
+  ee-update-bg: $gray-blank,
+  ee-update-dev: $brand-warning,
+  ee-update-dev-bg: $gray-blank,
+  ee-update-vital: $brand-danger,
+  ee-update-vital-bg: $gray-blank,
+
+	// LEGACY
+	modal-overlay-bg: $gray-0,
+);

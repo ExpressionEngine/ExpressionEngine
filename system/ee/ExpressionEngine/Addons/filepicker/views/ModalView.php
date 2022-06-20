@@ -33,11 +33,11 @@
 							<img src="<?=ee('Thumbnail')->get($file)->url?>" alt="<?=$file->file_name?>">
 						<?php else: ?>
 							<?php if (in_array($file->mime_type, ['text/plain', 'text/markdown'])): ?>
-								<i class="fas fa-file-alt fa-5x"></i>
+								<i class="fal fa-file-alt fa-5x"></i>
 							<?php elseif ($file->mime_type == 'application/zip'): ?>
-								<i class="fas fa-file-archive fa-5x"></i>
+								<i class="fal fa-file-archive fa-5x"></i>
 							<?php else: ?>
-								<i class="fas fa-file fa-5x"></i>
+								<i class="fal fa-file fa-5x"></i>
 							<?php endif; ?>
 							<span class="file-thumb"><b><?=$file->file_name?></b></span>
 						<?php endif; ?>

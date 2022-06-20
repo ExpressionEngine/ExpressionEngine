@@ -1864,7 +1864,7 @@ class JumpMenu extends AbstractJumpMenu
 
         $items[1] = array_merge($items[1], [
             'logsConsent' => array(
-                'icon' => 'fas fa-scroll',
+                'icon' => 'fal fa-scroll',
                 'command' => 'view_consent_log',
                 'command_title' => lang('view') . ' <b>' . lang('view_consent_log') . '</b>',
                 'dynamic' => false,
@@ -1873,7 +1873,7 @@ class JumpMenu extends AbstractJumpMenu
                 'permission' => 'can_manage_consents'
             ),
             'logsCp' => array(
-                'icon' => 'fas fa-scroll',
+                'icon' => 'fal fa-scroll',
                 'command' => 'view_cp_log',
                 'command_title' => lang('view') . ' <b>' . lang('view_cp_log') . '</b>',
                 'dynamic' => false,
@@ -1882,7 +1882,7 @@ class JumpMenu extends AbstractJumpMenu
                 'permission' => 'can_access_logs'
             ),
             'logsThrottle' => array(
-                'icon' => 'fas fa-scroll',
+                'icon' => 'fal fa-scroll',
                 'command' => 'view_throttle_log',
                 'command_title' => lang('view') . ' <b>' . lang('view_throttle_log') . '</b>',
                 'dynamic' => false,
@@ -1891,7 +1891,7 @@ class JumpMenu extends AbstractJumpMenu
                 'permission' => 'can_access_logs'
             ),
             'logsEmail' => array(
-                'icon' => 'fas fa-scroll',
+                'icon' => 'fal fa-scroll',
                 'command' => 'view_email_logs',
                 'command_title' => lang('view') . ' <b>' . lang('view_email_logs') . '</b>',
                 'dynamic' => false,
@@ -1900,7 +1900,7 @@ class JumpMenu extends AbstractJumpMenu
                 'permission' => 'can_access_logs'
             ),
             'logsSearch' => array(
-                'icon' => 'fas fa-scroll',
+                'icon' => 'fal fa-scroll',
                 'command' => 'view_search_log',
                 'command_title' => lang('view') . ' <b>' . lang('view_search_log') . '</b>',
                 'dynamic' => false,
@@ -1922,7 +1922,7 @@ class JumpMenu extends AbstractJumpMenu
 
             //logs
             $items[1]['logsDeveloper'] = array(
-                'icon' => 'fas fa-scroll',
+                'icon' => 'fal fa-scroll',
                 'command' => 'view_developer_log',
                 'command_title' => lang('view') . ' <b>' . lang('view_developer_log') . '</b>',
                 'dynamic' => false,

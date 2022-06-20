@@ -53,7 +53,7 @@ $link-padding: 6px 12px;
 
 		&:after{
 			@extend %fa-icon;
-			@extend .fas;
+			@extend .fal;
 			color: color(security-caution);
 			margin-left: 10px;
 

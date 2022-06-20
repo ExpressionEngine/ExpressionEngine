@@ -2,7 +2,7 @@
 			<div class="modal modal--no-padding dialog dialog--warning">
 
 			<div class="dialog__header">
-				<div class="dialog__icon"><i class="fas fa-user-clock"></i></div>
+				<div class="dialog__icon"><i class="fal fa-user-clock"></i></div>
 				<h2 class="dialog__title"><?=sprintf(lang('log_into'), ee()->config->item('site_name'))?></h2>
 			</div>
 

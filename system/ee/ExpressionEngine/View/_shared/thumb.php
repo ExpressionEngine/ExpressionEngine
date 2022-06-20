@@ -1,5 +1,5 @@
-<?php 
-use ExpressionEngine\Library\CP\Table; 
+<?php
+use ExpressionEngine\Library\CP\Table;
 
 if (isset($table_attrs['id'])) {
     $table_id = $table_attrs['id'];
@@ -38,12 +38,12 @@ if (count($data)) {
       </label>
     </div><!-- /file-grid__select-all -->
     <?php endif; ?>
-    
+
     <?php if (!empty($data)) : ?>
     <!-- Add class "file-grid__wrapper-large" for larger thumbnails: -->
     <div class="file-grid__wrapper">
-        <?php 
-        foreach ($data as $row_id => $row) : 
+        <?php
+        foreach ($data as $row_id => $row) :
             $row['attrs']['class'] .= ' file-grid__file filepicker-item';
         ?>
             <a<?php foreach ($row['attrs'] as $key => $value) :?> <?=$key?>="<?=$value?>"<?php endforeach; ?> data-file-id="<?=$row['attrs']['file_id']?>">

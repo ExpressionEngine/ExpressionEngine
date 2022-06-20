@@ -33,7 +33,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var Relationship =
@@ -358,7 +358,7 @@ function (_React$Component) {
         }, _this5.state.selected.length > 1 && React.createElement("div", {
           "class": "list-item__handle"
         }, React.createElement("i", {
-          "class": "fas fa-bars"
+          "class": "fal fa-bars"
         })), React.createElement("div", {
           className: "list-item__content"
         }, React.createElement("div", {
@@ -379,7 +379,7 @@ function (_React$Component) {
           },
           className: "button button--small button--default"
         }, React.createElement("i", {
-          "class": "fas fa-fw fa-trash-alt"
+          "class": "fal fa-fw fa-trash-alt"
         })))));
       })), this.state.selected.length == 0 && React.createElement("input", {
         type: "hidden",
@@ -399,7 +399,7 @@ function (_React$Component) {
         type: "button",
         className: "js-dropdown-toggle button button--default"
       }, React.createElement("i", {
-        "class": "fas fa-plus icon-left"
+        "class": "fal fa-plus icon-left"
       }), " ", props.button_label ? props.button_label : EE.relationship.lang.relateEntry), React.createElement("div", {
         className: "dropdown js-dropdown-auto-focus-input"
       }, React.createElement("div", {
@@ -439,7 +439,7 @@ function (_React$Component) {
         type: "button",
         className: "js-dropdown-toggle button button--primary button--small"
       }, "New Entry ", React.createElement("i", {
-        "class": "fas fa-caret-down icon-right"
+        "class": "fal fa-chevron-down icon-right"
       })), React.createElement("div", {
         className: "dropdown"
       }, props.channels.map(function (channel) {

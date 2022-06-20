@@ -14,7 +14,7 @@
 	}
 	?>
 		<a class="filter-bar__button button button--default button--small<?=($value == $option) ? ' active' : ''?>" href="<?=$info['url']?>" title="<?=lang('view_as') . $info['label']?>">
-			<i class="fas <?=$class?>"></i>
+			<i class="fal <?=$class?>"></i>
 		</a>
 	<?php endforeach; ?>
 </div>

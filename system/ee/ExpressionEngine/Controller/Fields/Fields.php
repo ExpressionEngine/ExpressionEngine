@@ -175,7 +175,7 @@ class Fields extends AbstractFieldsController
         $vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('fields')), 'href' => $vars['create_url']];
 
         $breadcrumbs = array(
-            '#developer' => '<i class="fas fa-database"></i>'
+            '#developer' => '<i class="fal fa-database"></i>'
         );
         if (!$group) {
             ee()->view->cp_breadcrumbs = array(

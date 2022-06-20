@@ -28,6 +28,7 @@
   align-items: center;
     width: 100%;
 	padding: $s-m $s-m ($s-m - 2px) $s-m;
+  @include shadow-input;
 
 	@include m-mobile-down {
 		margin-bottom: 20px;

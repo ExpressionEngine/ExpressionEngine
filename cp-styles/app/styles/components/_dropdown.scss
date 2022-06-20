@@ -93,7 +93,7 @@
 	}
 
 	@include focus-visible {
-		@include focus-outline-inset;
+		//@include focus-outline-inset;
 	}
 }
 
@@ -102,7 +102,7 @@
 
 	&::before {
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 		@extend .fa-fw;
 
 		margin-right: 5px;
@@ -201,7 +201,7 @@
 			color: color(text-primary);
 		}
 
-		.fas {
+		.fas, .fal {
 			// Make sure icons line up next to each other
 			@extend .fa-fw;
 

@@ -94,7 +94,7 @@
 
           <div class="dialog__header">
             <h2 class="dialog__title"><?=lang('add_tab')?> <span class="req-title"><?=lang('required_fields')?></h2>
-            <div class="dialog__close js-modal-close"><i class="fas fa-times"></i></div>
+            <div class="dialog__close js-modal-close"><i class="fal fa-times"></i></div>
           </div>
           <div class="dialog__body">
 					<form class="settings">
