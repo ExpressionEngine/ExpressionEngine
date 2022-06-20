@@ -706,7 +706,7 @@ class Filesystem
      */
     public function chmod($path, $mode)
     {
-        return @chmod($this->normalize($path), $mode);
+        return @chmod($this->ensurePrefixedPath($this->normalize($path)), $mode);
     }
 
     /**
