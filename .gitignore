@@ -58,7 +58,6 @@ tests/rspec/fixtures/vendor/
 system/ee/ExpressionEngine/Tests/vendor/*
 system/ee/installer/updater/ExpressionEngine/Tests/vendor/*
 
-tests/cypress/cypress/integration/pro
 tests/cypress/support/sql/seed.sql
 tests/cypress/vendor/
 tests/cypress/vendor/*
