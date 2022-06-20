@@ -23,7 +23,11 @@
 			references.modal.find('.m-close').click();
 
 			// Assign the value {filedir_#}filename.ext
-			file_string = '{filedir_' + data.upload_location_id + '}' + data.file_name;
+			if (EE.fileManagerCompatibilityMode) {
+				file_string = '{filedir_' + data.upload_location_id + '}' + data.file_name;
+			} else {
+				file_string = '{file:' + data.file_id + ':url}';
+			}
 
 			// Output as image tag if image
 			if (data.isImage) {

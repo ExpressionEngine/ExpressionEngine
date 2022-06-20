@@ -56,6 +56,14 @@
 	}
 }
 
+.file-field_upload-icon {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 37px;
+	color: color(text-secondary);
+}
+
 .file-field__dropzone-icon {
 	position: absolute;
 	top: 0;

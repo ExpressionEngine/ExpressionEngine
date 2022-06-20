@@ -27,8 +27,13 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
-                'removeDismissedProBannerSetting',
-                'installPro',
+                'addFileDataTable',
+                'addFileManagerViewsTable',
+                'addFilesTableColumns',
+                'addFileUsageTable',
+                'modifyUploadPrefsTable',
+                'addEntryManagerViewsKeys',
+                'setFileManagerCompatibilityMode',
             ]
         );
 
@@ -39,32 +44,268 @@ class Updater
         return true;
     }
 
-    private function removeDismissedProBannerSetting()
+    private function addFileDataTable()
     {
-        // Remove the dismissed_pro_banner field
-        if (ee()->db->field_exists('dismissed_pro_banner', 'members')) {
-            ee()->smartforge->drop_column('members', 'dismissed_pro_banner');
+        if (ee()->db->table_exists('file_data')) {
+            return;
+        }
+
+        // Create table
+        ee()->dbforge->add_field(
+            [
+                'file_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                ],
+            ]
+        );
+        ee()->dbforge->add_key('file_id', true);
+        ee()->smartforge->create_table('file_data');
+
+        ee('db')->query('INSERT INTO exp_file_data (file_id) SELECT file_id FROM exp_files');
+    }
+
+    private function addFileManagerViewsTable()
+    {
+        if (! ee()->db->table_exists('file_manager_views')) {
+            ee()->dbforge->add_field(
+                [
+                    'view_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                        'auto_increment' => true
+                    ],
+                    'viewtype' => [
+                        'type' => 'varchar',
+                        'constraint' => 10,
+                        'null' => false,
+                        'default' => 'list',
+                    ],
+                    'upload_id' => [
+                        'type' => 'int',
+                        'constraint' => 6,
+                        'unsigned' => true,
+                        'null' => false,
+                    ],
+                    'member_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                    ],
+                    'name' => [
+                        'type' => 'varchar',
+                        'constraint' => 128,
+                        'null' => false,
+                        'default' => '',
+                    ],
+                    'columns' => [
+                        'type' => 'text',
+                        'null' => false
+                    ]
+                ]
+            );
+            ee()->dbforge->add_key('view_id', true);
+            ee()->dbforge->add_key(['viewtype', 'upload_id', 'member_id']);
+            ee()->smartforge->create_table('file_manager_views');
         }
     }
 
-    private function installPro()
+    private function addFilesTableColumns()
     {
-        // Check to see if pro is installed and install it
-        $pro = ee('Addon')->get('pro');
+        if (! ee()->db->field_exists('model_type', 'files')) {
+            ee()->smartforge->add_column(
+                'files',
+                [
+                    'model_type' => [
+                        'type' => 'enum',
+                        'constraint' => "'File','Directory'",
+                        'default' => 'File',
+                        'null' => false
+                    ]
+                ],
+                'file_id'
+            );
+            ee()->smartforge->add_key('files', 'model_type');
+        }
 
-        if ($pro && ! $pro->isInstalled()) {
-            if (!isset(ee()->addons)) {
-                ee()->load->library('addons');
-            }
+        if (! ee()->db->field_exists('file_type', 'files')) {
+            ee()->smartforge->add_column(
+                'files',
+                [
+                    'file_type' => [
+                        'type' => 'varchar',
+                        'constraint' => '50',
+                        'default' => 'other',
+                        'null' => false
+                    ]
+                ],
+                'mime_type'
+            );
+            ee()->smartforge->add_key('files', 'file_type');
+        }
 
-            ee()->addons->install_modules(['pro']);
-        } elseif ($pro && $pro->hasUpdate()) {
-            // Pro was installed and has an update
-            $class = $pro->getInstallerClass();
-            $UPD = new $class();
-            $UPD->update($pro->getInstalledVersion());
+        if (! ee()->db->field_exists('directory_id', 'files')) {
+            ee()->smartforge->add_column(
+                'files',
+                [
+                    'directory_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'default' => 0,
+                        'unsigned' => true,
+                        'null' => false
+                    ]
+                ],
+                'upload_location_id'
+            );
+            ee()->smartforge->add_key('files', 'directory_id');
+        }
+
+        if (! ee()->db->field_exists('total_records', 'files')) {
+            ee()->smartforge->add_column(
+                'files',
+                [
+                    'total_records' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'default' => 0,
+                        'unsigned' => true,
+                        'null' => false
+                    ]
+                ],
+            );
         }
     }
+
+    private function modifyUploadPrefsTable()
+    {
+        ee()->smartforge->modify_column(
+            'upload_prefs',
+            array(
+                'allowed_types' => array(
+                    'name' => 'allowed_types',
+                    'type' => 'varchar',
+                    'constraint' => 100,
+                    'default' => 'img',
+                    'null' => false
+                )
+            )
+        );
+
+        if (! ee()->db->field_exists('adapter', 'upload_prefs')) {
+            ee()->smartforge->add_column(
+                'upload_prefs',
+                [
+                    'adapter' => [
+                        'type' => 'varchar',
+                        'constraint' => 50,
+                        'default' => 'local',
+                        'null' => false
+                    ]
+                ],
+                'name'
+            );
+
+            ee()->smartforge->add_column(
+                'upload_prefs',
+                [
+                    'adapter_settings' => [
+                        'type' => 'text',
+                        'default' => null,
+                        'null' => true
+                    ]
+                ],
+                'adapter'
+            );
+        }
+
+        if (! ee()->db->field_exists('subfolders_on_top', 'upload_prefs')) {
+            ee()->smartforge->add_column(
+                'upload_prefs',
+                [
+                    'subfolders_on_top' => [
+                        'type' => 'enum',
+                        'constraint' => "'y','n'",
+                        'default' => 'y',
+                        'null' => false
+                    ]
+                ],
+                'allowed_types'
+            );
+        }
+
+        if (! ee()->db->field_exists('allow_subfolders', 'upload_prefs')) {
+            ee()->smartforge->add_column(
+                'upload_prefs',
+                [
+                    'allow_subfolders' => [
+                        'type' => 'enum',
+                        'constraint' => "'y','n'",
+                        'default' => 'n',
+                        'null' => false
+                    ]
+                ],
+                'allowed_types'
+            );
+        }
+    }
+
+    private function addFileUsageTable()
+    {
+        if (ee()->db->table_exists('file_usage')) {
+            return;
+        }
+
+        // Create table
+        ee()->dbforge->add_field(
+            [
+                'file_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                ],
+                'entry_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
+                ],
+                'cat_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                    'default' => 0
+                ],
+            ]
+        );
+        ee()->dbforge->add_key('file_id');
+        ee()->dbforge->add_key('entry_id');
+        ee()->dbforge->add_key('cat_id');
+        ee()->smartforge->create_table('file_usage');
+    }
+
+    private function addEntryManagerViewsKeys()
+    {
+        ee()->smartforge->add_key('entry_manager_views', ['channel_id', 'member_id']);
+    }
+
+    private function setFileManagerCompatibilityMode()
+    {
+        ee('Model')->make('Config', [
+            'site_id' => 0,
+            'key' => 'file_manager_compatibility_mode',
+            'value' => 'y'
+        ])->save();
+    }
+
 }
 
 // EOF

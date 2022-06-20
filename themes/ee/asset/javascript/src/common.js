@@ -8,6 +8,7 @@
  */
 
 $(document).ready(function(){
+
 	// the code is responsible for preventing the page scrolling when press on 
 	// the dropdown list using the spacebar (code 32)
 	window.addEventListener('keydown', (e) => {
@@ -323,6 +324,14 @@ $(document).ready(function(){
 		$.get(EE.cp.collapseNavURL, {collapsed: (!isHidden ? 1 : 0)});
 	})
 
+	// Collapse navigation sidebar
+	// -------------------------------------------------------------------
+	$('.banner-dismiss').on('click', function (e) {
+		e.preventDefault();
+		$(this).parent().remove();
+		$.get(EE.cp.dismissBannerURL);
+	})
+
 	// Toggle Developer Menu
 	// -------------------------------------------------------------------
 
@@ -508,6 +517,14 @@ $(document).ready(function(){
 			// Open the new tab
 			_this.addClass(active_class);
 			$('.'+active_group_class+' .tab.'+tabClassIs).addClass('tab-open');
+
+			//set the hidden input if needed
+			if (typeof(_this.data('action')) !== 'undefined') {
+				var _hiddenAction = _this.parents('form').find('input[type=hidden][name=action]');
+				if (_hiddenAction.length) {
+					_hiddenAction.val(_this.data('action'));
+				}
+			}
 		}
 
 
@@ -628,6 +645,10 @@ $(document).ready(function(){
 						.addClass('app-overlay--warning');
 				}
 			}
+
+				if ($(this).find('div[data-dropdown-react]').length) {
+					Dropdown.renderFields();
+				}
 
 			// reveal the modal
 			if ($(this).hasClass('modal-wrap')) {
@@ -773,7 +794,13 @@ $(document).ready(function(){
 
 		// listen for clicks on the element with a class of overlay
 		$('body').on('click', '.m-close, .js-modal-close', function(e) {
-			$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+			var thisModal = $(this).closest('.modal-wrap, .modal-form-wrap, .app-modal');
+			var thisModalParent = thisModal.parents('.modal-wrap, .modal-form-wrap, .app-modal');
+			if (thisModalParent.length) {
+				thisModal.hide();
+			} else {
+				$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+			}
 
 			// stop THIS from reloading the source window
 			e.preventDefault();
@@ -1012,6 +1039,16 @@ $(document).ready(function(){
 			}
 		});
 
+		$('#fieldset-limit_subfolders_layers button.toggle-btn').each(function(){
+			if( $(this).data('state') == 'on' ) {
+				$('#fieldset-limit_subfolders_layers').siblings('#fieldset-limit_subfolders_layers').show();
+			}
+
+			if( $(this).data('state') == 'off' ){
+				$('#fieldset-limit_subfolders_layers').siblings('#fieldset-limit_subfolders_layers').hide();
+			}
+		});
+
 		$('body').on('click', '.js-toggle-link', function(e) {
 			e.preventDefault()
 
@@ -1114,48 +1151,37 @@ $(document).ready(function(){
 
 		// Check the Entry page for existence and compliance with the conditions
 		// to show or hide fields depending on conditions
-        if(window.EE) {
-            EE.cp.hide_show_entries_fields = function(idArr) {
-                var hide_block = $('.hide-block');
+		if(window.EE) {
+			EE.cp.hide_show_entries_fields = function(idArr) {
+				var hide_block = $('.hide-block');
 
-                $(hide_block).removeClass('hide-block');
+				$(hide_block).removeClass('hide-block');
 
-                $.each(idArr, function(index, id) {
-                    $('[data-field_id="'+id+'"]').each(function(){
-                        $(this).addClass('hide-block').removeClass('fieldset-invalid');
-                    })
-                });
-            }
-        }
+				$.each(idArr, function(index, id) {
+					$('[data-field_id="'+id+'"]').each(function(){
+						$(this).addClass('hide-block').removeClass('fieldset-invalid');
+					})
+				});
+			}
+		}
 
-        if ($('.range-slider').length) {
+		if ($('.range-slider').length) {
+			$('.range-slider').each(function() {
+				var minValue = $(this).find('input[type="range"]').attr('min');
+				var maxValue = $(this).find('input[type="range"]').attr('max');
 
-        	$('.range-slider').each(function() {
-	        	var minValue = $(this).find('input[type="range"]').attr('min');
-	        	var maxValue = $(this).find('input[type="range"]').attr('max');
+				$(this).attr('data-min', minValue);
+				$(this).attr('data-max', maxValue);
+			});
+		}
 
-	        	$(this).attr('data-min', minValue);
-	        	$(this).attr('data-max', maxValue);
-        	});
-        }
 
-    // check and remove unused for desktop screen size grid column
-    function checkScreenSize() {
-    	if (window.innerWidth > 767) {
-    		$('.grid-field').each(function() {
-    			var gridTable = $(this);
-    			if(gridTable.hasClass('entry-grid')) {
-    				var entryGrid = $(this);
-    				var deleteElement = entryGrid.find('.grid-field__item-fieldset');
-
-    				deleteElement.each(function(el) {
-    					$(this).remove();
-    				})
-    			}
-    		})
-    		
-    	}
-    }
-
-    checkScreenSize();
+		$('body').on('click', '.title-bar a.upload, .main-nav__toolbar a.dropdown__link', function(e){
+			e.preventDefault();
+			var uploadLocationId = $(this).attr('data-upload_location_id');
+			var directoryId = $(this).attr('data-directory_id');
+			$('.imitation_button').attr('data-upload_location_id', uploadLocationId);
+			$('.imitation_button').attr('data-directory_id', directoryId);
+			$('.imitation_button')[0].click();
+		})
 }); // close (document).ready

@@ -334,10 +334,7 @@ class EE_Output
 
         // --------------------------------------------------------------------
         // Include PRO stuff
-        $installMode = false;
-        if (file_exists(FCPATH . '.env.php') && (require FCPATH . '.env.php') == true) {
-            $installMode = getenv('EE_INSTALL_MODE') === 'TRUE';
-        }
+        $installMode = (getenv('EE_INSTALL_MODE') === 'TRUE') ?: false;
         $inInstallMode = is_dir(SYSPATH . 'ee/installer/') && $installMode;
         if (!$inInstallMode) {
             $output = ee('pro:Dock')->buildOutput($output);

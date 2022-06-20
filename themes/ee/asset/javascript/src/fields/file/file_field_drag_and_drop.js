@@ -104,7 +104,7 @@ function (_React$Component) {
       return React.createElement(DragAndDropUpload, _extends({}, this.props, {
         onFileUploadSuccess: this.setFile,
         marginTop: false,
-        multiFile: false
+        multiFile: true
       }));
     }
   }], [{
@@ -113,7 +113,9 @@ function (_React$Component) {
       $('div[data-file-field-react]', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('fileFieldReact')));
         props.thisField = $(this);
+        var files_field = props.thisField.data('input-value');
         ReactDOM.render(React.createElement(FileField, props, null), this);
+        new MutableSelectField(files_field, EE.fileManager.fileDirectory);
       });
     }
   }]);

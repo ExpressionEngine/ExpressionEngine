@@ -121,6 +121,8 @@ If you made these changes, please accept the modifications on the control panel 
 
     'file_not_found' => 'File %s does not exist.',
 
+    'file_manager' => 'File Manager',
+
     'general_error' => 'The following errors were encountered',
 
     'generic_fatal_error' => 'Something has gone wrong and this URL cannot be processed at this time.',
@@ -162,6 +164,10 @@ If you made these changes, please accept the modifications on the control panel 
     'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="' . DOC_URL . 'installation/update.html" rel="external">Please update your installation of ExpressionEngine again</a>.',
 
     'php72_intl_error' => 'Your <code>intl</code> PHP extentsion is out-of-date. Please ensure you have <code>ICU 4.6</code> or newer installed.',
+
+    'license_error' => 'License error',
+    'license_error_file_not_writable' => 'The cache folder needs to be writable in order for ExpressionEngine Pro to work',
+    'license_error_file_broken' => 'There has been an error validating ExpressionEngine Pro license status',
 
     /* Member Groups */
     'banned' => 'Banned',
@@ -491,7 +497,7 @@ If you made these changes, please accept the modifications on the control panel 
 
     'cp' => 'Control Panel',
 
-    
+    'adapter_local' => 'Local',
 
 );
 

@@ -36,16 +36,12 @@
 $component = [
     'allowedDirectory' => $allowed_directory,
     'contentType' => $content_type,
-    'file' => $file
+    'file' => $file,
+    'createNewDirectory' => false,
+    'ignoreChild' => false,
+    'addInput' => false,
+    'imitationButton' => false
 ];
 ?>
 
-<div data-file-field-react="<?=base64_encode(json_encode($component))?>">
-	<div class="fields-select">
-		<div class="field-inputs">
-			<label class="field-loading">
-				<?=lang('loading')?><span></span>
-			</label>
-		</div>
-	</div>
-</div>
+<?php $this->embed('ee:_shared/file/upload-widget', ['component' => $component]); ?>

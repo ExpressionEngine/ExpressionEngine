@@ -70,12 +70,15 @@ class ResolveFilenameConflict extends React.Component {
     iframe.attr('src', url)
     modal.find('div.box').html(iframe)
 
-    iframe.load(() => {
+    iframe.on('load', () => {
       let response = iframe.contents().find('body').text()
       try {
         response = JSON.parse(response)
         modal.trigger('modal:close')
         if (response.cancel) {
+          if( $('.file-upload-widget').length) {
+            $('.file-upload-widget').hide();
+          }
           return this.props.onFileUploadCancel(e, file)
         }
         return this.props.onResolveConflict(file, response)

@@ -142,8 +142,8 @@ class file_grid_ft extends Grid_ft
 
         ee()->javascript->output('EE.grid_settings($(".fields-grid-setup[data-group=file_grid]"), ' . $settings_json . ');');
         ee()->javascript->output('FieldManager.on("fieldModalDisplay", function(modal) {
-			EE.grid_settings($(".fields-grid-setup[data-group=file_grid]", modal), ' . $settings_json . ');
-		});');
+            EE.grid_settings($(".fields-grid-setup[data-group=file_grid]", modal), ' . $settings_json . ');
+        });');
 
         return $settings;
     }

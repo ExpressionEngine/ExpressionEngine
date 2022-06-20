@@ -125,6 +125,7 @@ abstract class AbstractPublish extends CP_Controller
             'user.can_edit_html_buttons' => ee('Permission')->can('edit_html_buttons'),
             'user.foo' => false,
             'user_id' => ee()->session->userdata('member_id'),
+            'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
         ));
 
         ee('Category')->addCategoryJS();

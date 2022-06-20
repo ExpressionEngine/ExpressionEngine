@@ -4,8 +4,6 @@ $lang = array(
 
     'add_file' => 'Add File',
 
-    'directory' => 'Directory:',
-
     'directory_no_access' => 'You do not have access to the directory specified for this field',
 
     'file_undo_remove' => 'Undo Remove',
@@ -184,6 +182,8 @@ $lang = array(
     'file_dnd_uploading_to' => 'uploading to %s',
 
     'file_dnd_upload_new' => 'Upload New',
+
+    'file_dnd_create_directory' => 'Create New Directory',
 
     /* Grid */
     'grid_add_field' => 'add new field',

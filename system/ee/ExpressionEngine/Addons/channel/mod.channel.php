@@ -3029,10 +3029,8 @@ class Channel
             }
         }
 
-        if (strpos($str, '{filedir_') !== false) {
-            ee()->load->library('file_field');
-            $str = ee()->file_field->parse_string($str);
-        }
+        ee()->load->library('file_field');
+        $str = ee()->file_field->parse_string($str);
 
         return $str;
     }
@@ -3400,11 +3398,8 @@ class Channel
 
                         $chunk = $this->parseCategoryFields($cat_vars['category_id'], array_merge($row, $cat_vars), $chunk);
 
-                        // Check to see if we need to parse {filedir_n}
-                        if (strpos($chunk, '{filedir_') !== false) {
-                            ee()->load->library('file_field');
-                            $chunk = ee()->file_field->parse_string($chunk);
-                        }
+                        ee()->load->library('file_field');
+                        $chunk = ee()->file_field->parse_string($chunk);
 
                         $categories_parsed .= $chunk;
                         $used[$cat_vars['category_name']] = true;
@@ -3774,11 +3769,8 @@ class Channel
 
                 $chunk = $this->parseCategoryFields($cat_vars['category_id'], array_merge($val, $cat_vars), $chunk);
 
-                // Check to see if we need to parse {filedir_n}
-                if (strpos($chunk, '{filedir_') !== false) {
-                    ee()->load->library('file_field');
-                    $chunk = ee()->file_field->parse_string($chunk);
-                }
+                ee()->load->library('file_field');
+                $chunk = ee()->file_field->parse_string($chunk);
 
                 /** --------------------------------
                 /**  {count}
@@ -4216,11 +4208,8 @@ class Channel
 
         ee()->TMPL->tagdata = $this->parseCategoryFields($cat_vars['category_id'], array_merge($row, $cat_vars), ee()->TMPL->tagdata);
 
-        // Check to see if we need to parse {filedir_n}
-        if (strpos(ee()->TMPL->tagdata, '{filedir_') !== false) {
-            ee()->load->library('file_field');
-            ee()->TMPL->tagdata = ee()->file_field->parse_string(ee()->TMPL->tagdata);
-        }
+        ee()->load->library('file_field');
+        ee()->TMPL->tagdata = ee()->file_field->parse_string(ee()->TMPL->tagdata);
 
         return ee()->TMPL->tagdata;
     }

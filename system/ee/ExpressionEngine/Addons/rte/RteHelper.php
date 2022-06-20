@@ -36,9 +36,8 @@ class RteHelper
             $tags = array();
             $urls = array();
 
-            $dirs = ee('Model')->get('UploadDestination')
-                ->all()
-                ->getDictionary('id', 'url');
+            ee()->load->model('file_upload_preferences_model');
+            $dirs = ee()->file_upload_preferences_model->get_paths();
 
             foreach ($dirs as $id => $url) {
                 // ignore "/" URLs
@@ -62,12 +61,8 @@ class RteHelper
      */
     public static function replaceFileTags(&$data)
     {
-		if (empty($data)) {
-			return $data;
-		}
-		
-        $tags = static::_getFileTags();
-        $data = str_replace($tags[0], $tags[1], $data);
+        ee()->load->library('file_field');
+        $data = ee()->file_field->parse_string($data);
     }
 
     /**
@@ -79,6 +74,30 @@ class RteHelper
     {
         $tags = static::_getFileTags();
         $data = str_replace($tags[1], $tags[0], $data);
+        
+        if (!bool_config_item('file_manager_compatibility_mode') && strpos((string) $data, '{filedir_') !== false) {
+            $dirsAndFiles = [];
+            if (preg_match_all('/{filedir_(\d+)}(.*)\"/', $data, $matches, PREG_SET_ORDER)) {
+                foreach ($matches as $match) {
+                    $dirsAndFiles[$match[1]][] = $match[2];
+                }
+            }
+            if (!empty($dirsAndFiles)) {
+                $files = ee('Model')
+                    ->get('File')
+                    ->fields('file_id', 'upload_location_id', 'file_name');
+                foreach ($dirsAndFiles as $dir_id => $file_names) {
+                    $files->orFilterGroup()
+                        ->filter('upload_location_id', $dir_id)
+                        ->filter('file_name', 'IN', $file_names)
+                        ->endFilterGroup();
+                }
+                foreach ($files->all() as $file) {
+                    $data = str_replace('{filedir_' . $file->upload_location_id . '}' . $file->file_name, '{file:' . $file->file_id . ':url}', $data);
+                }
+            }
+        }
+        
     }
 
     /**

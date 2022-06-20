@@ -62,6 +62,9 @@ class Addons extends CP_Controller
         // Make sure Filepicker is accessible for those who need it
         if (ee('Permission')->can('access_files')) {
             $this->assigned_modules[] = ee('Model')->get('Module')->filter('module_name', 'Filepicker')->first()->getId();
+            ee()->cp->add_js_script(array(
+                'file' => array('cp/publish/entry-list'),
+            ));
         }
     }
 

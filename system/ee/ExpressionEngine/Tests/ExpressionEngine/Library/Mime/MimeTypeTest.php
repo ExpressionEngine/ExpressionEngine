@@ -181,7 +181,7 @@ class MimeTypeTest extends TestCase
             array('JPG File',      realpath(__DIR__ . '/../../../support/test.jpg'),  'image/jpeg', false),
             array('JS File',       realpath(__DIR__ . '/../../../support/test.js'),   'application/javascript', false),
             array('JSON File',     realpath(__DIR__ . '/../../../support/test.json'), 'application/json', false),
-            array('Markdown File', realpath(__DIR__ . '/../../../support/test.md'),   'text/plain', false),
+            array('Markdown File', realpath(__DIR__ . '/../../../support/test.md'),   'text/markdown', false),
             array('PDF File',      realpath(__DIR__ . '/../../../support/test.pdf'),  'application/pdf', false),
             array('PHP File',      realpath(__DIR__ . '/../../../support/test.php'),  'text/x-php', false),
             array('PNG File',      realpath(__DIR__ . '/../../../support/test.png'),  'image/png', false),

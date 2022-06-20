@@ -1033,9 +1033,12 @@ class EE_Schema
 			id int(4) unsigned NOT NULL auto_increment,
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			name varchar(50) NOT NULL,
+			driver varchar(50) NOT NULL DEFAULT 'local',
 			server_path varchar(255) NOT NULL default '',
 			url varchar(100) NOT NULL,
-			allowed_types varchar(3) NOT NULL default 'img',
+			allowed_types varchar(100) NOT NULL default 'img',
+			allow_subfolders ENUM('y','n') NOT NULL DEFAULT 'n',
+			subfolders_on_top ENUM('y','n') NOT NULL DEFAULT 'y',
 			default_modal_view varchar(5) NOT NULL default 'list',
 			max_size varchar(16) NULL DEFAULT NULL,
 			max_height varchar(6) NULL DEFAULT NULL,
@@ -1234,10 +1237,13 @@ class EE_Schema
         // Files table
         $Q[] = "CREATE TABLE `exp_files` (
 			`file_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`model_type` ENUM('File','Directory') NOT NULL DEFAULT 'File',
 			`site_id` int(4) unsigned DEFAULT '1',
 			`title` varchar(255) DEFAULT NULL,
 			`upload_location_id` int(4) unsigned DEFAULT '0',
+			`directory_id` int(10) unsigned DEFAULT '0',
 			`mime_type` varchar(255) DEFAULT NULL,
+			`file_type` varchar(50) DEFAULT NULL,
 			`file_name` varchar(255) DEFAULT NULL,
 			`file_size` int(10) DEFAULT '0',
 			`description` text,
@@ -1248,8 +1254,12 @@ class EE_Schema
 			`modified_by_member_id` int(10) unsigned DEFAULT '0',
 			`modified_date` int(10) DEFAULT NULL,
 			`file_hw_original` varchar(20) NOT NULL DEFAULT '',
+			`total_records` int(10) unsigned DEFAULT '0',
 			PRIMARY KEY (`file_id`),
+			KEY `model_type` (`model_type`),
 			KEY `upload_location_id` (`upload_location_id`),
+			KEY `directory_id` (`directory_id`),
+			KEY `file_type` (`file_type`),
 			KEY `site_id` (`site_id`)
 		)";
 
@@ -1260,6 +1270,11 @@ class EE_Schema
 			`is_cover` char(1) DEFAULT 'n',
 			PRIMARY KEY (`file_id`, `cat_id`),
 			KEY `cat_id` (`cat_id`)
+		)";
+
+        $Q[] = "CREATE TABLE `exp_file_data` (
+			`file_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY (`file_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_file_dimensions` (
@@ -1275,6 +1290,15 @@ class EE_Schema
 			`watermark_id` int(4) unsigned DEFAULT NULL,
 			PRIMARY KEY (`id`),
 			KEY `upload_location_id` (`upload_location_id`)
+		)";
+
+        $Q[] = "CREATE TABLE `exp_file_usage` (
+			`file_id` int(10) unsigned NOT NULL,
+			`entry_id` int(10) unsigned NOT NULL,
+			`cat_id` int(10) unsigned NOT NULL,
+			KEY `file_id` (`file_id`),
+			KEY `entry_id` (`entry_id`),
+			KEY `cat_id` (`cat_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_file_watermarks` (
@@ -1494,7 +1518,20 @@ class EE_Schema
 			`member_id` int(10) unsigned NOT NULL,
 			`name` varchar(128) NOT NULL DEFAULT '',
 			`columns` text NOT NULL,
-			PRIMARY KEY (`view_id`)
+			PRIMARY KEY (`view_id`),
+			KEY `channel_id_member_id` (`channel_id`, `member_id`)
+		);";
+
+        // file manager
+        $Q[] = "CREATE TABLE `exp_file_manager_views` (
+			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`viewtype` varchar(10) NOT NULL DEFAULT 'list',
+			`upload_id` int(6) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`name` varchar(128) NOT NULL DEFAULT '',
+			`columns` text NOT NULL,
+			PRIMARY KEY (`view_id`),
+			KEY `viewtype_upload_id_member_id` (`viewtype`, `upload_id`, `member_id`)
 		);";
 
         // Default menu set

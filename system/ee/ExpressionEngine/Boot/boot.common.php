@@ -617,6 +617,50 @@ if (! function_exists('hash_equals')) {
 }
 
 /**
+ * Dump variable pre-formatted
+ */
+if (! function_exists('dump')) {
+    function dump()
+    {
+        $args = func_get_args();
+        echo '<pre>';
+        foreach ($args as $arg) {
+            var_dump($arg);
+        }
+        echo '</pre>';
+    }
+}
+
+/**
+ * Dump-and-die
+ */
+if (! function_exists('dd')) {
+    function dd()
+    {
+        $args = func_get_args();
+        echo '<pre>';
+        foreach ($args as $arg) {
+            var_dump($arg);
+        }
+        echo '</pre>';
+        exit();
+    }
+}
+
+/**
+ * Show pre-formatted debug trace of required depth (default: 5)
+ */
+if (! function_exists('trace')) {
+    function trace($depth = 5)
+    {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $depth);
+        echo '<pre>';
+        var_dump($trace);
+        echo '</pre>';
+    }
+}
+
+/**
  * CLI Shutdown handler
  * @return bool|mixed
  */

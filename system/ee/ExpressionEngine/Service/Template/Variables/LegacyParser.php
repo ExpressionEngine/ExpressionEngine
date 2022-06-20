@@ -42,7 +42,9 @@ class LegacyParser
      */
     public function parseVariableProperties($template_var, $prefix = '')
     {
-        $props = [];
+        $props = [
+            'invalid_modifier' => false,
+        ];
 
         $unprefixed_var = ltrim(preg_replace('/^' . $prefix . '/', '', $template_var));
         $orig_field_name_length = strpos($unprefixed_var, ' ') ?: strpos($unprefixed_var, "\n");
@@ -64,14 +66,20 @@ class LegacyParser
             $field_name = substr($orig_field_name, 0, $full_modifier_loc);
             $full_modifier = substr($orig_field_name, $full_modifier_loc + 1);
             $modifier = $full_modifier;
+            if (is_numeric($modifier)) {
+                $props['invalid_modifier'] = true;
+            }
         }
 
         if ($modifier_loc !== false && $modifier_loc !== $full_modifier_loc) {
             $modifier = substr($orig_field_name, $modifier_loc + 1);
+            if (is_numeric(substr($full_modifier, 0, strpos($full_modifier, ':')))) {
+                $props['invalid_modifier'] = true;
+            }
         }
 
         $props['field_name'] = trim($field_name);
-        $props['params'] = (trim($param_string)) ? $this->parseTagParameters($param_string) : [];
+        $props['params'] = (trim($param_string) && ! $props['invalid_modifier']) ? $this->parseTagParameters($param_string) : [];
         $props['modifier'] = trim($modifier);
         $props['full_modifier'] = trim($full_modifier);
 

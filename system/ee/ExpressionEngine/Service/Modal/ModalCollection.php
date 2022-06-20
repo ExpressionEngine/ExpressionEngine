@@ -94,6 +94,20 @@ class ModalCollection
     {
         return $this->modals;
     }
+
+    /**
+     * Removed the previously set modal
+     *
+     * @param str $name The name of the modal
+     * @return void
+     */
+    public function removeModal($name)
+    {
+        if (isset($this->modals[$name])) {
+            unset($this->modals[$name]);
+        }
+    }
+
 }
 
 // EOF

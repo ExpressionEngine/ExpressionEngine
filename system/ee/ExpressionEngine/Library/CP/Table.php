@@ -22,6 +22,7 @@ class Table
     const COL_ID = 5;
     const COL_SMALL = 6;
     const COL_INFO = 7;
+    const COL_THUMB = 8;
 
     public $config = array();
     protected $columns = array();
@@ -688,7 +689,13 @@ class Table
 
         if ((empty($this->config['sort_col']) && count($this->columns) > 0) or
             ! in_array($this->config['sort_col'], $search)) {
-            return isset($this->columns[0]) ? $this->columns[0]['label'] : null;
+            //grab the first column that can be used for sorting
+            foreach ($this->columns as $column) {
+                if ($column['sort'] === true) {
+                    return $column['label'];
+                }
+            }
+            return null;
         }
 
         return $this->config['sort_col'];
@@ -717,14 +724,24 @@ class Table
      * @param	string	$action_link	Link for action button to create a new item
      * @return  void
      */
-    public function setNoResultsText($text, $action_text = '', $action_link = '', $external = false)
+    public function setNoResultsText($text, $action_text = '', $action_link = '', $external = false, $html = null)
     {
         $this->config['no_results'] = array(
             'text' => $text,
             'action_text' => $action_text,
             'action_link' => $action_link,
-            'external' => $external
+            'external' => $external,
+            'html' => $html
         );
+    }
+
+    public function setNoResultsHTML($html, $class='')
+    {
+        $this->config['no_results'] = $this->setNoResultsText('');
+        $this->config['no_results']['html'] = $html;
+        if (!empty($class)) {
+            $this->config['no_results']['class'] = $class;
+        }
     }
 
     /**

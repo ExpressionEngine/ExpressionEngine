@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Tests\Library\Filesystem;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Library\Filesystem\Adapter\Local;
 use PHPUnit\Framework\TestCase;
 
 class FilesystemTest extends TestCase
@@ -21,9 +22,8 @@ class FilesystemTest extends TestCase
 
     public function setUp(): void
     {
-        $this->fs = new Filesystem();
-
         $this->path = realpath(__DIR__ . '/../../../support/') . '/';
+        $this->fs = new Filesystem(new Local(['path' => $this->path]));
 
         $this->dummy_files = array(
             'image001.jpg',

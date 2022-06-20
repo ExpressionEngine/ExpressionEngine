@@ -2549,8 +2549,11 @@ DOH;
 
         $filepath = $base_path . $query->row('attachment_location') ;
 
-        ee()->load->library('mime_type');
-        $mime = ee()->mime_type->ofFile($filepath);
+        try {
+            $mime = ee('MimeType')->ofFile($filepath);
+        }catch(\Exception $e){
+            show_error(sprintf(lang('file_not_found'), $filepath));
+        }
 
         if (! file_exists($filepath) or ! isset($mime)) {
             ee()->output->show_user_error('submission', ee()->lang->line('not_authorized'));
