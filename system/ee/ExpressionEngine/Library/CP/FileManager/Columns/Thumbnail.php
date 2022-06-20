@@ -33,14 +33,15 @@ class Thumbnail extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $file, $viewtype = 'list')
     {
-        $file_thumbnail = ee('Thumbnail')->get($file)->tag;
+        $thumb = ee('Thumbnail')->get($file);
+        $file_thumbnail = $thumb->tag;
 
         if ($viewtype == 'list') {
             if ($file->isDirectory()) {
                 $url = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]);
-                $file_thumbnail = '<a href="' . $url . '">' . $file_thumbnail . '</a>';
+                $file_thumbnail = '<a href="' . $url . '">' . $thumb->tag . '</a>';
             } elseif (ee('Permission')->can('edit_files')) {
-                $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" class="imgpreview" data-url="' . $file->getAbsoluteURL() . '">' . $file_thumbnail . '</a>';
+                $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '" class="imgpreview" data-url="' . $thumb->url . '">' . $thumb->tag . '</a>'; 
             }
         }
 
