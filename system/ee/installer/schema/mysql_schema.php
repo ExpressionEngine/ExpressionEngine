@@ -1295,8 +1295,8 @@ class EE_Schema
 
         $Q[] = "CREATE TABLE `exp_file_usage` (
 			`file_id` int(10) unsigned NOT NULL,
-			`entry_id` int(10) unsigned NOT NULL,
-			`cat_id` int(10) unsigned NOT NULL,
+			`entry_id` int(10) unsigned NOT NULL DEFAULT '0',
+			`cat_id` int(10) unsigned NOT NULL DEFAULT '0',
 			KEY `file_id` (`file_id`),
 			KEY `entry_id` (`entry_id`),
 			KEY `cat_id` (`cat_id`)
