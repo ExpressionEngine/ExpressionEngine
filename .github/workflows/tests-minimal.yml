@@ -4,11 +4,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
+      - 7.dev
       - 6.dev
-      - 6.2.0
-      - 6.3.0
-      - 6.4.0
-      - 6.5.0
 
 jobs:
     cancel-running-tests:
@@ -80,7 +77,7 @@ jobs:
               echo "::set-output name=BUILD_VERSION::$content"
 
           - name: Run build process (with Pro)
-            if: github.event.pull_request.head.repo.full_name == github.repository
+            if: github.event.pull_request.base.ref == '6.dev' && github.event.pull_request.head.repo.full_name == github.repository
             working-directory: build-tools
             env:
               RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
@@ -90,7 +87,7 @@ jobs:
             run: gulp build-app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Run build process (without Pro)
-            if: github.event.pull_request.head.repo.full_name != github.repository
+            if:  github.event.pull_request.base.ref == '7.dev' || github.event.pull_request.head.repo.full_name != github.repository
             working-directory: build-tools
             env:
               RELEASE_KEY: ${{ secrets.RELEASE_KEY }}

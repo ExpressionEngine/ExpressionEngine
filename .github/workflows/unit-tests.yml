@@ -7,6 +7,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
+      - 7.dev
       - 6.dev
       - 6.2.0
       - 6.3.0

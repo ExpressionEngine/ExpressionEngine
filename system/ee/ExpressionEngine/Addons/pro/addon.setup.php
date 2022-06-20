@@ -10,8 +10,8 @@ return array(
     'settings_exist' => true,
     'built_in' => true,
     'requires'       => [
-        'php'   => '7.2.0',
-        'ee'    => '7.0.0-a.1'
+        'php'   => '7.2.5',
+        'ee'    => '7.0.0-rc.1'
     ],
     'cookies.functionality' => [
         'frontedit',
