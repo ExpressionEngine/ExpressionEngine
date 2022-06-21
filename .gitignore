@@ -122,7 +122,7 @@ system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/Verifier.ph
 
 #
 *.code-workspace
-
+/.ddev
 /vendor/
 /vendor-build/
 /vendor-bin/*/vendor

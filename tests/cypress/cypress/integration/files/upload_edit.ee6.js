@@ -22,8 +22,7 @@ context('Upload Destination Create/Edit', () => {
 
   it('shows the Upload Destination Create/Edit page', () => {
     page.get('name').should('exist')
-    page.get('url').should('exist')
-    page.get('server_path').should('exist')
+    page.get('adapter').should('exist')
     page.get('allowed_types').should('exist')
     page.get('max_size').should('exist')
     page.get('max_width').should('exist')
@@ -46,12 +45,16 @@ context('Upload Destination Create/Edit', () => {
     // AJAX validation
     page.load()
 
+    page.get('url').should('not.be.visible')
+    cy.get('[data-input-value=adapter] .select__button').click()
+    cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
 
     cy.route("POST", "**/files/uploads/**").as("ajax1");
     page.get('name').trigger('blur')
     cy.wait("@ajax1");
     page.hasError(page.get('name'), page.messages.validation.required)
     page.hasErrors()
+
 
     cy.route("POST", "**/files/uploads/**").as("ajax2");
     page.get('name').clear().type('Dir')
@@ -61,6 +64,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoErrors()
 
     // Duplicate directory name
+    cy.log('Duplicate directory name')
     cy.route("POST", "**/files/uploads/**").as("ajax3");
     page.get('name').clear().type('Main Upload Directory')
     page.get('name').trigger('blur')
@@ -71,6 +75,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Multiple errors for URL
     // Error when just submitting "http://"
+    cy.log('Error when just submitting "http://"')
     cy.route("POST", "**/files/uploads/**").as("ajax4");
     page.get('url').clear().type('http://').trigger('blur')
     cy.wait("@ajax4");
@@ -88,6 +93,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasErrors()
 
     // Error when left blank
+    cy.log('Error when left blank')
     cy.route("POST", "**/files/uploads/**").as("ajax6");
     page.get('url').clear().trigger('blur')
     cy.wait("@ajax6");
@@ -97,6 +103,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Server path errors, path must both exist and be writable
     // Required:
+    cy.log(' Server path errors, path must both exist and be writable')
     cy.route("POST", "**/files/uploads/**").as("ajax7");
     page.get('server_path').clear().trigger('blur')
     cy.wait("@ajax7");
@@ -113,6 +120,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasErrors()
 
     // Invalid path:
+    cy.log('Invalid path:')
     cy.route("POST", "**/files/uploads/**").as("ajax9");
     page.get('server_path').clear().type('sdfsdf').trigger('blur')
     cy.wait("@ajax9");
@@ -130,6 +138,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasErrors()
 
     // Not writable path:
+    cy.log('Not writable path:')
     cy.route("POST", "**/files/uploads/**").as("ajax11");
     page.get('server_path').clear().type('/')
     page.get('server_path').trigger('blur')
@@ -163,6 +172,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasErrors()
 
     // These fields should not be required
+    cy.log('These fields should not be required')
     cy.route("POST", "**/files/uploads/**").as("ajax15");
     page.get('max_size').clear()
     page.get('max_size').trigger('blur')
@@ -247,6 +257,10 @@ context('Upload Destination Create/Edit', () => {
     page.get('grid_rows').should('have.length', 2) // Header and no results row
 
     page.get('grid_add_no_results').click()
+
+    page.get('url').should('not.be.visible')
+    cy.get('[data-input-value=adapter] .select__button').click()
+    cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
 
     page.get('name').clear().type('Dir')
     page.get('url').clear().type('http://ee3/')
@@ -401,9 +415,13 @@ context('Upload Destination Create/Edit', () => {
   })
 
   it('should repopulate the form on validation error, and save', () => {
+    page.get('url').should('not.be.visible')
+    cy.get('[data-input-value=adapter] .select__button').click()
+    cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
+
     page.get('url').clear().type('http://ee3/')
     page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false})
-    page.get('allowed_types').check('all')
+    page.get('allowed_types').find('[value="--"]').check()
     page.get('max_size').clear().type('4')
     page.get('max_width').clear().type('300')
     page.get('max_height').clear().type('200')
@@ -439,7 +457,7 @@ context('Upload Destination Create/Edit', () => {
     })
 
     //page.get('allowed_types').is('[value=all]').should('be.checked')
-    page.get('wrap').find('input[type!=hidden][name=allowed_types][value=all]').should('be.checked')
+    page.get('allowed_types').find('[value="--"]').should('be.checked')
 
     page.get('max_size').invoke('val').then((text) => {
       expect(text).equal('4')
@@ -492,7 +510,7 @@ context('Upload Destination Create/Edit', () => {
       expect(text).equal(upload_path + '/')
     })
     //page.get('allowed_types').is('[value=all]').should('be.checked')
-    page.get('wrap').find('input[type!=hidden][name=allowed_types][value=all]').should('be.checked')
+    page.get('allowed_types').find('[value="--"]').should('be.checked')
     page.get('max_size').invoke('val').then((text) => {
       expect(text).equal('4')
     })
@@ -536,6 +554,9 @@ context('Upload Destination Create/Edit', () => {
   })
 
   it('should save a new upload directory', () => {
+    page.get('url').should('not.be.visible')
+    cy.get('[data-input-value=adapter] .select__button').click()
+    cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
     page.get('name').clear().type('Dir 2')
     page.get('url').clear().type('http://ee3/')
     page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false})
@@ -573,7 +594,7 @@ context('Upload Destination Create/Edit', () => {
       expect(text).equal(upload_path + '/')
     })
     //page.get('allowed_types').is('[value=img]').should('be.checked')
-    page.get('wrap').find('input[type!=hidden][name=allowed_types][value=img]').should('be.checked')
+    page.get('allowed_types').find('[value="img"]').should('be.checked')
     page.get('max_size').invoke('val').then((text) => {
       expect(text).equal('4')
     })

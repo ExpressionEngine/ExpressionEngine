@@ -428,3 +428,22 @@ fieldset {
 		}
 	}
 }
+
+// Publish form behavior for fieldsets
+.panel-body__publish {
+
+  fieldset, .fieldset-faux {
+    width: 100%;
+    display: inline-block;
+    margin-bottom: 30px;
+    padding-left: 15px;
+    padding-right: 15px;
+    vertical-align: top;
+    font-size: 1rem; // reset for side-by-side fields
+
+    // Override custom field widths
+    @media (max-width: 899px) {
+      width: 100% !important;
+    }
+  }
+}

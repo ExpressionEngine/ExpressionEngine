@@ -385,6 +385,7 @@ context('File Manager', () => {
 		//page.get('modal_submit_button').click() // Submits a form
 		cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 		cy.hasNoErrors()
+        cy.task('db:seed').then(() => {})
 
 	});
 
@@ -476,7 +477,7 @@ context('File Manager', () => {
 			expect(text).contains('The upload directory About has been deleted.')
 		})
 
-
+        cy.task('db:seed').then(() => {})
 
 	});
 
