@@ -6898,6 +6898,11 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
 .ee-debugger .tab {
   display: none;
 }
+.ee-debugger .panel-body__publish .tab {
+  margin-left: -15px;
+  margin-right: -15px;
+  font-size: 0;
+}
 .ee-debugger .tab-open {
   display: block;
 }
