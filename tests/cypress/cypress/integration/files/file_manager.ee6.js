@@ -139,10 +139,11 @@ context('File Manager', () => {
         cy.visit(page.url + '&perpage=1')
 		page.get('perpage_filter').click()
 		//page.wait_until_perpage_filter_menu_visible
+		cy.intercept('/admin.php?/cp/files*').as('fileRequest')
 		page.get('perpage_manual_filter').type('5')
 		page.get('perpage_manual_filter').closest('form').submit()
+		cy.wait('@fileRequest')
 		cy.hasNoErrors()
-        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
 		page.get('pages').last().click()
 		cy.hasNoErrors()
         cy.wait('@fileRequest')
@@ -318,9 +319,9 @@ context('File Manager', () => {
 			filename = text.trim()
 		})
 
-        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
+        cy.intercept('/admin.php?/cp/files/*').as('fileRequest')
 		page.get('files').eq(1).find('input[type="checkbox"]').check()
-		//page.get('bulk_action').should('be.visible')
+		page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
         cy.wait('@fileRequest')
@@ -375,12 +376,12 @@ context('File Manager', () => {
 
 	it('can remove multiple files', () => {
 		beforeEach_all_files();
-		beforeEach_perpage_50();
+		// beforeEach_perpage_50();
 		page.get('checkbox_header').click()
 		page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
-		//page.get('modal').should('be.visible')
+		page.get('modal').should('be.visible')
 		//page.get('modal_submit_button').click() // Submits a form
 		cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 		cy.hasNoErrors()
@@ -461,9 +462,9 @@ context('File Manager', () => {
 		page.get('sidebar').find('.folder-list > div:first-child').trigger('mouseover')
 		cy.get('a[rel="modal-confirm-directory"]').first().click({force: true})
 
-		//page.wait_until_remove_directory_modal_visible
+		page.get('modal').should('be.visible')
 		//page.get('modal_submit_button').click() // Submits a form
-		cy.get('button').contains('Confirm and Delete').click()
+		cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 		cy.hasNoErrors()
 
 		page.get('sidebar').invoke('text').then((text) => {

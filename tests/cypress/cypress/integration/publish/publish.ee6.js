@@ -105,6 +105,8 @@ context('Publish Page - Create', () => {
 
           page.get('file_fields').each(function(field, i) {
 
+              cy.intercept('/admin.php?/cp/addons/settings/filepicker/modal*').as('filepicker' + i)
+
               let link = field.find("button:contains('Choose Existing')")
               cy.get(link).click()
 
@@ -113,7 +115,7 @@ context('Publish Page - Create', () => {
                   cy.get(dir_link).click()
               }
 
-              cy.wait(1000)
+              cy.wait('@filepicker' + i)
 
               //page.get('modal').should('be.visible')
               file_modal.get('files').should('be.visible')
@@ -127,7 +129,6 @@ context('Publish Page - Create', () => {
         })
 
         it('the file field restricts you to the chosen directory', () => {
-          cy.server();
           let link = page.get('file_fields').first().find("button:contains('Choose Existing')");
           link.click()
 
@@ -137,17 +138,17 @@ context('Publish Page - Create', () => {
           file_modal.get('files').should('be.visible')
           //page.file_modal.wait_for_filters
 
-          file_modal.get('filters').should('have.length', 3)
+          file_modal.get('filters').should('have.length', 8)
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
           file_modal.get('upload_button').should('exist')// no longer exists in new cp
-          cy.route("GET", "**/filepicker/modal**").as("ajax");
-          file_modal.get('filters').eq(1).find('a').first().click()
+          cy.intercept("**/filepicker/modal**").as('ajax')
+          file_modal.get('view_filters').find('a:not(.active)').first().click()
           cy.wait("@ajax");
 
           //file_modal.wait_for_filters
-          file_modal.get('filters').should('have.length', 3)
+          file_modal.get('filters').should('have.length', 9)
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
