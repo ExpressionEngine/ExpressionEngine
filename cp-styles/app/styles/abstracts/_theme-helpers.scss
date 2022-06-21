@@ -39,6 +39,12 @@ html.color-theme-in-transition *:after {
 	}
 }
 
+.light-theme, body[data-theme="light"] {
+	@each $name, $value in $light-theme {
+		--ee-#{$name}: #{$value};
+	}
+}
+
 .dark-theme, body[data-theme="dark"] {
 	@each $name, $value in $dark-theme {
 		--ee-#{$name}: #{$value};
