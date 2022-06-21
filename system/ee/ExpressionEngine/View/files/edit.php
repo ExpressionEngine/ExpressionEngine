@@ -62,7 +62,7 @@ if (! isset($alerts_name)) {
                 <div class="form-standard">
                     <div class="">
                         <?php if (isset($tabs)):?>
-                            <?php $active_tab = (isset($active_tab)) ? $active_tab : array_key_first($tabs); ?>
+                            <?php $active_tab = (isset($active_tab)) ? $active_tab : array_shift(array_keys($tabs)); ?>
                             <div class="tab-wrap">
                                 <div class="tab-bar">
                                     <div class="tab-bar__tabs">

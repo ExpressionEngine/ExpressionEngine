@@ -648,6 +648,20 @@ if (! function_exists('dd')) {
 }
 
 /**
+ * This should be removed when mimimum PHP version gets bumped to 7.3
+ * array_key_first poly fill for PHP older then 7.3
+ */
+if (!function_exists('array_key_first')) {
+    function array_key_first(array $arr) {
+        foreach($arr as $key => $unused) {
+            return $key;
+        }
+        return NULL;
+    }
+}
+
+
+/**
  * Show pre-formatted debug trace of required depth (default: 5)
  */
 if (! function_exists('trace')) {
