@@ -14,7 +14,6 @@ function preventNavigateAway(e) {
 	}
 }
 $(document).ready(function () {
-
 	if(typeof isNavigatingAway === 'undefined') {
 		var isNavigatingAway
 	}
@@ -64,7 +63,7 @@ $(document).ready(function () {
 	}
 
 	//prevent navigating away
-	$('body').on('click', 'a', function(e) {
+	$('body .ee-wrapper').on('click', 'a', function(e) {
 		if (
 			sessionStorage.getItem("preventNavigateAway") == 'true' &&
 			$(this).attr('href') != null && 
@@ -109,7 +108,7 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						var publishHeading = $('.panel-heading .title-bar h3');
+						var publishHeading = $('.ee-wrapper .panel-heading .title-bar h3');
 						publishHeading.find('.app-badge').remove();
 
 						if (result.error) {

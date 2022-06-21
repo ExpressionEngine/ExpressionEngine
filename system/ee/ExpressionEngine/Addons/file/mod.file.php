@@ -506,7 +506,7 @@ class File
     {
         ee()->load->library('mime_type');
 
-        if (IS_PRO && ee()->input->get('prolet')) {
+        if (ee()->input->get('prolet')) {
             $prolet = ee('Model')->get('pro:Prolet', (int) ee()->input->get('prolet'))->first();
             if (!empty($prolet)) {
                 $path = $prolet->icon;
@@ -530,7 +530,7 @@ class File
         } else {
             $path = PATH_THEMES . 'asset/img/default-addon-icon.svg';
         }
-        $mime = ee()->mime_type->ofFile($path);
+        $mime = ee('MimeType')->ofFile($path);
         if ($mime == 'image/svg') {
             $mime = 'image/svg+xml';
         }

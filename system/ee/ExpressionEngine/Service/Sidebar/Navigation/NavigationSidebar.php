@@ -90,7 +90,7 @@ class NavigationSidebar extends AbstractSidebar
                 }
             }
             if (ee('Permission')->has('can_access_files')) {
-                $section->addItem(lang('menu_files'), ee('CP/URL', 'files'))->withIcon('folder');
+                $section->addItem(lang('menu_files'), ee('CP/URL', 'files'))->withIcon('archive');
             }
             if (ee('Permission')->has('can_admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories')) {
                 $section->addItem(lang('categories'), ee('CP/URL', 'categories'))->withIcon('tags');

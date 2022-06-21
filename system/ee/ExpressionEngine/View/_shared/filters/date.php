@@ -5,9 +5,6 @@
 		<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
 		<?php endif; ?>
 	</button>
-	<?php if ($value): ?>
-		<a class="filter-clear" href="<?=$url_without_filter?>"><i class="fas fa-times"></i></a>
-	<?php endif; ?>
 	<div class="dropdown">
 		<div class="dropdown__search">
 			<div class="search-input">
@@ -28,4 +25,7 @@
 		<?php endforeach; ?>
 		</div>
 	</div>
+	<?php if ($value): ?>
+		<a class="filter-clear" href="<?=$url_without_filter?>"><i class="fas fa-times"></i></a>
+	<?php endif; ?>
 </div>

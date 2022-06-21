@@ -499,7 +499,10 @@ class Edit extends AbstractPublishController
                 'ee_filebrowser',
                 'ee_fileuploader',
             ),
-            'file' => array('cp/publish/publish')
+            'file' => array(
+                'cp/publish/publish',
+                'cp/publish/entry-list',
+            )
         ));
 
         ee()->view->cp_breadcrumbs = array(
@@ -517,7 +520,7 @@ class Edit extends AbstractPublishController
             $vars['layout']->setIsInModalContext(true);
             ee()->output->enable_profiler(false);
 
-            if (IS_PRO && ee('Request')->get('hide_closer') == 'y') {
+            if (ee('Request')->get('hide_closer') == 'y') {
                 ee()->cp->add_js_script(array(
                     'pro_file' => array(
                         'iframe-listener'
@@ -624,7 +627,7 @@ class Edit extends AbstractPublishController
                     $entry->Site->save();
                 }
             }
-            
+
             $entries->delete();
         }
 

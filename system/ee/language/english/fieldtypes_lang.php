@@ -4,8 +4,6 @@ $lang = array(
 
     'add_file' => 'Add File',
 
-    'directory' => 'Directory:',
-
     'directory_no_access' => 'You do not have access to the directory specified for this field',
 
     'file_undo_remove' => 'Undo Remove',
@@ -185,12 +183,18 @@ $lang = array(
 
     'file_dnd_upload_new' => 'Upload New',
 
+    'file_dnd_create_directory' => 'Create New Directory',
+
     /* Grid */
     'grid_add_field' => 'add new field',
 
     'grid_add_some_data' => 'You have not added any rows of data yet. <a href="#" class="grid_link_add">Add some data?</a>',
 
     'grid_allow_reorder' => 'Allow reordering of rows?',
+
+    'grid_vertical_layout' => 'Always use a vertical grid layout?',
+
+    'grid_vertical_layout_desc' => 'The fields within the grid will be stacked vertically on the publish form.',
 
     'grid_chars_allowed' => 'Characters allowed.',
 

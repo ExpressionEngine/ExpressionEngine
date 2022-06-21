@@ -489,6 +489,10 @@ $setup = [
             return new Filesystem\Filesystem();
         },
 
+        'Filesystem/Adapter' => function ($ee) {
+            return new Filesystem\AdapterManager();
+        },
+
         'IpAddress' => function ($ee) {
             return new IpAddress\Factory();
         },
@@ -502,6 +506,13 @@ $setup = [
 
         'Member' => function ($ee) {
             return new Member\Member();
+        },
+
+        'MimeType' => function($ee) {
+            $mimeType = new ExpressionEngine\Library\Mime\MimeType();
+            $mimeType->whitelistMimesFromConfig();
+            
+            return $mimeType;
         },
 
         'Model/Datastore' => function ($ee) {
@@ -586,7 +597,10 @@ $setup = [
         // ..\File
         'UploadDestination' => 'Model\File\UploadDestination',
         'FileDimension' => 'Model\File\FileDimension',
+        'FileSystemEntity' => 'Model\File\FileSystemEntity',
         'File' => 'Model\File\File',
+        'Directory' => 'Model\File\Directory',
+        //'FileField' => 'Model\File\FileField',
         'Watermark' => 'Model\File\Watermark',
 
         // ..\Log
@@ -694,7 +708,9 @@ $setup = [
 
         // ..\EntryManager
         'EntryManagerView' => 'Model\EntryManager\View',
-        'EntryManagerViewColumn' => 'Model\EntryManager\ViewColumn',
+
+        // ..\FileManager
+        'FileManagerView' => 'Model\File\FileManagerView',
     ),
 
     'cookies.necessary' => [

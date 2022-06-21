@@ -99,6 +99,11 @@ abstract class Core
 
         $application = $this->loadApplicationCore();
 
+        if (defined('REQ') && REQ === 'CLI') {
+            // Set a fake request for CLI
+            $application->setRequest($request);
+        }
+
         if (defined('BOOT_ONLY')) {
             return $this->bootOnly($request);
         }
@@ -106,9 +111,6 @@ abstract class Core
         $routing = $this->getRouting($request);
 
         if (defined('REQ') && REQ === 'CLI') {
-            // Set a fake request and then allow CLI to boot
-            $application->setRequest($request);
-
             // Keep off the CLI. Note: CLI requests die at the end of bootCli()
             $this->bootCli();
         }

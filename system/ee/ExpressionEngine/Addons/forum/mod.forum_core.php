@@ -3631,14 +3631,14 @@ class Forum_Core extends Forum
         $filepath = $this->fetch_pref('board_upload_path') . $query->row('filehash') . $thumb_prefix . $query->row('extension') ;
 
         ee()->load->library('mime_type');
-        $mime = ee()->mime_type->ofFile($filepath);
+        $mime = ee('MimeType')->ofFile($filepath);
 
         if (! file_exists($filepath) or ! isset($mime)) {
             exit;
         }
 
         if ($this->fetch_pref('board_attach_types') == 'img') {
-            if (! ee()->mime_type->isImage($mime)) {
+            if (! ee('MimeType')->isImage($mime)) {
                 exit;
             }
         }

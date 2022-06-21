@@ -12,6 +12,7 @@ namespace ExpressionEngine\Library\Mime;
 
 use Exception;
 use InvalidArgumentException;
+use ExpressionEngine\Dependency\League\MimeTypeDetection;
 
 /**
  * Mime Type
@@ -19,6 +20,7 @@ use InvalidArgumentException;
 class MimeType
 {
     protected $whitelist = array();
+    protected $kinds = array();
     protected $images = array();
 
     /**
@@ -29,7 +31,25 @@ class MimeType
      */
     public function __construct(array $mimes = array())
     {
+        $this->detector = new MimeTypeDetection\FinfoMimeTypeDetector();
         $this->addMimeTypes($mimes);
+    }
+    
+    public function whitelistMimesFromConfig()
+    {
+        $whitelist = ee()->config->loadFile('mimes');
+
+        $this->addMimeTypes($whitelist);
+
+        // Add any mime types from the config
+        $extra_mimes = ee()->config->item('mime_whitelist_additions');
+        if ($extra_mimes !== false) {
+            if (is_array($extra_mimes)) {
+                $this->addMimeTypes($extra_mimes);
+            } else {
+                $this->addMimeTypes(explode('|', $extra_mimes));
+            }
+        }
     }
 
     /**
@@ -38,7 +58,7 @@ class MimeType
      * @param string $mime The mime type to add to the whitelist
      * @return void
      */
-    public function addMimeType($mime)
+    public function addMimeType($mime, $kind = null)
     {
         if (! is_string($mime)) {
             throw new InvalidArgumentException("addMimeType only accepts strings; " . gettype($mime) . " found instead.");
@@ -50,6 +70,13 @@ class MimeType
 
         if (! in_array($mime, $this->whitelist)) {
             $this->whitelist[] = $mime;
+
+            if (! empty($kind)) {
+                if (! isset($this->kinds[$kind])) {
+                    $this->kinds[$kind] = [];
+                }
+                $this->kinds[$kind][] = $mime;
+            }
 
             if (strpos($mime, 'image/') === 0) {
                 $this->images[] = $mime;
@@ -63,10 +90,13 @@ class MimeType
      * @param array $mimes An array of MIME types to add to the whitelist
      * @return void
      */
-    public function addMimeTypes(array $mimes)
+    public function addMimeTypes(array $mimes, $kind = null)
     {
-        foreach ($mimes as $mime) {
-            $this->addMimeType($mime);
+        foreach ($mimes as $group => $mime) {
+            if (is_array($mime)) {
+                return $this->addMimeTypes($mime, $group);
+            }
+            $this->addMimeType($mime, $kind);
         }
     }
 
@@ -81,6 +111,18 @@ class MimeType
     }
 
     /**
+     * Checks whether mime belongs to one of supported types
+     *
+     * @param [type] $mime
+     * @param [type] $mimeTypeKind
+     * @return boolean
+     */
+    public function isOfKind($mime, $mimeTypeKind)
+    {
+        return (isset($this->kinds[$mimeTypeKind]) && in_array($mime, $this->kinds[$mimeTypeKind]));
+    }
+
+    /**
      * Determines the MIME type of a file
      *
      * @throws Exception If the file does not exist
@@ -92,61 +134,16 @@ class MimeType
         if (! file_exists($path)) {
             throw new Exception("File " . $path . " does not exist.");
         }
+        
+        $file_opening = file_get_contents($path, false, null, 0, 50); //get first 50 bytes off the file
+        $mime = $this->detector->detectMimeType($path, $file_opening);
 
         // Set a default
-        $mime = 'application/octet-stream';
+        $mime = !is_null($mime) ? $mime :  'application/octet-stream';
 
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        if ($finfo !== false) {
-            $fres = @finfo_file($finfo, $path);
-            if (($fres !== false)
-                && is_string($fres)
-                && (strlen($fres) > 0)) {
-                $mime = $fres;
-            }
-
-            @finfo_close($finfo);
-        }
-
-        //try another method to get mime
+        // try another method to get mime
         if ($mime == 'application/octet-stream') {
-            $file_opening = file_get_contents($path, false, null, 0, 50);//get first 50 bytes off the file
-            if (strpos($file_opening, 'RIFF') === 0 && strpos($file_opening, 'WEBPVP8') !== false) {
-                $mime = 'image/webp';
-                // PDF files start with "%PDF" (25 50 44 46) or " %PDF"
-                // @see https://en.wikipedia.org/wiki/Magic_number_%28programming%29#Examples
-            } else if (strpos($file_opening, '%PDF') !== false) {
-                $mime = 'application/pdf';
-            }
-        }
-
-        // A few files are identified as plain text, which while true is not as
-        // helpful as which type of plain text files they are.
-        if ($mime == 'text/plain') {
-            $parts = explode('.', $path);
-            $extension = end($parts);
-
-            switch ($extension) {
-                case 'css':
-                    $mime = 'text/css';
-
-                    break;
-
-                case 'js':
-                    $mime = 'application/javascript';
-
-                    break;
-
-                case 'json':
-                    $mime = 'application/json';
-
-                    break;
-
-                case 'svg':
-                    $mime = 'image/svg+xml';
-
-                    break;
-            }
+            $mime = $this->guessOctetStream($file_opening);
         }
 
         return $mime;
@@ -161,19 +158,32 @@ class MimeType
     public function ofBuffer($buffer)
     {
         // Set a default
+        $default = 'application/octet-stream';
+
+        if (is_array($buffer) || is_object($buffer)) {
+            return $default;
+        }
+
+        $mime = $this->detector->detectMimeTypeFromBuffer((string) $buffer) ?: $default;
+
+        // try another method to get mime
+        if ($mime == 'application/octet-stream') {
+            $mime = $this->guessOctetStream((string) $buffer);
+        }
+
+        return $mime;
+    }
+
+    public function guessOctetStream($contents)
+    {
         $mime = 'application/octet-stream';
 
-        $finfo = @finfo_open(FILEINFO_MIME_TYPE);
-
-        if ($finfo !== false && !is_array($buffer) && !is_object($buffer)) {
-            $fres = @finfo_buffer($finfo, $buffer);
-            if (($fres !== false)
-                && is_string($fres)
-                && (strlen($fres) > 0)) {
-                $mime = $fres;
-            }
-
-            @finfo_close($finfo);
+        if (strpos($contents, 'RIFF') === 0 && strpos($contents, 'WEBPVP8') !== false) {
+            $mime = 'image/webp';
+            // PDF files start with "%PDF" (25 50 44 46) or " %PDF"
+            // @see https://en.wikipedia.org/wiki/Magic_number_%28programming%29#Examples
+        } else if (strpos($contents, '%PDF') !== false) {
+            $mime = 'application/pdf';
         }
 
         return $mime;
@@ -253,6 +263,9 @@ class MimeType
      */
     public function fileIsSafeForUpload($path)
     {
+        if ($this->memberExcludedFromWhitelistRestrictions()) {
+            return true;
+        }
         return $this->isSafeForUpload($this->ofFile($path));
     }
 
@@ -265,7 +278,41 @@ class MimeType
      */
     public function isSafeForUpload($mime)
     {
+        if ($this->memberExcludedFromWhitelistRestrictions()) {
+            return true;
+        }
         return in_array($mime, $this->whitelist, true);
+    }
+
+    /**
+     * Checks the config for specific member exceptions or member group
+     * exceptions and compares the current member to those lists.
+     *
+     * @return bool TRUE if excluded; FALSE otherwise
+     */
+    protected function memberExcludedFromWhitelistRestrictions()
+    {
+        $excluded_members = ee()->config->item('mime_whitelist_member_exception');
+        if ($excluded_members !== false) {
+            $excluded_members = preg_split('/[\s|,]/', $excluded_members, -1, PREG_SPLIT_NO_EMPTY);
+            $excluded_members = is_array($excluded_members) ? $excluded_members : array($excluded_members);
+
+            if (in_array(ee()->session->userdata('member_id'), $excluded_members)) {
+                return true;
+            }
+        }
+
+        $excluded_member_groups = ee()->config->item('mime_whitelist_member_group_exception');
+        if ($excluded_member_groups !== false) {
+            $excluded_member_groups = preg_split('/[\s|,]/', $excluded_member_groups, -1, PREG_SPLIT_NO_EMPTY);
+            $excluded_member_groups = is_array($excluded_member_groups) ? $excluded_member_groups : array($excluded_member_groups);
+
+            if (ee('Permission')->hasAnyRole($excluded_member_groups)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

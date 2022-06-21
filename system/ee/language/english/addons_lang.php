@@ -188,10 +188,6 @@ $lang = array(
 
     /* License */
 
-    'license_error' => 'License error',
-    'license_error_file_not_writable' => 'The cache folder needs to be writable in order for ExpressionEngine Pro to work',
-    'license_error_file_broken' => 'There has been an error validating ExpressionEngine Pro license status',
-
     'license_license_expired' => 'License Expired',
     'license_invalid_domain' => 'Invalid Site Domain',
     'license_invalid_license_key' => 'Invalid Key',

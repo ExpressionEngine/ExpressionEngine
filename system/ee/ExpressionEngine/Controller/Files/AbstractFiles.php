@@ -11,18 +11,16 @@ namespace ExpressionEngine\Controller\Files;
 
 use CP_Controller;
 
-use ExpressionEngine\Model\File\UploadDestination;
 use ExpressionEngine\Model\File\File;
-use ExpressionEngine\Library\Data\Collection;
-use ExpressionEngine\Library\CP\Table;
-use ExpressionEngine\Model\Content\FieldFacade;
-use ExpressionEngine\Model\Content\Display\FieldDisplay;
+use ExpressionEngine\Library\CP\FileManager\Traits\FileManagerTrait;
 
 /**
  * Abstract Files Controller
  */
 abstract class AbstractFiles extends CP_Controller
 {
+    use FileManagerTrait;
+
     /**
      * Constructor
      */
@@ -47,6 +45,12 @@ abstract class AbstractFiles extends CP_Controller
         }
 
         $sidebar = ee('CP/Sidebar')->make();
+
+        $all_files = $sidebar->addItem(lang('all_files'), ee('CP/URL')->make('files'))->withIcon('archive');
+
+        if ($active) {
+            $all_files->isInactive();
+        }
 
         $header = $sidebar->addHeader(lang('upload_directories'));
 
@@ -85,6 +89,7 @@ abstract class AbstractFiles extends CP_Controller
             $display_name = htmlspecialchars($destination->name, ENT_QUOTES, 'UTF-8');
 
             $item = $list->addItem($display_name, ee('CP/URL')->make('files/directory/' . $destination->id))
+                ->withIcon('hdd')
                 ->withEditUrl(ee('CP/URL')->make('files/uploads/edit/' . $destination->id))
                 ->withRemoveConfirmation(lang('upload_directory') . ': <b>' . $display_name . '</b>')
                 ->identifiedBy($destination->id);
@@ -109,207 +114,29 @@ abstract class AbstractFiles extends CP_Controller
 
     protected function stdHeader($active = null)
     {
-        $upload_destinations = [];
-        if (ee('Permission')->can('upload_new_files')) {
-            $upload_destinations = ee('Model')->get('UploadDestination')
-                ->fields('id', 'name')
-                ->filter('site_id', ee()->config->item('site_id'))
-                ->filter('module_id', 0)
-                ->order('name', 'asc')
-                ->all();
-
-            if (! ee('Permission')->isSuperAdmin()) {
-                $member = ee()->session->getMember();
-                $upload_destinations = $upload_destinations->filter(function ($dir) use ($member) {
-                    return $dir->memberHasAccess($member);
-                });
-            }
-
-            $choices = [];
-            foreach ($upload_destinations as $upload) {
-                $choices[ee('CP/URL')->make('files/upload/' . $upload->getId())->compile()] = $upload->name;
-            }
-        }
+        $uploadLocationsAndDirectoriesDropdownChoices = $this->getUploadLocationsAndDirectoriesDropdownChoices();
 
         $toolbar_items = [];
-
-        if ($active !== null) {
-            $toolbar_items['sync'] = [
-                'href' => ee('CP/URL')->make('files/uploads/sync/' . $active),
-                'title' => lang('sync')
-            ];
-        }
 
         ee()->view->header = array(
             'title' => lang('file_manager'),
             'toolbar_items' => $toolbar_items,
-            'action_button' => ee('Permission')->can('upload_new_files') && $upload_destinations->count() ? [
+            'action_button' => ee('Permission')->can('upload_new_files') && !empty($uploadLocationsAndDirectoriesDropdownChoices) ? [
                 'text' => '<i class="fas fa-cloud-upload-alt icon-left"></i>' . lang('upload'),
                 'filter_placeholder' => lang('filter_upload_directories'),
-                'choices' => count($choices) > 1 ? $choices : null,
-                'href' => ee('CP/URL')->make('files/upload/' . $upload_destinations->first()->getId())->compile()
+                'choices' => count($uploadLocationsAndDirectoriesDropdownChoices) > 1 ? $uploadLocationsAndDirectoriesDropdownChoices : null,
+                'href' => '#'
             ] : null
         );
-    }
 
-    protected function buildTable($files, $limit, $offset)
-    {
-        $table = ee('CP/Table', array(
-            'sort_col' => 'date_added',
-            'sort_dir' => 'desc',
-            'class' => 'tbl-fixed'
-        ));
-
-        $table->setColumns(
-            array(
-                'title_or_name' => array(
-                    'encode' => false,
-                    'attrs' => array(
-                        'width' => '40%'
-                    ),
-                ),
-                'file_type',
-                'date_added',
-                'manage' => array(
-                    'type' => Table::COL_TOOLBAR
-                ),
-                array(
-                    'type' => Table::COL_CHECKBOX
-                )
-            )
-        );
-
-        $table->setNoResultsText(sprintf(lang('no_found'), lang('files')));
-
-        $sort_col = $table->sort_col;
-
-        $sort_map = array(
-            'title_or_name' => 'title',
-            'file_type' => 'mime_type',
-            'date_added' => 'upload_date'
-        );
-
-        if (! array_key_exists($sort_col, $sort_map)) {
-            throw new \Exception("Invalid sort column: " . htmlentities($sort_col));
-        }
-
-        $files = $files->order($sort_map[$sort_col], $table->sort_dir)
-            ->limit($limit)
-            ->offset($offset)
-            ->all();
-
-        $data = array();
-        $missing_files = false;
-
-        $file_id = ee()->session->flashdata('file_id');
-        $member = ee()->session->getMember();
-
-        foreach ($files as $file) {
-            if (! $file->memberHasAccess($member)) {
-                continue;
-            }
-
-            $toolbar = array(
-                'edit' => array(
-                    'href' => '',
-                    'rel' => 'modal-view-file',
-                    'class' => 'm-link',
-                    'title' => lang('edit'),
-                    'data-file-id' => $file->file_id
-                ),
-                'link' => array(
-                    'href' => $file->getAbsoluteURL(),
-                    'title' => lang('link'),
-                    'target' => '_blank',
-                ),
-                'crop' => array(
-                    'href' => ee('CP/URL')->make('files/file/crop/' . $file->file_id),
-                    'title' => lang('crop'),
-                ),
-                'download' => array(
-                    'href' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
-                    'title' => lang('download'),
-                ),
-            );
-
-            if (! ee('Permission')->can('edit_files') || ! $file->isEditableImage()) {
-                unset($toolbar['crop']);
-            }
-
-            $file_description = $file->title;
-
-            if (ee('Permission')->can('edit_files')) {
-                $file_description = '<a href data-file-id="' . $file->file_id . '" rel="modal-view-file" class="m-link">' . $file->title . '</a>';
-            }
-
-            $attrs = array();
-
-            if (!$file->exists()) {
-                $attrs['class'] = 'missing';
-                $missing_files = true;
-                $file_description .= '<br><em class="faded">' . lang('file_not_found') . '</em>';
-            } else {
-                $file_description .= '<br><em class="faded">' . $file->file_name . '</em>';
-            }
-
-            $column = array(
-                $file_description,
-                $file->mime_type,
-                ee()->localize->human_time($file->upload_date),
-                array('toolbar_items' => $toolbar),
-                array(
-                    'name' => 'selection[]',
-                    'value' => $file->file_id,
-                    'data' => array(
-                        'confirm' => lang('file') . ': <b>' . htmlentities($file->title, ENT_QUOTES, 'UTF-8') . '</b>'
-                    )
-                )
-            );
-
-            if ($file_id && $file->file_id == $file_id) {
-                if (array_key_exists('class', $attrs)) {
-                    $attrs['class'] .= ' selected';
-                } else {
-                    $attrs['class'] = 'selected';
-                }
-            }
-
-            $data[] = array(
-                'attrs' => $attrs,
-                'columns' => $column
-            );
-        }
-
-        $table->setData($data);
-
-        if ($missing_files) {
-            ee('CP/Alert')->makeInline('missing-files')
-                ->asWarning()
-                ->cannotClose()
-                ->withTitle(lang('files_not_found'))
-                ->addToBody(lang('files_not_found_desc'))
-                ->now();
-        }
-
-        return $table;
-    }
-
-    protected function validateFile(File $file)
-    {
-        return ee('File')->makeUpload()->validateFile($file);
+        return [
+            'uploadLocationsAndDirectoriesDropdownChoices' => $uploadLocationsAndDirectoriesDropdownChoices
+        ];
     }
 
     protected function saveFileAndRedirect(File $file, $is_new = false, $sub_alert = null)
     {
         $action = ($is_new) ? 'upload_filedata' : 'edit_file_metadata';
-
-        if ($file->isNew()) {
-            $file->uploaded_by_member_id = ee()->session->userdata('member_id');
-            $file->upload_date = ee()->localize->now;
-        }
-
-        $file->modified_by_member_id = ee()->session->userdata('member_id');
-        $file->modified_date = ee()->localize->now;
 
         $file->save();
 
@@ -328,78 +155,17 @@ abstract class AbstractFiles extends CP_Controller
             ee()->session->set_flashdata('file_id', $file->file_id);
         }
 
-        ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
-    }
-
-    protected function listingsPage($files, $base_url, $view_type = 'list')
-    {
-        $vars = array();
-        $search_terms = ee()->input->get_post('filter_by_keyword');
-
-        if ($search_terms) {
-            $base_url->setQueryStringVariable('filter_by_keyword', $search_terms);
-            $files->search(['title', 'file_name', 'mime_type'], $search_terms);
-            $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
-        }
-
-        $total_files = $files->count();
-        $vars['total_files'] = $total_files;
-
-        $filters = ee('CP/Filter')
-            ->add('Keyword')
-            ->add('ViewType', ['list', 'thumb'], $view_type)
-            ->add('Perpage', $total_files, 'show_all_files');
-
-        $filter_values = $filters->values();
-
-        $perpage = $filter_values['perpage'];
-        $page = ((int) ee()->input->get('page')) ?: 1;
-        $offset = ($page - 1) * $perpage;
-
-        $base_url->addQueryStringVariables($filter_values);
-
-        if ($view_type === 'thumb') {
-            ee()->view->filters = $filters->render($base_url);
-
-            if ($files->count() == 0) {
-                $vars['no_results'] = [
-                    'text' => sprintf(lang('no_found'), lang('files'))
-                ];
+        if (ee()->input->post('submit') == 'save_and_close') {
+            $params = [];
+            if ($file->directory_id != 0) {
+                $params['directory_id'] = $file->directory_id;
             }
-
-            $files = $files->limit($perpage)
-                ->offset($offset);
-
-            $vars['files'] = $files->all();
-            $vars['form_url'] = $base_url;
+            ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id, $params));
         } else {
-            $table = $this->buildTable($files, $perpage, $offset);
-
-            $base_url->setQueryStringVariable('sort_col', $table->sort_col);
-            $base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-            ee()->view->filters = $filters->render($base_url);
-
-            $vars['table'] = $table->viewData($base_url);
-            $vars['form_url'] = $vars['table']['base_url'];
+            ee()->functions->redirect(ee('CP/URL')->make('files/file/view/' . $file->getId()));
         }
-
-        $vars['pagination'] = ee('CP/Pagination', $total_files)
-            ->perPage($perpage)
-            ->currentPage($page)
-            ->render($base_url);
-
-        ee()->javascript->set_global('file_view_url', ee('CP/URL')->make('files/file/view/###')->compile());
-        ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
-        ee()->cp->add_js_script(array(
-            'file' => array(
-                'cp/confirm_remove',
-                'cp/files/manager'
-            ),
-        ));
-
-        return $vars;
     }
+
 }
 
 // EOF

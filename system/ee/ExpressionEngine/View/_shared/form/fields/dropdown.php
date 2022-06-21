@@ -24,7 +24,8 @@ if ($field_disabled) {
         'emptyText' => $empty_text,
         'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null,
         'conditionalRule' => isset($conditional_toggle) ? $conditional_toggle : null,
-        'isRequired' => isset($is_required) ? isset($is_required) : false
+        'isRequired' => isset($is_required) ? isset($is_required) : false,
+        'fileManager' => isset($fileManager) ? $fileManager : false
     ];
     
     $react = 'data-dropdown-react="' . base64_encode(json_encode($component)) . '" data-input-value="' . $field_name . '"';

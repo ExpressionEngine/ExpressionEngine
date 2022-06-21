@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 6.x
+      - 7.x
   push:
     branches:
       - feature/6.x/preparing-to-release
@@ -52,15 +53,27 @@ jobs:
           content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
           echo "::set-output name=BUILD_VERSION::$content"
 
-      - name: Run build process
+      - name: Run build process (with Pro)
+        if: github.event.pull_request.base.ref == '6.x'
         working-directory: build-tools
         env:
-          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
+          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
           PRO_REPO_PATH: ${{ github.workspace }}/__pro
         run: |
           gulp app --local --nogit --head --skip-lint --jira-collector --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+
+      - name: Run build process (without Pro)
+        if:  github.event.pull_request.base.ref == '7.x'
+        working-directory: build-tools
+        env:
+          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          APP_REPO_PATH: ${{ github.workspace }}
+          PRO_REPO_PATH: ${{ github.workspace }}/__pro
+        run: |
+          gulp app --local --nogit --head --skip-lint --jira-collector --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2
@@ -200,6 +213,9 @@ jobs:
                 mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
 
             - name: Install PHP dependencies
+              run: composer install
+
+            - name: Install Testing PHP dependencies
               working-directory: tests/cypress
               run: composer install
 

@@ -123,14 +123,15 @@ class Settings extends CP_Controller
             }
         }
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee('Permission')->canUsePro()) {
+        if (ee('pro:Access')->hasRequiredLicense() && ee('Permission')->canUsePro()) {
             ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $list = $sidebar->addHeader(lang('pro_settings'))
                 ->addBasicList();
 
+            $sidebar->addItem(lang('pro_settings'), ee('CP/URL')->make('settings/pro/general'));
             $sidebar->addItem(lang('cookie_settings'), ee('CP/URL')->make('settings/pro/cookies'));
+            $sidebar->addItem(lang('branding_settings'), ee('CP/URL')->make('settings/pro/branding'));
         }
-
     }
 
     /**
@@ -164,8 +165,8 @@ class Settings extends CP_Controller
      * view, check POST for their values, and then save the values in site
      * preferences
      *
-     * @param	array	$sections	Array of sections passed to form view
-     * @return	bool	Success or failure of saving the settings
+     * @param   array   $sections   Array of sections passed to form view
+     * @return  bool    Success or failure of saving the settings
      */
     protected function saveSettings($sections)
     {

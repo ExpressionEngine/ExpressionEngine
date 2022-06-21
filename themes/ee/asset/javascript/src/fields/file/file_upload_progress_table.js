@@ -109,7 +109,7 @@ function (_React$Component) {
       var url = EE.dragAndDrop.resolveConflictEndpoint + '&' + $.param(params);
       iframe.attr('src', url);
       modal.find('div.box').html(iframe);
-      iframe.load(function () {
+      iframe.on('load', function () {
         var response = iframe.contents().find('body').text();
 
         try {
@@ -117,6 +117,10 @@ function (_React$Component) {
           modal.trigger('modal:close');
 
           if (response.cancel) {
+            if ($('.file-upload-widget').length) {
+              $('.file-upload-widget').hide();
+            }
+
             return _this.props.onFileUploadCancel(e, file);
           }
 

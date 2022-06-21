@@ -15,65 +15,6 @@ use  ExpressionEngine\Library\Mime\MimeType;
  */
 class Mime_type
 {
-    protected $mime_type;
-
-    /**
-     * Instantiates a new MimeType object and adds whitelisted MIME types based
-     * on the config/mimes.php file and any MIME types in the
-     * 'mime_whitelist_additions' config override.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->mime_type = new MimeType();
-
-        $whitelist = ee()->config->loadFile('mimes');
-
-        $this->mime_type->addMimeTypes($whitelist);
-
-        // Add any mime types from the config
-        $extra_mimes = ee()->config->item('mime_whitelist_additions');
-        if ($extra_mimes !== false) {
-            if (is_array($extra_mimes)) {
-                $this->mime_type->addMimeTypes($extra_mimes);
-            } else {
-                $this->mime_type->addMimeTypes(explode('|', $extra_mimes));
-            }
-        }
-    }
-
-    /**
-     * Checks the config for specific member exceptions or member group
-     * exceptions and compares the current member to those lists.
-     *
-     * @return bool TRUE if excluded; FALSE otherwise
-     */
-    protected function memberExcludedFromWhitelistRestrictions()
-    {
-        $excluded_members = ee()->config->item('mime_whitelist_member_exception');
-        if ($excluded_members !== false) {
-            $excluded_members = preg_split('/[\s|,]/', $excluded_members, -1, PREG_SPLIT_NO_EMPTY);
-            $excluded_members = is_array($excluded_members) ? $excluded_members : array($excluded_members);
-
-            if (in_array(ee()->session->userdata('member_id'), $excluded_members)) {
-                return true;
-            }
-        }
-
-        $excluded_member_groups = ee()->config->item('mime_whitelist_member_group_exception');
-        if ($excluded_member_groups !== false) {
-            $excluded_member_groups = preg_split('/[\s|,]/', $excluded_member_groups, -1, PREG_SPLIT_NO_EMPTY);
-            $excluded_member_groups = is_array($excluded_member_groups) ? $excluded_member_groups : array($excluded_member_groups);
-
-            if (ee('Permission')->hasAnyRole($excluded_member_groups)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /**
      * Determines the MIME type of a file
      *
@@ -81,11 +22,9 @@ class Mime_type
      */
     public function ofFile($path)
     {
-        try {
-            return $this->mime_type->ofFile($path);
-        } catch (Exception $e) {
-            show_error(sprintf(lang('file_not_found'), $path));
-        }
+        ee()->load->library('logger');
+        ee()->logger->deprecated('7.0.0', "ee('MimeType')->ofFile()");
+        return ee('MimeType')->ofFile($path);
     }
 
     /**
@@ -95,7 +34,9 @@ class Mime_type
      */
     public function ofBuffer($buffer)
     {
-        return $this->mime_type->ofBuffer($buffer);
+        ee()->load->library('logger');
+        ee()->logger->deprecated('7.0.0', "ee('MimeType')->ofBuffer()");
+        return ee('MimeType')->ofBuffer($buffer);
     }
 
     /**
@@ -105,11 +46,9 @@ class Mime_type
      */
     public function fileIsImage($path)
     {
-        try {
-            return $this->mime_type->fileIsImage($path);
-        } catch (Exception $e) {
-            show_error(sprintf(lang('file_not_found'), $path));
-        }
+        ee()->load->library('logger');
+        ee()->logger->deprecated('7.0.0', "ee('MimeType')->fileIsImage()");
+        return ee('MimeType')->fileIsImage($path);
     }
 
     /**
@@ -119,7 +58,9 @@ class Mime_type
      */
     public function isImage($mime)
     {
-        return $this->mime_type->isImage($mime);
+        ee()->load->library('logger');
+        ee()->logger->deprecated('7.0.0', "ee('MimeType')->isImage()");
+        return ee('MimeType')->isImage($mime);
     }
 
     /**
@@ -130,11 +71,9 @@ class Mime_type
      */
     public function fileIsSafeForUpload($path)
     {
-        if ($this->memberExcludedFromWhitelistRestrictions()) {
-            return true;
-        }
-
-        return $this->mime_type->fileIsSafeForUpload($path);
+        ee()->load->library('logger');
+        ee()->logger->deprecated('7.0.0', "ee('MimeType')->fileIsSafeForUpload()");
+        return ee('MimeType')->fileIsSafeForUpload($path);
     }
 
     /**
@@ -145,11 +84,9 @@ class Mime_type
      */
     public function isSafeForUpload($mime)
     {
-        if ($this->memberExcludedFromWhitelistRestrictions()) {
-            return true;
-        }
-
-        return $this->mime_type->isSafeForUpload($mime);
+        ee()->load->library('logger');
+        ee()->logger->deprecated('7.0.0', "ee('MimeType')->isSafeForUpload()");
+        return ee('MimeType')->isSafeForUpload($mime);
     }
 
     /**
@@ -159,7 +96,9 @@ class Mime_type
      */
     public function getWhitelist()
     {
-        return $this->mime_type->getWhitelist();
+        ee()->load->library('logger');
+        ee()->logger->deprecated('7.0.0', "ee('MimeType')->getWhitelist()");
+        return ee('MimeType')->getWhitelist();
     }
 }
 

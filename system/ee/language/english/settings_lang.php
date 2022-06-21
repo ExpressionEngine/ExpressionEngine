@@ -320,6 +320,10 @@ $lang = array(
 
     'enable_sql_caching_desc' => 'When enabled, the speed of dynamic channel pages will be improved. Do <b>not</b> use if you need the "future entries" or "expiring entries" features.',
 
+    'file_manager_compatibility_mode' => 'Run File Manager in Compatibility Mode?',
+
+    'file_manager_compatibility_mode_desc' => 'Since ExpressionEngine 7, the File Manager offers new bigger set of features. Some of the features like subfolders support, cloud storage adapters, file usage stats require that data would be stored differently from how they were stored in older version. This might cause some add-ons to malfunction. Use the Compatibility Mode if you want the data to be stored an old way.',
+
     'gd' => 'GD',
 
     'gd2' => 'GD 2',

@@ -31,6 +31,20 @@ class Upload
     {
         $html = '';
 
+        if (! $file->isNew()) {
+            $dimensions = explode(" ", $file->file_hw_original);
+            $metadata = [
+                'name' => $file->file_name,
+                'size' => ee('Format')->make('Number', $file->file_size)->bytes(),
+                'file_type' => lang('type_' . $file->file_type),
+                'dimensions' => (count($dimensions) > 1) ? $dimensions[0] . 'x' . $dimensions[1] . ' px' : '',
+                'uploaded_by' => ($file->uploaded_by_member_id && $file->UploadAuthor) ? $file->UploadAuthor->getMemberName() : '',
+                'date_added' => ee()->localize->human_time($file->upload_date),
+                'modified_by' => ($file->modified_by_member_id && $file->ModifyAuthor) ? $file->ModifyAuthor->getMemberName() : '',
+                'date_modified' => ee()->localize->human_time($file->modified_date)
+            ];
+        }
+
         $sections = array(
             array(
                 array(
@@ -40,6 +54,14 @@ class Upload
                         'file' => array(
                             'type' => 'file',
                             'required' => true
+                        )
+                    )
+                ),
+                array(
+                    'fields' => array(
+                        'f_metadata' => array(
+                            'type' => 'html',
+                            'content' => ! $file->isNew() ? ee('View')->make('ee:files/file-data')->render(['data' => $metadata]) : ''
                         )
                     )
                 ),
@@ -231,29 +253,31 @@ class Upload
         return $sections;
     }
 
-    public function uploadTo($dir_id)
+    public function uploadTo($upload_location_id, $directory_id = 0)
     {
-        $dir = ee('Model')->get('UploadDestination', $dir_id)
+        $uploadLocation = ee('Model')->get('UploadDestination', $upload_location_id)
             ->filter('site_id', ee()->config->item('site_id'))
             ->first();
 
-        if (! $dir) {
+        if (! $uploadLocation) {
             show_error(lang('no_upload_destination'));
         }
 
-        if (! $dir->memberHasAccess(ee()->session->getMember())) {
+        // check EE permissions on upload location
+        if (! $uploadLocation->memberHasAccess(ee()->session->getMember())) {
             show_error(lang('unauthorized_access'), 403);
         }
 
-        if (! $dir->exists()) {
+        // check upload location exists
+        if (! $uploadLocation->exists()) {
             if (AJAX_REQUEST) {
                 show_error(lang('invalid_upload_destination'), 404);
             }
-            $upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
+            $upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $uploadLocation->id);
             ee('CP/Alert')->makeStandard()
                 ->asIssue()
                 ->withTitle(lang('file_not_found'))
-                ->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
+                ->addToBody(sprintf(lang('directory_not_found'), $uploadLocation->name))
                 ->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
                 ->now();
 
@@ -262,17 +286,33 @@ class Upload
 
         $posted = false;
 
-        // Check permissions on the directory
-        if (! $dir->isWritable()) {
+        // Check file system permissions on upload location
+        if (! $uploadLocation->isWritable()) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
                 ->withTitle(lang('dir_not_writable'))
-                ->addToBody(sprintf(lang('dir_not_writable_desc'), $dir->server_path))
+                ->addToBody(sprintf(lang('dir_not_writable_desc'), $uploadLocation->name))
                 ->now();
         }
 
+        // check subfolder permissions
+        if ($directory_id != 0) {
+            $directory = ee('Model')->get('Directory', $directory_id)->filter('upload_location_id', $uploadLocation->id)->first();
+            if (! $directory) {
+                show_error(lang('invalid_subfolder'));
+            }
+
+            if (! $directory->exists()) {
+                show_error(lang('subfolder_not_exists'));
+            }
+
+            if (! $directory->isWritable()) {
+                show_error(lang('subfolder_not_writable'));
+            }
+        }
+
         $file = ee('Model')->make('File');
-        $file->UploadDestination = $dir;
+        $file->UploadDestination = $uploadLocation;
 
         $result = $this->validateFile($file);
 
@@ -287,7 +327,7 @@ class Upload
 
                 // PUNT! @TODO Break away from the old Filemanger Library
                 ee()->load->library('filemanager');
-                $upload_response = ee()->filemanager->upload_file($dir_id, 'file');
+                $upload_response = ee()->filemanager->upload_file($upload_location_id, 'file', false, $directory_id);
                 if (isset($upload_response['error'])) {
                     ee('CP/Alert')->makeInline('shared-form')
                         ->asIssue()
@@ -298,7 +338,8 @@ class Upload
                     $uploaded = true;
                     $file = ee('Model')->get('File', $upload_response['file_id'])->first();
 
-                    $file->upload_location_id = $dir_id;
+                    $file->upload_location_id = $upload_location_id;
+                    $file->directory_id = $directory_id;
                     $file->site_id = ee()->config->item('site_id');
 
                     // Validate handles setting properties...
@@ -426,7 +467,7 @@ class Upload
                 $file->file_name = $original_name;
                 $file->save();
 
-                ee('Filesystem')->copy($src, $file->getAbsolutePath());
+                $file->getFilesystem()->forceCopy($src, $file->getAbsolutePath());
             } else {
                 if (($file->description && ($file->description != $original->description))
                     || ($file->credit && ($file->credit != $original->credit))
@@ -435,10 +476,10 @@ class Upload
                     $result['warning'] = lang('replace_no_metadata');
                 }
 
-                ee('Filesystem')->copy($file->getAbsolutePath(), $original->getAbsolutePath());
+                $file->getFilesystem()->forceCopy($file->getAbsolutePath(), $original->getAbsolutePath());
 
-                if (file_exists($file->getAbsoluteThumbnailPath())) {
-                    ee('Filesystem')->copy($file->getAbsoluteThumbnailPath(), $original->getAbsoluteThumbnailPath());
+                if ($file->getFilesystem()->exists($file->getAbsoluteThumbnailPath())) {
+                    $file->getFilesystem()->forceCopy($file->getAbsoluteThumbnailPath(), $original->getAbsoluteThumbnailPath());
                 }
 
                 foreach ($file->UploadDestination->FileDimensions as $fd) {
@@ -446,8 +487,8 @@ class Upload
                     $dest = $fd->getAbsolutePath() . $original->file_name;
 
                     // non-image files will not have manipulations
-                    if (ee('Filesystem')->exists($src)) {
-                        ee('Filesystem')->copy($src, $dest);
+                    if ($file->getFilesystem()->exists($src)) {
+                        $file->getFilesystem()->forceCopy($src, $dest);
                     }
                 }
 

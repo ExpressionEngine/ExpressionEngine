@@ -19,7 +19,9 @@
     $('div[data-file-field-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('fileFieldReact')))
       props.thisField = $(this)
+      let files_field = props.thisField.data('input-value');
       ReactDOM.render(React.createElement(FileField, props, null), this)
+      new MutableSelectField(files_field, EE.fileManager.fileDirectory);
     })
   }
 
@@ -38,7 +40,6 @@
   }
 
   getFieldContainer() {
-
     // If in a grid, return that
     if($(this.props.thisField).closest('.grid-file-upload').length) {
       return $(this.props.thisField).closest('.grid-file-upload')
@@ -60,9 +61,9 @@
     let fileField = this.getFieldContainer()
 
     EE.FileField.pickerCallback(response, {
-      input_value: fileField.find('input.js-file-input'),
-      input_img: fileField.find('img.js-file-image'),
-      modal: $('.modal-file')
+        input_value: fileField.find('input.js-file-input'),
+        input_img: fileField.find('img.js-file-image'),
+        modal: $('.modal-file')
     })
 
     this.setState({
@@ -79,7 +80,7 @@
       {...this.props}
       onFileUploadSuccess={this.setFile}
       marginTop={false}
-      multiFile={false}
+      multiFile={true}
     />
   }
 }

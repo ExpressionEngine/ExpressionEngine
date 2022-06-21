@@ -11,12 +11,15 @@
 use ExpressionEngine\Model\File\UploadDestination;
 use ExpressionEngine\Addons\FilePicker\FilePicker as Picker;
 use ExpressionEngine\Service\File\ViewType;
+use ExpressionEngine\Library\CP\FileManager\Traits\FileManagerTrait;
 
 /**
  * File Picker Module control panel
  */
 class Filepicker_mcp
 {
+    use FileManagerTrait;
+
     private $images = false;
 
     public function __construct()
@@ -61,7 +64,6 @@ class Filepicker_mcp
     {
         // check if we have a request for a specific file id
         $file = ee()->input->get('file');
-
         if (! empty($file)) {
             return $this->fileInfo($file);
         }
@@ -70,192 +72,101 @@ class Filepicker_mcp
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $dirs = $this->getUserUploadDirectories();
+        // directory filter
+        $field_upload_locations = ee()->input->get('field_upload_locations') ?: (ee()->input->get('directory') ?: 'all');
 
         // directories we were asked to list
-        $show = ee()->input->get('directories');
+        $requested_directory = ee()->input->get('requested_directory') ?: ee()->input->get('directories');
+        $requested_directory = empty($requested_directory) ? $field_upload_locations : $requested_directory;
 
-        // directory filter
-        $requested = ee()->input->get('directory') ?: 'all';
-
-        $show = empty($show) ? $requested : $show;
-
-        if ($show != 'all') {
-            $dirs = $dirs->filter('id', (int) $show);
+        $dirs = $this->getUserUploadDirectories();
+        if ($requested_directory != 'all') {
+            $dirs = $dirs->filter('id', (int) $requested_directory);
         }
 
         // only have one? use it
         if ($dirs->count() == 1) {
-            $requested = $dirs->first()->id;
+            $field_upload_locations = $dirs->first()->id;
         }
-
         $directories = $dirs->indexBy('id');
-        $files = null;
-        $nodirs = false;
 
-        $vars['search_allowed'] = false;
-
-        if ($requested == 'all') {
-            $files = ee('Model')->get('File')
-                ->filter('upload_location_id', 'IN', $dirs->getIds())
-                ->filter('site_id', ee()->config->item('site_id'));
-
-            $dir_ids = $dirs->getIds();
-
-            if (empty($dir_ids)) {
-                $nodirs = true;
-                $files->markAsFutile();
-            }
-
-            $this->search($files);
-            $this->sort($files);
-            $vars['search_allowed'] = true;
-
-            $total_files = $files->count();
-
+        if ($field_upload_locations == 'all') {
             $viewTypeService = new ViewType();
-            $type = $viewTypeService->determineViewType('all', 'list');
+            $type = $viewTypeService->determineViewType();
         } else {
             // selected something but we don't have that directory? check
             // the system dirs, just in case
-            if (empty($directories[$requested])) {
+            if (!isset($directories[$field_upload_locations]) || empty($directories[$field_upload_locations])) {
                 $system_dirs = $this->getSystemUploadDirectories()->indexBy('id');
-
-                if (empty($system_dirs[$requested])) {
+                if (empty($system_dirs[$field_upload_locations])) {
                     show_error(lang('no_upload_destination'));
                 }
-
-                $dir = $system_dirs[$requested];
-                $files = $dir->getFilesystem()->all();
-                $total_files = iterator_count($files);
+                $dir = $system_dirs[$field_upload_locations];
             } else {
-                $dir = $directories[$requested];
-
-                $files = ee('Model')->get('File')
-                    ->filter('upload_location_id', $dir->getId())
-                    ->filter('site_id', ee()->config->item('site_id'));
-
-                $this->search($files);
-                $this->sort($files);
-                $vars['search_allowed'] = true;
-
-                $total_files = $files->count();
+                $dir = $directories[$field_upload_locations];
             }
-
             $viewTypeService = new ViewType();
-            $type = $viewTypeService->determineViewType('dir_' . $requested, $dir->default_modal_view);
+            $type = $viewTypeService->determineViewType('dir_' . $field_upload_locations, $dir->default_modal_view);
         }
 
-        $has_filters = ee()->input->get('hasFilters');
-
-        $base_url = ee('CP/URL', $this->base_url);
-        $base_url->setQueryStringVariable('directories', $show);
-        $base_url->setQueryStringVariable('directory', $requested);
-        $base_url->setQueryStringVariable('viewtype', $type);
-        $reset_url = clone $base_url;
-
-        if ($has_filters !== '0') {
-            $vars['type'] = $type;
-            $filters = ee('CP/Filter');
-
-            if (count($directories) > 1) {
-                $directories = array_map(function ($dir) {
-                    return $dir->name;
-                }, $directories);
-                $directories = array('all' => lang('all')) + $directories;
-
-                $dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
-                    ->disableCustomValue()
-                    ->setDefaultValue($requested);
-
-                $filters = ee('CP/Filter')->add($dirFilter);
+        // show a slightly different message if we have no upload directories
+        /*if ($nodirs) {
+            if (ee('Permission')->can('create_upload_directories')) {
+                $table->setNoResultsText(
+                    lang('zero_upload_directories_found'),
+                    lang('create_new'),
+                    ee('CP/URL')->make('files/uploads/create'),
+                    true
+                );
+            } else {
+                $table->setNoResultsText(lang('zero_upload_directories_found'));
             }
+        }*/
 
-            $imgOptions = array(
-                'thumb' => 'thumbnails',
-                'list' => 'list'
-            );
+        $vars = $this->listingsPage($field_upload_locations != 'all' ? $dir : null, $type, true);
+        $vars['viewtype'] = $type;
+        $vars['toolbar_items'] = [];
+        $vars['cp_heading'] = $field_upload_locations == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
-            if ($vars['search_allowed']) {
-                $filters->add('Keyword');
-                if (ee()->input->get('filter_by_keyword') != '') {
-                    $base_url->setQueryStringVariable('filter_by_keyword', ee()->input->get('filter_by_keyword'));
-                }
+        if ($requested_directory != 'all') {
+            /*if (!bool_config_item('file_manager_compatibility_mode') && $dir->allow_subfolders) {
+                $vars['toolbar_items']['new_folder'] = [
+                    'href' => '#',
+                    'rel' => 'modal-new-folder',
+                    'class' => 'm-link',
+                    'content' => lang('new_folder'),
+                ];
+            }*/
+            if (ee('Permission')->can('upload_new_files') && isset($dir)) {
+                $vars['toolbar_items']['upload'] = [
+                    'href' => '#',
+                    'rel' => 'trigger-upload-to-current-location',
+                    'data-upload_location_id' => $dir->getId(),
+                    'data-directory_id' => (int) ee('Request')->get('directory_id'),
+                    'content' => lang('upload'),
+                ];
             }
-
-            $filters->add('ViewType', ['list', 'thumb'], $type);
-
-            $filters = $filters->add('Perpage', $total_files, 'show_all_files');
-
-            $perpage = $filters->values();
-            $perpage = $perpage['perpage'];
-            $base_url->setQueryStringVariable('perpage', $perpage);
-
-            $page = ((int) ee()->input->get('page')) ?: 1;
-            $offset = ($page - 1) * $perpage; // Offset is 0 indexed
-
-            $vars['filters'] = $filters->render($reset_url);
-        } else {
-            $base_url->setQueryStringVariable('hasFilters', $has_filters);
-
-            $perpage = 25;
-            $page = ((int) ee()->input->get('page')) ?: 1;
-            $offset = ($page - 1) * $perpage; // Offset is 0 indexed
         }
 
-        if (! $files instanceof \Iterator) {
-            $files = $files->limit($perpage)->offset($offset)->all();
-            $files = $files->getIterator();
-        } else {
-            $files = new \LimitIterator($files, $offset, $perpage);
+        // Generate the contents of the new folder modal
+        $newFolderModal = ee('View')->make('files/modals/folder')->render([
+            'name' => 'modal-new-folder',
+            'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
+            'choices' => $this->getUploadLocationsAndDirectoriesDropdownChoices(),
+            'selected' => (int) ee('Request')->get('directory_id'),
+        ]);
+
+        $html = ee('View')->make('ee:files/index')->render($vars) . $newFolderModal;
+
+        if (!empty(ee('Request')->header('ACCEPT')) && strpos(ee('Request')->header('ACCEPT'), '/json') !== false) {
+            return json_encode([
+                'html' => $html,
+                'url' => $vars['form_url']->compile(),
+                'viewManager_saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => null, 'viewtype' => $vars['viewtype']])->compile()
+            ]);
         }
 
-        if (ee()->input->get('hasUpload') !== '0') {
-            $vars['upload'] = ee('CP/URL', $this->picker->base_url . "upload");
-            $vars['upload']->setQueryStringVariable('directory', $requested);
-        }
-
-        $vars['dir'] = $requested;
-
-        if (($this->images || $type == 'thumb') && $total_files > 0) {
-            $vars['type'] = 'thumb';
-            $vars['files'] = $files;
-            $vars['form_url'] = $base_url;
-            $vars['data_url_base'] = $this->base_url;
-        } else {
-            $table = $this->picker->buildTableFromFileCollection($files, $perpage, ee()->input->get_post('selected'));
-
-            // show a slightly different message if we have no upload directories
-            if ($nodirs) {
-                if (ee('Permission')->can('create_upload_directories')) {
-                    $table->setNoResultsText(
-                        lang('zero_upload_directories_found'),
-                        lang('create_new'),
-                        ee('CP/URL')->make('files/uploads/create'),
-                        true
-                    );
-                } else {
-                    $table->setNoResultsText(lang('zero_upload_directories_found'));
-                }
-            }
-
-            $base_url->setQueryStringVariable('sort_col', $table->sort_col);
-            $base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-            $vars['type'] = $type;
-            $vars['files'] = array();
-            $vars['table'] = $table->viewData($base_url);
-            $vars['form_url'] = $vars['table']['base_url'];
-        }
-
-        $vars['pagination'] = ee('CP/Pagination', $total_files)
-            ->perPage($perpage)
-            ->currentPage($page)
-            ->render($base_url);
-
-        $vars['cp_heading'] = $requested == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
-
-        return ee('View')->make('filepicker:ModalView')->render($vars);
+        return $html;
     }
 
     /**
@@ -397,7 +308,8 @@ class Filepicker_mcp
 
     public function ajaxUpload()
     {
-        $dir_id = ee('Request')->post('directory');
+        $dir_id = ee('Request')->post('upload_location_id') ?: ee('Request')->post('directory');
+        $subfolder_id = (int) ee('Request')->post('directory_id');
 
         if (empty($dir_id)) {
             show_404();
@@ -405,7 +317,7 @@ class Filepicker_mcp
 
         $errors = null;
 
-        $result = ee('File')->makeUpload()->uploadTo($dir_id);
+        $result = ee('File')->makeUpload()->uploadTo($dir_id, $subfolder_id);
 
         $file = $result['file'];
 
@@ -443,6 +355,7 @@ class Filepicker_mcp
                         // Inconsistent casing for backwards compatibility
                         'status' => 'success',
                         'title' => $file->file_name,
+                        'file_id' => $file->getId(),
                         'file_name' => $file->file_name,
                         'isImage' => $file->isImage(),
                         'isSVG' => $file->isSVG(),

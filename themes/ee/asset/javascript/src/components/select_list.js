@@ -493,7 +493,9 @@ function (_React$Component) {
             parent: parent ? parent : null,
             component: items[key].component != undefined ? items[key].component : null,
             sectionLabel: currentSection,
-            entry_id: items[key].entry_id ? items[key].entry_id : ''
+            entry_id: items[key].entry_id ? items[key].entry_id : '',
+            upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
+            path: items[key].path ? items[key].path : ''
           };
 
           if (items[key].children) {

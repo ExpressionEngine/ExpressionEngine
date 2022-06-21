@@ -74,9 +74,9 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20220428');
-        define('APP_VER', '6.4.0');
-        define('APP_VER_ID', '');
+        define('APP_BUILD', '20220506');
+        define('APP_VER', '7.0.0-rc.1');
+        define('APP_VER_ID', 'rc.1');
         define('SLASH', '&#47;');
         define('LD', '{');
         define('RD', '}');
@@ -132,12 +132,16 @@ class EE_Core
             define('IS_PRO', false);
         }
 
+        //register local filesystem adapter
+        ee('Filesystem/Adapter')->registerAdapter('ExpressionEngine\Library\Filesystem\Adapter\Local');
+
         // setup cookie settings for all providers
-        if (REQ == 'CP') {
-            $providers = ee('App')->getProviders();
-            foreach ($providers as $provider) {
+        $providers = ee('App')->getProviders();
+        foreach ($providers as $provider) {
+            if (REQ == 'CP') {
                 $provider->registerCookiesSettings();
             }
+            $provider->registerFilesystemAdapters();
         }
         if (REQ != 'CLI') {
             ee('CookieRegistry')->loadCookiesSettings();

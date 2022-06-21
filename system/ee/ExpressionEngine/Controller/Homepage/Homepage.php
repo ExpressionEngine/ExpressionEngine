@@ -41,7 +41,7 @@ class Homepage extends CP_Controller
             'dashboard' => $dashboard_layout->generateDashboardHtml()
         ];
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee('pro:Access')->hasRequiredLicense()) {
             $vars['header']['toolbar_items'] = array(
                 'settings' => array(
                     'href' => ee('CP/URL')->make('pro/dashboard/layout/' . $member->member_id),
@@ -179,15 +179,6 @@ class Homepage extends CP_Controller
     public function toggleSidebarNav()
     {
         ee()->input->set_cookie('collapsed_nav', (int) ee()->input->get('collapsed'), 31104000);
-
-        ee()->output->send_ajax_response(['success']);
-    }
-
-    public function dismissBanner()
-    {
-        $member = ee()->session->getMember();
-        $member->dismissed_pro_banner = 'y';
-        $member->save();
 
         ee()->output->send_ajax_response(['success']);
     }

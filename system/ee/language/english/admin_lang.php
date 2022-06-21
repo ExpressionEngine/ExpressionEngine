@@ -900,10 +900,6 @@ $lang = array(
 
     'throttling_disabled' => 'Throttling Disabled',
 
-    'thumbnail_prefix' => 'Image Thumbnail Suffix',
-
-    'thumbnail_prefix_exp' => 'This suffix will be added to all auto-generated thumbnails. Example: photo_thumb.jpg',
-
     'time_format' => 'Default Time Formatting',
 
     'time_interval' => 'Time Interval (in seconds)',

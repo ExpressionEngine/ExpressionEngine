@@ -45,12 +45,16 @@
 					selected.parents('tr').addClass('selected');
 				}
 			}
+
+			if ($('div[data-file-field-react]').length) {
+				FileField.renderFields();
+			}
 		});
 
 		$('.modal-file').off('click', '.filepicker-item, tbody > tr:not(.tbl-action)');
 		$('.modal-file').on('click', '.filepicker-item, tbody > tr:not(.tbl-action)', function(e) {
 
-			if ($(e.target).is('a[rel=external]')) {
+			if ($(e.target).is('a[rel=external]') || $(this).is('[data-filter-url]')) {
 				return true;
 			}
 
@@ -83,6 +87,8 @@
 					dataType: 'json'
 				});
 			}
+
+			return false;
 		});
 
 		$('.modal-file').on('click', '.filters a:not([href=""]), .filter-bar a:not([href=""]), .paginate a:not([href=""], .pagination a:not([href=""]), thead a:not([href=""])', function(e) {
@@ -140,7 +146,7 @@
 				});
 			}
 
-			frame.load(function (e) {
+			frame.on('load', function (e) {
 				
 				$(modal).off('modal:close', cancelOnClose);
 

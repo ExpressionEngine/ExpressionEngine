@@ -28,10 +28,17 @@ $(document).ready(function () {
 			$('table').toggle_all();
 		}
 
-		window.history.pushState(null, '', data.url);
+		if ($(form_selector).parents('.modal-wrap').length == 0) {
+			window.history.pushState(null, '', data.url);
+		}
 		var searchInput = $(form_selector).find('input[name="filter_by_keyword"]')[0];
-		searchInput.focus();
-		searchInput.setSelectionRange(1000, 1000);
+
+		if(searchInput) {
+			searchInput.focus();
+			searchInput.setSelectionRange(1000, 1000);
+		}
+
+		FileField.renderFields();
 	}
 
 	function searchEntries(type = 'GET', url = null) 
@@ -50,7 +57,6 @@ $(document).ready(function () {
 		if (type != 'GET') {
 			data = $('input[name!="columns[]"]', _form).serialize();
 		}
-		
 		searching = $.ajax({
 			url: url,
 			type: type,
@@ -63,13 +69,16 @@ $(document).ready(function () {
 				searching = null;
 				replaceData(response);
 				sortableColumns();
+				// $('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
+				// 	cursor: "move"
+				// })
 			}
 		});
 	}
 
-	// Submitting the search form
+	// Submitting bulk action sends the parent form
 	$('body').on('click', 'button[name="bulk_action_submit"]:not([data-conditional-modal])', function(event) {
-
+		//if the bulk action for is modal, but the selected action is not modal
 		event.preventDefault();
 		$('body').off('submit', form_selector);
 		$(form_selector).submit();
@@ -115,7 +124,7 @@ $(document).ready(function () {
 	});
 
 	// Selecting a channel filter
-	$('body').on('click', 'form .filter-search-bar .dropdown a.dropdown__link, form .filter-bar .dropdown a.dropdown__link, .filter-bar .filter-bar__button--clear, .pagination li a, .column-sort', function(event) {
+	$('body').on('click', 'form .filter-search-bar .dropdown a.dropdown__link, form .filter-search-bar .filter-clear, form .filter-search-bar .filter__viewtype .filter-bar__button, form .filter-bar .dropdown a.dropdown__link, .filter-bar .filter-bar__button--clear, .pagination li a, .column-sort', function(event) {
 
 		var search = $('input[name="filter_by_keyword"]').serialize();
 
@@ -124,10 +133,9 @@ $(document).ready(function () {
 		event.preventDefault();
 	});
 
-	$('body').on('click', 'form .filter-search-bar .filter-clear', function(event) {
-		var search = $('input[name="filter_by_keyword"]').serialize();
+	$('body').on('click', '[data-filter-url]', function(event) {
 
-		searchEntries('GET', $(this).attr('href') + '&' + search)
+		searchEntries('GET', $(this).data('filter-url'))
 
 		event.preventDefault();
 	});

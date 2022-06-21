@@ -19,90 +19,90 @@ class EE_Template
     // bring in the :modifier methods
     use Template\Variables\ModifiableTrait;
 
-    public $loop_count            = 0;         // Main loop counter.
-    public $depth                 = 0;          // Sub-template loop depth
-    public $in_point              = '';          // String position of matched opening tag
-    public $template              = '';          // The requested template (page)
-    public $final_template        = '';            // The finalized template
-    public $fl_tmpl               = '';           // 'Floating' copy of the template.  Used as a temporary "work area".
-    public $cache_hash            = '';            // md5 checksum of the template name.  Used as title of cache file.
-    public $cache_prefix          = '';          // prefix for cache file. Defaults to current URL, but can be set to custom string for shared cache
-    public $cache_status          = '';          // Status of page cache (NO_CACHE, CURRENT, EXPIRED)
-    public $tag_cache_status      = '';          // Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
-    public $cache_timestamp       = '';
-    public $template_type         = '';         // Type of template (webpage, rss)
-    public $embed_type            = '';            // Type of template for embedded template
-    public $template_hits         = 0;
-    public $php_parse_location    = 'output';  // Where in the chain the PHP gets parsed
-    public $template_edit_date    = '';            // Template edit date
-    public $templates_sofar       = '';           // Templates processed so far, subtemplate tracker
-    public $templates_loaded      = array();     // Templates loaded so far (yes, redundant)
-    public $attempted_fetch       = array();      // Templates attempted to fetch but may have bailed due to recursive embeds
-    public $encode_email          = true;        // Whether to use the email encoder.  This is set automatically
-    public $hit_lock_override     = false;      // Set to TRUE if you want hits tracked on sub-templates
-    public $hit_lock              = false;       // Lets us lock the hit counter if sub-templates are contained in a template
-    public $parse_php             = false;      // Whether to parse PHP or not
-    public $strict_urls           = false;        // Whether to make URLs operate strictly or not.  This is set via a template global pref
-    public $protect_javascript    = false;     // Protect js blocks from conditional parsing?
+    public $loop_count = 0;         // Main loop counter.
+    public $depth = 0;          // Sub-template loop depth
+    public $in_point = '';          // String position of matched opening tag
+    public $template = '';          // The requested template (page)
+    public $final_template = '';            // The finalized template
+    public $fl_tmpl = '';           // 'Floating' copy of the template.  Used as a temporary "work area".
+    public $cache_hash = '';            // md5 checksum of the template name.  Used as title of cache file.
+    public $cache_prefix = '';          // prefix for cache file. Defaults to current URL, but can be set to custom string for shared cache
+    public $cache_status = '';          // Status of page cache (NO_CACHE, CURRENT, EXPIRED)
+    public $tag_cache_status = '';          // Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
+    public $cache_timestamp = '';
+    public $template_type = '';         // Type of template (webpage, rss)
+    public $embed_type = '';            // Type of template for embedded template
+    public $template_hits = 0;
+    public $php_parse_location = 'output';  // Where in the chain the PHP gets parsed
+    public $template_edit_date = '';            // Template edit date
+    public $templates_sofar = '';           // Templates processed so far, subtemplate tracker
+    public $templates_loaded = array();     // Templates loaded so far (yes, redundant)
+    public $attempted_fetch = array();      // Templates attempted to fetch but may have bailed due to recursive embeds
+    public $encode_email = true;        // Whether to use the email encoder.  This is set automatically
+    public $hit_lock_override = false;      // Set to TRUE if you want hits tracked on sub-templates
+    public $hit_lock = false;       // Lets us lock the hit counter if sub-templates are contained in a template
+    public $parse_php = false;      // Whether to parse PHP or not
+    public $strict_urls = false;        // Whether to make URLs operate strictly or not.  This is set via a template global pref
+    public $protect_javascript = false;     // Protect js blocks from conditional parsing?
 
-    public $group_name            = '';            // Group of template being parsed
-    public $template_group_id     = 0;
-    public $template_name         = '';         // Name of template being parsed
-    public $template_id           = 0;
-    public $enable_frontedit      = 'y';
+    public $group_name = '';            // Group of template being parsed
+    public $template_group_id = 0;
+    public $template_name = '';         // Name of template being parsed
+    public $template_id = 0;
+    public $enable_frontedit = 'y';
 
-    public $tag_data              = array();     // Data contained in tags
-    public $tagparams             = array();
-    public $tagchunk              = '';
-    public $modules               = array();      // List of installed modules
-    public $module_data           = array();      // Data for modules from exp_channels
-    public $plugins               = array();      // List of installed plug-ins
+    public $tag_data = array();     // Data contained in tags
+    public $tagparams = array();
+    public $tagchunk = '';
+    public $modules = array();      // List of installed modules
+    public $module_data = array();      // Data for modules from exp_channels
+    public $plugins = array();      // List of installed plug-ins
 
-    public $var_single            = array();       // "Single" variables
-    public $var_cond              = array();     // "Conditional" variables
-    public $var_pair              = array();     // "Paired" variables
-    public $global_vars           = array();      // This array can be set via the assign_to_config
-    public $embed_vars            = array();       // This array can be set via the {embed} tag
-    public $layout_vars           = array();      // This array can be set via the {layout} tag
-    public $segment_vars          = array();     // Array of segment variables
-    public $template_route_vars   = array();      // Array of segment variables
-    public $consent_vars          = [];          // Array of consent variables
+    public $var_single = array();       // "Single" variables
+    public $var_cond = array();     // "Conditional" variables
+    public $var_pair = array();     // "Paired" variables
+    public $global_vars = array();      // This array can be set via the assign_to_config
+    public $embed_vars = array();       // This array can be set via the {embed} tag
+    public $layout_vars = array();      // This array can be set via the {layout} tag
+    public $segment_vars = array();     // Array of segment variables
+    public $template_route_vars = array();      // Array of segment variables
+    public $consent_vars = [];          // Array of consent variables
 
-    public $tagparts              = array();     // The parts of the tag: {exp:comment:form}
-    public $tagdata               = '';           // The chunk between tag pairs.  This is what modules will utilize
-    public $tagproper             = '';         // The full opening tag
-    public $no_results            = '';            // The contents of the {if no_results}{/if} conditionals
-    public $no_results_block      = '';          // The {if no_results}{/if} chunk
-    public $search_fields         = array();        // Special array of tag parameters that begin with 'search:'
-    public $date_vars             = array();        // Date variables found in the tagdata (FALSE if date variables do not exist in tagdata)
-    public $unfound_vars          = array();     // These are variables that have not been found in the tagdata and can be ignored
-    public $conditional_vars      = array();     // Used by the template variable parser to prep conditionals
-    public $layout_conditionals   = array();      // Used for {if layout:variable conditionals
-    public $TYPE                  = false;       // FALSE if Typography has not been instantiated, Typography Class object otherwise
+    public $tagparts = array();     // The parts of the tag: {exp:comment:form}
+    public $tagdata = '';           // The chunk between tag pairs.  This is what modules will utilize
+    public $tagproper = '';         // The full opening tag
+    public $no_results = '';            // The contents of the {if no_results}{/if} conditionals
+    public $no_results_block = '';          // The {if no_results}{/if} chunk
+    public $search_fields = array();        // Special array of tag parameters that begin with 'search:'
+    public $date_vars = array();        // Date variables found in the tagdata (FALSE if date variables do not exist in tagdata)
+    public $unfound_vars = array();     // These are variables that have not been found in the tagdata and can be ignored
+    public $conditional_vars = array();     // Used by the template variable parser to prep conditionals
+    public $layout_conditionals = array();      // Used for {if layout:variable conditionals
+    public $TYPE = false;       // FALSE if Typography has not been instantiated, Typography Class object otherwise
 
-    public $related_data          = array();     //  A multi-dimensional array containing any related tags
-    public $related_id            = '';            // Used temporarily for the related ID number
-    public $related_markers       = array();      // Used temporarily
-    public $reverse_related_data  = array(); //  A multi-dimensional array containing any reverse related tags
+    public $related_data = array();     //  A multi-dimensional array containing any related tags
+    public $related_id = '';            // Used temporarily for the related ID number
+    public $related_markers = array();      // Used temporarily
+    public $reverse_related_data = array(); //  A multi-dimensional array containing any reverse related tags
 
-    public $site_ids              = array();     // Site IDs for the Sites Request for a Tag
-    public $sites                 = array();        // Array of sites with site_id as key and site_name as value, used to determine site_ids for tag, above.
-    public $site_prefs_cache      = array();     // Array of cached site prefs, to allow fetching of another site's template files
+    public $site_ids = array();     // Site IDs for the Sites Request for a Tag
+    public $sites = array();        // Array of sites with site_id as key and site_name as value, used to determine site_ids for tag, above.
+    public $site_prefs_cache = array();     // Array of cached site prefs, to allow fetching of another site's template files
 
-    public $disable_caching       = false;
+    public $disable_caching = false;
 
-    public $debugging             = false;      // Template parser debugging on?
-    public $cease_processing      = false;       // Used with no_results() method.
-    public $log                   = array();      // Log of Template processing
-    public $start_microtime       = 0;            // For Logging (= microtime())
+    public $debugging = false;      // Template parser debugging on?
+    public $cease_processing = false;       // Used with no_results() method.
+    public $log = array();      // Log of Template processing
+    public $start_microtime = 0;            // For Logging (= microtime())
 
-    public $form_id               = '';       //  Form Id
-    public $form_class            = '';        //  Form Class
+    public $form_id = '';       //  Form Id
+    public $form_class = '';        //  Form Class
 
-    public $realm                 = 'Restricted Content';  // Localize?
-    public $marker                = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
+    public $realm = 'Restricted Content';  // Localize?
+    public $marker = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
 
-    protected $_tag_cache_prefix  = 'tag_cache'; // Tag cache key namespace
+    protected $_tag_cache_prefix = 'tag_cache'; // Tag cache key namespace
     protected $_page_cache_prefix = 'page_cache'; // Page cache key namespace
 
     private $layout_contents = '';
@@ -347,7 +347,7 @@ class EE_Template
 
         //Pro conditionals
         $added_globals['frontedit'] = false;
-        if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee('pro:Access')->hasDockPermission()) {
+        if (ee('pro:Access')->hasRequiredLicense() && ee('pro:Access')->hasDockPermission()) {
             if (
                 REQ == 'PAGE' &&
                 ee()->session->userdata('admin_sess') == 1 &&
@@ -1252,9 +1252,9 @@ class EE_Template
                 $data_start = $this->in_point + $tag_length;
 
                 $tag = trim(substr($raw_tag, 1, -1));
-                if (IS_PRO) {
-                    $tag = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $tag);
-                }
+
+                $tag = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $tag);
+
                 $args = trim((preg_match("/\s+.*/", $tag, $matches))) ? $matches[0] : '';
                 $tag = trim(str_replace($args, '', $tag));
 
@@ -1391,7 +1391,7 @@ class EE_Template
                 $this->tag_data[$this->loop_count]['no_results'] = $no_results;
                 $this->tag_data[$this->loop_count]['no_results_block'] = $no_results_block;
                 $this->tag_data[$this->loop_count]['search_fields'] = $search_fields;
-                if (IS_PRO && $tag != 'exp:channel:entries') {
+                if ($tag != 'exp:channel:entries') {
                     $this->tag_data[$this->loop_count]['chunk'] = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $chunk);
                     $this->tag_data[$this->loop_count]['block'] = preg_replace("/\{frontedit_link\s+(.*)[\"\'@]\s?\}/sU", '', $block);
                 }
@@ -1857,7 +1857,7 @@ class EE_Template
      */
     public function swap_var_single($search, $replace, $source)
     {
-        return str_replace(LD . $search . RD, $replace, $source);
+        return str_replace(LD . $search . RD, (string) $replace, $source);
     }
 
     /**
@@ -1958,7 +1958,7 @@ class EE_Template
         }
 
         // do not use cache with Pro editing
-        if (IS_PRO && ee('pro:Access')->hasDockPermission()) {
+        if (ee('pro:Access')->hasDockPermission()) {
             $status = 'NO_CACHE';
 
             return false;
@@ -2968,7 +2968,7 @@ class EE_Template
             return $str;
         }
 
-        if (IS_PRO && ee('Permission')->canUsePro()) {
+        if (ee('Permission')->canUsePro()) {
             $str = preg_replace("/\{\!--\s*(\/\/)*\s*disable\s*frontedit\s*--\}/s", '<!-- ${1}disable frontedit -->', $str);
         }
 
@@ -3163,7 +3163,8 @@ class EE_Template
                 $str = str_replace(
                     $asset_matches[0][$ci],
                     $s_index . QUERY_MARKER . $asset_type . '=' . $asset_matches[2][$ci]
-                        . (isset($asset_versions[$asset_matches[2][$ci]])
+                        . (
+                            isset($asset_versions[$asset_matches[2][$ci]])
                             ? '.v.' . $asset_versions[$asset_matches[2][$ci]]
                             : ''
                         ),
@@ -4293,7 +4294,7 @@ class EE_Template
                     $data = array(
                         'group_name' => $group_name,
                         'is_site_default' => 'n',
-                        'site_id' => ee()->config->item('site_id')
+                        'site_id' => ee()->config->item('site_id') ?: 1
                     );
 
                     $new_group = ee('Model')->make('TemplateGroup', $data)->save();
@@ -4349,8 +4350,8 @@ class EE_Template
                         'template_type' => $template_type,
                         'template_data' => file_get_contents($basepath . '/' . $group . '/' . $template),
                         'edit_date' => ee()->localize->now,
-                        'last_author_id' => ee()->session->userdata['member_id'],
-                        'site_id' => ee()->config->item('site_id')
+                        'last_author_id' => ee()->session->userdata('member_id'),
+                        'site_id' => ee()->config->item('site_id') ?: 1
                     );
 
                     // do it!
@@ -4373,8 +4374,8 @@ class EE_Template
                         'template_data' => '',
                         'edit_date' => ee()->localize->now,
                         'save_template_file' => 'y',
-                        'last_author_id' => ee()->session->userdata['member_id'],
-                        'site_id' => ee()->config->item('site_id')
+                        'last_author_id' => ee()->session->userdata('member_id'),
+                        'site_id' => ee()->config->item('site_id') ?: 1
                     );
 
                     $template_model = ee('Model')->make('Template', $data)->save();

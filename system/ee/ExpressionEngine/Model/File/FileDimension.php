@@ -217,7 +217,7 @@ class FileDimension extends Model
      */
     public function getAbsoluteURL()
     {
-        return rtrim($this->UploadDestination->url, '/') . '/_' . rawurlencode($this->short_name) . '/';
+        return $this->UploadDestination->getFilesystem()->getUrl('_' . rawurlencode($this->short_name) . '/');
     }
 }
 

@@ -12,6 +12,7 @@ namespace ExpressionEngine\Service\Filter;
 
 use ExpressionEngine\Library\CP\URL;
 use ExpressionEngine\Service\View\ViewFactory;
+use ExpressionEngine\Model\Content\StructureModel;
 
 /**
  * Columns Filter
@@ -21,16 +22,12 @@ class Columns extends Filter
     public $view_id = null;
     public $channel_id = null;
 
-    public function __construct(array $columns = array(), $channel = null, $view_id = null)
+    public function __construct(array $columns = array(), StructureModel $channel = null, $view_id = null)
     {
         $this->name = 'columns';
         $this->label = lang('columns_filter');
         $this->options = $columns;
         $this->view_id = $view_id;
-
-        if (! empty($channel)) {
-            $this->channel_id = $channel->channel_id;
-        }
 
         $this->default_value = ['entry_id', 'title', 'entry_date', 'author', 'status', 'comments'];
     }

@@ -10,14 +10,22 @@
 
 namespace ExpressionEngine\Service\File;
 
+use ExpressionEngine\Dependency\League\Flysystem;
+
 /**
  * File Service Factory
  */
 class Factory
 {
-    public function getPath($path)
+    public function getPath($path, ?Flysystem\AdapterInterface $adapter = null)
     {
-        return new Directory($path);
+        if (is_null($adapter)) {
+            $adapter = new Flysystem\Adapter\Local($path);
+        }else{
+            $adapter->setPathPrefix($path);
+        }
+        
+        return new Directory($adapter);
     }
 
     public function makeUpload()

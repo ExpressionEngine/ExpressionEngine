@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Model\File;
 
-use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Model\Content\StructureModel;
 use ExpressionEngine\Model\Member\Member;
 
 /**
@@ -22,10 +22,14 @@ use ExpressionEngine\Model\Member\Member;
  * files may be uploaded to it, as well as essential information, such as the
  * server paths where those files actually end up.
  */
-class UploadDestination extends Model
+class UploadDestination extends StructureModel
 {
     protected static $_primary_key = 'id';
     protected static $_table_name = 'upload_prefs';
+
+    protected static $_events = array(
+        'beforeSave',
+    );
 
     protected static $_relationships = array(
         'Site' => array(
@@ -62,14 +66,18 @@ class UploadDestination extends Model
     );
 
     protected static $_typed_columns = array(
-        'server_path' => 'LocalPath'
+        'server_path' => 'LocalPath',
+        'allowed_types' => 'pipeDelimited',
+        'allow_subfolders' => 'boolString',
+        'subfolders_on_top' => 'boolString',
+        'adapter_settings' => 'json',
     );
 
     protected static $_validation_rules = array(
         'name' => 'required|xss|noHtml|unique[site_id]',
-        'server_path' => 'required|fileExists|writable',
-        'url' => 'required|validateUrl',
-        'allowed_types' => 'enum[img,all]',
+        'adapter' => 'required',
+        'allow_subfolders' => 'enum[y,n]',
+        'subfolders_on_top' => 'enum[y,n]',
         'default_modal_view' => 'enum[list,thumb]',
         'max_size' => 'numeric|greaterThan[0]',
         'max_height' => 'isNatural',
@@ -81,9 +89,13 @@ class UploadDestination extends Model
     protected $id;
     protected $site_id;
     protected $name;
+    protected $adapter;
+    protected $adapter_settings;
     protected $server_path;
     protected $url;
     protected $allowed_types;
+    protected $allow_subfolders;
+    protected $subfolders_on_top;
     protected $default_modal_view;
     protected $max_size;
     protected $max_height;
@@ -98,6 +110,7 @@ class UploadDestination extends Model
     protected $batch_location;
     protected $module_id;
 
+    private $filesystem = null;
     /**
      * Because of the 'upload_preferences' Config value, the data in the DB
      * is not always authoritative. So we will need to get any override data
@@ -128,6 +141,18 @@ class UploadDestination extends Model
         $value = parent::__get($name);
 
         return $this->fetchOverride($name, $value);
+    }
+
+    public function onBeforeSave()
+    {
+        $allowed_types = $this->getProperty('allowed_types');
+        if (! is_array($allowed_types)) {
+            $allowed_types = [$allowed_types];
+        }
+        if (in_array('--', $allowed_types)) {
+            $allowed_types =  ['all'];
+        }
+        $this->setProperty('allowed_types', $allowed_types);
     }
 
     /**
@@ -178,7 +203,7 @@ class UploadDestination extends Model
     }
 
     /**
-     * Returns the propety value using the overrides if present
+     * Returns the property value using the overrides if present
      *
      * @param str $name The name of the property to fetch
      * @return mixed The value of the property
@@ -255,18 +280,29 @@ class UploadDestination extends Model
         return $path;
     }
 
-    /**
-     * Make sure URL is not submitted with the default value
-     */
-    public function validateUrl($key, $value, $params, $rule)
+    public function getValidationData()
     {
-        if ($value == 'http://') {
-            $rule->stop();
+        return array_merge(parent::getValidationData(), [
+            'filesystem_provider' => $this,
+        ]);
+    }
 
-            return lang('valid_url');
-        }
+    /**
+     * Get the backing filesystem adapter for this upload destination
+     */
+    public function getFilesystemAdapter()
+    {
+        // Do we want to allow variable replacement in adapters that aren't local?
+        $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
+        $adapterName = $this->adapter ?? 'local';
+        $adapterSettings = array_merge([
+            'path' => $path,
+            'server_path' => $this->server_path,
+            'url' => $this->url
+        ], $this->adapter_settings ?? []);
+        $adapter = ee('Filesystem/Adapter')->make($adapterName, $adapterSettings);
 
-        return true;
+        return $adapter;
     }
 
     /**
@@ -274,10 +310,165 @@ class UploadDestination extends Model
      */
     public function getFilesystem()
     {
-        $fs = ee('File')->getPath($this->getProperty('server_path'));
-        $fs->setUrl($this->getProperty('url'));
+        if ($this->filesystem) {
+            return $this->filesystem;
+        }
 
-        return $fs;
+        // Do we want to allow variable replacement in adapters that aren't local?
+        $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
+        $adapter = $this->getFilesystemAdapter();
+
+        $filesystem = ee('File')->getPath($path, $adapter);
+        $filesystem->setUrl($this->getProperty('url'));
+
+        // This will effectively eager load the directory and speed up checks
+        // for file existence, especially in remote filesystems.  This might
+        // make more sense to move into file listing controllers eventually
+        $filesystem->getDirectoryContents($path, true);
+        $this->filesystem = $filesystem;
+
+        return $this->filesystem;
+    }
+
+    /**
+     * Gets the map of upload location directories and files as nested array
+     *
+     * @param boolean $includeHiddenFiles
+     * @param boolean $includeHiddenFolders
+     * @param boolean $includeIndex
+     * @param boolean $ignoreAllowedTypes
+     * @return array
+     */
+    public function getDirectoryMap($path = '/', $fullPathAsKey = false, $includeHiddenFiles = false, $includeHiddenFolders = false, $includeIndex = false, $ignoreAllowedTypes = false)
+    {
+        if (! $this->getFilesystem()->isReadable($path)) {
+            return [];
+        }
+
+        $map = array();
+        $indexFiles = array('index.html', 'index.htm', 'index.php');
+
+        foreach ($this->getFilesystem()->getDirectoryContents($path) as $filePath) {
+            $pathInfo = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $filePath));
+            $fileName = array_pop($pathInfo);
+            $isDir = $this->getFilesystem()->isDir($filePath);
+
+            if (empty(trim($fileName, '.'))) {
+                continue;
+            }
+
+            if (! $includeHiddenFiles && substr($fileName, 0, 1) == '.') {
+                continue;
+            }
+
+            if (! $includeHiddenFolders && $isDir && substr($fileName, 0, 1) == '_') {
+                continue;
+            }
+
+            if (! $includeIndex && in_array($fileName, $indexFiles)) {
+                continue;
+            }
+
+            if (! $isDir && ! $ignoreAllowedTypes && ! in_array('all', $this->allowed_types)) {
+                $isOfAllowedMimeType = false;
+                foreach ($this->allowed_types as $allowed_type) {
+                    if (ee('MimeType')->isOfKind($this->getFilesystem()->getMimetype($filePath), $allowed_type)) {
+                        $isOfAllowedMimeType = true;
+
+                        break;
+                    }
+                }
+                if (! $isOfAllowedMimeType) {
+                    continue;
+                }
+            }
+
+            $key = $fullPathAsKey ? $filePath : $fileName;
+
+            if ($isDir && !bool_config_item('file_manager_compatibility_mode')) {
+                $map[$key] = $this->getDirectoryMap($filePath, $fullPathAsKey, $includeHiddenFiles, $includeHiddenFolders, $includeIndex, $ignoreAllowedTypes);
+            } else {
+                $map[$key] = $fileName;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * Give the file relative path, returns File mode
+     *
+     * @param string $filePath
+     * @return File
+     */
+    public function getFileByPath($filePath)
+    {
+        $pathInfo = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $filePath));
+        $depth = count($pathInfo) - 1;
+        $directory_id = 0;
+        foreach ($pathInfo as $i => $fileOrDirName) {
+            if (empty($fileOrDirName)) {
+                continue;
+            }
+            $model = ($i == $depth) ? 'FileSystemEntity' : 'Directory';
+            $file = ee('Model')
+                ->get($model)
+                ->filter('upload_location_id', $this->getId())
+                ->filter('directory_id', $directory_id)
+                ->filter('file_name', $fileOrDirName)
+                ->first();
+            if (! empty($file)) {
+                $directory_id = $file->file_id;
+            }
+        }
+
+        return $file;
+    }
+
+    /**
+     * Get the subdirectories nested array
+     *
+     * @param [type] $key_value
+     * @param boolean $root_only
+     * @return array
+     */
+    public function buildDirectoriesDropdown($directory_id, $icon = false, $path = '', $root_only = true)
+    {
+        $children = [];
+        $i = 0;
+        $directoriesCount = 0;
+        do {
+            $directories = ee('Model')->get('Directory')->fields('file_id', 'upload_location_id', 'directory_id', 'file_name', 'title');
+            if ($root_only) {
+                $directories = $directories->filter('upload_location_id', $directory_id)->filter('directory_id', 0)->all();
+            } else {
+                $directories = $directories->filter('directory_id', $directory_id)->all();
+            }
+
+            $directoriesCount = count($directories);
+            if ($directoriesCount > 0) {
+                foreach ($directories as $i => $directory) {
+                    $i++;
+                    if (!empty($directory)) {
+                        $folder_icon = $directory->title;
+                        if ($icon) {
+                            $folder_icon = '<i class="fas fa-folder"></i>' . $directory->title;
+                            $icon = true;
+                        }
+                        $path = $path . urlencode($directory->file_name) . '/';
+                        $children[$this->getId() . '.' . $directory->getId()] = [
+                            'label' => $folder_icon,
+                            'upload_location_id' => $this->getId(),
+                            'path' => $path,
+                            'directory_id' => $directory->getId(),
+                            'children' => $this->buildDirectoriesDropdown($directory->file_id, $icon, $path, false)
+                        ];
+                    }
+                }
+            }
+        } while ($directoriesCount > ($i + 1));
+
+        return $children;
     }
 
     /**
@@ -306,7 +497,11 @@ class UploadDestination extends Model
      */
     public function exists()
     {
-        return file_exists($this->parseConfigVars((string) $this->getProperty('server_path')));
+        try {
+            return $this->getFilesystem()->exists('');
+        } catch (\LogicException $e) {
+            return false;
+        }
     }
 
     /**
@@ -316,7 +511,68 @@ class UploadDestination extends Model
      */
     public function isWritable()
     {
-        return is_writable($this->parseConfigVars((string) $this->getProperty('server_path')));
+        return $this->getFilesystem()->isWritable('');
+    }
+
+    /**
+     * Returns a collection of all the custom fields available for files in this Upload Destination
+     *
+     * @return Collection A collection of fields
+     */
+    public function getAllCustomFields()
+    {
+        return [];
+    }
+
+    public function deleteOriginalFiles($path)
+    {
+        $filesystem = $this->getFilesystem();
+
+        // Remove the file
+        if ($filesystem->exists($path)) {
+            return $filesystem->delete($path);
+        }
+
+        return false;
+    }
+
+    public function deleteGeneratedFiles($path)
+    {
+        $filesystem = $this->getFilesystem();
+        $filename = $filesystem->filename($path);
+        $dirname = $filesystem->dirname($path);
+        $basename = $filesystem->basename($path);
+
+        // Remove the thumbnail if it exists
+        if ($filesystem->exists("{$dirname}/_thumbs/{$filename}")) {
+            $filesystem->delete("{$dirname}/_thumbs/{$filename}");
+        }
+
+        // Remove any manipulated files as well
+        foreach ($this->FileDimensions as $file_dimension) {
+            $file = rtrim($file_dimension->getAbsolutePath(), '/') . '/' . $filename;
+
+            if ($filesystem->exists($file)) {
+                $filesystem->delete($file);
+            }
+        }
+
+        // Remove front-end manipulations
+        $manipulations = ['resize', 'crop', 'rotate', 'webp'];
+        $renamer = strrchr($basename, '_');
+        $basename = ($renamer === false) ? $basename : substr($basename, 0, -strlen($renamer));
+
+        foreach ($manipulations as $manipulation) {
+            if($filesystem->exists("{$dirname}/_{$manipulation}/")) {
+                $files = $filesystem->getDirectoryContents("{$dirname}/_{$manipulation}/");
+                $files = array_filter($files, function ($file) use ($basename) {
+                    return (strpos($file, "{$basename}_") === 0);
+                });
+                foreach ($files as $file) {
+                    $filesystem->delete($file);
+                }
+            }
+        }
     }
 }
 

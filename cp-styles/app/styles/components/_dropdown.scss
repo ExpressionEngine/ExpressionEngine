@@ -33,6 +33,16 @@
 .dropdown__scroll {
 	max-height: 260px;
 	overflow-y: auto;
+
+	ul {
+		margin-top: 0;
+		list-style-type: none;
+		
+		a {
+			padding: 0 20px;
+			min-height: 30px;
+		}
+	}
 }
 
 .dropdown__scroll--small {
@@ -55,6 +65,10 @@
 	color: color(text-primary);
 	width: 100%;
 	align-items: center;
+
+	&.with-divider {
+		border-top: 1px solid var(--ee-border);
+	}
 
 	a {
 		color: color(text-primary);
