@@ -1776,7 +1776,7 @@ class JumpMenu extends AbstractJumpMenu
             //misc
             'switchTheme' => array(
                 'icon' => 'fa-random',
-                'command' => 'switch theme light dark',
+                'command' => 'switch theme light dark snow',
                 'dynamic' => true,
                 'addon' => false,
                 'target' => 'themes/switch'

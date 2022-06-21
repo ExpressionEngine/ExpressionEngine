@@ -40,7 +40,6 @@ html.color-theme-in-transition *:after {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #bbbdf9;
   --ee-notification: #fa5252;
-  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #0d0d19;
   --ee-text-normal: #0d0d19;
   --ee-text-secondary: #8f90b0;
@@ -169,6 +168,170 @@ html.color-theme-in-transition *:after {
   --ee-ee-update-dev-bg: #FFFFFF;
   --ee-ee-update-vital: #FA5252;
   --ee-ee-update-vital-bg: #FFFFFF;
+  --ee-modal-overlay-bg: #f7f7fb;
+}
+
+.light-theme, body[data-theme=light] {
+  --ee-brand-primary: #5D63F1;
+  --ee-brand-success: #00C571;
+  --ee-brand-warning: #FFB40B;
+  --ee-brand-danger: #FA5252;
+  --ee-accent: #5D63F1;
+  --ee-accent-dark: #171feb;
+  --ee-accent-medium: #bbbdf9;
+  --ee-accent-light: #eaebfd;
+  --ee-gray-blank: #FFFFFF;
+  --ee-gray-0: #f7f7fb;
+  --ee-gray-5: #ecedf5;
+  --ee-gray-10: #dfe0ef;
+  --ee-gray-20: #cbcbda;
+  --ee-gray-30: #adaec5;
+  --ee-gray-40: #8f90b0;
+  --ee-gray-50: #5a5b7f;
+  --ee-gray-60: #252634;
+  --ee-gray-70: #0d0d19;
+  --ee-success-dark: #007945;
+  --ee-success: #00C571;
+  --ee-success-light: #dffff1;
+  --ee-warning-dark: #be8300;
+  --ee-warning: #FFB40B;
+  --ee-warning-light: #fff6e1;
+  --ee-error-dark: #f80808;
+  --ee-error: #FA5252;
+  --ee-error-light: #fee7e7;
+  --ee-security-caution: #FFB40B;
+  --ee-danger: #FA5252;
+  --ee-keyboard-focus: #bbbdf9;
+  --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
+  --ee-text-primary: #0d0d19;
+  --ee-text-normal: #0d0d19;
+  --ee-text-secondary: #8f90b0;
+  --ee-text-tertiary: #5a5b7f;
+  --ee-text-placeholder: #adaec5;
+  --ee-text-selection: inherit;
+  --ee-text-selection-bg: #d2d4fb;
+  --ee-link: #5D63F1;
+  --ee-link-hover: #171feb;
+  --ee-main-bg: #f7f7fb;
+  --ee-dashboard-bg: #f7f7fb;
+  --ee-bg-blank: #FFFFFF;
+  --ee-bg-0: #f7f7fb;
+  --ee-bg-5: #ecedf5;
+  --ee-bg-10: #dfe0ef;
+  --ee-bg-15: #cbcbda;
+  --ee-bg-25: #adaec5;
+  --ee-bg-neutral-light: #ededed;
+  --ee-bg-neutral-dark: #434249;
+  --ee-bg-dropdown: #FFFFFF;
+  --ee-bg-dropdown-hover: #f7f7fb;
+  --ee-bg-dropdown-selected: #eaebfd;
+  --ee-dropdown-border: #dfe0ef;
+  --ee-border: #dfe0ef;
+  --ee-border-dark: #cbcbda;
+  --ee-button-default-color: #0d0d19;
+  --ee-button-default-bg: #FFFFFF;
+  --ee-button-default-border: #cbcbda;
+  --ee-button-default-hover-bg: #f7f7fb;
+  --ee-button-default-hover-border: #cbcbda;
+  --ee-button-primary-color: #ffffff;
+  --ee-button-primary-bg: #5D63F1;
+  --ee-button-primary-border: #5D63F1;
+  --ee-button-primary-hover-bg: #2e36ed;
+  --ee-button-primary-hover-border: #2e36ed;
+  --ee-button-secondary-color: #5D63F1;
+  --ee-button-secondary-bg: #e0e2fc;
+  --ee-button-secondary-border: #e0e2fc;
+  --ee-button-secondary-hover-bg: #cecffb;
+  --ee-button-secondary-hover-border: #cecffb;
+  --ee-button-secondary-alt-color: #0d0d19;
+  --ee-button-secondary-alt-bg: #FFFFFF;
+  --ee-button-secondary-alt-border: #cbcbda;
+  --ee-button-secondary-alt-hover-bg: #f7f7fb;
+  --ee-button-secondary-alt-hover-border: #cbcbda;
+  --ee-button-success-color: #ffffff;
+  --ee-button-success-bg: #00C571;
+  --ee-button-success-border: #00C571;
+  --ee-button-success-hover-bg: #009254;
+  --ee-button-success-hover-border: #009254;
+  --ee-button-action-color: #ffffff;
+  --ee-button-action-bg: #00C571;
+  --ee-button-action-border: #00C571;
+  --ee-button-action-hover-bg: #009254;
+  --ee-button-action-hover-border: #009254;
+  --ee-button-warning-color: #ffffff;
+  --ee-button-warning-bg: #FFB40B;
+  --ee-button-warning-border: #FFB40B;
+  --ee-button-warning-hover-bg: #d79500;
+  --ee-button-warning-hover-border: #d79500;
+  --ee-button-danger-color: #ffffff;
+  --ee-button-danger-bg: #FA5252;
+  --ee-button-danger-border: #FA5252;
+  --ee-button-danger-hover-bg: #f92020;
+  --ee-button-danger-hover-border: #f92020;
+  --ee-input-color: #0d0d19;
+  --ee-input-bg: #FFFFFF;
+  --ee-input-placeholder: #adaec5;
+  --ee-input-border: #cbcbda;
+  --ee-input-border-accent: #ecedf5;
+  --ee-input-focus-border: #5D63F1;
+  --ee-input-focus-shadow: 0 3px 6px -3px rgba(174, 151, 255, 0.14), 0 5px 10px -3px rgba(97, 114, 242, 0.05);
+  --ee-input-toggle-bg: #cbcbda;
+  --ee-input-toggle-fg: #ffffff;
+  --ee-input-toggle-shadow: rgba(120, 119, 140, 0.077);
+  --ee-input-toggle-active-bg: #5D63F1;
+  --ee-input-toggle-active-fg: #ffffff;
+  --ee-input-disabled-bg: #f7f7fb;
+  --ee-input-jump-bg: #FFFFFF;
+  --ee-sidebar-text: #adaec5;
+  --ee-sidebar-text-primary: #ffffff;
+  --ee-sidebar-text-faded: #8f90b0;
+  --ee-sidebar-text-active: #ffffff;
+  --ee-sidebar-icon-active: #ffffff;
+  --ee-sidebar-bg-active: #181922;
+  --ee-sidebar-bg: #252634;
+  --ee-sidebar-title-text: #adaec5;
+  --ee-sidebar-title-bg: #2d2e40;
+  --ee-sidebar-bottom-bg: #2d2e40;
+  --ee-sidebar-title-bg-hover: #323246;
+  --ee-sidebar-version-bg: #2d2e40;
+  --ee-sidebar-version-bg-hover: #323246;
+  --ee-sidebar-border: #f7f7fb;
+  --ee-secondary-sidebar-item-bg: #ecedf5;
+  --ee-secondary-sidebar-item-icon: #8f90b0;
+  --ee-secondary-sidebar-item-bg-active: #ecedf5;
+  --ee-table-bg: #FFFFFF;
+  --ee-table-border: #dfe0ef;
+  --ee-panel-bg: #FFFFFF;
+  --ee-panel-border: #dfe0ef;
+  --ee-panel-border-outer: transparent;
+  --ee-shadow-modal: rgba(69, 68, 85, 0.2);
+  --ee-shadow-dropdown: rgba(0, 0, 0, 0.1);
+  --ee-shadow-panel: rgba(0, 0, 0, 0.1);
+  --ee-shadow-input: rgba(0, 0, 0, 0.05);
+  --ee-shadow-button: rgba(0, 0, 0, 0.05);
+  --ee-note-fieldtype-bg: #f7f7fb;
+  --ee-note-fieldtype-color: #8f90b0;
+  --ee-note-fieldtype-icon-bg: #ecedf5;
+  --ee-note-fieldtype-icon-color: #8f90b0;
+  --ee-note-fieldtype-blockquote-border: #ecedf5;
+  --ee-mark-bg: #fffbf1;
+  --ee-form-section-title-border: #dfe0ef;
+  --ee-key-border: #dfe0ef;
+  --ee-list-item-border: #dfe0ef;
+  --ee-tab-bar-border: #dfe0ef;
+  --ee-code-border: #dfe0ef;
+  --ee-add-on-card-border: #dfe0ef;
+  --ee-lots-of-checkboxes-border: #dfe0ef;
+  --ee-layout-item-border: #dfe0ef;
+  --ee-fluid-item-border: #dfe0ef;
+  --ee-slider-value-bg: #eaebfd;
+  --ee-ee-update: #5D63F1;
+  --ee-ee-update-bg: #0a0f78;
+  --ee-ee-update-dev: #FFB40B;
+  --ee-ee-update-dev-bg: #3e2b00;
+  --ee-ee-update-vital: #FA5252;
+  --ee-ee-update-vital-bg: #640303;
   --ee-modal-overlay-bg: #f7f7fb;
 }
 
@@ -532,6 +695,7 @@ body[data-theme=snow] .inverted-theme {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #5D63F1;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #05073b;
   --ee-text-primary: #dedede;
   --ee-text-normal: #dedede;
   --ee-text-secondary: #6b6b6b;
@@ -37704,18 +37868,7 @@ body[data-theme="dark"] {
   max-height: 60px;
   display: inline-block;
 }
-.f_manager-wrapper tr.app-listing__row i.fas, .f_manager-wrapper tr.app-listing__row i.column-sort::after, .f_manager-wrapper tr.app-listing__row i.app-notice__icon::before, .f_manager-wrapper tr.app-listing__row i.app-notice__dismiss::before, .f_manager-wrapper tr.app-listing__row i.m-close:before, .f_manager-wrapper tr.app-listing__row i.sidebar__link.remove:after, .f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-remove:before, .tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
-.f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-on:before,
-.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-on:before,
-.f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-off:before,
-.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i.dropdown__link--selected::before, .f_manager-wrapper tr.app-listing__row i[class^=widget-icon--],
-.f_manager-wrapper tr.app-listing__row i[class*=" widget-icon--"], .f_manager-wrapper tr.app-listing__row i.widget--support::before, .f_manager-wrapper tr.app-listing__row i.checkbox:after, .f_manager-wrapper tr.app-listing__row i.checkbox--large:after, .f_manager-wrapper tr.app-listing__row i.checkbox--small:after, .f_manager-wrapper tr.app-listing__row i.sub-arrow:before, .f_manager-wrapper tr.app-listing__row i.select__button-label::after, .f_manager-wrapper tr.app-listing__row i.select-popup:not([multiple])::after, .f_manager-wrapper tr.app-listing__row i.layout-item__handle::after, .f_manager-wrapper tr.app-listing__row i.icon-reorder, .f_manager-wrapper tr.app-listing__row i[class^=icon--],
-.f_manager-wrapper tr.app-listing__row i[class*=" icon--"], .f_manager-wrapper tr.app-listing__row i.icon-settings,
-.f_manager-wrapper tr.app-listing__row i.icon--settings, .f_manager-wrapper tr.app-listing__row i.has-sub::after, .f_manager-wrapper tr.app-listing__row .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .f_manager-wrapper tr.app-listing__row i.has-sub::before, .f_manager-wrapper tr.app-listing__row .tbl-list i.reorder:before, .tbl-list .f_manager-wrapper tr.app-listing__row i.reorder:before, .f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
-.f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-on:before,
-.tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-on:before,
-.f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-off:before,
-.tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i[class*=fields-grid-tool-]:before {
+.f_manager-wrapper tr.app-listing__row i.fas {
   color: var(--ee-secondary-sidebar-item-icon);
 }
 .f_manager-wrapper .dropdown a.edit:before, .f_manager-wrapper .select__dropdown a.edit:before,
@@ -37849,46 +38002,7 @@ body[data-theme="dark"] {
 }
 .file-grid__wrapper .file-thumbnail img,
 .file-grid__wrapper .file-thumbnail svg,
-.file-grid__wrapper .file-thumbnail i.fas,
-.file-grid__wrapper .file-thumbnail i.column-sort::after,
-.file-grid__wrapper .file-thumbnail i.app-notice__icon::before,
-.file-grid__wrapper .file-thumbnail i.app-notice__dismiss::before,
-.file-grid__wrapper .file-thumbnail i.m-close:before,
-.file-grid__wrapper .file-thumbnail i.sidebar__link.remove:after,
-.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-remove:before,
-.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-remove:before,
-.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
-.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-on:before,
-.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-off:before,
-.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before,
-.file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before,
-.file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
-.file-grid__wrapper .file-thumbnail i[class*=" widget-icon--"],
-.file-grid__wrapper .file-thumbnail i.widget--support::before,
-.file-grid__wrapper .file-thumbnail i.checkbox:after,
-.file-grid__wrapper .file-thumbnail i.checkbox--large:after,
-.file-grid__wrapper .file-thumbnail i.checkbox--small:after,
-.file-grid__wrapper .file-thumbnail i.sub-arrow:before,
-.file-grid__wrapper .file-thumbnail i.select__button-label::after,
-.file-grid__wrapper .file-thumbnail i.select-popup:not([multiple])::after,
-.file-grid__wrapper .file-thumbnail i.layout-item__handle::after,
-.file-grid__wrapper .file-thumbnail i.icon-reorder,
-.file-grid__wrapper .file-thumbnail i[class^=icon--],
-.file-grid__wrapper .file-thumbnail i[class*=" icon--"],
-.file-grid__wrapper .file-thumbnail i.icon-settings,
-.file-grid__wrapper .file-thumbnail i.icon--settings,
-.file-grid__wrapper .file-thumbnail i.has-sub::after,
-.file-grid__wrapper .file-thumbnail .menu-wrap .develop i.has-sub::before,
-.menu-wrap .develop .file-grid__wrapper .file-thumbnail i.has-sub::before,
-.file-grid__wrapper .file-thumbnail .tbl-list i.reorder:before,
-.tbl-list .file-grid__wrapper .file-thumbnail i.reorder:before,
-.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-remove:before,
-.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-remove:before,
-.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-on:before,
-.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-on:before,
-.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-off:before,
-.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-off:before,
-.file-grid__wrapper .file-thumbnail i[class*=fields-grid-tool-]:before {
+.file-grid__wrapper .file-thumbnail i.fas {
   max-width: 100%;
   max-height: 100%;
   position: absolute;
@@ -37897,18 +38011,7 @@ body[data-theme="dark"] {
   transform: translate(-50%, -50%);
   border-radius: 6px;
 }
-.file-grid__wrapper .file-thumbnail i.fas, .file-grid__wrapper .file-thumbnail i.column-sort::after, .file-grid__wrapper .file-thumbnail i.app-notice__icon::before, .file-grid__wrapper .file-thumbnail i.app-notice__dismiss::before, .file-grid__wrapper .file-thumbnail i.m-close:before, .file-grid__wrapper .file-thumbnail i.sidebar__link.remove:after, .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-remove:before, .tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-remove:before,
-.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
-.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-on:before,
-.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-off:before,
-.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before, .file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
-.file-grid__wrapper .file-thumbnail i[class*=" widget-icon--"], .file-grid__wrapper .file-thumbnail i.widget--support::before, .file-grid__wrapper .file-thumbnail i.checkbox:after, .file-grid__wrapper .file-thumbnail i.checkbox--large:after, .file-grid__wrapper .file-thumbnail i.checkbox--small:after, .file-grid__wrapper .file-thumbnail i.sub-arrow:before, .file-grid__wrapper .file-thumbnail i.select__button-label::after, .file-grid__wrapper .file-thumbnail i.select-popup:not([multiple])::after, .file-grid__wrapper .file-thumbnail i.layout-item__handle::after, .file-grid__wrapper .file-thumbnail i.icon-reorder, .file-grid__wrapper .file-thumbnail i[class^=icon--],
-.file-grid__wrapper .file-thumbnail i[class*=" icon--"], .file-grid__wrapper .file-thumbnail i.icon-settings,
-.file-grid__wrapper .file-thumbnail i.icon--settings, .file-grid__wrapper .file-thumbnail i.has-sub::after, .file-grid__wrapper .file-thumbnail .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .file-grid__wrapper .file-thumbnail i.has-sub::before, .file-grid__wrapper .file-thumbnail .tbl-list i.reorder:before, .tbl-list .file-grid__wrapper .file-thumbnail i.reorder:before, .file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-remove:before,
-.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-on:before,
-.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-on:before,
-.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-off:before,
-.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i[class*=fields-grid-tool-]:before {
+.file-grid__wrapper .file-thumbnail i.fas {
   color: var(--ee-secondary-sidebar-item-icon);
 }
 .file-grid__wrapper .file-thumbnail svg {
