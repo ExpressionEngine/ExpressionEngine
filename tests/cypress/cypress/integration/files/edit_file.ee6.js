@@ -42,7 +42,7 @@ context('File Manager / Edit File', () => {
     page.get('form_submit_button').click()
     cy.hasNoErrors()
 
-    filemanager.get('alert').contains("The meta data for the file Rspec was here has been updated.")
+    filemanager.get('alert').contains("The data for the file Rspec was here has been updated.")
   })
 
   it('can edit the description', () => {
@@ -53,7 +53,7 @@ context('File Manager / Edit File', () => {
     page.get('form_submit_button').click()
     cy.hasNoErrors()
 
-    filemanager.get('alert').contains("The meta data for the file")
+    filemanager.get('alert').contains("The data for the file")
     filemanager.get('alert').contains("has been updated.")
   })
 
@@ -65,7 +65,7 @@ context('File Manager / Edit File', () => {
     page.get('form_submit_button').click()
     cy.hasNoErrors()
 
-    filemanager.get('alert').contains("The meta data for the file")
+    filemanager.get('alert').contains("The data for the file")
     filemanager.get('alert').contains("has been updated.")
   })
 
@@ -77,7 +77,7 @@ context('File Manager / Edit File', () => {
     page.get('form_submit_button').click()
     cy.hasNoErrors()
 
-    filemanager.get('alert').contains("The meta data for the file")
+    filemanager.get('alert').contains("The data for the file")
     filemanager.get('alert').contains("has been updated.")
   })
 
