@@ -118,7 +118,7 @@ $(document).ready(function () {
 		}
 	})
 
-	$('body').on('click', '[rel="modal-confirm-delete-file"], [rel="modal-confirm-move-file"], [rel="modal-confirm-rename-file"]', function (e) {
+	$('body').on('click', 'a[rel="modal-confirm-delete-file"], a[rel="modal-confirm-move-file"], a[rel="modal-confirm-rename-file"]', function (e) {
 		var ajax_url = $(this).data('confirm-ajax');
 		var file_id = $(this).data('file-id');
 		var file_name = $(this).parents('tr').find('input[type=checkbox]').attr('name');
