@@ -11,26 +11,26 @@ class FileManager extends FileManagerSection {
 					'heading': '.ee-main .title-bar .title-bar__title',
 					'sync_button': 'a.icon--sync',
 
-					'perpage_filter': 'div.filter-bar>.filter-bar__item:nth-child(3)',
-					'perpage_filter_menu': 'div.filter-bar>.filter-bar__item:nth-child(3) .dropdown',
+					'perpage_filter': '.pagination__item .filter-search-bar__item',
+					'perpage_filter_menu': '.pagination__item .filter-bar__button[data-filter-label="show"] + .dropdown',
 					'perpage_manual_filter': 'input[type!=hidden][name="perpage"]',
 
 					// Main box's table elements
 					'files': '.ee-main__content form .table-responsive table tr',
-					
 
-					'title_name_header': '.ee-main__content form .table-responsive table tr th:first-child',
-					'file_type_header': '.ee-main__content form .table-responsive table tr th:nth-child(2)',
-					'date_added_header': '.ee-main__content form .table-responsive table tr th:nth-child(3)',
-					'manage_header': '.ee-main__content form .table-responsive table tr th:nth-child(4)',
+
+					'title_name_header': '.ee-main__content form .table-responsive table tr th:nth-child(3)',
+					'file_type_header': '.ee-main__content form .table-responsive table tr th:nth-child(5)',
+					'date_added_header': '.ee-main__content form .table-responsive table tr th:nth-child(6)',
+					'manage_header': '.ee-main__content form .table-responsive table tr th:nth-child(8)',
 					'checkbox_header': '.ee-main__content form .table-responsive table tr th:nth-child(5) input[type=checkbox]',
 
-					'title_names': '.ee-main__content form .table-responsive table tr td:first-child',
-					'file_types': '.ee-main__content form .table-responsive table tr td:nth-child(2)',
-					'dates_added': '.ee-main__content form .table-responsive table tr td:nth-child(3)',
-					'manage_actions': '.ee-main__content form .table-responsive table tr td:nth-child(4)',
+					'title_names': '.ee-main__content form .table-responsive table tr td:nth-child(3)',
+					'file_types': '.ee-main__content form .table-responsive table tr td:nth-child(5)',
+					'dates_added': '.ee-main__content form .table-responsive table tr td:nth-child(6)',
+					'manage_actions': '.ee-main__content form .table-responsive table tr td:nth-child(8)',
 
-					'no_results': 'tr.no-results',
+					'no_results': '.no-results',
 
 					'view_modal': 'div.modal-view-file',
 					'view_modal_header': 'div.modal-view-file h1',
