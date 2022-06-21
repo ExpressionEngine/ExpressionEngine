@@ -222,6 +222,10 @@ class File_field
             ),
         ));
 
+        ee()->javascript->set_global([
+            'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
+        ]);
+
         ee()->file_field->loadDragAndDropAssets();
 
         return ee('View')->make('file:publish')->render(array(
