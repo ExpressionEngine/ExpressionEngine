@@ -23726,6 +23726,9 @@ body[data-theme="dark"] {
 }
 .fields-grid-tools a {
   color: var(--ee-text-secondary);
+  /* Hack for capybara-webkit, leave in place for now */
+  display: inline-block;
+  min-width: 1px;
 }
 .fields-grid-tools a:hover {
   color: var(--ee-link);
