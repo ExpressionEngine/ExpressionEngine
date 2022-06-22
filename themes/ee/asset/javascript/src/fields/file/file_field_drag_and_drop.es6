@@ -70,11 +70,20 @@
   setFile = (response, mainDropzone) => {
     let fileField = this.getFieldContainer(mainDropzone)
 
-    EE.FileField.pickerCallback(response, {
-      input_value: fileField.find('input.js-file-input'),
-      input_img: fileField.find('img.js-file-image'),
-      modal: $('.modal-file')
-    })
+    if (fileField.find('div[data-file-field-react]').length) {
+      EE.FileField.pickerCallback(response, {
+        input_value: fileField.find('input.js-file-input'),
+        input_img: fileField.find('img.js-file-image'),
+        modal: $('.modal-file')
+      })
+    }
+
+    if (fileField.find('textarea.has-format-options').length) {
+      EE.filePickerCallback(response, {
+        input_value: mainDropzone,
+        modal: $('.modal-file')
+      })
+    }
 
     this.setState({
       file: response
