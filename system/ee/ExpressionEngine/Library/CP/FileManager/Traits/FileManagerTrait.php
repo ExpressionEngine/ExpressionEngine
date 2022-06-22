@@ -257,6 +257,11 @@ trait FileManagerTrait
         }
 
         $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
+        $preselectedFileId =ee()->session->flashdata('file_id');
+
+        if ($preselectedFileId) {
+            $files = $files->order('FIELD( file_id, ' . $preselectedFileId . ' )', 'DESC', false);
+        }
 
         $files = $files->order($sort_field, $table->sort_dir)
             ->limit($perpage)
@@ -266,7 +271,6 @@ trait FileManagerTrait
         $data = array();
         $missing_files = false;
 
-        $file_id = ee()->session->flashdata('file_id');
         $member = ee()->session->getMember();
 
         foreach ($files as $file) {
@@ -285,7 +289,7 @@ trait FileManagerTrait
                 $missing_files = true;
             }
 
-            if ($file_id && $file->file_id == $file_id) {
+            if ($preselectedFileId && $file->file_id == $preselectedFileId) {
                 $attrs['class'] .= ' selected';
             }
 

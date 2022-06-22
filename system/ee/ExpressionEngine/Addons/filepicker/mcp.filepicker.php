@@ -335,6 +335,9 @@ class Filepicker_mcp
             $errors = $result['validation_result'];
 
             if ($result['uploaded']) {
+                // mark the file as newly uploaded in file picker
+                ee()->session->set_flashdata('file_id', $file->getId());
+
                 if ($file->file_name != $result['upload_response']['file_data_orig_name']) {
                     $file->save();
 
