@@ -17,6 +17,7 @@ class DragAndDropUpload extends React.Component {
   constructor (props) {
     super(props)
     window.list;
+    window.globalDropzone;
 
     let directoryName = this.getDirectoryName(props.allowedDirectory);
 
@@ -30,10 +31,9 @@ class DragAndDropUpload extends React.Component {
       error: null,
       path: item.path,
       upload_location_id: item.upload_location_id, //main folder ID
-      directory_id: item.directory_id //subfolder ID
+      directory_id: item.directory_id, //subfolder ID
     }
 
-    
     this.queue = new ConcurrencyQueue({concurrency: this.props.concurrency})
   }
 
@@ -127,7 +127,7 @@ class DragAndDropUpload extends React.Component {
           pendingFiles: droppedFiles
         })
       }
-
+      window.globalDropzone = undefined
       this.handleDroppedFiles(droppedFiles)
     })
 
@@ -216,12 +216,13 @@ class DragAndDropUpload extends React.Component {
           switch (response.status) {
             case 'success':
               this.removeFile(file)
-              this.props.onFileUploadSuccess(JSON.parse(xhr.responseText))
               resolve(file)
               if( $('.file-upload-widget').length) {
                 $('.file-upload-widget').hide();
                 $('body .f_manager-wrapper > form').submit();
               }
+
+              this.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone)
               break
             case 'duplicate':
               file.duplicate = true
@@ -303,6 +304,7 @@ class DragAndDropUpload extends React.Component {
   chooseExisting = (directory) => {
     let url = this.props.filebrowserEndpoint.replace('=all', '='+directory)
     this.presentFilepicker(url, false)
+    window.globalDropzone = $(this.dropZone)
   }
 
   uploadNew = (directory) => {
@@ -328,6 +330,7 @@ class DragAndDropUpload extends React.Component {
       path: item.path || '',
       upload_location_id: item.upload_location_id || null
     })
+    window.globalDropzone = undefined;
 
     $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
     $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').change(function(e){
@@ -400,11 +403,12 @@ class DragAndDropUpload extends React.Component {
 
   resolveConflict(file, response) {
     this.removeFile(file)
-    this.props.onFileUploadSuccess(response)
+    this.props.onFileUploadSuccess(response, window.globalDropzone)
     if( $('.file-upload-widget').length) {
       $('.file-upload-widget').hide();
       $('body .f_manager-wrapper > form').submit();
     }
+
   }
 
   showErrorWithInvalidState(error) {

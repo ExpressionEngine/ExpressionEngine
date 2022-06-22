@@ -2,9 +2,8 @@
         <div class="field-control">
             <em class="ee-form-error-message"><?=lang('confirmation_toggle_required')?></em>
         </div>
+        <br />
     </fieldset>
-
-    <br />
 
     <?php
     if (isset($fieldset)) {

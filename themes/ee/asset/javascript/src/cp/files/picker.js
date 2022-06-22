@@ -15,6 +15,7 @@
 
 (function ($) {
 	var bind_modal = function(url, options) {
+		window.globalDropzone = options.input_value;
 		var modal = $("." + options.rel),
 			callback = function(data) {
 				var picker = {

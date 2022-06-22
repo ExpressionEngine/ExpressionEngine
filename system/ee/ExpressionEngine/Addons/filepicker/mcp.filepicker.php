@@ -128,7 +128,7 @@ class Filepicker_mcp
         $vars['toolbar_items'] = [];
         $vars['cp_heading'] = $field_upload_locations == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
-        if ($requested_directory != 'all') {
+        if ($requested_directory != 'all' && ee('Request')->get('hasUpload') == '1') {
             /*if (!bool_config_item('file_manager_compatibility_mode') && $dir->allow_subfolders) {
                 $vars['toolbar_items']['new_folder'] = [
                     'href' => '#',
@@ -335,6 +335,9 @@ class Filepicker_mcp
             $errors = $result['validation_result'];
 
             if ($result['uploaded']) {
+                // mark the file as newly uploaded in file picker
+                ee()->session->set_flashdata('file_id', $file->getId());
+
                 if ($file->file_name != $result['upload_response']['file_data_orig_name']) {
                     $file->save();
 

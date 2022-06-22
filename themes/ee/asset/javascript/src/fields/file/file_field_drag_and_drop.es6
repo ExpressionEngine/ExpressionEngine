@@ -39,13 +39,23 @@
       })
   }
 
-  getFieldContainer() {
-    // If in a grid, return that
-    if($(this.props.thisField).closest('.grid-file-upload').length) {
-      return $(this.props.thisField).closest('.grid-file-upload')
+  getFieldContainer(mainDropzone) {
+    let thisField = $(this.props.thisField)
+
+    if (mainDropzone !== undefined) {
+      thisField = mainDropzone.parents('div[data-file-field-react]');
+
+      if (!thisField.length) {
+        thisField = mainDropzone;
+      }
     }
 
-    let fluidContainer = $(this.props.thisField).closest('.fluid__item-field')
+    // If in a grid, return that
+    if(thisField.closest('.grid-file-upload').length) {
+      return thisField.closest('.grid-file-upload')
+    }
+
+    let fluidContainer = thisField.closest('.fluid__item-field')
 
     // Is this file field inside of a fluid field? 
     // If it is, we need to get the fluid item container, 
@@ -54,17 +64,26 @@
       return fluidContainer
     }
 
-    return $(this.props.thisField).closest('.grid-file-upload, .field-control')
+    return thisField.closest('.grid-file-upload, .field-control')
   }
 
-  setFile = (response) => {
-    let fileField = this.getFieldContainer()
+  setFile = (response, mainDropzone) => {
+    let fileField = this.getFieldContainer(mainDropzone)
 
-    EE.FileField.pickerCallback(response, {
+    if (fileField.find('div[data-file-field-react]').length) {
+      EE.FileField.pickerCallback(response, {
         input_value: fileField.find('input.js-file-input'),
         input_img: fileField.find('img.js-file-image'),
         modal: $('.modal-file')
-    })
+      })
+    }
+
+    if (fileField.find('textarea.has-format-options').length) {
+      EE.filePickerCallback(response, {
+        input_value: mainDropzone,
+        modal: $('.modal-file')
+      })
+    }
 
     this.setState({
       file: response

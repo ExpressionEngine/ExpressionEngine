@@ -47,6 +47,11 @@ trait FileManagerTrait
                     'requested_directory' => $requested_directory
                 ]);
             }
+            if (!empty(ee('Request')->get('hasUpload'))) {
+                $base_url->addQueryStringVariables([
+                    'hasUpload' => ee('Request')->get('hasUpload')
+                ]);
+            }
         }
 
         $files = ee('Model')->get($model)
@@ -233,7 +238,9 @@ trait FileManagerTrait
             'imitationButton' => true
         ];
 
-        $table->setNoResultsHTML(ee('View')->make('ee:_shared/file/upload-widget')->render(['component' => $uploaderComponent]), 'file-upload-widget');
+        if (!$filepickerMode || ee('Request')->get('hasUpload') == 1) {
+            $table->setNoResultsHTML(ee('View')->make('ee:_shared/file/upload-widget')->render(['component' => $uploaderComponent]), 'file-upload-widget');
+        }
 
         if (! empty($uploadLocation) && $uploadLocation->subfolders_on_top === true) {
             // $files->fields('model_type');
@@ -250,6 +257,11 @@ trait FileManagerTrait
         }
 
         $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
+        $preselectedFileId =ee()->session->flashdata('file_id');
+
+        if ($preselectedFileId) {
+            $files = $files->order('FIELD( file_id, ' . $preselectedFileId . ' )', 'DESC', false);
+        }
 
         $files = $files->order($sort_field, $table->sort_dir)
             ->limit($perpage)
@@ -259,7 +271,6 @@ trait FileManagerTrait
         $data = array();
         $missing_files = false;
 
-        $file_id = ee()->session->flashdata('file_id');
         $member = ee()->session->getMember();
 
         foreach ($files as $file) {
@@ -278,7 +289,7 @@ trait FileManagerTrait
                 $missing_files = true;
             }
 
-            if ($file_id && $file->file_id == $file_id) {
+            if ($preselectedFileId && $file->file_id == $preselectedFileId) {
                 $attrs['class'] .= ' selected';
             }
 
@@ -303,6 +314,11 @@ trait FileManagerTrait
                     if (!empty($requested_directory)) {
                         $attrs['data-filter-url']->addQueryStringVariables([
                             'requested_directory' => $requested_directory
+                        ]);
+                    }
+                    if (!empty(ee('Request')->get('hasUpload'))) {
+                        $attrs['data-filter-url']->addQueryStringVariables([
+                            'hasUpload' => ee('Request')->get('hasUpload')
                         ]);
                     }
                 }

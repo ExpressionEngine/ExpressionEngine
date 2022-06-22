@@ -445,9 +445,9 @@ class Builder
     /**
      * Add ordering to the query
      */
-    public function order($property, $direction = '')
+    public function order($property, $direction = '', $escape = true)
     {
-        $this->orders[] = array($property, $direction);
+        $this->orders[] = array($property, $direction, $escape);
 
         return $this;
     }
