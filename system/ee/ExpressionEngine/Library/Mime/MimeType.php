@@ -94,9 +94,10 @@ class MimeType
     {
         foreach ($mimes as $group => $mime) {
             if (is_array($mime)) {
-                return $this->addMimeTypes($mime, $group);
+                $this->addMimeTypes($mime, $group);
+            } else {
+                $this->addMimeType($mime, $kind);
             }
-            $this->addMimeType($mime, $kind);
         }
     }
 
@@ -134,9 +135,12 @@ class MimeType
         if (! file_exists($path)) {
             throw new Exception("File " . $path . " does not exist.");
         }
-        
-        $file_opening = file_get_contents($path, false, null, 0, 50); //get first 50 bytes off the file
-        $mime = $this->detector->detectMimeType($path, $file_opening);
+
+        $mime = $this->detector->detectMimeTypeFromFile($path);
+        if (is_null($mime)) {
+            $file_opening = file_get_contents($path, false, null, 0, 50); //get first 50 bytes off the file
+            $mime = $this->detector->detectMimeType($path, $file_opening);
+        }
 
         // Set a default
         $mime = !is_null($mime) ? $mime :  'application/octet-stream';
