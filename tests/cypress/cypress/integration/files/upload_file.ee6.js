@@ -32,7 +32,7 @@ context('File Manager / Upload File', () => {
     //page.displayed?
 
     // Check that the heder data is intact
-    page.get('manager_title').invoke('text').then((text) => { expect(text.trim()).to.be.equal('File Manager') })
+    page.get('manager_title').invoke('text').then((text) => { expect(text.trim()).to.be.equal('Files') })
     page.get('download_all').should('exist')
 
     // Check that we have a sidebar
@@ -44,14 +44,8 @@ context('File Manager / Upload File', () => {
     page.get('sidebar').find('.sidebar__link.active a').first().invoke('text').then((text) => { expect(text.trim()).to.be.equal('Main Upload Directory') })
 
     page.get('breadcrumb').should('exist')
-    page.get('heading').invoke('text').then((text) => { expect(text.trim()).to.be.equal('File Upload') })
 
     page.get('file_input').should('exist')
-    page.get('title_input').should('exist')
-    page.get('description_input').should('exist')
-    page.get('credit_input').should('exist')
-    page.get('location_input').should('exist')
-    page.get('form_submit_button').should('exist')
   })
 
   // Restore the images/uploads directory
@@ -59,25 +53,8 @@ context('File Manager / Upload File', () => {
     cy.task('filesystem:delete', upload_dir+'/\*')
   })
 
-  it('shows the upload form', () => {
-    page.get('title_input').invoke('val').then((val) => { expect(val).to.be.equal('') })
-    page.get('description_input').invoke('val').then((val) => { expect(val).to.be.equal('') })
-    page.get('credit_input').invoke('val').then((val) => { expect(val).to.be.equal('') })
-    page.get('location_input').invoke('val').then((val) => { expect(val).to.be.equal('') })
-  })
-
-  it('requires that a file be uploaded', () => {
-    page.get('form_submit_button').click()
-    cy.hasNoErrors()
-
-    page.get('alert').should('be.visible')
-    page.get('alert_error').should('be.visible')
-    page.get('alert').contains("Cannot Upload File")
-    page.get('alert').contains("You did not select a file to upload.")
-  })
-
   it('can upload a Markdown file', () => {
-    cy.get('input[name="file"]').attachFile(md_file)
+    page.get('file_input').find('.file-field__dropzone').attachFile(md_file, { subjectType: 'drag-n-drop' })
     page.get('form_submit_button').click()
     cy.hasNoErrors()
 

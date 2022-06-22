@@ -26,6 +26,9 @@ context('Upload Sync', () => {
     cy.auth();
     // Create a new upload directory for testing
     new_upload.load()
+    new_upload.get('url').should('not.be.visible')
+    cy.get('[data-input-value=adapter] .select__button').click()
+    cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
     new_upload.get('name').type('Dir')
     new_upload.get('url').clear().type('http://ee/')
     cy.task('filesystem:path', upload_path).then((text) => {
