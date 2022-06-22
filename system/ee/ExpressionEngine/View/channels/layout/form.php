@@ -68,7 +68,7 @@
                                         <?php endif; ?>
 										<div class="layout-item__field-width">
 										<div class="field-control field-option-width">
-											<i class="fas fa-arrows-h"></i>
+											<i class="fal fa-arrows-h"></i>
 											<select class="select-popup button--xsmall">
 											<option value="100" <?php echo ($field->getWidth() == 100) ? 'selected="selected"' : ''; ?>>100%</option>
 											<option value="75" <?php echo ($field->getWidth() == 75) ? 'selected="selected"' : ''; ?>>75%</option>

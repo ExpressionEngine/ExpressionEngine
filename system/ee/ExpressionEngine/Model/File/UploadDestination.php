@@ -452,7 +452,7 @@ class UploadDestination extends StructureModel
                     if (!empty($directory)) {
                         $folder_icon = $directory->title;
                         if ($icon) {
-                            $folder_icon = '<i class="fas fa-folder"></i>' . $directory->title;
+                            $folder_icon = '<i class="fal fa-folder"></i>' . $directory->title;
                             $icon = true;
                         }
                         $path = $path . urlencode($directory->file_name) . '/';

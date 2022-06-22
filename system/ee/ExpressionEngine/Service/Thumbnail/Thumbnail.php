@@ -61,7 +61,7 @@ class Thumbnail
             if (! $file->exists()) {
                 $this->setMissing();
             } elseif ($file->isDirectory()) {
-                $this->tag = '<i class="fas fa-folder fa-3x"></i>';
+                $this->tag = '<i class="fal fa-folder fa-3x"></i>';
             } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL();
                 $this->path = $file->getAbsoluteThumbnailPath();
@@ -69,13 +69,13 @@ class Thumbnail
             } else {
                 switch ($file->mime_type) {
                     case 'text/plain':
-                        $this->tag = '<i class="fas fa-file-alt fa-3x"></i>';
+                        $this->tag = '<i class="fal fa-file-alt fa-3x"></i>';
                         break;
                     case 'application/zip':
-                        $this->tag = '<i class="fas fa-file-archive fa-3x"></i>';
+                        $this->tag = '<i class="fal fa-file-archive fa-3x"></i>';
                         break;
                     default:
-                        $this->tag = '<i class="fas fa-file fa-3x"></i>';
+                        $this->tag = '<i class="fal fa-file fa-3x"></i>';
                         break;
                 }
             }
@@ -114,7 +114,7 @@ class Thumbnail
         $this->missing = true;
         $this->url = PATH_CP_GBL_IMG . 'missing.jpg';
         $this->path = PATH_THEMES . 'asset/img/missing.jpg';
-        $this->tag = '<i class="fas fa-exclamation-triangle fa-3x"></i>';
+        $this->tag = '<i class="fal fa-exclamation-triangle fa-3x"></i>';
     }
 
     /**
