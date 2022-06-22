@@ -1014,7 +1014,7 @@ class Filesystem
         $normalized = $this->normalizeAbsolutePath($path);
         $prefix = rtrim($this->getPathPrefix(), '\\/');
 
-        if (strpos($normalized, $prefix) === 0) {
+        if (!empty($prefix) && strpos($normalized, $prefix) === 0) {
             return $normalized;
         }
 
