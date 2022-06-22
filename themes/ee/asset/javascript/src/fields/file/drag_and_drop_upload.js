@@ -139,6 +139,8 @@ function (_React$Component) {
       var url = _this.props.filebrowserEndpoint.replace('=all', '=' + directory);
 
       _this.presentFilepicker(url, false);
+
+      window.globalDropzone = $(_this.dropZone);
     });
 
     _defineProperty(_assertThisInitialized(_this), "uploadNew", function (directory) {
@@ -164,6 +166,7 @@ function (_React$Component) {
         path: item.path || '',
         upload_location_id: item.upload_location_id || null
       });
+      window.globalDropzone = undefined;
       $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
       $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').change(function (e) {
         var files = e.target.files;
@@ -220,6 +223,7 @@ function (_React$Component) {
     });
 
     window.list;
+    window.globalDropzone;
 
     var directoryName = _this.getDirectoryName(props.allowedDirectory);
 
@@ -323,6 +327,8 @@ function (_React$Component) {
           });
         }
 
+        window.globalDropzone = undefined;
+
         _this2.handleDroppedFiles(droppedFiles);
       });
 
@@ -375,14 +381,14 @@ function (_React$Component) {
               case 'success':
                 _this3.removeFile(file);
 
-                _this3.props.onFileUploadSuccess(JSON.parse(xhr.responseText));
-
                 resolve(file);
 
                 if ($('.file-upload-widget').length) {
                   $('.file-upload-widget').hide();
                   $('body .f_manager-wrapper > form').submit();
                 }
+
+                _this3.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone);
 
                 break;
 
@@ -470,7 +476,7 @@ function (_React$Component) {
     key: "resolveConflict",
     value: function resolveConflict(file, response) {
       this.removeFile(file);
-      this.props.onFileUploadSuccess(response);
+      this.props.onFileUploadSuccess(response, window.globalDropzone);
 
       if ($('.file-upload-widget').length) {
         $('.file-upload-widget').hide();
