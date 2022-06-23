@@ -24484,18 +24484,20 @@ body[data-theme="dark"] {
   justify-content: center;
   overflow: hidden;
   z-index: 12000;
+  max-width: 200px;
 }
 #preview span {
-  width: 100%;
-  height: 100%;
+  width: 250px;
+  height: 200px;
   display: flex;
   overflow: hidden;
-  max-width: 200px;
-  max-height: 200px;
   margin: 5px;
   box-sizing: border-box;
   align-items: center;
   justify-content: center;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .hidden {
