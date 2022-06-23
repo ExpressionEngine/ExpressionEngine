@@ -169,7 +169,7 @@
 				var left = $(this).offset().left;
 				parent.append("<p id='preview'><img src='" + path + "' alt='"+alt+"' /></p>");
 				$("#preview").css({
-					'top': (top + 70) + "px",
+					'top': (top + 30) + "px",
 					'left': (left - 200) + "px",
 					'display': 'flex',
 				}).fadeIn();

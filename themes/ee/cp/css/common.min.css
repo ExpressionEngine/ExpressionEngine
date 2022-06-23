@@ -24167,6 +24167,9 @@ body[data-theme="dark"] {
 .tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i[class*=fields-grid-tool-]:before {
   color: var(--ee-secondary-sidebar-item-icon);
 }
+.f_manager-wrapper tr.selected td {
+  position: inherit;
+}
 .f_manager-wrapper .dropdown a.edit:before, .f_manager-wrapper .select__dropdown a.edit:before,
 .f_manager-wrapper .dropdown a.download:before,
 .f_manager-wrapper .select__dropdown a.download:before,

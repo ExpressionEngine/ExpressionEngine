@@ -78,6 +78,10 @@
     }
   }
 
+  tr.selected {
+    td { position: inherit;}
+  }
+
   .dropdown {
     a.edit,
     a.download,
