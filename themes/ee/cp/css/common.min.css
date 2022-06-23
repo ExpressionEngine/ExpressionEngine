@@ -24478,11 +24478,22 @@ body[data-theme="dark"] {
   position: absolute;
   border: 2px solid var(--ee-button-default-border);
   background: var(--ee-button-default-bg);
-  padding: 5px;
   border-radius: 4px;
   display: none;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 12000;
+}
+#preview span {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
   max-width: 200px;
   max-height: 200px;
+  margin: 5px;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
 }
