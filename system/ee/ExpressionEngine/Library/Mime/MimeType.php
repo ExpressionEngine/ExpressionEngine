@@ -137,6 +137,8 @@ class MimeType
         }
 
         $mime = $this->detector->detectMimeTypeFromFile($path);
+        $file_opening = null;
+        
         if (is_null($mime)) {
             $file_opening = file_get_contents($path, false, null, 0, 50); //get first 50 bytes off the file
             $mime = $this->detector->detectMimeType($path, $file_opening);
@@ -147,6 +149,7 @@ class MimeType
 
         // try another method to get mime
         if ($mime == 'application/octet-stream') {
+            $file_opening = ($file_opening) ?: file_get_contents($path, false, null, 0, 50);
             $mime = $this->guessOctetStream($file_opening);
         }
 

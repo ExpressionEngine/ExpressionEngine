@@ -2,6 +2,7 @@
 
 import EditFile from '../../elements/pages/files/EditFile';
 import FileManager from '../../elements/pages/files/FileManager';
+const { _, $ } = Cypress
 const page = new EditFile;
 const filemanager = new FileManager;
 
@@ -26,10 +27,15 @@ context('File Manager / Edit File', () => {
 
   it('can add a picture', () => {
     cy.get('button').contains('Upload').first().click()
-    cy.get('a[class="dropdown__link"]').contains('About').filter(':visible').first().click()
+    
     const fileName = 'pictureUpload.png'
-    cy.get('input[name="file"]').attachFile(fileName)
-    cy.get('[value="Upload File"]').filter(':visible').first().click()
+    cy.get('.file-upload-widget').then(function(widget) {
+      $(widget).removeClass('hidden')
+    })
+    cy.get('.file-upload-widget .js-dropdown-toggle').click();
+    cy.get('.file-upload-widget .dropdown__link').contains('About').filter(':visible').first().click()
+    cy.get('.file-upload-widget .file-field__dropzone').attachFile(fileName, { subjectType: 'drag-n-drop' })
+    
     cy.hasNoErrors()
 
   })

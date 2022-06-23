@@ -83,6 +83,15 @@ class Files extends AbstractFilesController
                 ->withTitle(sprintf(lang('directory_not_found'), $dir->server_path))
                 ->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
                 ->now();
+        } else {
+            // If the directory exists check if it's writable
+            if (!$dir->isWritable()) {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('dir_not_writable'))
+                    ->addToBody(sprintf(lang('dir_not_writable_desc'), $dir->name))
+                    ->now();
+            }
         }
 
         $this->handleBulkActions(ee('CP/URL')->make('files/directory/' . $id, ee()->cp->get_url_state()));

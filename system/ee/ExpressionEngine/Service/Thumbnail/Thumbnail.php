@@ -60,6 +60,7 @@ class Thumbnail
         if ($file) {
             if (! $file->exists()) {
                 $this->setMissing();
+                return;
             } elseif ($file->isDirectory()) {
                 $this->tag = '<i class="fas fa-folder fa-3x"></i>';
             } elseif ($file->isEditableImage() || $file->isSVG()) {

@@ -189,7 +189,7 @@ context('Upload Sync', () => {
           let file_count = images_count + bad_files_count;
 
           new_upload.load_edit_for_dir(2)
-          new_upload.get('allowed_types').find('[value="--"]').check()
+          new_upload.get('allowed_types').find('[type="checkbox"][value="--"]').check()
           new_upload.submit()
           new_upload.get('wrap').contains('Upload directory saved')
           cy.hasNoErrors()
