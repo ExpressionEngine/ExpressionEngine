@@ -14402,7 +14402,7 @@ input[type=button].btn-block {
 .sidebar__section-title .field-no-results a,
 .field-no-results .sidebar__section-title a, .sidebar__section-title .select-popup, .sidebar__section-title select, .sidebar__section-title .select__button, .sidebar__section-title .license-status-badge, .sidebar__section-title .filter-bar__button, .sidebar__section-title .markItUpHeader ul a, .markItUpHeader ul .sidebar__section-title a {
   position: relative;
-  top: -2px;
+  top: 0px;
   margin-left: auto;
   display: inline-table;
 }
@@ -23863,6 +23863,7 @@ body[data-theme="dark"] {
   display: flex;
   padding-top: 0;
   padding-bottom: 0;
+  position: relative;
 }
 @media (max-width: 767px) {
   .secondary-sidebar-container {
@@ -23881,6 +23882,85 @@ body[data-theme="dark"] {
     padding: 0;
     padding-top: 20px;
     max-width: 100%;
+  }
+}
+.secondary-sidebar.secondary-sidebar__collapsed {
+  display: none;
+}
+
+.secondary-sidebar-toggle {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: -32px;
+}
+.secondary-sidebar-toggle:before {
+  content: "";
+  width: 1px;
+  height: 150px;
+  display: block;
+  background: linear-gradient(var(--ee-border), var(--ee-main-bg));
+  position: absolute;
+  top: 1px;
+  left: 12px;
+}
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target {
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  display: block;
+  cursor: pointer;
+  text-align: right;
+  border-radius: 1000px;
+  color: var(--ee-text-secondary);
+  background-color: var(--ee-panel-bg);
+  border: 1px solid var(--ee-panel-border);
+  font-size: 12px;
+  line-height: 29px;
+  padding: 0;
+  z-index: 10;
+  position: absolute;
+  top: 0;
+  left: 0px;
+}
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target:hover {
+  color: var(--ee-text-secondary);
+  display: block;
+}
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target .fas, .secondary-sidebar-toggle .secondary-sidebar-toggle__target tr.missing td:not(.reorder-col):first-child:before, tr.missing .secondary-sidebar-toggle .secondary-sidebar-toggle__target td:not(.reorder-col):first-child:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .column-sort::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .app-notice__icon::before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .app-notice__dismiss::before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .m-close:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .app-modal__dismiss a:before, .app-modal__dismiss .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .sidebar__link.remove:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-bar--editable .tab-remove:before, .tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-remove:before,
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-bar--editable .tab-on:before,
+.tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-on:before,
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-bar--editable .tab-off:before,
+.tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-off:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .dropdown__link--selected::before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target [class^=widget-icon--],
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target [class*=" widget-icon--"], .secondary-sidebar-toggle .secondary-sidebar-toggle__target .widget--support::before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .checkbox:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target input[type=checkbox]:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .checkbox--large:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .checkbox--small:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .secondary-sidebar-toggle .secondary-sidebar-toggle__target label:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .secondary-sidebar-toggle .secondary-sidebar-toggle__target label:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .secondary-sidebar-toggle .secondary-sidebar-toggle__target label:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fieldset-invalid > label:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .sub-arrow:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .checklist li:before, .checklist .secondary-sidebar-toggle .secondary-sidebar-toggle__target li:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .select__button-label::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .select-popup:not([multiple])::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target select:not([multiple])::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .layout-item__handle::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .secondary-sidebar-toggle .secondary-sidebar-toggle__target a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .icon-reorder, .secondary-sidebar-toggle .secondary-sidebar-toggle__target [class^=icon--],
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target [class*=" icon--"], .secondary-sidebar-toggle .secondary-sidebar-toggle__target .icon-settings,
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target .icon--settings, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .has-sub::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .menu-wrap .develop .has-sub::before, .menu-wrap .develop .secondary-sidebar-toggle .secondary-sidebar-toggle__target .has-sub::before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .toolbar a:after, .toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .toolbar a:before, .toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .toolbar span:after, .toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target span:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .toolbar span:before, .toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target span:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target button-toolbar a:after, button-toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target button-toolbar a:before, button-toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target button-toolbar span:after, button-toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target span:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target button-toolbar span:before, button-toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target span:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tbl-list .reorder:before, .tbl-list .secondary-sidebar-toggle .secondary-sidebar-toggle__target .reorder:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .filters a.add:before, .filters .secondary-sidebar-toggle .secondary-sidebar-toggle__target a.add:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .filters .filter-clear a:before, .filters .filter-clear .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-remove:before,
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-wrap .tabs.layout .tab-on:before,
+.tab-wrap .tabs.layout .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-on:before,
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-wrap .tabs.layout .tab-off:before,
+.tab-wrap .tabs.layout .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-off:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target [class*=fields-grid-tool-]:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fal, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .far {
+  position: absolute;
+  top: 5px;
+  right: 9px;
+  cursor: pointer;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .secondary-sidebar-toggle {
+    display: block;
+  }
+}
+.secondary-sidebar:hover + .container .secondary-sidebar-toggle, .secondary-sidebar-toggle:hover {
+  display: block;
+}
+
+.secondary-sidebar.secondary-sidebar__collapsed + .container .secondary-sidebar-toggle {
+  display: block;
+}
+
+@media only screen and (max-width: 767px) {
+  .secondary-sidebar-toggle {
+    display: none !important;
   }
 }
 .ee-sidebar {

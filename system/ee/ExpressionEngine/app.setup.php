@@ -728,6 +728,7 @@ $setup = [
         'viewtype',
         'cp_last_site_id',
         'ee_cp_viewmode',
+        'secondary_sidebar',
         'collapsed_nav'
     ],
     'cookie_settings' => [
@@ -768,6 +769,10 @@ $setup = [
         ],
         'collapsed_nav' => [
             'description' => 'lang:cookie_collapsed_nav_desc',
+            'provider' => 'cp',
+        ],
+        'secondary_sidebar' => [
+            'description' => 'lang:cookie_secondary_sidebar_desc',
             'provider' => 'cp',
         ],
         'ee_cp_viewmode' => [

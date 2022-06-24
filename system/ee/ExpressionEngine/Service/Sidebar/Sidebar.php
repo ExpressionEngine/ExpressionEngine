@@ -17,6 +17,8 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class Sidebar extends AbstractSidebar
 {
+    public $collapsedState;
+    
     /**
      * Renders the sidebar
      *
@@ -53,9 +55,23 @@ class Sidebar extends AbstractSidebar
             $this->class .= ' ';
         }
 
+        //depending on where it is inserted, set class for owner
+        $owner = ee()->uri->segment(2);
+        if (ee()->uri->segment(2) == 'addons') {
+            $owner = ee()->uri->segment(4);
+        }
+        $containerClass = ' secondary-sidebar__' . $owner;
+        $state = json_decode(ee()->input->cookie('secondary_sidebar'));
+        if (!empty($state) && isset($state->$owner) && $state->$owner == 1) {
+            $containerClass = ' secondary-sidebar__collapsed';
+            $this->collapsedState = true;
+        }
+
         return $this->view->make('_shared/sidebar/sidebar')
             ->render([
                 'class' => $this->class,
+                'containerClass' => $containerClass,
+                'owner' => $owner,
                 'sidebar' => $output,
             ]);
     }
