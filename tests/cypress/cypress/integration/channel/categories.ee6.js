@@ -18,7 +18,7 @@ context('Categories', () => {
         cy.get('input[name="image_manipulations[rows][new_row_1][width]"]').type('100')
         cy.get('input[name="image_manipulations[rows][new_row_1][height]"]').type('100')
         cy.get('.title-bar__extra-tools .button--primary').first().click()
-        cy.get('.icon--sync').click();
+        cy.visit('admin.php?/cp/files/uploads/sync/2');
         cy.get('input[name="sizes[]"]').first().check();
         cy.contains('Sync Directory').first().click()
 
@@ -34,6 +34,7 @@ context('Categories', () => {
 
     beforeEach(function() {
         cy.authVisit(page.url);
+        cy.dismissLicenseAlert()
         cy.hasNoErrors()
     })
 
@@ -141,6 +142,7 @@ context('Categories', () => {
         cy.wait(5000)
         cy.get('.checkbox-label__text:contains("category one")').parent().find('input[type=checkbox]').check()
 
+        cy.dismissLicenseAlert()
         cy.get('.tab-bar__right-buttons .button--primary').first().click()
 
         cy.visit(page.url);
@@ -317,6 +319,7 @@ context('Categories', () => {
                 cy.task('db:query', 'UPDATE exp_channel_titles SET entry_date=1409242039 WHERE entry_id=1').then(() => {
 
                     cy.visit('index.php/cats/archive-sorted')
+                    cy.hasNoErrors()
                     cy.logFrontendPerformance()
                     
                     cy.get(".default-linear .category_name").eq(0).invoke('text').then((text) => {
@@ -480,6 +483,7 @@ context('Categories', () => {
     })
 
     function check_category_one() {
+        cy.hasNoErrors()
         cy.get('#category-one .category_name').invoke('text').then((text) => {
             expect(text).equal('category one')
         })
@@ -512,7 +516,7 @@ context('Categories', () => {
     }
 
     function check_category_two() {
-
+        cy.hasNoErrors()
         cy.get('#category-two .category_name').invoke('text').then((text) => {
             expect(text).equal('category two')
         })

@@ -55,7 +55,7 @@ class Filesystem
 
     public function isLocalRoot($path)
     {
-        return $this->isLocal() && (in_array($path, ['/', '\\']) || strrpos($path, ':/', -2) || strrpos($path, ':\\'));
+        return $this->isLocal() && $path === '/';
     }
 
     /**
