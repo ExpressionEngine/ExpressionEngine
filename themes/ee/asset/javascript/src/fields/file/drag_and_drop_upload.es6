@@ -182,7 +182,6 @@ class DragAndDropUpload extends React.Component {
     this.setState({
       files: this.state.files.concat(files)
     })
-
     files = files.filter(file => ! file.error)
     this.queue.enqueue(files, (file => this.makeUploadPromise(file)))
   }
@@ -494,8 +493,12 @@ class DragAndDropUpload extends React.Component {
               onFileErrorDismiss={(e, file) => {
                 e.preventDefault()
                 this.removeFile(file)
-                if( $('.file-upload-widget').length && $('.file-upload-widget').hasClass('hidden')) {
-                  $('.file-upload-widget').hide();
+                if( $('.file-upload-widget').length) {
+                  if ($('.file-upload-widget').hasClass('hidden')) {
+                    $('.file-upload-widget').hide();
+                  }
+
+                  $('body .f_manager-wrapper > form').submit();
                 }
               }}
               onResolveConflict={(file, response) => this.resolveConflict(file, response)}
