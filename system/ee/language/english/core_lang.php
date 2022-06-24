@@ -482,6 +482,9 @@ If you made these changes, please accept the modifications on the control panel 
     'cookie_collapsed_nav' => 'Collapsed Navigation',
     'cookie_collapsed_nav_desc' => 'Determines whether navigation sidebar is control panel should be collapsed.',
 
+    'cookie_secondary_sidebar' => 'Secondary Sidebar State',
+    'cookie_secondary_sidebar_desc' => 'Determines whether secondary navigation sidebar is control panel should be collapsed for each corresponding section.',
+
     'cookie_ee_cp_viewmode' => 'CP View Mode',
     'cookie_ee_cp_viewmode_desc' => 'Determines view mode for control panel.',
 

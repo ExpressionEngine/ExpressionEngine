@@ -324,73 +324,22 @@ $(document).ready(function(){
 		$.get(EE.cp.collapseNavURL, {collapsed: (!isHidden ? 1 : 0)});
 	})
 
-	// Set cookie for secondary sidebar
-
-	function setCookie(name,value,days) {
-		var expires = "";
-
-		if (days) {
-			var date = new Date();
-			date.setTime(date.getTime() + (days*24*60*60*1000));
-			expires = "; expires=" + date.toUTCString();
-		}
-
-		document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-	}
-
-	function getCookie(name) {
-		var nameEQ = name + "=";
-		var ca = document.cookie.split(';');
-		for(var i=0;i < ca.length;i++) {
-			var c = ca[i];
-			while (c.charAt(0)==' ') c = c.substring(1,c.length);
-				if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-			}
-		return null;
-	}
-
-	function secondarySidebarCookieName() {
-		if ($('.secondary-sidebar').length) {
-			var cookieName = (window.location.href.match("\/cp\/(.*?)(?=\/|&|$)")[0]).replaceAll("/", "_");
-			return cookieName = 'exp'+cookieName+'_collapsed_nav';
-		}
-	}
-
-	function firstCheckCookie() {
-		var cookieName = secondarySidebarCookieName();
-
-		if (!getCookie(cookieName)) {
-			setCookie(cookieName, '0' ,31104000)
-		}
-
-		if (getCookie(cookieName) == '1') {
-			$('.secondary-sidebar').addClass('secondary-sidebar__collapsed');
-			$('.secondary-sidebar-toggle .secondary-sidebar-toggle__target').addClass('collapsed');
-			$('.secondary-sidebar-toggle .secondary-sidebar-toggle__target').find('i').removeClass('fa-angle-left').addClass('fa-angle-right');
-		}
-	}
-
-	firstCheckCookie();
 	// Collapse navigation sidebar
 	// -------------------------------------------------------------------
 	$('body').on('click', '.secondary-sidebar-toggle .secondary-sidebar-toggle__target', function(e){
 		e.preventDefault();
 		let isSecondaryHidden = $('.secondary-sidebar').hasClass('secondary-sidebar__collapsed');
-		let cookieName = secondarySidebarCookieName();
-		let cookieStatus = getCookie(cookieName);
 
 		if (isSecondaryHidden) {
 			$('.secondary-sidebar').removeClass('secondary-sidebar__collapsed');
 			$(this).removeClass('collapsed');
 			$(this).find('i').removeClass('fa-angle-right').addClass('fa-angle-left');
-			cookieStatus = '0';
 		} else {
 			$('.secondary-sidebar').addClass('secondary-sidebar__collapsed');
 			$(this).addClass('collapsed');
 			$(this).find('i').removeClass('fa-angle-left').addClass('fa-angle-right');
-			cookieStatus = '1';
 		}
-		setCookie(cookieName, cookieStatus ,31104000)
+		$.get(EE.cp.collapseSecondaryNavURL, {owner: $('.secondary-sidebar').data('owner'), collapsed: (!isSecondaryHidden ? 1 : 0)});
 	})
 
 	// Collapse navigation sidebar

@@ -185,6 +185,27 @@ class Homepage extends CP_Controller
         ee()->output->send_ajax_response(['success']);
     }
 
+    /**
+     * Toggles the secondary sidebar navigation to/from collapsed state
+     *
+     * @return void
+     */
+    public function toggleSecondarySidebarNav()
+    {
+        if (empty(ee('Request')->get('owner'))) {
+            ee()->output->send_ajax_response(['error']);
+        }
+        $state = json_decode(ee()->input->cookie('secondary_sidebar'));
+        if (is_null($state)) {
+            $state = new \stdClass();
+        }
+        $owner = ee('Security/XSS')->clean(ee('Request')->get('owner'));
+        $state->$owner = (int) ee()->input->get('collapsed');
+        ee()->input->set_cookie('secondary_sidebar', json_encode($state), 31104000);
+
+        ee()->output->send_ajax_response(['success']);
+    }
+
     public function dismissBanner()
     {
         $member = ee()->session->getMember();
