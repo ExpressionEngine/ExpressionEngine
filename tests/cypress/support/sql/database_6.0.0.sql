@@ -568,17 +568,17 @@ INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`) VALUES
 -- Dumping data for table ee-test.exp_files: ~10 rows (approximately)
 DELETE FROM `exp_files`;
 /*!40000 ALTER TABLE `exp_files` DISABLE KEYS */;
-INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `mime_type`, `file_name`, `file_size`, `description`, `credit`, `location`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`) VALUES
-	(1, 1, 'staff_jane.png', 2, 'image/png', 'staff_jane.png', 51612, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''),
-	(2, 1, 'staff_jason.png', 2, 'image/png', 'staff_jason.png', 51430, NULL, NULL, NULL, 1, 1302888304, 1, 1302888304, ''),
-	(3, 1, 'staff_josh.png', 2, 'image/png', 'staff_josh.png', 50638, NULL, NULL, NULL, 1, 1302887304, 1, 1302887304, ''),
-	(4, 1, 'staff_randell.png', 2, 'image/png', 'staff_randell.png', 51681, NULL, NULL, NULL, 1, 1302886304, 1, 1302886304, ''),
-	(5, 1, 'ee_banner_120_240.gif', 2, 'image/gif', 'ee_banner_120_240.gif', 9257, NULL, NULL, NULL, 1, 1302885304, 1, 1302885304, ''),
-	(6, 1, 'testband300.jpg', 2, 'image/jpeg', 'testband300.jpg', 23986, NULL, NULL, NULL, 1, 1302884304, 1, 1302884304, ''),
-	(7, 1, 'map.jpg', 2, 'image/jpeg', 'map.jpg', 71299, NULL, NULL, NULL, 1, 1302883304, 1, 1302883304, ''),
-	(8, 1, 'map2.jpg', 2, 'image/jpeg', 'map2.jpg', 49175, NULL, NULL, NULL, 1, 1302882304, 1, 1302882304, ''),
-	(9, 1, 'staff_chloe.png', 2, 'image/png', 'staff_chloe.png', 50262, NULL, NULL, NULL, 1, 1302881304, 1, 1302881304, ''),
-	(10, 1, 'staff_howard.png', 2, 'image/png', 'staff_howard.png', 51488, NULL, NULL, NULL, 1, 1302880304, 1, 1302880304, '');
+INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `mime_type`, `file_type`, `file_name`, `file_size`, `description`, `credit`, `location`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`) VALUES
+	(1, 1, 'staff_jane.png', 2, 'image/png', 'img', 'staff_jane.png', 51612, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''),
+	(2, 1, 'staff_jason.png', 2, 'image/png', 'img', 'staff_jason.png', 51430, NULL, NULL, NULL, 1, 1302888304, 1, 1302888304, ''),
+	(3, 1, 'staff_josh.png', 2, 'image/png', 'img', 'staff_josh.png', 50638, NULL, NULL, NULL, 1, 1302887304, 1, 1302887304, ''),
+	(4, 1, 'staff_randell.png', 2, 'image/png', 'img', 'staff_randell.png', 51681, NULL, NULL, NULL, 1, 1302886304, 1, 1302886304, ''),
+	(5, 1, 'ee_banner_120_240.gif', 2, 'image/gif', 'img', 'ee_banner_120_240.gif', 9257, NULL, NULL, NULL, 1, 1302885304, 1, 1302885304, ''),
+	(6, 1, 'testband300.jpg', 2, 'image/jpeg', 'img', 'testband300.jpg', 23986, NULL, NULL, NULL, 1, 1302884304, 1, 1302884304, ''),
+	(7, 1, 'map.jpg', 2, 'image/jpeg', 'img', 'map.jpg', 71299, NULL, NULL, NULL, 1, 1302883304, 1, 1302883304, ''),
+	(8, 1, 'map2.jpg', 2, 'image/jpeg', 'img', 'map2.jpg', 49175, NULL, NULL, NULL, 1, 1302882304, 1, 1302882304, ''),
+	(9, 1, 'staff_chloe.png', 2, 'image/png', 'img', 'staff_chloe.png', 50262, NULL, NULL, NULL, 1, 1302881304, 1, 1302881304, ''),
+	(10, 1, 'staff_howard.png', 2, 'image/png', 'img', 'staff_howard.png', 51488, NULL, NULL, NULL, 1, 1302880304, 1, 1302880304, '');
 /*!40000 ALTER TABLE `exp_files` ENABLE KEYS */;
 
 DELETE FROM `exp_file_data`;
