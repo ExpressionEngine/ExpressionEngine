@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '6.3.4'; // The version being installed
+    public $version = '7.0.0-rc.1'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -58,7 +58,8 @@ class Wizard extends CI_Controller
         'file',
         'filepicker',
         'relationship',
-        'search'
+        'search',
+        'pro',
     );
 
     public $theme_required_modules = array();
@@ -141,7 +142,7 @@ class Wizard extends CI_Controller
 
         // retain in case third-party add-ons expect IS_CORE to be defined
         define('IS_CORE', false);
-        define('IS_PRO', false);
+        define('IS_PRO', true);
 
         define('USERNAME_MAX_LENGTH', 75);
         define('PASSWORD_MAX_LENGTH', 72);
@@ -1687,13 +1688,13 @@ class Wizard extends CI_Controller
             'recount_batch_total' => '1000',
             'image_resize_protocol' => 'gd2',
             'image_library_path' => '',
-            'thumbnail_prefix' => 'thumb',
             'word_separator' => 'dash',
             'use_category_name' => 'n',
             'reserved_category_word' => 'category',
             'auto_convert_high_ascii' => 'n',
             'new_posts_clear_caches' => 'y',
             'auto_assign_cat_parents' => 'y',
+            'file_manager_compatibility_mode' => 'n',
             'new_version_check' => 'y',
             'enable_throttling' => 'n',
             'banish_masked_ips' => 'y',
@@ -1712,6 +1713,9 @@ class Wizard extends CI_Controller
             'show_ee_news' => 'y',
             'cli_enabled' => 'y',
             'theme_folder_path' => $this->userdata['theme_folder_path'],
+            'legacy_member_data' => 'n',
+            'legacy_channel_data' => 'n',
+            'legacy_category_field_data' => 'n',
         );
 
         $inserts = [];

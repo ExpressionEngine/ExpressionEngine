@@ -881,6 +881,15 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'auto_assign_cat_parents auto_assign_cat_parents_desc',
                         'command_title' => 'auto_assign_cat_parents'
                     ),
+                    // Assign category parents?
+                    'fieldset-file_manager_compatibility_mode' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'file_manager_compatibility_mode',
+                        'command_title' => 'file_manager_compatibility_mode'
+                    ),
                     // Image Resizing -- Protocol
                     'fieldset-image_resize_protocol' => array(
                         'trail' => [
@@ -898,15 +907,6 @@ class JumpMenu extends AbstractJumpMenu
                         ],
                         'command' => 'image_library_path image_resizing',
                         'command_title' => 'image_library_path'
-                    ),
-                    // Image Resizing -- Thumbnail suffix
-                    'fieldset-thumbnail_prefix' => array(
-                        'trail' => [
-                            'settings',
-                            'content_and_design'
-                        ],
-                        'command' => 'thumbnail_suffix thumbnail_suffix_desc image_resizing',
-                        'command_title' => 'thumbnail_suffix'
                     ),
                     // Enable emoticons?
                     'fieldset-enable_emoticons' => array(
@@ -1029,19 +1029,28 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                 )
             ),
-            'systemSettingsHitTracking' => array(
+            'systemSettingsTracking' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings hit_tracking    ',
+                'command' => 'system_settings tracking    ',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'settings/hit-tracking',
+                'target' => 'settings/tracking',
                 'permission' => 'can_access_sys_prefs',
                 'anchors' => array(
+                    // Enable tracking cookie?
+                    'fieldset-enable_tracking_cookie' => array(
+                        'trail' => [
+                            'settings',
+                            'tracking'
+                        ],
+                        'command' => 'enable_tracking_cookie enable_tracking_cookie_desc',
+                        'command_title' => 'enable_tracking_cookie'
+                    ),
                     // Enable online user tracking?
                     'fieldset-enable_online_user_tracking' => array(
                         'trail' => [
                             'settings',
-                            'hit_tracking'
+                            'tracking'
                         ],
                         'command' => 'enable_online_user_tracking enable_online_user_tracking_desc',
                         'command_title' => 'enable_online_user_tracking'
@@ -1050,7 +1059,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-enable_hit_tracking' => array(
                         'trail' => [
                             'settings',
-                            'hit_tracking'
+                            'tracking'
                         ],
                         'command' => 'enable_hit_tracking enable_hit_tracking_desc',
                         'command_title' => 'enable_hit_tracking'
@@ -1059,7 +1068,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-enable_entry_view_tracking' => array(
                         'trail' => [
                             'settings',
-                            'hit_tracking'
+                            'tracking'
                         ],
                         'command' => 'enable_entry_view_tracking enable_entry_view_tracking_desc',
                         'command_title' => 'enable_entry_view_tracking'
@@ -1068,7 +1077,7 @@ class JumpMenu extends AbstractJumpMenu
                     'fieldset-dynamic_tracking_disabling' => array(
                         'trail' => [
                             'settings',
-                            'hit_tracking'
+                            'tracking'
                         ],
                         'command' => 'dynamic_tracking_disabling dynamic_tracking_disabling_desc',
                         'command_title' => 'dynamic_tracking_disabling'
@@ -1737,6 +1746,14 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/reindex',
+                'permission' => 'can_access_data'
+            ),
+            'systemUtilitiesFileUsage' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities update_file_usage',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/file-usage',
                 'permission' => 'can_access_data'
             ),
             'systemUtilitiesStatistics' => array(

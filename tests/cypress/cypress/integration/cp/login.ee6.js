@@ -111,13 +111,15 @@ context('Login Page', () => {
                 win.EE.cp.broadcastEvents.modal()
                 win.$(window).trigger('broadcast.idleState', 'modal');
                 // win.$.get(win.EE.BASE + '&C=login&M=lock_cp');
+                cy.request('GET', '/admin.php?S=0&D=cp&C=login&M=lock_cp')
+                cy.wait(1000);
+                cy.get('.modal-timeout').should('be.visible');
+                
+                // Now make sure we can find the modal, but it is visible
+                cy.contains('Log into EE6').should('be.visible');
             })
 
-            cy.wait(1000);
-            cy.request('GET', '/admin.php?S=0&D=cp&C=login&M=lock_cp')
 
-            // Now make sure we can find the modal, but it is visible
-            cy.contains('Log into EE6').should('be.visible');
 
         });
 

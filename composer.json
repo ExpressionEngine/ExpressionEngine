@@ -1,0 +1,49 @@
+{
+    "name": "expressionengine/expressionengine",
+    "description": "ExpressionEngine",
+    "homepage": "https://expressionengine.com",
+    "license": "Apache-2.0",
+    "type": "project",
+    "keywords": ["expressionengine", "content management", "cms"],
+    "authors": [{
+        "name": "Packet Tide",
+        "homepage": "https://packettide.com/"
+    }],
+    "support": {
+        "docs": "https://docs.expressionengine.com/latest/",
+        "source": "https://github.com/expressionengine/expressionengine",
+        "issues": "https://github.com/expressionengine/expressionengine/issues",
+        "rss": "https://github.com/expressionengine/expressionengine/releases.atom",
+        "chat": "https://expressionengine.com/blog/join-us-in-slack",
+        "forum": "https://expressionengine.com/forums"
+    },
+    "require": {
+        "php": "^7.2 || ^8.0",
+        "league/flysystem": "^1.0",
+        "league/flysystem-cached-adapter": "^1.1",
+        "vlucas/phpdotenv": "4.*",
+        "bamarni/composer-bin-plugin": "^1.5"
+    },
+    "config": {
+        "platform": {
+            "php": "7.2.5"
+        },
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@composer bin all install --ansi",
+            "@prefix-dependencies"
+        ],
+        "post-update-cmd": [
+            "@composer bin all update --ansi",
+            "@prefix-dependencies"
+        ],
+        "prefix-dependencies": [
+            "vendor/bin/php-scoper add-prefix --output-dir=./vendor-build --force --quiet",
+            "COMPOSER_VENDOR_DIR=vendor-build composer dump-autoload"
+        ]
+    }
+}

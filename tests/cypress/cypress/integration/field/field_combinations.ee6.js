@@ -224,14 +224,12 @@ context('Create combinations of field', () => {
 		 cy.visit('index.php/aaEmailAddress')
 
 		cy.get('body').contains('This is xqcs email: xqc@gmail.com')
-
 	})
-
-
 
 	it('Tests File', () => {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
+		cy.get('.file-field__buttons').should('exist')
 		cy.get('button').contains('Choose Existing').eq(0).click()
 		cy.get('a[rel="modal-file"]').contains('About').eq(0).click()
 		cy.get('tr[data-id="1"]').click()
@@ -250,10 +248,6 @@ context('Create combinations of field', () => {
 		 cy.get('a').contains('staff_jane')
 	})
 
-
-
-
-
 	it('Tests Relationships' , () =>{
 
 		cy.visit('admin.php?/cp/design')
@@ -265,8 +259,6 @@ context('Create combinations of field', () => {
 		cy.get('button').contains('Save').eq(0).click()
 		cy.visit('index.php/aaRelationships')
 		cy.get('body').contains('AA Test Entry')
-
-
 	})
 
 	it.skip('Tests Rich Text Editor', ()=> {
@@ -282,11 +274,7 @@ context('Create combinations of field', () => {
 		cy.get('select').select('heading 3')
 		cy.get('.WysiHat-editor').type('This is heading 3{enter}')
 
-
-
 		cy.get('button').contains('Save').eq(0).click()
-
-
 	})
 
 	it('Tests Select', () => {
@@ -305,6 +293,7 @@ context('Create combinations of field', () => {
 
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
+		cy.get('fieldset').contains('AA Select Dropdown Test').parents('fieldset').find('.select .js-dropdown-toggle').should('exist')
 		cy.get('fieldset').contains('AA Select Dropdown Test').parents('fieldset').find('.select .select__button').click()
 		cy.wait(500)
 		cy.get('.select__dropdown-item:visible').last().click()
@@ -360,7 +349,6 @@ context('Create combinations of field', () => {
 
 		cy.visit('index.php/aaToggle')
 		cy.get('body').contains('The sale is on')
-
 	})
 
 	it('Test URL' , () => {
@@ -459,10 +447,6 @@ context('Create combinations of field', () => {
 		})
 	})
 
-	
-
-
-
 	it('Test Buttons' , () => {
 		cy.visit('admin.php?/cp/design')
 		cy.get('a').contains('aaSelectableButtons').eq(0).click()
@@ -536,6 +520,7 @@ context('Create combinations of field', () => {
 
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Selectable Buttons Test').click()
+		cy.get('[data-input-value=field_type] .js-dropdown-toggle').should('exist')
 		cy.get('[data-input-value=field_type] .select__button').click()
 		page.get('Type_Options').contains('Checkboxes').click()
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
@@ -546,6 +531,7 @@ context('Create combinations of field', () => {
 
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Selectable Buttons Test').click()
+		cy.get('[data-input-value=field_type] .js-dropdown-toggle').should('exist')
 		cy.get('[data-input-value=field_type] .select__button').click()
 		page.get('Type_Options').contains('Multi Select').click()
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
@@ -579,14 +565,13 @@ context('Create combinations of field', () => {
 		cy.get('#single_tag').should('contain', 'four')*/
 	})
 
-
 	context("Slider", () => {
 
 		it('Test Slider' , () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Value Slider').click()
-			cy.get('[name=field_min_value]:visible').clear().type('10');
-			cy.get('[name=field_max_value]:visible').clear().type('50');
+			cy.get('[name=field_min_value]:visible').first().clear({force: true}).type('10');
+			cy.get('[name=field_max_value]:visible').clear({force: true}).type('50');
 			cy.get('[name=field_step]:visible').clear().type('5');
 			cy.get('[name=field_prefix]:visible').clear().type('$')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
@@ -612,7 +597,7 @@ context('Create combinations of field', () => {
 		it('Test Range Slider' , () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Range Slider').click()
-			cy.get('[name=field_min_value]:visible').clear().type('10');
+			cy.get('[name=field_min_value]:visible').first().clear({force: true}).type('10');
 			cy.get('[name=field_max_value]:visible').clear().type('50');
 			cy.get('[name=field_step]:visible').clear().type('5');
 			cy.get('[name=field_suffix]:visible').clear().type('%')
@@ -636,12 +621,12 @@ context('Create combinations of field', () => {
 			cy.get('button').contains('Save').eq(0).click()
 			cy.visit('index.php/aaRangeSlider')
 			cy.get('body').should('contain', '25% — 35%')
-	
 		})
 	
 		it('Switch between slider types', () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Value Slider').click()
+			cy.get('[data-input-value=field_type] .js-dropdown-toggle').should('exist')
 			cy.get('[data-input-value=field_type] .select__button').click()
 			page.get('Type_Options').contains('Range Slider').click()
 			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');
@@ -661,6 +646,7 @@ context('Create combinations of field', () => {
 			//------------------------------------
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Range Slider').click()
+			cy.get('[data-input-value=field_type] .js-dropdown-toggle').should('exist')
 			cy.get('[data-input-value=field_type] .select__button').click()
 			page.get('Type_Options').contains('Value Slider').click()
 			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');
@@ -677,10 +663,7 @@ context('Create combinations of field', () => {
 			cy.visit('index.php/aaRangeSlider')
 			cy.get('body').should('contain', '25%')
 		})
-	
 	})
-	
-
 })
 
 
@@ -701,8 +684,8 @@ function addGroup(name){
 //creates a feild with the name
 function addField(name){
 	cy.visit('admin.php?/cp/fields/create')
-	cy.get('[data-input-value=field_type] .select__button').click()
-	page.get('Type_Options').contains(name).click()
+	cy.get('[data-input-value=field_type] .select__button').click({force: true})
+	page.get('Type_Options').contains(name).click({force: true})
 	let title = 'AA ' + name + ' Test'
 	page.get('Name').type(title)
 

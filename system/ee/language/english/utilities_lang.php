@@ -471,6 +471,30 @@ $lang = array(
 
     'uptime' => 'Uptime',
 
+    /* File Usage */
+
+    'update_file_usage' => 'Update Files Usage',
+
+    'update_file_usage_explained_desc' => 'In order to get all features of File Manager to work correctly (that includes subfolders support, cloud storage adapters, file usage stats) the file data need to be stored differently from what they were before ExpressionEngine 7.<br /><br />
+
+    To update the file data to new format, run this utility.<br /><br />
+    
+    After you do this, visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode for File Manager.<br /><br />
+    
+    Be aware that some third-party add-ons that are not compatible with the new File Manager might malfunction.',
+
+    'update_file_usage_desc' => 'Will update content in %d database tables',
+
+    'update_file_usage_started' => 'Started updating file usage',
+
+    'update_file_usage_completed' => 'File usage update complete. %s database tables were affected.',
+
+    'update_file_usage_success' => 'File Usage Updated',
+
+    'update_file_usage_success_desc' => 'The file data has been converted to new format',
+
+    'update_file_usage_fail' => 'Unable to update file usage',
+
     /* Search Reindex */
 
     'search_reindex_fail' => 'Reindexing Failed',

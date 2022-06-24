@@ -54,9 +54,7 @@ if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/r
  */
     function is_really_writable($file)
     {
-        $fs = new Filesystem();
-
-        return $fs->isWritable($file);
+        return ee('Filesystem')->isWritable($file);
     }
 
 /**
@@ -615,6 +613,64 @@ if (! function_exists('hash_equals')) {
 
             return !$ret;
         }
+    }
+}
+
+/**
+ * Dump variable pre-formatted
+ */
+if (! function_exists('dump')) {
+    function dump()
+    {
+        $args = func_get_args();
+        echo '<pre>';
+        foreach ($args as $arg) {
+            var_dump($arg);
+        }
+        echo '</pre>';
+    }
+}
+
+/**
+ * Dump-and-die
+ */
+if (! function_exists('dd')) {
+    function dd()
+    {
+        $args = func_get_args();
+        echo '<pre>';
+        foreach ($args as $arg) {
+            var_dump($arg);
+        }
+        echo '</pre>';
+        exit();
+    }
+}
+
+/**
+ * This should be removed when mimimum PHP version gets bumped to 7.3
+ * array_key_first poly fill for PHP older then 7.3
+ */
+if (!function_exists('array_key_first')) {
+    function array_key_first(array $arr) {
+        foreach($arr as $key => $unused) {
+            return $key;
+        }
+        return NULL;
+    }
+}
+
+
+/**
+ * Show pre-formatted debug trace of required depth (default: 5)
+ */
+if (! function_exists('trace')) {
+    function trace($depth = 5)
+    {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $depth);
+        echo '<pre>';
+        var_dump($trace);
+        echo '</pre>';
     }
 }
 

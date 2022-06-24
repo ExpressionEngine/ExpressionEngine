@@ -40,6 +40,7 @@ html.color-theme-in-transition *:after {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #bbbdf9;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #0d0d19;
   --ee-text-normal: #0d0d19;
   --ee-text-secondary: #8f90b0;
@@ -196,6 +197,7 @@ html.color-theme-in-transition *:after {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #5D63F1;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #05073b;
   --ee-text-primary: #dedede;
   --ee-text-normal: #dedede;
   --ee-text-secondary: #6b6b6b;
@@ -352,6 +354,7 @@ body[data-theme=dark] .inverted-theme {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #bbbdf9;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #0d0d19;
   --ee-text-normal: #0d0d19;
   --ee-text-secondary: #8f90b0;
@@ -508,6 +511,7 @@ body[data-theme=light] .inverted-theme {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #5D63F1;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #05073b;
   --ee-text-primary: #dedede;
   --ee-text-normal: #dedede;
   --ee-text-secondary: #6b6b6b;
@@ -14020,6 +14024,10 @@ input[type=button].btn-block {
   padding-top: 45px;
   padding-bottom: 45px;
 }
+.modal-wrap.modal-new-folder .modal {
+  padding: 0;
+  margin: 0;
+}
 
 .modal--no-padding {
   padding: 0;
@@ -14090,6 +14098,11 @@ input[type=button].btn-block {
 }
 .app-modal[rel=modal-bulk-edit] .meta-info .danger-link {
   cursor: pointer;
+}
+
+.modal-file {
+  max-width: 100%;
+  width: 98%;
 }
 
 .jump-menu {
@@ -15107,6 +15120,9 @@ input[type=button].btn-block {
   border-bottom: 2px solid var(--ee-accent);
   margin-bottom: -2px;
 }
+.tab-bar__tab.active .tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-accent);
+}
 .tab-bar__tab.invalid, .tab-bar__tab.invalid:hover {
   color: var(--ee-error);
   border-color: var(--ee-error);
@@ -15119,19 +15135,30 @@ input[type=button].btn-block {
 .tab-bar__tab-notification {
   position: relative;
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  min-width: 22px;
+  min-height: 22px;
   line-height: 16px;
   top: -2px;
-  border-radius: 50%;
+  border-radius: 1000px;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   color: #fff;
   background: var(--ee-notification);
+  padding: 3px 5px;
+}
+.tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-text-secondary);
+  background-color: var(--ee-notification-generic);
 }
 
 .tab {
   display: none;
+}
+
+.panel-body__publish .tab {
+  margin-left: -15px;
+  margin-right: -15px;
+  font-size: 0;
 }
 
 .tab-open {
@@ -15298,6 +15325,14 @@ input[type=button].btn-block {
   max-height: 260px;
   overflow-y: auto;
 }
+.dropdown__scroll ul {
+  margin-top: 0;
+  list-style-type: none;
+}
+.dropdown__scroll ul a {
+  padding: 0 20px;
+  min-height: 30px;
+}
 
 .dropdown__scroll--small {
   max-height: 180px;
@@ -15316,6 +15351,9 @@ input[type=button].btn-block {
   color: var(--ee-text-primary);
   width: 100%;
   align-items: center;
+}
+.dropdown__link.with-divider, .with-divider.select__dropdown-item, .with-divider.button__within-dropdown {
+  border-top: 1px solid var(--ee-border);
 }
 .dropdown__link a, .select__dropdown-item a, .button__within-dropdown a {
   color: var(--ee-text-primary);
@@ -17129,6 +17167,21 @@ fieldset .field-control #eye {
     }
   }
 }
+.panel-body__publish fieldset, .panel-body__publish .fieldset-faux {
+  width: 100%;
+  display: inline-block;
+  margin-bottom: 30px;
+  padding-left: 15px;
+  padding-right: 15px;
+  vertical-align: top;
+  font-size: 1rem;
+}
+@media (max-width: 899px) {
+  .panel-body__publish fieldset, .panel-body__publish .fieldset-faux {
+    width: 100% !important;
+  }
+}
+
 .note-fieldtype {
   color: var(--ee-note-fieldtype-color);
   background-color: var(--ee-note-fieldtype-bg);
@@ -17245,6 +17298,14 @@ fieldset .field-control #eye {
 .file-field__dropzone--dragging .file-field__dropzone-title, .file-field__dropzone--dragging .file-field__dropzone-button {
   opacity: 0;
   filter: blur(10px);
+}
+
+.file-field_upload-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 37px;
+  color: var(--ee-text-secondary);
 }
 
 .file-field__dropzone-icon {
@@ -17524,8 +17585,14 @@ fieldset .field-control #eye {
   justify-content: normal;
 }
 
-.file-preview-modal__preview, .file-preview-modal__form {
-  flex: 0 0 50%;
+.file-preview-modal__preview {
+  flex: 0 0 40%;
+  padding: 20px 30px 20px 30px;
+  max-width: 500px;
+}
+
+.file-preview-modal__form {
+  flex: 0 1 100%;
   padding: 20px 30px 20px 30px;
 }
 
@@ -17535,10 +17602,6 @@ fieldset .field-control #eye {
 }
 .file-preview-modal__preview .title-bar__title {
   color: var(--ee-text-secondary);
-}
-
-.file-preview-modal__form {
-  padding-top: 65px;
 }
 
 .file-preview-modal__preview-file {
@@ -17908,6 +17971,166 @@ fieldset .field-control #eye {
   display: none;
 }
 
+.grid-field__item-fieldset {
+  display: none;
+}
+.grid-field__item-fieldset .grid-field__column-label {
+  display: block;
+}
+.grid-field__item-fieldset .grid-field__item-tools {
+  transition: opacity 100ms ease;
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+.grid-field__item-fieldset .grid-field__item-tools.has-open-dropdown {
+  z-index: 200;
+}
+.grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-block;
+  padding: 0px;
+  margin-left: 5px;
+  background: transparent;
+  border: none;
+  line-height: 1 !important;
+  cursor: pointer;
+  color: var(--ee-text-secondary);
+}
+.grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool:hover {
+  color: var(--ee-link);
+}
+.grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool .dropdown, .grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool .select__dropdown {
+  max-height: 90vh;
+  overflow-y: auto;
+  white-space: nowrap;
+}
+.grid-field__item-fieldset .field-instruct {
+  padding-right: 55px;
+  margin-bottom: 5px;
+}
+.grid-field__item-fieldset .field-instruct label {
+  margin-right: 5px;
+  color: var(--ee-text-secondary);
+  display: inline-block;
+  font-size: 1rem;
+  margin-bottom: 0 !important;
+  margin-left: -5px;
+}
+.grid-field__item-fieldset .field-instruct button {
+  border: none;
+  background: none;
+  color: inherit;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.grid-field__item-fieldset tr.grid__item--collapsed {
+  padding-bottom: 0 !important;
+}
+.grid-field__item-fieldset tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+  display: none !important;
+}
+.grid-field__item-fieldset tr.grid__item--collapsed td.grid-field__item-fieldset {
+  border-bottom: none !important;
+}
+.grid-field__item-fieldset tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  transform: rotate(180deg);
+}
+
+.grid-field.vertical-layout {
+  padding: 10px;
+  background: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  border-radius: 5px;
+}
+.grid-field.vertical-layout .table-responsive {
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  overflow: inherit;
+}
+.grid-field.vertical-layout .grid-field__table {
+  display: block;
+}
+.grid-field.vertical-layout .grid-field__table thead {
+  display: none;
+}
+.grid-field.vertical-layout .grid-field__table tbody {
+  display: block;
+  border: none;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid var(--ee-border);
+  margin-bottom: 10px;
+  padding-bottom: 15px;
+  background-color: var(--ee-bg-blank);
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td {
+  border-right: none;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  border-bottom: none;
+  padding: 10px 15px 10px 15px;
+  padding-bottom: 0;
+  font-size: 1rem;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools {
+  text-align: left;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .pagination__link, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .no-results a, .no-results .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a,
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .field-no-results a,
+.field-no-results .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .select-popup, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools select, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .select__button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .filter-bar__button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .license-status-badge {
+  margin-bottom: 0;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.no-results {
+  padding: 0px;
+  background-color: transparent;
+  border: none;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.no-results td {
+  padding-top: 0;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed {
+  padding-bottom: 0 !important;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+  display: none !important;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
+  border-bottom: none !important;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  transform: rotate(180deg);
+}
+.grid-field.vertical-layout .grid-field__item-fieldset {
+  padding: 10px 15px 5px 15px;
+  border-bottom: 1px solid var(--ee-border) !important;
+  position: relative;
+}
+.grid-field.vertical-layout .grid-field__item-fieldset .field-instruct label {
+  font-size: 1rem;
+}
+.grid-field.vertical-layout .grid-field__item-fieldset .field-instruct label button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.grid-field.vertical-layout .grid-field__column--tools {
+  display: none !important;
+}
+.grid-field.vertical-layout .grid-field__column-label {
+  display: inherit;
+}
+
 @media (max-width: 767px) {
   .grid-field__column-label {
     display: block;
@@ -17917,6 +18140,7 @@ fieldset .field-control #eye {
     box-shadow: none;
     border: none;
     border-radius: 0;
+    overflow: inherit;
   }
 
   .grid-field__table, .grid-field__table tbody, .grid-field__table th, .grid-field__table td, .grid-field__table tr {
@@ -17937,21 +18161,32 @@ fieldset .field-control #eye {
     position: relative;
     border: 1px solid var(--ee-border);
     margin-bottom: 10px;
-    border-radius: 8px;
     padding-bottom: 15px;
+    background-color: var(--ee-bg-blank);
   }
   .grid-field__table tr.no-results {
-    border: 1px solid var(--ee-border);
-    padding-bottom: 18px;
+    padding: 0px;
   }
   .grid-field__table tr.no-results td {
     padding-top: 0;
   }
   .grid-field__table td {
     display: block;
-    border-bottom: none !important;
+    border-bottom: none;
     padding: 10px 15px 10px 15px;
     padding-bottom: 0;
+  }
+  .grid-field__table tr.grid__item--collapsed {
+    padding-bottom: 0 !important;
+  }
+  .grid-field__table tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+    display: none !important;
+  }
+  .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset {
+    border-bottom: none !important;
+  }
+  .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+    transform: rotate(180deg);
   }
 
   .grid-field__column--tools {
@@ -17961,6 +18196,22 @@ fieldset .field-control #eye {
 .grid-field__column--tools .field-no-results a,
 .field-no-results .grid-field__column--tools a, .grid-field__column--tools .select-popup, .grid-field__column--tools select, .grid-field__column--tools .select__button, .grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field__column--tools a, .grid-field__column--tools .filter-bar__button, .grid-field__column--tools .license-status-badge {
     margin-bottom: 0;
+  }
+
+  .entry-grid, .vertical-layout {
+    padding: 10px;
+    background: var(--ee-bg-0);
+    border: 1px solid var(--ee-border);
+    border-radius: 5px;
+  }
+  .entry-grid .grid-field__item-fieldset, .vertical-layout .grid-field__item-fieldset {
+    display: block;
+    position: relative;
+    border-bottom: 1px solid var(--ee-border) !important;
+    font-size: 1rem;
+  }
+  .entry-grid td.grid-field__column--tools, .vertical-layout td.grid-field__column--tools {
+    display: none !important;
   }
 }
 .select {
@@ -18256,6 +18507,9 @@ body[data-theme=dark] .select-popup {
   border-bottom: 2px solid var(--ee-accent);
   margin-bottom: -2px;
 }
+.ee-debugger .tab-bar__tab.active .tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-accent);
+}
 .ee-debugger .tab-bar__tab.invalid, .ee-debugger .tab-bar__tab.invalid:hover {
   color: var(--ee-error);
   border-color: var(--ee-error);
@@ -18267,18 +18521,28 @@ body[data-theme=dark] .select-popup {
 .ee-debugger .tab-bar__tab-notification {
   position: relative;
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  min-width: 22px;
+  min-height: 22px;
   line-height: 16px;
   top: -2px;
-  border-radius: 50%;
+  border-radius: 1000px;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   color: #fff;
   background: var(--ee-notification);
+  padding: 3px 5px;
+}
+.ee-debugger .tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-text-secondary);
+  background-color: var(--ee-notification-generic);
 }
 .ee-debugger .tab {
   display: none;
+}
+.ee-debugger .panel-body__publish .tab {
+  margin-left: -15px;
+  margin-right: -15px;
+  font-size: 0;
 }
 .ee-debugger .tab-open {
   display: block;
@@ -18664,6 +18928,7 @@ body[data-theme=dark] .select-popup {
 .layout-item__options {
   font-size: 0.9em;
   padding-top: 5px;
+  position: relative;
   border-top: 1px solid var(--ee-border);
 }
 .layout-item__options label {
@@ -18674,6 +18939,33 @@ body[data-theme=dark] .select-popup {
 .layout-item__options label input[type=checkbox] {
   margin-right: 5px;
   top: 3px;
+}
+.layout-item__options .layout-item__field-width {
+  position: absolute;
+  bottom: -4px;
+  right: 0px;
+}
+.layout-item__options .layout-item__field-width .field-control {
+  position: relative;
+}
+.layout-item__options .layout-item__field-width i, .layout-item__options .layout-item__field-width .fas, .layout-item__options .layout-item__field-width [class*=fields-grid-tool-]:before, .layout-item__options .layout-item__field-width .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .layout-item__options .layout-item__field-width .tab-remove:before,
+.layout-item__options .layout-item__field-width .tab-wrap .tabs.layout .tab-on:before,
+.tab-wrap .tabs.layout .layout-item__options .layout-item__field-width .tab-on:before,
+.layout-item__options .layout-item__field-width .tab-wrap .tabs.layout .tab-off:before,
+.tab-wrap .tabs.layout .layout-item__options .layout-item__field-width .tab-off:before, .layout-item__options .layout-item__field-width .filters .filter-clear a:before, .filters .filter-clear .layout-item__options .layout-item__field-width a:before, .layout-item__options .layout-item__field-width .filters a.add:before, .filters .layout-item__options .layout-item__field-width a.add:before, .layout-item__options .layout-item__field-width .tbl-list .reorder:before, .tbl-list .layout-item__options .layout-item__field-width .reorder:before, .layout-item__options .layout-item__field-width .toolbar a:after, .toolbar .layout-item__options .layout-item__field-width a:after, .layout-item__options .layout-item__field-width .toolbar a:before, .toolbar .layout-item__options .layout-item__field-width a:before, .layout-item__options .layout-item__field-width .toolbar span:after, .toolbar .layout-item__options .layout-item__field-width span:after, .layout-item__options .layout-item__field-width .toolbar span:before, .toolbar .layout-item__options .layout-item__field-width span:before, .layout-item__options .layout-item__field-width button-toolbar a:after, button-toolbar .layout-item__options .layout-item__field-width a:after, .layout-item__options .layout-item__field-width button-toolbar a:before, button-toolbar .layout-item__options .layout-item__field-width a:before, .layout-item__options .layout-item__field-width button-toolbar span:after, button-toolbar .layout-item__options .layout-item__field-width span:after, .layout-item__options .layout-item__field-width button-toolbar span:before, button-toolbar .layout-item__options .layout-item__field-width span:before, .layout-item__options .layout-item__field-width .menu-wrap .develop .has-sub::before, .menu-wrap .develop .layout-item__options .layout-item__field-width .has-sub::before, .layout-item__options .layout-item__field-width .has-sub::after, .layout-item__options .layout-item__field-width .icon-settings,
+.layout-item__options .layout-item__field-width .icon--settings, .layout-item__options .layout-item__field-width [class^=icon--],
+.layout-item__options .layout-item__field-width [class*=" icon--"], .layout-item__options .layout-item__field-width .icon-reorder, .layout-item__options .layout-item__field-width tr.missing td:not(.reorder-col):first-child:before, tr.missing .layout-item__options .layout-item__field-width td:not(.reorder-col):first-child:before, .layout-item__options .layout-item__field-width .column-sort::after, .layout-item__options .layout-item__field-width .app-notice__icon::before, .layout-item__options .layout-item__field-width .app-notice__dismiss::before, .layout-item__options .layout-item__field-width .m-close:before, .layout-item__options .layout-item__field-width .app-modal__dismiss a:before, .app-modal__dismiss .layout-item__options .layout-item__field-width a:before, .layout-item__options .layout-item__field-width .sidebar__link.remove:after, .layout-item__options .layout-item__field-width .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .layout-item__options .layout-item__field-width a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .layout-item__options .layout-item__field-width .tab-bar--editable .tab-remove:before, .tab-bar--editable .layout-item__options .layout-item__field-width .tab-remove:before,
+.layout-item__options .layout-item__field-width .tab-bar--editable .tab-on:before,
+.tab-bar--editable .layout-item__options .layout-item__field-width .tab-on:before,
+.layout-item__options .layout-item__field-width .tab-bar--editable .tab-off:before,
+.tab-bar--editable .layout-item__options .layout-item__field-width .tab-off:before, .layout-item__options .layout-item__field-width .dropdown__link--selected::before, .layout-item__options .layout-item__field-width [class^=widget-icon--],
+.layout-item__options .layout-item__field-width [class*=" widget-icon--"], .layout-item__options .layout-item__field-width .widget--support::before, .layout-item__options .layout-item__field-width .checkbox:after, .layout-item__options .layout-item__field-width input[type=checkbox]:after, .layout-item__options .layout-item__field-width .checkbox--large:after, .layout-item__options .layout-item__field-width .checkbox--small:after, .layout-item__options .layout-item__field-width .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .layout-item__options .layout-item__field-width label:after, .layout-item__options .layout-item__field-width .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .layout-item__options .layout-item__field-width label:after, .layout-item__options .layout-item__field-width .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .layout-item__options .layout-item__field-width label:after, .layout-item__options .layout-item__field-width .fieldset-invalid > label:after, .layout-item__options .layout-item__field-width .sub-arrow:before, .layout-item__options .layout-item__field-width .checklist li:before, .checklist .layout-item__options .layout-item__field-width li:before, .layout-item__options .layout-item__field-width .select__button-label::after, .layout-item__options .layout-item__field-width .select-popup:not([multiple])::after, .layout-item__options .layout-item__field-width select:not([multiple])::after, .layout-item__options .layout-item__field-width .layout-item__handle::after {
+  font-size: 12px;
+  color: var(--ee-text-secondary);
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .code-example {
@@ -23434,6 +23726,9 @@ body[data-theme="dark"] {
 }
 .fields-grid-tools a {
   color: var(--ee-text-secondary);
+  /* Hack for capybara-webkit, leave in place for now */
+  display: inline-block;
+  min-width: 1px;
 }
 .fields-grid-tools a:hover {
   color: var(--ee-link);
@@ -24137,6 +24432,384 @@ body[data-theme="dark"] {
 
 .pro-frontend-modal > .panel > .panel-body, .add-on-layout .pro-frontend-modal > .table-responsive > .panel-body {
   padding: 0px;
+}
+
+.f_manager-wrapper .app-listing__row:last-child td {
+  border-bottom: 1px solid var(--ee-border);
+}
+.f_manager-wrapper .filter-search-bar .filter-search-bar__search-row .filter-search-bar__item:first-child {
+  flex-grow: 0;
+}
+.f_manager-wrapper .filter-search-bar .filter-search-bar__search-row .filter-search-bar__item:nth-child(2) {
+  flex-grow: 1;
+}
+.f_manager-wrapper .filter-search-bar .filter-search-bar__search-row .filter-search-bar__item:nth-child(2) .field-control {
+  width: 100%;
+}
+@media only screen and (max-width: 768px) {
+  .f_manager-wrapper .filter-search-bar .filter-search-bar__search-row:last-child {
+    flex-wrap: wrap;
+  }
+  .f_manager-wrapper .filter-search-bar .filter-search-bar__search-row:last-child .filter-search-bar__item:first-child {
+    width: 100%;
+    margin-bottom: 10px;
+    order: 3;
+  }
+}
+.f_manager-wrapper .no-results [data-file-field-react] .dropdown__link, .f_manager-wrapper .no-results [data-file-field-react] .button__within-dropdown, .f_manager-wrapper .no-results [data-file-field-react] .select__dropdown-item {
+  padding: 7px 20px !important;
+  margin-left: 0;
+  background-color: transparent;
+  border: none;
+  line-height: 2;
+  text-align: left;
+}
+.f_manager-wrapper .no-results [data-file-field-react] .dropdown__link:hover, .f_manager-wrapper .no-results [data-file-field-react] .button__within-dropdown:hover, .f_manager-wrapper .no-results [data-file-field-react] .select__dropdown-item:hover {
+  background-color: var(--ee-bg-dropdown-hover);
+}
+.f_manager-wrapper .create_new_direction a {
+  color: var(--ee-button-secondary-color);
+}
+.f_manager-wrapper td.checkbox-column {
+  width: 55px;
+}
+.f_manager-wrapper tr.app-listing__row .thumbnail_img {
+  max-width: 80px;
+  max-height: 60px;
+  display: inline-block;
+}
+.f_manager-wrapper tr.app-listing__row i.fas, .f_manager-wrapper tr.app-listing__row i.column-sort::after, .f_manager-wrapper tr.app-listing__row i.app-notice__icon::before, .f_manager-wrapper tr.app-listing__row i.app-notice__dismiss::before, .f_manager-wrapper tr.app-listing__row i.m-close:before, .f_manager-wrapper tr.app-listing__row i.sidebar__link.remove:after, .f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-remove:before, .tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
+.f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-on:before,
+.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-on:before,
+.f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-off:before,
+.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i.dropdown__link--selected::before, .f_manager-wrapper tr.app-listing__row i[class^=widget-icon--],
+.f_manager-wrapper tr.app-listing__row i[class*=" widget-icon--"], .f_manager-wrapper tr.app-listing__row i.widget--support::before, .f_manager-wrapper tr.app-listing__row i.checkbox:after, .f_manager-wrapper tr.app-listing__row i.checkbox--large:after, .f_manager-wrapper tr.app-listing__row i.checkbox--small:after, .f_manager-wrapper tr.app-listing__row i.sub-arrow:before, .f_manager-wrapper tr.app-listing__row i.select__button-label::after, .f_manager-wrapper tr.app-listing__row i.select-popup:not([multiple])::after, .f_manager-wrapper tr.app-listing__row i.layout-item__handle::after, .f_manager-wrapper tr.app-listing__row i.icon-reorder, .f_manager-wrapper tr.app-listing__row i[class^=icon--],
+.f_manager-wrapper tr.app-listing__row i[class*=" icon--"], .f_manager-wrapper tr.app-listing__row i.icon-settings,
+.f_manager-wrapper tr.app-listing__row i.icon--settings, .f_manager-wrapper tr.app-listing__row i.has-sub::after, .f_manager-wrapper tr.app-listing__row .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .f_manager-wrapper tr.app-listing__row i.has-sub::before, .f_manager-wrapper tr.app-listing__row .tbl-list i.reorder:before, .tbl-list .f_manager-wrapper tr.app-listing__row i.reorder:before, .f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
+.f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-on:before,
+.tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-on:before,
+.f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-off:before,
+.tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i[class*=fields-grid-tool-]:before {
+  color: var(--ee-secondary-sidebar-item-icon);
+}
+.f_manager-wrapper .dropdown a.edit:before, .f_manager-wrapper .select__dropdown a.edit:before,
+.f_manager-wrapper .dropdown a.download:before,
+.f_manager-wrapper .select__dropdown a.download:before,
+.f_manager-wrapper .dropdown a.link:before,
+.f_manager-wrapper .select__dropdown a.link:before {
+  display: none;
+}
+.f_manager-wrapper th.app-listing__header input[type=checkbox].intermediate:after {
+  opacity: 1;
+  content: "\f068";
+  color: var(--ee-accent) !important;
+}
+.f_manager-wrapper th.app-listing__header input[type=checkbox].intermediate:checked:after, .f_manager-wrapper th.app-listing__header input[type=checkbox].intermediate.checkbox--checked:after {
+  color: #fff !important;
+  content: "\f00c";
+}
+
+.f_manager-table-breadcrumbs .breadcrumb {
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--ee-table-border);
+}
+.f_manager-table-breadcrumbs .breadcrumb li a, .f_manager-table-breadcrumbs .breadcrumb li span {
+  border-radius: 0;
+  text-transform: none;
+  padding: 5px;
+}
+.f_manager-table-breadcrumbs .breadcrumb li a i, .f_manager-table-breadcrumbs .breadcrumb li span i {
+  margin-right: 5px;
+}
+.f_manager-table-breadcrumbs .breadcrumb li a:hover {
+  background-color: transparent;
+}
+.f_manager-table-breadcrumbs .breadcrumb li:after {
+  content: "/";
+}
+.f_manager-table-breadcrumbs .breadcrumb li:last-child:after {
+  content: "";
+}
+
+.f_manager-action-part {
+  display: flex;
+  flex-wrap: wrap;
+}
+.f_manager-action-part .pagination {
+  border-top: none;
+  margin-left: auto;
+}
+.f_manager-action-part .pagination .filter-bar__item {
+  margin-bottom: 0;
+}
+
+.file-upload-progress__main-wrapper {
+  display: none;
+}
+
+.file-upload-progress__wrapper {
+  padding: 10px 25px 20px;
+  margin-bottom: -1px;
+  border-bottom: 1px solid var(--ee-panel-border);
+}
+.file-upload-progress__wrapper label {
+  font-weight: normal;
+  font-size: 13px;
+  color: var(--ee-text-secondary);
+  margin-bottom: 7px;
+}
+
+.file-grid__checkAll {
+  margin-bottom: 10px;
+  margin-top: -7px;
+}
+.file-grid__checkAll input[type=checkbox].intermediate:after {
+  opacity: 1;
+  content: "\f068";
+  color: var(--ee-accent) !important;
+}
+.file-grid__checkAll input[type=checkbox].intermediate:checked:after, .file-grid__checkAll input[type=checkbox].intermediate.checkbox--checked:after {
+  color: #fff !important;
+  content: "\f00c";
+}
+
+.file-grid__wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-column-gap: 15px;
+  grid-row-gap: 15px;
+  /* Additional class for larger thumbnails: */
+  /* This colors the grid SVG thumbnails for folders and documents: */
+}
+.file-grid__wrapper.file-grid__wrapper-large {
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  grid-column-gap: 20px;
+  grid-row-gap: 20px;
+}
+.file-grid__wrapper .file-grid__file {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ee-text-normal);
+  border-radius: 8px;
+  border: 1px solid transparent;
+  -webkit-transition: background-color 0.15s ease-in-out;
+  -moz-transition: background-color 0.15s ease-in-out;
+  -o-transition: background-color 0.15s ease-in-out;
+}
+.file-grid__wrapper .file-grid__file.missing {
+  background-color: var(--ee-warning-light);
+}
+.file-grid__wrapper .file-grid__file:hover, .file-grid__wrapper .file-grid__file.selected {
+  background-color: var(--ee-accent-light);
+  color: var(--ee-text-normal);
+}
+.file-grid__wrapper .file-grid__file.selected {
+  border: 1px solid var(--ee-accent-medium);
+}
+.file-grid__wrapper .file-thumbnail__wrapper {
+  height: 0;
+  padding: 10px;
+  padding-top: calc(100% - 10px);
+  position: relative;
+}
+.file-grid__wrapper .file-thumbnail {
+  line-height: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 88%;
+  width: 88%;
+}
+.file-grid__wrapper .file-thumbnail img,
+.file-grid__wrapper .file-thumbnail svg,
+.file-grid__wrapper .file-thumbnail i.fas,
+.file-grid__wrapper .file-thumbnail i.column-sort::after,
+.file-grid__wrapper .file-thumbnail i.app-notice__icon::before,
+.file-grid__wrapper .file-thumbnail i.app-notice__dismiss::before,
+.file-grid__wrapper .file-thumbnail i.m-close:before,
+.file-grid__wrapper .file-thumbnail i.sidebar__link.remove:after,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-remove:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-off:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before,
+.file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before,
+.file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" widget-icon--"],
+.file-grid__wrapper .file-thumbnail i.widget--support::before,
+.file-grid__wrapper .file-thumbnail i.checkbox:after,
+.file-grid__wrapper .file-thumbnail i.checkbox--large:after,
+.file-grid__wrapper .file-thumbnail i.checkbox--small:after,
+.file-grid__wrapper .file-thumbnail i.sub-arrow:before,
+.file-grid__wrapper .file-thumbnail i.select__button-label::after,
+.file-grid__wrapper .file-thumbnail i.select-popup:not([multiple])::after,
+.file-grid__wrapper .file-thumbnail i.layout-item__handle::after,
+.file-grid__wrapper .file-thumbnail i.icon-reorder,
+.file-grid__wrapper .file-thumbnail i[class^=icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" icon--"],
+.file-grid__wrapper .file-thumbnail i.icon-settings,
+.file-grid__wrapper .file-thumbnail i.icon--settings,
+.file-grid__wrapper .file-thumbnail i.has-sub::after,
+.file-grid__wrapper .file-thumbnail .menu-wrap .develop i.has-sub::before,
+.menu-wrap .develop .file-grid__wrapper .file-thumbnail i.has-sub::before,
+.file-grid__wrapper .file-thumbnail .tbl-list i.reorder:before,
+.tbl-list .file-grid__wrapper .file-thumbnail i.reorder:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-remove:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-on:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-off:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-off:before,
+.file-grid__wrapper .file-thumbnail i[class*=fields-grid-tool-]:before {
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 6px;
+}
+.file-grid__wrapper .file-thumbnail i.fas, .file-grid__wrapper .file-thumbnail i.column-sort::after, .file-grid__wrapper .file-thumbnail i.app-notice__icon::before, .file-grid__wrapper .file-thumbnail i.app-notice__dismiss::before, .file-grid__wrapper .file-thumbnail i.m-close:before, .file-grid__wrapper .file-thumbnail i.sidebar__link.remove:after, .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-remove:before, .tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-off:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before, .file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" widget-icon--"], .file-grid__wrapper .file-thumbnail i.widget--support::before, .file-grid__wrapper .file-thumbnail i.checkbox:after, .file-grid__wrapper .file-thumbnail i.checkbox--large:after, .file-grid__wrapper .file-thumbnail i.checkbox--small:after, .file-grid__wrapper .file-thumbnail i.sub-arrow:before, .file-grid__wrapper .file-thumbnail i.select__button-label::after, .file-grid__wrapper .file-thumbnail i.select-popup:not([multiple])::after, .file-grid__wrapper .file-thumbnail i.layout-item__handle::after, .file-grid__wrapper .file-thumbnail i.icon-reorder, .file-grid__wrapper .file-thumbnail i[class^=icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" icon--"], .file-grid__wrapper .file-thumbnail i.icon-settings,
+.file-grid__wrapper .file-thumbnail i.icon--settings, .file-grid__wrapper .file-thumbnail i.has-sub::after, .file-grid__wrapper .file-thumbnail .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .file-grid__wrapper .file-thumbnail i.has-sub::before, .file-grid__wrapper .file-thumbnail .tbl-list i.reorder:before, .tbl-list .file-grid__wrapper .file-thumbnail i.reorder:before, .file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-on:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-off:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i[class*=fields-grid-tool-]:before {
+  color: var(--ee-secondary-sidebar-item-icon);
+}
+.file-grid__wrapper .file-thumbnail svg {
+  width: 100%;
+  height: 100%;
+}
+.file-grid__wrapper .file-grid__file-folder .file-thumbnail,
+.file-grid__wrapper .file-grid__file-document .file-thumbnail {
+  color: var(--ee-accent);
+}
+.file-grid__wrapper .file-metadata__wrapper {
+  padding: 0 19% 10px;
+  padding-right: calc(19% - 21px);
+  margin-top: -2%;
+  position: relative;
+  text-align: left;
+}
+.file-grid__wrapper .file-metadata__wrapper label {
+  padding: 8px;
+  position: absolute;
+  top: -4px;
+  left: calc(19% - 30px);
+  line-height: 0;
+  cursor: pointer;
+}
+.file-grid__wrapper .file-metadata__wrapper span {
+  color: var(--ee-text-secondary);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-grid__wrapper .file-metadata__wrapper span:first-of-type {
+  color: var(--ee-text-normal);
+  font-size: 14px;
+}
+.file-grid__wrapper .file-grid__file-folder .file-metadata__wrapper {
+  padding-left: calc(19% - 21px);
+}
+
+.f_metadata-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+  grid-column-gap: 15px;
+  grid-row-gap: 15px;
+  padding: 20px;
+  background: var(--ee-bg-0);
+  margin-bottom: 20px;
+}
+.f_metadata-section .f_metadata-item {
+  margin-bottom: 10px;
+}
+.f_metadata-section .f_metadata-item span {
+  display: block;
+  color: var(--ee-text-normal);
+}
+.f_metadata-section .f_meta-name {
+  font-weight: 500;
+}
+
+#fieldset-usage_tables h2 {
+  padding: 15px 25px;
+}
+
+.create_new_direction {
+  border-top: 2px solid var(--ee-tab-bar-border);
+}
+.create_new_direction a {
+  padding: 7px 20px;
+  display: block;
+  color: var(--ee-text-primary);
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  text-align: left;
+}
+.create_new_direction a:hover {
+  background-color: var(--ee-bg-dropdown-hover);
+}
+
+.file-edit-view .filter-bar__button {
+  margin-left: 10px;
+}
+
+.f_manager-alert {
+  display: none;
+  margin: 5px auto;
+  width: calc(100% - 10px);
+}
+
+.multilevel-select {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+}
+.multilevel-select .select__button {
+  width: 100%;
+  text-align: left;
+}
+.multilevel-select .select__button label {
+  display: block;
+  width: 100%;
+}
+.multilevel-select .select__button label span i {
+  display: none;
+}
+.multilevel-select .select__dropdown {
+  width: calc(100% - 60px);
+}
+.multilevel-select .select__dropdown .select__dropdown-item-parent {
+  margin-top: 0;
+}
+.multilevel-select .select__dropdown .select__dropdown-item-parent .select__dropdown-item-parent {
+  padding-left: 20px;
+}
+
+#preview {
+  position: absolute;
+  border: 2px solid var(--ee-button-default-border);
+  background: var(--ee-button-default-bg);
+  padding: 5px;
+  border-radius: 4px;
+  display: none;
+  max-width: 200px;
+  max-height: 200px;
+  align-items: center;
+  justify-content: center;
 }
 
 .hidden {

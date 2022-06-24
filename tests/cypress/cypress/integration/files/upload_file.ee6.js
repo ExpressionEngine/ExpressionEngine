@@ -26,13 +26,13 @@ context('File Manager / Upload File', () => {
   beforeEach(function() {
     cy.auth();
 
-    page.load()
+    cy.visit('admin.php?/cp/files/directory/1')
     cy.hasNoErrors()
 
     //page.displayed?
 
     // Check that the heder data is intact
-    page.get('manager_title').invoke('text').then((text) => { expect(text.trim()).to.be.equal('File Manager') })
+    page.get('manager_title').invoke('text').then((text) => { expect(text.trim()).to.be.equal('Files') })
     page.get('download_all').should('exist')
 
     // Check that we have a sidebar
@@ -44,14 +44,8 @@ context('File Manager / Upload File', () => {
     page.get('sidebar').find('.sidebar__link.active a').first().invoke('text').then((text) => { expect(text.trim()).to.be.equal('Main Upload Directory') })
 
     page.get('breadcrumb').should('exist')
-    page.get('heading').invoke('text').then((text) => { expect(text.trim()).to.be.equal('File Upload') })
 
     page.get('file_input').should('exist')
-    page.get('title_input').should('exist')
-    page.get('description_input').should('exist')
-    page.get('credit_input').should('exist')
-    page.get('location_input').should('exist')
-    page.get('form_submit_button').should('exist')
   })
 
   // Restore the images/uploads directory
@@ -59,38 +53,22 @@ context('File Manager / Upload File', () => {
     cy.task('filesystem:delete', upload_dir+'/\*')
   })
 
-  it('shows the upload form', () => {
-    page.get('title_input').invoke('val').then((val) => { expect(val).to.be.equal('') })
-    page.get('description_input').invoke('val').then((val) => { expect(val).to.be.equal('') })
-    page.get('credit_input').invoke('val').then((val) => { expect(val).to.be.equal('') })
-    page.get('location_input').invoke('val').then((val) => { expect(val).to.be.equal('') })
-  })
-
-  it('requires that a file be uploaded', () => {
-    page.get('form_submit_button').click()
-    cy.hasNoErrors()
-
-    page.get('alert').should('be.visible')
-    page.get('alert_error').should('be.visible')
-    page.get('alert').contains("Cannot Upload File")
-    page.get('alert').contains("You did not select a file to upload.")
-  })
-
   it('can upload a Markdown file', () => {
-    cy.get('input[name="file"]').attachFile(md_file)
-    page.get('form_submit_button').click()
+    cy.get('.file-upload-widget').then(function(widget) {
+      $(widget).removeClass('hidden')
+    })
+    cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+    cy.intercept('/admin.php?/cp/files/directory/*').as('table')
+    page.get('file_input').find('.file-field__dropzone').attachFile(md_file, { subjectType: 'drag-n-drop' })
+    cy.wait('@upload')
+    cy.wait('@table')
     cy.hasNoErrors()
 
-    //returnPage.displayed?
-    returnPage.get('alert').should('exist')
-    returnPage.get('alert_success').should('exist')
-    returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file README.md was uploaded successfully.")
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("README.md")
   })
 
-  it('can upload a Markdown file and set the title', () => {
+  /*it('can upload a Markdown file and set the title', () => {
     cy.get('input[name="file"]').attachFile(md_file)
     page.get('title_input').clear().type("RSpec README")
     page.get('form_submit_button').click()
@@ -167,32 +145,34 @@ context('File Manager / Upload File', () => {
 
     //filePage.displayed?
     filePage.get('location_input').invoke('val').then((val) => { expect(val).to.be.equal("RSpec README") })
-  })
+  })*/
 
   it('cannot upload a shell script', () => {
-    cy.get('input[name="file"]').attachFile(script_file)
-    page.get('form_submit_button').click()
+    cy.get('.file-upload-widget').then(function(widget) {
+      $(widget).removeClass('hidden')
+    })
+    cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+    page.get('file_input').find('.file-field__dropzone').attachFile(script_file, { subjectType: 'drag-n-drop' })
+    cy.wait('@upload')
     cy.hasNoErrors()
 
-    page.get('alert').should('be.visible')
-    page.get('alert_error').should('be.visible')
-    page.get('alert').contains("Cannot Upload File")
-    page.get('alert').contains("File not allowed.")
+    returnPage.get('selected_file').should('not.exist')
+    page.get('file_input').contains("File not allowed.")
   })
 
   it('can upload a image when the directory is restricted to images', () => {
-    cy.get('.button--primary').contains('Upload').click()
-    cy.get('.dropdown--open .dropdown__link').contains('About').click()
+    cy.get('.sidebar').contains('About').click()
 
-    cy.get('input[name="file"]').attachFile(image_file)
-    page.get('form_submit_button').click()
+    cy.get('.file-upload-widget').then(function(widget) {
+      $(widget).removeClass('hidden')
+    })
+    cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+    cy.intercept('/admin.php?/cp/files/directory/*').as('table')
+    page.get('file_input').find('.file-field__dropzone').attachFile(image_file, { subjectType: 'drag-n-drop' })
+    cy.wait('@upload')
+    cy.wait('@table')
     cy.hasNoErrors()
 
-    //returnPage.displayed?
-    returnPage.get('alert').should('exist')
-    returnPage.get('alert_success').should('exist')
-    returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file programming.gif was uploaded successfully.")
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("programming.gif")
 
@@ -202,31 +182,33 @@ context('File Manager / Upload File', () => {
   })
 
   it('cannot upload a non-image when the directory is restricted to images', () => {
-    cy.get('.button--primary').contains('Upload').click()
-    cy.get('.dropdown--open .dropdown__link').contains('About').click()
+    cy.get('.sidebar').contains('About').click()
 
-    cy.get('input[name="file"]').attachFile(md_file)
-    page.get('form_submit_button').click()
+    cy.get('.file-upload-widget').then(function(widget) {
+      $(widget).removeClass('hidden')
+    })
+    cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+    page.get('file_input').find('.file-field__dropzone').attachFile(md_file, { subjectType: 'drag-n-drop' })
+    cy.wait('@upload')
     cy.hasNoErrors()
 
-    page.get('alert').should('be.visible')
-    page.get('alert_error').should('be.visible')
-    page.get('alert').contains("Cannot Upload File")
-    page.get('alert').contains("File not allowed.")
+    returnPage.get('selected_file').should('not.exist')
+    page.get('file_input').contains("File not allowed.")
   })
 
   it('cannot upload a PHP script masquerading as an image', () => {
-    cy.get('.button--primary').contains('Upload').click()
-    cy.get('.dropdown--open .dropdown__link').contains('About').click()
+    cy.get('.sidebar').contains('About').click()
 
-    cy.get('input[name="file"]').attachFile(php_file)
-    page.get('form_submit_button').click()
+    cy.get('.file-upload-widget').then(function(widget) {
+      $(widget).removeClass('hidden')
+    })
+    cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+    page.get('file_input').find('.file-field__dropzone').attachFile(php_file, { subjectType: 'drag-n-drop' })
+    cy.wait('@upload')
     cy.hasNoErrors()
 
-    page.get('alert').should('be.visible')
-    page.get('alert_error').should('be.visible')
-    page.get('alert').contains("Cannot Upload File")
-    page.get('alert').contains("File not allowed.")
+    returnPage.get('selected_file').should('not.exist')
+    page.get('file_input').contains("File not allowed.")
   })
 
   it('shows an error if the directory upload path has no write permissions', () => {
@@ -254,7 +236,7 @@ context('File Manager / Upload File', () => {
       page.load()
       cy.hasNoErrors()
 
-      cy.contains("404")
+      cy.contains("Cannot find the directory")
 
       // page.get('alert').should('be.visible')
       // page.get('alert_error').should('be.visible')

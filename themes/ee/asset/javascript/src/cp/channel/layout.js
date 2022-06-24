@@ -248,6 +248,14 @@ $(document).ready(function () {
 		EE.publish_layout[tab].fields[field].visible = ! EE.publish_layout[tab].fields[field].visible;
 	});
 
+	// Saving the width state of fields
+	$('[data-publish] form').on('click', '.field-option-width select', function(e) {
+		var tab = getTabIndex();
+		var field = getFieldIndex(this);
+
+		EE.publish_layout[tab].fields[field].width = this.value;
+	});
+	
 	// Saving the collapsed state
 	$('[data-publish] form').on('click', '.field-option-collapse input', function(e) {
 		var tab = getTabIndex();

@@ -98,14 +98,16 @@ context('RTE Settings', () => {
             cy.authVisit(page.url);
             let toolsets = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
 
-            page.get('tool_set_name_header').find('a.column-sort').click().then(function() {
-                cy.hasNoErrors()
+            cy.intercept('/admin.php?/cp/addons/settings/rte*').as('reload')
+            page.get('tool_set_name_header').find('a.column-sort').click();
+            cy.wait('@reload')
+            cy.hasNoErrors()
 
-                page.get('tool_set_name_header').should('have.class', 'column-sort-header--active')
-                let toolsetsReversed = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
+            page.get('tool_set_name_header').should('have.class', 'column-sort-header--active')
+            let toolsetsReversed = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
 
-                expect(toolsetsReversed).to.deep.equal(toolsets.reverse())
-            })
+            expect(toolsetsReversed).to.deep.equal(toolsets.reverse())
+
         })
 
         it('can change the default tool set', function() {

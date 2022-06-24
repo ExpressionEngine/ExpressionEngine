@@ -10,6 +10,7 @@
 
 namespace ExpressionEngine\Library\Filesystem;
 
+use ExpressionEngine\Dependency\League\Flysystem;
 use FilesystemIterator;
 
 /**
@@ -17,6 +18,46 @@ use FilesystemIterator;
  */
 class Filesystem
 {
+    protected $flysystem;
+
+    public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = [])
+    {
+        if (is_null($adapter)) {
+            $default = ($_SERVER['DOCUMENT_ROOT']) ?: realpath(SYSPATH .'../');
+            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath(ee()->config->item('base_path') ?: $default));
+        }else{
+            // Fix prefixes
+            $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
+        }
+        // Create the cache store
+        $cacheStore = new Flysystem\Cached\Storage\Memory();
+        $adapter = new Flysystem\Cached\CachedAdapter($adapter, $cacheStore);
+
+        $defaults = [
+            'visibility' => Flysystem\AdapterInterface::VISIBILITY_PUBLIC
+        ];
+
+        $config = array_merge($defaults, $config);
+
+        $this->flysystem = new Flysystem\Filesystem($adapter, $config);
+        $this->flysystem->addPlugin(new Flysystem\Plugin\GetWithMetadata());
+    }
+
+    /**
+     * Determine if this filesystem is local
+     *
+     * @return boolean
+     */
+    public function isLocal()
+    {
+        return $this->getBaseAdapter() instanceof Flysystem\Adapter\Local;
+    }
+
+    public function isLocalRoot($path)
+    {
+        return $this->isLocal() && $path === '/';
+    }
+
     /**
      * Read a file from disk
      *
@@ -25,15 +66,28 @@ class Filesystem
      */
     public function read($path)
     {
-        if (! $this->exists($path)) {
+        $path = $this->normalizeRelativePath($path);
+        if (!$this->exists($path)) {
             throw new FilesystemException("File not found: {$path}");
-        } elseif (! $this->isFile($path)) {
+        } elseif (!$this->isFile($path)) {
             throw new FilesystemException("Not a file: {$path}");
-        } elseif (! $this->isReadable($path)) {
+        } elseif (!$this->isReadable($path)) {
             throw new FilesystemException("Cannot read file: {$path}");
         }
 
-        return file_get_contents($this->normalize($path));
+        return $this->flysystem->read($this->normalize($path));
+    }
+
+    /**
+     * Read the contents of a file as a stream
+     *
+     * @param string $path
+     * @return stream
+     */
+    public function readStream($path)
+    {
+        $path = $this->normalizeRelativePath($path);
+        return $this->flysystem->readStream($path);
     }
 
     /**
@@ -44,17 +98,18 @@ class Filesystem
      */
     public function readLineByLine($path, callable $callback)
     {
-        if (! $this->exists($path)) {
+        // @todo implement flysystem option, likely needs to read by stream
+        if (!$this->exists($path)) {
             throw new FilesystemException("File not found: {$path}");
-        } elseif (! $this->isFile($path)) {
+        } elseif (!$this->isFile($path)) {
             throw new FilesystemException("Not a file: {$path}");
-        } elseif (! $this->isReadable($path)) {
+        } elseif (!$this->isReadable($path)) {
             throw new FilesystemException("Cannot read file: {$path}");
         }
 
         $pointer = fopen($path, 'r');
 
-        while (! feof($pointer)) {
+        while (!feof($pointer)) {
             $callback(fgets($pointer));
         }
 
@@ -72,21 +127,38 @@ class Filesystem
     public function write($path, $data, $overwrite = false, $append = false)
     {
         $path = $this->normalize($path);
+        $path = $this->normalizeRelativePath($path);
 
         if ($this->isDir($path)) {
             throw new FilesystemException("Cannot write file, path is a directory: {$path}");
         } elseif ($this->isFile($path) && $overwrite == false && $append == false) {
             throw new FilesystemException("File already exists: {$path}");
+        } elseif ($append && !($this->isLocal())) {
+            throw new FilesystemException("Appending to file not supported by adapter '" . get_class($this->flysystem->getAdapter()) . "'");
         }
 
-        $flags = LOCK_EX;
         if ($overwrite == false && $append == true) {
             $flags = FILE_APPEND | LOCK_EX;
+            file_put_contents($path, $data, $flags);
+        } else {
+            $this->flysystem->put($path, $data);
         }
 
-        file_put_contents($path, $data, $flags);
-
         $this->ensureCorrectAccessMode($path);
+    }
+
+    /**
+     * Write a stream to the file path
+     *
+     * @param string $path
+     * @param stream $resource
+     * @param array $config
+     * @return bool
+     */
+    public function writeStream($path, $resource, array $config = [])
+    {
+        $path = $this->normalizeRelativePath($path);
+        return $this->flysystem->writeStream($path, $resource, $config);
     }
 
     /**
@@ -110,12 +182,10 @@ class Filesystem
     public function mkDir($path, $with_index = true)
     {
         $path = $this->normalize($path);
+        $path = $this->normalizeRelativePath($path);
+        $result = $this->flysystem->createDir($path);
 
-        $old_umask = umask(0);
-        $result = @mkdir($path, DIR_WRITE_MODE, true);
-        umask($old_umask);
-
-        if (! $result) {
+        if (!$result) {
             return false;
         }
 
@@ -135,11 +205,8 @@ class Filesystem
      */
     public function delete($path)
     {
-        if ($this->isDir($path)) {
-            return $this->deleteDir($path);
-        }
-
-        return $this->deleteFile($path);
+        $path = $this->normalizeRelativePath($path);
+        return $this->flysystem->delete($path);
     }
 
     /**
@@ -149,11 +216,12 @@ class Filesystem
      */
     public function deleteFile($path)
     {
-        if (! $this->isFile($path)) {
+        $path = $this->normalizeRelativePath($path);
+        if (!$this->isFile($path)) {
             throw new FilesystemException("File does not exist {$path}");
         }
 
-        return @unlink($this->normalize($path));
+        return $this->flysystem->delete($this->normalize($path));
     }
 
     /**
@@ -164,28 +232,21 @@ class Filesystem
      */
     public function deleteDir($path, $leave_empty = false)
     {
-        $path = rtrim($path, '/');
+        $path = $this->normalize($path);
+        $path = $this->normalizeRelativePath(rtrim($path, '/'));
 
-        if (! $this->isDir($path)) {
+        if (!$this->isDir($path)) {
             throw new FilesystemException("Directory does not exist {$path}.");
         }
 
-        if (! $leave_empty && $this->attemptFastDelete($path)) {
+        if (!$leave_empty && $this->attemptFastDelete($path)) {
             return true;
         }
 
-        $contents = new FilesystemIterator($this->normalize($path));
+        $this->flysystem->deleteDir($path);
 
-        foreach ($contents as $item) {
-            if ($item->isDir()) {
-                $this->deleteDir($item->getPathname());
-            } else {
-                $this->deleteFile($item->getPathName());
-            }
-        }
-
-        if (! $leave_empty) {
-            @rmdir($this->normalize($path));
+        if ($leave_empty) {
+            $this->flysystem->createDir($path);
         }
 
         return true;
@@ -199,28 +260,45 @@ class Filesystem
      * @param bool $recursive Whether or not to do a recursive search
      * @param array Array of all paths found inside the specified directory
      */
-    public function getDirectoryContents($path, $recursive = false)
+    public function getDirectoryContents($path = '/', $recursive = false, $includeHidden = false)
     {
-        if (! $this->exists($path)) {
-            throw new FilesystemException('Cannot get contents of path, the path is invalid: ' . $path);
+        $path = $this->normalizeRelativePath($path);
+
+        if ($this->isLocal()) {
+            if (!$this->exists($path)) {
+                throw new FilesystemException('Cannot get contents of path, the path is invalid: ' . $path);
+            }
+
+            if (!$this->isDir($path)) {
+                throw new FilesystemException('Cannot get contents of path, the path is not a directory: ' . $path);
+            }
         }
 
-        if (! $this->isDir($path)) {
-            throw new FilesystemException('Cannot get contents of path, the path is not a directory: ' . $path);
-        }
-
-        $contents = new FilesystemIterator($this->normalize($path));
+        $contents = $this->flysystem->listContents($path);
         $contents_array = [];
 
         foreach ($contents as $item) {
-            if ($item->isDir() && $recursive) {
-                $contents_array += $this->getDirectoryContents($item->getPathname(), $recursive);
-            } else {
-                $contents_array[] = $item->getPathName();
+            if ($item['type'] == 'dir' && $recursive) {
+                $contents_array += $this->getDirectoryContents($item['path'], $recursive);
+            } else if($includeHidden || strpos($item['path'], '.') !== 0) {
+                $contents_array[] = $item['path'];
             }
         }
 
         return $contents_array;
+    }
+
+    /**
+     * Get the file with metadata info
+     *
+     * @param string $path
+     * @param array $metadata
+     * @return array|false metadata
+     */
+    public function getWithMetadata($path, $metadata = [])
+    {
+        $path = $this->normalizeRelativePath($path);
+        return $this->flysystem->getWithMetadata($this->normalize($path), $metadata);
     }
 
     /**
@@ -247,6 +325,10 @@ class Filesystem
      */
     protected function attemptFastDelete($path)
     {
+        if (!$this->isLocal()) {
+            return false;
+        }
+
         $path = $this->normalize($path);
 
         $delete_name = sha1($path . '_delete_' . mt_rand());
@@ -273,22 +355,57 @@ class Filesystem
      *
      * @param String $source File or directory to rename
      * @param String $dest New location for the file or directory
+     * @return bool
      */
     public function rename($source, $dest)
     {
+        $source = $this->normalizeRelativePath($source);
+        $dest = $this->normalizeRelativePath($dest);
+
         if (! $this->exists($source)) {
             throw new FilesystemException("Cannot rename non-existent path: {$source}");
         } elseif ($this->exists($dest)) {
             throw new FilesystemException("Cannot rename, destination already exists: {$dest}");
         }
 
+        // if renaming directory not on local driver...
+        if(!$this->isFile($source) && !$this->isLocal()) {
+            return $this->renameFolder($this->normalize($source), $this->normalize($dest));
+        }
+
         // Suppressing potential warning when renaming a directory to one that already exists.
-        @rename(
-            $this->normalize($source),
-            $this->normalize($dest)
-        );
+        $renamed = @$this->flysystem->rename($this->normalize($source), $this->normalize($dest));
 
         $this->ensureCorrectAccessMode($dest);
+
+        return $renamed;
+    }
+
+
+    /**
+     * Rename a folder and all of the files and folders contained within
+     *
+     * @param string $source
+     * @param string $dest
+     * @return bool
+     */
+    private function renameFolder($source, $dest)
+    {
+        $success = true;
+        $this->mkDir($dest, false);
+
+        $contents = $this->getDirectoryContents($source);
+        foreach($contents as $path) {
+            $toPath = str_replace($source, $dest, $path);
+            $result = ($this->isFile($path)) ? $this->flysystem->rename($path, $toPath) : $this->renameFolder($path, $toPath);
+            $success = $success && $result;
+        }
+
+        if($success) {
+            $this->deleteDir($source);
+        }
+
+        return $success;
     }
 
     /**
@@ -299,6 +416,9 @@ class Filesystem
      */
     public function copy($source, $dest)
     {
+        $source = $this->normalizeRelativePath($source);
+        $dest = $this->normalizeRelativePath($dest);
+
         if (! $this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
         }
@@ -306,13 +426,41 @@ class Filesystem
         if ($this->isDir($source)) {
             $this->recursiveCopy($source, $dest);
         } else {
-            copy(
-                $this->normalize($source),
-                $this->normalize($dest)
-            );
+            $this->flysystem->copy($this->normalize($source), $this->normalize($dest));
         }
 
         $this->ensureCorrectAccessMode($dest);
+    }
+
+    /**
+     * Copy a file or directory
+     *
+     * @param String $source File or directory to copy
+     * @param Stirng $dest Path to the duplicate
+     */
+    public function forceCopy($source, $dest)
+    {
+        $source = $this->normalizeRelativePath($source);
+        $dest = $this->normalizeRelativePath($dest);
+        $destBackup = "$dest.backup";
+
+        if (!$this->exists($source)) {
+            throw new FilesystemException("Cannot copy non-existent path: {$source}");
+        }
+
+        if($this->exists($dest)) {
+            $this->rename($dest, $destBackup);
+        }
+
+        try {
+            $this->copy($source, $dest);
+        }catch(\Exception $e) {
+            $this->rename($destBackup, $dest);
+            throw $e;
+        }
+
+        $this->delete($destBackup);
+
     }
 
     /**
@@ -323,20 +471,38 @@ class Filesystem
      */
     protected function recursiveCopy($source, $dest)
     {
-        $dir = opendir($source);
-        @mkdir($dest);
+        $dir = $this->flysystem->listContents($source, false);
+        $this->flysystem->createDir($dest);
 
-        while (false !== ($file = readdir($dir))) {
-            if (($file != '.') && ($file != '..')) {
-                if ($this->isDir($source . '/' . $file)) {
-                    $this->recursiveCopy($source . '/' . $file, $dest . '/' . $file);
-                } else {
-                    copy($source . '/' . $file, $dest . '/' . $file);
-                }
+        foreach($dir as $file) {
+            if ($this->isDir($source . '/' . $file['path'])) {
+                $this->recursiveCopy($source . '/' . $file['path'], $dest . '/' . $file['path']);
+            } else {
+                $this->flysystem->copy($source . '/' . $file['path'], $dest . '/' . $file['path']);
             }
         }
+    }
 
-        closedir($dir);
+    /**
+     * Transform a path into an absolute path
+     *
+     * @param String $path Absolute or relative path
+     * @return String absolute path
+     */
+    public function absolute($path)
+    {
+        return $this->ensurePrefixedPath($path);
+    }
+
+    /**
+     * Transform a path into a relative path
+     *
+     * @param String $path Absolute or relative path
+     * @return String relative path
+     */
+    public function relative($path)
+    {
+        return $this->normalizeRelativePath($path);
     }
 
     /**
@@ -347,7 +513,18 @@ class Filesystem
      */
     public function dirname($path)
     {
-        return dirname($this->normalize($path));
+        return pathinfo($this->normalize($path), PATHINFO_DIRNAME);
+    }
+
+    /**
+     * Get the subdirectory path for a given path
+     *
+     * @param String $path Path to extract subdirectory from
+     * @return String Path of the subdirectory
+     */
+    public function subdirectory($path)
+    {
+        return pathinfo($this->normalizeRelativePath($path), PATHINFO_DIRNAME);
     }
 
     /**
@@ -391,11 +568,17 @@ class Filesystem
      */
     public function exists($path)
     {
-        if ($path = $this->normalize($path)) {
-            return file_exists($path);
+        // We are intentionally not calling `$this->flysystem->has($path);` so that
+        // we can handle calls to check the existence of the base path
+        $path = $this->normalizeRelativePath($path);
+
+        // If the path is the root of this filesystem it must exist or the
+        // filesystem would have thrown an exception during construction
+        if($path === '') {
+            return true;
         }
 
-        return false;
+        return (bool) $this->flysystem->getAdapter()->has($path);
     }
 
     /**
@@ -406,11 +589,51 @@ class Filesystem
      */
     public function mtime($path)
     {
+        $path = $this->normalizeRelativePath($path);
+
         if (! $this->exists($path)) {
             throw new FilesystemException("File does not exist: {$path}");
         }
 
-        return filemtime($this->normalize($path));
+        return $this->flysystem->getTimestamp($this->normalize($path));
+    }
+
+    /**
+     * Get the mimetype for file at $path
+     *
+     * @param String $path Path to file
+     * @return String|false mime-type or false on failure
+     */
+    public function getMimetype($path)
+    {
+        $path = $this->normalizeRelativePath($path);
+        $mime = $this->flysystem->getMimetype($path);
+
+        // try another method to get mime
+        if ($mime == 'application/octet-stream') {
+            $opening = fread($this->flysystem->readStream($path), 50);
+            $mime = ee('MimeType')->guessOctetStream($opening);
+        }
+
+        return $mime;
+    }
+
+    /**
+     * Get the filesize of a given path
+     *
+     * @param string $path
+     * @return int
+     */
+    public function getSize($path)
+    {
+        $size = 0;
+        $path = $this->normalizeRelativePath($path);
+
+        try {
+            $size = $this->flysystem->getSize($path);
+        }catch(\Exception $e){}
+
+        return $size;
     }
 
     /**
@@ -421,14 +644,16 @@ class Filesystem
      */
     public function touch($path, $time = null)
     {
+        $path = $this->normalizeRelativePath($path);
+
         if (! $this->exists($path)) {
             throw new FilesystemException("Touching non-existent files is not supported: {$path}");
         }
 
-        if (isset($time)) {
-            touch($this->normalize($path), $time);
+        if (isset($time) && $this->isLocal()) {
+            touch($this->flysystem->getAdapter()->applyPathPrefix($this->normalize($path)), $time);
         } else {
-            touch($this->normalize($path));
+            $this->write($this->normalize($path), '');
         }
     }
 
@@ -438,9 +663,13 @@ class Filesystem
      * @param String $path Path to check
      * @return bool Is a directory?
      */
-    public function isDir($path)
+    public function isDir($path = '/')
     {
-        return is_dir($this->normalize($path));
+        if ($this->isLocal()) {
+            return is_dir($this->ensurePrefixedPath($path));
+        }
+        $path = $this->normalizeRelativePath($path);
+        return empty($this->extension($path)) && $this->exists($path);
     }
 
     /**
@@ -451,7 +680,13 @@ class Filesystem
      */
     public function isFile($path)
     {
-        return is_file($this->normalize($path));
+        $path = $this->normalizeRelativePath($path);
+
+        if ($this->isLocal()) {
+            return is_file($this->ensurePrefixedPath($this->normalize($path)));
+        }
+
+        return !empty($this->extension($path)) && $this->flysystem->has($path);
     }
 
     /**
@@ -460,9 +695,13 @@ class Filesystem
      * @param String $path Path to check
      * @return bool Is readable?
      */
-    public function isReadable($path)
+    public function isReadable($path = '')
     {
-        return is_readable($this->normalize($path));
+        if (!$this->isLocal()) {
+            return true; // or is `return $this->flysystem->has($path);` better?
+        }
+
+        return is_readable($this->ensurePrefixedPath($this->normalize($path)));
     }
 
     /**
@@ -473,7 +712,7 @@ class Filesystem
      */
     public function chmod($path, $mode)
     {
-        return @chmod($this->normalize($path), $mode);
+        return @chmod($this->ensurePrefixedPath($this->normalize($path)), $mode);
     }
 
     /**
@@ -484,17 +723,23 @@ class Filesystem
      * @param String $path Path to check
      * @return bool Is writable?
      */
-    public function isWritable($path)
+    public function isWritable($path = '/')
     {
+        if(! $this->isLocal()) {
+            return true;
+        }
+
+        $path = $this->ensurePrefixedPath($this->normalize($path));
+
         // If we're on a Unix server with safe_mode off we call is_writable
         if (DIRECTORY_SEPARATOR == '/') {
-            return is_writable($this->normalize($path));
+            return is_writable($path);
         }
 
         // For windows servers and safe_mode "on" installations we'll actually
         // write a file then read it.  Bah...
         if ($this->isDir($path)) {
-            $path = rtrim($this->normalize($path), '/') . '/' . md5(mt_rand(1, 100) . mt_rand(1, 100));
+            $path = rtrim($path, '/') . '/' . md5(mt_rand(1, 100) . mt_rand(1, 100));
 
             if (($fp = @fopen($path, FOPEN_WRITE_CREATE)) === false) {
                 return false;
@@ -527,7 +772,7 @@ class Filesystem
             throw new FilesystemException("File does not exist: {$filename}");
         }
 
-        return hash_file($algo, $filename);
+        return hash($algo, $this->read($filename));
     }
 
     /**
@@ -538,6 +783,10 @@ class Filesystem
      */
     public function getFreeDiskSpace($path = '/')
     {
+        if(!$this->isLocal()) {
+            return null;
+        }
+
         return @disk_free_space($path);
     }
 
@@ -569,38 +818,49 @@ class Filesystem
 
         $i = 0;
         $extension = $this->extension($path);
-        $filename = $this->dirname($path) . '/' . $this->filename($path);
+        $dirname =  ($this->dirname($path) !== '.') ? $this->dirname($path) . '/' : '';
+        $filename = $this->filename($path);
 
-        $files = glob($filename . '_*' . $extension);
+        // Glob only works with local filesytem but is more performant than filtering directory results
+        if ($this->isLocal()) {
+            $files = array_map(function($file) {
+                return $this->filename($file);
+            }, glob($this->absolute($dirname . $filename) . '_*' . $extension));
+        }else{
+            // Filter out any files that do not start with our filename
+            $files = array_filter($this->getDirectoryContents($dirname), function($file) use($filename) {
+                return strpos($file, "{$filename}_") === 0;
+            });
+        }
 
-        if (! empty($files)) {
-            // Try to figure out if we already have a file we've renamed, then
-            // we can pick up where we left off, and reduce the guessing.
-            if (version_compare(PHP_VERSION, '5.4.0') < 0) {
-                rsort($files); // SORT_NATURAL was introduced in 5.4.0 :(
-            } else {
-                rsort($files, SORT_NATURAL);
-            }
+        // If we do not have any matching files at this point it gets the _1 suffix
+        if(empty($files)) {
+            return $dirname . "{$filename}_1.{$extension}";
+        }
 
-            foreach ($files as $file) {
-                $number = str_replace(array($filename, $extension), '', $file);
-                if (substr_count($number, '_') == 1 && strpos($number, '_') === 0) {
-                    $number = str_replace('_', '', $number);
-                    if (is_numeric($number)) {
-                        $i = (int) $number;
+        // Try to figure out if we already have a file we've renamed, then
+        // we can pick up where we left off, and reduce the guessing.
+        rsort($files, SORT_NATURAL);
 
-                        break;
-                    }
+        foreach ($files as $file) {
+            $number = str_replace(array($filename, $extension), '', $file);
+            if (substr_count($number, '_') == 1 && strpos($number, '_') === 0) {
+                $number = str_replace('_', '', $number);
+                if (is_numeric($number)) {
+                    $i = (int) $number;
+                    break;
                 }
             }
         }
 
+        $uniqueName = '';
+
         do {
             $i++;
-            $path = $filename . '_' . $i . '.' . $extension;
-        } while (in_array($path, $files));
+            $uniqueName = $filename . '_' . $i . '.' . $extension;
+        } while (in_array($uniqueName, $files));
 
-        return $path;
+        return $dirname . $uniqueName;
     }
 
     /**
@@ -639,12 +899,13 @@ class Filesystem
     /**
      * Add EE's default index file to a directory
      */
-    protected function addIndexHtml($dir)
+    public function addIndexHtml($dir)
     {
         $dir = rtrim($dir, '/');
+        $dir = $this->normalizeRelativePath($dir);
 
         if (! $this->isDir($dir)) {
-            throw new FilesystemException("Cannot add index file to non-existant directory: {$dir}");
+            throw new FilesystemException("Cannot add index file to non-existent directory: {$dir}");
         }
 
         if (! $this->isFile($dir . '/index.html')) {
@@ -659,13 +920,144 @@ class Filesystem
      *
      * @param String $path Path to ensure access to
      */
-    protected function ensureCorrectAccessMode($path)
+    public function ensureCorrectAccessMode($path)
     {
+        // This function is only relevant to Local filesystems
+        if(!$this->isLocal()) {
+            return;
+        }
+
         if ($this->isDir($path)) {
             $this->chmod($path, DIR_WRITE_MODE);
         } else {
             $this->chmod($path, FILE_WRITE_MODE);
         }
+    }
+
+    /**
+     * Copy the contents of a file to a new temporary file
+     *
+     * @param string $path
+     * @return array
+     */
+    public function copyToTempFile($path)
+    {
+        $path = $this->normalizeRelativePath($path);
+
+        if(!$this->isFile($path)) {
+            throw new \Exception("Cannot create a temp file from path: $path");
+        }
+
+        $tmp = $this->createTempFile();
+        fwrite($tmp['file'], $this->read($path));
+
+        return $tmp;
+    }
+
+    /**
+     * Create a temporary file on the local filesystem
+     *
+     * @return array
+     */
+    public function createTempFile()
+    {
+        $file = tmpfile();
+        $path = stream_get_meta_data($file)['uri'];
+
+        return compact('file', 'path');
+    }
+
+    /**
+     * Perform some action on a file in a local context
+     *
+     * @param string $path
+     * @param callable $callback
+     * @return mixed
+     */
+    public function actLocally($path, callable $callback)
+    {
+        if ($this->isLocal()) {
+            return $callback($path);
+        }
+
+        $tmp = $this->copyToTempFile($path);
+        $result = $callback($tmp['path']);
+
+        fclose($tmp['file']);
+
+        return $result;
+    }
+
+    /**
+     * Normalize a path and return the complete path address
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function normalizeAbsolutePath($path)
+    {
+        if(empty($path)) {
+            return '';
+        }
+
+        return str_replace('//', '/', implode([
+            in_array(substr($path, 0, 1), ['/', '\\']) ? '/' : '',
+            Flysystem\Util::normalizePath($path),
+            in_array(substr($path, -1), ['/', '\\']) ? '/' : ''
+        ]));
+    }
+
+    /**
+     * Make sure the given path has the filesystem's prefix
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function ensurePrefixedPath($path)
+    {
+        $adapter = $this->flysystem->getAdapter();
+        $normalized = $this->normalizeAbsolutePath($path);
+        $prefix = rtrim($this->getPathPrefix(), '\\/');
+
+        if (!empty($prefix) && strpos($normalized, $prefix) === 0) {
+            return $normalized;
+        }
+
+        return $adapter->applyPathPrefix(Flysystem\Util::normalizePath($path));
+    }
+
+    /**
+     * Get the path prefix.
+     *
+     * @return string|null
+     */
+    protected function getPathPrefix()
+    {
+        return $this->normalizeAbsolutePath($this->flysystem->getAdapter()->getPathPrefix());
+    }
+
+    /**
+     * Remove the prefix from a path if present
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function removePathPrefix($path)
+    {
+        $prefix = $this->getPathPrefix();
+        return (strpos($path, $prefix) === 0) ? str_replace($prefix, '', $path) : $path;
+    }
+
+    /**
+     * Normalize a path and return the relative address
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function normalizeRelativePath($path)
+    {
+        $path = $this->normalizeAbsolutePath($path);
+        return ltrim($this->removePathPrefix($path), '\\/');
     }
 
     /**
@@ -678,6 +1070,18 @@ class Filesystem
     protected function normalize($path)
     {
         return $path;
+    }
+
+    /**
+     * Get the base adapter for the filesystem
+     *
+     * @return void
+     */
+    public function getBaseAdapter()
+    {
+        $adapter = $this->flysystem->getAdapter();
+
+        return ($adapter instanceof Flysystem\Cached\CachedAdapter) ? $adapter->getAdapter() : $adapter;
     }
 }
 

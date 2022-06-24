@@ -336,6 +336,8 @@ $lang = array(
 
     'select_all' => 'Select All',
 
+    'select_all_files' => 'Select All Files',
+
     'search_in' => 'Search in',
 
     'show' => 'Show',
@@ -731,6 +733,9 @@ $lang = array(
 
     'confirm_show_all_desc' => 'Viewing more than %d items at a time may result in reduced performance.',
 
+    /* moving */
+    'btn_confirm_and_move' => 'Confirm and Move',
+
     /* HTML Buttons */
     'html_btn_anchor' => 'Link',
 
@@ -801,6 +806,8 @@ $lang = array(
     'dashboard_layout_save_error' => 'Could not save layout',
 
     'dashboard_needs_some_widgets' => 'Please enable at least one widget',
+
+    'unexpected_error' => 'Unexpected error',
 
 );
 

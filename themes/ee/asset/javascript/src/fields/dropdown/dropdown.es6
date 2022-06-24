@@ -15,8 +15,17 @@ class Dropdown extends React.Component {
   constructor (props) {
     super(props)
 
+    window.selectedEl;
+    var selected;
+
+    // use different function for file manager part and other site pages
+    if(props.fileManager) {
+      selected = this.checkChildDirectory(this.props.initialItems, props.selected);
+    } else {
+      selected = this.getItemForSelectedValue(props.selected)
+    }
     this.state = {
-      selected: this.getItemForSelectedValue(props.selected),
+      selected: selected,
       open: false
     }
   }
@@ -86,8 +95,37 @@ class Dropdown extends React.Component {
     })
   }
 
+  checkChildDirectory = (items, value) => {
+    items.map(item => {
+      if (item.value == value) {
+        return window.selectedEl = item;
+      } else if(item.value != value && (Array.isArray(item.children) && item.children.length)) {
+        this.checkChildDirectory(item.children, value);
+      }
+    })
+
+    return window.selectedEl;
+  }
+
   handleSearch(searchTerm) {
     this.props.filterChange('search', searchTerm)
+  }
+
+  selectRecursion = (items) => {
+    return (
+      <React.Fragment>
+      {items.map(item => (
+        <div className="select__dropdown-item-parent">
+          <DropdownItem key={item.value ? item.value : item.section}
+            item={item}
+            selected={this.state.selected && item.value == this.state.selected.value}
+            onClick={(e) => this.selectionChanged(item)}
+            name ={this.props.name} />
+          {item.children && item.children.length ? this.selectRecursion(item.children) : null}
+        </div>
+      ))}
+      </React.Fragment>
+    )
   }
 
   render () {
@@ -137,13 +175,8 @@ class Dropdown extends React.Component {
             {this.state.loading &&
               <Loading text={EE.lang.loading} />
             }
-            {this.props.items.map((item) =>
-              <DropdownItem key={item.value ? item.value : item.section}
-                item={item}
-                selected={this.state.selected && item.value == this.state.selected.value}
-                onClick={(e) => this.selectionChanged(item)}
-                name ={this.props.name} />
-            )}
+
+            {this.selectRecursion(this.props.items)}
           </div>
         </div>
       </div>
@@ -161,7 +194,6 @@ function DropdownItem (props) {
       </div>
     )
   }
-
   return (
     <div onClick={props.onClick} className={'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')} tabIndex="0">
       <span dangerouslySetInnerHTML={{__html: item.label}}></span>{item.instructions && <i>{item.instructions}</i>}

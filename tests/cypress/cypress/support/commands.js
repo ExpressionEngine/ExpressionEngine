@@ -157,6 +157,14 @@ Cypress.Commands.add("hasNoErrors", () => {
     cy.contains('Error Caught').should('not.exist')
 })
 
+Cypress.Commands.add("dismissLicenseAlert", () => {
+    cy.get('body').then(($body) => {
+        if ($body.find('.app-notice-pro-license-error .app-notice__dismiss').length) {
+            cy.get('.app-notice-pro-license-error .app-notice__dismiss').trigger('click');
+        }
+    })
+})
+
 Cypress.Commands.add("dragTo", { prevSubject: true }, (subject, target) => {
     cy.wrap(subject).trigger("mousedown", { which: 1 })
 

@@ -33,8 +33,15 @@
   }
 }
 
-.file-preview-modal__preview, .file-preview-modal__form {
-	flex: 0 0 50%;
+.file-preview-modal__preview {
+	flex: 0 0 40%;
+	padding: $sq-inset-m;
+	max-width: 500px;
+
+}
+
+.file-preview-modal__form {
+	flex: 0 1 100%;
 	padding: $sq-inset-m;
 }
 
@@ -47,11 +54,6 @@
 		color: color(text-secondary);
 	}
 }
-
-.file-preview-modal__form {
-  padding-top: 65px;
-}
-
 
 .file-preview-modal__preview-file {
 	overflow: hidden;

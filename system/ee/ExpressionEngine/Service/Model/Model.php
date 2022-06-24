@@ -380,6 +380,8 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
             }
         }
 
+        $this->emit('afterAssociationsSave');
+
         return $this;
     }
 
@@ -1027,6 +1029,21 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
             ee()->logger->developer('Unable to ' . $operation . ' ' . $this->getName() . ' model. The data contains multibyte characters, however the database table does not support those.', true);
         }
         throw $exception;
+    }
+
+    protected function saveToCache($key, $data)
+    {
+        if (isset(ee()->core)) {
+            ee()->core->set_cache(get_called_class(), $key, $data);
+        }
+    }
+
+    protected function getFromCache($key)
+    {
+        if (isset(ee()->core)) {
+            return ee()->core->cache(get_called_class(), $key, false);
+        }
+        return false;
     }
 }
 

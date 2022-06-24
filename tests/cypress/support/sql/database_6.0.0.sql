@@ -568,18 +568,33 @@ INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`) VALUES
 -- Dumping data for table ee-test.exp_files: ~10 rows (approximately)
 DELETE FROM `exp_files`;
 /*!40000 ALTER TABLE `exp_files` DISABLE KEYS */;
-INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `mime_type`, `file_name`, `file_size`, `description`, `credit`, `location`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`) VALUES
-	(1, 1, 'staff_jane.png', 2, 'image/png', 'staff_jane.png', 51612, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''),
-	(2, 1, 'staff_jason.png', 2, 'image/png', 'staff_jason.png', 51430, NULL, NULL, NULL, 1, 1302888304, 1, 1302888304, ''),
-	(3, 1, 'staff_josh.png', 2, 'image/png', 'staff_josh.png', 50638, NULL, NULL, NULL, 1, 1302887304, 1, 1302887304, ''),
-	(4, 1, 'staff_randell.png', 2, 'image/png', 'staff_randell.png', 51681, NULL, NULL, NULL, 1, 1302886304, 1, 1302886304, ''),
-	(5, 1, 'ee_banner_120_240.gif', 2, 'image/gif', 'ee_banner_120_240.gif', 9257, NULL, NULL, NULL, 1, 1302885304, 1, 1302885304, ''),
-	(6, 1, 'testband300.jpg', 2, 'image/jpeg', 'testband300.jpg', 23986, NULL, NULL, NULL, 1, 1302884304, 1, 1302884304, ''),
-	(7, 1, 'map.jpg', 2, 'image/jpeg', 'map.jpg', 71299, NULL, NULL, NULL, 1, 1302883304, 1, 1302883304, ''),
-	(8, 1, 'map2.jpg', 2, 'image/jpeg', 'map2.jpg', 49175, NULL, NULL, NULL, 1, 1302882304, 1, 1302882304, ''),
-	(9, 1, 'staff_chloe.png', 2, 'image/png', 'staff_chloe.png', 50262, NULL, NULL, NULL, 1, 1302881304, 1, 1302881304, ''),
-	(10, 1, 'staff_howard.png', 2, 'image/png', 'staff_howard.png', 51488, NULL, NULL, NULL, 1, 1302880304, 1, 1302880304, '');
+INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `mime_type`, `file_type`, `file_name`, `file_size`, `description`, `credit`, `location`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`) VALUES
+	(1, 1, 'staff_jane.png', 2, 'image/png', 'img', 'staff_jane.png', 51612, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''),
+	(2, 1, 'staff_jason.png', 2, 'image/png', 'img', 'staff_jason.png', 51430, NULL, NULL, NULL, 1, 1302888304, 1, 1302888304, ''),
+	(3, 1, 'staff_josh.png', 2, 'image/png', 'img', 'staff_josh.png', 50638, NULL, NULL, NULL, 1, 1302887304, 1, 1302887304, ''),
+	(4, 1, 'staff_randell.png', 2, 'image/png', 'img', 'staff_randell.png', 51681, NULL, NULL, NULL, 1, 1302886304, 1, 1302886304, ''),
+	(5, 1, 'ee_banner_120_240.gif', 2, 'image/gif', 'img', 'ee_banner_120_240.gif', 9257, NULL, NULL, NULL, 1, 1302885304, 1, 1302885304, ''),
+	(6, 1, 'testband300.jpg', 2, 'image/jpeg', 'img', 'testband300.jpg', 23986, NULL, NULL, NULL, 1, 1302884304, 1, 1302884304, ''),
+	(7, 1, 'map.jpg', 2, 'image/jpeg', 'img', 'map.jpg', 71299, NULL, NULL, NULL, 1, 1302883304, 1, 1302883304, ''),
+	(8, 1, 'map2.jpg', 2, 'image/jpeg', 'img', 'map2.jpg', 49175, NULL, NULL, NULL, 1, 1302882304, 1, 1302882304, ''),
+	(9, 1, 'staff_chloe.png', 2, 'image/png', 'img', 'staff_chloe.png', 50262, NULL, NULL, NULL, 1, 1302881304, 1, 1302881304, ''),
+	(10, 1, 'staff_howard.png', 2, 'image/png', 'img', 'staff_howard.png', 51488, NULL, NULL, NULL, 1, 1302880304, 1, 1302880304, '');
 /*!40000 ALTER TABLE `exp_files` ENABLE KEYS */;
+
+DELETE FROM `exp_file_data`;
+/*!40000 ALTER TABLE `exp_file_data` DISABLE KEYS */;
+INSERT INTO `exp_file_data` (`file_id`) VALUES
+	(1),
+	(2),
+	(3),
+	(4),
+	(5),
+	(6),
+	(7),
+	(8),
+	(9),
+	(10);
+/*!40000 ALTER TABLE `exp_file_data` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_file_categories: ~0 rows (approximately)
 DELETE FROM `exp_file_categories`;
@@ -650,14 +665,14 @@ DELETE FROM `exp_layout_publish_member_roles`;
 -- Dumping data for table ee-test.exp_members: ~7 rows (approximately)
 DELETE FROM `exp_members`;
 /*!40000 ALTER TABLE `exp_members` DISABLE KEYS */;
-INSERT INTO `exp_members` (`member_id`, `role_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `bookmarklets`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`, `dismissed_pro_banner`) VALUES
-	(1, 1, 'admin', 'Admin', '0d4b0184ac57f2233b7a7ccb8c844b3121ddffcc67d0144d7b5ef0594eb64f96fb6ee53f9d23bb4e9ed4d1b7433eb848eee2cfca030ebd15461ca8a68ff4dcc5', '3Vlfi\'R1tviY"`hA+4~h2#TGO:m;ePK`E~\\$G[%C;+W_<Cr\\fA9~v{U&x^6Ts9.!,BT1OjSl}hFdV6FPO4bZX-=`pa_8_UPrFIU@XbTN]5?9vAJ>E~Qn`2)Zo]I$=d<t', 'bc62f762437a95f19b722924b85f76bc19fb6430', '4da80648d120e6ce5c9886df6ae5de8f1fa3c3d5', NULL, 'cypress@expressionengine.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1409242030, 1588591744, 1588592390, 10, 0, 0, 0, 1409242030, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', 'America/New_York', '12', '%n/%j/%Y', 'n', NULL, NULL, NULL, '28', NULL, '18', NULL, '', NULL, 'n', 0, NULL, NULL, NULL, 'n'),
-	(2, 1, 'robin', 'Robin Screen', '5zaa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bz62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'mediacow@localhost', NULL, 'procotopus.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '4', 1, 'y', 0, 0, '127.0.0.1', 1465853984, 1491259180, 1491324114, 83, 10, 7, 4, 0, 1469650137, 1487020433, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'n', 'y', 'english', 'America/New_York', '12', '%n/%j/%Y', 'n', NULL, 'Shares', NULL, '28', NULL, '18', NULL, 'Query Results|index.php?/cp/utilities/query|1\nOffsite 2|http://test.com|4', NULL, 'n', 0,'entries_edit', '{"1":"1","2":"14","3":"8"}', '', 'n'),
-	(3, 2, 'banned1', 'Banned 1', '5aaa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'by62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'edit2@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1484840926, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, NULL, NULL, NULL, 'n'),
-	(4, 4, 'pending1', 'Pending 1', '5daa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bx62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'edit5@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1484841088, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, NULL, NULL, NULL, 'n'),
-	(5, 4, 'pending2', 'Pending 2', '5eaa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bm62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'edit6@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1485306436, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, NULL, NULL, NULL, 'n'),
-	(6, 5, 'member1', 'Member 1', '5faa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bn62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'editor7@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1485306584, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, NULL, NULL, NULL, 'n'),
-	(7, 5, 'member2', 'Member 2', '5gaa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bo62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'editor8@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1485307720, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, NULL, NULL, NULL, 'n');
+INSERT INTO `exp_members` (`member_id`, `role_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `bookmarklets`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
+	(1, 1, 'admin', 'Admin', '0d4b0184ac57f2233b7a7ccb8c844b3121ddffcc67d0144d7b5ef0594eb64f96fb6ee53f9d23bb4e9ed4d1b7433eb848eee2cfca030ebd15461ca8a68ff4dcc5', '3Vlfi\'R1tviY"`hA+4~h2#TGO:m;ePK`E~\\$G[%C;+W_<Cr\\fA9~v{U&x^6Ts9.!,BT1OjSl}hFdV6FPO4bZX-=`pa_8_UPrFIU@XbTN]5?9vAJ>E~Qn`2)Zo]I$=d<t', 'bc62f762437a95f19b722924b85f76bc19fb6430', '4da80648d120e6ce5c9886df6ae5de8f1fa3c3d5', NULL, 'cypress@expressionengine.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1409242030, 1588591744, 1588592390, 10, 0, 0, 0, 1409242030, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', 'America/New_York', '12', '%n/%j/%Y', 'n', NULL, NULL, NULL, '28', NULL, '18', NULL, '', NULL, 'n', 0, NULL, NULL, NULL),
+	(2, 1, 'robin', 'Robin Screen', '5zaa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bz62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'mediacow@localhost', NULL, 'procotopus.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '4', 1, 'y', 0, 0, '127.0.0.1', 1465853984, 1491259180, 1491324114, 83, 10, 7, 4, 0, 1469650137, 1487020433, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'n', 'y', 'english', 'America/New_York', '12', '%n/%j/%Y', 'n', NULL, 'Shares', NULL, '28', NULL, '18', NULL, 'Query Results|index.php?/cp/utilities/query|1\nOffsite 2|http://test.com|4', NULL, 'n', 0,'entries_edit', '{"1":"1","2":"14","3":"8"}', ''),
+	(3, 2, 'banned1', 'Banned 1', '5aaa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'by62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'edit2@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1484840926, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, NULL, NULL, NULL),
+	(4, 4, 'pending1', 'Pending 1', '5daa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bx62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'edit5@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1484841088, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, NULL, NULL, NULL),
+	(5, 4, 'pending2', 'Pending 2', '5eaa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bm62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'edit6@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1485306436, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, NULL, NULL, NULL),
+	(6, 5, 'member1', 'Member 1', '5faa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bn62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'editor7@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1485306584, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, NULL, NULL, NULL),
+	(7, 5, 'member2', 'Member 2', '5gaa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', 'bo62f762437a95f19b722924b85f76bc19fb6430', NULL, NULL, 'editor8@localhost', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1485307720, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, NULL, NULL, NULL);
 /*!40000 ALTER TABLE `exp_members` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_members_roles: ~7 rows (approximately)

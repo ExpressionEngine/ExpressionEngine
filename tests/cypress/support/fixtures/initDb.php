@@ -9,15 +9,15 @@ $command = array_shift($argv);
 
 $longopts = array(
     "help",
-  "version:",
-  "username:",
-  "password:",
-  "email:",
-  "url:",
-  "db_host:",
-  "db_user:",
-  'db_password:',
-  "db_database:"
+    "version:",
+    "username:",
+    "password:",
+    "email:",
+    "url:",
+    "db_host:",
+    "db_user:",
+    'db_password:',
+    "db_database:"
 );
 
 $options = getopt('h', $longopts);
@@ -110,19 +110,19 @@ $schema->userdata['unique_id'] = ee('Encrypt')->generateKey();
 // --------------------------------------------------------------------
 
 $db = array(
-  'port' => '3306',
-  'hostname' => $schema->userdata['db_hostname'],
-  'username' => $schema->userdata['db_username'],
-  'password' => $schema->userdata['db_password'],
-  'database' => $schema->userdata['db_name'],
-  'dbdriver' => 'mysqli',
-  'dbprefix' => 'exp_',
-  'swap_pre' => 'exp_',
-  'db_debug' => true, // We show our own errors
-  'cache_on' => false,
-  'autoinit' => false, // We'll initialize the DB manually
-  'char_set' => $schema->userdata['db_char_set'],
-  'dbcollat' => $schema->userdata['db_collat']
+    'port' => '3306',
+    'hostname' => $schema->userdata['db_hostname'],
+    'username' => $schema->userdata['db_username'],
+    'password' => $schema->userdata['db_password'],
+    'database' => $schema->userdata['db_name'],
+    'dbdriver' => 'mysqli',
+    'dbprefix' => 'exp_',
+    'swap_pre' => 'exp_',
+    'db_debug' => true, // We show our own errors
+    'cache_on' => false,
+    'autoinit' => false, // We'll initialize the DB manually
+    'char_set' => $schema->userdata['db_char_set'],
+    'dbcollat' => $schema->userdata['db_collat']
 );
 
 db_connect($db);
@@ -137,7 +137,7 @@ write_config_data($schema);
 
 install_modules();
 
-exit(!(int)$install);
+exit(!(int) $install);
 
 /**
  * Connect to the database
@@ -395,7 +395,8 @@ function install_modules()
         'file',
         'filepicker',
         'relationship',
-        'search'
+        'search',
+        'pro',
     ];
 
     ee()->load->library('addons');

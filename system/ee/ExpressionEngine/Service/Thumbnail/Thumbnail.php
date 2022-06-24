@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Service\Thumbnail;
 
-use ExpressionEngine\Model\File\File;
+use ExpressionEngine\Model\File;
 use InvalidArgumentException;
 
 /**
@@ -24,6 +24,13 @@ class Thumbnail
     protected $url;
 
     /**
+     * HTML code to use as thumbnail
+     *
+     * @var string $tag
+     */
+    protected $tag;
+
+    /**
      * @var str The path to the thumbnail
      */
     protected $path;
@@ -34,22 +41,47 @@ class Thumbnail
     protected $missing = false;
 
     /**
+     * Filesystem where the thumbnail is being stored
+     *
+     * @var ExpresionEngine\Library\Filesystem\Filesystem|null
+     */
+    protected $filesystem = null;
+
+    /**
      * Constructor: sets the url and path properties based on the arguments
      *
      * @param File $file (optional) A File entity from which we'll calculate the
      *   thumbnail url and path.
      */
-    public function __construct(File $file = null)
+    public function __construct(File\FileSystemEntity $file = null)
     {
         $this->setDefault();
 
         if ($file) {
             if (! $file->exists()) {
                 $this->setMissing();
-            } elseif ($file->isImage()) {
+                return;
+            } elseif ($file->isDirectory()) {
+                $this->tag = '<i class="fas fa-folder fa-3x"></i>';
+            } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL();
                 $this->path = $file->getAbsoluteThumbnailPath();
+                $this->tag = '<img src="' . $this->url . '" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" />';
+            } else {
+                switch ($file->mime_type) {
+                    case 'text/plain':
+                        $this->tag = '<i class="fas fa-file-alt fa-3x"></i>';
+                        break;
+                    case 'application/zip':
+                        $this->tag = '<i class="fas fa-file-archive fa-3x"></i>';
+                        break;
+                    default:
+                        $this->tag = '<i class="fas fa-file fa-3x"></i>';
+                        break;
+                }
             }
+
+            $this->filesystem = $file->UploadDestination->getFilesystem();
         }
     }
 
@@ -83,6 +115,7 @@ class Thumbnail
         $this->missing = true;
         $this->url = PATH_CP_GBL_IMG . 'missing.jpg';
         $this->path = PATH_THEMES . 'asset/img/missing.jpg';
+        $this->tag = '<i class="fas fa-exclamation-triangle fa-3x"></i>';
     }
 
     /**
@@ -92,7 +125,7 @@ class Thumbnail
      */
     public function exists()
     {
-        return file_exists($this->path);
+        return ($this->filesystem) ? $this->filesystem->exists($this->path) : false;
     }
 
     /**
@@ -102,7 +135,7 @@ class Thumbnail
      */
     public function isWritable()
     {
-        return is_writable($this->path);
+        return ($this->filesystem) ? $this->filesystem->isWritable($this->path) : false;
     }
 }
 

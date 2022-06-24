@@ -34,18 +34,17 @@ class Textarea_ft extends EE_Fieldtype
 
     public function display_field($data)
     {
-        if (isset($this->settings['field_show_formatting_btns'])
+        if (
+            isset($this->settings['field_show_formatting_btns'])
             && $this->settings['field_show_formatting_btns'] == 'y'
-            && ! ee()->session->cache(__CLASS__, 'markitup_initialized')) {
-            $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))
-                ->fields('member_id')
-                ->first();
+            && ! ee()->session->cache(__CLASS__, 'markitup_initialized')
+        ) {
 
             // channel form only uses formatting buttons in the {custom_fields}{/custom_fields}
             // tag pair which does NOT call this method. This method is still called with {field:my_textarea}, though,
             // so we do need to at least avoid a fatal error if that tag exists and the form allows guest authors.
-            if ($member) {
-                $buttons = $member->getHTMLButtonsForSite(ee()->config->item('site_id'));
+            if (ee()->session->userdata('member_id') != 0) {
+                $buttons = ee()->session->getMember()->getHTMLButtonsForSite(ee()->config->item('site_id'));
             } else {
                 $buttons = ee('Model')->get('HTMLButton')
                     ->filter('site_id', ee()->config->item('site_id'))
@@ -76,7 +75,7 @@ class Textarea_ft extends EE_Fieldtype
 
 				$("li.html-upload").addClass("m-link").attr({
 					rel: "modal-file",
-					href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')) . '"
+					href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all', 'hasUpload' => true)) . '"
 				});
 
 				Grid.bind("textarea", "display", function(cell)
@@ -85,7 +84,7 @@ class Textarea_ft extends EE_Fieldtype
 
 					$("li.html-upload", cell).addClass("m-link").attr({
 						rel: "modal-file",
-						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')) . '"
+						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all', 'hasUpload' => true)) . '"
 					});
 				});
 
@@ -95,7 +94,7 @@ class Textarea_ft extends EE_Fieldtype
 
 					$("li.html-upload", field).addClass("m-link").attr({
 						rel: "modal-file",
-						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')) . '"
+						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all', 'hasUpload' => true)) . '"
 					});
 
 					$(".textarea-field-filepicker, li.html-upload").FilePicker({callback: EE.filePickerCallback});
@@ -166,7 +165,7 @@ class Textarea_ft extends EE_Fieldtype
                 && $this->settings['field_show_formatting_btns'] == 'y')) {
                 $fp = new FilePicker();
                 $fp->inject(ee()->view);
-                $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('directory' => 'all'));
+                $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('directory' => 'all', 'hasUpload' => true));
 
                 ee()->cp->add_js_script(array(
                     'file' => array('fields/textarea/textarea'),

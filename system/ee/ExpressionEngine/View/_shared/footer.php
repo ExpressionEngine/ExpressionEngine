@@ -3,7 +3,6 @@
         </section>
     </div>
 
-    <?php if (IS_PRO) : ?>
     <div class="dropdown app-pro-validation" data-dropdown="app-pro-validation-dropdown">
       <h5>ExpressionEngine Pro</h5>
       <p class="pro-message"> <?=lang('your_license_is')?> <em class="license-status-text-<?=ee()->view->pro_license_status?>"><?=lang('license_' . ee()->view->pro_license_status)?></em></p>
@@ -25,7 +24,6 @@
 
       </div>
     </div>
-    <?php endif; ?>
 
         <div class="dropdown app-about" data-dropdown="app-about-dropdown">
             <div class="app-about__title">ExpressionEngine <span class="float-right"><?=$formatted_version?></span></div>

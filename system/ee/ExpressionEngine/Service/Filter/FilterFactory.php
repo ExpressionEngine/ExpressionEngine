@@ -175,16 +175,24 @@ class FilterFactory
     public function renderEntryFilters(URL $base_url)
     {
         $url = clone $base_url;
-        $url->addQueryStringVariables($this->values());
+        $values = $this->values();
+        unset($values['columns']);
+        if (isset($values['sort'])) {
+            $sort = explode('|', $values['sort']);
+            $values['sort_col'] = $sort[0];
+            $values['sort_dir'] = $sort[1];
+            unset($values['sort']);
+        }
+        $url->addQueryStringVariables($values);
 
         $filters = array();
 
         foreach ($this->filters as $filter) {
-            if (in_array($filter->name, ['filter_by_keyword', 'search_in', 'filter_by_entry_keyword', 'columns', 'perpage'])) {
+            if (in_array($filter->name, ['filter_by_keyword', 'search_in', 'filter_by_entry_keyword', 'columns', 'perpage', 'viewtype', 'sort'])) {
                 continue;
             }
 
-            $html = $filter->render($this->view, $url);
+            $html = $filter->render($this->view, $url, true);
             if (! empty($html)) {
                 $filters[] = [
                     'name' => $filter->name,
@@ -208,17 +216,26 @@ class FilterFactory
      * Filters and calling their individual render() methods.
      *
      * @param URL $base_url A URL object reference to use when constructing URLs
+     * @param bool $skipSearchIn skip "search in" filter and just add closing HTML instead
      * @return string Returns HTML
      */
-    public function renderSearch(URL $base_url)
+    public function renderSearch(URL $base_url, $skipSearchIn = false)
     {
         $url = clone $base_url;
-        $url->addQueryStringVariables($this->values());
+        $values = $this->values();
+        unset($values['columns']);
+        if (isset($values['sort'])) {
+            $sort = explode('|', $values['sort']);
+            $values['sort_col'] = $sort[0];
+            $values['sort_dir'] = $sort[1];
+            unset($values['sort']);
+        }
+        $url->addQueryStringVariables($values);
 
         $filters = array();
 
         foreach ($this->filters as $filter) {
-            if (!in_array($filter->name, ['columns', 'filter_by_keyword', 'search_in'])) {
+            if (!in_array($filter->name, ['columns', 'filter_by_keyword', 'search_in', 'viewtype', 'sort'])) {
                 continue;
             }
 
@@ -236,7 +253,8 @@ class FilterFactory
         $vars = array(
             'filters' => $filters,
             'has_reset' => $this->canReset(),
-            'reset_url' => $base_url
+            'reset_url' => $base_url,
+            'skipSearchIn' => $skipSearchIn,
         );
 
         return $this->view->make('_shared/filters/search')->render($vars);
@@ -326,6 +344,26 @@ class FilterFactory
     protected function createDefaultColumns($columns, $channel = null, $view_id = null)
     {
         return new Filter\Columns($columns, $channel, $view_id);
+    }
+
+    /**
+     * This will instantiate and return a default FilemanagerColumns filter
+     *
+     * @return Filter\FilemanagerColumns a FilemanagerColumns Filter object
+     */
+    protected function createDefaultFilemanagerColumns($columns, $uploadLocation = null, $view_id = null)
+    {
+        return new Filter\FilemanagerColumns($columns, $uploadLocation, $view_id);
+    }
+
+    /**
+     * This will instantiate and return a default Sort filter
+     *
+     * @return Filter\Sort a Sort Filter object
+     */
+    protected function createDefaultSort($options, $default = null)
+    {
+        return new Filter\Sort($options, $default);
     }
 
     /**

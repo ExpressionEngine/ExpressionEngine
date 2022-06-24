@@ -165,6 +165,7 @@ context('Conditional Fields', () => {
     it('can be used in a grid field', function() {
         // Create grid field
         cy.authVisit('admin.php?/cp/fields/create/1')
+        cy.get('#fieldset-field_type .select__button.js-dropdown-toggle').should('exist');
         cy.get('#fieldset-field_type .select__button').click();
         cy.get('.dropdown--open .select__dropdown-item').contains(/^Grid$/).click({ force: true });
         cy.get('input[name="field_label"]').type('CF Grid');
@@ -284,6 +285,7 @@ context('Conditional Fields', () => {
         // Create fluid field in News Group
         cy.authVisit('admin.php?/cp/fields&group_id=1')
         cy.get('.button--primary').contains('New Field').click();
+        cy.get('#fieldset-field_type .select__button.js-dropdown-toggle').should('exist');
         cy.get('#fieldset-field_type .select__button').click();
         cy.get('.dropdown--open .select__dropdown-item').contains('Fluid').click({ force: true });
         cy.get('input[name="field_label"]').type('CF Fluid');

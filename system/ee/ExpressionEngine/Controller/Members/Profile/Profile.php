@@ -99,7 +99,7 @@ class Profile extends CP_Controller
         $list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
         $list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
 
-        if ($this->member->member_id == ee()->session->userdata['member_id'] && IS_PRO && ee('pro:Access')->hasValidLicense() && (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y')) {
+        if ($this->member->member_id == ee()->session->userdata['member_id'] && ee('pro:Access')->hasRequiredLicense() && (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y')) {
             ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $list->addItem(lang('mfa'), ee('CP/URL')->make('members/profile/pro/mfa', $this->query_string));
         }

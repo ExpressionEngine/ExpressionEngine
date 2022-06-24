@@ -1,48 +1,129 @@
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="file-preview-modal">
-	<div class="file-preview-modal__preview">
-		<div class="title-bar">
-
-			<div class="title-bar__extra-tools">
-				<div class="button-group">
-					<a class="button button--large filter-bar__button" href="<?=$download_url?>" title="<?=lang('download')?>"><i class="fas fa-download"></i></a>
-					<?php if ($file->isEditableImage()) : ?>
-					<a class="button button--large filter-bar__button" href="<?=ee('CP/URL')->make('files/file/crop/' . $file->file_id)?>" title="<?=lang('btn_crop')?>"><i class="fas fa-crop"></i></a>
-					<?php endif; ?>
-					<a class="button button--large filter-bar__button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('open')?>"><i class="fas fa-link"></i></a>
-				</div>
-			</div>
-		</div>
-
-		<div class="file-preview-modal__preview-file">
-			<?php if ($is_image) {
-    echo "<img src=\"{$file->getAbsoluteURL()}\">";
-} else {
-    echo "<div class=\"file-preview-modal__preview-file-name\">{$file->file_name}</div>";
+<?php
+$form_class = '';
+if (isset($ajax_validate) && $ajax_validate == true) {
+    $form_class .= 'ajax-validate';
 }
-            ?>
-
-			<div class="file-preview-modal__preview-file-meta">
-				<?php
-                if ($is_image) {
-                    echo "{$image_info['width']} x {$image_info['height']} " . lang('pixels') . ' - ';
-                }
-                ?><i><?= $size ?></i>
-			</div>
-		</div>
-	</div>
-	<div class="file-preview-modal__form">
-
-	<?php
-    $this->embed('_shared/form');
-
-    $modal = ee('View')->make('ee:_shared/modal-form')->render([
-        'name' => 'modal-form',
-        'contents' => ''
-    ]);
-    ee('CP/Modal')->addModal('modal-form', $modal);
+$attributes = 'class="' . $form_class . '"';
+if (isset($has_file_input) && $has_file_input == true) {
+    $attributes .= ' enctype="multipart/form-data"';
+}
+if (! isset($alerts_name)) {
+    $alerts_name = 'shared-form';
+}
 ?>
+<?=form_open($base_url, $attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 
+<?=form_hidden('action')?>
 
-	</div>
+<div class="file-edit-view">
+    <div class="panel">
+        <div class="panel-heading">
+            <div class="form-btns form-btns-top">
+                <div class="title-bar title-bar--large">
+                    <h3 class="title-bar__title">
+                        <?=$file->title?>
+                        <a class="button button--large filter-bar__button js-copy-url-button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_link')?>">
+                            <i class="fas fa-link"></i>
+                        </a>
+                    </h3>
+
+                    <div class="title-bar__extra-tools">
+                        <a class="btn button button--secondary" href="<?=$download_url?>" title="<?=lang('download')?>"><?=lang('download')?></a>
+                        <?php $this->embed('ee:_shared/form/buttons'); ?>
+                    </div>
+                </div>
+            </div>
+      </div>
+
+        <div class="entry-pannel-notice-wrap">
+            <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+
+            <div class="alert alert--success f_manager-alert">
+                <div class="alert__icon"><i class="fas fa-check-circle fa-fw"></i></div>
+                <div class="alert__content">
+                    <?=lang('link_copied')?>
+                </div>
+            </div>
+
+        </div>
+
+      <div class="panel-body file-preview-modal">
+            <div class="file-preview-modal__preview">
+                <?php if ($is_image) : ?>
+                    <a href="<?=$file->getAbsoluteURL() . '?v=' . time()?>" target="_blank"><img src="<?=$file->getAbsoluteURL() . '?v=' . time()?>"></a>
+                <?php else: ?>
+                    <div class="file-preview-modal__preview-file-name"><?=$file->file_name?></div>
+                <?php endif; ?>
+            </div>
+
+            <div class="file-preview-modal__form">
+                <div class="form-standard">
+                    <div class="">
+                        <?php if (isset($tabs)):?>
+                            <?php $active_tab = (isset($active_tab)) ? $active_tab : array_key_first($tabs); ?>
+                            <div class="tab-wrap">
+                                <div class="tab-bar">
+                                    <div class="tab-bar__tabs">
+                                    <?php foreach (array_keys($tabs) as $key):
+                                        $class = '';
+                                        if ($key == $active_tab) {
+                                            $class = 'active';
+                                        }
+
+                                        if (strpos($tabs[$key], 'class="ee-form-error-message"') !== false) {
+                                            $class .= ' invalid';
+                                        }
+                                    ?>
+                                        <button type="button" class="js-tab-button tab-bar__tab <?=$class?>" data-action="<?=$key?>" rel="t-<?=$key?>">
+                                        <?=lang($key)?>
+                                            <?php if ($key == 'usage') : ?>
+                                                <span class="tab-bar__tab-notification tab-notification-generic"><?=$usage_count?></span>
+                                            <?php endif; ?>
+                                        </button>
+                                    <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php
+                            if (isset($extra_alerts)) {
+                                foreach ($extra_alerts as $alert) {
+                                    echo ee('CP/Alert')->get($alert);
+                                }
+                            }
+                            if (isset($tabs)):
+                                foreach ($tabs as $key => $html):
+                            ?>
+                            <div class="tab t-<?=$key?><?php if ($key == $active_tab) { echo ' tab-open'; }?>"><?=$html?></div>
+                                <?php
+                                    endforeach;
+                                endif;
+
+                                $secure_form_ctrls = array();
+
+                                if (isset($sections['secure_form_ctrls'])) {
+                                    $secure_form_ctrls = $sections['secure_form_ctrls'];
+                                    unset($sections['secure_form_ctrls']);
+                                }
+                                foreach ($sections as $name => $settings) {
+                                    $this->embed('_shared/form/section', array('name' => $name, 'settings' => $settings));
+                                }
+                                ?>
+                        <?php foreach ($secure_form_ctrls as $setting):
+                            $this->embed('ee:_shared/form/fieldset', ['setting' => $setting, 'group' => false]); ?>
+                        <?php endforeach ?>
+                        </div>
+                        
+                        <?php if (isset($tabs)):?>
+                            </div>
+                        <?php endif; ?>
+                    
+                </div>
+
+            </div>
+      </div>
+    </div>
 </div>
+</form>

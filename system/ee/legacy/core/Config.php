@@ -261,7 +261,7 @@ class EE_Config
             }
         }
 
-        if (! file_exists(APPPATH . 'libraries/Sites.php') or ! isset($this->default_ini['multiple_sites_enabled']) or $this->default_ini['multiple_sites_enabled'] != 'y') {
+        if (! isset($this->default_ini['multiple_sites_enabled']) or $this->default_ini['multiple_sites_enabled'] != 'y') {
             $site_name = '';
             $site_id = 1;
         }
@@ -663,7 +663,6 @@ class EE_Config
         $channel_default = array(
             'image_resize_protocol',
             'image_library_path',
-            'thumbnail_prefix',
             'word_separator',
             'use_category_name',
             'reserved_category_word',
@@ -684,13 +683,18 @@ class EE_Config
             'enable_entry_view_tracking',
             'enable_hit_tracking',
             'enable_online_user_tracking',
+            'enable_tracking_cookie',
+            'file_manager_compatibility_mode',
             'force_redirect',
             'is_system_on',
             'cli_enabled',
             'multiple_sites_enabled',
             'newrelic_app_name',
             'use_newrelic',
-            'search_reindex_needed'
+            'search_reindex_needed',
+            'legacy_member_data',
+            'legacy_channel_data',
+            'legacy_category_field_data'
         ];
 
         $name = $which . '_default';
@@ -1341,6 +1345,7 @@ class EE_Config
                 'use_category_name' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'reserved_category_word' => array('i', ''),
                 'auto_assign_cat_parents' => array('r', array('y' => 'yes', 'n' => 'no')),
+                'file_manager_compatibility_mode' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'new_posts_clear_caches' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'enable_sql_caching' => array('r', array('y' => 'yes', 'n' => 'no')),
                 'word_separator' => array('s', array('dash' => 'dash', 'underscore' => 'underscore')),
@@ -1349,7 +1354,6 @@ class EE_Config
             'image_cfg' => array(
                 'image_resize_protocol' => array('s', array('gd' => 'gd', 'gd2' => 'gd2', 'imagemagick' => 'imagemagick', 'netpbm' => 'netpbm')),
                 'image_library_path' => array('i', ''),
-                'thumbnail_prefix' => array('i', '')
             ),
 
             'security_cfg' => array(
@@ -1703,7 +1707,6 @@ class EE_Config
             'force_query_string' => array('force_query_string_explanation'),
             'image_resize_protocol' => array('image_resize_protocol_exp'),
             'image_library_path' => array('image_library_path_exp'),
-            'thumbnail_prefix' => array('thumbnail_prefix_exp'),
             'member_theme' => array('member_theme_exp'),
             'require_terms_of_service' => array('require_terms_of_service_exp'),
             'email_console_timelock' => array('email_console_timelock_exp'),

@@ -28,7 +28,7 @@ class MutableSelectField {
   toggleAddButton() {
     let addButtons = this.field.parent().find(this.addButton)
 
-    if (this.field.find('.field-no-results').size()) {
+    if (this.field.find('.field-no-results').length) {
       addButtons.filter((i, el) => {
         return $(el).hasClass('btn')
       }).hide()

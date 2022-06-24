@@ -30,6 +30,7 @@ if (! defined('BASEPATH')) {
  * @return	array
  */
 if (! function_exists('directory_map')) {
+    // @todo convert to flysystem?
     function directory_map($source_dir, $directory_depth = 0, $hidden = false)
     {
         if ($fp = @opendir($source_dir)) {

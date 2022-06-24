@@ -101,7 +101,11 @@ context('Publish Page - Create', () => {
 
           createSecondFileField()
 
+          cy.wait(1000)
+
           page.get('file_fields').each(function(field, i) {
+
+              cy.intercept('/admin.php?/cp/addons/settings/filepicker/modal*').as('filepicker' + i)
 
               let link = field.find("button:contains('Choose Existing')")
               cy.get(link).click()
@@ -111,7 +115,7 @@ context('Publish Page - Create', () => {
                   cy.get(dir_link).click()
               }
 
-              cy.wait(1000)
+              cy.wait('@filepicker' + i)
 
               //page.get('modal').should('be.visible')
               file_modal.get('files').should('be.visible')
@@ -120,16 +124,11 @@ context('Publish Page - Create', () => {
               file_modal.get('files').first().scrollIntoView().click()
 
               file_modal.get('files').should('not.be.visible')
-
-
-
-
             })
           page.get('chosen_files').should('have.length.gte', 2)
         })
 
         it('the file field restricts you to the chosen directory', () => {
-          cy.server();
           let link = page.get('file_fields').first().find("button:contains('Choose Existing')");
           link.click()
 
@@ -139,17 +138,17 @@ context('Publish Page - Create', () => {
           file_modal.get('files').should('be.visible')
           //page.file_modal.wait_for_filters
 
-          file_modal.get('filters').should('have.length', 3)
+          file_modal.get('filters').should('have.length', 8)
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
           file_modal.get('upload_button').should('exist')// no longer exists in new cp
-          cy.route("GET", "**/filepicker/modal**").as("ajax");
-          file_modal.get('filters').eq(1).find('a').first().click()
+          cy.intercept("**/filepicker/modal**").as('ajax')
+          file_modal.get('view_filters').find('a:not(.active)').first().click()
           cy.wait("@ajax");
 
           //file_modal.wait_for_filters
-          file_modal.get('filters').should('have.length', 3)
+          file_modal.get('filters').should('have.length', 9)
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
@@ -158,6 +157,7 @@ context('Publish Page - Create', () => {
         })
 
         it('the file field retains data after being created and edited', () => {
+          cy.wait(1000)
           page.get('file_fields').each(function(field, i) {
             let link = field.find("button:contains('Choose Existing')")
             cy.get(link).click()
@@ -412,6 +412,8 @@ context('Publish Page - Create', () => {
           fluid_field.check_content(index)
         })
         cy.logCPPerformance()
+
+        cy.visit('index.php/entries/complex-w-fluid')
       })
 
       it('adds repeat fields', () => {
@@ -515,6 +517,7 @@ context('Publish Page - Create', () => {
     context('various Grids', () => {
       it('Grid with Buttons', () => {
         cy.authVisit('admin.php?/cp/fields/create/1')
+        cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')
         cy.get('[data-input-value=field_type] .select__button').click()
         cy.get('[data-input-value=field_type] .select__dropdown-item:contains("Grid")').last().click()
         cy.get('input[type="text"][name = "field_label"]').type("Grid with Buttons")
@@ -539,26 +542,27 @@ context('Publish Page - Create', () => {
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
+        cy.get('.grid-field tbody [rel=add_row]:visible').should('be.visible');
         cy.get('.grid-field [rel=add_row]:visible').click();
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').click()
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').click()
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').should('have.class', 'active')
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').should('have.class', 'active')
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').click()
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').click()
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('p').contains('has been updated')
-        cy.get('.grid-field tbody tr:visible td').eq(0).find('input').invoke('attr', 'value').then((val) => {
+        cy.get('.grid-field tbody tr:visible td:visible').eq(0).find('input').invoke('attr', 'value').then((val) => {
           expect(val).to.eq('row 1');
         })
-        cy.get('.grid-field tbody tr:visible td').eq(1).find('.button:contains("dos")').should('have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td').eq(1).find('.button:contains("tres")').should('have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(1).find('.button:contains("dos")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(1).find('.button:contains("tres")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.visit('index.php/entries/grid')
         cy.logFrontendPerformance()
@@ -574,7 +578,4 @@ context('Publish Page - Create', () => {
         cy.logCPPerformance()
       })
     })
-
-
-
 })

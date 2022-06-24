@@ -54,7 +54,7 @@ context('File Manager', () => {
 		page.get('upload_new_file_button').should('exist')
 		page.get('upload_new_file_filter').should('exist')
 		page.get('files').should('exist')
-		page.get('no_results').should('not.exist')
+		page.get('no_results').should('not.be.visible')
 
 	}
 
@@ -70,9 +70,11 @@ context('File Manager', () => {
 	}
 
 	function beforeEach_perpage_50() {
+        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
 		page.get('perpage_filter').click()
 		//page.wait_until_perpage_filter_menu_visible
 		page.get('perpage_filter_menu').contains('50 results').click()
+        cy.wait('@fileRequest')
 		cy.hasNoErrors()
 	}
 
@@ -89,7 +91,6 @@ context('File Manager', () => {
 
 	it('shows the "All Files" File Manager page', () => {
 		beforeEach_all_files();
-		page.get('perpage_filter').contains('show (25)')
 		page.get('date_added_header').should('have.class', 'column-sort-header--active')
 		page.get('files').should('have.length', 11)
 	});
@@ -98,26 +99,28 @@ context('File Manager', () => {
 
 	it('can change the page size using the menu', () => {
 		beforeEach_all_files();
+        cy.visit(page.url + '&perpage=1')
+        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
 		page.get('perpage_filter').click()
 		//page.wait_until_perpage_filter_menu_visible
 		page.get('perpage_filter_menu').contains("50 results", {timeout: 2000}).click()
+        cy.wait('@fileRequest');
 		cy.hasNoErrors()
 
-		page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
-			return text.trim()
-		}).should('match', /show(\s)*\(50\)/)
 		page.get('have_pagination').should('not.exist');
 		page.get('files').should('have.length', 11)
 	});
 
 	it('can change the page size manually', () => {
 		beforeEach_all_files();
+        cy.visit(page.url + '&perpage=1')
 		page.get('perpage_filter').click()
 		//page.wait_until_perpage_filter_menu_visible
+        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
 		page.get('perpage_manual_filter').type('5')
 		page.get('perpage_manual_filter').closest('form').submit()
+        cy.wait('@fileRequest')
 		cy.hasNoErrors()
-
 		page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
 			return text.trim()
 		}).should('match', /show(\s)*\(5\)/)
@@ -133,15 +136,17 @@ context('File Manager', () => {
 
 	it('can change pages', () => {
 		beforeEach_all_files();
+        cy.visit(page.url + '&perpage=1')
 		page.get('perpage_filter').click()
 		//page.wait_until_perpage_filter_menu_visible
+		cy.intercept('/admin.php?/cp/files*').as('fileRequest')
 		page.get('perpage_manual_filter').type('5')
 		page.get('perpage_manual_filter').closest('form').submit()
+		cy.wait('@fileRequest')
 		cy.hasNoErrors()
-
 		page.get('pages').last().click()
 		cy.hasNoErrors()
-
+        cy.wait('@fileRequest')
 		page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
 			return text.trim()
 		}).should('match', /show(\s)*\(5\)/)
@@ -156,10 +161,13 @@ context('File Manager', () => {
 
 	it('can reverse sort by title/name', () => {
 		beforeEach_all_files();
-		beforeEach_perpage_50();
-
+		// beforeEach_perpage_50();
+        
+        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
 		page.get('title_name_header').find('a.column-sort').click()
+        cy.wait('@fileRequest')
 		cy.hasNoErrors()
+        
 
 		let sorted_files = [];
 		page.get('title_names').then(function($td) {
@@ -167,11 +175,12 @@ context('File Manager', () => {
 					return $(el).text();
 			})
 		})
-
+        
 		page.get('title_name_header').find('a.column-sort').click()
+        cy.wait('@fileRequest')
 		cy.hasNoErrors()
-
-		page.get('title_name_header').should('have.class', 'column-sort-header--active')
+		
+        page.get('title_name_header').should('have.class', 'column-sort-header--active')
 		page.get('title_names').then(function($td) {
 			let files_reversed = _.map($td, function(el) {
 					return $(el).text();
@@ -183,10 +192,12 @@ context('File Manager', () => {
 
 	it('can sort by file type', () => {
 		beforeEach_all_files();
-		beforeEach_perpage_50();
-
+		// beforeEach_perpage_50();
+        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
 		page.get('file_type_header').find('a.column-sort').click()
+        cy.wait('@fileRequest')
 		cy.hasNoErrors()
+
 		page.get('file_type_header').should('have.class', 'column-sort-header--active')
 		let sorted_files = [];
 		page.get('file_types').then(function($td) {
@@ -196,7 +207,9 @@ context('File Manager', () => {
 		})
 
 		page.get('file_type_header').find('a.column-sort').click()
+        cy.wait('@fileRequest')
 		cy.hasNoErrors()
+
 		page.get('file_type_header').should('have.class', 'column-sort-header--active')
 		page.get('file_types').then(function($td) {
 			let files_reversed = _.map($td, function(el) {
@@ -206,7 +219,9 @@ context('File Manager', () => {
 		})
 
 		page.get('file_type_header').find('a.column-sort').click()
+        cy.wait('@fileRequest')
 		cy.hasNoErrors()
+
 		page.get('file_type_header').should('have.class', 'column-sort-header--active')
 		page.get('file_types').then(function($td) {
 			let files_reversed = _.map($td, function(el) {
@@ -220,8 +235,10 @@ context('File Manager', () => {
 
 	it('can sort by date added', () => {
 		beforeEach_all_files();
-		beforeEach_perpage_50();
+		// beforeEach_perpage_50();
+        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
 		page.get('date_added_header').find('a.column-sort').click()
+        cy.wait('@fileRequest')
 		cy.hasNoErrors()
 
 		page.get('date_added_header').should('have.class', 'column-sort-header--active')
@@ -234,6 +251,7 @@ context('File Manager', () => {
 		})
 
 		page.get('date_added_header').find('a.column-sort').click()
+        cy.wait('@fileRequest')
 		cy.hasNoErrors()
 
 		page.get('date_added_header').should('have.class', 'column-sort-header--active')
@@ -245,6 +263,7 @@ context('File Manager', () => {
 		})
 
 		page.get('date_added_header').find('a.column-sort').click()
+        cy.wait('@fileRequest')
 		cy.hasNoErrors()
 
 		page.get('date_added_header').should('have.class', 'column-sort-header--active')
@@ -275,7 +294,9 @@ context('File Manager', () => {
 		beforeEach_all_files();
 
 		//page.get('manage_actions').eq(0).find('li.edit a').click()
-		cy.get('a[title="Edit"]').filter(':visible').first().click()
+		cy.get('tr[file_id="1"] .toolbar-wrap .js-dropdown-toggle').click()
+        cy.get('a[title="Edit"]').filter(':visible').first().click()
+        
 		cy.hasNoErrors()
 
 
@@ -284,21 +305,26 @@ context('File Manager', () => {
 	it('can crop an image', () => {
 		beforeEach_all_files();
 		//page.get('manage_actions').eq(0).find('li.crop a').click()
-		cy.get('a[title="Crop"]').filter(':visible').first().click()
+        cy.get('tr[file_id="1"] .toolbar-wrap .js-dropdown-toggle').click()
+        cy.get('a[title="Edit"]').filter(':visible').first().click()
+        cy.get('button[data-action="crop"]').click()
+
 		cy.hasNoErrors()
 	});
 
-	it('displays an itemzied modal when attempting to remove 5 or less files', () => {
+	it('displays an itemized modal when attempting to remove 5 or less files', () => {
 
 		let filename = '';
 		page.get('title_names').eq(0).find('a').invoke('text').then((text) => {
 			filename = text.trim()
 		})
 
+        cy.intercept('/admin.php?/cp/files/*').as('fileRequest')
 		page.get('files').eq(1).find('input[type="checkbox"]').check()
-		//page.get('bulk_action').should('be.visible')
+		page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
+        cy.wait('@fileRequest')
 
 		//page.get('modal').should('be.visible')
 		page.get('modal_title').invoke('text').then((text) => {
@@ -312,7 +338,7 @@ context('File Manager', () => {
 	});
 
 	it('displays a bulk confirmation modal when attempting to remove more than 5 files', () => {
-		page.get('checkbox_header').click()
+		cy.get('input[type="checkbox"][title="Select All Files"]').check()
 		page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
@@ -350,32 +376,27 @@ context('File Manager', () => {
 
 	it('can remove multiple files', () => {
 		beforeEach_all_files();
-		beforeEach_perpage_50();
+		// beforeEach_perpage_50();
 		page.get('checkbox_header').click()
 		page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
-		//page.get('modal').should('be.visible')
+		page.get('modal').should('be.visible')
 		//page.get('modal_submit_button').click() // Submits a form
 		cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 		cy.hasNoErrors()
+        cy.task('db:seed').then(() => {})
 
 	});
 
 
 	it('can add a new directory', () => {
-		cy.wait(10000)
-		cy.task('db:seed').then(() => {
-			cy.auth();
-			page.load();
+        beforeEach_all_files();
+        //page.get('new_directory_button').click()
+        cy.get('a[href="admin.php?/cp/files/uploads/create"]').first().click()
+        cy.hasNoErrors()
 
-			beforeEach_all_files();
-			//page.get('new_directory_button').click()
-			cy.get('a[href="admin.php?/cp/files/uploads/create"]').first().click()
-			cy.hasNoErrors()
-
-			cy.url().should('match', /files\/uploads\/create/)
-		})
+        cy.url().should('match', /files\/uploads\/create/)
 	});
 
 	it('can view a single directory', () => {
@@ -385,7 +406,7 @@ context('File Manager', () => {
 
 		cy.url().should('match', /files\/directory\//)
 		page.get('heading').invoke('text').then((text) => {
-			expect(text.trim()).equal('Files in Main Upload Directory')
+			expect(text.trim()).equal('Main Upload Directory')
 		})
 		page.get('sync_button').should('exist')
 		page.get('no_results').should('exist')
@@ -442,9 +463,9 @@ context('File Manager', () => {
 		page.get('sidebar').find('.folder-list > div:first-child').trigger('mouseover')
 		cy.get('a[rel="modal-confirm-directory"]').first().click({force: true})
 
-		//page.wait_until_remove_directory_modal_visible
+		page.get('modal').should('be.visible')
 		//page.get('modal_submit_button').click() // Submits a form
-		cy.get('button').contains('Confirm and Delete').click()
+		cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 		cy.hasNoErrors()
 
 		page.get('sidebar').invoke('text').then((text) => {
@@ -456,7 +477,7 @@ context('File Manager', () => {
 			expect(text).contains('The upload directory About has been deleted.')
 		})
 
-		
+        cy.task('db:seed').then(() => {})
 
 	});
 
@@ -464,13 +485,13 @@ context('File Manager', () => {
 
 	it('must choose where to upload a new file when viewing All Files', () => {
 
-		cy.wait(10000)
+		// cy.wait(10000)
 
-		cy.task('db:seed').then(() => {
+		// cy.task('db:seed').then(() => {
 
-			cy.auth();
+		// 	cy.auth();
 			page.load();
-			cy.hasNoErrors()
+		// 	cy.hasNoErrors()
 
 			cy.url().should('match', page.urlMatch)
 
@@ -488,8 +509,9 @@ context('File Manager', () => {
 			page.get('upload_new_file_filter_menu_items').eq(0).click()
 			cy.hasNoErrors()
 
-			cy.url().should('match', /files\/upload/)
-		})
+            // No more page redirect but should add assertion about upload dialog appearing if possible?
+			// cy.url().should('match', /files\/upload/)
+		// })
 
 	});
 
