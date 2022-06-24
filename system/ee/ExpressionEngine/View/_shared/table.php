@@ -10,7 +10,7 @@
 	</div>
 <?php endif; ?>
 
-<?php if (!empty($data)) :?>
+<?php if (!empty($data) || empty($no_results['html'])) :?>
     <?php if ($wrap): ?>
         <div class="table-responsive table-responsive--collapsible">
     <?php endif ?>
