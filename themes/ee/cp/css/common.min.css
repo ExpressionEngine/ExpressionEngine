@@ -24492,6 +24492,9 @@ body[data-theme="dark"] {
 .tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i[class*=fields-grid-tool-]:before {
   color: var(--ee-secondary-sidebar-item-icon);
 }
+.f_manager-wrapper tr.selected td {
+  position: inherit;
+}
 .f_manager-wrapper .dropdown a.edit:before, .f_manager-wrapper .select__dropdown a.edit:before,
 .f_manager-wrapper .dropdown a.download:before,
 .f_manager-wrapper .select__dropdown a.download:before,
@@ -24803,13 +24806,26 @@ body[data-theme="dark"] {
   position: absolute;
   border: 2px solid var(--ee-button-default-border);
   background: var(--ee-button-default-bg);
-  padding: 5px;
   border-radius: 4px;
   display: none;
-  max-width: 200px;
-  max-height: 200px;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  z-index: 12000;
+  max-width: 200px;
+}
+#preview span {
+  width: 250px;
+  height: 200px;
+  display: flex;
+  overflow: hidden;
+  margin: 5px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .hidden {

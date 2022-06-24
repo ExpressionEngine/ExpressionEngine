@@ -561,8 +561,12 @@ function (_React$Component) {
 
           _this5.removeFile(file);
 
-          if ($('.file-upload-widget').length && $('.file-upload-widget').hasClass('hidden')) {
-            $('.file-upload-widget').hide();
+          if ($('.file-upload-widget').length) {
+            if ($('.file-upload-widget').hasClass('hidden')) {
+              $('.file-upload-widget').hide();
+            }
+
+            $('body .f_manager-wrapper > form').submit();
           }
         },
         onResolveConflict: function onResolveConflict(file, response) {
