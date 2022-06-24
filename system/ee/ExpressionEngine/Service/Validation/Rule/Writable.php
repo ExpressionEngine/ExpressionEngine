@@ -34,7 +34,8 @@ class Writable extends ValidationRule
             }
         }
 
-        return $filesystem->isWritable(parse_config_variables($value, $this->all_values));
+        $parsed = parse_config_variables($value, $this->all_values);
+        return $filesystem->isWritable($parsed) && !$filesystem->isLocalRoot($parsed);
     }
 
     public function getLanguageKey()

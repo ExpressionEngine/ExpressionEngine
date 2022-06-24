@@ -53,6 +53,11 @@ class Filesystem
         return $this->getBaseAdapter() instanceof Flysystem\Adapter\Local;
     }
 
+    public function isLocalRoot($path)
+    {
+        return $this->isLocal() && (in_array($path, ['/', '\\']) || strrpos($path, ':/', -2) || strrpos($path, ':\\'));
+    }
+
     /**
      * Read a file from disk
      *
