@@ -33,12 +33,14 @@ $(document).ready(function () {
 		}
 		var searchInput = $(form_selector).find('input[name="filter_by_keyword"]')[0];
 
-		if(searchInput) {
+		if (typeof(searchInput) !== 'undefined') {
 			searchInput.focus();
 			searchInput.setSelectionRange(1000, 1000);
 		}
 
-		FileField.renderFields();
+		if (typeof(FileField) !== 'undefined') {
+			FileField.renderFields();
+		}
 	}
 
 	function searchEntries(type = 'GET', url = null) 

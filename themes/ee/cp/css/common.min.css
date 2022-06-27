@@ -17176,6 +17176,9 @@ fieldset .field-control #eye {
   vertical-align: top;
   font-size: 1rem;
 }
+.panel-body__publish fieldset.hide-block, .panel-body__publish .fieldset-faux.hide-block {
+  display: none;
+}
 @media (max-width: 899px) {
   .panel-body__publish fieldset, .panel-body__publish .fieldset-faux {
     width: 100% !important;

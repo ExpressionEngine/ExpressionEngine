@@ -286,7 +286,7 @@ EE.cp.validateLicense = function() {
 
 					},
 					error: function (data, textStatus, errorThrown) {
-						console.log('Error Data:', (typeof(data.responseJSON.message) !== 'undefined') ? data.responseJSON.message : data.responseJSON.error, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+						console.log('Error Data:', (typeof(data.responseJSON) !== 'undefined') ? data.responseJSON : data, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
 						return true;
 					}
 				});
@@ -294,7 +294,7 @@ EE.cp.validateLicense = function() {
 		},
 
 		error: function(data, textStatus, errorThrown) {
-			console.log('Error Data:', (typeof(data.responseJSON.message) !== 'undefined') ? data.responseJSON.message : data.responseJSON.error, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+			console.log('Error Data:', (typeof(data.responseJSON) !== 'undefined') ? data.responseJSON : data, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
 			return true;
 		}
 	});

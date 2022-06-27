@@ -56,6 +56,7 @@ Cypress.Commands.add("login", (user) => {
 
 Cypress.Commands.add("logout", () => {
     cy.visit('admin.php?/cp/members/profile/settings')
+    cy.dismissLicenseAlert()
     cy.get('.main-nav__account-icon > img').click()
     cy.get('[href="admin.php?/cp/login/logout"]').click()
 })
@@ -73,6 +74,7 @@ Cypress.Commands.add("addMembers", (group, count, password = 'password') => {
     let i = 1;
     for(i ; i <= count; i++){
         cy.visit('/admin.php?/cp/members/create') //goes to member creation url
+        cy.dismissLicenseAlert()
 
         let email = group;
         email += i.toString();
@@ -98,6 +100,7 @@ Cypress.Commands.add("addMembers", (group, count, password = 'password') => {
 Cypress.Commands.add("addRole", (role) => {
     cy.auth();
     cy.visit('admin.php?/cp/members/roles')
+    cy.dismissLicenseAlert()
     cy.get('a').contains('New Role').click()
     cy.get('input[name="name"]').clear().type(role)
     cy.get('.form-btns-top .saving-options').click()
