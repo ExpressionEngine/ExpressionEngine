@@ -491,11 +491,10 @@ abstract class AbstractDesign extends CP_Controller
                     'title' => lang('edit')
                 ),
                 'settings' => array(
-                    'href' => '',
-                    'rel' => 'modal-template-settings',
+                    'href' => $edit_url.'#tab=t-2',
                     'class' => 'm-link',
                     'title' => lang('settings'),
-                    'data-template-id' => $template->template_id
+                    'data-template-id' => $template->template_id,
                 )
             );
 
