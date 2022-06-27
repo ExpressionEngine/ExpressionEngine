@@ -65,6 +65,7 @@ context('General Settings', () => {
     // getting the latest version info; unsure at the moment how to
     // best handle actual version comparison because we need to edit
     // Core.php dynamically based on the actual latest version
+    cy.dismissLicenseAlert()
     page.get('alert_error').should('not.exist')
     page.get('wrap').invoke('text').then((text) => {
       expect(text).not.contains( 'An error occurred')

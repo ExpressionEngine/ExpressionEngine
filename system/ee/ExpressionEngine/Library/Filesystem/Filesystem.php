@@ -53,11 +53,6 @@ class Filesystem
         return $this->getBaseAdapter() instanceof Flysystem\Adapter\Local;
     }
 
-    public function isLocalRoot($path)
-    {
-        return $this->isLocal() && $path === '/';
-    }
-
     /**
      * Read a file from disk
      *
@@ -568,6 +563,10 @@ class Filesystem
      */
     public function exists($path)
     {
+        if (DIRECTORY_SEPARATOR == '\\' && strpos($path, '/') === 0) {
+            //on Windows server, the path can't start with /
+            return false;
+        }
         // We are intentionally not calling `$this->flysystem->has($path);` so that
         // we can handle calls to check the existence of the base path
         $path = $this->normalizeRelativePath($path);
@@ -736,6 +735,10 @@ class Filesystem
             return is_writable($path);
         }
 
+        if (strpos($path, '/') === 0) {
+            //on Windows server, the path can't start with /
+            return false;
+        }
         // For windows servers and safe_mode "on" installations we'll actually
         // write a file then read it.  Bah...
         if ($this->isDir($path)) {
