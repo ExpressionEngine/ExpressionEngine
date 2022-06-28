@@ -294,26 +294,23 @@ class Updater
                 'max_size' => $member_prefs['prv_msg_attach_maxsize']
             );
 
-            $existing = ee('Model')->get('UploadDestination')
-                ->fields('name')
-                ->filter('name', 'IN', array_keys($member_directories))
-                ->filter('site_id', $site['site_id'])
-                ->all()
-                ->pluck('name');
+            $existing = ee('db')->from('upload_prefs')
+                ->select('name')
+                ->where_in('name', array_keys($member_directories))
+                ->where('site_id', $site['site_id'])
+                ->get();
 
-            foreach ($existing as $name) {
-                unset($member_directories[$name]);
+            foreach ($existing->result() as $row) {
+                unset($member_directories[$row->name]);
             }
 
             foreach ($member_directories as $name => $data) {
-                $dir = ee('Model')->make('UploadDestination', $data);
-                $dir->site_id = $site['site_id'];
-                $dir->name = $name;
-                //$dir->removeNoAccess(); //function not defined since 2.x, so not using it
-                $dir->module_id = 1; // this is a terribly named column - should be called `hidden`
-                $dir->save();
+                $data['site_id'] = $site['site_id'];
+                $data['name'] = $name;
+                $data['module_id'] = 1; // this is a terribly named column - should be called `hidden`
+                ee()->db->insert('upload_prefs', $data);
 
-                ee()->db->where('upload_id', $dir->getId());
+                ee()->db->where('upload_id', ee()->db->insert_id());
                 ee()->db->delete('upload_no_access');
             }
         }
