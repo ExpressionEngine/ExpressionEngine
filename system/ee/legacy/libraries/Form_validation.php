@@ -596,8 +596,14 @@ class EE_Form_validation
      */
     public function file_exists($file)
     {
-        //assuming local filsystem here
-        return ee('Filesystem')->exists(parse_config_variables($file, $_POST));
+        $parsed = rtrim(parse_config_variables($file, $_POST), '\\/');
+
+        try {
+            $filesystem = ee('File')->getPath($parsed);
+            return $filesystem->exists($parsed) || $filesystem->exists($parsed . DIRECTORY_SEPARATOR);
+        }catch(\Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -610,8 +616,16 @@ class EE_Form_validation
      */
     public function writable($path)
     {
-        //assuming local filsystem here
-        return ee('Filesystem')->isWritable(parse_config_variables($path, $_POST));
+        
+        $parsed = rtrim(parse_config_variables($path, $_POST), '\\/');
+        
+        try {
+            $filesystem = ee('File')->getPath($parsed);
+            return $filesystem->isWritable($parsed) || $filesystem->isWritable($parsed . DIRECTORY_SEPARATOR);
+        } catch (\Exception $e) {
+            return false;
+        }
+        
     }
 
     /**
