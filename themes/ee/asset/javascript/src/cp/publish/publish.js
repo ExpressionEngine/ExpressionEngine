@@ -64,7 +64,7 @@ $(document).ready(function () {
 	}
 
 	//prevent navigating away
-	$('body').on('click', 'a', function(e) {
+	$('body .ee-wrapper').on('click', 'a', function(e) {
 		if (
 			sessionStorage.getItem("preventNavigateAway") == 'true' &&
 			$(this).attr('href') != null && 

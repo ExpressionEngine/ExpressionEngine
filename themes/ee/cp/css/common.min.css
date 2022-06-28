@@ -9309,7 +9309,7 @@ tr.selected {
 }
 tr.selected td {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   background: var(--ee-accent-light);
   color: var(--ee-link);
 }
