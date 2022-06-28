@@ -347,13 +347,13 @@ class FilterFactory
     }
 
     /**
-     * This will instantiate and return a default FilemanagerColumns filter
+     * This will instantiate and return a default FileManagerColumns filter
      *
-     * @return Filter\FilemanagerColumns a FilemanagerColumns Filter object
+     * @return Filter\FileManagerColumns a FileManagerColumns Filter object
      */
-    protected function createDefaultFilemanagerColumns($columns, $uploadLocation = null, $view_id = null)
+    protected function createDefaultFileManagerColumns($columns, $uploadLocation = null, $view_id = null)
     {
-        return new Filter\FilemanagerColumns($columns, $uploadLocation, $view_id);
+        return new Filter\FileManagerColumns($columns, $uploadLocation, $view_id);
     }
 
     /**

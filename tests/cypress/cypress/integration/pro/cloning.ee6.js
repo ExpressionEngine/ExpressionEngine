@@ -19,12 +19,12 @@ context('Entry Cloning', () => {
       cy.task('db:load', '../../channel_sets/channel-with-fluid-field.sql')
       cy.eeConfig({ item: 'login_logo', value: '' })
       cy.eeConfig({ item: 'favicon', value: '' })
-      cy.authVisit(page.url);
-      page.get('first_party_addons').find('.add-on-card:contains("ExpressionEngine Pro") a').click()
+      //cy.authVisit(page.url);
+      //page.get('first_party_addons').find('.add-on-card:contains("ExpressionEngine Pro") a').click()
 
-      cy.wait('@check')
-      cy.wait('@license')
-      cy.get('.app-notice---error').should('not.exist')
+      //cy.wait('@check')
+      //cy.wait('@license')
+      //cy.get('.app-notice---error').should('not.exist')
     })
 
 
@@ -100,6 +100,7 @@ context('Entry Cloning', () => {
             fluid_field.check_content(index)
         })
 
+        cy.dismissLicenseAlert()
         cy.get('.saving-options').click()
         cy.get('[value=save_as_new_entry]').first().click()
 
@@ -144,6 +145,7 @@ context('Entry Cloning', () => {
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('.app-notice---success').contains('Entry Updated');
         
+        cy.dismissLicenseAlert()
         cy.get('.saving-options').click()
         cy.get('[value=save_as_new_entry]').first().click()
 
@@ -187,6 +189,7 @@ context('Entry Cloning', () => {
         cy.get('input[name=pages__pages_uri]').invoke('val').should('eq', '/getting_to_know_expressionengine');
         cy.get('[data-input-value="pages__pages_template_id"] .select__button-label').invoke('text').should('include', 'comments');
 
+        cy.dismissLicenseAlert()
         cy.get('.saving-options').click()
         cy.get('[value=save_as_new_entry]').first().click()
 

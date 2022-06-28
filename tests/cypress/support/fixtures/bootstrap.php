@@ -12,7 +12,7 @@ define('FIXTURE', TRUE);
 define('SELF', 'index.php');
 define('EESELF', 'index.php');
 define('FCPATH', __DIR__.'/');
-define('REQ', 'CLI');
+defined('REQ') ||define('REQ', 'CLI');
 
 define('BOOT_ONLY', TRUE);
 include_once SYSPATH.'ee/ExpressionEngine/Boot/boot.php';

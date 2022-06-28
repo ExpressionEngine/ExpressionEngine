@@ -9,7 +9,7 @@ class FileModal extends ControlPanel {
       'upload_button': '.modal-file .button.button--primary:contains("Upload")',
       'filters': '.modal-file .filter-search-bar > div > .filter-search-bar__item',
       'view_filters': '.modal-file .filter-search-bar .filter-search-bar__item .filter__viewtype',
-      'files': '.modal-file table tbody td'
+      'files': '.modal-file table tbody tr'
     })
   }
 }

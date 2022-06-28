@@ -600,7 +600,16 @@ class EE_Config
             'max_logged_searches',
             'rte_default_toolset',
             'rte_file_browser',
-            'forum_trigger'
+            'forum_trigger',
+            //pro config values
+            'login_logo',
+            'favicon',
+            'autosave_interval_seconds',
+            'enable_dock',
+            'enable_entry_cloning',
+            'enable_frontedit',
+            'automatic_frontedit_links',
+            'enable_mfa',
         );
 
         $member_default = array(
@@ -966,7 +975,7 @@ class EE_Config
     private function _update_preferences($site_id, $site_prefs, $query, $find, $replace)
     {
         foreach (array('system', 'channel', 'template', 'member') as $type) {
-            $prefs = unserialize(base64_decode($query->row('site_' . $type . '_preferences')));
+            $prefs = !empty($query->row('site_' . $type . '_preferences')) ? unserialize(base64_decode($query->row('site_' . $type . '_preferences'))) : [];
             $changes = 'n';
 
             foreach ($this->divination($type) as $value) {

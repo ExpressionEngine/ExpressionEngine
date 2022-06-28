@@ -489,21 +489,6 @@ INSERT INTO `exp_cp_log` (`id`, `site_id`, `member_id`, `username`, `ip_address`
 	(3, 1, 1, 'admin', '127.0.0.1', 1588591844, 'Logged in');
 /*!40000 ALTER TABLE `exp_cp_log` ENABLE KEYS */;
 
--- Dumping data for table ee-test.exp_dashboard_layouts: ~0 rows (approximately)
-DELETE FROM `exp_dashboard_layouts`;
-/*!40000 ALTER TABLE `exp_dashboard_layouts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `exp_dashboard_layouts` ENABLE KEYS */;
-
--- Dumping data for table ee-test.exp_dashboard_layout_widgets: ~0 rows (approximately)
-DELETE FROM `exp_dashboard_layout_widgets`;
-/*!40000 ALTER TABLE `exp_dashboard_layout_widgets` DISABLE KEYS */;
-/*!40000 ALTER TABLE `exp_dashboard_layout_widgets` ENABLE KEYS */;
-
--- Dumping data for table ee-test.exp_dashboard_widgets: ~0 rows (approximately)
-DELETE FROM `exp_dashboard_widgets`;
-/*!40000 ALTER TABLE `exp_dashboard_widgets` DISABLE KEYS */;
-/*!40000 ALTER TABLE `exp_dashboard_widgets` ENABLE KEYS */;
-
 -- Dumping data for table ee-test.exp_developer_log: ~0 rows (approximately)
 DELETE FROM `exp_developer_log`;
 /*!40000 ALTER TABLE `exp_developer_log` DISABLE KEYS */;

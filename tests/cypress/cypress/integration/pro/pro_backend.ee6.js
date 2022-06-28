@@ -21,12 +21,12 @@ context('Pro', () => {
       cy.authVisit('admin.php?/cp/design')
       cy.visit(page.url);
 
-      cy.intercept('https://updates.expressionengine.com/check').as('check')
-      cy.intercept('**/license/handleAccessResponse').as('license')
-      page.get('first_party_addons').find('.add-on-card:contains("ExpressionEngine Pro") a').click()
-      cy.wait('@check')
-      cy.wait('@license')
-      cy.get('.app-notice---error').should('not.exist')
+      //cy.intercept('https://updates.expressionengine.com/check').as('check')
+      //cy.intercept('**/license/handleAccessResponse').as('license')
+      //page.get('first_party_addons').find('.add-on-card:contains("ExpressionEngine Pro") a').click()
+      //cy.wait('@check')
+      //cy.wait('@license')
+      //cy.get('.app-notice---error').should('not.exist')
     })
 
 
@@ -41,11 +41,12 @@ context('Pro', () => {
     })
 
     it('the license is valid', function() {
-      cy.authVisit('/admin.php?/cp/addons/settings/pro', {failOnStatusCode: false})
+      cy.authVisit('/admin.php?/cp/settings/pro/general', {failOnStatusCode: false})
       cy.get('.ee-pro__indicator-badge').click()
       cy.get('.pro-message em').invoke('text').then((text) => {
         return text.trim()
       }).should('match', /trial|valid/i)
+      cy.dismissLicenseAlert()
       cy.get('.app-notice---error').should('not.exist')
     })
 
@@ -76,7 +77,7 @@ context('Pro', () => {
         cy.visit('index.php/pro/index')
         cy.get('#ee-pro-ee-44E4F0E59DFA295EB450397CA40D1169').should('exist')
         
-        cy.visit('/admin.php?/cp/addons/settings/pro/general', {failOnStatusCode: false});
+        cy.visit('/admin.php?/cp/settings/pro/general', {failOnStatusCode: false});
         cy.get('[data-toggle-for=enable_dock]').click();
         cy.get('.button--primary').first().click()
 
@@ -234,7 +235,7 @@ context('Pro', () => {
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
         
-        cy.visit('/admin.php?/cp/addons/settings/pro/general', {failOnStatusCode: false});
+        cy.visit('/admin.php?/cp/settings/pro/general', {failOnStatusCode: false});
         cy.get('[data-toggle-for=enable_frontedit]').click();
         cy.get('.button--primary').first().click()
         
@@ -255,7 +256,7 @@ context('Pro', () => {
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
         
-        cy.visit('/admin.php?/cp/addons/settings/pro/general', {failOnStatusCode: false});
+        cy.visit('/admin.php?/cp/settings/pro/general', {failOnStatusCode: false});
         cy.get('[data-toggle-for=automatic_frontedit_links]').click();
         cy.get('.button--primary').first().click()
         
@@ -277,14 +278,14 @@ context('Pro', () => {
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
         
-        cy.visit('/admin.php?/cp/addons/settings/pro/branding', {failOnStatusCode: false});
+        cy.visit('/admin.php?/cp/settings/pro/branding', {failOnStatusCode: false});
 
         cy.get("#fieldset-login_logo div[data-file-field-react] button:contains('Choose Existing')").click()
         cy.wait(1000)
         cy.get("#fieldset-login_logo div[data-file-field-react] .dropdown--open a:contains('About')").click()
         cy.wait(1000)
         file_modal.get('files').should('be.visible')
-        file_modal.get('files').eq(3).scrollIntoView().click()
+        file_modal.get('files').contains('staff_jason.png').scrollIntoView().click()
         file_modal.get('files').should('not.be.visible')
 
         cy.get("#fieldset-favicon div[data-file-field-react] button:contains('Choose Existing')").click()
@@ -292,7 +293,7 @@ context('Pro', () => {
         cy.get("#fieldset-favicon div[data-file-field-react] .dropdown--open a:contains('About')").click()
         cy.wait(1000)
         file_modal.get('files').should('be.visible')
-        file_modal.get('files').first().scrollIntoView().click()
+        file_modal.get('files').contains('staff_jane.png').scrollIntoView().click({force: true})
         file_modal.get('files').should('not.be.visible')
 
         cy.get('.button--primary').first().click()
