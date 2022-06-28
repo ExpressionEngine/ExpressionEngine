@@ -119,6 +119,7 @@ abstract class AbstractRoles extends CP_Controller
         }
 
         ee()->view->left_nav = $sidebar->render();
+        ee()->view->left_nav_collapsed = $sidebar->collapsedState;
     }
 }
 

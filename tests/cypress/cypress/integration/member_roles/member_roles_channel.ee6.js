@@ -76,6 +76,7 @@ context('Test Member roles Channels ', () => {
    cy.visit('admin.php?/cp/members/profile/settings')
 
    cy.get('h1').contains('Channel1')
+   cy.dismissLicenseAlert()
    cy.get('.main-nav__account-icon > img').click()
 
    cy.get('.ee-sidebar').contains('Categories')
@@ -88,6 +89,7 @@ context('Test Member roles Channels ', () => {
     cy.visit('admin.php?/cp/channels')
     cy.hasNoErrors()
     cy.get('a').contains('New Channel').should('exist')
+    cy.dismissLicenseAlert()
     cy.get('a').contains('New Channel').click()
     cy.hasNoErrors()
  })

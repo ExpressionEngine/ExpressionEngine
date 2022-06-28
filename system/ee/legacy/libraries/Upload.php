@@ -897,7 +897,9 @@ class EE_Upload
             }
         }
 
-        if($this->upload_destination->getFilesystem()->isLocal()) {
+        $fs = (!empty($this->upload_destination)) ? $this->upload_destination->getFilesystem() : ee('Filesystem');
+
+        if($fs->isLocal()) {
             if ($this->upload_path == '') {
                 $this->set_error('upload_no_filepath');
 
@@ -915,7 +917,7 @@ class EE_Upload
         //     return false;
         // }
 
-        if (! $this->upload_destination->getFilesystem()->isWritable()) {
+        if (! $fs->isWritable()) {
             $this->set_error('upload_not_writable');
 
             return false;

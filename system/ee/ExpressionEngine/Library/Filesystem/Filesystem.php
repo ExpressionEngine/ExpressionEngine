@@ -563,6 +563,10 @@ class Filesystem
      */
     public function exists($path)
     {
+        if (DIRECTORY_SEPARATOR == '\\' && strpos($path, '/') === 0) {
+            //on Windows server, the path can't start with /
+            return false;
+        }
         // We are intentionally not calling `$this->flysystem->has($path);` so that
         // we can handle calls to check the existence of the base path
         $path = $this->normalizeRelativePath($path);
@@ -731,6 +735,10 @@ class Filesystem
             return is_writable($path);
         }
 
+        if (strpos($path, '/') === 0) {
+            //on Windows server, the path can't start with /
+            return false;
+        }
         // For windows servers and safe_mode "on" installations we'll actually
         // write a file then read it.  Bah...
         if ($this->isDir($path)) {
@@ -1014,7 +1022,7 @@ class Filesystem
         $normalized = $this->normalizeAbsolutePath($path);
         $prefix = rtrim($this->getPathPrefix(), '\\/');
 
-        if (strpos($normalized, $prefix) === 0) {
+        if (!empty($prefix) && strpos($normalized, $prefix) === 0) {
             return $normalized;
         }
 

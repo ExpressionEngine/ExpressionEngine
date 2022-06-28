@@ -36,13 +36,17 @@ class Upload
             $metadata = [
                 'name' => $file->file_name,
                 'size' => ee('Format')->make('Number', $file->file_size)->bytes(),
-                'file_type' => lang('type_' . $file->file_type),
-                'dimensions' => (count($dimensions) > 1) ? $dimensions[0] . 'x' . $dimensions[1] . ' px' : '',
+                'file_type' => lang('type_' . $file->file_type)
+            ];
+            if ($file->isImage()) {
+                $metadata['dimensions'] = (count($dimensions) > 1) ? $dimensions[0] . 'x' . $dimensions[1] . ' px' : '';
+            }
+            $metadata = array_merge($metadata, [
                 'uploaded_by' => ($file->uploaded_by_member_id && $file->UploadAuthor) ? $file->UploadAuthor->getMemberName() : '',
                 'date_added' => ee()->localize->human_time($file->upload_date),
                 'modified_by' => ($file->modified_by_member_id && $file->ModifyAuthor) ? $file->ModifyAuthor->getMemberName() : '',
                 'date_modified' => ee()->localize->human_time($file->modified_date)
-            ];
+            ]);
         }
 
         $sections = array(

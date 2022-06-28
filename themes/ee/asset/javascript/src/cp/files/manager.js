@@ -167,9 +167,9 @@
 				var parent = $(this).parent();
 				var top = $(this).offset().top;
 				var left = $(this).offset().left;
-				parent.append("<p id='preview'><img src='"+ path +"' alt='"+ alt +"' /></p>");
+				parent.append("<p id='preview'><img src='" + path + "' alt='"+alt+"' /></p>");
 				$("#preview").css({
-					'top': (top + 20) + "px",
+					'top': (top + 30) + "px",
 					'left': (left - 200) + "px",
 					'display': 'flex',
 				}).fadeIn();

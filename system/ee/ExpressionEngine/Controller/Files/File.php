@@ -80,14 +80,6 @@ class File extends AbstractFilesController
                     ->addToBody(sprintf(lang('file_not_writable_desc'), $file->getAbsolutePath()))
                     ->now();
             }
-
-            ee()->load->library('image_lib');
-            // we should really be storing the image properties in the db during file upload
-            $info = $file->actLocally(function($path) {
-                return ee()->image_lib->get_image_properties($path, true);
-            });
-        
-            ee()->image_lib->error_msg = array(); // Reset any erorrs
         }
 
         $tabs = array(
@@ -95,6 +87,13 @@ class File extends AbstractFilesController
             'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
         );
         if ($file->isEditableImage()) {
+            ee()->load->library('image_lib');
+            // we should really be storing the image properties in the db during file upload
+            $info = $file->actLocally(function($path) {
+                return ee()->image_lib->get_image_properties($path, true);
+            });
+            ee()->image_lib->error_msg = array(); // Reset any erorrs
+
             $tabs['crop'] = $this->renderCropForm($file, $info);
             $tabs['rotate'] = $this->renderRotateForm($file);
             $tabs['resize'] = $this->renderResizeForm($file, $info);

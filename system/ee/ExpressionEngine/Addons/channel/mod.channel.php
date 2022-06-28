@@ -4139,7 +4139,7 @@ class Channel
             return ee()->TMPL->no_results();
         }
 
-        $cat_id = ctype_digit(ee()->TMPL->fetch_param('category_id')) ? ee()->TMPL->fetch_param('category_id') : $match[2];
+        $cat_id = ee()->TMPL->fetch_param('category_id') !== false && ctype_digit(ee()->TMPL->fetch_param('category_id')) ? ee()->TMPL->fetch_param('category_id') : $match[2];
 
         // fetch category field names and id's
 

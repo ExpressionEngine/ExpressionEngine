@@ -386,6 +386,7 @@ function write_config_data($schema)
 function install_modules()
 {
     $required_modules = [
+        'pro',
         'channel',
         'comment',
         'consent',
@@ -396,7 +397,6 @@ function install_modules()
         'filepicker',
         'relationship',
         'search',
-        'pro',
     ];
 
     ee()->load->library('addons');

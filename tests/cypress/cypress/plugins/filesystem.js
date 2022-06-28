@@ -6,8 +6,8 @@ const path = require('path');
 
 class Filesystem {
     copy(from, to) {
-        to = path.resolve(to);
-        from = path.resolve(from);
+        to = path.resolve(to).replace(/\\/g, '/');
+        from = path.resolve(from).replace(/\\/g, '/');
         // console.log("FS Copy:", { from, to });
 
         let sources = glob.sync(from);
@@ -21,7 +21,7 @@ class Filesystem {
     }
 
     create(target) {
-        target = path.resolve(target);
+        target = path.resolve(target).replace(/\\/g, '/');
         // console.log('FS Create: ' + target);
 
         return fs.promises.mkdir(target, { recursive: true }).then(function() {
@@ -32,28 +32,28 @@ class Filesystem {
     }
 
     createFile(target) {
-        target = path.resolve(target);
+        target = path.resolve(target).replace(/\\/g, '/');
         fs.writeFileSync(target, '');
         return true;
     }
 
     delete(target) {
-        target = path.resolve(target);
+        target = path.resolve(target).replace(/\\/g, '/');
         // console.log('FS Delete: ' + target);
         return del(target, { force: true });
     }
 
     count(target) {
-        target = path.resolve(target);
+        target = path.resolve(target).replace(/\\/g, '/');
         return glob.sync(target+'/*').length;
     }
 
     path(target) {
-        return path.resolve(target);
+        return path.resolve(target).replace(/\\/g, '/');
     }
 
     list({target, mask='/*'}) {
-        target = path.resolve(target);
+        target = path.resolve(target).replace(/\\/g, '/');
         return glob.sync(target+mask);
     }
 
@@ -66,11 +66,11 @@ class Filesystem {
     }
 
     read(file) {
-        return fs.readFileSync(path.resolve(file), "utf8");
+        return fs.readFileSync(path.resolve(file).replace(/\\/g, '/'), "utf8");
     }
 
     rename(source, target) {
-        fs.renameSync(path.resolve(source), path.resolve(target));
+        fs.renameSync(path.resolve(source).replace(/\\/g, '/'), path.resolve(target).replace(/\\/g, '/'));
         return true;
     }
 }

@@ -236,7 +236,7 @@ context('File Manager / Upload File', () => {
       page.load()
       cy.hasNoErrors()
 
-      cy.contains("404")
+      cy.contains("Cannot find the directory")
 
       // page.get('alert').should('be.visible')
       // page.get('alert_error').should('be.visible')

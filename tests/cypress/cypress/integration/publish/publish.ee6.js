@@ -121,7 +121,7 @@ context('Publish Page - Create', () => {
               file_modal.get('files').should('be.visible')
               //page.file_modal.wait_for_filters
 
-              file_modal.get('files').first().scrollIntoView().click()
+              cy.get('.modal-file table tbody tr:first-child').click()
 
               file_modal.get('files').should('not.be.visible')
             })
@@ -142,7 +142,6 @@ context('Publish Page - Create', () => {
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
-          file_modal.get('upload_button').should('exist')// no longer exists in new cp
           cy.intercept("**/filepicker/modal**").as('ajax')
           file_modal.get('view_filters').find('a:not(.active)').first().click()
           cy.wait("@ajax");
@@ -152,7 +151,6 @@ context('Publish Page - Create', () => {
           file_modal.get('title').invoke('text').then((text) => {
             expect(text.trim()).not.equal('All Files')
           })
-          file_modal.get('upload_button').should('exist')// new cp brings files up in seperate spot this check is no longer valid
           cy.logCPPerformance()
         })
 

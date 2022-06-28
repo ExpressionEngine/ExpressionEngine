@@ -356,14 +356,14 @@ class Filemanager
         $prefs['mime_type'] = $mime;
 
         // Check to see if its an editable image, if it is, try and create the thumbnail
-        if (isset($prefs['temp_file']) && $this->is_editable_image($prefs['temp_file'] ?: $file_path, $mime)) {
+        if ($this->is_editable_image(isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? $prefs['temp_file'] : $file_path, $mime)) {
             // Check to see if we have GD and can resize images
             if (! (extension_loaded('gd') && function_exists('gd_info'))) {
                 return $this->_save_file_response(false, lang('gd_not_installed'));
             }
 
             // Check and fix orientation
-            $orientation = $this->orientation_check($prefs['temp_file'] ?: $file_path, $prefs);
+            $orientation = $this->orientation_check(isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? $prefs['temp_file'] : $file_path, $prefs);
 
             if (! empty($orientation)) {
                 $prefs = $orientation;

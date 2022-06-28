@@ -178,6 +178,7 @@ class Cp
             'site_name' => ee()->config->item('site_name'),
             'site_url' => ee()->config->item('site_url'),
             'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
+            'cp.collapseSecondaryNavURL' => ee('CP/URL', 'homepage/toggle-secondary-sidebar-nav')->compile(),
             'fileManagerCompatibilityMode' => bool_config_item('file_manager_compatibility_mode'),
         ));
 
@@ -333,6 +334,7 @@ class Cp
 
         if (! empty($sidebar)) {
             ee()->view->left_nav = $sidebar;
+            ee()->view->left_nav_collapsed = ee('CP/Sidebar')->collapsedState;
         }
 
         return ee()->view->render($view, $data, $return);

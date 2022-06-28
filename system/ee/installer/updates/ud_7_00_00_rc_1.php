@@ -38,6 +38,7 @@ class Updater
                 'modifyUploadPrefsTable',
                 'addEntryManagerViewsKeys',
                 'setFileManagerCompatibilityMode',
+                'installPro',
             ]
         );
 
@@ -345,6 +346,17 @@ class Updater
             'key' => 'file_manager_compatibility_mode',
             'value' => 'y'
         ])->save();
+    }
+
+    private function installPro()
+    {
+        /*$addon = ee('Addon')->get('pro');
+        if (! $addon or ! $addon->isInstalled()) {
+            if (!isset(ee()->addons)) {
+                ee()->load->library('addons');
+            }
+            ee()->addons->install_modules(['pro']);
+        }*/
     }
 
 }

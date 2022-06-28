@@ -30,7 +30,7 @@ context('Upload Sync', () => {
     cy.get('[data-input-value=adapter] .select__button').click()
     cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
     new_upload.get('name').type('Dir')
-    new_upload.get('url').clear().type('http://ee/')
+    new_upload.get('url').clear().type('{base_url}tests/cypress/' + upload_path, {parseSpecialCharSequences: false})
     cy.task('filesystem:path', upload_path).then((text) => {
       new_upload.get('server_path').clear().type(text)
     })
@@ -98,15 +98,6 @@ context('Upload Sync', () => {
 
 
     cy.wait(10000)
-    //cy.visit(dir_link)
-    // Make sure progress bar progressed in the proper increments
-
-    // This was a nice idea, but it's too intermittent, the AJAX is
-    // sometimes too fast for RSpec. Uncomment if you want to test locally.
-    //progress_bar_values = page.log_progress_bar_moves
-    //progress_bar_values.should('eq', page.progress_bar_moves_for_file_count($images_count)
-
-
 
     page.get('alert').should('exist')
 
@@ -135,9 +126,6 @@ context('Upload Sync', () => {
         expect(db_files).to.include.members(dir_files)
       })
     })
-
-
-    page.get('alert').contains('Upload directory synchronized')
 
   })
 
@@ -189,7 +177,7 @@ context('Upload Sync', () => {
           let file_count = images_count + bad_files_count;
 
           new_upload.load_edit_for_dir(2)
-          new_upload.get('allowed_types').find('[value="--"]').check()
+          new_upload.get('allowed_types').find('[type="checkbox"][value="--"]').check()
           new_upload.submit()
           new_upload.get('wrap').contains('Upload directory saved')
           cy.hasNoErrors()

@@ -949,12 +949,15 @@ class Roles extends AbstractRolesController
 
         $addons = ee('Model')->get('Module')
             ->fields('module_id', 'module_name')
-            ->filter('module_name', 'NOT IN', array('Channel', 'Comment', 'Member', 'File', 'Filepicker')) // @TODO This REALLY needs abstracting.
             ->all()
             ->filter(function ($addon) {
                 $provision = ee('Addon')->get(strtolower($addon->module_name));
 
                 if (! $provision) {
+                    return false;
+                }
+
+                if ($provision->get('built_in')) {
                     return false;
                 }
 

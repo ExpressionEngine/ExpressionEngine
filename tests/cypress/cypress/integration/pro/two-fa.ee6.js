@@ -15,8 +15,8 @@ context('Two-Factor Authentication', function() {
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.authVisit('admin.php?/cp/design')
         })
-        cy.authVisit('admin.php?/cp/addons')
-        cy.get('.add-on-card:contains("ExpressionEngine Pro") a').click()
+        //cy.authVisit('admin.php?/cp/addons')
+        //cy.get('.add-on-card:contains("ExpressionEngine Pro") a').click()
 
         cy.task('db:query', 'SELECT unique_id, backup_mfa_code FROM exp_members WHERE username="' + Cypress.env("USER_EMAIL") + '"').then(function([rows, fields]) {
             unique_id = rows[0].unique_id;
@@ -25,9 +25,9 @@ context('Two-Factor Authentication', function() {
             }
         })
 
-        cy.wait('@check')
-        cy.wait('@license')
-        cy.get('.app-notice---error').should('not.exist')
+        //cy.wait('@check')
+        //cy.wait('@license')
+        //cy.get('.app-notice---error').should('not.exist')
     })
 
     it('Shows the links in template', () => {
@@ -165,6 +165,7 @@ context('Two-Factor Authentication', function() {
                             cy.get('[name=mfa_code]').type(token);
                             cy.get('.button--primary').first().click()
 
+                            cy.dismissLicenseAlert()
                             cy.get('.app-notice---success').should('exist')
                             cy.get('[data-toggle-for="enable_mfa"]').should('have.class', 'on');
                             cy.get('.app-notice---error').should('not.exist')
@@ -183,6 +184,7 @@ context('Two-Factor Authentication', function() {
             cy.get('[name=mfa_code]').should('exist')
             cy.get('[name=mfa_code]').type('123456');
             cy.get('.button--primary').first().click()
+            cy.dismissLicenseAlert()
             cy.get('.app-notice---error').should('contain', 'The verification code you have entered is not valid')
             
             cy.visit('admin.php')
@@ -246,6 +248,7 @@ context('Two-Factor Authentication', function() {
                     cy.get('#enable_mfa_link').should('exist')
                     cy.get('#enable_mfa_link').invoke('attr', 'href').should('not.be.empty')
                     cy.hasNoErrors()
+                    cy.dismissLicenseAlert()
                     cy.get('.app-notice---error').should('not.exist')
 
                     cy.logout()
@@ -325,6 +328,7 @@ context('Two-Factor Authentication', function() {
                             cy.task("generateOTP", otpSecret).then(token => {
                                 cy.get('[name=mfa_code]').type(token);
                                 cy.get('.button--primary').first().click()
+                                cy.dismissLicenseAlert()
 
                                 cy.get('.app-notice---error').should('not.exist')
                                 cy.get('.app-notice---success').should('exist')
@@ -366,6 +370,7 @@ context('Two-Factor Authentication', function() {
                             cy.task("generateOTP", otpSecret).then(token => {
                                 cy.get('[name=mfa_code]').type(token);
                                 cy.get('.button--primary').first().click()
+                                cy.dismissLicenseAlert()
 
                                 cy.hasNoErrors()
                                 cy.get('.app-notice---error').should('not.exist')

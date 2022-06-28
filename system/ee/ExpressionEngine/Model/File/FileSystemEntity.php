@@ -326,6 +326,10 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteURL()
     {
+        if (!$this->UploadDestination->exists()) {
+            return null;
+        }
+
         return $this->UploadDestination->getFilesystem()->getUrl($this->getSubfoldersPath() . $this->file_name);
     }
 
@@ -337,6 +341,10 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteThumbnailURL()
     {
+        if (!$this->UploadDestination->exists()) {
+            return null;
+        }
+
         $filesystem = $this->UploadDestination->getFilesystem();
 
         if (! $filesystem->exists($this->getAbsoluteThumbnailPath())) {
@@ -417,6 +425,10 @@ class FileSystemEntity extends ContentModel
      */
     public function exists()
     {
+        if (!$this->UploadDestination->exists()) {
+            return false;
+        }
+
         $filesystem = $this->UploadDestination->getFilesystem();
 
         return $filesystem->exists($this->getAbsolutePath());

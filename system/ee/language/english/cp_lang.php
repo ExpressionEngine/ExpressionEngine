@@ -179,6 +179,8 @@ $lang = array(
 
     'templates' => 'Templates',
 
+    'toggle_sidebar' => 'Toggle Sidebar',
+
     'unauthorized' => 'Unauthorized',
 
     'unauthorized_access' => 'You are not authorized to access this page',

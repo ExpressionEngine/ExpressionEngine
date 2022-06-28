@@ -638,8 +638,16 @@ class File_field
      */
     public function parse_field($data)
     {
+        if (empty($data)) {
+            return false;
+        }
+
+        // If file field is just a file ID
+        if (is_numeric($data)) {
+            $file = $this->get_file($data);
+        }
         // If the file field is in the "{file:XX:url}" format
-        if (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+        elseif (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
             // Set upload directory ID and file name
             $file_id = $matches[1];
             $file = $this->get_file($file_id);
@@ -651,10 +659,6 @@ class File_field
             $file_name = str_replace($matches[0], '', $data);
 
             $file = $this->get_file($file_name, $dir_id);
-        }
-        // If file field is just a file ID
-        elseif (! empty($data) && is_numeric($data)) {
-            $file = $this->get_file($data);
         }
 
         // If there is no file, but data was passed in, create a dummy file

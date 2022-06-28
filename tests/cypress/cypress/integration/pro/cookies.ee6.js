@@ -31,22 +31,22 @@ context('Pro Cookie Features', () => {
     describe('{exp:consent:cookies}', function() {
         before(function(){
             
-            cy.intercept('**/check').as('check')
-            cy.intercept('**/license/handleAccessResponse').as('license')
+            //cy.intercept('**/check').as('check')
+            //cy.intercept('**/license/handleAccessResponse').as('license')
 
-            cy.authVisit(addonManager.url);
-            addonManager.get('first_party_addons').find('.add-on-card:contains("ExpressionEngine Pro") a').click()
+            //cy.authVisit(addonManager.url);
+            //addonManager.get('first_party_addons').find('.add-on-card:contains("ExpressionEngine Pro") a').click()
 
-            cy.wait('@check')
-            cy.wait('@license')
-            cy.get('.app-notice---error').should('not.exist')
+            //cy.wait('@check')
+            //cy.wait('@license')
+            //cy.get('.app-notice---error').should('not.exist')
         })
 
         it('lists all cookies but forum', ()=>{
             cy.visit('index.php/consents/cookies')
             cy.logFrontendPerformance()
             cy.get('#all-cookies li').should(($lis) => {
-                expect($lis, '20 items').to.have.length(20)
+                expect($lis, '21 items').to.have.length(21)
                 expect($lis).to.contain('exp_csrf_token')
                 expect($lis).to.contain('exp_flash')
                 expect($lis).to.contain('exp_remember')
@@ -67,6 +67,7 @@ context('Pro Cookie Features', () => {
                 expect($lis).to.contain('exp_notify_me')
                 expect($lis).to.contain('exp_save_info')
                 expect($lis).to.contain('exp_tracker')
+                expect($lis).to.contain('secondary_sidebar')
 
                 expect($lis).to.not.contain('forum')
             })
