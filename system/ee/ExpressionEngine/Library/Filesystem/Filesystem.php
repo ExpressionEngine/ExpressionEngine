@@ -466,14 +466,16 @@ class Filesystem
      */
     protected function recursiveCopy($source, $dest)
     {
+        $source = rtrim($source, '\\/');
+        $dest = rtrim($dest, '\\/');
         $dir = $this->flysystem->listContents($source, false);
         $this->flysystem->createDir($dest);
 
         foreach($dir as $file) {
-            if ($this->isDir($source . '/' . $file['path'])) {
-                $this->recursiveCopy($source . '/' . $file['path'], $dest . '/' . $file['path']);
+            if ($this->isDir($source . '/' . $file['basename'])) {
+                $this->recursiveCopy($source . '/' . $file['basename'], $dest . '/' . $file['basename']);
             } else {
-                $this->flysystem->copy($source . '/' . $file['path'], $dest . '/' . $file['path']);
+                $this->flysystem->copy($source . '/' . $file['basename'], $dest . '/' . $file['basename']);
             }
         }
     }

@@ -19,7 +19,8 @@ class AdapterManager
 
     public function __construct()
     {
-
+        //register local filesystem adapter
+        $this->registerAdapter(__NAMESPACE__ .'\Adapter\Local');
     }
 
     public function get($key)
