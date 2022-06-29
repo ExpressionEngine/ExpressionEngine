@@ -76,6 +76,9 @@ context('File Manager / Usage Tab', () => {
 
     cy.get('button').contains('Usage').first().click()
     cy.get('.f_entries-table tbody tr').should('have.length', 3)
+    cy.get('.f_entries-table tbody tr td a').contains('Getting to Know ExpressionEngine')
+    cy.get('.f_entries-table tbody tr td a').contains('About the Label')
+    cy.get('.f_entries-table tbody tr td a').contains('Welcome to the Example Site!')
   })
 
   it('add image to category, usage tab have 4 items', () => {
@@ -98,6 +101,11 @@ context('File Manager / Usage Tab', () => {
 
     cy.get('button').contains('Usage').first().click()
     cy.get('.f_entries-table tbody tr').should('have.length', 3)
+    cy.get('.f_entries-table tbody tr td a').contains('Getting to Know ExpressionEngine')
+    cy.get('.f_entries-table tbody tr td a').contains('About the Label')
+    cy.get('.f_entries-table tbody tr td a').contains('Welcome to the Example Site!')
+
     cy.get('.f_category-table tbody tr').should('have.length', 1)
+    cy.get('.f_entries-table tbody tr td a').contains('News')
   })
 })
