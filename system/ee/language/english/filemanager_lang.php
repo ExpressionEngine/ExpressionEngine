@@ -1010,7 +1010,7 @@ $lang = array(
 
     'all_files_in_folder_will_be_moved' => 'All files in folder will be moved with it.',
 
-    'file_is_in_use' => 'The file is being used <a href="%s"><span>%s</span> in entries</a>',
+    'file_is_in_use' => 'The file is being used <a href="%s"> in <span>%s</span> entries</a>',
 
     'files_is_in_use' => 'Please note some of these files are currently in use',
 
