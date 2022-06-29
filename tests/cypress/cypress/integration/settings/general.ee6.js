@@ -45,7 +45,7 @@ context('General Settings', () => {
     // Make sure they stuck, also test Check Now button visibility
     cy.hasNoErrors()
     //should_have_no_form_errors(page)
-    page.get('wrap').contains('Preferences updated')
+    page.get('wrap').contains('Preferences Updated')
     page.get('site_name').invoke('val').then((val) => { expect(val).to.be.equal('My sweet site')})
     page.get('site_short_name').invoke('val').then((val) => { expect(val).to.be.equal('my_sweet_site')})
     page.get('is_system_on').invoke('val').then((val) => { expect(val).to.be.equal('n')})
@@ -148,7 +148,7 @@ context('General Settings', () => {
       //page.submit()
       cy.hasNoErrors()
       //should_have_no_form_errors(page)
-      page.get('wrap').contains('Preferences updated')
+      page.get('wrap').contains('Preferences Updated')
     })
   })
 

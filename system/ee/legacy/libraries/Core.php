@@ -131,10 +131,6 @@ class EE_Core
         } else {
             define('IS_PRO', false);
         }
-
-        //register local filesystem adapter
-        ee('Filesystem/Adapter')->registerAdapter('ExpressionEngine\Library\Filesystem\Adapter\Local');
-
         // setup cookie settings for all providers
         $providers = ee('App')->getProviders();
         foreach ($providers as $provider) {

@@ -239,8 +239,12 @@ class Pro_upd extends Installer
             $self->updateProlets();
 
             // Install or update bundled add-ons
-            ee()->load->library('addons');
-            ee()->load->library('addons/addons_installer');
+            if (!isset(ee()->addons)) {
+                ee()->load->library('addons');
+            }
+            if (!isset(ee()->addons_installer)) {
+                ee()->load->library('addons/addons_installer');
+            }
 
             $fs = new Filesystem();
 
@@ -254,7 +258,7 @@ class Pro_upd extends Installer
             $inEEInstallMode = is_dir(SYSPATH . 'ee/installer/') && (! defined('INSTALL_MODE') or INSTALL_MODE != false);
 
             //bundled add-ons will be handled separately, skip if installing with EE
-            if ($inEEInstallMode) {
+            if ($inEEInstallMode || REQ == 'CLI') {
                 return $installed;
             }
 

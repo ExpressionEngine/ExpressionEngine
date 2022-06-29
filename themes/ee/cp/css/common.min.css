@@ -27319,6 +27319,20 @@ input[type=button].btn-block {
   width: 98%;
 }
 
+.modal-confirm-delete-file,
+.modal-confirm-move-file,
+.modal-confirm-rename-file {
+  position: fixed;
+}
+@media (max-width: 999px) {
+  .modal-confirm-delete-file,
+.modal-confirm-move-file,
+.modal-confirm-rename-file {
+    width: calc(90% - 200px);
+    transform: translateX(100px);
+  }
+}
+
 .jump-menu {
   background: var(--ee-bg-dropdown);
   min-width: 400px;

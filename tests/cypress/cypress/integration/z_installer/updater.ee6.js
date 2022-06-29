@@ -110,6 +110,7 @@ it('turns system off if system was off before updating', () => {
         }).then(() => {
             cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
                 test_cli_update()
+                cy.task('installer:disable')
                 cy.eeConfig({ item: 'is_system_on' }).then((config) => {
                     expect(config.trim()).to.be.equal('n')
                 })
@@ -134,6 +135,7 @@ it('turns system off if system was off before updating', () => {
             }).then(() => {
                 cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
                     test_cli_update()
+                    cy.task('installer:disable')
                     cy.eeConfig({ item: 'is_system_on' }).then((config) => {
                         expect(config.trim()).to.be.equal('y')
                     })
@@ -218,7 +220,7 @@ it('turns system off if system was off before updating', () => {
       })
     })
 
-    it.only('has all required modules installed after the update', () => {
+    it('has all required modules installed after the update', () => {
       test_update()
       test_templates()
 
