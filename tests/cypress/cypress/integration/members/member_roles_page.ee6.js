@@ -232,6 +232,7 @@ context('Member Group List', () => {
   })
 
   function create_member_group() {
+    cy.dismissLicenseAlert()
     page.get('new_group').click()
 
     //page.edit.all_there?.should('eq', true

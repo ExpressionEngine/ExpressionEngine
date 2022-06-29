@@ -350,13 +350,13 @@ class Updater
 
     private function installPro()
     {
-        /*$addon = ee('Addon')->get('pro');
+        $addon = ee('Addon')->get('pro');
         if (! $addon or ! $addon->isInstalled()) {
             if (!isset(ee()->addons)) {
                 ee()->load->library('addons');
             }
             ee()->addons->install_modules(['pro']);
-        }*/
+        }
     }
 
 }

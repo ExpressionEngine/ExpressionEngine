@@ -167,25 +167,23 @@ context('File Manager', () => {
 		page.get('title_name_header').find('a.column-sort').click()
         cy.wait('@fileRequest')
 		cy.hasNoErrors()
-        
 
 		let sorted_files = [];
 		page.get('title_names').then(function($td) {
 			sorted_files = _.map($td, function(el) {
 					return $(el).text();
 			})
-		})
-        
-		page.get('title_name_header').find('a.column-sort').click()
-        cy.wait('@fileRequest')
-		cy.hasNoErrors()
-		
-        page.get('title_name_header').should('have.class', 'column-sort-header--active')
-		page.get('title_names').then(function($td) {
-			let files_reversed = _.map($td, function(el) {
-					return $(el).text();
+			page.get('title_name_header').find('a.column-sort').click()
+			cy.wait('@fileRequest')
+			cy.hasNoErrors()
+			
+			page.get('title_name_header').should('have.class', 'column-sort-header--active')
+			page.get('title_names').then(function($td) {
+				let files_reversed = _.map($td, function(el) {
+						return $(el).text();
+				})
+				expect(files_reversed).to.deep.equal(sorted_files.reverse())
 			})
-			expect(files_reversed).to.deep.equal(sorted_files.reverse())
 		})
 
 	});

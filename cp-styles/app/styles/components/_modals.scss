@@ -176,3 +176,14 @@
   max-width: 100%;
   width: 98%;
 }
+
+.modal-confirm-delete-file,
+.modal-confirm-move-file,
+.modal-confirm-rename-file {
+  position: fixed;
+
+  @include m-custom-down(999px) {
+    width: calc(90% - 200px);
+    transform: translateX(100px);
+  }
+}

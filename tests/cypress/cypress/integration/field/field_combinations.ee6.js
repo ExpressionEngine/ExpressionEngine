@@ -132,6 +132,7 @@ context('Create combinations of field', () => {
 	})
 	it('Tests Checkboxes', () => {
 		cy.visit('admin.php?/cp/fields')
+		cy.dismissLicenseAlert()
 		cy.get('div').contains('AA Checkboxes Test').click()
 		cy.get('div').contains('Value/Label Pairs').click()
 		cy.get('a').contains('Add New').click()
@@ -391,6 +392,7 @@ context('Create combinations of field', () => {
 		cy.get('input[placeholder="http://"]').clear().type('https://expressionengine.com').blur()
 		cy.get('.ee-form-error-message').should('not.exist')
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
+		cy.dismissLicenseAlert()
 		page.get('alert_error').should('not.exist')
 
 		cy.visit('admin.php?/cp/design')

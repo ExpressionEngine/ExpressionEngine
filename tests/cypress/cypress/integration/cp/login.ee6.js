@@ -224,7 +224,8 @@ context('Login Page', () => {
         // We should now be logged in as robin, and in the control panel
 
         // Make sure user is logged in
-        cy.get('.main-header__account');
+        cy.get('.main-header__account').should('exist');
+        cy.dismissLicenseAlert()
 
         // Click the account icon
         cy.get('.main-header__account').click();

@@ -73,7 +73,7 @@ class Updater
     {
         $upload_destinations = ee('db')->from('upload_prefs')->get();
 
-        foreach ($upload_destinations as $upload) {
+        foreach ($upload_destinations->result() as $upload) {
             $FileDimensions = ee('db')->where('upload_location_id', $upload->id)->from('file_dimensions')->get();
             foreach ($FileDimensions->result() as $size) {
                 if ($size->site_id != $upload->site_id) {

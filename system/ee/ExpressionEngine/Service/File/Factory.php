@@ -10,6 +10,7 @@
 
 namespace ExpressionEngine\Service\File;
 
+use ExpressionEngine\Library\Filesystem\Adapter\Local;
 use ExpressionEngine\Dependency\League\Flysystem;
 
 /**
@@ -20,7 +21,7 @@ class Factory
     public function getPath($path, ?Flysystem\AdapterInterface $adapter = null)
     {
         if (is_null($adapter)) {
-            $adapter = new Flysystem\Adapter\Local($path);
+            $adapter = new Local(['path' => $path]);
         }else{
             $adapter->setPathPrefix($path);
         }

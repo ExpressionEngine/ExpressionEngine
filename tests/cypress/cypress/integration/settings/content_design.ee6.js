@@ -147,7 +147,7 @@ context('Content & Design Settings', () => {
     //page.submit()AJ
     cy.get('button').contains('Save Settings').first().click()
 
-    page.get('wrap').contains('Preferences updated')
+    page.get('wrap').contains('Preferences Updated')
     page.get('new_posts_clear_caches').invoke('val').then((val) => {
       expect(val).not.to.be.equal(new_posts_clear_caches)
     })

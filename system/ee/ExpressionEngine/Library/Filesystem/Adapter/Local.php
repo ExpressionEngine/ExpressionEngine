@@ -37,7 +37,6 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
 
         // Overriding parent constructor to remove this behavior of creating the root if it does not exist
         // $this->ensureDirectory($root);
-
         if (!\is_dir($root) || !\is_readable($root)) {
             //throw an exception if root is not valid, but only if it's not validation request
             if (empty(ee()->input->post('ee_fv_field'))) {
