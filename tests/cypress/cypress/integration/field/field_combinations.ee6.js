@@ -392,6 +392,7 @@ context('Create combinations of field', () => {
 		cy.get('input[placeholder="http://"]').clear().type('https://expressionengine.com').blur()
 		cy.get('.ee-form-error-message').should('not.exist')
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
+		cy.dismissLicenseAlert()
 		page.get('alert_error').should('not.exist')
 
 		cy.visit('admin.php?/cp/design')
