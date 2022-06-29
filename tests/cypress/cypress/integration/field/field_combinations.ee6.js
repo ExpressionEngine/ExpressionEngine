@@ -132,6 +132,7 @@ context('Create combinations of field', () => {
 	})
 	it('Tests Checkboxes', () => {
 		cy.visit('admin.php?/cp/fields')
+		cy.dismissLicenseAlert()
 		cy.get('div').contains('AA Checkboxes Test').click()
 		cy.get('div').contains('Value/Label Pairs').click()
 		cy.get('a').contains('Add New').click()

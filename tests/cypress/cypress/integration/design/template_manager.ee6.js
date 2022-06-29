@@ -265,7 +265,7 @@ context('Template Manager', () => {
 
     it('can search templates', function() {
         cy.hasNoErrors()
-
+        cy.dismissLicenseAlert()
         page.get('phrase_search').type('Recent News').type('{enter}')
         cy.wait(500)
 
