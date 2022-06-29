@@ -437,7 +437,7 @@ class Filesystem
     {
         $source = $this->normalizeRelativePath($source);
         $dest = $this->normalizeRelativePath($dest);
-        $destBackup = "$dest.backup";
+        $destBackup = rtrim($dest, '\\/').'.backup';
 
         if (!$this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
