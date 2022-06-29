@@ -201,6 +201,11 @@ class Filesystem
     public function delete($path)
     {
         $path = $this->normalizeRelativePath($path);
+        
+        if($this->isDir($path)) {
+            return $this->deleteDir($path);
+        }
+
         return $this->flysystem->delete($path);
     }
 
@@ -441,6 +446,10 @@ class Filesystem
 
         if (!$this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
+        }
+
+        if($this->exists($destBackup)) {
+            $this->delete($destBackup);
         }
 
         if($this->exists($dest)) {
