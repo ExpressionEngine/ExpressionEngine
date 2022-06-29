@@ -367,6 +367,13 @@ class Files extends AbstractFilesController
             ->all();
 
         $usageCount = 0;
+
+        if ($files->count() == 1) {
+            foreach ($files as $file) {
+                $edit_url = ee('CP/URL')->make('files/file/view/' . $file->file_id.'#tab=t-usage');
+            }
+        }
+
         foreach ($files as $file) {
             if ($file->model_type == 'Directory') {
                 $countFiles = ee('db')->from('files')->where('directory_id', $file->file_id)->count_all_results();
@@ -385,7 +392,11 @@ class Files extends AbstractFilesController
         }
 
         if ($usageCount > 0) {
-            $title = lang('file_is_in_use');
+            if (isset($edit_url)) {
+                $title = sprintf(lang('file_is_in_use'), $edit_url, $usageCount);
+            } else {
+                $title = lang('files_is_in_use');
+            }
         }
 
         if (isset($title)) {
