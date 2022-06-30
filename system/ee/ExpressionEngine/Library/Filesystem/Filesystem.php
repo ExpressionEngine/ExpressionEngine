@@ -23,9 +23,9 @@ class Filesystem
     public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = [])
     {
         if (is_null($adapter)) {
-            $eeConfig = &get_config();
+            $basePath = array_key_exists('base_path', get_config()) ? get_config()['base_path'] : '';
             $default = ($_SERVER['DOCUMENT_ROOT']) ?: realpath(SYSPATH .'../');
-            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath($eeConfig['base_path'] ?: $default));
+            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath($basePath ?: $default));
         }else{
             // Fix prefixes
             $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
