@@ -153,67 +153,66 @@
                                 $column_name = $columns[$key]['label'];
                                 $column_name = ($lang_cols) ? lang($column_name) : $column_name;
                                 ?>
-
-                                <?php if ($column['encode'] == true && $column['type'] != Table::COL_STATUS): ?>
-                                    <?php if (isset($column['href'])): ?>
-                                    <td><span class="collapsed-label"><?=$column_name?></span><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
-                                    <?php else: ?>
-                                    <td><span class="collapsed-label"><?=$column_name?></span><?=htmlentities((string) $column['content'], ENT_QUOTES, 'UTF-8')?></td>
-                                    <?php endif; ?>
-                                <?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
-                                    <td class="app-listing__cell">
-                                        <div class="toolbar-wrap">
-                                            <?=ee()->load->view('_shared/toolbar', $column, true)?>
-                                        </div>
-                                    </td>
-                                <?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
-                                    <td class="app-listing__cell app-listing__cell--input text--center checkbox-column">
-                                        <label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
-                                        <input
-                                            id="<?=$table_id . '-' . $i . '-' . $row_id?>"
-                                            class="input--no-mrg<?php if (isset($column['hidden']) && $column['hidden']):?> hidden<?php endif; ?>"
-                                            name="<?=form_prep($column['name'])?>"
-                                            value="<?=form_prep($column['value'])?>"
-                                            <?php if (isset($column['data'])):?>
-                                                <?php foreach ($column['data'] as $key => $value): ?>
-                                                    data-<?=$key?>="<?=form_prep($value)?>"
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                            <?php if (isset($column['disabled']) && $column['disabled'] !== false):?>
-                                                disabled="disabled"
-                                            <?php endif; ?>
-                                            type="checkbox"
-                                        >
-                                    </td>
-                                <?php elseif ($column['type'] == Table::COL_STATUS): ?>
-                                    <td><span class="collapsed-label"><?=$column_name?></span><?=$column['content']?></td>
-                                <?php elseif (isset($column['html'])): ?>
-                                    <td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?> <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
-                                        <span class="collapsed-label"><?=$column_name?></span>
-                                        <?=$column['html']?>
-                                        <?php if (isset($column['error']) && ! empty($column['error'])): ?>
-                                            <em class="ee-form-error-message"><?=$column['error']?></em>
-                                        <?php endif ?>
-                                    </td>
-                                <?php else: ?>
-                                    <td><span class="collapsed-label"><?=$column_name?></span><?=$column['content']?></td>
-                                <?php endif ?>
-                            <?php endforeach ?>
-                        </tr>
-                    <?php endforeach ?>
-                <?php endforeach ?>
-                <?php if (! empty($action_buttons) || ! empty($action_content)): ?>
-                    <tr class="tbl-action">
-                        <td colspan="<?=$colspan?>" class="solo">
-                            <?php foreach ($action_buttons as $button): ?>
-                                <a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a></td>
-                            <?php endforeach; ?>
-                            <?=$action_content?>
-                        </td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+    							<?php if ($column['encode'] == true && $column['type'] != Table::COL_STATUS): ?>
+    								<?php if (isset($column['href'])): ?>
+    								<td><span class="collapsed-label"><?=$column_name?></span><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
+    								<?php else: ?>
+    								<td><span class="collapsed-label"><?=$column_name?></span><?=htmlentities((string) $column['content'], ENT_QUOTES, 'UTF-8')?></td>
+    								<?php endif; ?>
+    							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
+    								<td class="app-listing__cell">
+    									<div class="toolbar-wrap">
+    										<?=ee()->load->view('_shared/toolbar', $column, true)?>
+    									</div>
+    								</td>
+    							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
+    								<td class="app-listing__cell app-listing__cell--input text--center checkbox-column">
+    									<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
+    									<input
+    										id="<?=$table_id . '-' . $i . '-' . $row_id?>"
+    										class="input--no-mrg<?php if (isset($column['hidden']) && $column['hidden']):?> hidden<?php endif; ?>"
+    										name="<?=form_prep($column['name'])?>"
+    										value="<?=form_prep($column['value'])?>"
+    										<?php if (isset($column['data'])):?>
+    											<?php foreach ($column['data'] as $key => $value): ?>
+    												data-<?=$key?>="<?=form_prep($value)?>"
+    											<?php endforeach; ?>
+    										<?php endif; ?>
+    										<?php if (isset($column['disabled']) && $column['disabled'] !== false):?>
+    											disabled="disabled"
+    										<?php endif; ?>
+    										type="checkbox"
+    									>
+    								</td>
+    							<?php elseif ($column['type'] == Table::COL_STATUS): ?>
+    								<td><span class="collapsed-label"><?=$column_name?></span><?=$column['content']?></td>
+    							<?php elseif (isset($column['html'])): ?>
+    								<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?> <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+    									<span class="collapsed-label"><?=$column_name?></span>
+    									<?=$column['html']?>
+    									<?php if (isset($column['error']) && ! empty($column['error'])): ?>
+    										<em class="ee-form-error-message"><?=$column['error']?></em>
+    									<?php endif ?>
+    								</td>
+    							<?php else: ?>
+    								<td class="<?=($column['type'] == Table::COL_THUMB ? 'thumb-column' : '')?>"><span class="collapsed-label"><?=$column_name?></span><?=$column['content']?></td>
+    							<?php endif ?>
+    						<?php endforeach ?>
+    					</tr>
+    				<?php endforeach ?>
+    			<?php endforeach ?>
+    			<?php if (! empty($action_buttons) || ! empty($action_content)): ?>
+    				<tr class="tbl-action">
+    					<td colspan="<?=$colspan?>" class="solo">
+    						<?php foreach ($action_buttons as $button): ?>
+    							<a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a></td>
+    						<?php endforeach; ?>
+    						<?=$action_content?>
+    					</td>
+    				</tr>
+    			<?php endif; ?>
+    		</tbody>
+    	</table>
     <?php endif ?>
 
     <?php if ($wrap): ?>

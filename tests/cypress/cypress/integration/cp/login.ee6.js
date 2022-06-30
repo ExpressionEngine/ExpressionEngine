@@ -14,87 +14,7 @@ context('Login Page', () => {
         cy.hasNoErrors();
     })
 
-    it('shows the login page content', function() {
-        //cy.lighthouse();
-        cy.contains('Username');
-        cy.contains('Password');
-        cy.contains('Remind me');
-
-        cy.get('input[type=submit]').should('not.be.disabled');
-    })
-
-    it('logs out when session cookies are cleared', function() {
-        // Make sure we are using "cookie" as our session type
-        cy.eeConfig({item: 'website_session_type', value: 'c'})
-
-        cy.eeConfig({item: 'website_session_type'}) .then((config) => {
-             expect(config.trim()).to.be.equal('c')
-        })
-
-        // Make sure the exp_sessionid cookie is null
-        cy.getCookie('exp_sessionid').should('be.null')
-
-        // Log in
-        cy.login({ email: 'admin', password: 'password' });
-
-        // Make sure the exp_sessionid cookie is not null
-        cy.getCookie('exp_sessionid').should('not.be.null');
-
-        // Make sure the login modal is not visible
-        cy.get('#idle-modal', { timeout: 20000 }).should('not.be.visible');
-
-        // Clear the exp_sessionid cookie and make sure it is null
-        cy.clearCookie('exp_sessionid').should('be.null');
-
-        // Check that the login modal is visible now
-        //cy.get('#idle-modal', { timeout: 20000 }).should('be.visible');
-
-        // Click the overview nav item, which will reload the page
-        cy.get('.ee-sidebar').contains('Overview').click({force: true});
-
-        // Make sure user is on the login page
-        cy.contains('Username');
-        cy.contains('Password');
-        cy.contains('Remind me');
-    })
-
-    it('rejects when submitting no credentials', function() {
-        cy.login({ email: '', password: '' });
-
-        cy.contains('The username field is required');
-        cy.get('input[type=submit]').should('not.be.disabled');
-    })
-
-    it('rejects when submitting no password', function() {
-        cy.login({ email: 'admin', password: '' });
-
-        cy.contains('The password field is required');
-        cy.get('input[type=submit]').should('not.be.disabled');
-    })
-
-    it('logs in when submitting valid credentials', function() {
-        cy.login({ email: 'admin', password: 'password' });
-
-       cy.get('h2').contains("Members")
-    })
-
-    it('rejects when submitting invalid credentials', function() {
-        cy.login({ email: 'noone', password: 'nowhere' });
-
-        cy.contains('That is the wrong username or password');
-        cy.get('input[type=submit]').should('not.be.disabled');
-    })
-
-    it('locks the user out after four login attempts', function() {
-        for (var i = 0; i < 4; i++) {
-            cy.login({ email: 'nobody', password: 'nowhere' });
-        }
-
-        cy.contains('You are only permitted to make four login attempts every 1 minute(s)');
-        cy.get('input[type=submit]').contains('Locked').should('be.disabled');
-        cy.wait(60000);
-    })
-
+    
     context('when cp session is idle', () => {
         beforeEach(function() {
             // Log in
@@ -111,12 +31,12 @@ context('Login Page', () => {
                 win.EE.cp.broadcastEvents.modal()
                 win.$(window).trigger('broadcast.idleState', 'modal');
                 // win.$.get(win.EE.BASE + '&C=login&M=lock_cp');
-                cy.request('GET', '/admin.php?S=0&D=cp&C=login&M=lock_cp')
-                cy.wait(1000);
-                cy.get('.modal-timeout').should('be.visible');
-                
-                // Now make sure we can find the modal, but it is visible
-                cy.contains('Log into EE6').should('be.visible');
+                cy.request('GET', '/admin.php?S=0&D=cp&C=login&M=lock_cp').then(() => {
+                    cy.get('.modal-timeout').should('be.visible');
+                    
+                    // Now make sure we can find the modal, but it is visible
+                    cy.contains('Log into EE6').should('be.visible');
+                })
             })
 
 
@@ -167,95 +87,181 @@ context('Login Page', () => {
         })
     })
 
-    it('logs in after logout', function() {
-        // Log in
-        cy.login({ email: 'admin', password: 'password' });
+    context ('basic login sanity checks', () => {
 
-        // User is logged in
-        cy.get('h2').contains("Members");
+        it('shows the login page content', function() {
+            //cy.lighthouse();
+            cy.contains('Username');
+            cy.contains('Password');
+            cy.contains('Remind me');
 
-        // Click the account icon
-        cy.get('.main-header__account').click();
+            cy.get('input[type=submit]').should('not.be.disabled');
+        })
 
-        // Click the log out button
-        cy.contains('Log Out').click();
+        it('logs out when session cookies are cleared', function() {
+            // Make sure we are using "cookie" as our session type
+            cy.eeConfig({item: 'website_session_type', value: 'c'})
 
-        // Make sure we can see the login page
-        cy.contains('Username');
-        cy.contains('Password');
-        cy.contains('Remind me');
+            cy.eeConfig({item: 'website_session_type'}) .then((config) => {
+                expect(config.trim()).to.be.equal('c')
+            })
 
-        // Log in
-        cy.login({ email: 'admin', password: 'password' });
+            // Make sure the exp_sessionid cookie is null
+            cy.getCookie('exp_sessionid').should('be.null')
 
-        // User is logged in
-        cy.get('h2').contains("Members");
+            // Log in
+            cy.login({ email: 'admin', password: 'password' });
+
+            // Make sure the exp_sessionid cookie is not null
+            cy.getCookie('exp_sessionid').should('not.be.null');
+
+            // Make sure the login modal is not visible
+            cy.get('#idle-modal', { timeout: 20000 }).should('not.be.visible');
+
+            // Clear the exp_sessionid cookie and make sure it is null
+            cy.clearCookie('exp_sessionid').should('be.null');
+
+            // Check that the login modal is visible now
+            //cy.get('#idle-modal', { timeout: 20000 }).should('be.visible');
+
+            // Click the overview nav item, which will reload the page
+            cy.get('.ee-sidebar').contains('Overview').click({force: true});
+
+            // Make sure user is on the login page
+            cy.contains('Username');
+            cy.contains('Password');
+            cy.contains('Remind me');
+        })
+
+        it('rejects when submitting no credentials', function() {
+            cy.login({ email: '', password: '' });
+
+            cy.contains('The username field is required');
+            cy.get('input[type=submit]').should('not.be.disabled');
+        })
+
+        it('rejects when submitting no password', function() {
+            cy.login({ email: 'admin', password: '' });
+
+            cy.contains('The password field is required');
+            cy.get('input[type=submit]').should('not.be.disabled');
+        })
+
+        it('logs in when submitting valid credentials', function() {
+            cy.login({ email: 'admin', password: 'password' });
+
+        cy.get('h2').contains("Members")
+        })
+
+        it('rejects when submitting invalid credentials', function() {
+            cy.login({ email: 'noone', password: 'nowhere' });
+
+            cy.contains('That is the wrong username or password');
+            cy.get('input[type=submit]').should('not.be.disabled');
+        })
+
+        it('locks the user out after four login attempts', function() {
+            for (var i = 0; i < 4; i++) {
+                cy.login({ email: 'nobody', password: 'nowhere' });
+            }
+
+            cy.contains('You are only permitted to make four login attempts every 1 minute(s)');
+            cy.get('input[type=submit]').contains('Locked').should('be.disabled');
+            cy.wait(60000);
+        })
     })
 
-    it('logs in and then uses "login as user" in CP', function() {
-        // Log in
-        cy.login({ email: 'admin', password: 'password' });
+    context('advanced login routines', () => {
+        it('logs in after logout', function() {
+            // Log in
+            cy.login({ email: 'admin', password: 'password' });
 
-        // User is logged in
-        cy.get('h2').contains("Members");
+            // User is logged in
+            cy.get('h2').contains("Members");
 
-        // Click the members sidebar button
-        cy.get('.ee-sidebar__item').contains('Members').click();
+            // Click the account icon
+            cy.get('.main-header__account').click();
 
-        // Click the member "robin" (the other super admin user)
-        cy.get('a').contains('robin').click();
+            // Click the log out button
+            cy.contains('Log Out').click();
 
-        // Click the sidebar item "Login as robin"
-        cy.get('a').contains('Login as robin').click();
+            // Make sure we can see the login page
+            cy.contains('Username');
+            cy.contains('Password');
+            cy.contains('Remind me');
 
-        // We are now in the form where we need to type in our password
-        // First lets click the checkbox item "CP Index"
-        cy.contains('CP Index').click();
+            // Log in
+            cy.login({ email: 'admin', password: 'password' });
 
-        // Add a 5 second wait, since it couldnt find the password field
-        cy.wait(5000);
+            // User is logged in
+            cy.get('h2').contains("Members");
+        })
 
-        // Type in the password
-        cy.get('.form-standard > form .field-control input[type=password]').type('password');
+        it('logs in and then uses "login as user" in CP', function() {
+            // Log in
+            cy.login({ email: 'admin', password: 'password' });
 
-        // Click log in button
-        cy.contains('Authenticate & Login').click();
+            // User is logged in
+            cy.get('h2').contains("Members");
 
-        // We should now be logged in as robin, and in the control panel
+            // Click the members sidebar button
+            cy.get('.ee-sidebar__item').contains('Members').click();
 
-        // Make sure user is logged in
-        cy.get('.main-header__account').should('exist');
-        cy.dismissLicenseAlert()
+            // Click the member "robin" (the other super admin user)
+            cy.get('a').contains('robin').click();
 
-        // Click the account icon
-        cy.get('.main-header__account').click();
-        cy.get('.account-menu__header h2').contains("Robin Screen");
+            // Click the sidebar item "Login as robin"
+            cy.get('a').contains('Login as robin').click();
 
-        // Click the "My Profile link"
-        cy.get('.main-header__account').contains('My Profile').click();
+            // We are now in the form where we need to type in our password
+            // First lets click the checkbox item "CP Index"
+            cy.contains('CP Index').click();
 
-        // Make sure we end up on the account page and that the member is "robin"
-        cy.get('h1').contains('robin');
-    })
+            // Add a 5 second wait, since it couldnt find the password field
+            cy.wait(5000);
 
-    // Tests that EECORE-1582 is fixed
-    it('redirects to login page', function() {
-        // Visit a URL that should redirect and then make sure we end up on the login page
-        cy.visit('admin.php?/cp/login/0');
+            // Type in the password
+            cy.get('.form-standard > form .field-control input[type=password]').type('password');
 
-        // Make sure there are no errors
-        cy.hasNoErrors();
+            // Click log in button
+            cy.contains('Authenticate & Login').click();
 
-        // Make sure we can see the login page
-        cy.contains('Username');
-        cy.contains('Password');
-        cy.contains('Remind me');
-    })
+            // We should now be logged in as robin, and in the control panel
 
-    it('shows the reset password form when link is clicked', function() {
-        cy.contains('Remind me').click()
+            // Make sure user is logged in
+            cy.get('.main-header__account').should('exist');
+            cy.dismissLicenseAlert()
 
-        cy.contains('Reset Password');
+            // Click the account icon
+            cy.get('.main-header__account').click();
+            cy.get('.account-menu__header h2').contains("Robin Screen");
+
+            // Click the "My Profile link"
+            cy.get('.main-header__account').contains('My Profile').click();
+
+            // Make sure we end up on the account page and that the member is "robin"
+            cy.get('h1').contains('robin');
+        })
+
+        // Tests that EECORE-1582 is fixed
+        it('redirects to login page', function() {
+            // Visit a URL that should redirect and then make sure we end up on the login page
+            cy.visit('admin.php?/cp/login/0');
+
+            // Make sure there are no errors
+            cy.hasNoErrors();
+
+            // Make sure we can see the login page
+            cy.contains('Username');
+            cy.contains('Password');
+            cy.contains('Remind me');
+        })
+
+        it('shows the reset password form when link is clicked', function() {
+            cy.contains('Remind me').click()
+
+            cy.contains('Reset Password');
+        })
     })
 
     context('when cookie domain is wrong', () => {

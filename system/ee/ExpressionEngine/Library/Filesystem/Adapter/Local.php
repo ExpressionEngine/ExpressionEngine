@@ -9,6 +9,8 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
 {
     use AdapterTrait;
 
+    protected $rootExists = true;
+
     protected $_validation_rules = [
         'server_path' => 'required|fileExists|writable',
         'url' => 'required|validateUrl',
@@ -39,7 +41,9 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
         // $this->ensureDirectory($root);
         if (!\is_dir($root) || !\is_readable($root)) {
             //throw an exception if root is not valid, but only if it's not validation request
-            if (empty(ee()->input->post('ee_fv_field'))) {
+            if ($this->settings['allow_missing'] ?? false) {
+                $this->rootExists = false;
+            }else{
                 throw new \LogicException('The root path ' . $root . ' is not readable.');
             }
         }
@@ -89,6 +93,14 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
         }
 
         return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function has($path)
+    {
+        return $this->rootExists && parent::has($path);
     }
 
 }

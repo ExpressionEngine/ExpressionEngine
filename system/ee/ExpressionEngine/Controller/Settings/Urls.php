@@ -190,7 +190,7 @@ class Urls extends Settings
      **/
     public function _validateThemeFolderPath($path)
     {
-        if (!ee()->form_validation->file_exists(rtrim(rtrim((string) $path, '/'), DIRECTORY_SEPARATOR) . '/ee/cp')) {
+        if (!ee()->form_validation->file_exists(rtrim((string) $path, '\\/') . '/ee/cp')) {
             ee()->form_validation->set_message('_validateThemeFolderPath', lang('invalid_theme_folder_path'));
 
             return false;

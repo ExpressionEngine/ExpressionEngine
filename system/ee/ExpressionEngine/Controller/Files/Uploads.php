@@ -656,16 +656,16 @@ class Uploads extends AbstractFilesController
 
         if (!empty($upload_destination->adapter)) {
             //validate adapter settings
-            $adapterValidation = ee('Validation')->make()->validate($upload_destination->getFilesystemAdapter());
-            if (! $adapterValidation->isValid()) {
-                foreach ($adapterValidation->getFailed() as $field_name => $rules) {
-                    if (property_exists($upload_destination, $field_name)) {
-                        $field = '_for_adapter[' . $upload_destination->adapter . '][' . $field_name . ']';
-                    } else {
-                        $field = '_for_adapter[' . $upload_destination->adapter . '][adapter_settings][' . $field_name . ']';
-                    }
-                    $result->addFailed($field, $rules[0]);
+            $adapter = $upload_destination->getFilesystemAdapter(['allow_missing' => true]);
+            $adapterValidation = ee('Validation')->make()->validate($adapter);           
+            
+            foreach ($adapterValidation->getFailed() as $field_name => $rules) {
+                if (property_exists($upload_destination, $field_name)) {
+                    $field = '_for_adapter[' . $upload_destination->adapter . '][' . $field_name . ']';
+                } else {
+                    $field = '_for_adapter[' . $upload_destination->adapter . '][adapter_settings][' . $field_name . ']';
                 }
+                $result->addFailed($field, $rules[0]);
             }
         }
 
