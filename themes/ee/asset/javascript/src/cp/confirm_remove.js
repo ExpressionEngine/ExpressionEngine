@@ -36,6 +36,7 @@ $(document).ready(function () {
 					window.location = checked.first().data('link');
 				}
 			} else if ($(conditional_element).data('action') == 'download') {
+				$('body').off('submit', '.container > .panel > .tbl-ctrls > form');
 				$(this).parents('form').trigger('submit');
 			}
 			return;
