@@ -20,23 +20,15 @@ $checkbox-size: 15px;
 		content: "";
 		display: block;
 		position: absolute;
-		top: 20%;
-		left: 8%;
-		// width: 25%;
-		// height: 45%;
-		// left: 40%;
-		// top: 20%;
-
-		// border: 2px solid #fff;
-		// border-top: 0;
-		// border-left: 0;
-		// transform: rotate(45deg) scale(0);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 		opacity: 0;
 
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 		@extend .fa-fw;
-		font-size: math.div($checkbox-size, 1.6);
+		font-size: math.div($checkbox-size, 1.3);
 
 		margin: 0 !important;
 		color: #fff !important;
@@ -61,7 +53,9 @@ $checkbox-size: 15px;
 	}
 
 	&:focus {
-		// @include focus-outline;
+    @include focus-visible {
+  		@include focus-outline;
+  	}
 		border-color: var(--ee-input-focus-border);
 	}
 
@@ -138,7 +132,9 @@ $radio-size: 15px;
 	}
 
 	&:focus {
-		@include focus-outline;
+    @include focus-visible {
+  		@include focus-outline;
+  	}
 		border-color: var(--ee-input-focus-border);
 	}
 
@@ -217,6 +213,7 @@ $radio-size: 15px;
 .lots-of-checkboxes {
 	border: 1px solid color(lots-of-checkboxes-border);
 	border-radius: $border-radius-base;
+  @include shadow-input;
 
 	.checkbox-label__text {
 		border-radius: 0;
@@ -225,7 +222,6 @@ $radio-size: 15px;
 
 .lots-of-checkboxes__search {
 	padding: $s-s;
-	margin-bottom: $s-s;
 	background: color(bg-0);
   border-bottom: 1px solid color(border);
   border-radius: $border-radius-base $border-radius-base 0 0;
@@ -277,7 +273,7 @@ $radio-size: 15px;
 }
 
 .lots-of-checkboxes .lots-of-checkboxes__items {
-  padding: 0px 15px 15px;
+  padding: 5px 15px 15px;
 }
 
 .lots-of-checkboxes__items--too-many {
@@ -298,7 +294,7 @@ $radio-size: 15px;
 	border-top: 1px solid color(border);
 	// box-shadow: 0 -5px 10px -10px rgba(#000, 0.2);
 
-	.fas {
+	.fas, .fal {
 		color: color(accent);
 	}
 }
@@ -353,7 +349,7 @@ ul.field-nested ul {
 .button-group-flyout-right {
 	float: right;
 }
-	
+
 .field-nested li {
 	padding: 0;
 
@@ -398,4 +394,49 @@ ul.field-nested ul {
 			}
 		}
 	}
+}
+
+// Custom styling for Statuses checkbox lists
+#fieldset-statuses {
+  .checkbox-label {
+    background-color: color(bg-0);
+    border: 1px solid color(border);
+    @include shadow-input;
+    border-radius: $border-radius-base;
+    position: relative;
+    margin-bottom: 8px;
+
+    .checkbox-label__text {
+      height: 45px;
+      position: relative;
+    }
+
+    input[type="checkbox"] {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 40px;
+    }
+
+    .icon-reorder {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 15px;
+    }
+
+    .status-tag {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 67px;
+    }
+
+    .button-group.button-group-flyout-right {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 15px;
+    }
+  }
 }

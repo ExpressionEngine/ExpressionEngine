@@ -482,7 +482,7 @@ class DragAndDropUpload extends React.Component {
                 }
             </div>
 
-            <div class="file-field__dropzone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <div class="file-field__dropzone-icon"><i class="fal fa-cloud-upload-alt"></i></div>
             </>
           }
           </div>

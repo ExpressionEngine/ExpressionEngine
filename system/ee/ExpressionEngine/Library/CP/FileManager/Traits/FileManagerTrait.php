@@ -105,10 +105,10 @@ trait FileManagerTrait
             $filters->add(
                 'Sort',
                 [
-                    'column_title|asc' => '<i class="fas fa-sort-amount-up"></i> ' . lang('title'),
-                    'column_title|desc' => '<i class="fas fa-sort-amount-down-alt"></i> ' . lang('title'),
-                    'date_added|asc' => '<i class="fas fa-sort-amount-up"></i> ' . lang('date_added'),
-                    'date_added|desc' => '<i class="fas fa-sort-amount-down-alt"></i> ' . lang('date_added'),
+                    'column_title|asc' => '<i class="fal fa-sort-amount-up"></i> ' . lang('title'),
+                    'column_title|desc' => '<i class="fal fa-sort-amount-down-alt"></i> ' . lang('title'),
+                    'date_added|asc' => '<i class="fal fa-sort-amount-up"></i> ' . lang('date_added'),
+                    'date_added|desc' => '<i class="fal fa-sort-amount-down-alt"></i> ' . lang('date_added'),
                 ],
                 'date_added|desc'
             );
@@ -525,7 +525,7 @@ trait FileManagerTrait
 
             foreach ($upload_destinations as $upload_pref) {
                 $uploadLocationsAndDirectoriesDropdownChoices[$upload_pref->getId() . '.0'] = [
-                    'label' => '<i class="fas fa-hdd"></i>' . $upload_pref->name,
+                    'label' => '<i class="fal fa-hdd"></i>' . $upload_pref->name,
                     'upload_location_id' => $upload_pref->id,
                     'directory_id' => 0,
                     'path' => '',

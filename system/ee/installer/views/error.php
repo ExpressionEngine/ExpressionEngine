@@ -8,7 +8,7 @@
 
 			<div class="alert alert--attention app-notice---error">
 				<div class="alert__icon">
-					<i class="fas fa-info-circle fa-fw"></i>
+					<i class="fal fa-info-circle fa-fw"></i>
 				</div>
 				<div class="alert__content">
 					<?=$error?>

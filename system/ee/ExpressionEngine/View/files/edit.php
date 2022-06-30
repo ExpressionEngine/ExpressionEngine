@@ -25,7 +25,7 @@ if (! isset($alerts_name)) {
                     <h3 class="title-bar__title">
                         <?=$file->title?>
                         <a class="button button--large filter-bar__button js-copy-url-button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_link')?>">
-                            <i class="fas fa-link"></i>
+                            <i class="fal fa-link"></i>
                         </a>
                     </h3>
 
@@ -41,7 +41,7 @@ if (! isset($alerts_name)) {
             <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
             <div class="alert alert--success f_manager-alert">
-                <div class="alert__icon"><i class="fas fa-check-circle fa-fw"></i></div>
+                <div class="alert__icon"><i class="fal fa-check-circle fa-fw"></i></div>
                 <div class="alert__content">
                     <?=lang('link_copied')?>
                 </div>
@@ -115,11 +115,11 @@ if (! isset($alerts_name)) {
                             $this->embed('ee:_shared/form/fieldset', ['setting' => $setting, 'group' => false]); ?>
                         <?php endforeach ?>
                         </div>
-                        
+
                         <?php if (isset($tabs)):?>
                             </div>
                         <?php endif; ?>
-                    
+
                 </div>
 
             </div>

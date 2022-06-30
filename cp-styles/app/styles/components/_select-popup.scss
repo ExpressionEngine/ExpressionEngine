@@ -56,7 +56,7 @@
 
 	&:not([multiple])::after {
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 
 		content: fa-content($fa-var-chevron-down);
 

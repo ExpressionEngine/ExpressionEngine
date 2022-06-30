@@ -417,7 +417,7 @@ EE.cp.JumpMenu = {
 					commandContext = commandSet[commandKey].command_context;
 				}
 
-				jumpContainer.document.querySelector(resultsTarget).innerHTML += '<a class="jump-menu__link ' + matchClass + '" href="' + jumpTarget + '" ' + jumpClick + '><span class="jump-menu__link-text"><i class="fas fa-sm ' + commandSet[commandKey].icon + '"></i> ' + commandSet[commandKey].command_title + '</span><span class="meta-info jump-menu__link-right">' + commandContext + '</span></a>';
+				jumpContainer.document.querySelector(resultsTarget).innerHTML += '<a class="jump-menu__link ' + matchClass + '" href="' + jumpTarget + '" ' + jumpClick + '><span class="jump-menu__link-text"><i class="fal fa-sm ' + commandSet[commandKey].icon + '"></i> ' + commandSet[commandKey].command_title + '</span><span class="meta-info jump-menu__link-right">' + commandContext + '</span></a>';
 
 				firstMatch = false;
 				matchClass = '';

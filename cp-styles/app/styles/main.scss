@@ -7,20 +7,20 @@
 @import 'abstracts/_space';
 @import "abstracts/_variables";
 // @import 'abstracts/_theme';
+@import 'themes/_theme-light-snow';
 @import 'themes/_theme-light-default';
 @import 'themes/_theme-dark-default';
 @import 'themes/_theme-light-pink';
 @import 'abstracts/_theme-helpers';
 @import 'abstracts/_mixins';
-@import 'fonts/_roboto.scss';
 
 
 // Vendor - third party plugins & fonts
 // -------------------------------------------------------------------
 
-@import 'vendor/fontawesome/scss/_fontawesome';
-@import 'vendor/fontawesome/scss/_solid';
-@import 'vendor/fontawesome/scss/_brands';
+@import 'vendor/fontawesome/scss/fontawesome';
+@import 'vendor/fontawesome/scss/light';
+@import 'vendor/fontawesome/scss/brands';
 
 @import 'vendor/_codemirror';
 @import 'vendor/_codemirror-custom';

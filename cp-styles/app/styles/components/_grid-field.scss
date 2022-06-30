@@ -3,7 +3,7 @@
 	width: 100%;
 
 	.table-responsive {
-		box-shadow: none;
+		@include shadow-input;
 		border: 1px solid color(border);
 		// overflow-x: visible;
 	}

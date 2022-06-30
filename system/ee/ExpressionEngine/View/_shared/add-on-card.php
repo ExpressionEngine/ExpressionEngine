@@ -28,7 +28,7 @@
 
 
 	<?php if (empty($show_updates)) : ?>
-	<a class="add-on-card__cog js-dropdown-toggle"><i class="fas fa-cog"></i></a>
+	<a class="add-on-card__cog js-dropdown-toggle"><i class="fal fa-cog"></i></a>
 	<?php endif; ?>
 
 	<div class="dropdown">

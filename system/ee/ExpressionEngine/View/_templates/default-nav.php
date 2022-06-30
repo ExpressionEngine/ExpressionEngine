@@ -29,12 +29,12 @@
                 <?=form_open($header['search_form_url'])?>
                     <?php if (isset($header['search_button_value'])): ?>
             <div class="field-control with-icon-start">
-              <i class="fas fa-search icon-start"></i>
+              <i class="fal fa-search icon-start"></i>
               <input class="main-nav__toolbar-input" placeholder="<?=$header['search_button_value']?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
             </div>
                     <?php else: ?>
           <div class="field-control with-icon-start">
-            <i class="fas fa-search icon-start"></i>
+            <i class="fal fa-search icon-start"></i>
             <input class="main-nav__toolbar-input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
           </div>
                     <?php endif; ?>
@@ -81,31 +81,31 @@
             <?php endif ?>
         <?php endif ?>
 
-        <?php if (isset($header['action_buttons']) && count($header['action_buttons'])): ?>
-                <?php foreach ($header['action_buttons'] as $button): ?>
-                        <?php if (isset($button['choices'])): ?>
-                            <button type="button" class="button button--primary js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$button['text']?> <i class="fas fa-caret-down icon-right"></i></button>
-                            <div class="dropdown">
-                                <?php if (count($button['choices']) > 8): ?>
-                                    <div class="dropdown__search">
-                                        <div class="search-input">
-                                            <input type="text" value="" class="search-input__input input--small" data-fuzzy-filter="true" placeholder="<?=$button['filter_placeholder']?>">
-                                        </div>
-                                    </div>
-                                <?php endif ?>
-                                <div class="dropdown__scroll">
-                                <?php foreach ($button['choices'] as $link => $text): ?>
-                                    <a href="<?=$link?>" class="dropdown__link"><?=$text?></a>
-                                <?php endforeach ?>
-                                </div>
-                            </div>
-                        <?php else: ?>
-                            <a class="button button--<?=isset($button['type']) ? $button['type'] : 'primary'?>" href="<?=$button['href']?>" rel="<?=isset($button['rel']) ? $button['rel'] : ''?>"><?=$button['text']?></a>
-                        <?php endif ?>
-                <?php endforeach ?>
-            <?php endif ?>
-    </div>
-    </div>
+		<?php if (isset($header['action_buttons']) && count($header['action_buttons'])): ?>
+				<?php foreach ($header['action_buttons'] as $button): ?>
+						<?php if (isset($button['choices'])): ?>
+							<button type="button" class="button button--primary js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$button['text']?> <i class="fal fa-caret-down icon-right"></i></button>
+							<div class="dropdown">
+								<?php if (count($button['choices']) > 8): ?>
+									<div class="dropdown__search">
+										<div class="search-input">
+											<input type="text" value="" class="search-input__input input--small" data-fuzzy-filter="true" placeholder="<?=$button['filter_placeholder']?>">
+										</div>
+									</div>
+								<?php endif ?>
+								<div class="dropdown__scroll">
+								<?php foreach ($button['choices'] as $link => $text): ?>
+									<a href="<?=$link?>" class="dropdown__link"><?=$text?></a>
+								<?php endforeach ?>
+								</div>
+							</div>
+						<?php else: ?>
+							<a class="button button--<?=isset($button['type']) ? $button['type'] : 'primary'?>" href="<?=$button['href']?>" rel="<?=isset($button['rel']) ? $button['rel'] : ''?>"><?=$button['text']?></a>
+						<?php endif ?>
+				<?php endforeach ?>
+			<?php endif ?>
+	</div>
+	</div>
 
 
 </div>

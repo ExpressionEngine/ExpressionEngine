@@ -10,7 +10,7 @@
   			<?php foreach ($update_notices as $notice): ?>
   				<div class="alert alert--attention">
             <div class="alert__icon">
-              <i class="fas fa-info-circle fa-fw"></i>
+              <i class="fal fa-info-circle fa-fw"></i>
             </div>
             <div class="alert__content">
     					<?php if ($notice->is_header): ?>

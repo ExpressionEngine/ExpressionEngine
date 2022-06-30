@@ -22,7 +22,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
         <!-- Add 'in-use' class if the filter is currently being applied -->
         <div class="filter-search-bar__item in-use">
 		  <button type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="Channel" title="Channel (Channel Name)">Channel <span class="faded">(Channel Name)</span></button>
-		  <a class="filter-clear" href="#"><i class="fas fa-times"></i></a>
+		  <a class="filter-clear" href="#"><i class="fal fa-times"></i></a>
           <div class="dropdown">
           	<div class="dropdown__scroll">
         			<a class="dropdown__link" href="">Channel Name</a>
@@ -84,7 +84,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
         <div class="filter-search-bar__item">
           <div class="field-control input-group input-group-sm with-icon-start with-icon-end">
             <input class="search-input__input input--small input-clear" type="text" name="filter_by_keyword" value="" placeholder="Search..." autofocus="autofocus">
-            <i class="fas fa-search icon-start icon--small"></i>
+            <i class="fal fa-search icon-start icon--small"></i>
             <span class="input-group-addon">
               <label class="checkbox-label">
                 <input type="checkbox" class="checkbox--small" value="">
@@ -97,7 +97,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
         </div>
 
         <div class="filter-search-bar__item">
-          <button type="button" class="filter-bar__button js-dropdown-toggle button button--default button--small dropdown-open open" title="Columns"><i class="fas fa-columns"></i></button>
+          <button type="button" class="filter-bar__button js-dropdown-toggle button button--default button--small dropdown-open open" title="Columns"><i class="fal fa-columns"></i></button>
           <div class="dropdown dropdown__scroll ui-sortable" rev="toggle-columns" x-placement="bottom-end">
           	<div class="dropdown__header">Columns</div>
           	<div class="dropdown__item">
