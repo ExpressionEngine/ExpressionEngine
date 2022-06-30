@@ -39,6 +39,7 @@ class Updater
                 'addEntryManagerViewsKeys',
                 'setFileManagerCompatibilityMode',
                 'installPro',
+                'addProTrialSeenToSession',
             ]
         );
 
@@ -359,6 +360,22 @@ class Updater
         }
     }
 
+    private function addProTrialSeenToSession()
+    {
+        if (!ee()->db->field_exists('pro_banner_seen', 'sessions')) {
+            ee()->smartforge->add_column(
+                'sessions',
+                [
+                    'pro_banner_seen' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'n',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
+    }
 }
 
 // EOF

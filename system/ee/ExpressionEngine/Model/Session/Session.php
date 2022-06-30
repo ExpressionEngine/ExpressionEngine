@@ -21,7 +21,8 @@ class Session extends Model
     protected static $_table_name = 'sessions';
 
     protected static $_typed_columns = array(
-        'can_debug' => 'boolString'
+        'can_debug' => 'boolString',
+        'pro_banner_seen' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -42,19 +43,33 @@ class Session extends Model
     protected $last_activity;
     protected $can_debug;
     protected $mfa_flag;
+    protected $pro_banner_seen;
 
     /**
      * Manage sudo-like timeout for "trust but verify" actions
      */
     const AUTH_TIMEOUT = '+15 minutes';
+
     public function resetAuthTimeout()
     {
         $this->setProperty('auth_timeout', ee()->localize->string_to_timestamp(self::AUTH_TIMEOUT));
         $this->save();
     }
+
     public function isWithinAuthTimeout()
     {
         return $this->auth_timeout > ee()->localize->now;
+    }
+
+    public function proBannerSeen()
+    {
+        return $this->getProperty('pro_banner_seen');
+    }
+
+    public function setProBannerSeen()
+    {
+        $this->setProperty('pro_banner_seen', 'y');
+        $this->save();
     }
 }
 

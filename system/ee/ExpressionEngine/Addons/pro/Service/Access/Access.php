@@ -215,6 +215,7 @@ class Access
         ee()->load->library('logger');
         ee()->lang->load('addons');
         ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        $isTrial = ($message === 'pro_license_error_trial');
 
         if (! $this->hasValidLicense()) {
             $message = sprintf(
@@ -230,8 +231,16 @@ class Access
             );
         }
 
+        // If the user is running pro as a trial then they should only see the error once
+        if ($isTrial && ee('Session')->proBannerSeen()) {
+            $showAlert = false;
+        }
+
         ee()->logger->developer($message, true);
         if (REQ == 'CP' && $showAlert) {
+            // The user has seen the banner, so we're marking it in the session
+            ee('Session')->setProBannerSeen();
+
             ee('CP/Alert')->makeBanner('pro-license-error')
                 ->asIssue()
                 ->canClose()
