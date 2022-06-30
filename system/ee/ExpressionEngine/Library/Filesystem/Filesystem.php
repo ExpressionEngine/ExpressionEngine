@@ -275,13 +275,11 @@ class Filesystem
             }
         }
 
-        $contents = $this->flysystem->listContents($path);
+        $contents = $this->flysystem->listContents($path, $recursive);
         $contents_array = [];
 
         foreach ($contents as $item) {
-            if ($item['type'] == 'dir' && $recursive) {
-                $contents_array += $this->getDirectoryContents($item['path'], $recursive);
-            } else if($includeHidden || strpos($item['path'], '.') !== 0) {
+            if ($item['type'] == 'file' && ($includeHidden || strpos($item['path'], '.') !== 0)) {
                 $contents_array[] = $item['path'];
             }
         }
