@@ -153,7 +153,6 @@
                                 $column_name = $columns[$key]['label'];
                                 $column_name = ($lang_cols) ? lang($column_name) : $column_name;
                                 ?>
-
     							<?php if ($column['encode'] == true && $column['type'] != Table::COL_STATUS): ?>
     								<?php if (isset($column['href'])): ?>
     								<td><span class="collapsed-label"><?=$column_name?></span><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
@@ -196,7 +195,7 @@
     									<?php endif ?>
     								</td>
     							<?php else: ?>
-    								<td><span class="collapsed-label"><?=$column_name?></span><?=$column['content']?></td>
+    								<td class="<?=($column['type'] == Table::COL_THUMB ? 'thumb-column' : '')?>"><span class="collapsed-label"><?=$column_name?></span><?=$column['content']?></td>
     							<?php endif ?>
     						<?php endforeach ?>
     					</tr>
