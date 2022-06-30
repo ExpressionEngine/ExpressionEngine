@@ -109,6 +109,13 @@ context('Install with default theme', () => {
       cy.logFrontendPerformance()
     })
 
+    it('there are no missing files in filemanager', () => {
+      cy.login({ email: 'admin', password: '1Password' });
+      cy.visit('admin.php?/cp/files')
+      cy.get('.app-notice-missing-files').should('not.exist')
+      cy.hasNoErrors()
+    })
+
     it('Entry with BandCamp audio', () => {
 
       cy.on('uncaught:exception', (err, runnable) => {

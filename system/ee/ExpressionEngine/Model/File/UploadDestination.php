@@ -152,6 +152,9 @@ class UploadDestination extends StructureModel
         if (in_array('--', $allowed_types)) {
             $allowed_types =  ['all'];
         }
+        if (empty($allowed_types)) {
+            $allowed_types = ['img'];
+        }
         $this->setProperty('allowed_types', $allowed_types);
     }
 
