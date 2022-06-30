@@ -24824,25 +24824,12 @@ body[data-theme="dark"] {
   border: 2px solid var(--ee-button-default-border);
   background: var(--ee-button-default-bg);
   border-radius: 4px;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   z-index: 12000;
   max-width: 200px;
-}
-#preview span {
-  width: 250px;
-  height: 200px;
-  display: flex;
-  overflow: hidden;
-  margin: 5px;
-  box-sizing: border-box;
-  align-items: center;
-  justify-content: center;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 .hidden {

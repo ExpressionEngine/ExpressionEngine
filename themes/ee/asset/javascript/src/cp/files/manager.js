@@ -160,19 +160,36 @@
 		
 		// new MutableSelectField('files_field', EE.fileManager.fileDirectory);
 
+		function showBigImage(button) {
+			var tooltip = button.find('#preview');
+			var element = button.next();
+			var placement = 'top-start';
+			var offset = '-5px, -25px';
+			new Popper(element, tooltip, {
+				placement: placement,
+				modifiers: {
+					offset: {
+						enabled: true,
+						offset: offset
+					},
+					preventOverflow: {
+						boundariesElement: 'viewport',
+					},
+					flip: {
+						behavior: ['right', 'left']
+					}
+				},
+			});
+		}
+
 		$('body').on({
 			mouseenter: function () {
 				var path = $(this).data('url');
 				var alt = $(this).attr('alt');
 				var parent = $(this).parent();
-				var top = $(this).offset().top;
-				var left = $(this).offset().left;
+
 				parent.append("<p id='preview'><img src='" + path + "' alt='"+alt+"' /></p>");
-				$("#preview").css({
-					'top': (top + 30) + "px",
-					'left': (left - 200) + "px",
-					'display': 'flex',
-				}).fadeIn();
+				showBigImage(parent);
 			}, mouseleave: function () {
 				$("#preview").remove();
 			}
