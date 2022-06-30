@@ -293,7 +293,7 @@ class UploadDestination extends StructureModel
     /**
      * Get the backing filesystem adapter for this upload destination
      */
-    public function getFilesystemAdapter()
+    public function getFilesystemAdapter($overrides = [])
     {
         // Do we want to allow variable replacement in adapters that aren't local?
         $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
@@ -302,7 +302,7 @@ class UploadDestination extends StructureModel
             'path' => $path,
             'server_path' => $this->server_path,
             'url' => $this->url
-        ], $this->adapter_settings ?? []);
+        ], $this->adapter_settings ?? [], $overrides);
         $adapter = ee('Filesystem/Adapter')->make($adapterName, $adapterSettings);
 
         return $adapter;
