@@ -502,7 +502,7 @@ class UploadDestination extends StructureModel
     {
         try {
             return $this->getFilesystem()->exists('');
-        } catch (\LogicException $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }
