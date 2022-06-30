@@ -78,7 +78,8 @@ if (! AJAX_REQUEST) {
                     }
                     $options[] = [
                         'value' => "download",
-                        'text' => lang('download')
+                        'text' => lang('download'),
+                        'attrs' => ' data-action="download"'
                     ];
                     $options[] = [
                         'value' => "copy_link",
@@ -91,11 +92,11 @@ if (! AJAX_REQUEST) {
                             'text' => lang('move'),
                             'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-move-file"'
                         ];
-                        $options[] = [
+                        /*$options[] = [
                             'value' => "replace",
                             'text' => lang('replace_file'),
                             'attrs' => ''
-                        ];
+                        ];*/
                     }
                     if (ee('Permission')->can('delete_files')) {
                         $options[] = [

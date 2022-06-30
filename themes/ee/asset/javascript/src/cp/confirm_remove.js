@@ -35,6 +35,8 @@ $(document).ready(function () {
 				if (checked.length && typeof(checked.first().data('link') !== 'undefined')) {
 					window.location = checked.first().data('link');
 				}
+			} else if ($(conditional_element).data('action') == 'download') {
+				$(this).parents('form').trigger('submit');
 			}
 			return;
 		}
