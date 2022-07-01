@@ -106,6 +106,6 @@ context('File Manager / Usage Tab', () => {
     cy.get('.f_entries-table tbody tr td a').contains('Welcome to the Example Site!')
 
     cy.get('.f_category-table tbody tr').should('have.length', 1)
-    cy.get('.f_entries-table tbody tr td a').contains('News')
+    cy.get('.f_category-table tbody tr td a').contains('News')
   })
 })

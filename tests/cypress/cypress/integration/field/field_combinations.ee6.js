@@ -21,6 +21,7 @@ context('Create combinations of field', () => {
 
 	before(function(){
 		cy.task('db:seed')
+		cy.eeConfig({ item: 'save_tmpl_files', value: 'n' });
 
 		cy.auth()
 

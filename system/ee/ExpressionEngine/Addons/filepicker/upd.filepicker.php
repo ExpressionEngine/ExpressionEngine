@@ -60,15 +60,6 @@ class Filepicker_upd
             'max_size' => $member_prefs['avatar_max_kb'],
         );
 
-        $member_directories['Member Photos'] = array(
-            'server_path' => $member_prefs['photo_path'],
-            'url' => $member_prefs['photo_url'],
-            'allowed_types' => ['img'],
-            'max_width' => $member_prefs['photo_max_width'],
-            'max_height' => $member_prefs['photo_max_height'],
-            'max_size' => $member_prefs['photo_max_kb'],
-        );
-
         $member_directories['Signature Attachments'] = array(
             'server_path' => $member_prefs['sig_img_path'],
             'url' => $member_prefs['sig_img_url'],

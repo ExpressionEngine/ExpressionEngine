@@ -23,8 +23,9 @@ class Filesystem
     public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = [])
     {
         if (is_null($adapter)) {
+            $basePath = array_key_exists('base_path', get_config()) ? get_config()['base_path'] : '';
             $default = ($_SERVER['DOCUMENT_ROOT']) ?: realpath(SYSPATH .'../');
-            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath(ee()->config->item('base_path') ?: $default));
+            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath($basePath ?: $default));
         }else{
             // Fix prefixes
             $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
@@ -201,6 +202,11 @@ class Filesystem
     public function delete($path)
     {
         $path = $this->normalizeRelativePath($path);
+
+        if($this->isDir($path)) {
+            return $this->deleteDir($path);
+        }
+
         return $this->flysystem->delete($path);
     }
 
@@ -441,6 +447,10 @@ class Filesystem
 
         if (!$this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
+        }
+
+        if($this->exists($destBackup)) {
+            $this->delete($destBackup);
         }
 
         if($this->exists($dest)) {

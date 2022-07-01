@@ -224,6 +224,10 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
         return;
     }
 
+    if (value === '') {
+        value = 'EMPTY';
+    }
+
     let command = [
         `cd support/fixtures && php config.php ${item}`,
         (value) ? ` ${value}` : '',
@@ -231,6 +235,7 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
     ].join('');
 
     //cy.exec('ddev exec --dir /var/www/html/tests/cypress "' + command + '"').then((harvest) => {
+    console.log(command)
     cy.exec(command).then((harvest) => {
         return harvest.stdout;
     })
