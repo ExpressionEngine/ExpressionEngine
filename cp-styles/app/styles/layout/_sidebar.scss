@@ -164,7 +164,7 @@
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.03);
 	padding: 0px 20px;
 	margin-bottom: 20px;
-  border-bottom: 1px solid color(border);
+  border-bottom: 1px solid color(sidebar-title-border-bottom);
   -webkit-transition: background-color 0.15s ease-in-out;
   -moz-transition: background-color 0.15s ease-in-out;
   -o-transition: background-color 0.15s ease-in-out;
@@ -253,8 +253,8 @@
 	height: 35px;
 	line-height: 35px;
 	padding: 0 20px;
-	margin-left: 10px;
-  margin-right: 10px;
+	margin-left: 7px;
+  margin-right: 7px;
   margin-bottom: 2px;
 	color: color(sidebar-text);
   border-radius: $border-radius-base;
@@ -423,7 +423,7 @@
   left: 0;
   width: $ee-sidebar-width;
   background-color: color(sidebar-bottom-bg);
-  border-top: 1px solid color(sidebar-border);
+  border-top: 1px solid color(sidebar-bottom-border-top);
   border-right: 1px solid color(sidebar-border);
   box-shadow: 0 -2px 2px 0 rgba(0,0,0,0.03);
 
@@ -474,7 +474,7 @@
   border-radius: $border-radius-full;
   color: color(sidebar-text);
   background-color: color(sidebar-bg);
-  border: 1px solid color(button-default-border);
+  border: 1px solid color(sidebar-border);
   font-size: 12px;
   line-height: 29px;
   padding: 0;
