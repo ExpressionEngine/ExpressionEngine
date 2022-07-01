@@ -64,10 +64,7 @@ function (_React$Component) {
         pendingFiles: null
       });
 
-      var files = Array.from(droppedFiles);
-      files = files.filter(function (file) {
-        return file.type != '';
-      });
+      var files = Array.from(droppedFiles); // files = files.filter(file => file.type != '')
 
       if (!_this.props.multiFile && files.length > 1) {
         return _this.setState({
@@ -166,9 +163,15 @@ function (_React$Component) {
         path: item.path || '',
         upload_location_id: item.upload_location_id || null
       });
-      window.globalDropzone = undefined;
-      $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
-      $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').change(function (e) {
+      window.globalDropzone = $(_this.dropZone);
+      var el = $(_this.dropZone).parents('div[data-file-field-react]');
+
+      if (!el.length) {
+        el = $(_this.dropZone).parents('div[data-file-grid-react]');
+      }
+
+      el.find('.f_open-filepicker').click();
+      el.find('.f_open-filepicker').change(function (e) {
         var files = e.target.files;
         that.handleDroppedFiles(files);
       });
@@ -219,7 +222,13 @@ function (_React$Component) {
         files: _this.state.files
       });
 
-      $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').val('');
+      var el = $(_this.dropZone).parents('div[data-file-field-react]');
+
+      if (!el.length) {
+        el = $(_this.dropZone).parents('div[data-file-grid-react]');
+      }
+
+      el.find('.f_open-filepicker').val('');
     });
 
     window.list;
@@ -327,7 +336,7 @@ function (_React$Component) {
           });
         }
 
-        window.globalDropzone = undefined;
+        window.globalDropzone = $(_this2.dropZone);
 
         _this2.handleDroppedFiles(droppedFiles);
       });
@@ -396,11 +405,41 @@ function (_React$Component) {
                 file.duplicate = true;
                 file.fileId = _response.fileId;
                 file.originalFileName = _response.originalFileName;
+
+                if (window.globalDropzone.parents('.field-control').find('.button-segment').length) {
+                  window.globalDropzone.parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+                    $(this).attr('disabled', 'disabled');
+                  });
+                }
+
+                if ($('.title-bar a.upload').length) {
+                  $('.title-bar a.upload').addClass('disabled');
+                }
+
+                if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                  $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled');
+                }
+
                 reject(file);
                 break;
 
               case 'error':
                 file.error = _this3.stripTags(_response.error);
+
+                if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+                  $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+                    $(this).attr('disabled', 'disabled');
+                  });
+                }
+
+                if ($('.title-bar a.upload').length) {
+                  $('.title-bar a.upload').addClass('disabled');
+                }
+
+                if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                  $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled');
+                }
+
                 reject(file);
                 break;
 
@@ -477,6 +516,20 @@ function (_React$Component) {
     value: function resolveConflict(file, response) {
       this.removeFile(file);
       this.props.onFileUploadSuccess(response, window.globalDropzone);
+
+      if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+        $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+          $(this).removeAttr('disabled');
+        });
+      }
+
+      if ($('.title-bar a.upload').length) {
+        $('.title-bar a.upload').removeClass('disabled');
+      }
+
+      if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+        $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled');
+      }
 
       if ($('.file-upload-widget').length) {
         $('.file-upload-widget').hide();
@@ -560,6 +613,20 @@ function (_React$Component) {
           e.preventDefault();
 
           _this5.removeFile(file);
+
+          if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+            $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+              $(this).removeAttr('disabled');
+            });
+          }
+
+          if ($('.title-bar a.upload').length) {
+            $('.title-bar a.upload').removeClass('disabled');
+          }
+
+          if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+            $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled');
+          }
 
           if ($('.file-upload-widget').length) {
             if ($('.file-upload-widget').hasClass('hidden')) {

@@ -117,7 +117,6 @@ class DragAndDropUpload extends React.Component {
       e.preventDefault()
       e.stopPropagation()
     }
-
     // Handle upload
     this.dropZone.addEventListener('drop', (e) => {
       let droppedFiles = e.dataTransfer.files
@@ -127,7 +126,7 @@ class DragAndDropUpload extends React.Component {
           pendingFiles: droppedFiles
         })
       }
-      window.globalDropzone = undefined
+      window.globalDropzone = $(this.dropZone)
       this.handleDroppedFiles(droppedFiles)
     })
 
@@ -154,7 +153,7 @@ class DragAndDropUpload extends React.Component {
     })
 
     let files = Array.from(droppedFiles)
-    files = files.filter(file => file.type != '')
+    // files = files.filter(file => file.type != '')
 
     if ( ! this.props.multiFile && files.length > 1) {
       return this.setState({
@@ -227,10 +226,33 @@ class DragAndDropUpload extends React.Component {
               file.duplicate = true
               file.fileId = response.fileId
               file.originalFileName = response.originalFileName
+
+              if(window.globalDropzone.parents('.field-control').find('.button-segment').length) {
+                window.globalDropzone.parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
+                  $(this).attr('disabled','disabled');
+                })
+              }
+              if( $('.title-bar a.upload').length) {
+                $('.title-bar a.upload').addClass('disabled')
+              }
+              if( $('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled')
+              }
               reject(file)
               break
             case 'error':
               file.error = this.stripTags(response.error)
+              if($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+                $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
+                  $(this).attr('disabled','disabled');
+                })
+              }
+              if( $('.title-bar a.upload').length) {
+                $('.title-bar a.upload').addClass('disabled')
+              }
+              if( $('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled')
+              }
               reject(file)
               break
             default:
@@ -329,10 +351,15 @@ class DragAndDropUpload extends React.Component {
       path: item.path || '',
       upload_location_id: item.upload_location_id || null
     })
-    window.globalDropzone = undefined;
+    window.globalDropzone = $(this.dropZone);
 
-    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
-    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').change(function(e){
+    let el = $(this.dropZone).parents('div[data-file-field-react]');
+    if (!el.length) {
+      el = $(this.dropZone).parents('div[data-file-grid-react]')
+    }
+
+    el.find('.f_open-filepicker').click();
+    el.find('.f_open-filepicker').change(function(e){
       var files = e.target.files;
       that.handleDroppedFiles(files)
     });
@@ -389,8 +416,11 @@ class DragAndDropUpload extends React.Component {
     this.setState({
       files: this.state.files
     })
-
-    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').val('');
+    let el = $(this.dropZone).parents('div[data-file-field-react]');
+    if (!el.length) {
+      el = $(this.dropZone).parents('div[data-file-grid-react]')
+    }
+    el.find('.f_open-filepicker').val('');
   }
 
   warningsExist() {
@@ -403,6 +433,17 @@ class DragAndDropUpload extends React.Component {
   resolveConflict(file, response) {
     this.removeFile(file)
     this.props.onFileUploadSuccess(response, window.globalDropzone)
+    if($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+      $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
+        $(this).removeAttr('disabled');
+      })
+    }
+    if( $('.title-bar a.upload').length) {
+      $('.title-bar a.upload').removeClass('disabled')
+    }
+    if( $('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+      $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled')
+    }
     if( $('.file-upload-widget').length) {
       $('.file-upload-widget').hide();
       $('body .f_manager-wrapper > form').submit();
@@ -493,6 +534,17 @@ class DragAndDropUpload extends React.Component {
               onFileErrorDismiss={(e, file) => {
                 e.preventDefault()
                 this.removeFile(file)
+                if($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+                  $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
+                    $(this).removeAttr('disabled');
+                  })
+                }
+                if( $('.title-bar a.upload').length) {
+                  $('.title-bar a.upload').removeClass('disabled')
+                }
+                if( $('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                  $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled')
+                }
                 if( $('.file-upload-widget').length) {
                   if ($('.file-upload-widget').hasClass('hidden')) {
                     $('.file-upload-widget').hide();
