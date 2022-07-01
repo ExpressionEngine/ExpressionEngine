@@ -24,12 +24,13 @@ if (! isset($alerts_name)) {
                 <div class="title-bar title-bar--large">
                     <h3 class="title-bar__title">
                         <?=$file->title?>
-                        <a class="button button--large filter-bar__button js-copy-url-button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_link')?>">
-                            <i class="fal fa-link"></i>
-                        </a>
+
                     </h3>
 
                     <div class="title-bar__extra-tools">
+                      <a class="button button--secondary js-copy-url-button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_link')?>">
+                          <i class="fal fa-link"></i>
+                      </a>
                         <a class="btn button button--secondary" href="<?=$download_url?>" title="<?=lang('download')?>"><?=lang('download')?></a>
                         <?php $this->embed('ee:_shared/form/buttons'); ?>
                     </div>

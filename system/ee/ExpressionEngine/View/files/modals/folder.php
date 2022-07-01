@@ -8,27 +8,27 @@
         </div>
 
         <div class="dialog__body">
-            <?=isset($alert) ? $alert : lang('create_folder_location')?>
+            <p style="margin-bottom: 20px;"><?=isset($alert) ? $alert : lang('create_folder_location')?></p>
 
-            <p>
-                <label for="upload_location"><?= lang('location') ?></label>
-            </p>
+            <fieldset>
+              <label for="upload_location"><?= lang('location') ?></label>
 
-            <div class="button-toolbar toolbar multilevel-select">
-                <?php
-                    echo ee('View')->make('ee:_shared/form/fields/dropdown')->render([
-                        'field_name' => 'upload_location',
-                        'choices' => $choices,
-                        'value' => $selected,
-                        'fileManager' => true,
-                    ]);
-                ?>
-            </div>
+              <div class="button-toolbar toolbar multilevel-select" style="margin-top: 0px;">
+                  <?php
+                      echo ee('View')->make('ee:_shared/form/fields/dropdown')->render([
+                          'field_name' => 'upload_location',
+                          'choices' => $choices,
+                          'value' => $selected,
+                          'fileManager' => true,
+                      ]);
+                  ?>
+              </div>
+            </fieldset>
 
-            <p>
+            <fieldset>
                 <label for="folder_name"><?= lang('folder_name') ?></label>
                 <input type="text" name="folder_name" autocomplete="off">
-            </p>
+            </fieldset>
         </div>
 
         <div class="dialog__actions">

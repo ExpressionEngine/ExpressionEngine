@@ -108,8 +108,9 @@
 
     .fas, .fal, .far {
       position: absolute;
-      top: 5px;
-      right: 9px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       cursor: pointer;
     }
   }

@@ -677,7 +677,7 @@ function (_React$Component3) {
         href: "",
         onClick: props.clearSelection
       }, React.createElement("i", {
-        "class": "fas fa-trash-alt"
+        "class": "fal fa-trash-alt"
       })));
     }
   }]);

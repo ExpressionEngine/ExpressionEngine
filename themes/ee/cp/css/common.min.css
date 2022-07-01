@@ -27227,7 +27227,7 @@ input[type=button].btn-block {
   margin-bottom: 40px;
   padding: 20px 30px 20px 30px;
   position: relative;
-  border-radius: 5px;
+  border-radius: 6px;
   box-shadow: 0 8px 40px var(--ee-shadow-modal);
 }
 .modal .col {
@@ -28098,6 +28098,7 @@ input[type=button].btn-block {
 }
 
 .filter-bar__button {
+  text-transform: capitalize;
   text-align: left;
 }
 .filter-bar__button.dropdown-open {
@@ -28588,7 +28589,7 @@ input[type=button].btn-block {
   list-style-type: none;
 }
 .dropdown__scroll ul a {
-  padding: 0 20px;
+  padding: 5px 15px;
   min-height: 30px;
 }
 
@@ -28605,7 +28606,7 @@ input[type=button].btn-block {
   display: flex;
   height: auto;
   line-height: inherit;
-  padding: 7px 20px;
+  padding: 7px 15px;
   color: var(--ee-text-primary);
   margin-left: 7px;
   margin-right: 7px;
@@ -28753,6 +28754,10 @@ input[type=button].btn-block {
   justify-content: space-between;
   align-items: center;
   color: var(--ee-text-primary);
+  margin-left: 7px;
+  margin-right: 7px;
+  margin-bottom: 2px;
+  border-radius: 5px;
 }
 .dropdown__item:hover {
   background-color: var(--ee-bg-dropdown-hover);
@@ -28769,7 +28774,7 @@ input[type=button].btn-block {
   flex: 1 1;
   display: block;
   height: 100%;
-  padding: 5px 20px;
+  padding: 5px 15px;
   line-height: 1.5;
   color: var(--ee-text-primary);
 }
@@ -28797,7 +28802,7 @@ input[type=button].btn-block {
 }
 
 .dropdown__item-button {
-  margin-right: 15px;
+  margin-right: 5px;
 }
 .dropdown__item-button i {
   margin: 0 !important;
@@ -30697,7 +30702,7 @@ fieldset .field-control #eye {
   opacity: 1;
   animation: pulsate-fwd 1s ease-in-out infinite both;
 }
-.file-field__dropzone--dragging .file-field__dropzone-title, .file-field__dropzone--dragging .file-field__dropzone-button {
+.file-field__dropzone--dragging .file-field__dropzone-title, .file-field__dropzone--dragging .file-field__dropzone-button, .file-field__dropzone--dragging .file-field_upload-icon {
   opacity: 0;
   filter: blur(10px);
 }
@@ -30708,6 +30713,7 @@ fieldset .field-control #eye {
   align-items: center;
   font-size: 37px;
   color: var(--ee-text-secondary);
+  transition: all 200ms ease;
 }
 
 .file-field__dropzone-icon {
@@ -31033,6 +31039,21 @@ fieldset .field-control #eye {
   color: var(--ee-text-secondary);
   margin-top: 10px;
   font-size: 0.9em;
+}
+
+.file-edit-view .file-preview-modal {
+  padding: 0 !important;
+}
+.file-edit-view .file-preview-modal__preview {
+  border-right: 1px solid var(--ee-border);
+  margin-right: -1px;
+  background-color: var(--ee-bg-0);
+  padding: 25px 30px 25px 30px;
+  border-radius: 0 0 0 6px;
+}
+.file-edit-view .file-preview-modal__form {
+  padding: 25px 30px 20px 25px;
+  border-left: 1px solid var(--ee-border);
 }
 
 .add-on-card-list {
@@ -31627,7 +31648,9 @@ fieldset .field-control #eye {
 }
 .select--open .select__button-label::after {
   content: "\f106";
-  top: 1px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 .select--open .select__button {
   background-color: var(--ee-button-default-hover-bg);
@@ -31667,10 +31690,11 @@ fieldset .field-control #eye {
 .select__button-label::after {
   content: "\f107";
   position: absolute;
-  top: 2px;
-  bottom: 0;
   margin: auto 0;
   right: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   transition: transform 100ms ease;
 }
 
@@ -32418,6 +32442,7 @@ body[data-theme=dark] .select-popup {
   align-items: center;
   padding: 20px 30px 20px 30px;
   background-color: var(--ee-bg-0);
+  border-radius: 6px 6px 0 0;
 }
 
 .dialog__header--centered {
@@ -32465,6 +32490,7 @@ body[data-theme=dark] .select-popup {
 .dialog__actions {
   padding: 20px 30px 20px 30px;
   background-color: var(--ee-bg-0);
+  border-radius: 0 0 6px 6px;
 }
 .dialog__actions .button + .button, .dialog__actions .pagination__link + .button, .dialog__actions .button + .pagination__link, .dialog__actions .pagination__link + .pagination__link, .dialog__actions .no-results a + .button, .dialog__actions .no-results a + .pagination__link, .no-results .dialog__actions a + .button, .no-results .dialog__actions a + .pagination__link,
 .dialog__actions .field-no-results a + .button,
@@ -33815,6 +33841,10 @@ a.ck.ck-button.ck-on {
   text-align: center;
   line-height: 1.6;
 }
+.no-results.file-upload-widget,
+.field-no-results.file-upload-widget {
+  background-color: transparent;
+}
 .no-results p,
 .field-no-results p {
   margin: 0 0 10px;
@@ -33848,6 +33878,10 @@ table .field-no-results {
 
 .field-no-results.hidden {
   display: none !important;
+}
+
+.f_manager-wrapper .no-results.file-upload-widget:not(.hidden) + .panel-body {
+  display: none;
 }
 
 .avatar-icon {
@@ -37376,8 +37410,9 @@ body[data-theme="dark"] {
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-wrap .tabs.layout .tab-off:before,
 .tab-wrap .tabs.layout .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-off:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target [class*=fields-grid-tool-]:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .far {
   position: absolute;
-  top: 5px;
-  right: 9px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   cursor: pointer;
 }
 
@@ -37965,9 +38000,14 @@ body[data-theme="dark"] {
   }
 }
 .f_manager-wrapper .no-results [data-file-field-react] .dropdown__link, .f_manager-wrapper .no-results [data-file-field-react] .button__within-dropdown, .f_manager-wrapper .no-results [data-file-field-react] .select__dropdown-item {
-  padding: 7px 20px !important;
-  margin-left: 0;
+  padding: 5px 10px !important;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-bottom: 0px;
+  box-shadow: none;
+  display: block;
   background-color: transparent;
+  color: var(--ee-text-normal);
   border: none;
   line-height: 2;
   text-align: left;
@@ -37982,14 +38022,32 @@ body[data-theme="dark"] {
   width: 55px;
 }
 .f_manager-wrapper td.thumb-column {
-  width: 100px;
+  width: 70px;
+  height: 71px;
+  text-align: center;
+}
+.f_manager-wrapper td.thumb-column a {
+  display: inline-block;
+  vertical-align: middle;
 }
 .f_manager-wrapper tr.app-listing__row .thumbnail_img {
-  max-width: 80px;
-  max-height: 60px;
-  display: inline-block;
+  max-width: 50px;
+  max-height: 50px;
+  display: block;
+  border-radius: 4px;
 }
-.f_manager-wrapper tr.app-listing__row i.fas {
+.f_manager-wrapper tr.app-listing__row i.fas, .f_manager-wrapper tr.app-listing__row i.fal, .f_manager-wrapper tr.app-listing__row i.column-sort::after, .f_manager-wrapper tr.app-listing__row i.app-notice__icon::before, .f_manager-wrapper tr.app-listing__row i.app-notice__dismiss::before, .f_manager-wrapper tr.app-listing__row i.m-close:before, .f_manager-wrapper tr.app-listing__row i.sidebar__link.remove:after, .f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-remove:before, .tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
+.f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-on:before,
+.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-on:before,
+.f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-off:before,
+.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i.dropdown__link--selected::before, .f_manager-wrapper tr.app-listing__row i[class^=widget-icon--],
+.f_manager-wrapper tr.app-listing__row i[class*=" widget-icon--"], .f_manager-wrapper tr.app-listing__row i.widget--support::before, .f_manager-wrapper tr.app-listing__row i.checkbox:after, .f_manager-wrapper tr.app-listing__row i.checkbox--large:after, .f_manager-wrapper tr.app-listing__row i.checkbox--small:after, .f_manager-wrapper tr.app-listing__row i.sub-arrow:before, .f_manager-wrapper tr.app-listing__row i.select__button-label::after, .f_manager-wrapper tr.app-listing__row i.select-popup:not([multiple])::after, .f_manager-wrapper tr.app-listing__row i.layout-item__handle::after, .f_manager-wrapper tr.app-listing__row i.icon-reorder, .f_manager-wrapper tr.app-listing__row i[class^=icon--],
+.f_manager-wrapper tr.app-listing__row i[class*=" icon--"], .f_manager-wrapper tr.app-listing__row i.icon-settings,
+.f_manager-wrapper tr.app-listing__row i.icon--settings, .f_manager-wrapper tr.app-listing__row i.has-sub::after, .f_manager-wrapper tr.app-listing__row .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .f_manager-wrapper tr.app-listing__row i.has-sub::before, .f_manager-wrapper tr.app-listing__row .tbl-list i.reorder:before, .tbl-list .f_manager-wrapper tr.app-listing__row i.reorder:before, .f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
+.f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-on:before,
+.tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-on:before,
+.f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-off:before,
+.tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i[class*=fields-grid-tool-]:before {
   color: var(--ee-secondary-sidebar-item-icon);
 }
 .f_manager-wrapper tr.selected td {
@@ -38015,6 +38073,7 @@ body[data-theme="dark"] {
 .f_manager-table-breadcrumbs .breadcrumb {
   padding: 10px 20px;
   border-bottom: 1px solid var(--ee-table-border);
+  letter-spacing: 0px;
 }
 .f_manager-table-breadcrumbs .breadcrumb li a, .f_manager-table-breadcrumbs .breadcrumb li span {
   border-radius: 0;
@@ -38034,16 +38093,9 @@ body[data-theme="dark"] {
   content: "";
 }
 
-.f_manager-action-part {
-  display: flex;
-  flex-wrap: wrap;
-}
 .f_manager-action-part .pagination {
   border-top: none;
   margin-left: auto;
-}
-.f_manager-action-part .pagination .filter-bar__item {
-  margin-bottom: 0;
 }
 
 .file-upload-progress__main-wrapper {
@@ -38126,7 +38178,18 @@ body[data-theme="dark"] {
 }
 .file-grid__wrapper .file-thumbnail img,
 .file-grid__wrapper .file-thumbnail svg,
-.file-grid__wrapper .file-thumbnail i.fas {
+.file-grid__wrapper .file-thumbnail i.fas, .file-grid__wrapper .file-thumbnail i.fal, .file-grid__wrapper .file-thumbnail i.column-sort::after, .file-grid__wrapper .file-thumbnail i.app-notice__icon::before, .file-grid__wrapper .file-thumbnail i.app-notice__dismiss::before, .file-grid__wrapper .file-thumbnail i.m-close:before, .file-grid__wrapper .file-thumbnail i.sidebar__link.remove:after, .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-remove:before, .tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-off:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before, .file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" widget-icon--"], .file-grid__wrapper .file-thumbnail i.widget--support::before, .file-grid__wrapper .file-thumbnail i.checkbox:after, .file-grid__wrapper .file-thumbnail i.checkbox--large:after, .file-grid__wrapper .file-thumbnail i.checkbox--small:after, .file-grid__wrapper .file-thumbnail i.sub-arrow:before, .file-grid__wrapper .file-thumbnail i.select__button-label::after, .file-grid__wrapper .file-thumbnail i.select-popup:not([multiple])::after, .file-grid__wrapper .file-thumbnail i.layout-item__handle::after, .file-grid__wrapper .file-thumbnail i.icon-reorder, .file-grid__wrapper .file-thumbnail i[class^=icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" icon--"], .file-grid__wrapper .file-thumbnail i.icon-settings,
+.file-grid__wrapper .file-thumbnail i.icon--settings, .file-grid__wrapper .file-thumbnail i.has-sub::after, .file-grid__wrapper .file-thumbnail .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .file-grid__wrapper .file-thumbnail i.has-sub::before, .file-grid__wrapper .file-thumbnail .tbl-list i.reorder:before, .tbl-list .file-grid__wrapper .file-thumbnail i.reorder:before, .file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-on:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-off:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i[class*=fields-grid-tool-]:before {
   max-width: 100%;
   max-height: 100%;
   position: absolute;
@@ -38135,8 +38198,20 @@ body[data-theme="dark"] {
   transform: translate(-50%, -50%);
   border-radius: 6px;
 }
-.file-grid__wrapper .file-thumbnail i.fas {
+.file-grid__wrapper .file-thumbnail i.fas, .file-grid__wrapper .file-thumbnail i.fal, .file-grid__wrapper .file-thumbnail i.column-sort::after, .file-grid__wrapper .file-thumbnail i.app-notice__icon::before, .file-grid__wrapper .file-thumbnail i.app-notice__dismiss::before, .file-grid__wrapper .file-thumbnail i.m-close:before, .file-grid__wrapper .file-thumbnail i.sidebar__link.remove:after, .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-remove:before, .tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-off:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before, .file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" widget-icon--"], .file-grid__wrapper .file-thumbnail i.widget--support::before, .file-grid__wrapper .file-thumbnail i.checkbox:after, .file-grid__wrapper .file-thumbnail i.checkbox--large:after, .file-grid__wrapper .file-thumbnail i.checkbox--small:after, .file-grid__wrapper .file-thumbnail i.sub-arrow:before, .file-grid__wrapper .file-thumbnail i.select__button-label::after, .file-grid__wrapper .file-thumbnail i.select-popup:not([multiple])::after, .file-grid__wrapper .file-thumbnail i.layout-item__handle::after, .file-grid__wrapper .file-thumbnail i.icon-reorder, .file-grid__wrapper .file-thumbnail i[class^=icon--],
+.file-grid__wrapper .file-thumbnail i[class*=" icon--"], .file-grid__wrapper .file-thumbnail i.icon-settings,
+.file-grid__wrapper .file-thumbnail i.icon--settings, .file-grid__wrapper .file-thumbnail i.has-sub::after, .file-grid__wrapper .file-thumbnail .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .file-grid__wrapper .file-thumbnail i.has-sub::before, .file-grid__wrapper .file-thumbnail .tbl-list i.reorder:before, .tbl-list .file-grid__wrapper .file-thumbnail i.reorder:before, .file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-remove:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-on:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-on:before,
+.file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-off:before,
+.tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i[class*=fields-grid-tool-]:before {
   color: var(--ee-secondary-sidebar-item-icon);
+  font-size: 128px;
 }
 .file-grid__wrapper .file-thumbnail svg {
   width: 100%;
@@ -38180,20 +38255,24 @@ body[data-theme="dark"] {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
   grid-column-gap: 15px;
-  grid-row-gap: 15px;
-  padding: 20px;
+  grid-row-gap: 10px;
+  padding: 15px 25px 10px;
   background: var(--ee-bg-0);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  border-radius: 6px;
 }
 .f_metadata-section .f_metadata-item {
   margin-bottom: 10px;
 }
-.f_metadata-section .f_metadata-item span {
+.f_metadata-section .f_metadata-item .f_meta-info {
   display: block;
-  color: var(--ee-text-normal);
+  color: var(--ee-text-secondary);
 }
 .f_metadata-section .f_meta-name {
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
 }
 
 #fieldset-usage_tables h2 {
@@ -38222,7 +38301,7 @@ body[data-theme="dark"] {
 
 .f_manager-alert {
   display: none;
-  margin: 5px auto;
+  margin: 30px auto 0;
   width: calc(100% - 10px);
 }
 
@@ -38254,15 +38333,21 @@ body[data-theme="dark"] {
 
 #preview {
   position: absolute;
-  border: 2px solid var(--ee-button-default-border);
   background: var(--ee-button-default-bg);
-  border-radius: 4px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   z-index: 12000;
+  max-height: 200px;
   max-width: 200px;
+  box-shadow: 0 1px 4px 0 var(--ee-shadow-dropdown);
+}
+
+.file-edit-view .entry-pannel-notice-wrap .app-notice {
+  margin-top: 30px;
+  margin-bottom: 0px;
 }
 
 .hidden {
@@ -38419,7 +38504,8 @@ body[data-theme="dark"] {
   font-size: 0.85rem;
 }
 
-.click-select-text {
+.click-select-text, .f_metadata-section .f_metadata-item .f_meta-info {
+  font-family: "SFMono-Regular", Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
   cursor: default;
   -webkit-user-select: all;
   -moz-user-select: all;

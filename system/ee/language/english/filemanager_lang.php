@@ -30,7 +30,7 @@ $lang = array(
 
     'column_categories' => 'Categories',
 
-    'copy_link' => 'Copy link',
+    'copy_link' => 'Copy Link',
 
     'credit' => 'Credit',
 

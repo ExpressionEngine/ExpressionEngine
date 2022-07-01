@@ -1,4 +1,4 @@
-// Styles for new File Manager 
+// Styles for new File Manager
 .f_manager-wrapper {
   .app-listing__row:last-child {
     td {
@@ -42,9 +42,14 @@
     [data-file-field-react] {
 
       .dropdown__link {
-        padding: 7px 20px !important;
-        margin-left: 0;
+        padding: 5px 10px !important;
+        margin-left: 5px;
+        margin-right: 5px;
+        margin-bottom: 0px;
+        box-shadow: none;
+        display: block;
         background-color: transparent;
+        color: color(text-normal);
         border: none;
         line-height: 2;
         text-align: left;
@@ -67,17 +72,25 @@
   }
 
   td.thumb-column {
-    width: 100px;
+    width: 70px;
+    height: 71px;
+    text-align: center;
+
+    a {
+      display: inline-block;
+      vertical-align: middle;
+    }
   }
 
   tr.app-listing__row {
     .thumbnail_img {
-      max-width: 80px;
-      max-height: 60px;
-      display: inline-block;
+      max-width: 50px;
+      max-height: 50px;
+      display: block;
+      border-radius: $border-radius-small;
     }
 
-    i.fas {
+    i.fas, i.fal {
       color: var(--ee-secondary-sidebar-item-icon);
     }
   }
@@ -116,6 +129,7 @@
   .breadcrumb {
     padding: 10px 20px;
     border-bottom: 1px solid var(--ee-table-border);
+    letter-spacing: 0px;
 
     li {
       a, span {
@@ -144,16 +158,12 @@
 }
 
 .f_manager-action-part {
-  display: flex;
-  flex-wrap: wrap;
+  //display: flex;
+  //flex-wrap: wrap;
 
   .pagination {
     border-top: none;
     margin-left: auto;
-
-    .filter-bar__item {
-      margin-bottom: 0;
-    }
   }
 }
 
@@ -254,7 +264,7 @@
 
     img,
     svg,
-    i.fas {
+    i.fas, i.fal {
       max-width: 100%;
       max-height: 100%;
       position: absolute;
@@ -264,8 +274,9 @@
       border-radius: 6px;
     }
 
-    i.fas {
+    i.fas, i.fal {
       color: var(--ee-secondary-sidebar-item-icon);
+      font-size: 128px;
     }
 
     svg {
@@ -323,22 +334,27 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
   grid-column-gap: 15px;
-  grid-row-gap: 15px;
-  padding: 20px;
+  grid-row-gap: 10px;
+  padding: 15px 25px 10px;
   background: var(--ee-bg-0);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  border-radius: $border-radius-large;
 
   .f_metadata-item {
     margin-bottom: 10px;
 
-    span {
+    .f_meta-info {
       display: block;
-      color: var(--ee-text-normal);
+      color: color(text-secondary);
+      @extend .click-select-text;
     }
   }
 
   .f_meta-name {
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
   }
 }
 
@@ -372,7 +388,7 @@
 
 .f_manager-alert{
   display: none;
-  margin: 5px auto;
+  margin: 30px auto 0;
   width: calc(100% - 10px);
 }
 
@@ -408,13 +424,19 @@
 
 #preview {
   position:absolute;
-  border:2px solid var(--ee-button-default-border);
   background:var(--ee-button-default-bg);
-  border-radius: 4px;
+  border-radius: $border-radius-base;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   z-index: 12000;
+  max-height: 200px;
   max-width: 200px;
+  @include shadow-dropdown;
+}
+
+.file-edit-view .entry-pannel-notice-wrap .app-notice {
+  margin-top: 30px;
+  margin-bottom: 0px;
 }

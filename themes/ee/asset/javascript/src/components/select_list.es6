@@ -554,7 +554,7 @@ class SelectedItem extends React.Component {
 
     return (
       <div className="lots-of-checkboxes__selection">
-        <i className="fas fa-check-circle"></i> {label}
+        <i className="fal fa-check-circle"></i> {label}
           {props.selectionRemovable &&
             <a className="button button--default float-right" href="" onClick={props.clearSelection}><i class="fal fa-trash-alt"></i></a>
           }

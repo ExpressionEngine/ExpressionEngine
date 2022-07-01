@@ -50,7 +50,7 @@
 		animation: pulsate-fwd 1s ease-in-out infinite both;
 	}
 
-	.file-field__dropzone-title, .file-field__dropzone-button {
+	.file-field__dropzone-title, .file-field__dropzone-button, .file-field_upload-icon {
 		opacity: 0;
 		filter: blur(10px);
 	}
@@ -62,6 +62,7 @@
 	align-items: center;
 	font-size: 37px;
 	color: color(text-secondary);
+  transition: all $t-speed ease;
 }
 
 .file-field__dropzone-icon {
@@ -180,7 +181,7 @@
   text-align: center;
 
   img {
-	max-height: 125px; 
+	max-height: 125px;
 	max-width: 125px
   }
 }
