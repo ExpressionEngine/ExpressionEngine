@@ -261,6 +261,17 @@ class DragAndDropUpload extends React.Component {
               } else {
                 file.error = EE.lang.file_dnd_unexpected_error;
               }
+              if($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+                $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
+                  $(this).attr('disabled','disabled');
+                })
+              }
+              if( $('.title-bar a.upload').length) {
+                $('.title-bar a.upload').addClass('disabled')
+              }
+              if( $('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled')
+              }
               console.error(xhr)
               reject(file)
               break
@@ -277,6 +288,17 @@ class DragAndDropUpload extends React.Component {
               file.error = response.message;
             }
           } catch(err) {}
+              if($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+                $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
+                  $(this).attr('disabled','disabled');
+                })
+              }
+              if( $('.title-bar a.upload').length) {
+                $('.title-bar a.upload').addClass('disabled')
+              }
+              if( $('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled')
+              }
           console.error(xhr)
           reject(file)
         }
