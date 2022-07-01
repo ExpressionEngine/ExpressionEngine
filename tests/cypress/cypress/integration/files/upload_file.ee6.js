@@ -89,7 +89,7 @@ context('File Manager / Upload File', () => {
   })
 
   it('cannot upload a file when mime type is not registered', () => {
-    dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64.torrent')
+    dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
@@ -100,12 +100,12 @@ context('File Manager / Upload File', () => {
 
     //reload the page, make sure the file is not listed
     cy.visit('admin.php?/cp/files/directory/1')
-    cy.get('.ee-main__content form .table-responsive table').should('not.contain', 'ubuntu-22.04-live-server-amd64.torrent');
+    cy.get('.ee-main__content form .table-responsive table').should('not.contain', 'ubuntu-22');
 
   })
 
   it('uploads the file correctly after error', () => {
-    dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64.torrent')
+    dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
@@ -124,13 +124,13 @@ context('File Manager / Upload File', () => {
 
   it('can upload a file when mime type is whitelisted in config', () => {
     cy.task('filesystem:copy', { from: 'support/config/mimes.php', to: '../../system/user/config/' })
-    dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64.torrent')
+    dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
     cy.get('.file-upload-widget').should('not.be.visible')
     cy.wait('@table')
     cy.hasNoErrors()
 
     returnPage.get('selected_file').should('exist')
-    returnPage.get('selected_file').contains("ubuntu-22.04-live-server-amd64.torrent")
+    returnPage.get('selected_file').contains("ubuntu-22.04-live-server-amd64-iso_.torrent")
     returnPage.get('selected_file').should('contain', 'Other')
   })
 
@@ -148,85 +148,6 @@ context('File Manager / Upload File', () => {
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("database_6.0.0.sql")
   })
-
-  /*it('can upload a Markdown file and set the title', () => {
-    cy.get('input[name="file"]').attachFile(md_file)
-    page.get('title_input').clear().type("RSpec README")
-    page.get('form_submit_button').click()
-    cy.hasNoErrors()
-
-    //returnPage.displayed?
-    returnPage.get('alert').should('exist')
-    returnPage.get('alert_success').should('exist')
-    returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file RSpec README was uploaded successfully.")
-    returnPage.get('selected_file').should('exist')
-    returnPage.get('selected_file').contains("README.md")
-    returnPage.get('selected_file').contains("RSpec README")
-  })
-
-  it('can upload a Markdown file and set the description', () => {
-    cy.get('input[name="file"]').attachFile(md_file)
-    page.get('description_input').clear().type("RSpec README")
-    page.get('form_submit_button').click()
-    cy.hasNoErrors()
-
-    //returnPage.displayed?
-    returnPage.get('alert').should('exist')
-    returnPage.get('alert_success').should('exist')
-    returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file README.md was uploaded successfully.")
-    returnPage.get('selected_file').should('exist')
-    returnPage.get('selected_file').contains("README.md")
-
-    returnPage.get('selected_file').find('a.edit').click()
-    cy.hasNoErrors()
-
-    //filePage.displayed?
-    filePage.get('description_input').invoke('val').then((val) => { expect(val).to.be.equal("RSpec README") })
-  })
-
-  it('can upload a Markdown file and set the credit', () => {
-    cy.get('input[name="file"]').attachFile(md_file)
-    page.get('credit_input').clear().type("RSpec README")
-    page.get('form_submit_button').click()
-    cy.hasNoErrors()
-
-    //returnPage.displayed?
-    returnPage.get('alert').should('exist')
-    returnPage.get('alert_success').should('exist')
-    returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file README.md was uploaded successfully.")
-    returnPage.get('selected_file').should('exist')
-    returnPage.get('selected_file').contains("README.md")
-
-    returnPage.get('selected_file').find('a.edit').click()
-    cy.hasNoErrors()
-
-    //filePage.displayed?
-    filePage.get('credit_input').invoke('val').then((val) => { expect(val).to.be.equal("RSpec README") })
-  })
-
-  it('can upload a Markdown file and set the location', () => {
-    cy.get('input[name="file"]').attachFile(md_file)
-    page.get('location_input').clear().type("RSpec README")
-    page.get('form_submit_button').click()
-    cy.hasNoErrors()
-
-    //returnPage.displayed?
-    returnPage.get('alert').should('exist')
-    returnPage.get('alert_success').should('exist')
-    returnPage.get('alert').contains("File Upload Success")
-    returnPage.get('alert').contains("The file README.md was uploaded successfully.")
-    returnPage.get('selected_file').should('exist')
-    returnPage.get('selected_file').contains("README.md")
-
-    returnPage.get('selected_file').find('a.edit').click()
-    cy.hasNoErrors()
-
-    //filePage.displayed?
-    filePage.get('location_input').invoke('val').then((val) => { expect(val).to.be.equal("RSpec README") })
-  })*/
 
   it('cannot upload a shell script', () => {
     cy.get('.file-upload-widget').then(function(widget) {
@@ -265,16 +186,23 @@ context('File Manager / Upload File', () => {
   it('cannot upload a non-image when the directory is restricted to images', () => {
     cy.get('.sidebar').contains('About').click()
 
-    cy.get('.file-upload-widget').then(function(widget) {
-      $(widget).removeClass('hidden')
-    })
-    cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
-    page.get('file_input').find('.file-field__dropzone').attachFile(md_file, { subjectType: 'drag-n-drop' })
+    dragAndDropUpload(md_file)
     cy.wait('@upload')
     cy.hasNoErrors()
 
     returnPage.get('selected_file').should('not.exist')
     page.get('file_input').contains("File not allowed.")
+  })
+
+  it('file uploaded only once in case of previous error', () => {
+    cy.get('.sidebar').contains('About').click()
+
+    dragAndDropUpload(md_file)
+
+    page.get('file_input').find('.file-field__dropzone').invoke('show')
+    dragAndDropUpload('../../../../themes/ee/asset/fonts/fontawesome-webfont.eot')
+
+    cy.get('.file-upload-widget:contains(fontawesome-webfont.eot)').its('length').should('eq', 1)
   })
 
   it('cannot upload a PHP script masquerading as an image', () => {

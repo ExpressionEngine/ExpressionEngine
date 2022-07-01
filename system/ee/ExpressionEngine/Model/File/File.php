@@ -60,9 +60,11 @@ class File extends FileSystemEntity
         foreach ($fileTypes as $fileType) {
             if (in_array($this->getProperty('mime_type'), $mimes[$fileType])) {
                 $this->setProperty('file_type', $fileType);
-                break;
+                return;
             }
         }
+        //fallback to default
+        $this->setProperty('file_type', 'other');
     }
 }
 
