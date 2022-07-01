@@ -36,11 +36,20 @@ class FileManager extends FileManagerSection {
 					'view_modal_header': 'div.modal-view-file h1',
 
 					'remove_directory_modal': 'div.modal-confirm-directory',
-					'remove_directory_modal_submit_button': 'div.modal-confirm-directory .form-ctrls .button'
+					'remove_directory_modal_submit_button': 'div.modal-confirm-directory .form-ctrls .button',
+
+                    'new_folder_button': '.title-bar .btn.new_folder',
+
+                    'file_input': 'div[data-input-value="files_field"]',
+                    
         })
 		}
 		load() {
 			cy.contains('Files').click()
 		}
+        load_for_dir(number) {
+            cy.contains('Files').click()
+            cy.get('div.sidebar .folder-list > div:nth-child('+number.toString()+')').click();
+        }
 }
 export default FileManager;

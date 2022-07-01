@@ -17,7 +17,8 @@ class UploadEdit extends FileManagerSection {
         'image_manipulations': '#image_manipulations',
         'grid_rows': '#image_manipulations tr:visible',
         'upload_member_groups': 'input[type!=hidden][name="upload_roles[]"]',
-        'cat_group': 'input[type!=hidden][name="cat_group[]"]'
+        'cat_group': 'input[type!=hidden][name="cat_group[]"]',
+        'toggle_subfolder_support': '#fieldset-allow_subfolders .toggle-btn',
       })
     }
     load() {
