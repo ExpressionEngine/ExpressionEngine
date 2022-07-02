@@ -38228,7 +38228,7 @@ body[data-theme="dark"] {
 .file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-off:before,
 .tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i[class*=fields-grid-tool-]:before {
   color: var(--ee-secondary-sidebar-item-icon);
-  font-size: 128px;
+  font-size: 108px;
 }
 .file-grid__wrapper .file-thumbnail svg {
   width: 100%;
