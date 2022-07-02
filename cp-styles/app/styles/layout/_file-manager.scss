@@ -388,7 +388,7 @@
 
 .f_manager-alert{
   display: none;
-  margin: 30px auto 0;
+  margin: 20px auto 0;
   width: calc(100% - 10px);
 }
 
@@ -437,6 +437,16 @@
 }
 
 .file-edit-view .entry-pannel-notice-wrap .app-notice {
-  margin-top: 30px;
+  margin-top: 20px;
   margin-bottom: 0px;
+}
+
+.file-edit-view .entry-pannel-notice-wrap {
+  padding: 0;
+}
+
+.f_entries-table h2,
+.f_category-table h2 {
+  margin-bottom: 0 !important;
+  color: color(text-normal) !important;
 }

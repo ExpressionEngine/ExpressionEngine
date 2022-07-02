@@ -36,19 +36,20 @@ if (! isset($alerts_name)) {
                     </div>
                 </div>
             </div>
+            <div class="entry-pannel-notice-wrap">
+                <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+
+                <div class="alert alert--success f_manager-alert">
+                    <div class="alert__icon"><i class="fal fa-check-circle fa-fw"></i></div>
+                    <div class="alert__content">
+                        <?=lang('link_copied')?>
+                    </div>
+                </div>
+
+            </div>
       </div>
 
-        <div class="entry-pannel-notice-wrap">
-            <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-            <div class="alert alert--success f_manager-alert">
-                <div class="alert__icon"><i class="fal fa-check-circle fa-fw"></i></div>
-                <div class="alert__content">
-                    <?=lang('link_copied')?>
-                </div>
-            </div>
-
-        </div>
 
       <div class="panel-body file-preview-modal">
             <div class="file-preview-modal__preview">

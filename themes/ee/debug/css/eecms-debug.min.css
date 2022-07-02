@@ -18231,20 +18231,21 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
 .ee-debugger .tab-bar__tab-notification {
   position: relative;
   display: inline-block;
-  min-width: 22px;
-  min-height: 22px;
-  line-height: 16px;
-  top: -2px;
-  border-radius: 1000px;
+  min-width: 20px;
+  min-height: 20px;
+  line-height: 0;
+  top: -1px;
+  border-radius: 4px;
   text-align: center;
-  font-size: 12px;
+  font-size: 11px;
   color: #fff;
   background: var(--ee-notification);
-  padding: 3px 5px;
+  padding: 10px 5px;
+  margin-bottom: -4px;
 }
 .ee-debugger .tab-bar__tab-notification.tab-notification-generic {
   color: var(--ee-text-secondary);
-  background-color: var(--ee-notification-generic);
+  background-color: var(--ee-bg-0);
 }
 .ee-debugger .tab {
   display: none;

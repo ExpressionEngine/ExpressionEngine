@@ -28394,20 +28394,21 @@ input[type=button].btn-block {
 .tab-bar__tab-notification {
   position: relative;
   display: inline-block;
-  min-width: 22px;
-  min-height: 22px;
-  line-height: 16px;
-  top: -2px;
-  border-radius: 1000px;
+  min-width: 20px;
+  min-height: 20px;
+  line-height: 0;
+  top: -1px;
+  border-radius: 4px;
   text-align: center;
-  font-size: 12px;
+  font-size: 11px;
   color: #fff;
   background: var(--ee-notification);
-  padding: 3px 5px;
+  padding: 10px 5px;
+  margin-bottom: -4px;
 }
 .tab-bar__tab-notification.tab-notification-generic {
   color: var(--ee-text-secondary);
-  background-color: var(--ee-notification-generic);
+  background-color: var(--ee-bg-0);
 }
 
 .tab {
@@ -31051,9 +31052,24 @@ fieldset .field-control #eye {
   padding: 25px 30px 25px 30px;
   border-radius: 0 0 0 6px;
 }
+@media (max-width: 767px) {
+  .file-edit-view .file-preview-modal__preview {
+    max-width: 100%;
+    width: 100%;
+    border-top: 1px solid var(--ee-border);
+    margin-right: 0;
+    border-right: none;
+    border-radius: 0 0 6px 6px;
+  }
+}
 .file-edit-view .file-preview-modal__form {
   padding: 25px 30px 20px 25px;
   border-left: 1px solid var(--ee-border);
+}
+@media (max-width: 767px) {
+  .file-edit-view .file-preview-modal__form {
+    border-left: none;
+  }
 }
 
 .add-on-card-list {
@@ -31956,20 +31972,21 @@ body[data-theme=dark] .select-popup {
 .ee-debugger .tab-bar__tab-notification {
   position: relative;
   display: inline-block;
-  min-width: 22px;
-  min-height: 22px;
-  line-height: 16px;
-  top: -2px;
-  border-radius: 1000px;
+  min-width: 20px;
+  min-height: 20px;
+  line-height: 0;
+  top: -1px;
+  border-radius: 4px;
   text-align: center;
-  font-size: 12px;
+  font-size: 11px;
   color: #fff;
   background: var(--ee-notification);
-  padding: 3px 5px;
+  padding: 10px 5px;
+  margin-bottom: -4px;
 }
 .ee-debugger .tab-bar__tab-notification.tab-notification-generic {
   color: var(--ee-text-secondary);
-  background-color: var(--ee-notification-generic);
+  background-color: var(--ee-bg-0);
 }
 .ee-debugger .tab {
   display: none;
@@ -38301,7 +38318,7 @@ body[data-theme="dark"] {
 
 .f_manager-alert {
   display: none;
-  margin: 30px auto 0;
+  margin: 20px auto 0;
   width: calc(100% - 10px);
 }
 
@@ -38346,8 +38363,18 @@ body[data-theme="dark"] {
 }
 
 .file-edit-view .entry-pannel-notice-wrap .app-notice {
-  margin-top: 30px;
+  margin-top: 20px;
   margin-bottom: 0px;
+}
+
+.file-edit-view .entry-pannel-notice-wrap {
+  padding: 0;
+}
+
+.f_entries-table h2,
+.f_category-table h2 {
+  margin-bottom: 0 !important;
+  color: var(--ee-text-normal) !important;
 }
 
 .hidden {
