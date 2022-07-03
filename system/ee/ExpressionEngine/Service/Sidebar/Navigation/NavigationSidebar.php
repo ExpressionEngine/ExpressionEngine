@@ -137,7 +137,7 @@ class NavigationSidebar extends AbstractSidebar
                     'can_delete_channel_fields'
                 )
             ) {
-                $section->addItem(lang('fields'), ee('CP/URL')->make('fields'))->withIcon('i-cursor');
+                $section->addItem(lang('fields'), ee('CP/URL')->make('fields'))->withIcon('pen-field');
             }
 
             if (ee('Permission')->has('can_access_design')) {

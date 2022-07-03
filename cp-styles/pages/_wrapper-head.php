@@ -37,7 +37,7 @@ include(dirname(__FILE__) . '/_header.php');
 				<a href="./foundation.php"  class="ee-sidebar__item <?=($current_page == 'foundation' ? 'active' : '')?>"><i class="fal fa-tint"></i> Colors</a>
 				<a href="./typography.php"  class="ee-sidebar__item <?=($current_page == 'typography' ? 'active' : '')?>"><i class="fal fa-heading"></i> Typography</a>
 				<a href="./components.php"  class="ee-sidebar__item <?=($current_page == 'components' ? 'active' : '')?>"><i class="fal fa-cubes"></i> Components</a>
-				<a href="./fields.php"  class="ee-sidebar__item <?=($current_page == 'fields' ? 'active' : '')?>"><i class="fal fa-i-cursor"></i> Fields</a>
+				<a href="./fields.php"  class="ee-sidebar__item <?=($current_page == 'fields' ? 'active' : '')?>"><i class="fal fa-pen-field"></i> Fields</a>
 				<a href="./support.php"  class="ee-sidebar__item <?=($current_page == 'support' ? 'active' : '')?>"><i class="fal fa-life-ring"></i> Support</a>
 			</div>
 
