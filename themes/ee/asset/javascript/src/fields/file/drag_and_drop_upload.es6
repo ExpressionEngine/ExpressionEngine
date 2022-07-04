@@ -345,7 +345,7 @@ class DragAndDropUpload extends React.Component {
   }
 
   chooseExisting = (directory) => {
-    let url = this.props.filebrowserEndpoint.replace('=all', '='+directory)
+    let url = this.props.filebrowserEndpoint.replace('requested_directory=all', 'requested_directory=' + directory).replace('field_upload_locations=all', 'field_upload_locations=' + this.props.allowedDirectory);
     this.presentFilepicker(url, false)
     window.globalDropzone = $(this.dropZone)
   }

@@ -84,7 +84,7 @@ class Table
             'class' => '',
             'attrs' => array(),
             'no_results' => array(
-                'text' => 'no_rows_returned',
+                'text' => lang('no_rows_returned'),
                 'action_text' => '',
                 'action_link' => ''
             )

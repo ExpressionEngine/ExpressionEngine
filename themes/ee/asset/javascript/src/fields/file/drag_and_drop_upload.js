@@ -133,7 +133,7 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "chooseExisting", function (directory) {
-      var url = _this.props.filebrowserEndpoint.replace('=all', '=' + directory);
+      var url = _this.props.filebrowserEndpoint.replace('requested_directory=all', 'requested_directory=' + directory).replace('field_upload_locations=all', 'field_upload_locations=' + _this.props.allowedDirectory);
 
       _this.presentFilepicker(url, false);
 
