@@ -86,12 +86,14 @@ class RteHelper
                 $files = ee('Model')
                     ->get('File')
                     ->fields('file_id', 'upload_location_id', 'file_name');
+                $files->filterGroup();
                 foreach ($dirsAndFiles as $dir_id => $file_names) {
                     $files->orFilterGroup()
                         ->filter('upload_location_id', $dir_id)
                         ->filter('file_name', 'IN', $file_names)
                         ->endFilterGroup();
                 }
+                $files->endFilterGroup();
                 foreach ($files->all() as $file) {
                     $data = str_replace('{filedir_' . $file->upload_location_id . '}' . $file->file_name, '{file:' . $file->file_id . ':url}', $data);
                 }

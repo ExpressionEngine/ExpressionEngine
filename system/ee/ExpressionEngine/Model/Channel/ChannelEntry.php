@@ -741,12 +741,14 @@ class ChannelEntry extends ContentModel
                     $files = ee('Model')
                         ->get('File')
                         ->fields('file_id', 'upload_location_id', 'file_name');
+                    $files->filterGroup();
                     foreach ($dirsAndFiles as $dir_id => $file_names) {
                         $files->orFilterGroup()
                             ->filter('upload_location_id', $dir_id)
                             ->filter('file_name', 'IN', $file_names)
                             ->endFilterGroup();
                     }
+                    $files->endFilterGroup();
                     foreach ($files->all() as $file) {
                         $file_id = $file->file_id;
                         if (! isset($usage[$file_id])) {

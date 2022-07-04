@@ -191,9 +191,8 @@ class FileUsage extends Utilities
                 }
                 $replacement = [];
                 foreach ($query->result_array() as $row) {
+                    $update = [];
                     foreach ($fields as $fieldName) {
-                        $update = [];
-                        $fileIds = [];
                         $data = $row[$fieldName];
                         if (strpos((string) $data, '{filedir_') !== false) {
                             $dirsAndFiles = [];
@@ -213,12 +212,14 @@ class FileUsage extends Utilities
                                 $files = ee('Model')
                                     ->get('File')
                                     ->fields('file_id', 'upload_location_id', 'file_name');
+                                $files->filterGroup();
                                 foreach ($dirsAndFiles as $dir_id => $file_names) {
                                     $files->orFilterGroup()
                                         ->filter('upload_location_id', $dir_id)
                                         ->filter('file_name', 'IN', $file_names)
                                         ->endFilterGroup();
                                 }
+                                $files->endFilterGroup();
                                 foreach ($files->all() as $file) {
                                     //set the data to variables to use later
                                     $fileTag = '{filedir_' . $file->upload_location_id . '}' . $file->file_name;
@@ -251,7 +252,7 @@ class FileUsage extends Utilities
                                 for ($i = 0; $i < $numberOfReplacements; $i++) {
                                     ee('db')->insert('file_usage', [
                                         $idField => $row[$idField],
-                                        'field_id' => $customFieldId,
+                                        //'field_id' => $customFieldId,
                                         'file_id' => $fileId
                                     ]);
                                 }

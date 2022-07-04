@@ -5,7 +5,6 @@ import ForumTab from '../../elements/pages/publish/ForumTab';
 import FileModal from '../../elements/pages/publish/FileModal';
 import FluidField from '../../elements/pages/publish/FluidField';
 import EntryManager from '../../elements/pages/publish/EntryManager';
-
 import ChannelFieldForm from '../../elements/pages/channel/ChannelFieldForm';
 
 const page = new Publish;
@@ -99,6 +98,10 @@ context('Publish Page - Create', () => {
             page.get('url_title').should('exist')
         })
 
+        after(function() {
+            //cy.task('filesystem:delete', '../../images/uploads/README.md')
+        })
+
         it('the file field properly assigns image data when using the filepicker modal in a channel with two file fields', () => {
             var selectedFiles = {};
             var selectedFileIds = {};
@@ -162,7 +165,7 @@ context('Publish Page - Create', () => {
         })
 
         it('if the file field is limited to directory, it is only available', () => {
-            let link = page.get('file_fields').first().find("a:contains('Choose Existing')");
+            let link = page.get('file_fields').eq(0).find("a:contains('Choose Existing')");
             link.click()
 
             //page.get('modal').should('be.visible')
@@ -213,68 +216,48 @@ context('Publish Page - Create', () => {
             cy.logCPPerformance()
         })
 
-        it.skip('uploads the file into field with drag & drop', () => {
-            var selectedFiles = {};
-            var selectedFileIds = {};
+        it('uploads the file into field with drag & drop', () => {
+            cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+            page.get('file_fields').eq(0).find('.file-field__dropzone').attachFile('../../support/file/README.md', { subjectType: 'drag-n-drop' })
+            cy.wait('@upload')
+            cy.hasNoErrors()
 
-            page.get('file_fields').each(function(field, i) {
+            //the file should not be uploaded, error shown with dismiss button
+            page.get('file_fields').eq(0).should('contain', 'File not allowed')
+            page.get('file_fields').eq(0).find('a').contains('Dismiss').click()
+            page.get('chosen_files').should('have.length', 0)
 
-                cy.intercept('/admin.php?/cp/addons/settings/filepicker/modal*').as('filepicker' + i)
+            //allow all files into this upload location
+            cy.visit('admin.php?/cp/fields');
+            cy.get('.list-item__content').contains('Second File').click();
+            cy.get('input[name=allowed_directories][value=1]').check()
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
 
-                let link = field.find("button:contains('Choose Existing')")
-                cy.get(link).should('be.visible')
-                cy.get(link).click()
+            //try again
+            cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
+            cy.wait(1000)
+            page.get('file_fields').eq(0).find('.file-field__dropzone').attachFile('../../support/file/README.md', { subjectType: 'drag-n-drop' })
+            cy.wait('@upload')
 
-                if (link.hasClass('has-sub')) {
-                    let dir_link = link.next('.dropdown').find("a:contains('About')")
-                    cy.get(dir_link).click()
-                }
+            page.get('chosen_files').should('have.length', 1)
+            page.get('file_fields').eq(0).parents('.field-control').find('.fields-upload-chosen-name').should('be.visible').should('contain', 'README.md')
 
-                cy.wait('@filepicker' + i)
-
-                file_modal.get('files').should('be.visible')
-                cy.get('.modal-file table tbody tr:nth-child(' + (i + 1) + ')').should('be.visible')
-                cy.get('.modal-file table tbody tr:nth-child(' + (i + 1) + ')').invoke('attr', 'data-id').then((fileId) => {
-                    selectedFileIds[i] = fileId;
-                })
-                cy.get('.modal-file table tbody tr:nth-child(' + (i + 1) + ') td:nth-child(3)').invoke('text').then((fileName) => {
-                    selectedFiles[i] = fileName.replace('File Name', '');
-                })
-                cy.get('.modal-file table tbody tr:nth-child(' + (i + 1) + ') td:nth-child(3)').should('be.visible')
-                cy.get('.modal-file table tbody tr:nth-child(' + (i + 1) + ')').click()
-
-                file_modal.get('files').should('not.be.visible')
-            })
-            page.get('chosen_files').should('have.length', 2)
-            page.get('file_fields').each(function(field, i) {
-                var fileNameLabel = field.parents('.field-control').find('.fields-upload-chosen-name');
-                cy.get(fileNameLabel).should('be.visible')
-                cy.get(fileNameLabel).should('contain', selectedFiles[i])
-
-                var fileInputHidded = field.parents('.field-control').find('input[class="js-file-input"]');
-                cy.get(fileInputHidded).invoke('val').then((value) => {
-                    expect(value).eq( '{file:' + selectedFileIds[i] + ':url}')
-                })
+            var fileInputHidded = '';
+            page.get('file_fields').eq(0).parents('.field-control').find('input[class="js-file-input"]').invoke('val').then((value) => {
+              fileInputHidded = value
             })
 
             //data in place after saving
-            page.get('title').clear().type('File Field Test')
-            page.get('chosen_files').should('have.length', 2)
+            page.get('title').clear().type('File Field Test - Upload Image')
             cy.get('button[value="save"]').click()
 
-            page.get('chosen_files').should('have.length', 2)
-            page.get('file_fields').each(function(field, i) {
-                var fileNameLabel = field.parents('.field-control').find('.fields-upload-chosen-name');
-                cy.get(fileNameLabel).should('be.visible')
-                cy.get(fileNameLabel).should('contain', selectedFiles[i])
+            page.get('chosen_files').should('have.length', 1)
+            page.get('file_fields').eq(0).parents('.field-control').find('.fields-upload-chosen-name').should('be.visible').should('contain', 'README.md')
 
-                var fileInputHidded = field.parents('.field-control').find('input[class="js-file-input"]');
-                cy.get(fileInputHidded).invoke('val').then((value) => {
-                    expect(value).eq( '{file:' + selectedFileIds[i] + ':url}')
-                })
+            page.get('file_fields').eq(0).parents('.field-control').find('input[class="js-file-input"]').invoke('val').then((value) => {
+              expect(value).eq(fileInputHidded)
             })
         })
-
     })
 
     context('when using fluid fields', () => {
