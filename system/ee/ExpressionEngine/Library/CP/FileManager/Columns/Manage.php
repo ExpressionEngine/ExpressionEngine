@@ -84,10 +84,6 @@ class Manage extends EntryManager\Columns\Column
                     'data-file-name' => $file->file_name,
                     'data-confirm-ajax' => ee('CP/URL')->make('files/confirm'),
                 );
-                $toolbar['replace'] = array(
-                    'href' => '',
-                    'title' => lang('replace_file'),
-                );
             }
         }
 

@@ -16,7 +16,7 @@ class FileManager extends FileManagerSection {
 					'perpage_manual_filter': 'input[type!=hidden][name="perpage"]',
 
 					// Main box's table elements
-					'files': '.ee-main__content form .table-responsive table tr',
+					'files': '.ee-main__content form .table-responsive table tbody tr',
 
 
 					'title_name_header': '.ee-main__content form .table-responsive table tr th:nth-child(3)',
