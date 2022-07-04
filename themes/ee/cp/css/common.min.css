@@ -17496,6 +17496,20 @@ fieldset .field-control #eye {
     max-width: 100%;
   }
 }
+.fields-upload-chosen .fields-upload-chosen-file i.fas, .fields-upload-chosen .fields-upload-chosen-file i[class*=fields-grid-tool-]:before, .fields-upload-chosen .fields-upload-chosen-file .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .fields-upload-chosen .fields-upload-chosen-file i.tab-remove:before,
+.fields-upload-chosen .fields-upload-chosen-file .tab-wrap .tabs.layout i.tab-on:before,
+.tab-wrap .tabs.layout .fields-upload-chosen .fields-upload-chosen-file i.tab-on:before,
+.fields-upload-chosen .fields-upload-chosen-file .tab-wrap .tabs.layout i.tab-off:before,
+.tab-wrap .tabs.layout .fields-upload-chosen .fields-upload-chosen-file i.tab-off:before, .fields-upload-chosen .fields-upload-chosen-file .tbl-list i.reorder:before, .tbl-list .fields-upload-chosen .fields-upload-chosen-file i.reorder:before, .fields-upload-chosen .fields-upload-chosen-file .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .fields-upload-chosen .fields-upload-chosen-file i.has-sub::before, .fields-upload-chosen .fields-upload-chosen-file i.has-sub::after, .fields-upload-chosen .fields-upload-chosen-file i.icon-settings,
+.fields-upload-chosen .fields-upload-chosen-file i.icon--settings, .fields-upload-chosen .fields-upload-chosen-file i[class^=icon--],
+.fields-upload-chosen .fields-upload-chosen-file i[class*=" icon--"], .fields-upload-chosen .fields-upload-chosen-file i.icon-reorder, .fields-upload-chosen .fields-upload-chosen-file i.layout-item__handle::after, .fields-upload-chosen .fields-upload-chosen-file i.select-popup:not([multiple])::after, .fields-upload-chosen .fields-upload-chosen-file i.select__button-label::after, .fields-upload-chosen .fields-upload-chosen-file i.column-sort::after, .fields-upload-chosen .fields-upload-chosen-file i.app-notice__icon::before, .fields-upload-chosen .fields-upload-chosen-file i.app-notice__dismiss::before, .fields-upload-chosen .fields-upload-chosen-file i.m-close:before, .fields-upload-chosen .fields-upload-chosen-file i.sidebar__link.remove:after, .fields-upload-chosen .fields-upload-chosen-file .tab-bar--editable i.tab-remove:before, .tab-bar--editable .fields-upload-chosen .fields-upload-chosen-file i.tab-remove:before,
+.fields-upload-chosen .fields-upload-chosen-file .tab-bar--editable i.tab-on:before,
+.tab-bar--editable .fields-upload-chosen .fields-upload-chosen-file i.tab-on:before,
+.fields-upload-chosen .fields-upload-chosen-file .tab-bar--editable i.tab-off:before,
+.tab-bar--editable .fields-upload-chosen .fields-upload-chosen-file i.tab-off:before, .fields-upload-chosen .fields-upload-chosen-file i.dropdown__link--selected::before, .fields-upload-chosen .fields-upload-chosen-file i[class^=widget-icon--],
+.fields-upload-chosen .fields-upload-chosen-file i[class*=" widget-icon--"], .fields-upload-chosen .fields-upload-chosen-file i.widget--support::before, .fields-upload-chosen .fields-upload-chosen-file i.checkbox:after, .fields-upload-chosen .fields-upload-chosen-file i.checkbox--large:after, .fields-upload-chosen .fields-upload-chosen-file i.checkbox--small:after, .fields-upload-chosen .fields-upload-chosen-file i.sub-arrow:before {
+  color: var(--ee-secondary-sidebar-item-icon);
+}
 
 .installer-page .wrap {
   margin: auto;
