@@ -87,7 +87,7 @@ abstract class FileSyncedModel extends Model
     public function onAfterLoad()
     {
         $path = $this->getFilePath();
-
+   
         if (! isset($path)) {
             return;
         }
@@ -140,7 +140,7 @@ abstract class FileSyncedModel extends Model
         $path = $this->getFilePath();
         $old_path = $this->getPreviousFilePath($previous);
 
-        if ($path != $old_path && ee('Filesystem')->exists($old_path)) {
+        if ($path != $old_path && $old_path && ee('Filesystem')->exists($old_path)) {
             ee('Filesystem')->delete($old_path);
         }
     }
