@@ -38,6 +38,11 @@
 			if (data.isImage) {
 				// Set the thumbnail
 				references.input_img.attr('src', data.thumb_path);
+				if (figure.find('i').length) {
+					figure.find('i').remove();
+				}
+			} else {
+				references.input_img.after('<i class="fas fa-file fa-3x"></i>');
 			}
 
 			// Fill in formatted caption
