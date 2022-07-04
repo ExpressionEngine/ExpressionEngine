@@ -683,13 +683,21 @@ function (_React$Component) {
       }, EE.lang.file_dnd_choose_existing), React.createElement("a", {
         href: "#",
         className: "button button--default button--small m-link",
-        rel: "modal-file",
         onClick: function onClick(e) {
           e.preventDefault();
 
           _this5.uploadNew(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_upload_new))), this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement("div", {
+      }, EE.lang.file_dnd_upload_new), React.createElement("input", {
+        type: "file",
+        className: "f_open-filepicker",
+        style: {
+          display: 'none'
+        },
+        "data-upload_location_id": '',
+        "data-path": '',
+        multiple: "multiple"
+      }))), this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement("div", {
         className: "button-segment"
       }, React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,

@@ -588,10 +588,11 @@ class DragAndDropUpload extends React.Component {
               this.chooseExisting(this.state.directory)
             }}>{EE.lang.file_dnd_choose_existing}</a>
 
-            <a href="#" className="button button--default button--small m-link" rel="modal-file" onClick={(e) => {
+            <a href="#" className="button button--default button--small m-link" onClick={(e) => {
               e.preventDefault()
               this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
+            <input type="file" className="f_open-filepicker" style={{display: 'none'}} data-upload_location_id={''} data-path={''} multiple="multiple"/>
             </div>
           </React.Fragment>
         }
