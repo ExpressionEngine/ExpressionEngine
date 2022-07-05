@@ -103,4 +103,45 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
         return $this->rootExists && parent::has($path);
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function deleteDir($path)
+    {
+        return $this->attemptFastDelete($path) || parent::deleteDir($path);
+    }
+
+    /**
+     * Attempt to delete a file using the OS method
+     *
+     * We can't always do this, but it's much, much faster than iterating
+     * over directories with many children.
+     *
+     * @param bool whether or not the fast system delete could be done
+     */
+    protected function attemptFastDelete($path)
+    {
+        $path = $this->applyPathPrefix($path);
+
+        $delete_name = sha1($path . '_delete_' . mt_rand());
+        $delete_path = PATH_CACHE . $delete_name;
+
+        // Suppressing potential warning when renaming a directory to one that already exists.
+        @rename($path, $delete_path);
+
+        if (file_exists($delete_path) && is_dir($delete_path)) {
+            $delete_path = @escapeshellarg($delete_path);
+
+            if (DIRECTORY_SEPARATOR == '/') {
+                @exec("rm -rf {$delete_path}");
+            } else {
+                @exec("rd /s /q {$delete_path}");
+            }
+
+            return  !file_exists($delete_path);
+        }
+
+        return false;
+    }
+
 }

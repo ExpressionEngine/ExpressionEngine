@@ -25,7 +25,7 @@ class Filesystem
         if (is_null($adapter)) {
             $basePath = array_key_exists('base_path', get_config()) ? get_config()['base_path'] : '';
             $default = ($_SERVER['DOCUMENT_ROOT']) ?: realpath(SYSPATH .'../');
-            $adapter = new Flysystem\Adapter\Local($this->normalizeAbsolutePath($basePath ?: $default));
+            $adapter = new Adapter\Local(['path' => $this->normalizeAbsolutePath($basePath ?: $default)]);
         }else{
             // Fix prefixes
             $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
@@ -240,17 +240,13 @@ class Filesystem
             throw new FilesystemException("Directory does not exist {$path}.");
         }
 
-        if (!$leave_empty && $this->attemptFastDelete($path)) {
-            return true;
-        }
-
-        $this->flysystem->deleteDir($path);
+        $result = $this->flysystem->deleteDir($path);
 
         if ($leave_empty) {
             $this->flysystem->createDir($path);
         }
 
-        return true;
+        return $result;
     }
 
     /**
@@ -312,41 +308,6 @@ class Filesystem
         if($add_index) {
             $this->addIndexHtml($path);
         }
-    }
-
-    /**
-     * Attempt to delete a file using the OS method
-     *
-     * We can't always do this, but it's much, much faster than iterating
-     * over directories with many children.
-     *
-     * @param bool whether or not the fast system delete could be done
-     */
-    protected function attemptFastDelete($path)
-    {
-        if (!$this->isLocal()) {
-            return false;
-        }
-
-        $path = $this->normalize($path);
-
-        $delete_name = sha1($path . '_delete_' . mt_rand());
-        $delete_path = PATH_CACHE . $delete_name;
-        $this->rename($path, $delete_path);
-
-        if ($this->exists($delete_path) && is_dir($delete_path)) {
-            $delete_path = @escapeshellarg($delete_path);
-
-            if (DIRECTORY_SEPARATOR == '/') {
-                @exec("rm -rf {$delete_path}");
-            } else {
-                @exec("rd /s /q {$delete_path}");
-            }
-
-            return  ! $this->exists($delete_path);
-        }
-
-        return false;
     }
 
     /**
