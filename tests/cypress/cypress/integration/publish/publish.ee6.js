@@ -22,6 +22,7 @@ context('Publish Page - Create', () => {
         cy.visit('admin.php?/cp/design')
       })
       cy.eeConfig({ item: 'show_profiler', value: 'y' })
+      cy.task('filesystem:delete', '../../images/uploads/*')
     })
 
     beforeEach(function(){
@@ -259,6 +260,73 @@ context('Publish Page - Create', () => {
             })
         })
     })
+
+    context('file grid', () => {
+
+      beforeEach(function(){
+          cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
+          page.get('title').should('exist')
+          page.get('url_title').should('exist')
+          cy.wait(1000)
+      })
+
+      before(function() {
+          cy.auth();
+          const channel_field_form = new ChannelFieldForm
+          channel_field_form.createField({
+              group_id: 1,
+              type: 'File Grid',
+              label: 'File Grid Field',
+              fields: { field_content_type: 'all' }
+          })
+
+          cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
+          page.get('title').should('exist')
+          page.get('url_title').should('exist')
+      })
+
+      it('uploads several files', () => {
+          cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+          cy.intercept('POST', '**/publish/create/**'). as('validation')
+          cy.get('.js-file-grid').eq(0).find('.file-field__dropzone:visible').attachFile(['../../support/file/README.md', '../../../../LICENSE.txt', '../../support/file/script.sh'], { subjectType: 'drag-n-drop' })
+          //nothing happens until you select upload destination
+          cy.wait(3000);
+          cy.get('.js-file-grid').eq(0).contains('You must choose a directory to upload files').should('be.visible')
+          //select the destination
+          cy.get('.js-file-grid').eq(0).find('.file-field__dropzone-button:visible .js-dropdown-toggle').click();
+          cy.get('.js-file-grid').eq(0).find('.file-field__dropzone-button:visible .dropdown__link:contains("Main Upload Directory")').click()
+          cy.wait('@upload')
+          cy.hasNoErrors()
+
+          //one of the files is not allowed, two should be successfully uploaded
+          cy.get('.js-file-grid').eq(0).should('contain', 'File not allowed')
+          cy.get('.js-file-grid').eq(0).find('a').contains('Dismiss').click()
+          cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
+          cy.get('.grid-field__table tbody tr:visible').contains('README.md')
+          cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
+          cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+
+          //data in place after validation error
+          cy.get('button[value="save"]').click()
+
+          cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
+          cy.get('.grid-field__table tbody tr:visible').contains('README.md')
+          cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
+          cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+
+          //data in place after saving
+          page.get('title').clear().type('File Grid Test').blur()
+          page.get('url_title').focus().blur()
+          cy.wait('@validation')
+          cy.wait(3000)
+          cy.get('button[value="save"]').click()
+          
+          cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
+          cy.get('.grid-field__table tbody tr:visible').contains('README.md')
+          cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
+          cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+      })
+  })
 
     context('when using fluid fields', () => {
 
