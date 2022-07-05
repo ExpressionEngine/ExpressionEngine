@@ -279,7 +279,7 @@ class Filesystem
         $contents_array = [];
 
         foreach ($contents as $item) {
-            if ($item['type'] == 'file' && ($includeHidden || strpos($item['path'], '.') !== 0)) {
+            if (($item['type'] == 'file' && ($includeHidden || strpos($item['path'], '.') !== 0)) || ($item['type'] == 'dir' && ($includeHidden || strpos($item['path'], '_') !== 0))) {
                 $contents_array[] = $item['path'];
             }
         }

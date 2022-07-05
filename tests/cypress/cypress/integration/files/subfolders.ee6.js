@@ -2,8 +2,10 @@
 
 import UploadEdit from '../../elements/pages/files/UploadEdit';
 import FileManager from '../../elements/pages/files/FileManager';
+import UploadSync from '../../elements/pages/files/UploadSync';
 const page = new UploadEdit;
 const managerPage = new FileManager;
+const syncPage = new UploadSync;
 const { _, $ } = Cypress
 
 const upload_path = "{base_path}/images"
@@ -282,6 +284,62 @@ context('Upload Destination Subfolders', () => {
 
         managerPage.hasAlert('success').contains('deleted')
     })
+
+    context('sync the subfolders', () => {
+        before(() => {
+            cy.task('db:seed')
+            cy.task('filesystem:delete', '../../images/uploads/*').then(() => {
+                cy.task('filesystem:create', '../../images/uploads/to-be-synced').then(() => {
+                    cy.task('filesystem:copy', { from: '../../LICENSE.txt', to: '../../images/uploads/to-be-synced/' })
+                })
+                cy.task('filesystem:create', '../../images/uploads/_hidden-folder').then(() => {
+                    cy.task('filesystem:copy', { from: 'support/file/README.md', to: '../../images/uploads/_hidden-folder/' })
+                })
+            })
+        })
+
+        it('adding subfolder on filesystem', function() {
+
+            page.load_edit_for_dir(2)
+            page.get('name').should('exist')
+            page.get('toggle_subfolder_support').should('have.class', 'off')
+            page.get('toggle_subfolder_support').click()
+            page.get('toggle_subfolder_support').should('have.class', 'on')
+            page.submit()
+            cy.hasNoErrors()
+
+            //nothing listed initially
+            managerPage.load_for_dir(2)
+            cy.hasNoErrors()
+            cy.get('.app-listing__row').should('not.exist')
+
+            //sync the files
+            syncPage.load_sync_for_dir(2)
+            syncPage.get('wrap').contains('2 files and folders')
+            syncPage.get('sync_button').click()
+            cy.wait(10000)
+            syncPage.get('alert').should('exist')
+            syncPage.get('alert').contains('Upload directory synchronized')
+            cy.hasNoErrors()
+    
+            //the non-hidden folder is listed
+            managerPage.load_for_dir(2)
+            cy.get('.app-listing__row').should('contain', 'to-be-synced')
+            cy.get('.app-listing__row').should('not.contain', '_hidden-folder')
+    
+            //the file in folder is listed
+            cy.get('.app-listing__row').contains('to-be-synced').first().click()
+            cy.get('.app-listing__row').should('contain', 'LICENSE.txt')
+    
+            //only the file from non-hidden folder is listed
+            cy.visit('/admin.php?/cp/files');
+            cy.get('.app-listing__row').should('contain', 'LICENSE.txt')
+            cy.get('.app-listing__row').should('not.contain', 'README.md')
+    
+        })
+    })
+
+
 
 
 })
