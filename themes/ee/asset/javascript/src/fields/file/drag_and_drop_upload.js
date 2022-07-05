@@ -406,7 +406,7 @@ function (_React$Component) {
                 file.fileId = _response.fileId;
                 file.originalFileName = _response.originalFileName;
 
-                if (window.globalDropzone.parents('.field-control').find('.button-segment').length) {
+                if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
                   window.globalDropzone.parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
                     $(this).attr('disabled', 'disabled');
                   });

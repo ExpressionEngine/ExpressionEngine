@@ -226,8 +226,7 @@ class DragAndDropUpload extends React.Component {
               file.duplicate = true
               file.fileId = response.fileId
               file.originalFileName = response.originalFileName
-
-              if(window.globalDropzone.parents('.field-control').find('.button-segment').length) {
+              if($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
                 window.globalDropzone.parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
                   $(this).attr('disabled','disabled');
                 })
