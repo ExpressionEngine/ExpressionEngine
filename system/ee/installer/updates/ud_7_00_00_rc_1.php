@@ -347,6 +347,12 @@ class Updater
             'key' => 'file_manager_compatibility_mode',
             'value' => 'y'
         ])->save();
+
+        ee('Model')->make('Config', [
+            'site_id' => 0,
+            'key' => 'warn_file_manager_compatibility_mode',
+            'value' => 'y'
+        ])->save();
     }
 
     private function installPro()

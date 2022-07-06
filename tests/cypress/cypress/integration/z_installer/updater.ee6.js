@@ -346,6 +346,11 @@ it('turns system off if system was off before updating', () => {
           test_update(false, expect_login)
           page.get('success_actions').should('not.exist')
 
+          //shows the banner about filemanager being in legacy mode
+          cy.task('installer:disable').then(() => {
+            cy.login();
+            cy.get('.app-notice-file_manager_compatibility_mode').should('be.visible')
+          })
         })
       })
     })

@@ -607,6 +607,21 @@ class EE_Core
                     ->canClose()
                     ->now();
             }
+
+            //tell them about new file manager
+            if (bool_config_item('warn_file_manager_compatibility_mode') && ee()->router->fetch_class(true) !== 'login' && ee()->router->fetch_class() != 'css') {
+                ee('CP/Alert')->makeBanner('file_manager_compatibility_mode')
+                    ->asAttention()
+                    ->canClose()
+                    ->withTitle(lang('file_manager_compatibility_mode_warning'))
+                    ->addToBody(sprintf(
+                        lang('file_manager_compatibility_mode_warning_desc'),
+                        ee('CP/URL')->make('utilities/file-usage')->compile(),
+                        ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
+                    )
+                    ->now();
+                ee('Model')->get('Config')->filter('key', 'warn_file_manager_compatibility_mode')->delete();
+            }
         }
     }
 

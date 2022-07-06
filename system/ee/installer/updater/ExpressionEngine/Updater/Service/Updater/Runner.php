@@ -280,20 +280,6 @@ class Runner
                     ->defer();
             }
         }
-
-        //tell them about new file manager
-        if (bool_config_item('file_manager_compatibility_mode')) {
-            ee('CP/Alert')->makeBanner('file_manager_compatibility_mode')
-                ->asAttention()
-                ->canClose()
-                ->withTitle('file_manager_compatibility_mode_warning')
-                ->addToBody(sprintf(
-                    lang('file_manager_compatibility_mode_warning_desc'),
-                    ee('CP/URL')->make('utilities/file-usage')->compile(),
-                    ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
-                )
-                ->defer();
-        }
     }
 
     /**
