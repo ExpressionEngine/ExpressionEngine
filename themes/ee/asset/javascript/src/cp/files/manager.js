@@ -162,9 +162,9 @@
 
 		function showBigImage(button) {
 			var tooltip = button.find('#preview');
-			var element = button.next();
-			var placement = 'top-start';
-			var offset = '-5px, -25px';
+			var element = button.find('img.thumbnail_img');
+			var placement = 'top-end';
+			var offset = '60px, 25px';
 			new Popper(element, tooltip, {
 				placement: placement,
 				modifiers: {
@@ -187,8 +187,16 @@
 				var path = $(this).data('url');
 				var alt = $(this).attr('alt');
 				var parent = $(this).parent();
+				var width = $(this).find('img').width();
+				var height = $(this).find('img').height();
+				var style;
 
-				parent.append("<p id='preview'><img src='" + path + "' alt='"+alt+"' /></p>");
+				if (width > height) {
+					style = 'max-width: 200px';
+				} else {
+					style = 'max-height: 200px';
+				}
+				parent.prepend("<p id='preview'><img src='" + path + "' alt='"+alt+"' style='"+style+"' /></p>");
 				showBigImage(parent);
 			}, mouseleave: function () {
 				$("#preview").remove();

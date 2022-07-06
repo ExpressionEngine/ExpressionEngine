@@ -12,6 +12,7 @@
 (function ($) {
 	$(document).ready(function () {
 		$('.js-copy-url-button').on('click', function (e) {
+			e.preventDefault();
 			// copy asset link to clipboard
 			var copyText = $(this).attr('href');
 
@@ -24,6 +25,7 @@
 
 			// show notification
 			$('.f_manager-alert').css('display', 'flex');
+			DropdownController.hideAllDropdowns()
 
 			// hide notification in 10 sec
 			setTimeout(function() {
