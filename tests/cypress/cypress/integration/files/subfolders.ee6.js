@@ -295,6 +295,7 @@ context('Upload Destination Subfolders', () => {
                 cy.task('filesystem:create', '../../images/uploads/_hidden-folder').then(() => {
                     cy.task('filesystem:copy', { from: 'support/file/README.md', to: '../../images/uploads/_hidden-folder/' })
                 })
+                cy.task('filesystem:create', '../../images/uploads/empty-folder');
             })
         })
 
@@ -315,7 +316,7 @@ context('Upload Destination Subfolders', () => {
 
             //sync the files
             syncPage.load_sync_for_dir(2)
-            syncPage.get('wrap').contains('2 files and folders')
+            syncPage.get('wrap').contains('3 files and folders')
             syncPage.get('sync_button').click()
             cy.wait(10000)
             syncPage.get('alert').should('exist')
@@ -325,6 +326,7 @@ context('Upload Destination Subfolders', () => {
             //the non-hidden folder is listed
             managerPage.load_for_dir(2)
             cy.get('.app-listing__row').should('contain', 'to-be-synced')
+            cy.get('.app-listing__row').should('contain', 'empty-folder')
             cy.get('.app-listing__row').should('not.contain', '_hidden-folder')
     
             //the file in folder is listed
