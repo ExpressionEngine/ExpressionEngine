@@ -92,7 +92,7 @@ context('File Manager', () => {
     it('shows the "All Files" File Manager page', () => {
         beforeEach_all_files();
         page.get('date_added_header').should('have.class', 'column-sort-header--active')
-        page.get('files').should('have.length', 11)
+        page.get('files').should('have.length', 10)
     });
 
     // General Tests
@@ -108,7 +108,7 @@ context('File Manager', () => {
         cy.hasNoErrors()
 
         page.get('have_pagination').should('not.exist');
-        page.get('files').should('have.length', 11)
+        page.get('files').should('have.length', 10)
     });
 
     it('can change the page size manually', () => {
@@ -131,7 +131,7 @@ context('File Manager', () => {
         page.get('pages').each(function(el, i){
             expect(el).text(pages[i])
         })
-        page.get('files').should('have.length', 6)
+        page.get('files').should('have.length', 5)
     });
 
     it('can change pages', () => {
@@ -156,7 +156,7 @@ context('File Manager', () => {
         page.get('pages').each(function(el, i){
             expect(el).text(pages[i])
         })
-        page.get('files').should('have.length', 6)
+        page.get('files').should('have.length', 5)
     });
 
     it('can reverse sort by title/name', () => {
@@ -318,7 +318,7 @@ context('File Manager', () => {
         })
 
         cy.intercept('/admin.php?/cp/files/*').as('fileRequest')
-        page.get('files').eq(1).find('input[type="checkbox"]').check()
+        page.get('files').eq(0).find('input[type="checkbox"]').check()
         page.get('bulk_action').should('be.visible')
         page.get('bulk_action').select("Delete")
         page.get('action_submit_button').click()
@@ -358,7 +358,7 @@ context('File Manager', () => {
             filename = text
         })
 
-        page.get('files').eq(1).find('input[type="checkbox"]').check()
+        page.get('files').eq(0).find('input[type="checkbox"]').check()
         //page.get('bulk_action').should('be.visible')
         page.get('bulk_action').select("Delete")
         page.get('action_submit_button').click()
