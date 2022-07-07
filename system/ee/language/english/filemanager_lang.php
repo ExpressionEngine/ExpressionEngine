@@ -34,8 +34,6 @@ $lang = array(
 
     'credit' => 'Credit',
 
-    'custom_limit' => 'custom limit',
-
     'custom_fields' => 'custom fields',
 
     'date_added' => 'Date Added',

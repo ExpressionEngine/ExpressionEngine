@@ -71,6 +71,8 @@ $lang = array(
 
     'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
 
+    'category' => 'Category',
+
     'categories' => 'Categories',
 
     'channels' => 'Channels',
@@ -88,6 +90,8 @@ $lang = array(
     'copyright' => 'Copyright',
 
     'custom_limit' => 'custom limit',
+
+    'custom_date' => 'custom date',
 
     'details' => 'Details',
 

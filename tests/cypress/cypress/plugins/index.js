@@ -87,7 +87,7 @@ module.exports = (on, config) => {
                 }
 
                 if (renameInstaller || fs.exists('../../system/ee/installer')) {
-                    fs.rename('../../system/ee/installer', '../../system/ee/_installer');
+                    //fs.rename('../../system/ee/installer', '../../system/ee/_installer');
                 }
 
                 // Load content from dump

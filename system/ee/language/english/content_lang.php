@@ -100,10 +100,6 @@ $lang = array(
 
     'create_entry_with_channel_name' => 'New Entry: %s',
 
-    'custom_date' => 'custom date',
-
-    'custom_limit' => 'custom limit',
-
     'edit_channel_entries' => 'Edit Channel Entries',
 
     'edit_comment_error' => 'Cannot Edit Comment',

@@ -75,7 +75,7 @@ class Manage extends EntryManager\Columns\Column
                 'class' => 'js-copy-url-button',
                 'title' => lang('copy_link'),
             );
-            if (ee('Permission')->can('edit_files')) {
+            if (ee('Permission')->can('edit_files') && ee()->uri->segment(3) == 'directory') {
                 $toolbar['move'] = array(
                     'href' => '',
                     'title' => lang('move'),

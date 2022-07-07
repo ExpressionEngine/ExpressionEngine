@@ -611,4 +611,174 @@ context('File Manager', () => {
         })
     })
 
+    context('work with filters', function() {
+        before(function() {
+            cy.task('filesystem:delete', '../../images/uploads/*.zip')
+            cy.task('filesystem:delete', '../../images/uploads/*.torrent')
+            cy.task('filesystem:delete', '../../images/uploads/*.csv')
+            cy.task('filesystem:delete', '../../images/uploads/*.wav')
+            cy.task('filesystem:delete', '../../images/uploads/*.mp4')
+            cy.task('filesystem:copy', { from: 'support/config/mimes.php', to: '../../system/user/config/' })
+            cy.authVisit('/admin.php?/cp/files/directory/1');
+
+            cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+            cy.intercept('/admin.php?/cp/files/directory/*').as('table')
+
+            cy.get('.file-upload-widget').then(function(widget) {
+                $(widget).removeClass('hidden')
+            })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent', { subjectType: 'drag-n-drop' })
+            cy.wait('@upload')
+            cy.wait('@table')
+            cy.get('.ee-main__content form .table-responsive table tr:contains(torrent)').its('length').should('eq', 1)
+            
+            /*cy.get('.file-upload-widget').then(function(widget) {
+                $(widget).removeClass('hidden')
+            })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/archive.zip', { subjectType: 'drag-n-drop' })
+            cy.wait('@upload')
+            cy.wait('@table')
+            cy.get('.ee-main__content form .table-responsive table tr:contains(archive.zip)').its('length').should('eq', 1)*/
+
+            cy.get('.file-upload-widget').then(function(widget) {
+                $(widget).removeClass('hidden')
+            })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/data.csv', { subjectType: 'drag-n-drop' })
+            cy.wait('@upload')
+            cy.wait('@table')
+            cy.get('.ee-main__content form .table-responsive table tr:contains(data.csv)').its('length').should('eq', 1)
+
+            cy.get('.file-upload-widget').then(function(widget) {
+                $(widget).removeClass('hidden')
+            })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/ee-sample-video.mp4', { subjectType: 'drag-n-drop' })
+            cy.wait('@upload')
+            cy.wait('@table')
+            cy.get('.ee-main__content form .table-responsive table tr:contains(ee-sample-video.mp4)').its('length').should('eq', 1)
+
+            cy.get('.file-upload-widget').then(function(widget) {
+                $(widget).removeClass('hidden')
+            })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/mixkit-arcade-retro-game-over-213.wav', { subjectType: 'drag-n-drop' })
+            cy.wait('@upload')
+            cy.wait('@table')
+            cy.get('.ee-main__content form .table-responsive table tr:contains(mixkit-arcade-retro-game-over-213.wav)').its('length').should('eq', 1)
+
+        })
+
+        after(function() {
+            cy.task('filesystem:delete', '../../system/user/config/mimes.php')
+        })
+
+        it('filter by type', function() {
+            cy.intercept('/admin.php?/cp/files*').as('table')
+
+            /*cy.get('[data-filter-label="type"]').click();
+            cy.get('.dropdown--open').contains('Archive')
+            cy.wait('@table')
+            cy.get('.ee-main__content form .table-responsive table tbody tr:visible').its('length').should('eq', 1)
+            cy.get('.ee-main__content form .table-responsive table tr:contains(archive.zip)').its('length').should('eq', 1)*/
+
+            cy.get('[data-filter-label="type"]').click();
+            cy.get('.dropdown--open').contains('Audio').click();
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('.ee-main__content form .table-responsive table tbody tr:visible').its('length').should('eq', 1)
+            cy.get('.ee-main__content form .table-responsive table tr:contains(mixkit-arcade-retro-game-over-213.wav)').its('length').should('eq', 1)
+
+            cy.get('[data-filter-label="type"]').click();
+            cy.get('.dropdown--open').contains('Video').click();
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('.ee-main__content form .table-responsive table tbody tr:visible').its('length').should('eq', 1)
+            cy.get('.ee-main__content form .table-responsive table tr:contains(ee-sample-video.mp4)').its('length').should('eq', 1)
+
+            cy.get('[data-filter-label="type"]').click();
+            cy.get('.dropdown--open').contains('Document').click();
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('.ee-main__content form .table-responsive table tbody tr:visible').its('length').should('eq', 1)
+            cy.get('.ee-main__content form .table-responsive table tr:contains(data.csv)').its('length').should('eq', 1)
+
+            cy.get('[data-filter-label="type"]').click();
+            cy.get('.dropdown--open').contains('Other').click();
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('.ee-main__content form .table-responsive table tbody tr:visible').its('length').should('eq', 1)
+            cy.get('.ee-main__content form .table-responsive table tr:contains(torrent)').its('length').should('eq', 1)
+
+            cy.get('[data-filter-label="type"]').click();
+            cy.get('.dropdown--open').contains('Image').click();
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'jpg')
+            //cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'archive.zip')
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'mixkit-arcade-retro-game-over-213.wav')
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'ee-sample-video.mp4')
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'data.csv')
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'torrent')
+
+            cy.get('.filter-search-bar__item.in-use .filter-clear').click()
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'jpg')
+            //cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'archive.zip')
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'mixkit-arcade-retro-game-over-213.wav')
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'ee-sample-video.mp4')
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'data.csv')
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'torrent')
+        })
+
+        it('searches by file name', () => {
+            cy.intercept('/admin.php?/cp/files*').as('table')
+            cy.get('input[name="filter_by_keyword"]').clear().type('sample')
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('.ee-main__content form .table-responsive table tbody tr:visible').its('length').should('eq', 1)
+            cy.get('.ee-main__content form .table-responsive table tr:contains(ee-sample-video.mp4)').its('length').should('eq', 1)
+        })
+
+        it('filters by date', () => {
+            cy.intercept('/admin.php?/cp/files*').as('table')
+            cy.get('[data-filter-label="date"]').click();
+            cy.get('.dropdown--open').contains('Last 30 Days').click();
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'jpg')
+            //cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'archive.zip')
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'mixkit-arcade-retro-game-over-213.wav')
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'ee-sample-video.mp4')
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'data.csv')
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'torrent')
+        })
+
+        it('filters by custom date', () => {
+            cy.intercept('/admin.php?/cp/files*').as('table')
+            cy.get('[data-filter-label="date"]').click();
+            cy.get('.dropdown--open input[name="filter_by_date"]').clear().type('4/15/2011{enter}');
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('.ee-main__content form .table-responsive table tbody tr').should('contain', 'jpg')
+            //cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'archive.zip')
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'mixkit-arcade-retro-game-over-213.wav')
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'ee-sample-video.mp4')
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'data.csv')
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'torrent')
+        })
+
+        it('combination of filters', () => {
+            cy.intercept('/admin.php?/cp/files*').as('table')
+            cy.get('[data-filter-label="date"]').click();
+            cy.get('.dropdown--open input[name="filter_by_date"]').clear().type('4/15/2011{enter}');
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('input[name="filter_by_keyword"]').clear().type('jane')
+            cy.wait('@table')
+            cy.wait(1000) //give the table time to render
+            cy.get('.ee-main__content form .table-responsive table tbody tr').should('contain', 'staff_jane.png')
+            cy.get('.ee-main__content form .table-responsive table tbody tr:visible').its('length').should('eq', 1)
+        })
+
+    })
+
 })
