@@ -1,5 +1,5 @@
 import FileManagerSection from '../_sections/FileManagerSection'
-
+const { $ } = Cypress
 class UploadFile extends FileManagerSection {
   constructor() {
       super()
@@ -23,5 +23,16 @@ class UploadFile extends FileManagerSection {
       cy.visit('admin.php?/cp/files')
       cy.get('.sidebar').contains('Main Upload Directory').click()
     }
+
+    dragAndDropUpload(file) {
+        cy.get('.file-upload-widget').then(function(widget) {
+            $(widget).removeClass('hidden')
+        })
+        cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+        cy.intercept('/admin.php?/cp/files/directory/*').as('table')
+        this.get('file_input').find('.file-field__dropzone').attachFile(file, { subjectType: 'drag-n-drop' })
+        cy.wait('@upload')
+    }
+
 }
 export default UploadFile;

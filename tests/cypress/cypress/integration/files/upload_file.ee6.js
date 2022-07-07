@@ -56,18 +56,9 @@ context('File Manager / Upload File', () => {
     cy.task('filesystem:delete', '../../system/user/config/mimes.php')
   })
 
-  function dragAndDropUpload(file) {
-    cy.get('.file-upload-widget').then(function(widget) {
-      $(widget).removeClass('hidden')
-    })
-    cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
-    cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-    page.get('file_input').find('.file-field__dropzone').attachFile(file, { subjectType: 'drag-n-drop' })
-    cy.wait('@upload')
-  }
-
+  
   it('can upload a Markdown file', () => {
-    dragAndDropUpload(md_file)
+    page.dragAndDropUpload(md_file)
     cy.get('.file-upload-widget').should('not.be.visible')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -78,7 +69,7 @@ context('File Manager / Upload File', () => {
   })
 
   it('asked to resolve when uploading file with the same name', () => {
-    dragAndDropUpload(md_file)
+    page.dragAndDropUpload(md_file)
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File already exists')
@@ -89,7 +80,7 @@ context('File Manager / Upload File', () => {
   })
 
   it('cannot upload a file when mime type is not registered', () => {
-    dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
@@ -105,7 +96,7 @@ context('File Manager / Upload File', () => {
   })
 
   it('uploads the file correctly after error', () => {
-    dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
@@ -113,7 +104,7 @@ context('File Manager / Upload File', () => {
     cy.get('.file-upload-widget a').contains('Dismiss').click()
     cy.hasNoErrors()
 
-    dragAndDropUpload('../../../../LICENSE.txt')
+    page.dragAndDropUpload('../../../../LICENSE.txt')
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("LICENSE.txt")
     returnPage.get('selected_file').should('contain', 'Document')
@@ -124,7 +115,7 @@ context('File Manager / Upload File', () => {
 
   it('can upload a file when mime type is whitelisted in config', () => {
     cy.task('filesystem:copy', { from: 'support/config/mimes.php', to: '../../system/user/config/' })
-    dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
     cy.get('.file-upload-widget').should('not.be.visible')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -186,8 +177,7 @@ context('File Manager / Upload File', () => {
   it('cannot upload a non-image when the directory is restricted to images', () => {
     cy.get('.sidebar').contains('About').click()
 
-    dragAndDropUpload(md_file)
-    cy.wait('@upload')
+    page.dragAndDropUpload(md_file)
     cy.hasNoErrors()
 
     returnPage.get('selected_file').should('not.exist')
@@ -197,10 +187,10 @@ context('File Manager / Upload File', () => {
   it('file uploaded only once in case of previous error', () => {
     cy.get('.sidebar').contains('About').click()
 
-    dragAndDropUpload(md_file)
+    page.dragAndDropUpload(md_file)
 
     page.get('file_input').find('.file-field__dropzone').invoke('show')
-    dragAndDropUpload('../../../../themes/ee/asset/fonts/fontawesome-webfont.eot')
+    page.dragAndDropUpload('../../../../themes/ee/asset/fonts/fontawesome-webfont.eot')
 
     cy.get('.file-upload-widget:contains(fontawesome-webfont.eot)').its('length').should('eq', 1)
   })

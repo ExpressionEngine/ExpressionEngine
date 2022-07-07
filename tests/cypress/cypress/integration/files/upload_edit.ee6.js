@@ -140,7 +140,7 @@ context('Upload Destination Create/Edit', () => {
     // Not writable path:
     cy.log('Not writable path:')
     cy.route("POST", "**/files/uploads/**").as("ajax11");
-    page.get('server_path').clear().type('/')
+    page.get('server_path').clear().type('X:/')
     page.get('server_path').trigger('blur')
     cy.wait("@ajax11");
     page.hasErrorsCount(3)
