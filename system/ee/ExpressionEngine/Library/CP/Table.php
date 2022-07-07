@@ -36,6 +36,7 @@ class Table
      *
      * 'sort_col' - Name of the column currently sorting
      * 'sort_dir' - Direction of the sort, 'asc' or 'desc'
+     * 'force_sort_col' - forces the sort column to be used, even if it's not present in columns list
      * 'search' - Search text to search table with
      * 'wrap' - Whether or not to wrap the table in a div that allows overflow scrolling
      * 'autosort' - Handle sorting automatically, this expects the entire dataset to be
@@ -65,6 +66,7 @@ class Table
             'wrap' => true,
             'sort_col' => null,
             'sort_col_qs_var' => 'sort_col',
+            'force_sort_col' => false,
             'sort_dir' => 'asc',
             'sort_dir_qs_var' => 'sort_dir',
             'limit' => 25,
@@ -687,8 +689,10 @@ class Table
             return $column['label'];
         }, $this->columns);
 
-        if ((empty($this->config['sort_col']) && count($this->columns) > 0) or
-            ! in_array($this->config['sort_col'], $search)) {
+        if (! $this->config['force_sort_col'] && 
+            ((empty($this->config['sort_col']) && count($this->columns) > 0) or
+            ! in_array($this->config['sort_col'], $search))
+        ) {
             //grab the first column that can be used for sorting
             foreach ($this->columns as $column) {
                 if ($column['sort'] === true) {

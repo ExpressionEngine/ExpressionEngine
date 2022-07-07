@@ -247,7 +247,12 @@ trait FileManagerTrait
             $files->order('model_type', 'desc');
         }
 
-        $sort_col = 'file_id';
+        //in thumb view, we don't have 'date_added' column, but we still might need to sort by it
+        if ($view_type != 'list' && in_array(ee('Request')->get('sort_col'), [false, 'date_added'])) {
+            $table->config['force_sort_col'] = true;
+        }
+
+        $sort_col = 'date_added';
         foreach ($table_columns as $table_column) {
             if ($table_column['label'] == $table->sort_col) {
                 $sort_col = $table_column['name'];
@@ -256,7 +261,7 @@ trait FileManagerTrait
             }
         }
 
-        $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
+        $sort_field = ($sort_col == 'date_added') ? 'upload_date' : $columns[$sort_col]->getEntryManagerColumnSortField();
         $preselectedFileId =ee()->session->flashdata('file_id');
 
         if ($preselectedFileId) {

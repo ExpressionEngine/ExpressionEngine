@@ -103,6 +103,8 @@ $lang = array(
 
     'fields' => 'Fields',
 
+    'sort_filter' => 'Sort by',
+
     'forgot_password' => 'Forgot your password?',
 
     'forgotten_password' => 'Forgotten password',
