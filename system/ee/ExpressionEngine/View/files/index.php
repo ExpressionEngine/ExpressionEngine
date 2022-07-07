@@ -20,7 +20,7 @@ if (! AJAX_REQUEST) {
                 <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
                 <div class="alert alert--success f_manager-alert">
-                    <div class="alert__icon"><i class="fas fa-check-circle fa-fw"></i></div>
+                    <div class="alert__icon"><i class="fal fa-check-circle fa-fw"></i></div>
                     <div class="alert__content">
                         <?=lang('link_copied')?>
                     </div>
@@ -46,9 +46,9 @@ if (! AJAX_REQUEST) {
                     <?php foreach($breadcrumbs as $url => $name) : ?>
                         <?php $i++; ?>
                         <?php if ($i < count($breadcrumbs)) : ?>
-                        <li><a href="<?=$url?>" data-filter-url="<?=$url?>"><i class="fas fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
+                        <li><a href="<?=$url?>" data-filter-url="<?=$url?>"><i class="fal fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
                         <?php else : ?>
-                        <li><span><i class="fas fa-folder"></i><?=$name?></span></li>
+                        <li><span><i class="fal fa-folder"></i><?=$name?></span></li>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </ul>

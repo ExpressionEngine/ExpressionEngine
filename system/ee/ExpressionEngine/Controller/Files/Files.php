@@ -123,7 +123,7 @@ class Files extends AbstractFilesController
                 $vars['toolbar_items']['new_folder'] = [
                     'href' => '#',
                     'rel' => 'modal-new-folder',
-                    'class' => 'm-link',
+                    'class' => 'm-link button--secondary',
                     'content' => lang('new_folder'),
                 ];
             }
@@ -627,7 +627,7 @@ class Files extends AbstractFilesController
                 show_error(lang('unauthorized_access'), 403);
             }
             $targetPath = $target->getAbsolutePath();
-            
+
         }
 
         //directory cannot become child of itself - prepare the data

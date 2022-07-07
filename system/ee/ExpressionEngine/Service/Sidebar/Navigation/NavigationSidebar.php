@@ -57,7 +57,7 @@ class NavigationSidebar extends AbstractSidebar
                 $list = $section->addList(lang('menu_entries'));
 
                 if (count($channels)) {
-                    $list->addItem('<i class="fas fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
+                    $list->addItem('<i class="fal fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
                 }
 
                 foreach ($channels as $channel) {
@@ -137,7 +137,7 @@ class NavigationSidebar extends AbstractSidebar
                     'can_delete_channel_fields'
                 )
             ) {
-                $section->addItem(lang('fields'), ee('CP/URL')->make('fields'))->withIcon('i-cursor');
+                $section->addItem(lang('fields'), ee('CP/URL')->make('fields'))->withIcon('pen-field');
             }
 
             if (ee('Permission')->has('can_access_design')) {

@@ -517,8 +517,8 @@ class DragAndDropUpload extends React.Component {
       <React.Fragment>
         <div className={"file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')} >
           <div style={{display: this.state.files.length == 0 ? 'block' : 'none'}} className="file-field__dropzone" ref={(dropZone) => this.assignDropZoneRef(dropZone)}>
-          {!this.props.showActionButtons && 
-              <p class="file-field_upload-icon"><i class="fas fa-cloud-upload-alt"></i></p>
+          {!this.props.showActionButtons &&
+              <p class="file-field_upload-icon"><i class="fal fa-cloud-upload-alt"></i></p>
           }
           {this.state.files.length == 0 && <>
             <div className="file-field__dropzone-title">{heading}</div>
@@ -544,7 +544,7 @@ class DragAndDropUpload extends React.Component {
                 }
             </div>
 
-            <div class="file-field__dropzone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <div class="file-field__dropzone-icon"><i class="fal fa-cloud-upload-alt"></i></div>
             </>
           }
           </div>

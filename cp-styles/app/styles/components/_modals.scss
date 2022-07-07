@@ -36,7 +36,7 @@
 	padding: $sq-inset-m;
 	// overflow: hidden;
 	position: relative;
-	border-radius: $corners;
+	border-radius: $border-radius-large;
 	@include shadow-modal;
 
 	.title-bar {
@@ -96,7 +96,7 @@
 
 		&:before{
 			@extend %fa-icon;
-			@extend .fas;
+			@extend .fal;
 
 			content: fa-content($fa-var-times);
 			font-size: 24px;
@@ -122,7 +122,7 @@
 
     &:before{
       @extend %fa-icon;
-			@extend .fas;
+			@extend .fal;
 
       content: fa-content($fa-var-times);
       font-size: inherit;

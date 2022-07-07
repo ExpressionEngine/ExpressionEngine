@@ -617,7 +617,7 @@ function (_React$Component2) {
         href: "",
         className: "button button--default flyout-edit flyout-edit-icon"
       }, React.createElement("i", {
-        "class": "fas fa-pencil-alt"
+        "class": "fal fa-pencil-alt"
       })), props.removable && React.createElement("a", {
         href: "",
         className: "button button--default js-button-delete",
@@ -625,7 +625,7 @@ function (_React$Component2) {
           return props.handleRemove(e, props.item);
         }
       }, React.createElement("i", {
-        "class": "fas fa-fw fa-trash-alt"
+        "class": "fal fa-fw fa-trash-alt"
       })))));
 
       if (props.nested) {
@@ -671,13 +671,13 @@ function (_React$Component3) {
       return React.createElement("div", {
         className: "lots-of-checkboxes__selection"
       }, React.createElement("i", {
-        className: "fas fa-check-circle"
+        className: "fal fa-check-circle"
       }), " ", label, props.selectionRemovable && React.createElement("a", {
         className: "button button--default float-right",
         href: "",
         onClick: props.clearSelection
       }, React.createElement("i", {
-        "class": "fas fa-trash-alt"
+        "class": "fal fa-trash-alt"
       })));
     }
   }]);

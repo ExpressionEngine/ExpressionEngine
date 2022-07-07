@@ -24,30 +24,32 @@ if (! isset($alerts_name)) {
                 <div class="title-bar title-bar--large">
                     <h3 class="title-bar__title">
                         <?=$file->title?>
-                        <a class="button button--large filter-bar__button js-copy-url-button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_link')?>">
-                            <i class="fas fa-link"></i>
-                        </a>
+
                     </h3>
 
                     <div class="title-bar__extra-tools">
+                      <a class="button button--secondary js-copy-url-button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_link')?>">
+                          <i class="fal fa-link"></i>
+                      </a>
                         <a class="btn button button--secondary" href="<?=$download_url?>" title="<?=lang('download')?>"><?=lang('download')?></a>
                         <?php $this->embed('ee:_shared/form/buttons'); ?>
                     </div>
                 </div>
             </div>
+            <div class="entry-pannel-notice-wrap">
+                <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+
+                <div class="alert alert--success f_manager-alert">
+                    <div class="alert__icon"><i class="fal fa-check-circle fa-fw"></i></div>
+                    <div class="alert__content">
+                        <?=lang('link_copied')?>
+                    </div>
+                </div>
+
+            </div>
       </div>
 
-        <div class="entry-pannel-notice-wrap">
-            <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-            <div class="alert alert--success f_manager-alert">
-                <div class="alert__icon"><i class="fas fa-check-circle fa-fw"></i></div>
-                <div class="alert__content">
-                    <?=lang('link_copied')?>
-                </div>
-            </div>
-
-        </div>
 
       <div class="panel-body file-preview-modal">
             <div class="file-preview-modal__preview">
@@ -115,11 +117,11 @@ if (! isset($alerts_name)) {
                             $this->embed('ee:_shared/form/fieldset', ['setting' => $setting, 'group' => false]); ?>
                         <?php endforeach ?>
                         </div>
-                        
+
                         <?php if (isset($tabs)):?>
                             </div>
                         <?php endif; ?>
-                    
+
                 </div>
 
             </div>

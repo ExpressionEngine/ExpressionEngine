@@ -69,9 +69,9 @@ function (_React$Component) {
             return _this.selectItem(e, item);
           }
         }, item.path.trim() == "" ? React.createElement("i", {
-          "class": "fas fa-hdd"
+          "class": "fal fa-hdd"
         }) : React.createElement("i", {
-          "class": "fas fa-folder"
+          "class": "fal fa-folder"
         }), item.label), item.children && !_this.props.ignoreChild && item.children.length ? _this.dropdownRecursion(item.children) : null);
       })));
     });
@@ -135,7 +135,7 @@ function (_React$Component) {
         rel: "add_new",
         className: "js-modal-link--side submit"
       }, React.createElement("i", {
-        className: "fas fa-plus icon-left"
+        className: "fal fa-plus icon-left"
       }), " ", EE.lang.file_dnd_create_directory))));
     }
   }]);

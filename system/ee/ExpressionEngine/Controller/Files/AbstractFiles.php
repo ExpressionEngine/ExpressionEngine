@@ -122,7 +122,7 @@ abstract class AbstractFiles extends CP_Controller
             'title' => lang('file_manager'),
             'toolbar_items' => $toolbar_items,
             'action_button' => ee('Permission')->can('upload_new_files') && !empty($uploadLocationsAndDirectoriesDropdownChoices) ? [
-                'text' => '<i class="fas fa-cloud-upload-alt icon-left"></i>' . lang('upload'),
+                'text' => '<i class="fal fa-cloud-upload-alt icon-left"></i>' . lang('upload'),
                 'filter_placeholder' => lang('filter_upload_directories'),
                 'choices' => count($uploadLocationsAndDirectoriesDropdownChoices) > 1 ? $uploadLocationsAndDirectoriesDropdownChoices : null,
                 'href' => '#'

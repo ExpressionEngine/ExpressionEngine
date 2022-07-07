@@ -1417,7 +1417,7 @@ class Roles extends AbstractRolesController
             foreach ($templates as $template) {
                 $template_name = $template->template_name;
                 if ($template->enable_http_auth == 'y') {
-                    $template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
+                    $template_name = '<i class="fal fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
                 }
                 $children[$template->getId()] = $template_name;
             }

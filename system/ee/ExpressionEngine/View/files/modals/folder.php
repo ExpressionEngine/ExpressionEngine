@@ -4,31 +4,31 @@
         <?=form_open($form_url, '', (isset($hidden)) ? $hidden : array())?>
         <div class="dialog__header">
             <h2 class="dialog__title"><?=isset($title) ? $title : lang('new_folder') ?></h2>
-            <div class="dialog__close js-modal-close"><i class="fas fa-times"></i></div>
+            <div class="dialog__close js-modal-close"><i class="fal fa-times"></i></div>
         </div>
 
         <div class="dialog__body">
-            <?=isset($alert) ? $alert : lang('create_folder_location')?>
+            <p style="margin-bottom: 20px;"><?=isset($alert) ? $alert : lang('create_folder_location')?></p>
 
-            <p>
-                <label for="upload_location"><?= lang('location') ?></label>
-            </p>
+            <fieldset>
+              <label for="upload_location"><?= lang('location') ?></label>
 
-            <div class="button-toolbar toolbar multilevel-select">
-                <?php
-                    echo ee('View')->make('ee:_shared/form/fields/dropdown')->render([
-                        'field_name' => 'upload_location',
-                        'choices' => $choices,
-                        'value' => $selected,
-                        'fileManager' => true,
-                    ]);
-                ?>
-            </div>
+              <div class="button-toolbar toolbar multilevel-select" style="margin-top: 0px;">
+                  <?php
+                      echo ee('View')->make('ee:_shared/form/fields/dropdown')->render([
+                          'field_name' => 'upload_location',
+                          'choices' => $choices,
+                          'value' => $selected,
+                          'fileManager' => true,
+                      ]);
+                  ?>
+              </div>
+            </fieldset>
 
-            <p>
+            <fieldset>
                 <label for="folder_name"><?= lang('folder_name') ?></label>
                 <input type="text" name="folder_name" autocomplete="off">
-            </p>
+            </fieldset>
         </div>
 
         <div class="dialog__actions">

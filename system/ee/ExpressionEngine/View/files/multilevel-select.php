@@ -1,7 +1,7 @@
 <div class="button-toolbar toolbar multilevel-select">
     <button type="button" class="js-dropdown-toggle button button--default button--small" title="folders modal">
         <?=lang('select'); ?>
-        <i class="fas fa-angle-down"></i>
+        <i class="fal fa-angle-down"></i>
     </button>
 
     <div class="dropdown">

@@ -33,6 +33,12 @@ html.color-theme-in-transition *:after {
 
 // Set the default theme in the root
 :root,
+.snow-theme, body[data-theme="snow"] {
+	@each $name, $value in $snow-theme {
+		--ee-#{$name}: #{$value};
+	}
+}
+
 .light-theme, body[data-theme="light"] {
 	@each $name, $value in $light-theme {
 		--ee-#{$name}: #{$value};
@@ -47,6 +53,12 @@ html.color-theme-in-transition *:after {
 
 body[data-theme="dark"] .inverted-theme {
 	@each $name, $value in $light-theme {
+		--ee-#{$name}: #{$value};
+	}
+}
+
+body[data-theme="snow"] .inverted-theme {
+	@each $name, $value in $dark-theme {
 		--ee-#{$name}: #{$value};
 	}
 }

@@ -9,7 +9,7 @@
         </span>
     <?php endif; ?>
     <?php if ($addlink) : ?>
-    <a href="<?=$addlink?>" class="dropdown__item-button button button--secondary button--xsmall" title="New Entry"><i class="fas fa-plus"></i><span class="hidden"><?=lang('btn_create_new') . ' ' . $text?></span></a>
+    <a href="<?=$addlink?>" class="dropdown__item-button button button--secondary button--xsmall"><i class="fal fa-plus"></i><span class="hidden"><?=lang('btn_create_new') . ' ' . $text?></span></a>
     <?php endif; ?>
 </div>
 <?php if ($divider) : ?>

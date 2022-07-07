@@ -83,3 +83,36 @@
 	margin-top: $s-s;
 	font-size: 0.9em;
 }
+
+// Override padding for File Manager > Edit File
+.file-edit-view {
+  .file-preview-modal {
+    padding: 0 !important;
+  }
+
+  .file-preview-modal__preview {
+    border-right: 1px solid color(border);
+    margin-right: -1px;
+    background-color: color(bg-0);
+    padding: 25px 30px 25px 30px;
+    border-radius: 0 0 0 $border-radius-large;
+
+    @include m-tablet-down {
+      max-width: 100%;
+      width: 100%;
+      border-top: 1px solid var(--ee-border);
+      margin-right: 0;
+      border-right: none;
+      border-radius: 0 0 $border-radius-large $border-radius-large;
+    }
+  }
+
+  .file-preview-modal__form {
+    padding: 25px 30px 20px 25px;
+    border-left: 1px solid color(border);
+
+    @include m-tablet-down {
+      border-left: none;
+    }
+  }
+}

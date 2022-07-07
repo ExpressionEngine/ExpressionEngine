@@ -36,6 +36,13 @@
 		cursor: pointer;
     padding-left: 1px;
 		}
+
+    i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
 	}
 }
 
@@ -110,7 +117,7 @@
 	// border-radius: $corners-big;
 	// color: color(text-secondary);
 	// border: 1px solid color(border);
-	// text-transform: capitalize;
+	text-transform: capitalize;
 	text-align: left;
 
 	&:hover {

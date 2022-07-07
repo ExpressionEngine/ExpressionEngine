@@ -2,7 +2,7 @@
     <?php if (isset($toolbar_type) && $toolbar_type == 'dropdown'): ?>
         <div class="button-toolbar toolbar">
             <button type="button" class="js-dropdown-toggle button button--default button--small" title="actions bar">
-                <i class="fas fa-ellipsis-h"></i>
+                <i class="fal fa-ellipsis-h"></i>
             </button>
 
             <div class="dropdown">

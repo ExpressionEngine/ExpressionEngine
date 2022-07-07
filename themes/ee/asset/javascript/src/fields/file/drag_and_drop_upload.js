@@ -611,7 +611,7 @@ function (_React$Component) {
       }, !this.props.showActionButtons && React.createElement("p", {
         "class": "file-field_upload-icon"
       }, React.createElement("i", {
-        "class": "fas fa-cloud-upload-alt"
+        "class": "fal fa-cloud-upload-alt"
       })), this.state.files.length == 0 && React.createElement(React.Fragment, null, React.createElement("div", {
         className: "file-field__dropzone-title"
       }, heading), React.createElement("div", {
@@ -634,7 +634,7 @@ function (_React$Component) {
       })), React.createElement("div", {
         "class": "file-field__dropzone-icon"
       }, React.createElement("i", {
-        "class": "fas fa-cloud-upload-alt"
+        "class": "fal fa-cloud-upload-alt"
       })))), this.state.files.length > 0 && React.createElement(FileUploadProgressTable, {
         files: this.state.files,
         onFileErrorDismiss: function onFileErrorDismiss(e, file) {

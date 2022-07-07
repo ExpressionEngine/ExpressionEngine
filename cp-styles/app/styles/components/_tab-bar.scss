@@ -154,25 +154,26 @@
 }
 
 .tab-bar__tab-notification {
-	$bubble-size: 22px;
+	$bubble-size: 20px;
 
 	position: relative;
 	display: inline-block;
 	min-width: $bubble-size;
 	min-height: $bubble-size;
-	line-height: 16px;
-	top: -2px;
+	line-height: 0;
+	top: -1px;
 
-	border-radius: $border-radius-full;
+	border-radius: $border-radius-small;
 	text-align: center;
-	font-size: 12px;
+	font-size: 11px;
 	color: #fff;
 	background: color(notification);
-  padding: 3px 5px;
+  padding: 10px 5px;
+  margin-bottom: -4px;
 
   &.tab-notification-generic {
     color: color(text-secondary);
-    background-color: color(notification-generic);
+    background-color: color(bg-0);
   }
 }
 
@@ -238,7 +239,7 @@
 
 		&:before{
 			@extend %fa-icon;
-			@extend .fas;
+			@extend .fal;
 
 			// position: relative;
 			display: inline;

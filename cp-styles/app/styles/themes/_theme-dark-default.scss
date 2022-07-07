@@ -190,10 +190,15 @@ $dark-theme: (
   sidebar-icon-active: #ffffff,
   sidebar-bg-active: $gray-0,
   sidebar-bg: $gray-5,
+  sidebar-title-text: $gray-50,
   sidebar-title-bg: lighten($gray-5, 4%),
+  sidebar-title-border-bottom: lighten($gray-5, 4%),
+  sidebar-bottom-bg: lighten($gray-5, 4%),
+  sidebar-bottom-border-top: lighten($gray-5, 4%),
   sidebar-title-bg-hover: lighten($gray-5, 6%),
   sidebar-version-bg: lighten($gray-5, 4%),
   sidebar-version-bg-hover: lighten($gray-5, 6%),
+  sidebar-border: $gray-5,
 
   secondary-sidebar-item-bg: $gray-5,
   secondary-sidebar-item-icon: $text-secondary,
@@ -206,10 +211,14 @@ $dark-theme: (
   // Panels
   panel-bg: $gray-5,
   panel-border: $gray-20,
+  panel-border-outer: $gray-20,
 
   // Shadows
   shadow-modal: rgba($gray-blank, 0.5),
   shadow-dropdown: rgba($gray-blank, 0.5),
+  shadow-panel: rgba($gray-blank, 0.5),
+  shadow-input: rgba($gray-blank, 0.5),
+  shadow-button: rgba($gray-blank, 0.5),
 
   // Fieldtypes
   note-fieldtype-bg: $gray-0,
