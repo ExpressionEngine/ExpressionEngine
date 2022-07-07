@@ -173,7 +173,7 @@ html.color-theme-in-transition *:after {
   --ee-modal-overlay-bg: #f7f7fb;
 }
 
-.light-theme, body[data-theme=light] {
+.slate-theme, body[data-theme=slate] {
   --ee-brand-primary: #5D63F1;
   --ee-brand-success: #00C571;
   --ee-brand-warning: #FFB40B;
@@ -537,7 +537,6 @@ body[data-theme=dark] .inverted-theme {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #bbbdf9;
   --ee-notification: #fa5252;
-  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #0d0d19;
   --ee-text-normal: #0d0d19;
   --ee-text-secondary: #8f90b0;
@@ -617,22 +616,22 @@ body[data-theme=dark] .inverted-theme {
   --ee-input-toggle-active-fg: #ffffff;
   --ee-input-disabled-bg: #f7f7fb;
   --ee-input-jump-bg: #FFFFFF;
-  --ee-sidebar-text: #adaec5;
-  --ee-sidebar-text-primary: #ffffff;
+  --ee-sidebar-text: #8082a5;
+  --ee-sidebar-text-primary: #0d0d19;
   --ee-sidebar-text-faded: #8f90b0;
-  --ee-sidebar-text-active: #ffffff;
-  --ee-sidebar-icon-active: #ffffff;
-  --ee-sidebar-bg-active: #181922;
-  --ee-sidebar-bg: #252634;
-  --ee-sidebar-title-text: #adaec5;
-  --ee-sidebar-title-bg: #2d2e40;
-  --ee-sidebar-title-border-bottom: #2d2e40;
-  --ee-sidebar-bottom-bg: #2d2e40;
-  --ee-sidebar-bottom-border-top: #2d2e40;
-  --ee-sidebar-title-bg-hover: #323246;
-  --ee-sidebar-version-bg: #2d2e40;
-  --ee-sidebar-version-bg-hover: #323246;
-  --ee-sidebar-border: #252634;
+  --ee-sidebar-text-active: #5D63F1;
+  --ee-sidebar-icon-active: #5D63F1;
+  --ee-sidebar-bg-active: #f7f7fb;
+  --ee-sidebar-bg: #FFFFFF;
+  --ee-sidebar-title-text: #8082a5;
+  --ee-sidebar-title-bg: #FFFFFF;
+  --ee-sidebar-title-border-bottom: #dfe0ef;
+  --ee-sidebar-bottom-bg: #FFFFFF;
+  --ee-sidebar-bottom-border-top: #dfe0ef;
+  --ee-sidebar-title-bg-hover: #FFFFFF;
+  --ee-sidebar-version-bg: #FFFFFF;
+  --ee-sidebar-version-bg-hover: #FFFFFF;
+  --ee-sidebar-border: #dfe0ef;
   --ee-secondary-sidebar-item-bg: #ecedf5;
   --ee-secondary-sidebar-item-icon: #8f90b0;
   --ee-secondary-sidebar-item-bg-active: #ecedf5;
@@ -663,11 +662,11 @@ body[data-theme=dark] .inverted-theme {
   --ee-fluid-item-border: #dfe0ef;
   --ee-slider-value-bg: #eaebfd;
   --ee-ee-update: #5D63F1;
-  --ee-ee-update-bg: #0a0f78;
+  --ee-ee-update-bg: #FFFFFF;
   --ee-ee-update-dev: #FFB40B;
-  --ee-ee-update-dev-bg: #3e2b00;
+  --ee-ee-update-dev-bg: #FFFFFF;
   --ee-ee-update-vital: #FA5252;
-  --ee-ee-update-vital-bg: #640303;
+  --ee-ee-update-vital-bg: #FFFFFF;
   --ee-modal-overlay-bg: #f7f7fb;
 }
 

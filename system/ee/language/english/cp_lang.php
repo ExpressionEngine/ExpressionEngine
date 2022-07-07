@@ -36,9 +36,17 @@ $lang = array(
 
     'light_theme' => 'Light Theme',
 
+    'snow_theme' => 'Snow Theme',
+
+    'slate_theme' => 'Slate Theme',
+
     'dark' => 'Dark',
 
     'light' => 'Light',
+
+    'snow' => 'Snow',
+
+    'slate' => 'Slate',
 
     'jump_menu_item' => 'Jump Menu',
 

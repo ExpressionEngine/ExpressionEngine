@@ -151,6 +151,8 @@ class Cp
             'searching' => lang('searching'),
             'dark_theme' => lang('dark_theme'),
             'light_theme' => lang('light_theme'),
+            'slate_theme' => lang('slate_theme'),
+            'snow_theme' => lang('snow_theme'),
             'many_jump_results' => lang('many_jump_results'),
         );
 

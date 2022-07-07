@@ -17,7 +17,8 @@ class Themes extends Jumps
     private $themes = array(
         'light' => 'fa-sun',
         'dark' => 'fa-moon',
-        'snow' => 'fa-snowflake',
+        'slate' => 'fa-mountain-sun',
+        // 'snow' => 'fa-snowflake',
     );
 
     public function __construct()

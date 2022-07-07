@@ -1,7 +1,7 @@
 
 // Gets a color variable by name
 @function color($color-name) {
-	@if not map-has-key($light-theme, $color-name) {
+	@if not map-has-key($snow-theme, $color-name) {
 		@error "Color variable does not exist: #{$color-name}";
 	}
 
@@ -39,8 +39,8 @@ html.color-theme-in-transition *:after {
 	}
 }
 
-.light-theme, body[data-theme="light"] {
-	@each $name, $value in $light-theme {
+.slate-theme, body[data-theme="slate"] {
+	@each $name, $value in $slate-theme {
 		--ee-#{$name}: #{$value};
 	}
 }
@@ -52,7 +52,7 @@ html.color-theme-in-transition *:after {
 }
 
 body[data-theme="dark"] .inverted-theme {
-	@each $name, $value in $light-theme {
+	@each $name, $value in $snow-theme {
 		--ee-#{$name}: #{$value};
 	}
 }

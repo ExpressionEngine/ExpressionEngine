@@ -1,16 +1,16 @@
-// Default Light Theme
+// Slate Light Theme
 // -------------------------------------------------------------------
 
-// Base Variables - Default Light Theme
+// Base Variables - Slate Light Theme
 
-// Base Colors - Default Light Theme
+// Base Colors - Slate Light Theme
 // To create a new Light theme simply update these Base Colors. Your changes will automatically update all the other colors in the theme accordingly.
 $brand-primary: #5D63F1;
 $brand-success: #00C571;
 $brand-warning: #FFB40B;
 $brand-danger: #FA5252;
 
-// Base Grays - Default Light Theme
+// Base Grays - Slate Light Theme
 $gray-blank: #FFFFFF;
 // Adjust the saturation and lightness of $gray-0 as needed based on your chosen $brand-primary color:
 $gray-0: desaturate(lighten($brand-primary, 32), 52);
@@ -23,7 +23,7 @@ $gray-50: desaturate(darken($gray-0, 55), 15);
 $gray-60: desaturate(darken($gray-0, 80), 15);
 $gray-70: darken($gray-0, 90);
 
-// Base Text - Default Light Theme
+// Base Text - Slate Light Theme
 $text-primary: $gray-70;
 $text-normal: $gray-70;
 $text-secondary: $gray-40;
@@ -34,8 +34,8 @@ $text-selection-bg: lighten($brand-primary, 25%);
 $link: $brand-primary;
 $link-hover: darken($link, 15%);
 
-// #Details - Default Light Theme
-$light-theme: (
+// #Details - Slate Light Theme
+$slate-theme: (
 
   brand-primary: $brand-primary,
   brand-success: $brand-success,

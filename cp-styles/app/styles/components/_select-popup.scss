@@ -84,7 +84,7 @@ body[data-theme="light"] select
 .select-popup,
 body[data-theme="light"] .select-popup {
 	// Encode the hashtag so it works in the data uri
-	$color: str-replace("#{raw-color(text-secondary, $light-theme)}", '#', '\%23');
+	$color: str-replace("#{raw-color(text-secondary, $snow-theme)}", '#', '\%23');
 	@include select-popup-arrow($color);
 }
 
