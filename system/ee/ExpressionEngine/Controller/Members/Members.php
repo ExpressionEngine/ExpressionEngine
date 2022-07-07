@@ -1753,6 +1753,11 @@ class Members extends CP_Controller
                 continue;
             }
             $member->role_id = $role_id;
+
+            // Remove member from the pending role they were in
+            $sql = "DELETE FROM `exp_members_roles` WHERE `exp_members_roles`.`member_id` = $member->member_id AND `exp_members_roles`.`role_id` = 4";
+            ee()->db->query($sql);
+
             $member->save();
             $approvedCount++;
 
