@@ -235,7 +235,7 @@ class FilterFactory
         $filters = array();
 
         foreach ($this->filters as $filter) {
-            if (!in_array($filter->name, ['columns', 'filter_by_keyword', 'search_in', 'viewtype', 'sort'])) {
+            if (!in_array($filter->name, ['columns', 'filter_by_keyword', 'search_in', 'viewtype', 'sort', 'perpage'])) {
                 continue;
             }
 
