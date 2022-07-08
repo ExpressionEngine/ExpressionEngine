@@ -38385,8 +38385,7 @@ body[data-theme="dark"] {
   justify-content: center;
   z-index: 12000;
   padding: 5px;
-  max-height: 200px;
-  max-width: 200px;
+  border: 2px solid var(--ee-button-default-border);
   box-shadow: 0 1px 4px 0 var(--ee-shadow-dropdown);
 }
 #preview:before, #preview:after {
