@@ -4,11 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
-      - 6.x
-      - 7.x
-  push:
-    branches:
-      - feature/6.x/preparing-to-release
+      - '*.dev'
 
 jobs:
   build:
@@ -23,12 +19,13 @@ jobs:
         with:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
 
-      - name: Checkout Pro
-        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          repository: EllisLab/ExpressionEngine-Pro
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: __pro
+            php-version: '7.4'
+            extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+            coverage: none
+            ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
       - name: Setup node
         uses: actions/setup-node@v2
@@ -53,25 +50,13 @@ jobs:
           content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
           echo "::set-output name=BUILD_VERSION::$content"
 
-      - name: Run build process (with Pro)
-        if: github.event.pull_request.base.ref == '6.x'
-        working-directory: build-tools
-        env:
-          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-          APP_REPO_PATH: ${{ github.workspace }}
-          PRO_REPO_PATH: ${{ github.workspace }}/__pro
-        run: |
-          gulp app --local --nogit --head --skip-lint --jira-collector --version=${{ steps.build_json.outputs.BUILD_VERSION }}
-
-      - name: Run build process (without Pro)
+      - name: Run build process
         if:  github.event.pull_request.base.ref == '7.x'
         working-directory: build-tools
         env:
           RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-          PRO_REPO_PATH: ${{ github.workspace }}/__pro
         run: |
           gulp app --local --nogit --head --skip-lint --jira-collector --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
@@ -211,9 +196,6 @@ jobs:
                 sudo systemctl start mysql
                 mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
                 mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
-
-            - name: Install PHP dependencies
-              run: composer install
 
             - name: Install Testing PHP dependencies
               working-directory: tests/cypress
