@@ -781,4 +781,85 @@ context('File Manager', () => {
 
     })
 
+    context('manage files in thumb view', () => {
+        before(function() {
+            
+        })
+
+        it('sorting order stays the same', function() {
+            cy.authVisit('/admin.php?/cp/files');
+            cy.intercept('/admin.php?/cp/files*').as('table')
+            cy.get('.filter-search-bar .filter-search-bar__item .filter__viewtype a').eq(0).should('have.class', 'active')
+            let sorted_files = [];
+            page.get('title_names').then(function($td) {
+                sorted_files = _.map($td, function(el) {
+                        return $(el).find('a').text();
+                })
+                cy.get('.filter-search-bar .filter-search-bar__item .filter__viewtype a').eq(1).click()
+                cy.wait('@table')
+                cy.get('.file-grid__wrapper .file-grid__file').should('exist')
+                cy.get('.filter-search-bar .filter-search-bar__item .filter__viewtype a').eq(1).should('have.class', 'active')
+                cy.hasNoErrors()
+
+                cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
+                    let files_switched = _.map($td, function(el) {
+                            return $(el).find('span').first().text();
+                    })
+                    expect(files_switched).to.deep.equal(sorted_files)
+                })
+            })
+        })
+
+        it('can sort in thumb view', function() {
+            cy.authVisit('/admin.php?/cp/files');
+            cy.intercept('/admin.php?/cp/files*').as('table')
+            cy.get('.filter-search-bar .filter-search-bar__item .filter__viewtype a').eq(1).click()
+            cy.wait('@table')
+            cy.get('.file-grid__wrapper .file-grid__file').should('exist')
+
+            //default is sorting by date, let's try to reverse it
+            cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
+                let files_by_date = _.map($td, function(el) {
+                        return $(el).find('span').first().text();
+                })
+                cy.get('[data-filter-label="sort by"]').click();
+                cy.get('.dropdown--open .fa-sort-amount-up').parent().contains('Date Added').click();
+                cy.wait('@table')
+                cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
+                    let files_by_date_reversed = _.map($td, function(el) {
+                            return $(el).find('span').first().text();
+                    })
+                    expect(files_by_date_reversed).to.deep.equal(files_by_date.reverse())
+
+                    //sort by title, make sure it's not the same
+                    cy.get('[data-filter-label="sort by"]').click();
+                    cy.get('.dropdown--open .fa-sort-amount-up').parent().contains('Title').click();
+                    cy.wait('@table')
+                    cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
+                        let files_by_title = _.map($td, function(el) {
+                                return $(el).find('span').first().text();
+                        })
+                        expect(files_by_title).to.not.deep.equal(files_by_date)
+                        expect(files_by_title).to.not.deep.equal(files_by_date_reversed)
+
+                        //reverse sort by title
+                        cy.get('[data-filter-label="sort by"]').click();
+                        cy.get('.dropdown--open .fa-sort-amount-down-alt').parent().contains('Title').click();
+                        cy.wait('@table')
+                        cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
+                            let files_by_title_reversed = _.map($td, function(el) {
+                                    return $(el).find('span').first().text();
+                            })
+                            expect(files_by_title).to.deep.equal(files_by_title.reverse())
+                        })
+                    })
+                    
+                })
+            })
+
+        })
+     })
+
+       
+
 })
