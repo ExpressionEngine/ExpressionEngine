@@ -43,7 +43,7 @@
  * ------------------------------------------------------
  */
     // Include composer autoloader
-    require SYSPATH . '../vendor-build/autoload.php';
+    require SYSPATH . 'ee/vendor-build/autoload.php';
     require SYSPATH . 'ee/ExpressionEngine/Core/Autoloader.php';
 
     ExpressionEngine\Core\Autoloader::getInstance()
