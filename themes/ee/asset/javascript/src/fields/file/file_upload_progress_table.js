@@ -127,8 +127,9 @@ function (_React$Component) {
           return _this.props.onResolveConflict(file, response);
         } catch (e) {
           var height = iframe.contents().find('body').height();
-          $('.box', modal).height(height);
-          iframe.height(height);
+          $('.box', modal).height('600px');
+          iframe.height('600px');
+          iframe.show();
         }
 
         $(iframe[0].contentWindow).on('unload', function () {

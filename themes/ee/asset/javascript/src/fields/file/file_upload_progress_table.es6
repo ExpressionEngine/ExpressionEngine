@@ -84,14 +84,15 @@ class ResolveFilenameConflict extends React.Component {
         return this.props.onResolveConflict(file, response)
       } catch(e) {
         var height = iframe.contents().find('body').height()
-        $('.box', modal).height(height)
-        iframe.height(height)
+        $('.box', modal).height('600px')
+        iframe.height('600px')
+        iframe.show()
       }
 
       $(iframe[0].contentWindow).on('unload', () => {
-        iframe.hide()
-        $('.box', modal).height('auto')
-        $(modal).height('auto')
+          iframe.hide()
+          $('.box', modal).height('auto')
+          $(modal).height('auto')
       })
     })
   }
