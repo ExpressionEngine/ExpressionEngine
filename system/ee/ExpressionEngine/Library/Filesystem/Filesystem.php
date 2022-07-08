@@ -423,7 +423,9 @@ class Filesystem
             throw $e;
         }
 
-        $this->delete($destBackup);
+        if ($this->exists($destBackup)) {
+            $this->delete($destBackup);
+        }
 
     }
 
