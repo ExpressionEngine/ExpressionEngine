@@ -1,0 +1,16 @@
+{
+    "name": "Low Search",
+    "shortname": "low_search",
+    "version": "8.0.0",
+    "description": "Powerful site search and Find &amp; Replace utility",
+    "license": "EEHarbor",
+    "trial": true,
+    "namespace": "Low\\Search",
+    "require": {
+        "php": ">=7.2.*",
+        "expressionengine/core": ">=7"
+    },
+    "resources": {
+        
+    }
+}
