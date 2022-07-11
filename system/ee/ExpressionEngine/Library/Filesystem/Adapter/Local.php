@@ -12,7 +12,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
     protected $rootExists = true;
 
     protected $_validation_rules = [
-        'server_path' => 'required|fileExists|writable',
+        'server_path' => 'required',
         'url' => 'required|validateUrl',
     ];
 

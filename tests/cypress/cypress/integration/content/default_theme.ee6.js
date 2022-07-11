@@ -97,6 +97,21 @@ context('Install with default theme', () => {
       cy.get('body').type('{ctrl}', {release: false}).type('s')
     })
 
+    it('file manager is not in compatibility mode', () => {
+      cy.eeConfig({ item: 'file_manager_compatibility_mode' }).then((config) => {
+        expect(config).not.eq('y')
+      })
+    })
+
+    it('there are no missing files in filemanager', () => {
+      cy.visit('admin.php?/cp/files')
+      cy.wait(2000)
+      cy.login({ email: 'admin', password: '1Password' });
+      cy.get('.ee-wrapper').should('exist')
+      cy.get('.app-notice-missing-files').should('not.exist')
+      cy.hasNoErrors()
+    })
+
     it('homepage', () => {
 
       cy.on('uncaught:exception', (err, runnable) => {
@@ -108,15 +123,6 @@ context('Install with default theme', () => {
       cy.visit('index.php/')
       cy.hasNoErrors()
       cy.logFrontendPerformance()
-    })
-
-    it('there are no missing files in filemanager', () => {
-      cy.visit('admin.php?/cp/files')
-      cy.wait(2000)
-      cy.login({ email: 'admin', password: '1Password' });
-      cy.get('.ee-wrapper').should('exist')
-      cy.get('.app-notice-missing-files').should('not.exist')
-      cy.hasNoErrors()
     })
 
     it('Entry with BandCamp audio', () => {
@@ -358,7 +364,10 @@ context('Install with default theme', () => {
       cy.get('section.w-12 p img').eq(1).invoke('attr', 'src').then((src) => {
         expect(src).to.contain('path.jpg')
       })
+
+      cy.eeConfig({ item: 'file_manager_compatibility_mode', value: 'n' })
     })
+
   })
 
 })
