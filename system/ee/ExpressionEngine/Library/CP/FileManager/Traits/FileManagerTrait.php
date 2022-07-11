@@ -166,11 +166,6 @@ trait FileManagerTrait
             )
         );
 
-        $vars['pagination'] = ee('CP/Pagination', $total_files)
-            ->perPage($perpage)
-            ->currentPage($page)
-            ->render($base_url);
-
         $table = ee('CP/Table', array(
             'sort_col' => 'date_added',
             'sort_dir' => 'desc',
@@ -267,6 +262,20 @@ trait FileManagerTrait
         if ($preselectedFileId) {
             $files = $files->order('FIELD( file_id, ' . $preselectedFileId . ' )', 'DESC', false);
         }
+
+        if (! ($table->sort_dir == 'desc' && $table->sort_col != 'date_added')) {
+            $base_url->addQueryStringVariables(
+                array(
+                    'sort_dir' => $table->sort_dir,
+                    'sort_col' => $table->sort_col
+                )
+            );
+        }
+
+        $vars['pagination'] = ee('CP/Pagination', $total_files)
+            ->perPage($perpage)
+            ->currentPage($page)
+            ->render($base_url);
 
         $files = $files->order($sort_field, $table->sort_dir)
             ->limit($perpage)
