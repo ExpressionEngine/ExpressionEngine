@@ -304,7 +304,20 @@ JSC;
             return ee()->TMPL->parse_variables($tagdata, array($data));
         }
 
-        if (! empty($data['path']) && ! empty($data['filename']) && $data['extension'] !== false) {
+        // first just try to parse tag data as string
+        if (!empty($data['url'])) {
+            ee()->load->library('file_field');
+            $full_path = ee()->file_field->parse_string($data['url']);
+
+            if (isset($params['wrap'])) {
+                return $this->_wrap_it($data, $params['wrap'], $full_path);
+            }
+
+            return $full_path;
+        }
+
+        //legacy old code, probably never used
+        if (! empty($data['path']) && ! empty($data['file_id']) && $data['extension'] !== false) {
             $full_path = $data['path'] . $data['filename'] . '.' . $data['extension'];
 
             if (isset($params['wrap'])) {

@@ -117,7 +117,6 @@ class FileSystemEntity extends ContentModel
     protected $total_records;
 
     protected $_baseServerPath;
-    protected $_baseUrl;
     protected $_subfolderPath;
 
     /**
@@ -232,17 +231,17 @@ class FileSystemEntity extends ContentModel
     }
 
     /**
-     * Get base url for upload location
+     * Get base url for upload location and folder
      *
      * @return string
      */
-    private function getBaseUrl()
+    public function getBaseUrl()
     {
-        if (empty($this->_baseUrl)) {
-            $this->_baseUrl = rtrim($this->UploadDestination->url, '\\/') . '/';
+        if (!$this->UploadDestination->exists()) {
+            return null;
         }
 
-        return $this->_baseUrl;
+        return $this->UploadDestination->getFilesystem()->getUrl($this->getSubfoldersPath());
     }
 
     /**

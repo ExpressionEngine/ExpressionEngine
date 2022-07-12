@@ -1863,7 +1863,7 @@ class Filemanager
 
         $upload_path = $dir['server_path'];
 
-        if($directory_id != 0) {
+        if ($directory_id != 0) {
             $upload_path = ee('Model')->get('Directory', $directory_id)->first()->getAbsolutePath();
         }
 

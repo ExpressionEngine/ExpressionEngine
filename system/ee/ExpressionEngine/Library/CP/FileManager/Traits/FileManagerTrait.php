@@ -414,6 +414,8 @@ trait FileManagerTrait
         $typesQuery = ee('db')->select('file_type')->distinct()->from('files');
         if (! empty($uploadLocation)) {
             $typesQuery->where('upload_location_id', $uploadLocation->getId());
+        } else {
+            $typesQuery->where('file_type != "directory"');
         }
         $types = $typesQuery->get();
 

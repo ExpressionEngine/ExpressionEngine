@@ -206,7 +206,7 @@ class FileDimension extends Model
      */
     public function getAbsolutePath()
     {
-        return rtrim($this->UploadDestination->server_path, '/') . '/_' . $this->short_name . '/';
+        return $this->UploadDestination->getAbsolutePath() . '/_' . $this->short_name . '/';
     }
 
     /**
