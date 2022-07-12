@@ -367,12 +367,15 @@ class FileSystemEntity extends ContentModel
     {
         $filesystem = $this->UploadDestination->getFilesystem();
 
-        // Remove the thumbnail if it exists
-        if ($filesystem->exists($this->getAbsoluteThumbnailPath())) {
-            $filesystem->delete($this->getAbsoluteThumbnailPath());
-        }
+        $manipulations = ['thumbs', 'resize', 'crop', 'rotate', 'webp'];
+        $manipulations = array_merge($manipulations, $this->UploadDestination->FileDimensions->pluck('short_name'));
 
-        $this->UploadDestination->deleteGeneratedFiles($this->getAbsolutePath());
+        foreach ($manipulations as $manipulation) {
+            $manipulatedFilePath = $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation . '/' . $this->file_name;
+            if ($filesystem->exists($manipulatedFilePath)) {
+                $filesystem->delete($manipulatedFilePath);
+            }
+        }
     }
 
     public function deleteAllFiles()

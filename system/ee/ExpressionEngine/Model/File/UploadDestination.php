@@ -29,6 +29,7 @@ class UploadDestination extends StructureModel
 
     protected static $_events = array(
         'beforeSave',
+        'afterUpdate',
     );
 
     protected static $_relationships = array(
@@ -111,6 +112,8 @@ class UploadDestination extends StructureModel
     protected $module_id;
 
     private $filesystem = null;
+
+    protected $_manipulationsToOperate;
     /**
      * Because of the 'upload_preferences' Config value, the data in the DB
      * is not always authoritative. So we will need to get any override data
@@ -156,6 +159,38 @@ class UploadDestination extends StructureModel
             $allowed_types = ['img'];
         }
         $this->setProperty('allowed_types', $allowed_types);
+
+        $this->_manipulationsToOperate = $this->FileDimensions;
+    }
+
+    public function onAfterUpdate()
+    {
+        // because FileDimensions are not manipulated separately from UploadDestination
+        // the ones to be removed are removed with 'soft delete' by dropComplement()
+        // which does not trigger any kind of delete event
+        // so we'll trigger the event here
+        if (! empty($this->_manipulationsToOperate)) {
+            $manipulationsToKeep = $this->_manipulationsToOperate->pluck('id');
+            // grab fresh list
+            $existingManipulations = ee('Model')->get('FileDimension')->filter('upload_location_id', $this->getId())->all()->indexBy('id');
+            foreach ($manipulationsToKeep as $manipulationId) {
+                if (isset($existingManipulations[$manipulationId])) {
+                    unset($existingManipulations[$manipulationId]);
+                }
+            }
+
+            if (! empty($existingManipulations)) {
+                foreach (array_keys($existingManipulations) as $manipulationId) {
+                    if ($manipulationId != '') {
+                        $manipulation = ee('Model')->get('FileDimension', $manipulationId)->first();
+                        if (!empty($manipulation)) {
+                            $manipulation->onAfterDelete();
+                        }
+                    }
+                }
+            }
+
+        }
     }
 
     /**
@@ -271,7 +306,7 @@ class UploadDestination extends StructureModel
     /**
      * Appends a trailing slash on to a value that doesn't have it
      *
-     * @param str $path Path string to ensure has a trailing slash
+     * @param string $path Path string to ensure has a trailing slash
      * @return void
      */
     private function getWithTrailingSlash($path)

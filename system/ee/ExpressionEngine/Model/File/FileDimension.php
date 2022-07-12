@@ -23,6 +23,10 @@ class FileDimension extends Model
     protected static $_primary_key = 'id';
     protected static $_table_name = 'file_dimensions';
 
+    protected static $_events = array(
+        'afterDelete',
+    );
+
     protected static $_typed_columns = array(
         //'width'  => 'int',
         //'height' => 'int'
@@ -59,6 +63,24 @@ class FileDimension extends Model
     protected $height;
     protected $watermark_id;
     protected $quality;
+
+    public function onAfterDelete()
+    {
+        //delete the root manipulation folder
+        $filesystem = $this->UploadDestination->getFilesystem();
+        $manipulatedFolderPath = '_' . $this->short_name;
+        if ($filesystem->exists($manipulatedFolderPath) && $filesystem->isDir($manipulatedFolderPath)) {
+            $filesystem->deleteDir($manipulatedFolderPath);
+        }
+        //go into subfolder and delete manipulations there
+        $folders = ee('Model')->get('Directory')->filter('upload_location_id', $this->UploadDestination->getId())->all();
+        foreach ($folders as $folder) {
+            $manipulatedFolderPath = $folder->getAbsolutePath() . '/_' . $this->short_name;
+            if ($filesystem->exists($manipulatedFolderPath) && $filesystem->isDir($manipulatedFolderPath)) {
+                $filesystem->deleteDir($manipulatedFolderPath);
+            }
+        }
+    }
 
     /**
      * At least a height OR a width must be specified if there is no watermark selected
@@ -200,7 +222,7 @@ class FileDimension extends Model
 
     /**
      * Uses the upload destination's server path to compute the absolute
-     * path of the dirctory
+     * path of the directory
      *
      * @return string The absolute path to the directory
      */

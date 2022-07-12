@@ -2066,7 +2066,7 @@ class Filemanager
         $replace = false;
 
         // Get the file data form the database
-        $previous_data = ee('Model')->get('File', $file_id)->first();
+        $previous_data = ee('Model')->get('File', $file_id)->with('UploadDestination')->first();
 
         // If the new name is the same as the previous, get out of here
         if ($new_file_name == $previous_data->file_name) {
@@ -2116,7 +2116,7 @@ class Filemanager
         }
 
         // Delete the thumbnails
-        $upload_directory->deleteGeneratedFiles($old_file_name);
+        $previous_data->deleteGeneratedFiles();
 
         // Rename the actual file
         $file_path = $this->_rename_raw_file(
