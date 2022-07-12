@@ -40,7 +40,6 @@ class ThumbnailFactory
         if ($file->isImage()) {
             ee()->load->library('filemanager');
             $dir = $file->UploadDestination;
-            $dimensions = $dir->FileDimensions;
 
             $success = ee()->filemanager->create_thumb(
                 $file->getAbsolutePath(),
@@ -48,7 +47,7 @@ class ThumbnailFactory
                     'directory' => $dir,
                     'server_path' => $dir->server_path,
                     'file_name' => $file->file_name,
-                    'dimensions' => $dimensions->asArray()
+                    'dimensions' => []
                 ),
                 true, // Regenerate thumbnails
                 false // Regenerate all images

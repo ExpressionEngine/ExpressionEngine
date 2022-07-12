@@ -1127,14 +1127,14 @@ class Filemanager
         ee()->load->library('image_lib');
         ee()->load->helper('file');
 
+        $filesystem = $prefs['directory']->getFilesystem();
+        $file_path =  str_replace('\\', '/', $filesystem->absolute($file_path));
+
         $img_path = rtrim($prefs['server_path'], '/') . '/';
-        $dirname = rtrim(dirname($file_path), '/') . '/';
-        if(strpos($dirname, $img_path) === 0) {
+        $dirname =  str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))) . '/';
+        if (strpos($dirname, $img_path) === 0) {
             $img_path = $dirname;
         }
-
-        $source = $file_path;
-        $filesystem = $prefs['directory']->getFilesystem();
 
         // We need to get a temporary local copy of the file in case it's stored on
         // another filesystem. This seems a little wasteful for uploaded files
