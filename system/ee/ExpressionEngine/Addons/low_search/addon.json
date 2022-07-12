@@ -1,5 +1,5 @@
 {
-    "name": "Low Search",
+    "name": "Pro Search",
     "shortname": "low_search",
     "version": "8.0.0",
     "description": "Powerful site search and Find &amp; Replace utility",
@@ -11,6 +11,5 @@
         "expressionengine/core": ">=7"
     },
     "resources": {
-        
     }
 }

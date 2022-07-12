@@ -19,7 +19,7 @@ $lang = array(
     //----------------------------------------
 
     "low_search_module_name" =>
-    "Low Search",
+    "Pro Search",
 
     "low_search_module_description" =>
     "Powerful site search and Find &amp; Replace utility",
