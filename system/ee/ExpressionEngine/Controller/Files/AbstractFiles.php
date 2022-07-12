@@ -124,7 +124,7 @@ abstract class AbstractFiles extends CP_Controller
             'action_button' => ee('Permission')->can('upload_new_files') && !empty($uploadLocationsAndDirectoriesDropdownChoices) ? [
                 'text' => '<i class="fal fa-cloud-upload-alt icon-left"></i>' . lang('upload'),
                 'filter_placeholder' => lang('filter_upload_directories'),
-                'choices' => count($uploadLocationsAndDirectoriesDropdownChoices) > 1 ? $uploadLocationsAndDirectoriesDropdownChoices : null,
+                'choices' => count($uploadLocationsAndDirectoriesDropdownChoices) > 0 ? $uploadLocationsAndDirectoriesDropdownChoices : null,
                 'href' => '#'
             ] : null
         );
