@@ -476,3 +476,25 @@
   margin-bottom: 0 !important;
   color: color(text-normal) !important;
 }
+
+.file-upload-widget.open-dd {
+  display: block;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 20;
+
+  div[data-file-field-react],
+  div.none,
+  .file-field {
+    height: 100%;
+  }
+
+  .file-field__dropzone {
+    background: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    border: none;
+    height: 100%;
+  }
+}

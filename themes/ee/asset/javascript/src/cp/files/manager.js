@@ -157,8 +157,6 @@
 				}
 			}
 		});
-		
-		// new MutableSelectField('files_field', EE.fileManager.fileDirectory);
 
 		function showBigImage(button) {
 			var tooltip = button.find('#preview');

@@ -71,6 +71,7 @@ $(document).ready(function () {
 				searching = null;
 				replaceData(response);
 				sortableColumns();
+				ddFileToNotEmptyTable();
 				// $('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
 				// 	cursor: "move"
 				// })
@@ -298,4 +299,51 @@ $(document).ready(function () {
 	})
 
 	sortableColumns();
+
+	// D&D for file manager if table is not empty
+	function ddFileToNotEmptyTable() {
+		// table view
+		$('.f_manager-wrapper table tbody').on('dragover', function(e) {
+			e.preventDefault()
+			e.stopPropagation()
+			if( $('.f_manager-wrapper table tbody').length ) {
+				openDDBlock('.f_manager-wrapper table tbody');
+			}
+		})
+
+		// grid view
+		$('.f_manager-wrapper .file-grid__wrapper').on('dragover', function(e) {
+			e.preventDefault()
+			e.stopPropagation()
+			if ($('.f_manager-wrapper .file-grid__wrapper').length) {
+				openDDBlock('.f_manager-wrapper .file-grid__wrapper');
+			}
+		});
+
+		$('.f_manager-wrapper .file-upload-widget .file-field__dropzone').on('dragleave', function(e) {
+			e.preventDefault()
+			e.stopPropagation()
+			if( $('.f_manager-wrapper table tbody').length || $('.f_manager-wrapper .file-grid__wrapper').length) {
+				closeDDBlock();
+			}
+		});
+	}
+
+	function openDDBlock(dropArea) {
+		let ddHeight = $(dropArea).outerHeight()
+		$('.f_manager-wrapper .file-upload-widget').css({
+			'height': ddHeight,
+			'bottom': '20px'
+		});
+		$('.f_manager-wrapper .file-upload-widget').addClass('open-dd')
+	}
+
+	function closeDDBlock() {
+		$('.f_manager-wrapper .file-upload-widget').removeClass('open-dd')
+		$('.f_manager-wrapper .file-upload-widget').css({
+			'height': 'auto'
+		})
+	}
+
+	ddFileToNotEmptyTable();
 });

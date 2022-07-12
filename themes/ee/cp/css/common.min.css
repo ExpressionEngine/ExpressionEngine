@@ -38422,6 +38422,26 @@ body[data-theme="dark"] {
   color: var(--ee-text-normal) !important;
 }
 
+.file-upload-widget.open-dd {
+  display: block;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 20;
+}
+.file-upload-widget.open-dd div[data-file-field-react],
+.file-upload-widget.open-dd div.none,
+.file-upload-widget.open-dd .file-field {
+  height: 100%;
+}
+.file-upload-widget.open-dd .file-field__dropzone {
+  background: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  border: none;
+  height: 100%;
+}
+
 .hidden {
   display: none;
 }
