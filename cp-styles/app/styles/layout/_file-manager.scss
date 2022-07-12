@@ -128,6 +128,20 @@
       }
     }
   }
+
+  tr.missing {
+    td:not(.reorder-col) .toolbar {
+      opacity: 1;
+      cursor: pointer;
+      pointer-events: unset;
+
+      .dropdown__link:not(.delete) {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+    }
+  }
 }
 
 .f_manager-table-breadcrumbs {
@@ -163,9 +177,6 @@
 }
 
 .f_manager-action-part {
-  //display: flex;
-  //flex-wrap: wrap;
-
   .pagination {
     border-top: none;
     margin-left: auto;

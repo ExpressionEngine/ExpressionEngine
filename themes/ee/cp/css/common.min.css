@@ -38114,6 +38114,16 @@ body[data-theme="dark"] {
   color: #fff !important;
   content: "\f00c";
 }
+.f_manager-wrapper tr.missing td:not(.reorder-col) .toolbar {
+  opacity: 1;
+  cursor: pointer;
+  pointer-events: unset;
+}
+.f_manager-wrapper tr.missing td:not(.reorder-col) .toolbar .dropdown__link:not(.delete), .f_manager-wrapper tr.missing td:not(.reorder-col) .toolbar .button__within-dropdown:not(.delete), .f_manager-wrapper tr.missing td:not(.reorder-col) .toolbar .select__dropdown-item:not(.delete) {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .f_manager-table-breadcrumbs .breadcrumb {
   padding: 10px 20px;
