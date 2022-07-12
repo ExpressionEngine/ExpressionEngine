@@ -372,24 +372,28 @@ class Filesystem
      * Copy a file or directory
      *
      * @param String $source File or directory to copy
-     * @param Stirng $dest Path to the duplicate
+     * @param String $dest Path to the duplicate
+     * @param null|static $destinationFilesystem Optional Filesystem to copy files to
      */
-    public function copy($source, $dest)
+    public function copy($source, $dest, $destinationFilesystem = null)
     {
+        $that = ($destinationFilesystem) ?: $this;
         $source = $this->normalizeRelativePath($source);
-        $dest = $this->normalizeRelativePath($dest);
+        $dest = $that->normalizeRelativePath($dest);
 
         if (! $this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
         }
 
         if ($this->isDir($source)) {
-            $this->recursiveCopy($source, $dest);
+            $this->recursiveCopy($source, $dest, $destinationFilesystem);
+        } else if($destinationFilesystem) {
+            $destinationFilesystem->writeStream($dest, $this->readStream($source));
         } else {
             $this->flysystem->copy($this->normalize($source), $this->normalize($dest));
         }
 
-        $this->ensureCorrectAccessMode($dest);
+        $that->ensureCorrectAccessMode($dest);
     }
 
     /**
@@ -435,18 +439,24 @@ class Filesystem
      * @param String $source Directory to copy
      * @param Stirng $dest Path to the duplicate
      */
-    protected function recursiveCopy($source, $dest)
+    protected function recursiveCopy($source, $dest, $destinationFilesystem = null)
     {
         $source = rtrim($source, '\\/');
         $dest = rtrim($dest, '\\/');
+        $that = ($destinationFilesystem) ?: $this;
         $dir = $this->flysystem->listContents($source, false);
-        $this->flysystem->createDir($dest);
+        $that->flysystem->createDir($dest);
 
         foreach($dir as $file) {
-            if ($this->isDir($source . '/' . $file['basename'])) {
-                $this->recursiveCopy($source . '/' . $file['basename'], $dest . '/' . $file['basename']);
+            $from = $source . '/' . $file['basename'];
+            $to = $dest . '/' . $file['basename'];
+
+            if ($this->isDir($from)) {
+                $this->recursiveCopy($from, $to, $destinationFilesystem);
+            } else if(!is_null($destinationFilesystem)) {
+                $destinationFilesystem->writeStream($to, $this->readStream($from));
             } else {
-                $this->flysystem->copy($source . '/' . $file['basename'], $dest . '/' . $file['basename']);
+                $this->flysystem->copy($from, $to);
             }
         }
     }
