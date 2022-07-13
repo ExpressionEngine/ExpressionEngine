@@ -643,12 +643,7 @@ class Files extends AbstractFilesController
         $names = array();
         $errors = array();
         foreach ($files as $file) {
-            //are they on same upload destination?
-            if ($file->UploadDestination->adapter != $targetUploadLocation->adapter) {
-                $errors[$file->file_name] = lang('error_moving_need_same_driver');
-                continue;
-            }
-
+            
             //are they not in target place already?
             if ($file->upload_location_id == $upload_destination_id && $file->directory_id == $subdirectory_id) {
                 $errors[$file->file_name] = lang('error_moving_already_there');
@@ -673,11 +668,17 @@ class Files extends AbstractFilesController
                 continue;
             }
 
-            $renamed = $file->UploadDestination->getFilesystem()->rename(
+            $targetFilesystem = ($file->UploadDestination->id == $targetUploadLocation->id) ? null : $targetUploadLocation->getFilesystem();
+            $success = $file->UploadDestination->getFilesystem()->move(
                 $file->getAbsolutePath(),
-                $targetPath . '/' . $file->file_name
+                $targetPath . '/' . $file->file_name,
+                $targetFilesystem
             );
-            if ($renamed) {
+
+            if ($success) {
+                // Cleanup any generated files in previous location before updating the location 
+                $file->deleteGeneratedFiles();
+                $file->upload_location_id = $targetUploadLocation->id;
                 $file->directory_id = $subdirectory_id;
                 $file->save();
                 $names[] = $file->title;

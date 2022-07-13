@@ -374,33 +374,37 @@ class Filesystem
      * @param String $source File or directory to copy
      * @param String $dest Path to the duplicate
      * @param null|static $destinationFilesystem Optional Filesystem to copy files to
+     * @return bool
      */
     public function copy($source, $dest, $destinationFilesystem = null)
     {
         $that = ($destinationFilesystem) ?: $this;
         $source = $this->normalizeRelativePath($source);
         $dest = $that->normalizeRelativePath($dest);
+        $result = false;
 
         if (! $this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
         }
 
         if ($this->isDir($source)) {
-            $this->recursiveCopy($source, $dest, $destinationFilesystem);
+            $result = $this->recursiveCopy($source, $dest, $destinationFilesystem);
         } else if($destinationFilesystem) {
-            $destinationFilesystem->writeStream($dest, $this->readStream($source));
+            $result = $destinationFilesystem->writeStream($dest, $this->readStream($source));
         } else {
-            $this->flysystem->copy($this->normalize($source), $this->normalize($dest));
+            $result = $this->flysystem->copy($this->normalize($source), $this->normalize($dest));
         }
 
         $that->ensureCorrectAccessMode($dest);
+
+        return $result;
     }
 
     /**
      * Copy a file or directory
      *
      * @param String $source File or directory to copy
-     * @param Stirng $dest Path to the duplicate
+     * @param String $dest Path to the duplicate
      */
     public function forceCopy($source, $dest)
     {
@@ -437,7 +441,8 @@ class Filesystem
      * Copies a directory to another directory by recursively iterating over its files
      *
      * @param String $source Directory to copy
-     * @param Stirng $dest Path to the duplicate
+     * @param String $dest Path to the duplicate
+     * @return bool
      */
     protected function recursiveCopy($source, $dest, $destinationFilesystem = null)
     {
@@ -446,19 +451,47 @@ class Filesystem
         $that = ($destinationFilesystem) ?: $this;
         $dir = $this->flysystem->listContents($source, false);
         $that->flysystem->createDir($dest);
+        $result = true;
 
         foreach($dir as $file) {
             $from = $source . '/' . $file['basename'];
             $to = $dest . '/' . $file['basename'];
 
             if ($this->isDir($from)) {
-                $this->recursiveCopy($from, $to, $destinationFilesystem);
+                $result = $result && $this->recursiveCopy($from, $to, $destinationFilesystem);
             } else if(!is_null($destinationFilesystem)) {
-                $destinationFilesystem->writeStream($to, $this->readStream($from));
+                $result = $result && $destinationFilesystem->writeStream($to, $this->readStream($from));
             } else {
-                $this->flysystem->copy($from, $to);
+                $result = $result && $this->flysystem->copy($from, $to);
             }
         }
+
+        return $result;
+    }
+
+    /**
+     * Move a file or directory
+     *
+     * @param String $source File or directory to copy
+     * @param String $dest Path to the duplicate
+     * @param null|static $destinationFilesystem Optional Filesystem to copy files to
+     * @return bool
+     */
+    public function move($source, $dest, $destinationFilesystem = null)
+    {
+        // Moving a file without a different destination filesystem is just rename
+        // Or in case both filesystems are 'local' a rename can also be more performant
+        if(is_null($destinationFilesystem) || ($this->isLocal() && $destinationFilesystem->isLocal() )) {
+            return $this->rename($source, $dest);
+        }
+
+        $copied = $this->copy($source, $dest, $destinationFilesystem);
+
+        if($copied) {
+            return $this->delete($source);
+        }
+
+        return false;
     }
 
     /**
