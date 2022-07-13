@@ -524,6 +524,59 @@ class FileSystemEntity extends ContentModel
 
         $this->Categories = $set_cats;
     }
+
+    /**
+     * Get an array of ids for files and folders that belong to this FileSystemEntity
+     *
+     * @return array
+     */
+    public function getChildIds()
+    {
+        if(!$this->isDirectory()) {
+            return [];
+        }
+
+        $files = ee()->db->select(['file_id', 'directory_id', 'file_type'])
+            ->where('upload_location_id', $this->upload_location_id)
+            ->order_by('directory_id', 'asc')
+            ->from('files')
+            ->get()
+            ->result_array();
+
+        // Group file ids by their directory_id
+        $grouped = array_reduce($files, function($carry, $item) {
+            $key = $item['directory_id'];
+            if(!array_key_exists($key, $carry)) {
+                $carry[$key] = [];
+            }
+
+            $carry[$key][] = $item['file_id'];
+
+            return $carry;
+        }, []);
+
+        // If we do not have a group for this file system entity we can exit
+        if(!array_key_exists($this->file_id, $grouped)) {
+            return [];
+        }
+
+        $ids = [];
+        $directories = [$this->file_id];
+
+        while(!empty($directories)) {
+            $next = [];
+            foreach($directories as $directory) {
+                $next = array_merge($next, array_filter($grouped[$directory], function($id) use($grouped) {
+                    return array_key_exists($id, $grouped);
+                }));
+
+                $ids = array_merge($ids, $grouped[$directory]);
+            }
+            $directories = $next;
+        }
+
+        return $ids;
+    }
 }
 
 // EOF

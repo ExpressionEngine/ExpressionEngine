@@ -643,7 +643,7 @@ class Files extends AbstractFilesController
         $names = array();
         $errors = array();
         foreach ($files as $file) {
-            
+
             //are they not in target place already?
             if ($file->upload_location_id == $upload_destination_id && $file->directory_id == $subdirectory_id) {
                 $errors[$file->file_name] = lang('error_moving_already_there');
@@ -677,15 +677,12 @@ class Files extends AbstractFilesController
 
             if ($success) {
                 // Update files within a directory if it is changing upload locations
-                if($file->isDirectory() && !is_null($targetFilesystem)) {
-                    // This won't handle deeply nested folders though
-                    ee()->db->update('files', 
-                        ['upload_location_id' => $targetUploadLocation->id],
-                        ['directory_id' => $file->file_id]
-                    );
+                if($file->isDirectory() && !is_null($targetFilesystem) && $childIds = $file->getChildIds()) {
+                    ee()->db->where_in('file_id', $childIds);
+                    ee()->db->update('files', ['upload_location_id' => $targetUploadLocation->id]);
                 }
-                
-                // Cleanup any generated files in previous location before updating the location 
+
+                // Cleanup any generated files in previous location before updating the location
                 if(!$file->isDirectory()) {
                     $file->deleteGeneratedFiles();
                 }
