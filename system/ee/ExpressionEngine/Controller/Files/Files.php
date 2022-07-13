@@ -676,8 +676,20 @@ class Files extends AbstractFilesController
             );
 
             if ($success) {
+                // Update files within a directory if it is changing upload locations
+                if($file->isDirectory() && !is_null($targetFilesystem)) {
+                    // This won't handle deeply nested folders though
+                    ee()->db->update('files', 
+                        ['upload_location_id' => $targetUploadLocation->id],
+                        ['directory_id' => $file->file_id]
+                    );
+                }
+                
                 // Cleanup any generated files in previous location before updating the location 
-                $file->deleteGeneratedFiles();
+                if(!$file->isDirectory()) {
+                    $file->deleteGeneratedFiles();
+                }
+
                 $file->upload_location_id = $targetUploadLocation->id;
                 $file->directory_id = $subdirectory_id;
                 $file->save();
