@@ -70,7 +70,7 @@ class Uploads extends AbstractFilesController
 
         if (! AJAX_REQUEST) {
             $this->stdHeader();
-            $this->generateSidebar(null);
+            $this->generateSidebar($upload_id);
         }
 
         ee()->view->cp_breadcrumbs = array(

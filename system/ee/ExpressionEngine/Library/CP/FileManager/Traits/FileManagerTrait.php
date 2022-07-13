@@ -526,7 +526,7 @@ trait FileManagerTrait
         $uploadLocationsAndDirectoriesDropdownChoices = [];
         if (ee('Permission')->can('upload_new_files')) {
             $upload_destinations = ee('Model')->get('UploadDestination')
-                ->fields('id', 'name')
+                ->fields('id', 'name', 'adapter')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('module_id', 0)
                 ->order('name', 'asc')
@@ -543,6 +543,7 @@ trait FileManagerTrait
                 $uploadLocationsAndDirectoriesDropdownChoices[$upload_pref->getId() . '.0'] = [
                     'label' => '<i class="fal fa-hdd"></i>' . $upload_pref->name,
                     'upload_location_id' => $upload_pref->id,
+                    'adapter' => $upload_pref->adapter,
                     'directory_id' => 0,
                     'path' => '',
                     'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true) : []

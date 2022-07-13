@@ -150,6 +150,7 @@ class Files extends AbstractFilesController
         // Add upload locations to the vars
         $vars['uploadLocationsAndDirectoriesDropdownChoices'] = $headerVars['uploadLocationsAndDirectoriesDropdownChoices'];
         $vars['current_subfolder'] = ee('Request')->get('directory_id');
+        $vars['adapter'] = $dir->adapter;
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('files')->compile() => lang('files'),
@@ -627,7 +628,6 @@ class Files extends AbstractFilesController
                 show_error(lang('unauthorized_access'), 403);
             }
             $targetPath = $target->getAbsolutePath();
-
         }
 
         //directory cannot become child of itself - prepare the data
@@ -639,18 +639,18 @@ class Files extends AbstractFilesController
             $subdirectoryParents[] = $parentDirectoryId;
         }
 
-        $files = ee('Model')->get('FileSystemEntity', $selected)->all();
+        $files = ee('Model')->get('FileSystemEntity', $selected)->with('UploadDestination')->all();
         $names = array();
         $errors = array();
         foreach ($files as $file) {
             //are they on same upload destination?
-            if ($file->upload_location_id != $upload_destination_id) {
-                $errors[$file->file_name] = lang('error_moving_need_same_upload_location');
+            if ($file->UploadDestination->adapter != $targetUploadLocation->adapter) {
+                $errors[$file->file_name] = lang('error_moving_need_same_driver');
                 continue;
             }
 
             //are they not in target place already?
-            if ($file->directory_id == $subdirectory_id) {
+            if ($file->upload_location_id == $upload_destination_id && $file->directory_id == $subdirectory_id) {
                 $errors[$file->file_name] = lang('error_moving_already_there');
                 continue;
             }

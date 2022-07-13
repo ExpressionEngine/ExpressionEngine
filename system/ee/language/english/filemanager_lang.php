@@ -1022,7 +1022,7 @@ $lang = array(
 
     'destination' => 'Destination',
 
-    'error_moving_need_same_upload_location' => 'The files can be moved only within their upload location',
+    'error_moving_need_same_driver' => 'The files can be moved only between upload directories that use same adapter',
 
     'error_moving_already_there' => 'The file is already in target destination',
 
