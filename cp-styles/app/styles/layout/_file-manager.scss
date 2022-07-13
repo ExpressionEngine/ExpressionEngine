@@ -93,6 +93,7 @@
       max-height: 50px;
       display: block;
       border-radius: $border-radius-small;
+      pointer-events: none;
     }
 
     i.fas, i.fal {
@@ -288,6 +289,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       border-radius: 6px;
+      pointer-events: none;
     }
 
     i.fas, i.fal {

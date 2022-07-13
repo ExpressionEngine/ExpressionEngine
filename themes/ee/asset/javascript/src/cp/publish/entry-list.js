@@ -72,9 +72,11 @@ $(document).ready(function () {
 				replaceData(response);
 				sortableColumns();
 				ddFileToNotEmptyTable();
-				// $('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
-				// 	cursor: "move"
-				// })
+				makeDirectoryDroppable();
+				$('.f_manager-wrapper tbody').sortable({
+					axis: "y"
+				});
+				$('.f_manager-wrapper .file-grid__wrapper').sortable();
 			}
 		});
 	}
@@ -346,4 +348,72 @@ $(document).ready(function () {
 	}
 
 	ddFileToNotEmptyTable();
+
+	$('.f_manager-wrapper tbody').sortable({
+		axis: "y"
+	});
+	$('.f_manager-wrapper .file-grid__wrapper').sortable();
+
+	// Move files to subfolder
+	function makeDirectoryDroppable() {
+		let modal_rel = 'modal-confirm-move-file';
+		let ajax_url = 'admin.php?/cp/files/confirm';
+		let timer;
+		$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').find('.drop-target').droppable({
+			accept: "table .app-listing__row, .file-grid__wrapper .filepicker-item",
+			tolerance: "intersect",
+			drop: function(e, ui) {
+				clearTimeout(timer);
+				window.selectedFolder = null
+			},
+			over: function(e, ui) {
+				var el = ui.draggable;
+				var subfolder = e.target;
+				var file_id = el.attr('file_id');
+				var file_name = el.find('input[type=checkbox]').attr('name');
+				var checkboxInput = el.find('input[type=checkbox]').attr('data-confirm');
+				var subfolder_file_id = $(subfolder).attr('file_upload_id');
+				e.preventDefault();
+
+				// First adjust the checklist
+				var modalIs = '.' + modal_rel;
+				var modal = $(modalIs+', [rel='+modal_rel+']')
+				$(modalIs + " .checklist").html(''); // Reset it
+
+				$(modalIs + " .checklist").append('<li>' + checkboxInput + '</li>');
+				// Add hidden <input> elements
+				$(modalIs + " .checklist li:last").append(
+					$('<input/>').attr({
+						type: 'hidden',
+						name: file_name,
+						value: file_id
+					})
+				);
+
+				$(modalIs + " .checklist li:last").addClass('last');
+
+				if (typeof ajax_url != 'undefined') {
+					$.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
+						$(modalIs + " .ajax").html(data);
+						window.selectedFolder = subfolder_file_id;
+						Dropdown.renderFields();
+					});
+				}
+				timer = setTimeout(function(){
+					modal.trigger('modal:open')
+					el.trigger('mouseup');
+				}, 1000);
+			},
+			out: function(e, ui) {
+				clearTimeout(timer);
+				window.selectedFolder = null
+			},
+			deactivate: function(e, ui) {
+				clearTimeout(timer);
+				window.selectedFolder = null
+			}
+		});
+	}
+
+	makeDirectoryDroppable();
 });

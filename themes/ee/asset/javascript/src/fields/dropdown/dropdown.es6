@@ -39,6 +39,10 @@ class Dropdown extends React.Component {
       // value to be set other than the one in the initial config
       if ($(this).data('initialValue')) {
         props.selected = $(this).data('initialValue')
+      } 
+
+      if (window.selectedFolder) {
+        props.selected = window.selectedFolder;
       }
 
       ReactDOM.render(React.createElement(FilterableDropdown, props, null), this)
@@ -130,7 +134,14 @@ class Dropdown extends React.Component {
 
   render () {
     const tooMany = this.props.items.length > this.props.tooMany && ! this.state.loading
-    const selected = this.state.selected
+    let selected;
+
+    if (window.selectedFolder) {
+       selected = this.checkChildDirectory(this.props.initialItems, window.selectedFolder);
+       this.state.selected = selected;
+    } else {
+      selected = this.state.selected;
+    }
 
     return (
       <div className={"select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>

@@ -293,10 +293,14 @@ trait FileManagerTrait
             }
 
             $attrs = [
-                'class' => '',
+                'class' => $file->isDirectory() ? 'drop-target' : '',
                 'file_id' => $file->file_id,
                 'title' => $file->title,
             ];
+
+            if ($file->isDirectory()) {
+                $attrs['file_upload_id'] = $file->upload_location_id.'.'.$file->file_id;
+            }
 
             if (! $file->exists()) {
                 $attrs['class'] = 'missing';

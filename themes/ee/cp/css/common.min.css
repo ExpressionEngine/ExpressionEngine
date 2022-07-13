@@ -38080,6 +38080,7 @@ body[data-theme="dark"] {
   max-height: 50px;
   display: block;
   border-radius: 4px;
+  pointer-events: none;
 }
 .f_manager-wrapper tr.app-listing__row i.fas, .f_manager-wrapper tr.app-listing__row i.fal, .f_manager-wrapper tr.app-listing__row i.column-sort::after, .f_manager-wrapper tr.app-listing__row i.app-notice__icon::before, .f_manager-wrapper tr.app-listing__row i.app-notice__dismiss::before, .f_manager-wrapper tr.app-listing__row i.m-close:before, .f_manager-wrapper tr.app-listing__row i.sidebar__link.remove:after, .f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-remove:before, .tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
 .f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-on:before,
@@ -38252,6 +38253,7 @@ body[data-theme="dark"] {
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 6px;
+  pointer-events: none;
 }
 .file-grid__wrapper .file-thumbnail i.fas, .file-grid__wrapper .file-thumbnail i.fal, .file-grid__wrapper .file-thumbnail i.column-sort::after, .file-grid__wrapper .file-thumbnail i.app-notice__icon::before, .file-grid__wrapper .file-thumbnail i.app-notice__dismiss::before, .file-grid__wrapper .file-thumbnail i.m-close:before, .file-grid__wrapper .file-thumbnail i.sidebar__link.remove:after, .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-remove:before, .tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-remove:before,
 .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
