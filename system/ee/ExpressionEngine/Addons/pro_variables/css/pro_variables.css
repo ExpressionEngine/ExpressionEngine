@@ -1,0 +1,463 @@
+/**
+ * Pro Variables CSS file
+ *
+ * @package        pro_variables
+ * @author         EEHarbor
+ * @link           https://eeharbor.com/pro-variables
+ * @copyright      Copyright (c) 2009-2022, EEHarbor
+ */
+
+/* Drag/drop folder list
+-------------------------------------------------*/
+
+/* >= 3.3.0 */
+.sidebar .folder-list .toolbar li.reorder a:before {
+    content: '\f0c9';
+    color:#b5b5b5;
+    cursor:move;
+    cursor:-webkit-grab;
+    cursor:-moz-grab;
+    cursor:grab;
+}
+
+/* < EE 3.3.0 */
+.sidebar .folder-list.glyphicons .toolbar li.reorder a:before {
+    content:'\e159';
+}
+
+.sidebar .folder-list .ui-sortable-helper {
+    background:rgba(255,255,255,0.8);
+    border-top:1px solid #e4e4e4;
+    -webkit-box-shadow:2px 2px 6px rgba(0,0,0,0.3);
+    -moz-box-shadow:2px 2px 6px rgba(0,0,0,0.3);
+    box-shadow:2px 2px 6px rgba(0,0,0,0.3);
+}
+
+.sidebar .folder-list .ui-sortable-helper .toolbar li.reorder a:before {
+    cursor:-webkit-grabbing;
+    cursor:-moz-grabbing;
+    cursor:grabbing;
+}
+
+.sidebar .folder-list .pro-var-group-placeholder {
+    border-bottom:1px solid #e4e4e4 !important;
+    padding:10px;
+    color:#000;
+}
+
+/* Show/hide var name on hover
+-------------------------------------------------*/
+
+.col-group[data-name] .setting-txt > :first-child a {
+    margin-right:5px;
+    vertical-align:middle;
+    border:1px solid #cdcdcd;
+    border-radius:4px;
+    padding:0 4px 2px;
+    box-shadow: 0 1px 0 0 rgba(0,0,0,.05);
+}
+
+.col-group[data-name] .setting-txt > :first-child a:before {
+    font-size:11px;
+    line-height:1;
+    display:inline-block;
+    vertical-align:middle;
+}
+
+.col-group[data-name] .setting-txt > :first-child code {
+    font:normal 12px/normal consolas, monaco, monospace;
+}
+
+.col-group[data-name] .setting-txt > :first-child a,
+.col-group[data-name] .setting-txt > :first-child code,
+.col-group[data-name] .setting-txt > :first-child:hover span {
+    display:none;
+}
+
+.col-group[data-name] .setting-txt > :first-child:hover a,
+.col-group[data-name] .setting-txt > :first-child:hover code {
+    display:inline-block;
+    font-weight:normal;
+    text-decoration:none;
+    margin-top:-6px;
+}
+
+.col-group[data-name] .setting-txt > :first-child:hover a:hover {
+    background:#fff8da;
+}
+
+/* EE7 styles */
+.pro-variables.pro-ee7 [data-name] .field-instruct label:not(:hover) a,
+.pro-variables.pro-ee7 [data-name] .field-instruct label:not(:hover) code {
+    display: none;
+}
+
+.pro-variables.pro-ee7 [data-name] .field-instruct label a.ico {
+    margin-right: 5px;
+}
+.pro-variables.pro-ee7 [data-name] .field-instruct label a.ico:before {
+    font-size: 13px;
+}
+
+.pro-variables.pro-ee7 [data-name] .field-instruct label code {
+    font:normal 12px/normal consolas, monaco, monospace;
+    color: #999;
+    margin-left: 5px;
+}
+
+/* Pro Variables input field size options
+-------------------------------------------------*/
+
+.pro-variables .pro-medium {
+    width:76%;
+}
+
+.pro-variables .pro-small {
+    width:33%;
+}
+
+.pro-variables.pro-ee7 .pro-medium {
+    width:50%;
+}
+
+.pro-variables.pro-ee7 .pro-small {
+    width:25%;
+}
+
+.pro-variables.pro-ee7 .pro-x-small {
+    width:10%;
+}
+
+/* Pro Variables Textarea Code Format
+-------------------------------------------------*/
+
+.pro_code_format, .pro_code_format:focus {
+    font-family:'consolas','andale mono','monaco',monospace;
+    background:#333;
+    color:#aaa;
+    padding:3px;
+    border:0;
+    border-radius:0;
+}
+
+.pro_code_format:focus {
+    background:#222;
+    color:#ccc;
+}
+
+.pro-variables.pro-ee7 textarea.pro_code_format {
+    min-height: 150px;
+}
+
+/* Multiple select field
+-------------------------------------------------*/
+
+.pro-select-multiple {
+    display:block;
+    width:100%;
+    height:150px;
+    cursor:pointer;
+
+    border:1px solid;
+    border-color:#b3b3b3 #cdcdcd #cdcdcd #b3b3b3;
+
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
+
+    -webkit-box-shadow: 0 1px 3px 0 rgba(0,0,0,.1) inset;
+    -moz-box-shadow: 0 1px 3px 0 rgba(0,0,0,.1) inset;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1) inset;
+}
+
+.pro-select-multiple option {
+    padding:3px 5px;
+    color:gray;
+}
+
+.pro-select-multiple > optgroup {
+    padding:3px 3px 0;
+    margin:0;
+}
+
+.pro-select-multiple optgroup option {
+    padding:3px 0;
+}
+
+.pro-select-multiple option:hover {
+    background:#eee;
+    color:#000
+}
+
+/* Group notes
+-------------------------------------------------*/
+
+.pro-text-row {
+    margin-bottom:10px;
+}
+
+/* Drag 'n Drop lists
+-------------------------------------------------*/
+
+.pro-drag-lists {
+    overflow:hidden;
+    margin-bottom:10px;
+}
+
+.pro-drag-lists ul {
+    font-size:12px;
+    background:#fff;
+    list-style:none;
+    padding:5px;
+    margin:0;
+    height:150px;
+    overflow:auto;
+    border:1px solid #ccc;
+    width:49.5%;
+
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
+
+    -webkit-box-shadow:0 1px 3px 0 rgba(0,0,0,.1) inset;
+    -moz-box-shadow:0 1px 3px 0 rgba(0,0,0,.1) inset;
+    box-shadow:0 1px 3px 0 rgba(0,0,0,.1) inset;
+
+    box-sizing:border-box;
+}
+
+.pro-drag-lists ul.pro-off {
+    float:left;
+    color:gray;
+}
+
+.pro-drag-lists ul.pro-on {
+    float:right;
+}
+
+.pro-drag-lists li {
+    overflow:hidden;
+    padding:3px 5px;
+    margin:0;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    cursor:move;
+    cursor:-webkit-grab;
+    cursor:-moz-grab;
+    cursor:grab;
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px
+}
+
+.pro-drag-lists ul li:hover {
+    background:#eee;
+    color:#000
+}
+
+.pro-drag-lists li.ui-sortable-helper {
+    background:#eee;
+    color:#000;
+    cursor:-webkit-grabbing;
+    cursor:-moz-grabbing;
+    cursor:grabbing;
+    -webkit-box-shadow:2px 2px 6px rgba(0,0,0,0.3);
+    -moz-box-shadow:2px 2px 6px rgba(0,0,0,0.3);
+    box-shadow:2px 2px 6px rgba(0,0,0,0.3);
+}
+
+.pro-drag-lists.pro-thumbs ul {
+    height:250px;
+    white-space:nowrap;
+}
+
+.pro-drag-lists.pro-thumbs li {
+    padding:0;
+    margin-bottom:5px;
+}
+
+.pro-drag-lists.pro-thumbs li:last-child {
+    margin-bottom:0;
+}
+
+.pro-drag-lists.pro-thumbs img {
+    display:inline-block;
+    overflow:hidden;
+    background:#fff;
+    vertical-align:middle;
+    margin-right:5px;
+
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
+}
+
+.pro-drag-lists.pro-thumbs .pro-off img {
+    opacity:0.5;
+}
+
+.pro-drag-lists.pro-thumbs li:hover img {
+    opacity:1;
+}
+
+/* Upload form
+-------------------------------------------------*/
+
+.pro-new-file {
+    margin-top:5px;
+    margin-bottom:10px;
+}
+
+.pro-new-file input[type=file] {
+    display:none;
+    margin:3px 0;
+}
+
+.pro-new-file em {
+    display:none;
+    font-size:12px;
+}
+
+.pro-new-file.has-file .toolbar {
+    display:none;
+}
+
+.pro-new-file.has-file input,
+.pro-new-file.has-file em {
+    display:inline;
+}
+
+/* Variable type: Pro Table
+-------------------------------------------------*/
+.pro-variables.pro-ee7 [data-type="pro_table"] table {
+    margin-bottom: 0;
+}
+
+.pro-variables [data-type="pro_table"] input {
+    margin:0;
+}
+
+
+.pro-variables [data-type="pro_table"] .toolbar {
+    margin-bottom:10px;
+}
+
+/* Manage variables: complete list of variables
+-------------------------------------------------*/
+
+.onoff {
+    display:block;
+    width:16px;
+    height:16px;
+    /*margin:0 auto;*/
+    overflow:hidden;
+    text-indent:-9999em;
+    background:transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEOSURBVHjabJBLaoRAEIYr2j5R8QWuXeYU2YsXGPAqziI5Qq4wkBt4B8FlZBa6dKOIGxWfSKpkEmaRhp/u6vqq+u96ybIMHuuCilDBI05QN9QXBWzfd9rfNU2LPc8D13VPqm3boK7rYBiGVwyvbNu2i67rse/7IMsyHMdxgrZtg6qqUBRF3Pf9nVvXNaIuoiie0LPojnLEsGVZAo7joGkakCQJFEU5O07TBJgDyhFDIFUAeoF5nuF5kRX0fhYQmGB1YBgGCILw55E6UfdxHAlMyOOtLEvgeR4sywLTNE/Rme4oRwwfhuE3VvFd170xxsBxHKC9qirI85zG9IGvfP7O8YqfuaOiNE3/HfiPAAMA/zqTukbyyzUAAAAASUVORK5CYII=) 50% 50% no-repeat;
+    border:none;
+}
+
+.onoff.on {
+    background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEGSURBVHjajJA9aoVAEMdHd5GHimhlsXiAgDdI8ZpXbZH+gfdIlRTJDZIrPAjkAJ4kVRQsxEIbLfzADyQzwyssM/Bn+c/8dmYY4/J9gXtcUQlK332KuqG+yMht2+h9833/JYoiUEoxVVWVLstSd133gPZVqCd19TzvI45jQBj2fWc5jsO+bdvzOI6/clmWJAxDEELAPM9wDMpRrWmaRGJR4w/Isoy7uK7LUN/3MAwDGIZBDTSBQCCO4PcYtm1DEAQ8icB0XVdN+1iWxftRmKbJINYITE3c8VYUBUgpefmjKEc1YsTp8fQzTZPAM5ypC16Au9V1DXmeA+bfccqnETwH/zr4nwADAJ/LgXQQOhtNAAAAAElFTkSuQmCC);
+}
+
+
+/* Manage variables: edit group, change var sort order
+-------------------------------------------------*/
+
+.pro-vars-in-group {
+    list-style:none;
+    padding:0;
+    margin:0 0 10px 0;
+}
+
+.pro-vars-in-group li {
+    margin:0;
+    padding:5px 0;
+    overflow:hidden;
+    border:1px solid transparent;
+    /*color:gray;
+    color:rgba(0,0,0,0.3);*/
+    cursor:move;
+    cursor:-moz-grab;
+    cursor:-webkit-grab;
+    border:1px solid transparent;
+    text-shadow:1px 1px 1px #fff;
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
+}
+
+.pro-vars-in-group li:hover {
+    border-color:#fff;
+
+    background:#f6f6f6;
+    background:-webkit-linear-gradient(top, rgba(250,250,250,0.85), rgba(240,240,240,0.85));
+    background:   -moz-linear-gradient(top, rgba(250,250,250,0.85), rgba(240,240,240,0.85));
+    background:    -ms-linear-gradient(top, rgba(250,250,250,0.85), rgba(240,240,240,0.85));
+    background:     -o-linear-gradient(top, rgba(250,250,250,0.85), rgba(240,240,240,0.85));
+    background:        linear-gradient(top, rgba(250,250,250,0.85), rgba(240,240,240,0.85));
+
+    -webkit-box-shadow:0 0 2px rgba(0,0,0,0.2);
+    -moz-box-shadow:0 0 2px rgba(0,0,0,0.2);
+    box-shadow:0 0 2px rgba(0,0,0,0.2);
+}
+
+.pro-vars-in-group li span {
+    display:inline-block;
+    color:#ddd;
+    font-weight:100;
+    width:1em;
+    height:1em;
+    margin:0 2px 0 5px;
+    cursor:inherit;
+}
+
+.pro-vars-in-group li.ui-sortable-helper {
+
+    cursor:-webkit-grabbing;
+    cursor:-moz-grabbing;
+    cursor:grabbing;
+
+    margin:2px 0 0 2px;
+
+    -webkit-box-shadow:2px 2px 6px rgba(0,0,0,0.3);
+    -moz-box-shadow:2px 2px 6px rgba(0,0,0,0.3);
+    box-shadow:2px 2px 6px rgba(0,0,0,0.3);
+}
+
+.pro-vars-in-group li.ui-sortable-placeholder {
+    visibility:visible !important;
+    border:1px dashed #cfcfcf;
+    background:#fff;
+}
+
+/* EE7 styles  */
+body[data-ee-version^="6."] .pro-variables .grid-field .table-responsive {
+    border: 1px solid var(--ee-border);
+    border-radius:  0;
+}
+
+body[data-ee-version^="6."] .pro-variables .pro-select-multiple {
+  background: var(--ee-input-bg);
+  border: 1px solid var(--ee-input-border);
+  box-shadow: none;
+  color: var(--ee-input-color);
+  padding: 8px 15px;
+}
+
+body[data-ee-version^="6."] .pro-variables .pro-select-multiple option {
+  color: var(--ee-input-color);
+}
+
+body[data-ee-version^="6."] .pro-variables .pro-select-multiple option:hover,
+body[data-ee-version^="6."] .pro-variables .pro-select-multiple:focus option:checked {
+  background: var(--ee-accent-light) !important;
+}
+
+body[data-ee-version^="6."] .pro-variables textarea.pro_code_format {
+    padding: 8px 15px;
+    font-size: 1rem;
+    line-height: 1.6;
+    border-radius: 5px;
+    color: var(--ee-button-primary-color);
+}

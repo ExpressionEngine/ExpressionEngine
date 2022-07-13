@@ -1,0 +1,14 @@
+{
+    "name": "Pro Variables",
+    "shortname": "pro_variables",
+    "version": "5.0.0",
+    "description": "Global settings and content",
+    "license": "ExpressionEngine",
+    "namespace": "Pro\\Variables",
+    "require": {
+        "php": ">=7.2.*",
+        "expressionengine/core": ">=7"
+    },
+    "resources": {
+    }
+}
