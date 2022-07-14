@@ -72,7 +72,11 @@ $(document).ready(function () {
 				replaceData(response);
 				sortableColumns();
 				ddFileToNotEmptyTable();
-				makeDirectoryDroppable();
+				
+				if ( $('.f_manager-wrapper tbody').length || $('.f_manager-wrapper .file-grid__wrapper').length) {
+					makeDirectoryDroppable();
+				}
+
 				$('.f_manager-wrapper tbody').sortable({
 					axis: "y"
 				});
@@ -438,5 +442,7 @@ $(document).ready(function () {
 		});
 	}
 
-	makeDirectoryDroppable();
+	if ( $('.f_manager-wrapper tbody').length || $('.f_manager-wrapper .file-grid__wrapper').length) {
+		makeDirectoryDroppable();
+	}
 });

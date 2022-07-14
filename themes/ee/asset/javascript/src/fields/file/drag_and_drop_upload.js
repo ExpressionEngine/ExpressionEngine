@@ -596,6 +596,8 @@ function (_React$Component) {
     value: function render() {
       var _this5 = this;
 
+      // console.log('1', this.props);
+      // console.log('2', this.state);
       var heading = this.props.multiFile ? EE.lang.file_dnd_drop_files : EE.lang.file_dnd_drop_file;
       var subheading = this.state.directory == 'all' ? EE.lang.file_dnd_choose_directory : EE.lang.file_dnd_upload_to + ' ';
 
@@ -622,7 +624,23 @@ function (_React$Component) {
         className: "file-field__dropzone-title"
       }, heading), React.createElement("div", {
         "class": "file-field__dropzone-button"
-      }, subheading, this.state.directory == 'all' && ':', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
+      }, subheading, this.state.directory == 'all' && ':', this.state.directory != 'all' && React.createElement(DropDownButton, {
+        key: EE.lang.file_dnd_choose_existing,
+        action: this.state.directory == this.state.directory,
+        center: true,
+        keepSelectedState: true,
+        title: EE.lang.file_dnd_choose_directory_btn,
+        placeholder: EE.lang.file_dnd_filter_directories,
+        items: EE.dragAndDrop.uploadDesinations,
+        onSelect: function onSelect(directory) {
+          return _this5.setDirectory(directory);
+        },
+        buttonClass: "button--default button--small",
+        createNewDirectory: this.props.createNewDirectory,
+        ignoreChild: false,
+        addInput: false,
+        choosenDirectory: this.getDirectoryItem(this.state.directory)
+      }), "\xA0", this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: this.state.directory == 'all',
         center: true,
@@ -686,15 +704,22 @@ function (_React$Component) {
 
           _this5.chooseExisting(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_choose_existing), React.createElement("a", {
-        href: "#",
-        className: "button button--default button--small m-link",
-        onClick: function onClick(e) {
-          e.preventDefault();
-
-          _this5.uploadNew(_this5.state.directory);
-        }
-      }, EE.lang.file_dnd_upload_new), React.createElement("input", {
+      }, EE.lang.file_dnd_choose_existing), React.createElement(DropDownButton, {
+        key: EE.lang.file_dnd_upload_new,
+        action: true,
+        keepSelectedState: false,
+        title: EE.lang.file_dnd_upload_new,
+        placeholder: EE.lang.file_dnd_filter_directories,
+        items: EE.dragAndDrop.uploadDesinations,
+        onSelect: function onSelect(directory) {
+          return _this5.uploadNew(_this5.state.directory);
+        },
+        buttonClass: "button--default button--small",
+        createNewDirectory: this.props.createNewDirectory,
+        ignoreChild: false,
+        addInput: true,
+        choosenDirectory: this.getDirectoryItem(this.state.directory)
+      }), React.createElement("input", {
         type: "file",
         className: "f_open-filepicker",
         style: {

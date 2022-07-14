@@ -89,9 +89,17 @@ function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var dropdownItems = this.state.items.filter(function (el) {
-        return el != _this2.state.selected;
-      });
+      var dropdownItems;
+
+      if (this.props.choosenDirectory) {
+        var items = [this.props.choosenDirectory];
+        dropdownItems = items;
+      } else {
+        dropdownItems = this.state.items.filter(function (el) {
+          return el != _this2.state.selected;
+        });
+      }
+
       return React.createElement(React.Fragment, null, React.createElement("button", {
         type: "button",
         className: "button js-dropdown-toggle has-sub " + this.props.buttonClass,
