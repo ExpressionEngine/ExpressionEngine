@@ -671,7 +671,7 @@ class Files extends AbstractFilesController
             $targetFilesystem = ($file->UploadDestination->id == $targetUploadLocation->id) ? null : $targetUploadLocation->getFilesystem();
             $success = $file->UploadDestination->getFilesystem()->move(
                 $file->getAbsolutePath(),
-                $targetPath . '/' . $file->file_name,
+                rtrim($targetPath,'\\/') . '/' . $file->file_name,
                 $targetFilesystem
             );
 

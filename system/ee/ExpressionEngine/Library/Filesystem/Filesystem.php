@@ -480,8 +480,7 @@ class Filesystem
     public function move($source, $dest, $destinationFilesystem = null)
     {
         // Moving a file without a different destination filesystem is just rename
-        // Or in case both filesystems are 'local' a rename can also be more performant
-        if(is_null($destinationFilesystem) || ($this->isLocal() && $destinationFilesystem->isLocal() )) {
+        if(is_null($destinationFilesystem)) {
             return $this->rename($source, $dest);
         }
 
