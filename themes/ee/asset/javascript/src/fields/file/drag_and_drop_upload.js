@@ -372,6 +372,13 @@ function (_React$Component) {
         xhr.open('POST', EE.dragAndDrop.endpoint, true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.upload.addEventListener('progress', function (e) {
+          if ($('.file-upload-widget').hasClass('open-dd')) {
+            $('.file-upload-widget').css({
+              'height': 'auto',
+              'position': 'static'
+            });
+          }
+
           if ($('.file-upload-widget').length && $('.file-upload-widget').hasClass('hidden')) {
             $('.file-upload-widget').show();
           }

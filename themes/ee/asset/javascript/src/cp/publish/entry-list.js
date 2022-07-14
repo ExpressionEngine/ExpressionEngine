@@ -340,6 +340,10 @@ $(document).ready(function () {
 
 	function openDDBlock(dropArea) {
 		let ddHeight = $(dropArea).outerHeight()
+
+		if ($(dropArea).hasClass('file-grid__wrapper')) {
+			ddHeight = ddHeight + 20
+		}
 		$('.f_manager-wrapper .file-upload-widget').css({
 			'height': ddHeight,
 			'bottom': '20px'

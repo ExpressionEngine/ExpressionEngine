@@ -199,6 +199,12 @@ class DragAndDropUpload extends React.Component {
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
       xhr.upload.addEventListener('progress', (e) => {
+        if ( $('.file-upload-widget').hasClass('open-dd') ) {
+          $('.file-upload-widget').css({
+            'height': 'auto',
+            'position': 'static'
+          })
+        }
         if( $('.file-upload-widget').length && $('.file-upload-widget').hasClass('hidden')) {
           $('.file-upload-widget').show();
         }
@@ -469,7 +475,6 @@ class DragAndDropUpload extends React.Component {
       $('.file-upload-widget').hide();
       $('body .f_manager-wrapper > form').submit();
     }
-
   }
 
   showErrorWithInvalidState(error) {
