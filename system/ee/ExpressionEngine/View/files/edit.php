@@ -56,7 +56,7 @@ if (! isset($alerts_name)) {
                 <?php if ($is_image) : ?>
                     <a href="<?=$file->getAbsoluteURL() . '?v=' . time()?>" target="_blank"><img src="<?=$file->getAbsoluteURL() . '?v=' . time()?>"></a>
                 <?php else: ?>
-                    <div class="file-preview-modal__preview-file-name"><?=$file->file_name?></div>
+                    <div class="file-preview-modal__preview-file-name"><?=str_replace('fa-3x', 'fa-10x', ee('Thumbnail')->get($file)->tag)?></div>
                 <?php endif; ?>
             </div>
 
