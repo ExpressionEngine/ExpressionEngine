@@ -76,7 +76,14 @@ $(document).ready(function () {
 				$('.f_manager-wrapper tbody').sortable({
 					axis: "y"
 				});
-				$('.f_manager-wrapper .file-grid__wrapper').sortable();
+				$('.f_manager-wrapper .file-grid__wrapper').sortable({
+					start: function( event, ui ) {
+						ui.item.css('transform', 'scale(0.7)');
+					},
+					stop: function( event, ui ) {
+						ui.item.css('transform', 'none');
+					}
+				});
 			}
 		});
 	}
@@ -352,7 +359,14 @@ $(document).ready(function () {
 	$('.f_manager-wrapper tbody').sortable({
 		axis: "y"
 	});
-	$('.f_manager-wrapper .file-grid__wrapper').sortable();
+	$('.f_manager-wrapper .file-grid__wrapper').sortable({
+		start: function( event, ui ) {
+			ui.item.css('transform', 'scale(0.7)');
+		},
+		stop: function( event, ui ) {
+			ui.item.css('transform', 'none');
+		}
+	});
 
 	// Move files to subfolder
 	function makeDirectoryDroppable() {
@@ -365,6 +379,7 @@ $(document).ready(function () {
 			drop: function(e, ui) {
 				clearTimeout(timer);
 				window.selectedFolder = null
+				$(e.target).removeAttr('style');
 			},
 			over: function(e, ui) {
 				var el = ui.draggable;
@@ -373,6 +388,8 @@ $(document).ready(function () {
 				var file_name = el.find('input[type=checkbox]').attr('name');
 				var checkboxInput = el.find('input[type=checkbox]').attr('data-confirm');
 				var subfolder_file_id = $(subfolder).attr('file_upload_id');
+
+				$(subfolder).css('backgroundColor', 'var(--ee-accent-light)');
 				e.preventDefault();
 
 				// First adjust the checklist
@@ -407,10 +424,12 @@ $(document).ready(function () {
 			out: function(e, ui) {
 				clearTimeout(timer);
 				window.selectedFolder = null
+				$(e.target).removeAttr('style');
 			},
 			deactivate: function(e, ui) {
 				clearTimeout(timer);
 				window.selectedFolder = null
+				$(e.target).removeAttr('style');
 			}
 		});
 	}
