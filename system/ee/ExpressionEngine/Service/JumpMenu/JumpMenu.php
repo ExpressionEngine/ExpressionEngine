@@ -18,17 +18,17 @@ class JumpMenu extends AbstractJumpMenu
 {
     protected static $items = array(
         '1' => array(
-            //cp
-            'home' => array(
-                'icon' => 'fa-home',
-                'command' => 'nav_homepage dashboard overview',
-                'dynamic' => false,
+            //theme
+            'switchTheme' => array(
+                'icon' => 'fa-random',
+                'command' => 'switch theme light dark slate',
+                'dynamic' => true,
                 'addon' => false,
-                'target' => 'homepage'
+                'target' => 'themes/switch'
             ),
             //entries
             'viewEntriesIn' => array(
-                'icon' => 'fa-eye',
+                'icon' => 'fa-newspaper',
                 'command' => 'view entries',
                 'dynamic' => true,
                 'addon' => false,
@@ -50,6 +50,76 @@ class JumpMenu extends AbstractJumpMenu
                 'addon' => false,
                 'target' => 'publish/edit',
                 'permission' => ['can_edit_other_entries', 'can_edit_self_entries']
+            ),
+            //files
+            'viewFiles' => array(
+                'icon' => 'fa-archive',
+                'command' => 'view all_files',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'files',
+                'permission' => 'can_access_files'
+            ),
+            //members
+            'viewMembers' => array(
+                'icon' => 'fa-users',
+                'command' => 'view_members',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members',
+                'permission' => 'can_access_members'
+            ),
+            //design
+            'viewTemplates' => array(
+                'icon' => 'fa-file',
+                'command' => 'view templates template_manager',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'design',
+                'permission' => 'can_access_design'
+            ),
+            //cache
+            'systemUtilitiesCacheManager' => array(
+                'icon' => 'fa-database',
+                'command' => 'system_utilities cache_manager caches_to_clear',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/cache',
+                'permission' => 'can_access_data'
+            ),
+            //addons
+            'viewAddons' => array(
+                'icon' => 'fa-puzzle-piece',
+                'command' => 'view addons add-ons modules plugins extensions',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'addons',
+                'permission' => 'can_access_addons'
+            ),
+            //channels & fields
+            'viewChannelFields' => array(
+                'icon' => 'fa-pen-field',
+                'command' => 'view edit_channel_fields custom_fields',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'fields',
+                'permission' => ['can_create_channel_fields', 'can_edit_channel_fields']
+            ),
+            'viewChannels' => array(
+                'icon' => 'fa-sitemap',
+                'command' => 'view manage_channels',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'channels',
+                'permission' => 'can_admin_channels'
+            ),
+            //cp
+            'home' => array(
+                'icon' => 'fa-home',
+                'command' => 'nav_homepage dashboard overview',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'homepage'
             ),
             //members
             'createMember' => array(
@@ -75,14 +145,6 @@ class JumpMenu extends AbstractJumpMenu
                 'addon' => false,
                 'target' => 'members/roles/create',
                 'permission' => 'can_create_roles'
-            ),
-            'viewMembers' => array(
-                'icon' => 'fa-eye',
-                'command' => 'view_members',
-                'dynamic' => false,
-                'addon' => false,
-                'target' => 'members',
-                'permission' => 'can_access_members'
             ),
             'viewMembersIn' => array(
                 'icon' => 'fa-eye',
@@ -181,14 +243,6 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'comments/list'
             ),
             //files
-            'viewFiles' => array(
-                'icon' => 'fa-eye',
-                'command' => 'view all_files',
-                'dynamic' => false,
-                'addon' => false,
-                'target' => 'files',
-                'permission' => 'can_access_files'
-            ),
             'viewFilesIn' => array(
                 'icon' => 'fa-eye',
                 'command' => 'view files content_files',
@@ -327,32 +381,7 @@ class JumpMenu extends AbstractJumpMenu
                 'addon' => false,
                 'target' => 'members/profile/cp-settings'
             ),
-            //addons
-            'viewAddons' => array(
-                'icon' => 'fa-eye',
-                'command' => 'view addons add-ons modules plugins extensions',
-                'dynamic' => false,
-                'addon' => false,
-                'target' => 'addons',
-                'permission' => 'can_access_addons'
-            ),
             //channels
-            'viewChannels' => array(
-                'icon' => 'fa-eye',
-                'command' => 'view manage_channels',
-                'dynamic' => false,
-                'addon' => false,
-                'target' => 'channels',
-                'permission' => 'can_admin_channels'
-            ),
-            'viewChannelFields' => array(
-                'icon' => 'fa-eye',
-                'command' => 'view edit_channel_fields custom_fields',
-                'dynamic' => false,
-                'addon' => false,
-                'target' => 'fields',
-                'permission' => ['can_create_channel_fields', 'can_edit_channel_fields']
-            ),
             'createChannel' => array(
                 'icon' => 'fa-plus',
                 'command' => 'create create_channel',
@@ -394,14 +423,6 @@ class JumpMenu extends AbstractJumpMenu
                 'permission' => 'can_edit_channels'
             ),
             //design
-            'viewTemplates' => array(
-                'icon' => 'fa-eye',
-                'command' => 'view templates template_manager',
-                'dynamic' => false,
-                'addon' => false,
-                'target' => 'design',
-                'permission' => 'can_access_design'
-            ),
             'viewTemplatesIn' => array(
                 'icon' => 'fa-eye',
                 'command' => 'view templates',
@@ -1732,14 +1753,6 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'utilities/query',
                 'permission' => 'can_access_sql_manager'
             ),
-            'systemUtilitiesCacheManager' => array(
-                'icon' => 'fa-database',
-                'command' => 'system_utilities cache_manager caches_to_clear',
-                'dynamic' => false,
-                'addon' => false,
-                'target' => 'utilities/cache',
-                'permission' => 'can_access_data'
-            ),
             'systemUtilitiesSearchReindex' => array(
                 'icon' => 'fa-hammer',
                 'command' => 'system_utilities search_reindex',
@@ -1774,13 +1787,6 @@ class JumpMenu extends AbstractJumpMenu
             ),
 
             //misc
-            'switchTheme' => array(
-                'icon' => 'fa-random',
-                'command' => 'switch theme light dark slate',
-                'dynamic' => true,
-                'addon' => false,
-                'target' => 'themes/switch'
-            ),
             'toggleSidebar' => array(
                 'icon' => 'fa-toggle-on',
                 'command' => 'navigation_toggle',
