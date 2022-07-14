@@ -364,7 +364,6 @@ function (_React$Component) {
       return new Promise(function (resolve, reject) {
         var formData = new FormData();
         formData.append('directory_id', _this3.state.directory_id);
-        formData.append('file', file);
         formData.append('csrf_token', EE.CSRF_TOKEN);
         formData.append('upload_location_id', _this3.state.upload_location_id);
         formData.append('path', _this3.state.path);
