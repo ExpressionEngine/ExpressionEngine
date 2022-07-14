@@ -1,9 +1,12 @@
 <?php
-
-// Remove when PHP 5.3 is no longer supported
-if (! defined('OPENSSL_RAW_DATA')) {
-    define('OPENSSL_RAW_DATA', 1);
-}
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 return array(
     /*

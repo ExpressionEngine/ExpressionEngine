@@ -96,6 +96,16 @@ class Watermark extends Model
         return ($this->wm_type == 'text') ? true : $rule->skip();
     }
 
+    public function get__wm_font_color()
+    {
+        return ltrim((string) $this->wm_font_color, '#');
+    }
+
+    public function get__wm_shadow_color()
+    {
+        return ltrim((string) $this->wm_shadow_color, '#');
+    }
+
     /**
      * Custom getter to parse path variables in the image path
      */
