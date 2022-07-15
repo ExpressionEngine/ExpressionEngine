@@ -45,6 +45,7 @@
   max-width: $secondary-sidebar-width;
 
 	padding-right: $s-l;
+  position: relative;
 
 	@include m-tablet-down {
 		flex: 0 0 100%;
@@ -62,14 +63,20 @@
 
 // Class for collapsing the secondary sidebar
 .secondary-sidebar.secondary-sidebar__collapsed {
-  display: none;
+  display: block;
+  flex: 0 0 auto;
+  padding: 0;
+
+  .sidebar {
+    display: none;
+  }
 }
 
 .secondary-sidebar-toggle {
   display: none;
   position: absolute;
   top: 0;
-  left: -32px;
+  right: 32px;
 
   &:before {
     content: "";
@@ -124,12 +131,12 @@
 }
 
 // Show secondary-sidebar-toggle when hovering over secondary-sidebar
-.secondary-sidebar:hover + .container .secondary-sidebar-toggle, .secondary-sidebar-toggle:hover {
+.secondary-sidebar:hover .secondary-sidebar-toggle, .secondary-sidebar-toggle:hover {
   display: block;
 }
 
 // Show secondary-sidebar-toggle when secondary sidebar is collapsed
-.secondary-sidebar.secondary-sidebar__collapsed + .container .secondary-sidebar-toggle {
+.secondary-sidebar.secondary-sidebar__collapsed .secondary-sidebar-toggle {
   display: block;
 }
 
