@@ -202,7 +202,7 @@ class FileSystemEntity extends ContentModel
             $directory_id = $this->directory_id;
             $subfolders = [];
             while ($directory_id != 0) {
-                $parent = $this->getModelFacade()->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'file_name')->first();
+                $parent = $this->getModelFacade()->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'file_name')->first(true);
                 if (!empty($parent)) {
                     $directory_id = $parent->directory_id;
                     array_unshift($subfolders, $parent->file_name . '/');

@@ -478,9 +478,9 @@ class UploadDestination extends StructureModel
         do {
             $directories = ee('Model')->get('Directory')->fields('file_id', 'upload_location_id', 'directory_id', 'file_name', 'title');
             if ($root_only) {
-                $directories = $directories->filter('upload_location_id', $directory_id)->filter('directory_id', 0)->all();
+                $directories = $directories->filter('upload_location_id', $directory_id)->filter('directory_id', 0)->all(true);
             } else {
-                $directories = $directories->filter('directory_id', $directory_id)->all();
+                $directories = $directories->filter('directory_id', $directory_id)->all(true);
             }
 
             $directoriesCount = count($directories);
