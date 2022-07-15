@@ -427,7 +427,7 @@ class File extends AbstractFilesController
             $columns = [
                 $manipulation->short_name,
                 lang($manipulation->resize_type) . ', ' . $manipulation->width . 'px ' . lang('by') . ' ' . $manipulation->height . 'px',
-                !empty($manipulation->Watermark) ? $manipulation->Watermark->wm_name : '',
+                !empty($manipulation->watermark_id) ? $manipulation->Watermark->wm_name : '',
                 '<a href="' . $file->getAbsoluteManupulationURL($manipulation->short_name) . '" target="_blank"><i class="fal fa-eye"></i></a>'
             ];
             $data[] = array(
