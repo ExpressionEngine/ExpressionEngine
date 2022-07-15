@@ -969,8 +969,10 @@ class Uploads extends AbstractFilesController
 
         if (is_array($resize_ids)) {
             foreach ($resize_ids as $resize_id) {
-                $replace_sizes[$resize_id] = $sizes[$id][$resize_id];
-                unset($missing_only_sizes[$resize_id]);
+                if (!empty($resize_id)) {
+                    $replace_sizes[$resize_id] = $sizes[$id][$resize_id];
+                    unset($missing_only_sizes[$resize_id]);
+                }
             }
         }
 
