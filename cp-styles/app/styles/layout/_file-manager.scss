@@ -246,6 +246,7 @@
     -webkit-transition: background-color .15s ease-in-out;
     -moz-transition: background-color .15s ease-in-out;
     -o-transition: background-color .15s ease-in-out;
+    cursor: grab;
 
     &.missing {
       background-color: color(warning-light);
@@ -261,6 +262,10 @@
     &.selected {
       border: 1px solid var(--ee-accent-medium);
     }
+  }
+
+  a.file-grid__file {
+    cursor: pointer;
   }
 
   .file-thumbnail__wrapper {

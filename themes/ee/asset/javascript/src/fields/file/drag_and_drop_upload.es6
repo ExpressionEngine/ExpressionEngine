@@ -505,8 +505,6 @@ class DragAndDropUpload extends React.Component {
   }
 
   render() {
-    // console.log('1', this.props);
-    // console.log('2', this.state);
     let heading = this.props.multiFile
       ? EE.lang.file_dnd_drop_files
       : EE.lang.file_dnd_drop_file
@@ -532,22 +530,7 @@ class DragAndDropUpload extends React.Component {
             <div class="file-field__dropzone-button">
                 {subheading}
                 {this.state.directory == 'all' && ':'}
-                {this.state.directory != 'all' && 
-                  <DropDownButton key={EE.lang.file_dnd_choose_existing}
-                    action={this.state.directory == this.state.directory}
-                    center={true}
-                    keepSelectedState={true}
-                    title={EE.lang.file_dnd_choose_directory_btn}
-                    placeholder={EE.lang.file_dnd_filter_directories}
-                    items={EE.dragAndDrop.uploadDesinations}
-                    onSelect={(directory) => this.setDirectory(directory)}
-                    buttonClass="button--default button--small"
-                    createNewDirectory={this.props.createNewDirectory}
-                    ignoreChild={false}
-                    addInput={false}
-                    choosenDirectory = {this.getDirectoryItem(this.state.directory)}
-                  />
-                }
+                {this.state.directory != 'all' && <b>{this.getDirectoryName(this.state.directory)}</b>}
                 &nbsp;
                 {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
                     <DropDownButton key={EE.lang.file_dnd_choose_existing}
@@ -609,20 +592,11 @@ class DragAndDropUpload extends React.Component {
               this.chooseExisting(this.state.directory)
             }}>{EE.lang.file_dnd_choose_existing}</a>
 
-            <DropDownButton key={EE.lang.file_dnd_upload_new}
-              action={true}
-              keepSelectedState={false}
-              title={EE.lang.file_dnd_upload_new}
-              placeholder={EE.lang.file_dnd_filter_directories}
-              items={EE.dragAndDrop.uploadDesinations}
-              onSelect={(directory) => this.uploadNew(this.state.directory)}
-              buttonClass="button--default button--small"
-              createNewDirectory={this.props.createNewDirectory}
-              ignoreChild={false}
-              addInput={true}
-              choosenDirectory = {this.getDirectoryItem(this.state.directory)}
-            />
-            <input type="file" className="f_open-filepicker" style={{display: 'none'}} data-upload_location_id={''} data-path={''} multiple="multiple"/>
+            <a href="#" className="button button--default button--small m-link" onClick={(e) => {
+              e.preventDefault()
+              this.uploadNew(this.state.directory)
+            }}>{EE.lang.file_dnd_upload_new}</a>
+
             </div>
           </React.Fragment>
         }

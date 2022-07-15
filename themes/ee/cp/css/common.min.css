@@ -38212,6 +38212,7 @@ body[data-theme="dark"] {
   -webkit-transition: background-color 0.15s ease-in-out;
   -moz-transition: background-color 0.15s ease-in-out;
   -o-transition: background-color 0.15s ease-in-out;
+  cursor: grab;
 }
 .file-grid__wrapper .file-grid__file.missing {
   background-color: var(--ee-warning-light);
@@ -38222,6 +38223,9 @@ body[data-theme="dark"] {
 }
 .file-grid__wrapper .file-grid__file.selected {
   border: 1px solid var(--ee-accent-medium);
+}
+.file-grid__wrapper a.file-grid__file {
+  cursor: pointer;
 }
 .file-grid__wrapper .file-thumbnail__wrapper {
   height: 0;

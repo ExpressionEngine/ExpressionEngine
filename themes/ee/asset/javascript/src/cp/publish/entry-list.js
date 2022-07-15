@@ -381,7 +381,7 @@ $(document).ready(function () {
 		let modal_rel = 'modal-confirm-move-file';
 		let ajax_url = 'admin.php?/cp/files/confirm';
 		let timer;
-		$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').find('.drop-target').droppable({
+		$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').find('div.drop-target').droppable({
 			accept: "table .app-listing__row, .file-grid__wrapper .filepicker-item",
 			tolerance: "intersect",
 			drop: function(e, ui) {
