@@ -332,13 +332,7 @@ class FileSystemEntity extends ContentModel
         return $this->UploadDestination->getFilesystem()->getUrl($this->getSubfoldersPath() . $this->file_name);
     }
 
-    /**
-     * Uses the file's upload destination's URL to compute the absolute thumbnail
-     *  URL of the file
-     *
-     * @return string The absolute thumbnail URL to the file
-     */
-    public function getAbsoluteThumbnailURL()
+    public function getAbsoluteManupulationURL($manipulation = 'thumbs')
     {
         if (!$this->UploadDestination->exists()) {
             return null;
@@ -350,7 +344,18 @@ class FileSystemEntity extends ContentModel
             return $this->getAbsoluteURL();
         }
 
-        return $filesystem->getUrl($this->getSubfoldersPath() . '_thumbs/'  . $this->file_name);
+        return $filesystem->getUrl($this->getSubfoldersPath() . '_' . $manipulation . '/'  . $this->file_name);
+    }
+
+    /**
+     * Uses the file's upload destination's URL to compute the absolute thumbnail
+     *  URL of the file
+     *
+     * @return string The absolute thumbnail URL to the file
+     */
+    public function getAbsoluteThumbnailURL()
+    {
+        return $this->getAbsoluteManupulationURL('thumbs');
     }
 
     public function getThumbnailUrl()

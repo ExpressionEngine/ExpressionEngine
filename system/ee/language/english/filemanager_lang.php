@@ -1064,6 +1064,10 @@ $lang = array(
 
     'rename_success_desc' => '<code>%s</code> has been renamed to <code>%s</code>',
 
+    'existing_file_manipulations_desc' => 'These are existing pre-defined manipulations for this files based in Upload Directory settings',
+
+    'manipulations' => 'Manipulations',
+
 );
 
 // EOF

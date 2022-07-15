@@ -97,6 +97,9 @@ class File extends AbstractFilesController
             $tabs['crop'] = $this->renderCropForm($file, $info);
             $tabs['rotate'] = $this->renderRotateForm($file);
             $tabs['resize'] = $this->renderResizeForm($file, $info);
+            if (!empty($file->UploadDestination->FileDimensions->count())) {
+                $tabs['manipulations'] = $this->renderManipulationsForm($file);
+            }
         }
         if (! bool_config_item('file_manager_compatibility_mode')) {
             $tabs['usage'] = $this->renderUsageForm($file);
@@ -389,6 +392,59 @@ class File extends AbstractFilesController
                             'entries' => $entriesTable->viewData(),
                             'categories' => $categoriesTable->viewData(),
                         ]),
+                    ],
+                ],
+            ],
+        ];
+
+        return ee('View')->make('_shared/form/section')
+            ->render(array('name' => null, 'settings' => $section));
+    }
+
+    protected function renderManipulationsForm($file)
+    {
+        $manipulationsTable = ee('CP/Table', array(
+            'class' => 'tbl-fixed',
+        ));
+        $manipulationsTable->setColumns(
+            array(
+                'short_name' => array(
+                    'encode' => false,
+                    'attrs' => array(
+                        'width' => '40%'
+                    ),
+                ),
+                'type',
+                'watermark',
+                'view' => array(
+                    'encode' => false,
+                ),
+            )
+        );
+        $data = array();
+        foreach ($file->UploadDestination->FileDimensions as $manipulation) {
+            $attrs = [];
+            $columns = [
+                $manipulation->short_name,
+                lang($manipulation->resize_type) . ', ' . $manipulation->width . 'px ' . lang('by') . ' ' . $manipulation->height . 'px',
+                !empty($manipulation->Watermark) ? $manipulation->Watermark->wm_name : '',
+                '<a href="' . $file->getAbsoluteManupulationURL($manipulation->short_name) . '" target="_blank"><i class="fal fa-eye"></i></a>'
+            ];
+            $data[] = array(
+                'attrs' => $attrs,
+                'columns' => $columns
+            );
+        }
+        $manipulationsTable->setData($data);
+
+        $section = [
+            [
+                'title' => '',
+                'desc' => lang('existing_file_manipulations_desc'),
+                'fields' => [
+                    'usage_tables' => [
+                        'type' => 'html',
+                        'content' => ee('View')->make('ee:_shared/table')->render($manipulationsTable->viewData()),
                     ],
                 ],
             ],
