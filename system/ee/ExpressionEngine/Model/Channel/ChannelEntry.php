@@ -1221,7 +1221,7 @@ class ChannelEntry extends ContentModel
             if ($this->Channel) {
                 $cat_groups = $this->getModelFacade()->get('CategoryGroup')
                     ->filter('group_id', 'IN', explode('|', (string) $this->Channel->cat_group))
-                    ->all();
+                    ->all(true);
 
                 foreach ($cat_groups as $cat_group) {
                     $metadata = $cat_group->getFieldMetadata();

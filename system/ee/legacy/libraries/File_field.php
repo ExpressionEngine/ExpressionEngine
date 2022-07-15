@@ -258,13 +258,13 @@ class File_field
 
         // If file field is just a file ID
         if (! empty($data) && is_numeric($data)) {
-            $file = ee('Model')->get('File', $data)->with('UploadDestination')->first();
+            $file = ee('Model')->get('File', $data)->with('UploadDestination')->first(true);
         }
         // If the file field is in the "{file:XX:url}" format
         elseif (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
             // Set upload directory ID and file name
             $file_id = $matches[1];
-            $file = ee('Model')->get('File', $file_id)->with('UploadDestination')->first();
+            $file = ee('Model')->get('File', $file_id)->with('UploadDestination')->first(true);
         }
         // If the file field is in the "{filedir_n}image.jpg" format
         elseif (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
@@ -277,7 +277,7 @@ class File_field
                 ->filter('file_name', $file_name)
                 ->filter('upload_location_id', $dir_id)
                 ->filter('site_id', ee()->config->item('site_id'))
-                ->first();
+                ->first(true);
         }
 
         return $file;

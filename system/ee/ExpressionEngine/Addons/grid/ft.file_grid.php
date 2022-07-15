@@ -57,7 +57,7 @@ class file_grid_ft extends Grid_ft
             ->filter('site_id', ee()->config->item('site_id'))
             ->filter('module_id', 0)
             ->order('name', 'asc')
-            ->all()
+            ->all(true)
             ->getDictionary('id', 'name');
 
         $vars = $this->getSettingsVars();
