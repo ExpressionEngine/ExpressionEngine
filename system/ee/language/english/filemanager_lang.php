@@ -325,9 +325,9 @@ $lang = array(
 
     'all_upload_dirs' => 'All Upload Directories',
 
-    'apply_manipulations' => 'Apply manipulations',
+    'apply_manipulations' => 'Re-generate manipulations',
 
-    'apply_manipulations_desc' => 'Applies chosen image manipulations to the files in this directory during sync operation. Increases sync time.',
+    'apply_manipulations_desc' => 'Forces generation of chosen image manipulations for the files in this directory during sync operation. Increases sync time.',
 
     'bottom' => 'Bottom',
 
@@ -445,7 +445,7 @@ $lang = array(
 
     'right' => 'Right',
 
-    'sync_alt_title' => 'Sync %s',
+    'sync_alt_title' => 'Syncronize %s',
 
     'sync_title' => 'Directory Sync',
 
