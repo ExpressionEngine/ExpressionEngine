@@ -196,7 +196,7 @@ class FileSystemEntity extends ContentModel
      *
      * @return string
      */
-    private function getSubfoldersPath()
+    public function getSubfoldersPath()
     {
         if (empty($this->_subfolderPath)) {
             $directory_id = $this->directory_id;

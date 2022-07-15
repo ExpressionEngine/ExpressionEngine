@@ -2067,6 +2067,7 @@ class Filemanager
 
         // Get the file data form the database
         $previous_data = ee('Model')->get('File', $file_id)->with('UploadDestination')->first();
+        $path = $previous_data->getSubfoldersPath();
 
         // If the new name is the same as the previous, get out of here
         if ($new_file_name == $previous_data->file_name) {
@@ -2082,9 +2083,10 @@ class Filemanager
 
         // If they renamed, we need to be sure the NEW name doesn't conflict
         if ($replace_file_name != '' && $new_file_name != $replace_file_name) {
-            if ($upload_directory->getFilesystem()->exists($new_file_name)) {
+            if ($upload_directory->getFilesystem()->exists($path . $new_file_name)) {
                 $replace_data = ee('Model')->get('File')
                     ->filter('file_name', $new_file_name)
+                    ->filter('directory_id', $previous_data->directory_id)
                     ->filter('upload_location_id', $upload_directory->id)
                     ->first();
 
@@ -2106,7 +2108,7 @@ class Filemanager
         }
 
         // Check to see if a file with that name already exists
-        if ($upload_directory->getFilesystem()->exists($new_file_name)) {
+        if ($upload_directory->getFilesystem()->exists($path . $new_file_name)) {
             // If it does, delete the old files and remove the new file
             // record in the database
 
@@ -2120,12 +2122,12 @@ class Filemanager
 
         // Rename the actual file
         $file_path = $this->_rename_raw_file(
-            $old_file_name,
-            $new_file_name,
+            $path . $old_file_name,
+            $path . $new_file_name,
             $upload_directory->id
         );
 
-        $new_file_name = str_replace($upload_directory->server_path, '', $file_path);
+        $new_file_name = basename($file_path);
 
         // If renaming the file sparked an error return it
         if (is_array($file_path)) {
@@ -2219,7 +2221,7 @@ class Filemanager
     public function _rename_raw_file($old_file_name, $new_file_name, $directory_id)
     {
         // Make sure the filename is clean
-        $new_file_name = basename($this->clean_filename($new_file_name, $directory_id));
+        $new_file_name = $this->clean_filename($new_file_name, $directory_id);
 
         // Check they have permission for this directory and get directory info
         $upload_directory = $this->fetch_upload_dir_prefs($directory_id);
