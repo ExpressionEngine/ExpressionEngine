@@ -659,7 +659,7 @@ $lang = array(
 
     'create_group_based_on_old' => 'Create a new group based on an existing one',
 
-    'custom_uri' => 'Custom URI &mdash; <i>e.g. members/groups</i>',
+    'custom_uri' => 'Custom URI &mdash; <i>e.g. members/roles</i>',
 
     'default_cp_homepage' => 'Default <abbr title="Control Panel">CP</abbr> homepage',
 

@@ -51,7 +51,7 @@ class Watermark extends Model
         'wm_test_image_path' => 'fileExists',
         'wm_use_font' => 'enum[y,n]',
         'wm_font_size' => 'isNaturalNoZero',
-        'wm_text' => 'validateText|required',
+        'wm_text' => 'validateWatermarkText',
         'wm_vrt_alignment' => 'enum[top,middle,bottom]',
         'wm_hor_alignment' => 'enum[left,center,right]',
         'wm_padding' => 'isNatural',
@@ -91,17 +91,24 @@ class Watermark extends Model
     /**
      * Require text only if watermark type is text
      */
-    public function validateText($key, $value, $params, $rule)
+    public function validateWatermarkText($key, $value, $params, $rule)
     {
-        return ($this->wm_type == 'text') ? true : $rule->skip();
+        if ($this->wm_type != 'text') {
+            $rule->skip();
+        }
+        if (empty($this->getProperty($key))) {
+            $rule->stop();
+            return 'required';
+        }
+        return true;
     }
 
-    public function get__wm_font_color()
+    public function set__wm_font_color()
     {
         return ltrim((string) $this->wm_font_color, '#');
     }
 
-    public function get__wm_shadow_color()
+    public function set__wm_shadow_color()
     {
         return ltrim((string) $this->wm_shadow_color, '#');
     }
