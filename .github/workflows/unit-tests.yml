@@ -107,6 +107,9 @@ jobs:
                 sudo locale-gen de_DE
                 sudo locale-gen uk
                 sudo locale-gen ru
+            
+            - name: Checkout code
+              uses: actions/checkout@v2
 
             - name: Use cached EE build
               uses: actions/cache@v2
@@ -117,13 +120,7 @@ jobs:
             - name: Move files to webroot
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
-                cp -R build-tools/builds/ExpressionEngine/. ./
-            
-            - name: Restore cached git history
-              uses: actions/cache@v2
-              with:
-                path: .git
-                key: cache-ee-git-${{ github.sha }}
+                cp -R build-tools/builds/ExpressionEngine/system/ee/vendor-build ./system/ee/
 
             - name: Directory Listing
               run: |
@@ -138,7 +135,7 @@ jobs:
 
             - name: Copy config.php
               run: php -r "file_exists('system/user/config/config.php') || copy('tests/docker/config.php', 'system/user/config/config.php');"
-            
+
             - name: Install PHP Unit Test dependencies
               working-directory: system/ee/ExpressionEngine/Tests/
               run: |
