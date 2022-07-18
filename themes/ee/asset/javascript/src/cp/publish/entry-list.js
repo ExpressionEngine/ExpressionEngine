@@ -72,22 +72,22 @@ $(document).ready(function () {
 				replaceData(response);
 				sortableColumns();
 				ddFileToNotEmptyTable();
-				
-				if ( $('.f_manager-wrapper tbody').length || $('.f_manager-wrapper .file-grid__wrapper').length) {
-					makeDirectoryDroppable();
-				}
+				if ( ($('.f_manager-wrapper tbody').length || $('.f_manager-wrapper .file-grid__wrapper').length) && (!$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').parents('.modal').length)) {
 
-				$('.f_manager-wrapper tbody').sortable({
-					axis: "y"
-				});
-				$('.f_manager-wrapper .file-grid__wrapper').sortable({
-					start: function( event, ui ) {
-						ui.item.css('transform', 'scale(0.7)');
-					},
-					stop: function( event, ui ) {
-						ui.item.css('transform', 'none');
-					}
-				});
+					makeDirectoryDroppable();
+
+					$('.f_manager-wrapper tbody').sortable({
+						axis: "y"
+					});
+					$('.f_manager-wrapper .file-grid__wrapper').sortable({
+						start: function( event, ui ) {
+							ui.item.css('transform', 'scale(0.7)');
+						},
+						stop: function( event, ui ) {
+							ui.item.css('transform', 'none');
+						}
+					});
+				}
 			}
 		});
 	}
