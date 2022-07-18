@@ -674,7 +674,7 @@ context('Publish Page - Create', () => {
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
-        cy.get('.grid-field tbody [rel=add_row]:visible').should('be.visible');
+        cy.get('.grid-field tbody [rel=add_row]').should('be.visible');
         cy.get('.grid-field [rel=add_row]:visible').click();
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').click()

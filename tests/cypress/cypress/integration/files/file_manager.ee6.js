@@ -502,6 +502,7 @@ context('File Manager', () => {
             page.get('sidebar').should('exist')
 
             beforeEach_all_files();
+            cy.dismissLicenseAlert()
             page.get('upload_new_file_button').click()
             //page.wait_until_upload_new_file_filter_menu_visible
             page.get('upload_new_file_filter_menu_items').eq(0).click()
