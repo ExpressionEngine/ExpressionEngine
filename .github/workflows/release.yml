@@ -73,7 +73,7 @@ jobs:
       #  with:
       #    fromTag: ${{ steps.prev_release_tag.outputs.tag }}
       #    configuration: build-tools/changelog.config.json
-      - uses: ncipollo/release-action@v1
+      - uses: ncipollo/release-action@v1.10.0
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.tagName.outputs.tag }}
