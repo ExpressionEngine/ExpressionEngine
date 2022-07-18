@@ -199,7 +199,7 @@ class Role extends Model
      */
     public function getAllMembersData($field = 'member_id')
     {
-        $cache_key = "Roles/AllMembersData/{$field}";
+        $cache_key = "Roles/{$this->getId()}/AllMembersData/{$field}";
         $data = $this->getFromCache($cache_key);
 
         if ($data === false) {

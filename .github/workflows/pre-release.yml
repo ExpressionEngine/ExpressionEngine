@@ -16,8 +16,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2

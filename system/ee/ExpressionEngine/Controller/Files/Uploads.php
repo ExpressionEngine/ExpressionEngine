@@ -672,7 +672,10 @@ class Uploads extends AbstractFilesController
             //and then do extra validation
             //but only on form submission
             if (! AJAX_REQUEST && ee('Request')->post('adapter') == 'local' && !empty($adapterSettings['server_path'])) {
-                ee('Filesystem')->mkDir(parse_config_variables($adapterSettings['server_path']));
+                $parsedServerPath = parse_config_variables($adapterSettings['server_path']);
+                if ((DIRECTORY_SEPARATOR == '/' && strpos($parsedServerPath, '/') === 0) || strpos($parsedServerPath, ':') === 1) {
+                    ee('Filesystem')->mkDir($parsedServerPath);
+                }
                 $localAdapterValidation = ee('Validation')->make(['server_path' => 'required|fileExists|writable'])->validate($adapterSettings);
                 foreach ($localAdapterValidation->getFailed() as $field_name => $rules) {
                     if (property_exists($upload_destination, $field_name)) {

@@ -103,14 +103,14 @@ class Watermark extends Model
         return true;
     }
 
-    public function set__wm_font_color()
+    public function set__wm_font_color($wm_font_color)
     {
-        return ltrim((string) $this->wm_font_color, '#');
+        $this->setRawProperty('wm_font_color', ltrim((string) $wm_font_color, '#'));
     }
 
-    public function set__wm_shadow_color()
+    public function set__wm_shadow_color($wm_shadow_color)
     {
-        return ltrim((string) $this->wm_shadow_color, '#');
+        $this->setRawProperty('wm_shadow_color', ltrim((string) $wm_shadow_color, '#'));
     }
 
     /**

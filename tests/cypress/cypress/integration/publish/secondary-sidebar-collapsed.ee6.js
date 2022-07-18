@@ -49,7 +49,6 @@ context('Secondary Sidebar - Collapsed', () => {
 		cy.get('.secondary-sidebar-toggle').invoke('show');
 		cy.get('.secondary-sidebar-toggle > a').first().click();
 		cy.get('.secondary-sidebar').should('have.class', 'secondary-sidebar__collapsed');
-		cy.get('.secondary-sidebar').invoke('css', 'display').should('equal', 'none');
 		cy.get('.secondary-sidebar-toggle__target').should('have.class', 'collapsed');
 		cy.get('.secondary-sidebar-toggle__target > i').should('have.class', 'fa-angle-right');
 
@@ -67,35 +66,37 @@ context('Secondary Sidebar - Collapsed', () => {
 
 		cy.visit('admin.php?/cp/fields')
 		cy.get('.secondary-sidebar').should('have.class', 'secondary-sidebar__collapsed');
-		cy.get('.secondary-sidebar').invoke('css', 'display').should('equal', 'none');
 		cy.get('.secondary-sidebar-toggle__target').should('have.class', 'collapsed');
 		cy.get('.secondary-sidebar-toggle__target > i').should('have.class', 'fa-angle-right');
+
+		cy.get('.secondary-sidebar-toggle > a').first().click();
+		cy.get('.secondary-sidebar').should('not.have.class', 'secondary-sidebar__collapsed');
+		cy.get('.secondary-sidebar-toggle__target').should('not.have.class', 'collapsed');
+		cy.get('.secondary-sidebar-toggle__target > i').should('not.have.class', 'fa-angle-right');
 	})
 
 	it('close sidebar on one page, and check subpages', () => {
+		cy.intercept('**toggle-secondary-sidebar-nav**').as('ajax')
 		cy.visit('admin.php?/cp/fields')
 		cy.get('.secondary-sidebar-toggle').invoke('show');
 		cy.get('.secondary-sidebar-toggle > a').first().click();
+		cy.wait('@ajax')
 		cy.get('.secondary-sidebar').should('have.class', 'secondary-sidebar__collapsed');
-		cy.get('.secondary-sidebar').invoke('css', 'display').should('equal', 'none');
 		cy.get('.secondary-sidebar-toggle__target').should('have.class', 'collapsed');
 		cy.get('.secondary-sidebar-toggle__target > i').should('have.class', 'fa-angle-right');
 
 		cy.get('.list-group li:first-child').click();
 		cy.get('.secondary-sidebar').should('have.class', 'secondary-sidebar__collapsed');
-		cy.get('.secondary-sidebar').invoke('css', 'display').should('equal', 'none');
 		cy.get('.secondary-sidebar-toggle__target').should('have.class', 'collapsed');
 		cy.get('.secondary-sidebar-toggle__target > i').should('have.class', 'fa-angle-right');
 
 		cy.get('.breadcrumb-wrapper a').contains('Fields').click();
 		cy.get('.secondary-sidebar').should('have.class', 'secondary-sidebar__collapsed');
-		cy.get('.secondary-sidebar').invoke('css', 'display').should('equal', 'none');
 		cy.get('.secondary-sidebar-toggle__target').should('have.class', 'collapsed');
 		cy.get('.secondary-sidebar-toggle__target > i').should('have.class', 'fa-angle-right');
 
 		cy.get('.list-group li:nth-child(2)').click();
 		cy.get('.secondary-sidebar').should('have.class', 'secondary-sidebar__collapsed');
-		cy.get('.secondary-sidebar').invoke('css', 'display').should('equal', 'none');
 		cy.get('.secondary-sidebar-toggle__target').should('have.class', 'collapsed');
 		cy.get('.secondary-sidebar-toggle__target > i').should('have.class', 'fa-angle-right');
 
@@ -107,7 +108,6 @@ context('Secondary Sidebar - Collapsed', () => {
 
 		cy.visit('admin.php?/cp/fields')
 		cy.get('.secondary-sidebar').should('have.class', 'secondary-sidebar__collapsed');
-		cy.get('.secondary-sidebar').invoke('css', 'display').should('equal', 'none');
 		cy.get('.secondary-sidebar-toggle__target').should('have.class', 'collapsed');
 		cy.get('.secondary-sidebar-toggle__target > i').should('have.class', 'fa-angle-right');
 	})
@@ -117,7 +117,6 @@ context('Secondary Sidebar - Collapsed', () => {
 		cy.get('.secondary-sidebar-toggle').invoke('show');
 		cy.get('.secondary-sidebar-toggle > a').first().click();
 		cy.get('.secondary-sidebar').should('have.class', 'secondary-sidebar__collapsed');
-		cy.get('.secondary-sidebar').invoke('css', 'display').should('equal', 'none');
 		cy.get('.secondary-sidebar-toggle__target').should('have.class', 'collapsed');
 		cy.get('.secondary-sidebar-toggle__target > i').should('have.class', 'fa-angle-right');
 
@@ -125,7 +124,6 @@ context('Secondary Sidebar - Collapsed', () => {
 		cy.get('.secondary-sidebar-toggle').invoke('show');
 		cy.get('.secondary-sidebar-toggle > a').first().click();
 		cy.get('.secondary-sidebar').should('have.class', 'secondary-sidebar__collapsed');
-		cy.get('.secondary-sidebar').invoke('css', 'display').should('equal', 'none');
 		cy.get('.secondary-sidebar-toggle__target').should('have.class', 'collapsed');
 		cy.get('.secondary-sidebar-toggle__target > i').should('have.class', 'fa-angle-right');
 
@@ -143,7 +141,6 @@ context('Secondary Sidebar - Collapsed', () => {
 
 		cy.visit('admin.php?/cp/utilities/communicate')
 		cy.get('.secondary-sidebar').should('have.class', 'secondary-sidebar__collapsed');
-		cy.get('.secondary-sidebar').invoke('css', 'display').should('equal', 'none');
 		cy.get('.secondary-sidebar-toggle__target').should('have.class', 'collapsed');
 		cy.get('.secondary-sidebar-toggle__target > i').should('have.class', 'fa-angle-right');
 	})
