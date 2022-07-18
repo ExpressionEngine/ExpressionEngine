@@ -159,6 +159,7 @@ class TableTest extends TestCase
             'autosearch' => false,
             'checkbox_header' => false,
             'show_add_button' => true,
+            'force_sort_col' => false,
             'attrs' => array()
         );
 
@@ -421,6 +422,7 @@ class TableTest extends TestCase
             'autosearch' => false,
             'checkbox_header' => false,
             'show_add_button' => true,
+            'force_sort_col' => false,
             'attrs' => array(),
             'data' => array(
                 array(
@@ -535,6 +537,7 @@ class TableTest extends TestCase
             'autosearch' => true,
             'checkbox_header' => false,
             'show_add_button' => true,
+            'force_sort_col' => false,
             'attrs' => array('data-test' => 'test'),
             'data' => array(
                 array(
