@@ -343,10 +343,14 @@ $(document).ready(function () {
 	}
 
 	function openDDBlock(dropArea) {
+		let paginationWrap = 0;
+		if ($(dropArea).parent().next().hasClass('f_manager-action-part')) {
+			paginationWrap = $(dropArea).parent().next().outerHeight();
+		}
 		let ddHeight = $(dropArea).outerHeight()
 
 		if ($(dropArea).hasClass('file-grid__wrapper')) {
-			ddHeight = ddHeight + 20
+			ddHeight = ddHeight + paginationWrap + 20
 		}
 		$('.f_manager-wrapper .file-upload-widget').css({
 			'height': ddHeight,
