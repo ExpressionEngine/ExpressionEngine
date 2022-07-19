@@ -358,6 +358,10 @@ gulp.task('_delete_files', function (cb) {
 		'scripts/',
 		'system/ee/legacy/libraries/Ldap.php',
 
+		'scoper.inc.php',
+		'composer.json',
+		'composer.lock',
+
 		'system/user/*/*',
 		'!system/user/*/index.html',
 		'!system/user/*/.htaccess',
