@@ -113,6 +113,11 @@ class EE_Template
 
     protected $ignore_fetch = ['url_title'];
 
+    protected $tag_class_aliases = [
+        'low_search' => 'pro_search',
+        'low_variables' => 'pro_variables',
+    ];
+
     /**
      * Constructor
      *
@@ -1281,6 +1286,22 @@ class EE_Template
                     $class[$key] = trim($value);
                 }
 
+                // Set the tag_alias to null until we actually alias something
+                $tag_alias = null;
+
+                // Loop through our class aliases and change the tags
+                // Ex. if there is a {exp:low_search:...} tag, we change the class to {exp:pro_search:...}
+                //   so it loads correctly and parses
+                foreach ($this->tag_class_aliases as $original_class => $aliased_class) {
+                    if ($class[0] === $original_class) {
+                        $class[0] = $aliased_class;
+                        $tag_alias = [
+                            'original' => $original_class,
+                            'aliased' => $aliased_class
+                        ];
+                    }
+                }
+
                 // -----------------------------------------
 
                 // Assign parameters based on the arguments from the tag
@@ -1309,6 +1330,15 @@ class EE_Template
                     // Assign the data contained between the opening/closing tag pair
 
                     $block = substr($this->template, $data_start, $out_point);
+
+                    // If we aliased this tag, lets replace some internal tag prefixes
+                    // This will replace things like {low_search_result} into {pro_search_result} when in a {exp:low_search:...} tag
+                    if (! is_null($tag_alias)) {
+                        $from = LD . $tag_alias['original'] . '_';
+                        $to = LD . $tag_alias['aliased'] . '_';
+
+                        $block = str_replace($from, $to, $block);
+                    }
 
                     // Fetch the "no_results" data
 
