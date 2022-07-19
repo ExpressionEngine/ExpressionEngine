@@ -72,7 +72,7 @@ jobs:
         continue-on-error: true
         uses: oprypin/find-latest-tag@v1
         with:
-          repository: ExpressionEngine/ExpressionEngine
+          repository: packettide/expressionengine-private
           prefix: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.
 
       - name: Increase DP version
@@ -86,7 +86,7 @@ jobs:
         continue-on-error: true
         uses: oprypin/find-latest-tag@v1
         with:
-          repository: ExpressionEngine/ExpressionEngine
+          repository: packettide/expressionengine-private
           regex: '^\d+\.\d+\.\d+$'
 
       - name: Fetch list of tags
@@ -139,7 +139,7 @@ jobs:
             - name: Checkout repo
               uses: actions/checkout@v2
               with:
-                repository: ExpressionEngine/ExpressionEngine
+                repository: packettide/expressionengine-private
                 path: __repo
 
             - name: Download EE 6
