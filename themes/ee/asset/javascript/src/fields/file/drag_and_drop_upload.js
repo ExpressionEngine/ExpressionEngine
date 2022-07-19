@@ -694,7 +694,14 @@ function (_React$Component) {
 
           _this5.uploadNew(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_upload_new))), this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement("div", {
+      }, EE.lang.file_dnd_upload_new), React.createElement("input", {
+        type: "file",
+        className: "f_open-filepicker",
+        style: {
+          display: 'none'
+        },
+        multiple: "multiple"
+      }))), this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement("div", {
         className: "button-segment"
       }, React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
