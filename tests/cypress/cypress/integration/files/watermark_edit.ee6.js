@@ -49,8 +49,9 @@ context('Watermark Create/Edit', () => {
     // Numbers
     page.get('wm_padding').clear().type('sdfsd')
     page.get('wm_padding').blur()
-    page.hasErrorsCount(3)
     page.hasError(page.get('wm_padding'), page.messages.validation.natural_number)
+    page.hasErrorsCount(3)
+    cy.screenshot({capture: 'fullPage'});
     page.hasErrors()
 //should_have_form_errors(page)
 

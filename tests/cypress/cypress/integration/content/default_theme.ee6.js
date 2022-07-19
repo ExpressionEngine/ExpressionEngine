@@ -239,27 +239,35 @@ context('Install with default theme', () => {
       cy.get('.textarea-field-filepicker').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
+      let lake_id = null;
+      cy.get('.modal-file .app-listing__row a').contains('lake.jpg').parents('tr').invoke('attr', 'data-id').then((id) => {
+        lake_id = id;
+      })
       cy.get('.modal-file .app-listing__row a').contains('lake.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
       cy.wait(1000)//give JS some extra time
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
-        expect(val).to.contain('<img src="{file:3:url}"')
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
       })
 
       cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
+      let ocean_id = null
+      cy.get('.modal-file .app-listing__row a').contains('ocean.jpg').parents('tr').invoke('attr', 'data-id').then((id) => {
+        ocean_id = id;
+      })
       cy.get('.modal-file .app-listing__row a').contains('ocean.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
       cy.wait(1000)//give JS some extra time
       cy.get('.grid-field__table tr:visible .js-file-input').invoke('val').then((val) => {
-        expect(val).to.eq('{file:4:url}')
+        expect(val).to.eq('{file:' + ocean_id + ':url}')
       })
       cy.get('.grid-field__table tr:visible .fields-upload-chosen-name').should('contain', 'ocean.jpg')
 
       cy.get('body').type('{ctrl}', {release: false}).type('s')
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
-        expect(val).to.contain('<img src="{file:3:url}"')
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
       })
       cy.get('.grid-field__table tr:visible .fields-upload-chosen-name').should('contain', 'ocean.jpg')
 
@@ -319,7 +327,7 @@ context('Install with default theme', () => {
       cy.get('.modal-file').should('not.be.visible')
       cy.wait(1000)//give JS some extra time
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
-        expect(val).to.contain('<img src="{file:3:url}"')//still there
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')//still there
       })
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
         expect(val).to.contain('<img src="{filedir_6}path.jpg"')
@@ -338,7 +346,7 @@ context('Install with default theme', () => {
 
       cy.get('body').type('{ctrl}', {release: false}).type('s')
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
-        expect(val).to.contain('<img src="{file:3:url}"')
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
       })
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
         expect(val).to.contain('<img src="{filedir_6}path.jpg"')

@@ -816,6 +816,7 @@ context('File Manager', () => {
             cy.intercept('/admin.php?/cp/files*').as('table')
             cy.get('.filter-search-bar .filter-search-bar__item .filter__viewtype a').eq(1).click()
             cy.wait('@table')
+            cy.wait(1000)//give JS time to render
             cy.get('.file-grid__wrapper .file-grid__file').should('exist')
 
             //default is sorting by date, let's try to reverse it
@@ -826,6 +827,7 @@ context('File Manager', () => {
                 cy.get('[data-filter-label="sort by"]').click();
                 cy.get('.dropdown--open .fa-sort-amount-up').parent().contains('Date Added').click();
                 cy.wait('@table')
+                cy.wait(1000)//give JS time to render
                 cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
                     let files_by_date_reversed = _.map($td, function(el) {
                         return $(el).find('span').first().text();
@@ -836,6 +838,7 @@ context('File Manager', () => {
                     cy.get('[data-filter-label="sort by"]').click();
                     cy.get('.dropdown--open .fa-sort-amount-up').parent().contains('Title').click();
                     cy.wait('@table')
+                    cy.wait(1000)//give JS time to render
                     cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
                         let files_by_title = _.map($td, function(el) {
                             return $(el).find('span').first().text();
@@ -847,6 +850,7 @@ context('File Manager', () => {
                         cy.get('[data-filter-label="sort by"]').click();
                         cy.get('.dropdown--open .fa-sort-amount-down-alt').parent().contains('Title').click();
                         cy.wait('@table')
+                        cy.wait(1000)//give JS time to render
                         cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
                             let files_by_title_reversed = _.map($td, function(el) {
                                 return $(el).find('span').first().text();
