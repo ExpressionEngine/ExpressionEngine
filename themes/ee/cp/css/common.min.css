@@ -38018,6 +38018,7 @@ body[data-theme="dark"] {
   margin-bottom: 0;
   background-color: none;
   border-radius: 0;
+  box-shadow: none;
 }
 
 .pro-frontend-modal > .panel > .panel-body, .add-on-layout .pro-frontend-modal > .table-responsive > .panel-body {
