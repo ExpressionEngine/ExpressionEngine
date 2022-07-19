@@ -803,9 +803,7 @@ class EE_Config
 
             $this->_update_pages($site_id, $new_values, $query);
 
-            if (! ee()->db->table_exists('config') && ee()->db->field_exists('site_system_preferences', 'sites')) {
-                $new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
-            } else {
+            if (ee()->db->table_exists('config')) {
                 if (empty($new_values)) {
                     $configs = [];
                 } else {
@@ -840,6 +838,8 @@ class EE_Config
                         unset($anything_to_add[$key]);
                     }
                 }
+            } else {
+                $new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
             }
         }
 

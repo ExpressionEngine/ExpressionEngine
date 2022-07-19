@@ -532,7 +532,7 @@ class Filemanager
             $prefs['file_width'] = $prefs['width'];
         }
 
-        if ($prefs['max_width'] == 0 && $prefs['max_height'] == 0) {
+        if (empty($prefs['max_width']) && empty($prefs['max_height'])) {
             return $prefs;
         }
 
@@ -545,11 +545,11 @@ class Filemanager
 
         // If either h/w unspecified, calculate the other here
         if (empty($prefs['max_width'])) {
-            $config['width'] = ($prefs['width'] / $prefs['height']) * $prefs['max_height'];
+            $config['width'] = ((int) $prefs['width'] / (int) $prefs['height']) * (int) $prefs['max_height'];
             $force_master_dim = 'height';
         } elseif (empty($prefs['max_height'])) {
             // Old h/old w * new width
-            $config['height'] = ($prefs['height'] / $prefs['width']) * $prefs['max_width'];
+            $config['height'] = ((int) $prefs['height'] / (int) $prefs['width']) * (int) $prefs['max_width'];
             $force_master_dim = 'width';
         }
 
