@@ -119,12 +119,7 @@ jobs:
 
             - name: Move files to webroot
               run: |
-                ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/system/ee/vendor-build ./system/ee/
-
-            - name: Directory Listing
-              run: |
-                ls -lar ./
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2

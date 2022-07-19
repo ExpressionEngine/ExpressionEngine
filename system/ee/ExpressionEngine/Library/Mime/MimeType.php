@@ -22,6 +22,7 @@ class MimeType
     protected $whitelist = array();
     protected $kinds = array();
     protected $images = array();
+    protected $detector;
 
     /**
      * Constructor
@@ -138,10 +139,20 @@ class MimeType
 
         $mime = $this->detector->detectMimeTypeFromFile($path);
         $file_opening = null;
-        
+
         if (is_null($mime)) {
             $file_opening = file_get_contents($path, false, null, 0, 50); //get first 50 bytes off the file
             $mime = $this->detector->detectMimeType($path, $file_opening);
+        }
+
+        // A few files are identified as plain text, which while true is not as
+        // helpful as which type of plain text files they are.
+        if ($mime == 'text/plain') {
+            $detectorByExtension = new MimeTypeDetection\ExtensionMimeTypeDetector();
+            $mimeByExtension = $detectorByExtension->detectMimeTypeFromFile($path);
+            if (!empty($mimeByExtension)) {
+                $mime = $mimeByExtension;
+            }
         }
 
         // Set a default

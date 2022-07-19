@@ -241,6 +241,7 @@ context('Install with default theme', () => {
       cy.get('.modal-file').should('be.visible')
       cy.get('.modal-file .app-listing__row a').contains('lake.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
         expect(val).to.contain('<img src="{file:3:url}"')
       })
@@ -250,6 +251,7 @@ context('Install with default theme', () => {
       cy.get('.modal-file').should('be.visible')
       cy.get('.modal-file .app-listing__row a').contains('ocean.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
       cy.get('.grid-field__table tr:visible .js-file-input').invoke('val').then((val) => {
         expect(val).to.eq('{file:4:url}')
       })
@@ -315,6 +317,7 @@ context('Install with default theme', () => {
       cy.get('.modal-file').should('be.visible')
       cy.get('.modal-file .app-listing__row a').contains('path.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
         expect(val).to.contain('<img src="{file:3:url}"')//still there
       })
@@ -327,6 +330,7 @@ context('Install with default theme', () => {
       cy.get('.modal-file').should('be.visible')
       cy.get('.modal-file .app-listing__row a').contains('sky.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
       cy.get('.grid-field__table tr:visible .js-file-input').invoke('val').then((val) => {
         expect(val).to.eq('{filedir_6}sky.jpg')
       })

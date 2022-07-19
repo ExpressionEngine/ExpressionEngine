@@ -100,7 +100,7 @@ context('Publish Page - Create', () => {
         })
 
         after(function() {
-            //cy.task('filesystem:delete', '../../images/uploads/README.md')
+            cy.task('filesystem:delete', '../../images/uploads/README.md')
         })
 
         it('the file field properly assigns image data when using the filepicker modal in a channel with two file fields', () => {
