@@ -632,14 +632,16 @@ context('File Manager', () => {
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(torrent)').its('length').should('eq', 1)
-            
-            /*cy.get('.file-upload-widget').then(function(widget) {
+            cy.wait(1000)//wait a sec to ensure upload time is different
+
+            cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
             cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/archive.zip', { subjectType: 'drag-n-drop' })
             cy.wait('@upload')
             cy.wait('@table')
-            cy.get('.ee-main__content form .table-responsive table tr:contains(archive.zip)').its('length').should('eq', 1)*/
+            cy.get('.ee-main__content form .table-responsive table tr:contains(archive.zip)').its('length').should('eq', 1)
+            cy.wait(1000)//wait a sec to ensure upload time is different
 
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
@@ -648,6 +650,7 @@ context('File Manager', () => {
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(data.csv)').its('length').should('eq', 1)
+            cy.wait(1000)//wait a sec to ensure upload time is different
 
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
@@ -656,6 +659,7 @@ context('File Manager', () => {
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(ee-sample-video.mp4)').its('length').should('eq', 1)
+            cy.wait(1000)//wait a sec to ensure upload time is different
 
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
@@ -674,11 +678,12 @@ context('File Manager', () => {
         it('filter by type', function() {
             cy.intercept('/admin.php?/cp/files*').as('table')
 
-            /*cy.get('[data-filter-label="type"]').click();
-            cy.get('.dropdown--open').contains('Archive')
+            cy.get('[data-filter-label="type"]').click();
+            cy.get('.dropdown--open').contains('Archive').click();
             cy.wait('@table')
+            cy.wait(1000) //give the table time to render
             cy.get('.ee-main__content form .table-responsive table tbody tr:visible').its('length').should('eq', 1)
-            cy.get('.ee-main__content form .table-responsive table tr:contains(archive.zip)').its('length').should('eq', 1)*/
+            cy.get('.ee-main__content form .table-responsive table tr:contains(archive.zip)').its('length').should('eq', 1)
 
             cy.get('[data-filter-label="type"]').click();
             cy.get('.dropdown--open').contains('Audio').click();
@@ -713,7 +718,7 @@ context('File Manager', () => {
             cy.wait('@table')
             cy.wait(1000) //give the table time to render
             cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'jpg')
-            //cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'archive.zip')
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'archive.zip')
             cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'mixkit-arcade-retro-game-over-213.wav')
             cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'ee-sample-video.mp4')
             cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'data.csv')
@@ -723,7 +728,7 @@ context('File Manager', () => {
             cy.wait('@table')
             cy.wait(1000) //give the table time to render
             cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'jpg')
-            //cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'archive.zip')
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'archive.zip')
             cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'mixkit-arcade-retro-game-over-213.wav')
             cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'ee-sample-video.mp4')
             cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'data.csv')
@@ -746,7 +751,7 @@ context('File Manager', () => {
             cy.wait('@table')
             cy.wait(1000) //give the table time to render
             cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'jpg')
-            //cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'archive.zip')
+            cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'archive.zip')
             cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'mixkit-arcade-retro-game-over-213.wav')
             cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'ee-sample-video.mp4')
             cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'data.csv')
@@ -760,7 +765,7 @@ context('File Manager', () => {
             cy.wait('@table')
             cy.wait(1000) //give the table time to render
             cy.get('.ee-main__content form .table-responsive table tbody tr').should('contain', 'jpg')
-            //cy.get('.ee-main__content form .table-responsive table tr').should('contain', 'archive.zip')
+            cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'archive.zip')
             cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'mixkit-arcade-retro-game-over-213.wav')
             cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'ee-sample-video.mp4')
             cy.get('.ee-main__content form .table-responsive table tr').should('not.contain', 'data.csv')
@@ -794,7 +799,7 @@ context('File Manager', () => {
             let sorted_files = [];
             page.get('title_names').then(function($td) {
                 sorted_files = _.map($td, function(el) {
-                        return $(el).find('a').text();
+                    return $(el).find('a').text();
                 })
                 cy.get('.filter-search-bar .filter-search-bar__item .filter__viewtype a').eq(1).click()
                 cy.wait('@table')
@@ -822,7 +827,7 @@ context('File Manager', () => {
             //default is sorting by date, let's try to reverse it
             cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
                 let files_by_date = _.map($td, function(el) {
-                        return $(el).find('span').first().text();
+                    return $(el).find('span').first().text();
                 })
                 cy.get('[data-filter-label="sort by"]').click();
                 cy.get('.dropdown--open .fa-sort-amount-up').parent().contains('Date Added').click();

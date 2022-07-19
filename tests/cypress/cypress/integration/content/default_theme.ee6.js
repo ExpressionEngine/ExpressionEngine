@@ -250,6 +250,8 @@ context('Install with default theme', () => {
         expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
       })
 
+      cy.get('.grid-field__table tr').should('be.visible')
+      cy.screenshot({capture: 'fullPage'});
       cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
@@ -333,6 +335,7 @@ context('Install with default theme', () => {
         expect(val).to.contain('<img src="{filedir_6}path.jpg"')
       })
 
+      cy.get('.grid-field__table tr').should('be.visible')
       cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')

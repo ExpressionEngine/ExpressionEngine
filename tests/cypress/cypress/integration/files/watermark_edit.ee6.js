@@ -50,8 +50,8 @@ context('Watermark Create/Edit', () => {
     page.get('wm_padding').clear().type('sdfsd')
     page.get('wm_padding').blur()
     page.hasError(page.get('wm_padding'), page.messages.validation.natural_number)
-    page.hasErrorsCount(3)
     cy.screenshot({capture: 'fullPage'});
+    page.hasErrorsCount(3)
     page.hasErrors()
 //should_have_form_errors(page)
 
