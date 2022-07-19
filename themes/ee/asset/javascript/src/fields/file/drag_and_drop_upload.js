@@ -106,7 +106,7 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "setDirectory", function (directory) {
-      if (directory == 'all') return null;
+      if (directory == 'all' || directory == null) return null;
 
       if (typeof directory == 'number') {
         directory = directory;
