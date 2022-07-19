@@ -1,0 +1,6 @@
+---
+suites:
+      cached_adapter_suite:
+        namespace: ExpressionEngine\Dependency\League\Flysystem\Cached
+        psr4_prefix: ExpressionEngine\Dependency\League\Flysystem\Cached
+formatter.name: pretty
