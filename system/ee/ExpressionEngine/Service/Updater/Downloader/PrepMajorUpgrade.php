@@ -106,7 +106,7 @@ class PrepMajorUpgrade
     {
         $this->logger->log(lang('preflight_verifying_php_version'));
 
-        if (version_compare(phpversion(), '7.2', '<')) {
+        if (version_compare(phpversion(), '7.2.5', '<')) {
             $error_message = sprintf(lang('preflight_verifying_php_version_error'), phpversion());
 
             $this->logger->log($error_message);

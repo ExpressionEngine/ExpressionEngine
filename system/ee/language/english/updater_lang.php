@@ -45,7 +45,7 @@ $lang = array(
     'Verifying PHP Version before upgrading to ExpressionEngine 7',
 
     'preflight_verifying_php_version_error' =>
-    'ExpressionEngine 7 requires PHP 7.2 or higher.<br>Current PHP version: %s',
+    'ExpressionEngine 7 requires PHP 7.2.5 or higher.<br>Current PHP version: %s',
 
     'preflight_step' =>
     'Preflight check',
