@@ -544,10 +544,10 @@ class Filemanager
         ee()->image_lib->clear();
 
         // If either h/w unspecified, calculate the other here
-        if ($prefs['max_width'] == 0) {
+        if ((int) $prefs['max_width'] == 0) {
             $config['width'] = ($prefs['width'] / $prefs['height']) * $prefs['max_height'];
             $force_master_dim = 'height';
-        } elseif ($prefs['max_height'] == 0) {
+        } elseif ((int) $prefs['max_height'] == 0) {
             // Old h/old w * new width
             $config['height'] = ($prefs['height'] / $prefs['width']) * $prefs['max_width'];
             $force_master_dim = 'width';

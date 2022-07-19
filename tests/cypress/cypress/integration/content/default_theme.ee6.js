@@ -234,7 +234,8 @@ context('Install with default theme', () => {
     it('add files and display them on frontend', () => {
       cy.intercept("**/filepicker/**").as('ajax')
       cy.login({ email: 'admin', password: '1Password' });
-      cy.visit('/admin.php?/cp/publish/edit/entry/1')
+      cy.visit('/admin.php?/cp/publish/edit')
+      cy.get('a').contains('About Default Theme').click()
       cy.wait(2000) //wait for picker on textarea to initiliaze
       cy.get('.textarea-field-filepicker').click()
       cy.wait('@ajax')
@@ -320,7 +321,8 @@ context('Install with default theme', () => {
 
       //add / replace images in compatibility mode
       cy.log('add / replace images in compatibility mode')
-      cy.authVisit('/admin.php?/cp/publish/edit/entry/1')
+      cy.authVisit('/admin.php?/cp/publish/edit')
+      cy.get('a').contains('About Default Theme').click()
       cy.wait(2000) //wait for picker on textarea to initiliaze
       cy.get('.textarea-field-filepicker').click()
       cy.wait('@ajax')
