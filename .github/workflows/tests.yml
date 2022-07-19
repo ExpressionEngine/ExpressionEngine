@@ -46,7 +46,7 @@ jobs:
           - name: Setup node
             uses: actions/setup-node@v2
             with:
-              node-version: '17'
+              node-version: '10'
 
           - name: Install build tool dependencies
             working-directory: build-tools
