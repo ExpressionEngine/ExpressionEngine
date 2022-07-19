@@ -143,6 +143,11 @@
       }
     }
   }
+
+  .input-group input[type=text]:first-child {
+    border-top-right-radius: $border-radius-small;
+    border-bottom-right-radius: $border-radius-small;
+  }
 }
 
 .f_manager-table-breadcrumbs {
@@ -456,7 +461,7 @@
   padding: 5px;
   border: 2px solid var(--ee-button-default-border);
   @include shadow-dropdown;
-  
+
   &:before,
   &:after {
     position: absolute;
