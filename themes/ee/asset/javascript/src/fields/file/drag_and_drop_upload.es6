@@ -325,7 +325,7 @@ class DragAndDropUpload extends React.Component {
   }
 
   setDirectory = (directory) => {
-    if (directory == 'all') return null;
+    if (directory == 'all' || directory == null) return null;
 
     if (typeof directory == 'number') {
       directory = directory
