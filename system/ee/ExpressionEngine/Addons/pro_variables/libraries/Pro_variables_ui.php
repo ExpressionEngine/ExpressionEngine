@@ -81,7 +81,7 @@ class Pro_variables_ui
 
             case 'multiple':
                 return array(
-                    'title' => 'alpro_multiple_items',
+                    'title' => 'allow_multiple_items',
                     'fields' => array(
                         $name => array(
                             'type'  => 'yes_no',

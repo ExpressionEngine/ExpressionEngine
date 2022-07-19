@@ -1,0 +1,392 @@
+/**
+ * Pro Search CSS file
+ *
+ * @package         pro-search
+ * @author          ExpressionEngine
+ * @link            https://eeharbor.com/pro-search
+ * @copyright       Copyright (c) 2022, ExpressionEngine
+ */
+
+/* Module homepage
+-------------------------------------------------*/
+
+.pro-search-home li {
+    margin-top:1.5em;
+}
+
+.pro-search-home code {
+    display:block;
+    margin-left:1.5em;
+    cursor:pointer;
+    font-family:consolas, monaco, 'lucida sans unicode', monospace;
+    color:gray;
+}
+
+/* Tabs
+-------------------------------------------------*/
+
+.pro-tabs .pro-tab {
+    display:none;
+}
+
+.pro-tabs .pro-tab.active {
+    display:block;
+}
+
+.pro-tab-links {
+    margin:0;
+    position:relative;
+    z-index:2;
+}
+
+.pro-tabs li {
+    display:inline-block;
+    margin-bottom:-1px;
+}
+
+.pro-tabs a {
+    display:block;
+    padding:10px 10px 11px;
+    text-decoration:none;
+}
+
+.pro-tabs .active a {
+    background:#f5f5f5;
+    border:1px solid #e8e8e8;
+    border-width:0 1px;
+}
+
+.pro-tabs li.active:first-child a {
+    border-left:none;
+}
+
+.pro-tabs li:not(.active) a {
+    color:rgba(0,0,0,0.5);
+}
+
+.pro-tabs-pages {
+    padding:10px;
+    background:#f5f5f5;
+    border:1px solid #e8e8e8;
+    border-width:1px 1px 1px 0;
+
+    /*max-height:550px;
+    overflow:auto;*/
+
+    position:relative;
+    z-index:1;
+}
+
+/* Lexicon
+-------------------------------------------------*/
+
+#pro-lexicon select {
+    width:100%;
+    margin-top:10px;
+}
+
+#pro-lexicon .pro-status {
+    border-bottom:1px solid #e8e8e8;
+    padding:0 10px 10px;
+    margin:0 0 10px;
+}
+
+#pro-lexicon .pro-found-words {
+    line-height:1.5;
+    word-spacing:.5em;
+}
+
+#pro-lexicon .pro-found-words a:link {
+    text-decoration:none;
+}
+
+#pro-lexicon .pro-found-words a:hover {
+    color:#999;
+    text-decoration:line-through;
+}
+
+/* Search filter settings
+-------------------------------------------------*/
+
+#parameters {
+    padding:0;
+}
+
+#parameters div {
+    margin-bottom:10px;
+}
+
+#parameters input {
+    width:35%;
+    margin:0;
+}
+
+#parameters button {
+    cursor:pointer;
+}
+
+#parameters button {
+    border:none;
+    background:none;
+    display:inline-block;
+    padding:0;
+    margin:0;
+    text-decoration:none;
+    color:#bbb;
+    color:rgba(0,0,0,0.4);
+    outline:none;
+}
+
+#parameters button:hover {
+    color:#888;
+    color:rgba(0,0,0,0.6);
+}
+
+#parameters button:before {
+    font:bold 16px/1 arial;
+    margin-right:5px;
+    position:relative;
+    top:2px;
+}
+
+#parameters button.add:before {
+    content:'+';
+}
+
+#parameters button.remove:before {
+    content:'×';
+}
+
+/* Table filter
+-------------------------------------------------*/
+
+.pro-log-filters {
+    margin-bottom:10px;
+}
+
+.pro-log-filters input,
+.pro-log-filters select {
+    display:inline-block;
+    width:auto;
+    margin:0;
+}
+
+/* Pro Search Log
+-------------------------------------------------*/
+
+.pro-log table {
+    font-size:12px;
+}
+
+/* Parameters in log
+-------------------------------------------------*/
+
+.pro-log .params {
+    width:40%;
+}
+
+.pro-log .params ul {
+    margin:0;
+}
+
+.pro-log .params li {
+    display:none;
+    margin-top:10px;
+}
+
+.pro-log .params li:first-child {
+    display:block;
+    margin-top:0;
+}
+
+.pro-log .has-more {
+    cursor:pointer;
+}
+
+.pro-log .more td {
+    vertical-align:top;
+}
+
+.pro-log .more .params li {
+    display:block;
+}
+
+.pro-log .more .params span {
+    display:none;
+}
+
+.pro-log .params var {
+    font-family:consolas, monaco, 'lucida sans unicode', monospace;
+    color:gray;
+}
+
+/* Find & Replace - channels/categories tabs
+-------------------------------------------------*/
+
+#pro-find-replace {
+    overflow:hidden;
+}
+
+#pro-find-replace .pro-tabs-pages {
+    font-size:12px;
+    color:gray;
+    margin-bottom:-1px;
+}
+
+#pro-find-replace .pro-boxes h4 {
+    margin-top:10px;
+}
+
+#pro-find-replace .pro-boxes h4 span {
+    cursor:pointer;
+}
+
+#pro-find-replace .pro-boxes label {
+    display:block;
+    cursor:pointer;
+    padding:0 10px;
+    margin:0 -10px;
+    white-space:nowrap;
+    overflow:hidden;
+    max-width:100%;
+    text-overflow:ellipsis;
+}
+
+#pro-find-replace .pro-boxes h4 span:hover {
+    color:#000;
+}
+
+#pro-find-replace .pro-boxes label:hover {
+    color:#000;
+    background:#fff;
+}
+
+/* Find & Replace - inline forms
+-------------------------------------------------*/
+
+#pro-find-replace .pro-find,
+#pro-find-replace .pro-dynamic-content {
+    padding:10px 10px 0;
+}
+
+#pro-find-replace .pro-inline-form input[type="text"] {
+    width:50%;
+    display: inline-block;
+}
+
+/* Find & Replace - Preview list
+-------------------------------------------------*/
+
+#pro-find-replace h2 {
+    margin-top:10px;
+}
+
+#pro-find-replace .log .item label {
+    cursor:pointer;
+}
+
+#pro-find-replace .log h3 input {
+    margin:0 5px;
+    position:relative;
+    top:-1px;
+}
+
+#pro-find-replace dl {
+    margin:0 0 5px;
+    color:gray;
+}
+
+#pro-find-replace dt {
+    margin-top:10px;
+}
+
+#pro-find-replace dt:first-child {
+    margin-top:0;
+}
+
+#pro-find-replace .item {
+    cursor:pointer;
+}
+
+#pro-find-replace .item:hover {
+    border-color:#cce0bd;
+}
+
+#pro-find-replace .item.selected {
+    background-color:#edfee1;
+    border-color:#cce0bd;
+}
+
+#pro-find-replace .alert.inline {
+    margin-top:0;
+}
+
+/* EE6 styles */
+body[data-ee-version^="6."] .pro-search-home code {
+    color:var(--ee-gray-50);
+}
+
+body[data-ee-version^="6."] .pro-tabs .active a {
+    background: var(--ee-bg-0);
+    border-color: var(--ee-list-item-border);
+}
+
+body[data-ee-version^="6."] .pro-tabs li:not(.active) a {
+    color:var(--ee-text-primary);
+}
+
+body[data-ee-version^="6."] .pro-tabs-pages {
+    background: var(--ee-bg-0);
+    border-color: var(--ee-list-item-border);
+}
+
+body[data-ee-version^="6."] #pro-lexicon .pro-status {
+    border-color: var(--ee-list-item-border);
+}
+
+body[data-ee-version^="6."] #pro-lexicon .pro-found-words a:hover {
+    color:var(--ee-accent-dark);
+}
+
+body[data-ee-version^="6."] #parameters button {
+    color:var(--ee-gray-50);
+}
+
+body[data-ee-version^="6."] #parameters button:hover {
+    color: var(--ee-gray-60);
+}
+
+body[data-ee-version^="6."] .pro-log .params var {
+    color:var(--ee-gray-5);
+}
+
+body[data-ee-version^="6."] #pro-find-replace .pro-tabs-pages {
+    color: var(--ee-text-normal);
+}
+
+body[data-ee-version^="6."] #pro-find-replace .pro-boxes h4 span:hover {
+    color: inherit;
+}
+
+body[data-ee-version^="6."] #pro-find-replace .pro-boxes label:hover {
+    color: inherit;
+    background: inherit;
+}
+
+body[data-ee-version^="6."] #pro-find-replace .pro-boxes label:hover {
+    color: var(--ee-text-primary);
+    background: var(--ee-gray-5);
+}
+
+body[data-ee-version^="6."] #pro-find-replace dl {
+    color: inherit;
+}
+
+body[data-ee-version^="6."] #pro-find-replace .item:hover {
+    border-color: inherit;
+}
+
+body[data-ee-version^="6."] #pro-find-replace .item.selected {
+    background-color:inherit;
+    border-color:inherit;
+}

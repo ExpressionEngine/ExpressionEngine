@@ -96,7 +96,7 @@ class Pro_rte extends Pro_variables_type
         $this->set_ft_property('row', array(
             'channel_html_formatting' => 'all',
             'channel_auto_link_urls'  => 'n',
-            'channel_alpro_img_urls'  => 'y'
+            'channel_allow_img_urls'  => 'y'
         ));
 
         return $this->call_ft(__FUNCTION__, $this->data(), ee()->TMPL->tagparams, $tagdata);

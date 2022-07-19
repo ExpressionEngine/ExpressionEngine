@@ -24,7 +24,7 @@ class Pro_grid extends Pro_variables_type
     public $default_settings = array(
         'grid_min_rows' => '',
         'grid_max_rows' => '',
-        'alpro_reorder' => 'y'
+        'allow_reorder' => 'y'
     );
     protected $ft = 'grid';
     /**
