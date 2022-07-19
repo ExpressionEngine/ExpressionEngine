@@ -38376,7 +38376,6 @@ body[data-theme="dark"] {
 .f_manager-alert {
   display: none;
   margin: 20px auto 0;
-  width: calc(100% - 10px);
 }
 
 .multilevel-select {
