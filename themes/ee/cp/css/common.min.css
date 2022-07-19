@@ -28197,7 +28197,9 @@ input[type=button].btn-block {
 .filter-search-bar {
   background-color: var(--ee-bg-0);
   border-bottom: 1px solid var(--ee-border);
+  border-top: 1px solid var(--ee-border);
   padding: 10px 25px;
+  margin-top: -1px;
 }
 .filter-search-bar .filter-search-bar__filter-row {
   display: flex;
