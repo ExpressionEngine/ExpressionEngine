@@ -117,7 +117,7 @@ trait Pro_variables_base
         // -------------------------------------
         //  Load helper, libraries and models
         // -------------------------------------
-
+        ee()->load->add_package_path(PATH_ADDONS . $this->package);
         ee()->load->helper($this->package);
         ee()->load->library($this->libraries);
         ee()->load->model($this->models);

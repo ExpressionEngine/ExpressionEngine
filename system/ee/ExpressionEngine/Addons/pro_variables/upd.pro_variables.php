@@ -76,6 +76,14 @@ class Pro_variables_upd
      */
     public function install()
     {
+        // If low vars is installed, we'll migrate from low vars to pro vars
+        $lowVars = ee('Addon')->get('low_variables');
+        if ($lowVars && $lowVars->isInstalled()) {
+            $this->migrateFromLow();
+
+            return $this->update();
+        }
+
         // --------------------------------------
         // Install tables
         // --------------------------------------
@@ -181,6 +189,88 @@ class Pro_variables_upd
         $this->unregister();
 
         return true;
+    }
+
+    public function migrateFromLow()
+    {
+        // --------------------------------------
+        // Update modules
+        // --------------------------------------
+        ee()->db->update(
+            'modules',
+            ['module_name' => $this->class_name],
+            ['module_name' => 'Low_variables'],
+        );
+
+        // --------------------------------------
+        // Update actions
+        // --------------------------------------
+        ee()->db->update(
+            'actions',
+            ['class' => $this->class_name],
+            ['class' => 'Low_variables'],
+        );
+        ee()->db->update(
+            'actions',
+            ['class' => $this->class_name],
+            ['class' => 'Low_variables_mcp'],
+        );
+
+        // --------------------------------------
+        // Update extensions
+        // --------------------------------------
+        ee()->db->update(
+            'extensions',
+            ['class' => $this->class_name . '_ext'],
+            ['class' => 'Low_variables_ext'],
+        );
+
+        // --------------------------------------
+        // Rename the LV tables
+        // --------------------------------------
+        ee()->load->library('smartforge');
+        foreach ($this->models as $model) {
+            $lvmodel = str_replace('pro', 'low', $model);
+            $lvTable = ee()->$lvmodel->table();
+
+            $lvTable = str_replace(ee()->db->dbprefix, '', $lvTable);
+            $pvTable = str_replace('low', 'pro', $lvTable);
+
+            if (ee()->db->table_exists($lvTable)) {
+                ee()->smartforge->rename_table($lvTable, $pvTable);
+            } else {
+                ee()->$model->install();
+            }
+        }
+
+        // --------------------------------------
+        // Migrate the FT
+        // --------------------------------------
+        ee()->db->update(
+            'fieldtypes',
+            ['name' => strtolower($this->class_name)],
+            ['name' => 'low_variables'],
+        );
+
+        // Migrate active FTs
+        ee()->db->update(
+            'channel_fields',
+            ['name' => strtolower($this->class_name)],
+            ['name' => 'low_variables'],
+        );
+
+        // Migrate settings
+        $settings = ee()->pro_variables_settings->get();
+        $settings['enabled_types1'] = $settings['enabled_types'];
+        foreach ($settings['enabled_types'] as $k => $v) {
+            $settings['enabled_types'][$k] = str_replace('low_', 'pro_', $v);
+        }
+
+        ee()->db->update(
+            'extensions',
+            ['settings' => serialize($settings)],
+            ['class' => $this->class_name . '_ext'],
+        );
     }
 
     // --------------------------------------------------------------------
