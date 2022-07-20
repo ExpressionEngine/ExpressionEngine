@@ -106,7 +106,7 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "setDirectory", function (directory) {
-      if (directory == 'all') return null;
+      if (directory == 'all' || directory == null) return null;
 
       if (typeof directory == 'number') {
         directory = directory;
@@ -364,7 +364,6 @@ function (_React$Component) {
       return new Promise(function (resolve, reject) {
         var formData = new FormData();
         formData.append('directory_id', _this3.state.directory_id);
-        formData.append('file', file);
         formData.append('csrf_token', EE.CSRF_TOKEN);
         formData.append('upload_location_id', _this3.state.upload_location_id);
         formData.append('path', _this3.state.path);
@@ -372,6 +371,13 @@ function (_React$Component) {
         xhr.open('POST', EE.dragAndDrop.endpoint, true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.upload.addEventListener('progress', function (e) {
+          if ($('.file-upload-widget').hasClass('open-dd')) {
+            $('.file-upload-widget').css({
+              'height': 'auto',
+              'position': 'static'
+            });
+          }
+
           if ($('.file-upload-widget').length && $('.file-upload-widget').hasClass('hidden')) {
             $('.file-upload-widget').show();
           }
@@ -392,12 +398,18 @@ function (_React$Component) {
 
                 resolve(file);
 
-                if ($('.file-upload-widget').length) {
-                  $('.file-upload-widget').hide();
-                  $('body .f_manager-wrapper > form').submit();
-                }
+                if ($('div[data-file-field-react]').find('.file-field__items .list-item').length > 0) {
+                  if ($('div[data-file-field-react]').parent().hasClass('file-upload-widget')) {
+                    $('div[data-file-field-react]').parent().show();
+                  }
+                } else {
+                  if ($('.file-upload-widget').length) {
+                    $('.file-upload-widget').hide();
+                    $('body .f_manager-wrapper > form').submit();
+                  }
 
-                _this3.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone);
+                  _this3.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone);
+                }
 
                 break;
 
@@ -543,25 +555,37 @@ function (_React$Component) {
     key: "resolveConflict",
     value: function resolveConflict(file, response) {
       this.removeFile(file);
-      this.props.onFileUploadSuccess(response, window.globalDropzone);
 
-      if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
-        $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
-          $(this).removeAttr('disabled');
-        });
-      }
+      if ($('div[data-file-field-react]').find('.file-field__items .list-item').length > 0) {
+        if ($('div[data-file-field-react]').parent().hasClass('file-upload-widget')) {
+          $('div[data-file-field-react]').parent().show();
+        }
+      } else {
+        this.props.onFileUploadSuccess(response, window.globalDropzone);
 
-      if ($('.title-bar a.upload').length) {
-        $('.title-bar a.upload').removeClass('disabled');
-      }
+        if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+          $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+            $(this).removeAttr('disabled');
+          });
+        }
 
-      if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
-        $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled');
-      }
+        if ($('.title-bar a.upload').length) {
+          $('.title-bar a.upload').removeClass('disabled');
+        }
 
-      if ($('.file-upload-widget').length) {
-        $('.file-upload-widget').hide();
-        $('body .f_manager-wrapper > form').submit();
+        if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+          $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled');
+        }
+
+        if ($('.file-upload-widget').length) {
+          if ($('.file-upload-widget').hasClass('open-dd')) {
+            $('.file-upload-widget').removeClass('open-dd');
+            $('.file-upload-widget').removeAttr('style');
+          }
+
+          $('.file-upload-widget').hide();
+          $('body .f_manager-wrapper > form').submit();
+        }
       }
     }
   }, {
@@ -694,8 +718,6 @@ function (_React$Component) {
         style: {
           display: 'none'
         },
-        "data-upload_location_id": '',
-        "data-path": '',
         multiple: "multiple"
       }))), this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement("div", {
         className: "button-segment"

@@ -71,9 +71,23 @@ $(document).ready(function () {
 				searching = null;
 				replaceData(response);
 				sortableColumns();
-				// $('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').sortable({
-				// 	cursor: "move"
-				// })
+				ddFileToNotEmptyTable();
+				if ( ($('.f_manager-wrapper tbody').length || $('.f_manager-wrapper .file-grid__wrapper').length) && (!$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').parents('.modal').length)) {
+
+					makeDirectoryDroppable();
+
+					$('.f_manager-wrapper tbody').sortable({
+						axis: "y"
+					});
+					$('.f_manager-wrapper .file-grid__wrapper').sortable({
+						start: function( event, ui ) {
+							ui.item.css('transform', 'scale(0.7)');
+						},
+						stop: function( event, ui ) {
+							ui.item.css('transform', 'none');
+						}
+					});
+				}
 			}
 		});
 	}
@@ -298,4 +312,141 @@ $(document).ready(function () {
 	})
 
 	sortableColumns();
+
+	// D&D for file manager if table is not empty
+	function ddFileToNotEmptyTable() {
+		// table view
+		$('.f_manager-wrapper table tbody').on('dragover', function(e) {
+			e.preventDefault()
+			e.stopPropagation()
+			if( $('.f_manager-wrapper table tbody').length ) {
+				openDDBlock('.f_manager-wrapper table tbody');
+			}
+		})
+
+		// grid view
+		$('.f_manager-wrapper .file-grid__wrapper').on('dragover', function(e) {
+			e.preventDefault()
+			e.stopPropagation()
+			if ($('.f_manager-wrapper .file-grid__wrapper').length) {
+				openDDBlock('.f_manager-wrapper .file-grid__wrapper');
+			}
+		});
+
+		$('.f_manager-wrapper .file-upload-widget .file-field__dropzone').on('dragleave', function(e) {
+			e.preventDefault()
+			e.stopPropagation()
+			if( $('.f_manager-wrapper table tbody').length || $('.f_manager-wrapper .file-grid__wrapper').length) {
+				closeDDBlock();
+			}
+		});
+	}
+
+	function openDDBlock(dropArea) {
+		let paginationWrap = 0;
+		if ($(dropArea).parent().next().hasClass('f_manager-action-part')) {
+			paginationWrap = $(dropArea).parent().next().outerHeight();
+		}
+		let ddHeight = $(dropArea).outerHeight()
+
+		if ($(dropArea).hasClass('file-grid__wrapper')) {
+			ddHeight = ddHeight + paginationWrap + 20
+		}
+		$('.f_manager-wrapper .file-upload-widget').css({
+			'height': ddHeight,
+			'bottom': '20px'
+		});
+		$('.f_manager-wrapper .file-upload-widget').addClass('open-dd')
+	}
+
+	function closeDDBlock() {
+		$('.f_manager-wrapper .file-upload-widget').removeClass('open-dd')
+		$('.f_manager-wrapper .file-upload-widget').css({
+			'height': 'auto'
+		})
+	}
+
+	ddFileToNotEmptyTable();
+
+	$('.f_manager-wrapper tbody').sortable({
+		axis: "y"
+	});
+	$('.f_manager-wrapper .file-grid__wrapper').sortable({
+		start: function( event, ui ) {
+			ui.item.css('transform', 'scale(0.7)');
+		},
+		stop: function( event, ui ) {
+			ui.item.css('transform', 'none');
+		}
+	});
+
+	// Move files to subfolder
+	function makeDirectoryDroppable() {
+		let modal_rel = 'modal-confirm-move-file';
+		let ajax_url = 'admin.php?/cp/files/confirm';
+		let timer;
+		$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').find('.drop-target').droppable({
+			accept: "table .app-listing__row, .file-grid__wrapper .filepicker-item",
+			tolerance: "intersect",
+			drop: function(e, ui) {
+				clearTimeout(timer);
+				window.selectedFolder = null
+				$(e.target).removeAttr('style');
+			},
+			over: function(e, ui) {
+				var el = ui.draggable;
+				var subfolder = e.target;
+				var file_id = el.attr('file_id');
+				var file_name = el.find('input[type=checkbox]').attr('name');
+				var checkboxInput = el.find('input[type=checkbox]').attr('data-confirm');
+				var subfolder_file_id = $(subfolder).attr('file_upload_id');
+
+				$(subfolder).css('backgroundColor', 'var(--ee-accent-light)');
+				e.preventDefault();
+
+				// First adjust the checklist
+				var modalIs = '.' + modal_rel;
+				var modal = $(modalIs+', [rel='+modal_rel+']')
+				$(modalIs + " .checklist").html(''); // Reset it
+
+				$(modalIs + " .checklist").append('<li>' + checkboxInput + '</li>');
+				// Add hidden <input> elements
+				$(modalIs + " .checklist li:last").append(
+					$('<input/>').attr({
+						type: 'hidden',
+						name: file_name,
+						value: file_id
+					})
+				);
+
+				$(modalIs + " .checklist li:last").addClass('last');
+
+				if (typeof ajax_url != 'undefined') {
+					$.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
+						$(modalIs + " .ajax").html(data);
+						window.selectedFolder = subfolder_file_id;
+						Dropdown.renderFields();
+					});
+				}
+				timer = setTimeout(function(){
+					modal.trigger('modal:open')
+					el.trigger('mouseup');
+				}, 1000);
+			},
+			out: function(e, ui) {
+				clearTimeout(timer);
+				window.selectedFolder = null
+				$(e.target).removeAttr('style');
+			},
+			deactivate: function(e, ui) {
+				clearTimeout(timer);
+				window.selectedFolder = null
+				$(e.target).removeAttr('style');
+			}
+		});
+	}
+
+	if ( $('.f_manager-wrapper tbody').length || $('.f_manager-wrapper .file-grid__wrapper').length) {
+		makeDirectoryDroppable();
+	}
 });

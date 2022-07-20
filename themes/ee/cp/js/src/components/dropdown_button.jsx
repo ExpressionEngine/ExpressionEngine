@@ -54,7 +54,8 @@ class DropDownButton extends React.Component {
     }
 
     render() {
-        let dropdownItems = this.state.items.filter(el => el != this.state.selected)
+        let dropdownItems = this.state.items.filter(el => el != this.state.selected);
+
         return (
             <>
                 <button type="button" className={"button js-dropdown-toggle has-sub " + this.props.buttonClass} onClick={this.toggle}>{this.state.selected ? this.state.selected.label : this.props.title}</button>

@@ -132,7 +132,7 @@ context('Site Manager', () => {
       cy.get('[data-toggle-for="custom_site_color"]').click()
       cy.get('body').type('{ctrl}', {release: false}).type('s')
 
-      cy.get('.ee-sidebar__title').should('have.css', 'backgroundColor').and('equal', 'rgb(45, 46, 64)');
+      cy.get('.ee-sidebar__title').should('have.css', 'backgroundColor').and('equal', 'rgb(255, 255, 255)');//default color
     })
 
   })

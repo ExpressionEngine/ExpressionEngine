@@ -229,7 +229,7 @@ class Edit extends AbstractPublishController
             'class' => 'entries'
         );
 
-        if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {
+        if (! ($table->sort_dir == 'desc' && $table->sort_col == 'column_entry_date')) {
             $base_url->addQueryStringVariables(
                 array(
                     'sort_dir' => $table->sort_dir,

@@ -117,7 +117,6 @@ class FileSystemEntity extends ContentModel
     protected $total_records;
 
     protected $_baseServerPath;
-    protected $_baseUrl;
     protected $_subfolderPath;
 
     /**
@@ -197,13 +196,13 @@ class FileSystemEntity extends ContentModel
      *
      * @return string
      */
-    private function getSubfoldersPath()
+    public function getSubfoldersPath()
     {
         if (empty($this->_subfolderPath)) {
             $directory_id = $this->directory_id;
             $subfolders = [];
             while ($directory_id != 0) {
-                $parent = $this->getModelFacade()->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'file_name')->first();
+                $parent = $this->getModelFacade()->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'file_name')->first(true);
                 if (!empty($parent)) {
                     $directory_id = $parent->directory_id;
                     array_unshift($subfolders, $parent->file_name . '/');
@@ -224,7 +223,7 @@ class FileSystemEntity extends ContentModel
      */
     private function getBaseServerPath()
     {
-        if (empty($this->_baseServerPath)) {
+        if (empty($this->_baseServerPath) && $this->UploadDestination->adapter == 'local') {
             $this->_baseServerPath = rtrim($this->UploadDestination->server_path, '\\/') . '/';
         }
 
@@ -232,17 +231,17 @@ class FileSystemEntity extends ContentModel
     }
 
     /**
-     * Get base url for upload location
+     * Get base url for upload location and folder
      *
      * @return string
      */
-    private function getBaseUrl()
+    public function getBaseUrl()
     {
-        if (empty($this->_baseUrl)) {
-            $this->_baseUrl = rtrim($this->UploadDestination->url, '\\/') . '/';
+        if (!$this->UploadDestination->exists()) {
+            return null;
         }
 
-        return $this->_baseUrl;
+        return $this->UploadDestination->getFilesystem()->getUrl($this->getSubfoldersPath());
     }
 
     /**
@@ -333,13 +332,7 @@ class FileSystemEntity extends ContentModel
         return $this->UploadDestination->getFilesystem()->getUrl($this->getSubfoldersPath() . $this->file_name);
     }
 
-    /**
-     * Uses the file's upload destination's URL to compute the absolute thumbnail
-     *  URL of the file
-     *
-     * @return string The absolute thumbnail URL to the file
-     */
-    public function getAbsoluteThumbnailURL()
+    public function getAbsoluteManupulationURL($manipulation = 'thumbs')
     {
         if (!$this->UploadDestination->exists()) {
             return null;
@@ -351,7 +344,18 @@ class FileSystemEntity extends ContentModel
             return $this->getAbsoluteURL();
         }
 
-        return $filesystem->getUrl($this->getSubfoldersPath() . '_thumbs/'  . $this->file_name);
+        return $filesystem->getUrl($this->getSubfoldersPath() . '_' . $manipulation . '/'  . $this->file_name);
+    }
+
+    /**
+     * Uses the file's upload destination's URL to compute the absolute thumbnail
+     *  URL of the file
+     *
+     * @return string The absolute thumbnail URL to the file
+     */
+    public function getAbsoluteThumbnailURL()
+    {
+        return $this->getAbsoluteManupulationURL('thumbs');
     }
 
     public function getThumbnailUrl()
@@ -368,12 +372,15 @@ class FileSystemEntity extends ContentModel
     {
         $filesystem = $this->UploadDestination->getFilesystem();
 
-        // Remove the thumbnail if it exists
-        if ($filesystem->exists($this->getAbsoluteThumbnailPath())) {
-            $filesystem->delete($this->getAbsoluteThumbnailPath());
-        }
+        $manipulations = ['thumbs', 'resize', 'crop', 'rotate', 'webp'];
+        $manipulations = array_merge($manipulations, $this->UploadDestination->FileDimensions->pluck('short_name'));
 
-        $this->UploadDestination->deleteGeneratedFiles($this->getAbsolutePath());
+        foreach ($manipulations as $manipulation) {
+            $manipulatedFilePath = $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation . '/' . $this->file_name;
+            if ($filesystem->exists($manipulatedFilePath)) {
+                $filesystem->delete($manipulatedFilePath);
+            }
+        }
     }
 
     public function deleteAllFiles()
@@ -521,6 +528,59 @@ class FileSystemEntity extends ContentModel
         }
 
         $this->Categories = $set_cats;
+    }
+
+    /**
+     * Get an array of ids for files and folders that belong to this FileSystemEntity
+     *
+     * @return array
+     */
+    public function getChildIds()
+    {
+        if(!$this->isDirectory()) {
+            return [];
+        }
+
+        $files = ee()->db->select(['file_id', 'directory_id', 'file_type'])
+            ->where('upload_location_id', $this->upload_location_id)
+            ->order_by('directory_id', 'asc')
+            ->from('files')
+            ->get()
+            ->result_array();
+
+        // Group file ids by their directory_id
+        $grouped = array_reduce($files, function($carry, $item) {
+            $key = $item['directory_id'];
+            if(!array_key_exists($key, $carry)) {
+                $carry[$key] = [];
+            }
+
+            $carry[$key][] = $item['file_id'];
+
+            return $carry;
+        }, []);
+
+        // If we do not have a group for this file system entity we can exit
+        if(!array_key_exists($this->file_id, $grouped)) {
+            return [];
+        }
+
+        $ids = [];
+        $directories = [$this->file_id];
+
+        while(!empty($directories)) {
+            $next = [];
+            foreach($directories as $directory) {
+                $next = array_merge($next, array_filter($grouped[$directory], function($id) use($grouped) {
+                    return array_key_exists($id, $grouped);
+                }));
+
+                $ids = array_merge($ids, $grouped[$directory]);
+            }
+            $directories = $next;
+        }
+
+        return $ids;
     }
 }
 

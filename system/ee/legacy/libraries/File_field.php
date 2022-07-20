@@ -258,13 +258,13 @@ class File_field
 
         // If file field is just a file ID
         if (! empty($data) && is_numeric($data)) {
-            $file = ee('Model')->get('File', $data)->with('UploadDestination')->first();
+            $file = ee('Model')->get('File', $data)->with('UploadDestination')->first(true);
         }
         // If the file field is in the "{file:XX:url}" format
         elseif (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
             // Set upload directory ID and file name
             $file_id = $matches[1];
-            $file = ee('Model')->get('File', $file_id)->with('UploadDestination')->first();
+            $file = ee('Model')->get('File', $file_id)->with('UploadDestination')->first(true);
         }
         // If the file field is in the "{filedir_n}image.jpg" format
         elseif (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
@@ -277,7 +277,7 @@ class File_field
                 ->filter('file_name', $file_name)
                 ->filter('upload_location_id', $dir_id)
                 ->filter('site_id', ee()->config->item('site_id'))
-                ->first();
+                ->first(true);
         }
 
         return $file;
@@ -690,7 +690,6 @@ class File_field
         }
 
         $upload_dir = $upload_dir[$file['upload_location_id']];
-        $filesystem = $upload_dir->getFilesystem();
 
         // save the file name for use in the file system as well as the URL
         $fs_file_name = $file['file_name'];
@@ -702,12 +701,18 @@ class File_field
         $file['extension'] = substr(strrchr($file['file_name'], '.'), 1);
         $file['filename'] = basename($file['file_name'], '.' . $file['extension']); // backwards compatibility
 
-        try {
-            $file['path'] = $filesystem->getUrl();
-            $file['url'] = $filesystem->getUrl($file['file_name']);
-        }catch(\Exception $e){
-            $file['path'] = '';
-            $file['url'] = $file['file_name'];
+        if (!empty($file['model_object'])) {
+            $file['path'] = $file['model_object']->getBaseUrl();
+            $file['url'] = $file['model_object']->getAbsoluteURL();
+        } else {
+            $filesystem = $upload_dir->getFilesystem();
+            try {
+                $file['path'] = $filesystem->getUrl();
+                $file['url'] = $filesystem->getUrl($file['file_name']);
+            }catch(\Exception $e){
+                $file['path'] = '';
+                $file['url'] = $file['file_name'];
+            }
         }
 
         $dimensions = explode(" ", $file['file_hw_original']);
@@ -777,11 +782,9 @@ class File_field
                 foreach ($matches as $match) {
                     $file_ids[] = $match[1];
                 }
-                $files = ee('Model')->get('File', $file_ids)->fields('file_id', 'upload_location_id', 'file_name')->all();
-                $this->_get_upload_prefs();
+                $files = ee('Model')->get('File', $file_ids)->with('UploadDestination')->all();
                 foreach ($files as $file) {
-                    $filesystem = $this->_upload_prefs[$file->upload_location_id]->getFilesystem();
-                    $data = str_replace('{file:' . $file->file_id . ':url}', $filesystem->getUrl($file->file_name), $data);
+                    $data = str_replace('{file:' . $file->file_id . ':url}', $file->getAbsoluteURL(), $data);
                 }
             }
         }

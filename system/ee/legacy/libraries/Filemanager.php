@@ -311,7 +311,7 @@ class Filemanager
         ee()->load->helper(array('file', 'xss'));
 
         $safeForUpload = false;
-        $mime = $directory['upload_destination']->getFilesystem()->getMimetype($file_path);
+        $mime = (isset($prefs['mime_type']) && !empty($prefs['mime_type'])) ? $prefs['mime_type'] : $directory['upload_destination']->getFilesystem()->getMimetype($file_path);
         if (empty($mime)) {
             //S3 return false as mime for dirs, need to check that
             $fileInfo = $directory['upload_destination']->getFilesystem()->getWithMetadata($file_path);
@@ -356,20 +356,24 @@ class Filemanager
         $prefs['mime_type'] = $mime;
 
         // Check to see if its an editable image, if it is, try and create the thumbnail
-        if ($this->is_editable_image(isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? $prefs['temp_file'] : $file_path, $mime)) {
+        $image_path = isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? $prefs['temp_file'] : $file_path;
+        if ($this->is_editable_image($image_path, $mime)) {
             // Check to see if we have GD and can resize images
             if (! (extension_loaded('gd') && function_exists('gd_info'))) {
                 return $this->_save_file_response(false, lang('gd_not_installed'));
             }
 
             // Check and fix orientation
-            $orientation = $this->orientation_check(isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? $prefs['temp_file'] : $file_path, $prefs);
+            $orientation = $this->orientation_check($image_path, $prefs);
 
             if (! empty($orientation)) {
                 $prefs = $orientation;
             }
 
-            $prefs = $this->max_hw_check($file_path, $prefs);
+            $prefs = $this->max_hw_check($image_path, array_merge($prefs, [
+                 // If we're using a temp image we need to pass along a null filesystem in some cases
+                'filesystem' => isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? null : $directory['upload_destination']->getFilesystem()
+            ]));
 
             if (! $prefs) {
                 return $this->_save_file_response(false, lang('image_exceeds_max_size'));
@@ -519,7 +523,7 @@ class Filemanager
         // Make sure height and width are set
         if (! isset($prefs['height']) or ! isset($prefs['width'])) {
             $upload_dir = $this->fetch_upload_dirs()[$prefs['upload_location_id']];
-            $filesystem = $upload_dir['upload_destination']->getFilesystem();
+            $filesystem = array_key_exists('filesystem', $prefs) ? $prefs['filesystem'] : $upload_dir['upload_destination']->getFilesystem();
             $dim = $this->get_image_dimensions($file_path, $filesystem);
 
             if ($dim == false) {
@@ -532,7 +536,7 @@ class Filemanager
             $prefs['file_width'] = $prefs['width'];
         }
 
-        if ($prefs['max_width'] == 0 && $prefs['max_height'] == 0) {
+        if (empty($prefs['max_width']) && empty($prefs['max_height'])) {
             return $prefs;
         }
 
@@ -544,12 +548,12 @@ class Filemanager
         ee()->image_lib->clear();
 
         // If either h/w unspecified, calculate the other here
-        if ($prefs['max_width'] == 0) {
-            $config['width'] = ($prefs['width'] / $prefs['height']) * $prefs['max_height'];
+        if (empty($prefs['max_width'])) {
+            $config['width'] = ((int) $prefs['width'] / (int) $prefs['height']) * (int) $prefs['max_height'];
             $force_master_dim = 'height';
-        } elseif ($prefs['max_height'] == 0) {
+        } elseif (empty($prefs['max_height'])) {
             // Old h/old w * new width
-            $config['height'] = ($prefs['height'] / $prefs['width']) * $prefs['max_width'];
+            $config['height'] = ((int) $prefs['height'] / (int) $prefs['width']) * (int) $prefs['max_width'];
             $force_master_dim = 'width';
         }
 
@@ -1127,14 +1131,14 @@ class Filemanager
         ee()->load->library('image_lib');
         ee()->load->helper('file');
 
-        $img_path = rtrim($prefs['server_path'], '/') . '/';
-        $dirname = rtrim(dirname($file_path), '/') . '/';
-        if(strpos($dirname, $img_path) === 0) {
+        $filesystem = $prefs['directory']->getFilesystem();
+        $file_path =  str_replace('\\', '/', $filesystem->absolute($file_path));
+
+        $img_path = ($prefs['directory']->adapter == 'local') ? rtrim($prefs['server_path'], '/') . '/' : '';
+        $dirname =  str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))) . '/';
+        if (empty($img_path) || strpos($dirname, $img_path) === 0) {
             $img_path = $dirname;
         }
-
-        $source = $file_path;
-        $filesystem = $prefs['directory']->getFilesystem();
 
         // We need to get a temporary local copy of the file in case it's stored on
         // another filesystem. This seems a little wasteful for uploaded files
@@ -1863,7 +1867,7 @@ class Filemanager
 
         $upload_path = $dir['server_path'];
 
-        if($directory_id != 0) {
+        if ($directory_id != 0) {
             $upload_path = ee('Model')->get('Directory', $directory_id)->first()->getAbsolutePath();
         }
 
@@ -1873,8 +1877,9 @@ class Filemanager
             'upload_path' => $upload_path,
             'max_size' => round((int) $dir['max_size'], 3),
             // @todo If we put these here we don't need to do a dimension check later...
-            // 'max_width' => '',
-            // 'max_height' => '',
+            'max_width' => $dir['max_width'],
+            'max_height' => $dir['max_height'],
+            'auto_resize' => true,
         );
 
         // Restricted upload directory?
@@ -1978,16 +1983,17 @@ class Filemanager
         }
 
         // Check to see if its an editable image, if it is, check max h/w
-        // @todo remove - This is already done in Upload Library Line 250
-        if ($this->is_editable_image($file['full_path'], $file['file_type'])) {
+        // @todo remove - This is already done in Upload Library Line 250 and again in $this->save_file()
+        // $file['image_processed'] is set by Upload library to avoid running this code twice
+        if (!($file['image_processed'] ?? false) && $this->is_editable_image($file['file_temp'], $file['file_type'])) {
             // Check and fix orientation
-            $orientation = $this->orientation_check($file['full_path'], $file_data);
+            $orientation = $this->orientation_check($file['file_temp'], $file_data);
 
             if (! empty($orientation)) {
                 $file_data = $orientation;
             }
 
-            $file_data = $this->max_hw_check($file['full_path'], $file_data);
+            $file_data = $this->max_hw_check($file['file_temp'], array_merge($file_data, ['filesystem' => null]));
 
             if (! $file_data) {
                 return $this->_upload_error(
@@ -1999,7 +2005,7 @@ class Filemanager
                 );
             }
         }
-
+        
         // Save file to database
         $saved = $this->save_file($file_data['relative_path'], $dir, $file_data);
 
@@ -2066,7 +2072,8 @@ class Filemanager
         $replace = false;
 
         // Get the file data form the database
-        $previous_data = ee('Model')->get('File', $file_id)->first();
+        $previous_data = ee('Model')->get('File', $file_id)->with('UploadDestination')->first();
+        $path = $previous_data->getSubfoldersPath();
 
         // If the new name is the same as the previous, get out of here
         if ($new_file_name == $previous_data->file_name) {
@@ -2082,9 +2089,10 @@ class Filemanager
 
         // If they renamed, we need to be sure the NEW name doesn't conflict
         if ($replace_file_name != '' && $new_file_name != $replace_file_name) {
-            if ($upload_directory->getFilesystem()->exists($new_file_name)) {
+            if ($upload_directory->getFilesystem()->exists($path . $new_file_name)) {
                 $replace_data = ee('Model')->get('File')
                     ->filter('file_name', $new_file_name)
+                    ->filter('directory_id', $previous_data->directory_id)
                     ->filter('upload_location_id', $upload_directory->id)
                     ->first();
 
@@ -2106,7 +2114,7 @@ class Filemanager
         }
 
         // Check to see if a file with that name already exists
-        if ($upload_directory->getFilesystem()->exists($new_file_name)) {
+        if ($upload_directory->getFilesystem()->exists($path . $new_file_name)) {
             // If it does, delete the old files and remove the new file
             // record in the database
 
@@ -2116,16 +2124,16 @@ class Filemanager
         }
 
         // Delete the thumbnails
-        $upload_directory->deleteGeneratedFiles($old_file_name);
+        $previous_data->deleteGeneratedFiles();
 
         // Rename the actual file
         $file_path = $this->_rename_raw_file(
-            $old_file_name,
-            $new_file_name,
+            $path . $old_file_name,
+            $path . $new_file_name,
             $upload_directory->id
         );
 
-        $new_file_name = str_replace($upload_directory->server_path, '', $file_path);
+        $new_file_name = basename($file_path);
 
         // If renaming the file sparked an error return it
         if (is_array($file_path)) {
@@ -2219,7 +2227,7 @@ class Filemanager
     public function _rename_raw_file($old_file_name, $new_file_name, $directory_id)
     {
         // Make sure the filename is clean
-        $new_file_name = basename($this->clean_filename($new_file_name, $directory_id));
+        $new_file_name = $this->clean_filename($new_file_name, $directory_id);
 
         // Check they have permission for this directory and get directory info
         $upload_directory = $this->fetch_upload_dir_prefs($directory_id);

@@ -2,26 +2,8 @@ name: Release
 on:
   push:
     tags:
-      - '6.3.4'
-      - '6.3.5'
-      - '6.3.6'
-      - '6.3.7'
-      - '6.3.8'
-      - '6.3.9'
-      - '6.3.10'
-      - '6.4.0'
-      - '6.4.1'
-      - '7.0.0'
-      - '7.0.1'
-      - '7.0.2'
-      - '7.0.3'
-      - '7.0.4'
-      - '7.0.5'
-      - '7.1.0'
-      - '7.1.1'
-      - '7.1.2'
-      - '7.1.3'
-      - '7.1.4'
+      - '[0-9]+.[0-9]+.[0-9]+'
+      
 jobs:
   build:
     #if: github.base_ref == '6.x'
@@ -30,21 +12,27 @@ jobs:
     steps:
       - uses: olegtarasov/get-tag@v2.1
         id: tagName
+      
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Checkout Pro
-        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          repository: EllisLab/ExpressionEngine-Pro
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: __pro
+            php-version: '7.4'
+            extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+            coverage: none
+            ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+
       - name: Setup node
         uses: actions/setup-node@v2
         with:
           node-version: '10'
+      
       - name: Install build tool dependencies
         working-directory: build-tools
         run: npm install
+      
       - name: Rebuild CSS and JS
         run: |
           npm install
@@ -52,25 +40,13 @@ jobs:
           npm run build:js
           npm run build:old-js
 
-      - name: Run build process (with Pro)
-        if: github.event.pull_request.base.ref == '6.x'
-        working-directory: build-tools
-        env:
-          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-          APP_REPO_PATH: ${{ github.workspace }}
-          PRO_REPO_PATH: ${{ github.workspace }}/__pro
-        run: |
-          gulp app --local --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
-
-      - name: Run build process (without Pro)
+      - name: Run build process
         if:  github.event.pull_request.base.ref == '7.x'
         working-directory: build-tools
         env:
           RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-          PRO_REPO_PATH: ${{ github.workspace }}/__pro
         run: |
           gulp app --local --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
   
@@ -97,7 +73,7 @@ jobs:
       #  with:
       #    fromTag: ${{ steps.prev_release_tag.outputs.tag }}
       #    configuration: build-tools/changelog.config.json
-      - uses: ncipollo/release-action@v1
+      - uses: ncipollo/release-action@v1.10.0
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.tagName.outputs.tag }}

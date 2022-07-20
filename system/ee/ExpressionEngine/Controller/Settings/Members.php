@@ -89,6 +89,15 @@ class Members extends Settings
                     )
                 ),
                 array(
+                    'title' => 'enable_mfa',
+                    'desc' => 'enable_mfa_desc',
+                    'fields' => [
+                        'enable_mfa' => [
+                            'type' => 'yes_no'
+                        ]
+                    ]
+                ),
+                array(
                     'title' => 'allow_member_localization',
                     'desc' => 'allow_member_localization_desc',
                     'fields' => array(

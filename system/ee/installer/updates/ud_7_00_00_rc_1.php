@@ -218,7 +218,7 @@ class Updater
                         'unsigned' => true,
                         'null' => false
                     ]
-                ],
+                ]
             );
         }
     }

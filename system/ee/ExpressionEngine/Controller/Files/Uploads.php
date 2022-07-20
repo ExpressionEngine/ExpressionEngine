@@ -70,7 +70,7 @@ class Uploads extends AbstractFilesController
 
         if (! AJAX_REQUEST) {
             $this->stdHeader();
-            $this->generateSidebar(null);
+            $this->generateSidebar($upload_id);
         }
 
         ee()->view->cp_breadcrumbs = array(
@@ -657,8 +657,8 @@ class Uploads extends AbstractFilesController
         if (!empty($upload_destination->adapter)) {
             //validate adapter settings
             $adapter = $upload_destination->getFilesystemAdapter(['allow_missing' => true]);
-            $adapterValidation = ee('Validation')->make()->validate($adapter);           
-            
+            $adapterValidation = ee('Validation')->make()->validate($adapter);
+
             foreach ($adapterValidation->getFailed() as $field_name => $rules) {
                 if (property_exists($upload_destination, $field_name)) {
                     $field = '_for_adapter[' . $upload_destination->adapter . '][' . $field_name . ']';
@@ -666,6 +666,25 @@ class Uploads extends AbstractFilesController
                     $field = '_for_adapter[' . $upload_destination->adapter . '][adapter_settings][' . $field_name . ']';
                 }
                 $result->addFailed($field, $rules[0]);
+            }
+
+            //for the local adapter, try to create directory, if missing
+            //and then do extra validation
+            //but only on form submission
+            if (! AJAX_REQUEST && ee('Request')->post('adapter') == 'local' && !empty($adapterSettings['server_path'])) {
+                $parsedServerPath = parse_config_variables($adapterSettings['server_path']);
+                if ((DIRECTORY_SEPARATOR == '/' && strpos($parsedServerPath, '/') === 0) || (DIRECTORY_SEPARATOR == '\\' && strpos($parsedServerPath, ':') === 1)) {
+                    ee('Filesystem')->mkDir($parsedServerPath);
+                }
+                $localAdapterValidation = ee('Validation')->make(['server_path' => 'required|fileExists|writable'])->validate($adapterSettings);
+                foreach ($localAdapterValidation->getFailed() as $field_name => $rules) {
+                    if (property_exists($upload_destination, $field_name)) {
+                        $field = '_for_adapter[' . $upload_destination->adapter . '][' . $field_name . ']';
+                    } else {
+                        $field = '_for_adapter[' . $upload_destination->adapter . '][adapter_settings][' . $field_name . ']';
+                    }
+                    $result->addFailed($field, $rules[0]);
+                }
             }
         }
 
@@ -953,8 +972,10 @@ class Uploads extends AbstractFilesController
 
         if (is_array($resize_ids)) {
             foreach ($resize_ids as $resize_id) {
-                $replace_sizes[$resize_id] = $sizes[$id][$resize_id];
-                unset($missing_only_sizes[$resize_id]);
+                if (!empty($resize_id)) {
+                    $replace_sizes[$resize_id] = $sizes[$id][$resize_id];
+                    unset($missing_only_sizes[$resize_id]);
+                }
             }
         }
 

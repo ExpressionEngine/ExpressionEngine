@@ -305,7 +305,7 @@ class Filesystem
     public function emptyDir($path, $add_index = true)
     {
         $this->deleteDir($path, true);
-        if($add_index) {
+        if ($add_index) {
             $this->addIndexHtml($path);
         }
     }
@@ -372,31 +372,39 @@ class Filesystem
      * Copy a file or directory
      *
      * @param String $source File or directory to copy
-     * @param Stirng $dest Path to the duplicate
+     * @param String $dest Path to the duplicate
+     * @param null|static $destinationFilesystem Optional Filesystem to copy files to
+     * @return bool
      */
-    public function copy($source, $dest)
+    public function copy($source, $dest, $destinationFilesystem = null)
     {
+        $that = ($destinationFilesystem) ?: $this;
         $source = $this->normalizeRelativePath($source);
-        $dest = $this->normalizeRelativePath($dest);
+        $dest = $that->normalizeRelativePath($dest);
+        $result = false;
 
         if (! $this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
         }
 
         if ($this->isDir($source)) {
-            $this->recursiveCopy($source, $dest);
+            $result = $this->recursiveCopy($source, $dest, $destinationFilesystem);
+        } else if($destinationFilesystem) {
+            $result = $destinationFilesystem->writeStream($dest, $this->readStream($source));
         } else {
-            $this->flysystem->copy($this->normalize($source), $this->normalize($dest));
+            $result = $this->flysystem->copy($this->normalize($source), $this->normalize($dest));
         }
 
-        $this->ensureCorrectAccessMode($dest);
+        $that->ensureCorrectAccessMode($dest);
+
+        return $result;
     }
 
     /**
      * Copy a file or directory
      *
      * @param String $source File or directory to copy
-     * @param Stirng $dest Path to the duplicate
+     * @param String $dest Path to the duplicate
      */
     public function forceCopy($source, $dest)
     {
@@ -433,22 +441,56 @@ class Filesystem
      * Copies a directory to another directory by recursively iterating over its files
      *
      * @param String $source Directory to copy
-     * @param Stirng $dest Path to the duplicate
+     * @param String $dest Path to the duplicate
+     * @return bool
      */
-    protected function recursiveCopy($source, $dest)
+    protected function recursiveCopy($source, $dest, $destinationFilesystem = null)
     {
         $source = rtrim($source, '\\/');
         $dest = rtrim($dest, '\\/');
+        $that = ($destinationFilesystem) ?: $this;
         $dir = $this->flysystem->listContents($source, false);
-        $this->flysystem->createDir($dest);
+        $that->flysystem->createDir($dest);
+        $result = true;
 
         foreach($dir as $file) {
-            if ($this->isDir($source . '/' . $file['basename'])) {
-                $this->recursiveCopy($source . '/' . $file['basename'], $dest . '/' . $file['basename']);
+            $from = $source . '/' . $file['basename'];
+            $to = $dest . '/' . $file['basename'];
+
+            if ($this->isDir($from)) {
+                $result = $result && $this->recursiveCopy($from, $to, $destinationFilesystem);
+            } else if(!is_null($destinationFilesystem)) {
+                $result = $result && $destinationFilesystem->writeStream($to, $this->readStream($from));
             } else {
-                $this->flysystem->copy($source . '/' . $file['basename'], $dest . '/' . $file['basename']);
+                $result = $result && $this->flysystem->copy($from, $to);
             }
         }
+
+        return $result;
+    }
+
+    /**
+     * Move a file or directory
+     *
+     * @param String $source File or directory to copy
+     * @param String $dest Path to the duplicate
+     * @param null|static $destinationFilesystem Optional Filesystem to copy files to
+     * @return bool
+     */
+    public function move($source, $dest, $destinationFilesystem = null)
+    {
+        // Moving a file without a different destination filesystem is just rename
+        if(is_null($destinationFilesystem)) {
+            return $this->rename($source, $dest);
+        }
+
+        $copied = $this->copy($source, $dest, $destinationFilesystem);
+
+        if($copied) {
+            return $this->delete($source);
+        }
+
+        return false;
     }
 
     /**

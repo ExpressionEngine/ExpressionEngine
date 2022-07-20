@@ -105,7 +105,7 @@ ee()->load->library('auth');
 $hashed_password = ee()->auth->hash_password($schema->userdata['password']);
 $schema->userdata['password'] = $hashed_password['password'];
 $schema->userdata['salt'] = $hashed_password['salt'];
-$schema->userdata['unique_id'] = ee('Encrypt')->generateKey();
+$schema->userdata['unique_id'] = sha1(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX), true));
 
 // --------------------------------------------------------------------
 

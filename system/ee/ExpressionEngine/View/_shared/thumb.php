@@ -46,7 +46,7 @@ if (count($data)) {
         foreach ($data as $row_id => $row) :
             $row['attrs']['class'] .= ' file-grid__file filepicker-item';
         ?>
-            <a<?php foreach ($row['attrs'] as $key => $value) :?> <?=$key?>="<?=$value?>"<?php endforeach; ?> data-file-id="<?=$row['attrs']['file_id']?>">
+            <div<?php foreach ($row['attrs'] as $key => $value) :?> <?=$key?>="<?=$value?>"<?php endforeach; ?> data-file-id="<?=$row['attrs']['file_id']?>">
 
             <?php
             $i = 0;
@@ -58,8 +58,10 @@ if (count($data)) {
 
                 <?php if ($i == 1) : ?>
                     <div class="file-thumbnail__wrapper">
+                        <a<?php foreach ($row['attrs'] as $key => $value) :?> <?=$key?>="<?=$value?>"<?php endforeach; ?> data-file-id="<?=$row['attrs']['file_id']?>">
                 <?php endif; ?>
                 <?php if ($i == 2) : ?>
+                        </a>
                     </div>
                     <div class="file-metadata__wrapper">
                 <?php endif; ?>
@@ -106,7 +108,7 @@ if (count($data)) {
                 <?php endif ?>
             <?php endforeach ?>
                 </div>
-                </a>
+                </div>
         <?php endforeach; ?>
     </div>
     <?php endif; ?>

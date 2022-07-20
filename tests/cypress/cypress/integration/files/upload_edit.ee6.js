@@ -32,6 +32,46 @@ context('Upload Destination Create/Edit', () => {
     page.get('cat_group').should('exist')
   })
 
+  it('validate server path', () => {
+      page.load()
+
+      page.get('url').should('not.be.visible')
+      cy.get('[data-input-value=adapter] .select__button').click()
+      cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
+
+      page.get('name').clear().type('Dir with incomplete server path')
+
+      // Invalid path:
+      // The validation for this field is only peformed when we submit 
+      cy.log('Invalid path:')
+      cy.route("POST", "**/files/uploads/**").as("ajax9");
+      page.get('server_path').clear().type('sdfsdf')
+      cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+      page.hasError(page.get('server_path'), page.messages.validation.invalid_path)
+      page.hasErrorsCount(1)
+      page.hasErrors()
+  })
+
+  it('Not writable path', () => {
+      // Not writable path:
+      page.load()
+
+      page.get('url').should('not.be.visible')
+      cy.get('[data-input-value=adapter] .select__button').click()
+      cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
+
+      page.get('name').clear().type('Not writable path')
+
+      page.get('server_path').clear().type('X:/')
+      page.get('server_path').trigger('blur')
+      cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+      page.hasError(page.get('server_path'), page.messages.validation.not_writable)
+      page.hasErrorsCount(1)
+      page.hasErrors()
+  })
+
   it('should validate regular fields', () => {
     const url_error = 'This field must contain a valid URL.'
     page.submit()
@@ -119,15 +159,6 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoError(page.get('server_path'))
     page.hasErrors()
 
-    // Invalid path:
-    cy.log('Invalid path:')
-    cy.route("POST", "**/files/uploads/**").as("ajax9");
-    page.get('server_path').clear().type('sdfsdf').trigger('blur')
-    cy.wait("@ajax9");
-    page.hasErrorsCount(3)
-    page.hasError(page.get('server_path'), page.messages.validation.invalid_path)
-    page.hasErrors()
-
     // Resolve so can break again:
     cy.route("POST", "**/files/uploads/**").as("ajax10");
     page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false})
@@ -137,21 +168,11 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoError(page.get('server_path'))
     page.hasErrors()
 
-    // Not writable path:
-    cy.log('Not writable path:')
-    cy.route("POST", "**/files/uploads/**").as("ajax11");
-    page.get('server_path').clear().type('X:/')
-    page.get('server_path').trigger('blur')
-    cy.wait("@ajax11");
-    page.hasErrorsCount(3)
-    page.hasError(page.get('server_path'), page.messages.validation.not_writable)
-    page.hasErrors()
-
     cy.route("POST", "**/files/uploads/**").as("ajax12");
     page.get('max_size').clear().type('sdf')
     page.get('max_size').trigger('blur')
     cy.wait("@ajax12");
-    page.hasErrorsCount(4)
+    page.hasErrorsCount(3)
     page.hasError(page.get('max_size'), page.messages.validation.numeric)
     page.hasErrors()
 
@@ -159,7 +180,7 @@ context('Upload Destination Create/Edit', () => {
     page.get('max_width').clear().type('sdf')
     page.get('max_width').trigger('blur')
     cy.wait("@ajax13");
-    page.hasErrorsCount(5)
+    page.hasErrorsCount(4)
     page.hasError(page.get('max_width'), page.messages.validation.natural_number)
     page.hasErrors()
 
@@ -167,7 +188,7 @@ context('Upload Destination Create/Edit', () => {
     page.get('max_height').clear().type('sdf')
     page.get('max_height').trigger('blur')
     cy.wait("@ajax14");
-    page.hasErrorsCount(6)
+    page.hasErrorsCount(5)
     page.hasError(page.get('max_height'), page.messages.validation.natural_number)
     page.hasErrors()
 
@@ -177,21 +198,21 @@ context('Upload Destination Create/Edit', () => {
     page.get('max_size').clear()
     page.get('max_size').trigger('blur')
     cy.wait("@ajax15");
-    page.hasErrorsCount(5)
+    page.hasErrorsCount(4)
     page.hasNoError(page.get('max_size'))
 
     cy.route("POST", "**/files/uploads/**").as("ajax16");
     page.get('max_width').clear()
     page.get('max_width').trigger('blur')
     cy.wait("@ajax16");
-    page.hasErrorsCount(4)
+    page.hasErrorsCount(3)
     page.hasNoError(page.get('max_width'))
 
     cy.route("POST", "**/files/uploads/**").as("ajax17");
     page.get('max_height').clear()
     page.get('max_height').trigger('blur')
     cy.wait("@ajax17");
-    page.hasErrorsCount(3)
+    page.hasErrorsCount(2)
     page.hasNoError(page.get('max_height'))
     page.hasErrors()
 
@@ -200,7 +221,7 @@ context('Upload Destination Create/Edit', () => {
     page.get('name').clear().type('Dir2')
     page.get('name').trigger('blur')
     cy.wait("@ajax18");
-    page.hasErrorsCount(2)
+    page.hasErrorsCount(1)
     page.hasNoError(page.get('name'))
     page.hasErrors()
 
@@ -208,9 +229,8 @@ context('Upload Destination Create/Edit', () => {
     page.get('url').clear().type('http://ee3/')
     page.get('url').trigger('blur')
     cy.wait("@ajax19");
-    page.hasErrorsCount(1)
     page.hasNoError(page.get('url'))
-    page.hasErrors()
+    page.hasNoErrors()
 
     cy.route("POST", "**/files/uploads/**").as("ajax20");
     page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false})

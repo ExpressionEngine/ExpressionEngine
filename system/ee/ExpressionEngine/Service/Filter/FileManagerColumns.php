@@ -40,7 +40,7 @@ class FileManagerColumns extends Columns
             ->filter('member_id', ee()->session->userdata('member_id'))
             ->filter('viewtype', $viewtype)
             ->filter('upload_id', $upload_id);
-        $view = $query->first();
+        $view = $query->first(true);
 
         if (!empty($view)) {
             $value = $view->getColumns();

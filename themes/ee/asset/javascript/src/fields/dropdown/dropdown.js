@@ -148,7 +148,15 @@ function (_React$Component) {
       var _this2 = this;
 
       var tooMany = this.props.items.length > this.props.tooMany && !this.state.loading;
-      var selected = this.state.selected;
+      var selected;
+
+      if (window.selectedFolder) {
+        selected = this.checkChildDirectory(this.props.initialItems, window.selectedFolder);
+        this.state.selected = selected;
+      } else {
+        selected = this.state.selected;
+      }
+
       return React.createElement("div", {
         className: "select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')
       }, React.createElement("div", {
@@ -199,6 +207,10 @@ function (_React$Component) {
 
         if ($(this).data('initialValue')) {
           props.selected = $(this).data('initialValue');
+        }
+
+        if (window.selectedFolder) {
+          props.selected = window.selectedFolder;
         }
 
         ReactDOM.render(React.createElement(FilterableDropdown, props, null), this);

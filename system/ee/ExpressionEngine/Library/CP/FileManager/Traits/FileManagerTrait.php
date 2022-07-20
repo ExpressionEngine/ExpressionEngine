@@ -166,11 +166,6 @@ trait FileManagerTrait
             )
         );
 
-        $vars['pagination'] = ee('CP/Pagination', $total_files)
-            ->perPage($perpage)
-            ->currentPage($page)
-            ->render($base_url);
-
         $table = ee('CP/Table', array(
             'sort_col' => 'date_added',
             'sort_dir' => 'desc',
@@ -268,6 +263,20 @@ trait FileManagerTrait
             $files = $files->order('FIELD( file_id, ' . $preselectedFileId . ' )', 'DESC', false);
         }
 
+        if (! ($table->sort_dir == 'desc' && $table->sort_col != 'date_added')) {
+            $base_url->addQueryStringVariables(
+                array(
+                    'sort_dir' => $table->sort_dir,
+                    'sort_col' => $table->sort_col
+                )
+            );
+        }
+
+        $vars['pagination'] = ee('CP/Pagination', $total_files)
+            ->perPage($perpage)
+            ->currentPage($page)
+            ->render($base_url);
+
         $files = $files->order($sort_field, $table->sort_dir)
             ->limit($perpage)
             ->offset($offset)
@@ -284,10 +293,14 @@ trait FileManagerTrait
             }
 
             $attrs = [
-                'class' => '',
+                'class' => $file->isDirectory() ? 'drop-target' : '',
                 'file_id' => $file->file_id,
                 'title' => $file->title,
             ];
+
+            if ($file->isDirectory()) {
+                $attrs['file_upload_id'] = $file->upload_location_id.'.'.$file->file_id;
+            }
 
             if (! $file->exists()) {
                 $attrs['class'] = 'missing';
@@ -405,6 +418,8 @@ trait FileManagerTrait
         $typesQuery = ee('db')->select('file_type')->distinct()->from('files');
         if (! empty($uploadLocation)) {
             $typesQuery->where('upload_location_id', $uploadLocation->getId());
+        } else {
+            $typesQuery->where('file_type != "directory"');
         }
         $types = $typesQuery->get();
 
@@ -515,7 +530,7 @@ trait FileManagerTrait
         $uploadLocationsAndDirectoriesDropdownChoices = [];
         if (ee('Permission')->can('upload_new_files')) {
             $upload_destinations = ee('Model')->get('UploadDestination')
-                ->fields('id', 'name')
+                ->fields('id', 'name', 'adapter')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('module_id', 0)
                 ->order('name', 'asc')
@@ -532,6 +547,7 @@ trait FileManagerTrait
                 $uploadLocationsAndDirectoriesDropdownChoices[$upload_pref->getId() . '.0'] = [
                     'label' => '<i class="fal fa-hdd"></i>' . $upload_pref->name,
                     'upload_location_id' => $upload_pref->id,
+                    'adapter' => $upload_pref->adapter,
                     'directory_id' => 0,
                     'path' => '',
                     'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true) : []

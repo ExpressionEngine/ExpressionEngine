@@ -97,6 +97,21 @@ context('Install with default theme', () => {
       cy.get('body').type('{ctrl}', {release: false}).type('s')
     })
 
+    it('file manager is not in compatibility mode', () => {
+      cy.eeConfig({ item: 'file_manager_compatibility_mode' }).then((config) => {
+        expect(config).not.eq('y')
+      })
+    })
+
+    it('there are no missing files in filemanager', () => {
+      cy.visit('admin.php?/cp/files')
+      cy.wait(2000)
+      cy.login({ email: 'admin', password: '1Password' });
+      cy.get('.ee-wrapper').should('exist')
+      cy.get('.app-notice-missing-files').should('not.exist')
+      cy.hasNoErrors()
+    })
+
     it('homepage', () => {
 
       cy.on('uncaught:exception', (err, runnable) => {
@@ -108,15 +123,6 @@ context('Install with default theme', () => {
       cy.visit('index.php/')
       cy.hasNoErrors()
       cy.logFrontendPerformance()
-    })
-
-    it('there are no missing files in filemanager', () => {
-      cy.visit('admin.php?/cp/files')
-      cy.wait(2000)
-      cy.login({ email: 'admin', password: '1Password' });
-      cy.get('.ee-wrapper').should('exist')
-      cy.get('.app-notice-missing-files').should('not.exist')
-      cy.hasNoErrors()
     })
 
     it('Entry with BandCamp audio', () => {
@@ -228,30 +234,43 @@ context('Install with default theme', () => {
     it('add files and display them on frontend', () => {
       cy.intercept("**/filepicker/**").as('ajax')
       cy.login({ email: 'admin', password: '1Password' });
-      cy.visit('/admin.php?/cp/publish/edit/entry/1')
+      cy.visit('/admin.php?/cp/publish/edit')
+      cy.get('a').contains('About Default Theme').click()
       cy.wait(2000) //wait for picker on textarea to initiliaze
       cy.get('.textarea-field-filepicker').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
+      let lake_id = null;
+      cy.get('.modal-file .app-listing__row a').contains('lake.jpg').parents('tr').invoke('attr', 'data-id').then((id) => {
+        lake_id = id;
+      })
       cy.get('.modal-file .app-listing__row a').contains('lake.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
-        expect(val).to.contain('<img src="{file:3:url}"')
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
       })
 
+      cy.get('.grid-field__table tr').should('be.visible')
+      cy.screenshot({capture: 'fullPage'});
       cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
+      let ocean_id = null
+      cy.get('.modal-file .app-listing__row a').contains('ocean.jpg').parents('tr').invoke('attr', 'data-id').then((id) => {
+        ocean_id = id;
+      })
       cy.get('.modal-file .app-listing__row a').contains('ocean.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
       cy.get('.grid-field__table tr:visible .js-file-input').invoke('val').then((val) => {
-        expect(val).to.eq('{file:4:url}')
+        expect(val).to.eq('{file:' + ocean_id + ':url}')
       })
       cy.get('.grid-field__table tr:visible .fields-upload-chosen-name').should('contain', 'ocean.jpg')
 
       cy.get('body').type('{ctrl}', {release: false}).type('s')
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
-        expect(val).to.contain('<img src="{file:3:url}"')
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
       })
       cy.get('.grid-field__table tr:visible .fields-upload-chosen-name').should('contain', 'ocean.jpg')
 
@@ -302,25 +321,29 @@ context('Install with default theme', () => {
 
       //add / replace images in compatibility mode
       cy.log('add / replace images in compatibility mode')
-      cy.authVisit('/admin.php?/cp/publish/edit/entry/1')
+      cy.authVisit('/admin.php?/cp/publish/edit')
+      cy.get('a').contains('About Default Theme').click()
       cy.wait(2000) //wait for picker on textarea to initiliaze
       cy.get('.textarea-field-filepicker').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
       cy.get('.modal-file .app-listing__row a').contains('path.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
-        expect(val).to.contain('<img src="{file:3:url}"')//still there
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')//still there
       })
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
         expect(val).to.contain('<img src="{filedir_6}path.jpg"')
       })
 
+      cy.get('.grid-field__table tr').should('be.visible')
       cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
       cy.get('.modal-file .app-listing__row a').contains('sky.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
       cy.get('.grid-field__table tr:visible .js-file-input').invoke('val').then((val) => {
         expect(val).to.eq('{filedir_6}sky.jpg')
       })
@@ -328,7 +351,7 @@ context('Install with default theme', () => {
 
       cy.get('body').type('{ctrl}', {release: false}).type('s')
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
-        expect(val).to.contain('<img src="{file:3:url}"')
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
       })
       cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
         expect(val).to.contain('<img src="{filedir_6}path.jpg"')
@@ -358,7 +381,10 @@ context('Install with default theme', () => {
       cy.get('section.w-12 p img').eq(1).invoke('attr', 'src').then((src) => {
         expect(src).to.contain('path.jpg')
       })
+
+      cy.eeConfig({ item: 'file_manager_compatibility_mode', value: 'n' })
     })
+
   })
 
 })

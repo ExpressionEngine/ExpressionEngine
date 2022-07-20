@@ -86,6 +86,7 @@ class DragAndDropUpload extends React.Component {
         directory.directory_id = parseInt(directory.value.substr(directory.value.indexOf('.') + 1))
       }
     }
+
     return directory
   }
 
@@ -189,7 +190,6 @@ class DragAndDropUpload extends React.Component {
     return new Promise((resolve, reject) => {
       let formData = new FormData()
       formData.append('directory_id', this.state.directory_id)
-      formData.append('file', file)
       formData.append('csrf_token', EE.CSRF_TOKEN)
       formData.append('upload_location_id', this.state.upload_location_id)
       formData.append('path', this.state.path)
@@ -199,6 +199,12 @@ class DragAndDropUpload extends React.Component {
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
       xhr.upload.addEventListener('progress', (e) => {
+        if ( $('.file-upload-widget').hasClass('open-dd') ) {
+          $('.file-upload-widget').css({
+            'height': 'auto',
+            'position': 'static'
+          })
+        }
         if( $('.file-upload-widget').length && $('.file-upload-widget').hasClass('hidden')) {
           $('.file-upload-widget').show();
         }
@@ -215,12 +221,18 @@ class DragAndDropUpload extends React.Component {
             case 'success':
               this.removeFile(file)
               resolve(file)
-              if( $('.file-upload-widget').length) {
-                $('.file-upload-widget').hide();
-                $('body .f_manager-wrapper > form').submit();
-              }
+              if ($('div[data-file-field-react]').find('.file-field__items .list-item').length > 0) {
+                if ( $('div[data-file-field-react]').parent().hasClass('file-upload-widget') ) {
+                  $('div[data-file-field-react]').parent().show();
+                }
+              } else {
+                if( $('.file-upload-widget').length) {
+                  $('.file-upload-widget').hide();
+                  $('body .f_manager-wrapper > form').submit();
+                }
 
-              this.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone)
+                this.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone)
+              }
               break
             case 'duplicate':
               file.duplicate = true
@@ -319,7 +331,7 @@ class DragAndDropUpload extends React.Component {
   }
 
   setDirectory = (directory) => {
-    if (directory == 'all') return null;
+    if (directory == 'all' || directory == null) return null;
 
     if (typeof directory == 'number') {
       directory = directory
@@ -453,23 +465,34 @@ class DragAndDropUpload extends React.Component {
 
   resolveConflict(file, response) {
     this.removeFile(file)
-    this.props.onFileUploadSuccess(response, window.globalDropzone)
-    if($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
-      $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
-        $(this).removeAttr('disabled');
-      })
-    }
-    if( $('.title-bar a.upload').length) {
-      $('.title-bar a.upload').removeClass('disabled')
-    }
-    if( $('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
-      $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled')
-    }
-    if( $('.file-upload-widget').length) {
-      $('.file-upload-widget').hide();
-      $('body .f_manager-wrapper > form').submit();
-    }
+    if ($('div[data-file-field-react]').find('.file-field__items .list-item').length > 0) {
+      if ( $('div[data-file-field-react]').parent().hasClass('file-upload-widget') ) {
+        $('div[data-file-field-react]').parent().show();
+      }
+    } else {
+      this.props.onFileUploadSuccess(response, window.globalDropzone);
 
+      if($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+        $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
+          $(this).removeAttr('disabled');
+        })
+      }
+      if( $('.title-bar a.upload').length) {
+        $('.title-bar a.upload').removeClass('disabled')
+      }
+      if( $('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+        $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled')
+      }
+
+      if( $('.file-upload-widget').length) {
+        if ($('.file-upload-widget').hasClass('open-dd')) {
+          $('.file-upload-widget').removeClass('open-dd');
+          $('.file-upload-widget').removeAttr('style');
+        }
+        $('.file-upload-widget').hide();
+        $('body .f_manager-wrapper > form').submit();
+      }
+    }
   }
 
   showErrorWithInvalidState(error) {
@@ -591,7 +614,7 @@ class DragAndDropUpload extends React.Component {
               e.preventDefault()
               this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
-            <input type="file" className="f_open-filepicker" style={{display: 'none'}} data-upload_location_id={''} data-path={''} multiple="multiple"/>
+            <input type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
             </div>
           </React.Fragment>
         }

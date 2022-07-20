@@ -28,6 +28,7 @@ context('Operate the site with many members', () => {
       cy.get('button:contains("Website Access")').click()
       cy.get('[type=checkbox][name=include_in_authorlist]').check()
       cy.get('body').type('{ctrl}', {release: false}).type('s')
+      cy.get('[type=checkbox][name=include_in_authorlist]').should('be.checked')
   
       cy.visit('admin.php?/cp/channels/edit/1')
       cy.get('button:contains("Settings")').click()

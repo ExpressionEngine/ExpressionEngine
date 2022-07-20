@@ -34,6 +34,8 @@ if (fs.existsSync('./local_config.json')) {
 
 if (process.env.APP_REPO_PATH) {
     properties.local_repositories.app = process.env.APP_REPO_PATH;
+}else{
+    properties.local_repositories.app = require('path').resolve(__dirname, '..')
 }
 
 if (process.env.PRO_REPO_PATH) {
@@ -131,7 +133,7 @@ gulp.task('_preflight', ['_properties'], function (cb) {
 		clone_or_archive,
 		'_archive_pro',
 		'_version_bump',
-		['_update_exists', '_set_debug', '_replace_jira_collector', '_boot_hack', '_wizard_hack', '_create_config', '_dp_config', '_dp_license', '_fill_updater_dependencies'],
+		['_update_exists', '_set_debug', '_replace_jira_collector', '_boot_hack', '_wizard_hack', '_create_config', '_dp_config', '_dp_license', '_fill_updater_dependencies', 'build_php_dependencies'],
 		['_phplint', '_compress_js'],
 		'_delete_files',
 		cb
@@ -356,6 +358,10 @@ gulp.task('_delete_files', function (cb) {
 		'scripts/',
 		'system/ee/legacy/libraries/Ldap.php',
 
+		'scoper.inc.php',
+		'composer.json',
+		'composer.lock',
+
 		'system/user/*/*',
 		'!system/user/*/index.html',
 		'!system/user/*/.htaccess',
@@ -497,6 +503,19 @@ gulp.task('_fill_updater_dependencies', function () {
 
 gulp.task('fill_updater_dependencies', function () {
 	return fillUpdaterDependencies();
+});
+
+/**
+ * Install composer dependencies
+ */
+gulp.task('build_php_dependencies', function (cb) {
+	return new Promise((resolve, reject) => {
+        exec('composer install', {cwd: paths.app, quiet: false}, function(err) {
+            if (err) return reject(err);
+            exec('rm -rf vendor vendor-bin', {cwd: paths.app})
+            resolve()
+        })
+    })
 });
 
 /**

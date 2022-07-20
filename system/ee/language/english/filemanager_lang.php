@@ -325,9 +325,9 @@ $lang = array(
 
     'all_upload_dirs' => 'All Upload Directories',
 
-    'apply_manipulations' => 'Apply manipulations',
+    'apply_manipulations' => 'Re-generate manipulations',
 
-    'apply_manipulations_desc' => 'Applies chosen image manipulations to the files in this directory during sync operation. Increases sync time.',
+    'apply_manipulations_desc' => 'Forces generation of chosen image manipulations for the files in this directory during sync operation. Increases sync time.',
 
     'bottom' => 'Bottom',
 
@@ -445,7 +445,7 @@ $lang = array(
 
     'right' => 'Right',
 
-    'sync_alt_title' => 'Sync %s',
+    'sync_alt_title' => 'Syncronize %s',
 
     'sync_title' => 'Directory Sync',
 
@@ -1022,7 +1022,7 @@ $lang = array(
 
     'destination' => 'Destination',
 
-    'error_moving_need_same_upload_location' => 'The files can be moved only within their upload location',
+    'error_moving_need_same_driver' => 'The files can be moved only between upload directories that use same adapter',
 
     'error_moving_already_there' => 'The file is already in target destination',
 
@@ -1063,6 +1063,10 @@ $lang = array(
     'rename_success' => 'Successully renamed',
 
     'rename_success_desc' => '<code>%s</code> has been renamed to <code>%s</code>',
+
+    'existing_file_manipulations_desc' => 'These are existing pre-defined manipulations for this file based in Upload Directory settings',
+
+    'manipulations' => 'Manipulations',
 
 );
 

@@ -208,6 +208,14 @@
 				options.rel = $(this).attr('rel');
 				options.source = $(this);
 
+				var iframeParentList = $('div[class^="popup-modal-ee-"]', window.parent.document);
+				if (iframeParentList.length) {
+					$(iframeParentList[0]).css({
+						'height': '60vh',
+						'width': '60vw',
+					})
+				}
+
 				if (options.input_value) {
 					options.input_value = $(options.input_value);
 				} else {

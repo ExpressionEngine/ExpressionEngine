@@ -132,10 +132,13 @@ if (! AJAX_REQUEST) {
             echo $modal;
 
             // Move file modal
-            $moveChoices = $uploadLocationsAndDirectoriesDropdownChoices;
+            $moveChoices = [];
             $selected = null;
-            if (isset($dir_id) && !empty($dir_id) && isset($uploadLocationsAndDirectoriesDropdownChoices[$dir_id . '.0'])) {
-                $moveChoices = [$dir_id . '.0' => $uploadLocationsAndDirectoriesDropdownChoices[$dir_id . '.0']];
+            if (isset($dir_id) && !empty($dir_id) && isset($adapter) && isset($uploadLocationsAndDirectoriesDropdownChoices[$dir_id . '.0'])) {
+                //$moveChoices = [$dir_id . '.0' => $uploadLocationsAndDirectoriesDropdownChoices[$dir_id . '.0']];
+                foreach ($uploadLocationsAndDirectoriesDropdownChoices as $key => $vars) {
+                    $moveChoices[$key] = $vars;
+                }
                 $selected = $dir_id . '.' . (int) ee('Request')->get('directory_id');
             }
             $modal_vars = array(
