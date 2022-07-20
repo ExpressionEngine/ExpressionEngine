@@ -43,6 +43,7 @@ class EE_Upload
     public $temp_prefix = "temp_file_";
     public $client_name = '';
     public $auto_resize = false;
+    public $image_processed = false;
 
     protected $use_temp_dir = false;
     protected $raw_upload = false;
@@ -232,6 +233,40 @@ class EE_Upload
             }
         }
 
+        // Are the image dimensions within the allowed size?
+        // Note: This can fail if the server has an open_basedir restriction.
+        if (! $this->is_allowed_dimensions()) {
+            //try to resize, if configured
+            if ($this->auto_resize) {
+                ee()->load->library('filemanager');
+                $file_data = [
+                    'max_width' => $this->max_width,
+                    'max_height' => $this->max_height,
+                    'width' => $this->image_width,
+                    'height' => $this->image_height,
+                    'filesystem' => null,
+                ];
+
+                $orientation = ee()->filemanager->orientation_check($this->file_temp, $file_data);
+
+                if (!empty($orientation)) {
+                    $file_data = $orientation;
+                }
+                
+                $auto_resize = ee()->filemanager->max_hw_check($this->file_temp, $file_data);
+
+                if ($auto_resize === false) {
+                    $this->set_error('upload_invalid_dimensions');
+                    return false;
+                }
+                $this->file_size = filesize($this->file_temp);
+            } else {
+                $this->set_error('upload_invalid_dimensions');
+                return false;
+            }
+            $this->image_processed = true;
+        }
+
         // Convert the file size to kilobytes
         if ($this->file_size > 0) {
             $this->file_size = round($this->file_size / 1024, 2);
@@ -243,24 +278,6 @@ class EE_Upload
             $this->set_error(sprintf(lang('upload_invalid_filesize'), $this->max_size));
 
             return false;
-        }
-
-        // Are the image dimensions within the allowed size?
-        // Note: This can fail if the server has an open_basdir restriction.
-        if (! $this->is_allowed_dimensions()) {
-
-            //try to resize, if configured
-            if ($this->auto_resize) {
-                ee()->load->library('filemanager');
-                $auto_resize = ee()->filemanager->max_hw_check($this->file_temp, ['max_width' => $this->max_width, 'max_height' => $this->max_height]);
-                if ($auto_resize === false) {
-                    $this->set_error('upload_invalid_dimensions');
-                    return false;
-                }
-            } else {
-                $this->set_error('upload_invalid_dimensions');
-                return false;
-            }
         }
 
         // Truncate the file name if it's too long
@@ -359,6 +376,7 @@ class EE_Upload
         return array(
             'file_name' => $this->file_name,
             'file_type' => $this->file_type,
+            'file_temp' => $this->file_temp,
             'file_path' => $this->upload_path,
             'full_path' => $this->upload_path . $this->file_name,
             'raw_name' => str_replace($this->file_ext, '', $this->file_name),
@@ -371,6 +389,7 @@ class EE_Upload
             'image_height' => $this->image_height,
             'image_type' => $this->image_type,
             'image_size_str' => $this->image_size_str,
+            'image_processed' => $this->image_processed,
         );
     }
 
@@ -598,6 +617,8 @@ class EE_Upload
 
         if (function_exists('getimagesize')) {
             $D = @getimagesize($this->file_temp);
+            $this->image_width = $D['0'];
+            $this->image_height = $D['1'];
 
             if ($this->max_width > 0 && $D['0'] > $this->max_width) {
                 return false;
