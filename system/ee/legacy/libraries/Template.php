@@ -1334,8 +1334,8 @@ class EE_Template
                     // If we aliased this tag, lets replace some internal tag prefixes
                     // This will replace things like {low_search_result} into {pro_search_result} when in a {exp:low_search:...} tag
                     if (! is_null($tag_alias)) {
-                        $from = LD . $tag_alias['original'] . '_';
-                        $to = LD . $tag_alias['aliased'] . '_';
+                        $from = $tag_alias['original'] . '_';
+                        $to = $tag_alias['aliased'] . '_';
 
                         $block = str_replace($from, $to, $block);
                     }
