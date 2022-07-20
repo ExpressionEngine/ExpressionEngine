@@ -148,6 +148,11 @@
     border-top-right-radius: $border-radius-small;
     border-bottom-right-radius: $border-radius-small;
   }
+
+  table td {
+    max-width: 350px;
+    overflow-wrap: break-word;
+  }
 }
 
 .f_manager-table-breadcrumbs {
@@ -370,10 +375,12 @@
 
   .f_metadata-item {
     margin-bottom: 10px;
+    min-width: 0;
 
     .f_meta-info {
       display: block;
       color: color(text-secondary);
+      overflow-wrap: break-word;
       @extend .click-select-text;
     }
   }
@@ -383,6 +390,9 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     font-size: 0.8rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
 
