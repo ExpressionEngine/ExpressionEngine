@@ -32655,8 +32655,20 @@ body[data-theme=dark] .select-popup {
 [data-theme=light] .panel, [data-theme=light] .add-on-layout .table-responsive, .add-on-layout [data-theme=light] .table-responsive,
 [data-theme=snow] .panel,
 [data-theme=snow] .add-on-layout .table-responsive,
-.add-on-layout [data-theme=snow] .table-responsive {
+.add-on-layout [data-theme=snow] .table-responsive,
+[data-theme=pink] .panel,
+[data-theme=pink] .add-on-layout .table-responsive,
+.add-on-layout [data-theme=pink] .table-responsive {
   border-width: 0px;
+}
+[data-theme=light] .panel.panel__with-border, [data-theme=light] .add-on-layout .panel__with-border.table-responsive, .add-on-layout [data-theme=light] .panel__with-border.table-responsive,
+[data-theme=snow] .panel.panel__with-border,
+[data-theme=snow] .add-on-layout .panel__with-border.table-responsive,
+.add-on-layout [data-theme=snow] .panel__with-border.table-responsive,
+[data-theme=pink] .panel.panel__with-border,
+[data-theme=pink] .add-on-layout .panel__with-border.table-responsive,
+.add-on-layout [data-theme=pink] .panel__with-border.table-responsive {
+  border: 1px solid var(--ee-border);
 }
 
 .panel-body {
