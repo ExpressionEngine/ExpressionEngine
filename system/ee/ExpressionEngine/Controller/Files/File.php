@@ -29,6 +29,7 @@ class File extends AbstractFilesController
         $file = ee('Model')->get('File', $id)
             ->with('UploadDestination', 'UploadAuthor', 'ModifyAuthor', 'Categories')
             ->filter('site_id', ee()->config->item('site_id'))
+            ->all()
             ->first();
 
         if (! $file) {

@@ -223,7 +223,7 @@ class FileSystemEntity extends ContentModel
      */
     private function getBaseServerPath()
     {
-        if (empty($this->_baseServerPath)) {
+        if (empty($this->_baseServerPath) && $this->UploadDestination->adapter == 'local') {
             $this->_baseServerPath = rtrim($this->UploadDestination->server_path, '\\/') . '/';
         }
 

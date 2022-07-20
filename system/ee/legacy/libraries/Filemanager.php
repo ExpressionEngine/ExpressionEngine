@@ -1130,9 +1130,9 @@ class Filemanager
         $filesystem = $prefs['directory']->getFilesystem();
         $file_path =  str_replace('\\', '/', $filesystem->absolute($file_path));
 
-        $img_path = rtrim($prefs['server_path'], '/') . '/';
+        $img_path = ($prefs['directory']->adapter == 'local') ? rtrim($prefs['server_path'], '/') . '/' : '';
         $dirname =  str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))) . '/';
-        if (strpos($dirname, $img_path) === 0) {
+        if (empty($img_path) || strpos($dirname, $img_path) === 0) {
             $img_path = $dirname;
         }
 
