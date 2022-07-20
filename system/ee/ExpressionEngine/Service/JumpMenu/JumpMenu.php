@@ -869,7 +869,7 @@ class JumpMenu extends AbstractJumpMenu
             ),
             'systemSettingsContentDesign' => array(
                 'icon' => 'fa-wrench',
-                'command' => 'system_settings content_and_design      ',
+                'command' => 'system_settings content_and_design',
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'settings/content-design',

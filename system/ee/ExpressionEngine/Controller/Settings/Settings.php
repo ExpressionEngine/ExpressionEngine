@@ -45,6 +45,7 @@ class Settings extends CP_Controller
     protected function generateSidebar($active = null)
     {
         $sidebar = ee('CP/Sidebar')->make();
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
 
         $list = $sidebar->addHeader(lang('general'))
             ->addBasicList();
@@ -85,6 +86,11 @@ class Settings extends CP_Controller
             $list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
         }
 
+        if (ee('Permission')->canUsePro()) {
+            $sidebar->addItem(lang('frontedit'), ee('CP/URL')->make('settings/pro/frontedit'));
+            $sidebar->addItem(lang('branding_settings'), ee('CP/URL')->make('settings/pro/branding'));
+        }
+
         $list->addItem(lang('tracking'), ee('CP/URL')->make('settings/tracking'));
 
         $list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
@@ -123,14 +129,8 @@ class Settings extends CP_Controller
             }
         }
 
-        if (ee('pro:Access')->hasRequiredLicense() && ee('Permission')->canUsePro()) {
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-            $list = $sidebar->addHeader(lang('pro_settings'))
-                ->addBasicList();
-
-            $sidebar->addItem(lang('pro_settings'), ee('CP/URL')->make('settings/pro/general'));
+        if (ee('Permission')->canUsePro()) {
             $sidebar->addItem(lang('cookie_settings'), ee('CP/URL')->make('settings/pro/cookies'));
-            $sidebar->addItem(lang('branding_settings'), ee('CP/URL')->make('settings/pro/branding'));
         }
     }
 

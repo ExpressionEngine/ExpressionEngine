@@ -48,6 +48,17 @@ class ContentDesign extends Settings
                     )
                 )
             ),
+            array(
+                [
+                    'title' => 'enable_entry_cloning',
+                    'desc' => 'enable_entry_cloning_desc',
+                    'fields' => [
+                        'enable_entry_cloning' => [
+                            'type' => 'yes_no'
+                        ]
+                    ]
+                ],
+            ),
             'categories_section' => array(
                 array(
                     'title' => 'auto_assign_cat_parents',
