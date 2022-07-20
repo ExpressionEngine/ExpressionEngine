@@ -398,12 +398,18 @@ function (_React$Component) {
 
                 resolve(file);
 
-                if ($('.file-upload-widget').length) {
-                  $('.file-upload-widget').hide();
-                  $('body .f_manager-wrapper > form').submit();
-                }
+                if ($('div[data-file-field-react]').find('.file-field__items .list-item').length > 0) {
+                  if ($('div[data-file-field-react]').parent().hasClass('file-upload-widget')) {
+                    $('div[data-file-field-react]').parent().show();
+                  }
+                } else {
+                  if ($('.file-upload-widget').length) {
+                    $('.file-upload-widget').hide();
+                    $('body .f_manager-wrapper > form').submit();
+                  }
 
-                _this3.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone);
+                  _this3.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone);
+                }
 
                 break;
 

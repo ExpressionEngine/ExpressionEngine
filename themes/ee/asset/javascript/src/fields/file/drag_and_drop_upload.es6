@@ -221,12 +221,18 @@ class DragAndDropUpload extends React.Component {
             case 'success':
               this.removeFile(file)
               resolve(file)
-              if( $('.file-upload-widget').length) {
-                $('.file-upload-widget').hide();
-                $('body .f_manager-wrapper > form').submit();
-              }
+              if ($('div[data-file-field-react]').find('.file-field__items .list-item').length > 0) {
+                if ( $('div[data-file-field-react]').parent().hasClass('file-upload-widget') ) {
+                  $('div[data-file-field-react]').parent().show();
+                }
+              } else {
+                if( $('.file-upload-widget').length) {
+                  $('.file-upload-widget').hide();
+                  $('body .f_manager-wrapper > form').submit();
+                }
 
-              this.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone)
+                this.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone)
+              }
               break
             case 'duplicate':
               file.duplicate = true
