@@ -73,6 +73,14 @@ class Pro_search_upd
      */
     public function install()
     {
+        // If low search is installed, we'll migrate from low search to pro search
+        $lowSearch = ee('Addon')->get('low_search');
+        if ($lowSearch && $lowSearch->isInstalled()) {
+            $this->migrateFromLow();
+
+            return true;
+        }
+
         // --------------------------------------
         // Install tables
         // --------------------------------------
@@ -325,6 +333,61 @@ class Pro_search_upd
             ->update('extensions', array('version' => $this->version));
 
         // Return TRUE to update version number in DB
+        return true;
+    }
+
+    public function migrateFromLow()
+    {
+        // --------------------------------------
+        // Rename the Low search tables
+        // --------------------------------------
+        ee()->load->add_package_path(PATH_THIRD . 'low_search');
+
+        ee()->load->library('smartforge');
+        foreach ($this->models as $model) {
+            $psTable = ee()->$model->table();
+            $psTable = str_replace(ee()->db->dbprefix, '', $psTable);
+            $lsTable = str_replace('pro', 'low', $psTable);
+
+            if (ee()->db->table_exists($lsTable)) {
+                ee()->smartforge->rename_table($lsTable, $psTable);
+            } else {
+                ee()->$model->install();
+            }
+        }
+
+        // --------------------------------------
+        // Update modules
+        // --------------------------------------
+        ee()->db->update(
+            'modules',
+            ['module_name' => $this->class_name],
+            ['module_name' => 'Low_search'],
+        );
+
+        // --------------------------------------
+        // Update actions
+        // --------------------------------------
+        ee()->db->update(
+            'actions',
+            ['class' => $this->class_name],
+            ['class' => 'Low_search'],
+        );
+        ee()->db->update(
+            'actions',
+            ['class' => $this->class_name],
+            ['class' => 'Low_search_mcp'],
+        );
+
+        // --------------------------------------
+        // Update extensions
+        // --------------------------------------
+        ee()->db->update(
+            'extensions',
+            ['class' => $this->class_name . '_ext'],
+            ['class' => 'Low_search_ext'],
+        );
+
         return true;
     }
 

@@ -81,7 +81,7 @@ class Pro_variables_upd
         if ($lowVars && $lowVars->isInstalled()) {
             $this->migrateFromLow();
 
-            return $this->update();
+            return true;
         }
 
         // --------------------------------------
@@ -194,6 +194,22 @@ class Pro_variables_upd
     public function migrateFromLow()
     {
         // --------------------------------------
+        // Rename the LV tables
+        // --------------------------------------
+        ee()->load->library('smartforge');
+        foreach ($this->models as $model) {
+            $pvTable = ee()->$model->table();
+            $pvTable = str_replace(ee()->db->dbprefix, '', $pvTable);
+            $lvTable = str_replace('pro', 'low', $pvTable);
+
+            if (ee()->db->table_exists($lvTable)) {
+                ee()->smartforge->rename_table($lvTable, $pvTable);
+            } else {
+                ee()->$model->install();
+            }
+        }
+
+        // --------------------------------------
         // Update modules
         // --------------------------------------
         ee()->db->update(
@@ -226,24 +242,6 @@ class Pro_variables_upd
         );
 
         // --------------------------------------
-        // Rename the LV tables
-        // --------------------------------------
-        ee()->load->library('smartforge');
-        foreach ($this->models as $model) {
-            $lvmodel = str_replace('pro', 'low', $model);
-            $lvTable = ee()->$lvmodel->table();
-
-            $lvTable = str_replace(ee()->db->dbprefix, '', $lvTable);
-            $pvTable = str_replace('low', 'pro', $lvTable);
-
-            if (ee()->db->table_exists($lvTable)) {
-                ee()->smartforge->rename_table($lvTable, $pvTable);
-            } else {
-                ee()->$model->install();
-            }
-        }
-
-        // --------------------------------------
         // Migrate the FT
         // --------------------------------------
         ee()->db->update(
@@ -255,13 +253,12 @@ class Pro_variables_upd
         // Migrate active FTs
         ee()->db->update(
             'channel_fields',
-            ['name' => strtolower($this->class_name)],
-            ['name' => 'low_variables'],
+            ['field_type' => strtolower($this->class_name)],
+            ['field_type' => 'low_variables'],
         );
 
         // Migrate settings
         $settings = ee()->pro_variables_settings->get();
-        $settings['enabled_types1'] = $settings['enabled_types'];
         foreach ($settings['enabled_types'] as $k => $v) {
             $settings['enabled_types'][$k] = str_replace('low_', 'pro_', $v);
         }
