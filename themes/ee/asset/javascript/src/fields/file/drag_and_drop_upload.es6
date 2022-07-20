@@ -459,21 +459,33 @@ class DragAndDropUpload extends React.Component {
 
   resolveConflict(file, response) {
     this.removeFile(file)
-    this.props.onFileUploadSuccess(response, window.globalDropzone)
-    if($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
-      $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
-        $(this).removeAttr('disabled');
-      })
-    }
-    if( $('.title-bar a.upload').length) {
-      $('.title-bar a.upload').removeClass('disabled')
-    }
-    if( $('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
-      $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled')
-    }
-    if( $('.file-upload-widget').length) {
-      $('.file-upload-widget').hide();
-      $('body .f_manager-wrapper > form').submit();
+    if ($('div[data-file-field-react]').find('.file-field__items .list-item').length > 0) {
+      if ( $('div[data-file-field-react]').parent().hasClass('file-upload-widget') ) {
+        $('div[data-file-field-react]').parent().show();
+      }
+    } else {
+      this.props.onFileUploadSuccess(response, window.globalDropzone);
+
+      if($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+        $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function(){
+          $(this).removeAttr('disabled');
+        })
+      }
+      if( $('.title-bar a.upload').length) {
+        $('.title-bar a.upload').removeClass('disabled')
+      }
+      if( $('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+        $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled')
+      }
+
+      if( $('.file-upload-widget').length) {
+        if ($('.file-upload-widget').hasClass('open-dd')) {
+          $('.file-upload-widget').removeClass('open-dd');
+          $('.file-upload-widget').removeAttr('style');
+        }
+        $('.file-upload-widget').hide();
+        $('body .f_manager-wrapper > form').submit();
+      }
     }
   }
 
