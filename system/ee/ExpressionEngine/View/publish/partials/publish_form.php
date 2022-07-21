@@ -119,7 +119,7 @@
                 </div>
                 <div class="field-control">
                     <?php if ($field->get('field_id') == 'revisions'): ?>
-                        <div class="panel">
+                        <div class="panel panel__with-border">
                             <?=$revisions?>
                         </div>
                     <?php elseif ($field->getSetting('string_override') !== null): ?>

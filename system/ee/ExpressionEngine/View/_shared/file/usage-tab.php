@@ -1,4 +1,4 @@
-<div class="panel">
+<div class="panel panel__with-border">
     <div class="f_entries-table">
         <h2><?=lang('entries')?></h2>
 
@@ -7,7 +7,7 @@
     </div>
 </div>
 
-<div class="panel">
+<div class="panel panel__with-border">
     <div class="f_category-table">
         <h2><?=lang('categories')?></h2>
 

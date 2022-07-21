@@ -53,15 +53,13 @@ class Consent extends Logs
             'form_url' => $this->base_url->compile()
         ];
 
-        if (ee('pro:Access')->hasRequiredLicense() && ee('Permission')->canUsePro()) {
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-            $header['toolbar_items'] = [
-                'export' => [
-                    'href' => ee('CP/URL', 'logs/pro/consent/export')->addQueryStringVariables($this->params),
-                    'title' => lang('export_consent_log')
-                ]
-            ];
-        }
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        $header['toolbar_items'] = [
+            'export' => [
+                'href' => ee('CP/URL', 'logs/pro/consent/export')->addQueryStringVariables($this->params),
+                'title' => lang('export_consent_log')
+            ]
+        ];
 
         ee()->view->header = $header;
 

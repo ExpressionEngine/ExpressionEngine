@@ -101,7 +101,7 @@ class Permission
     }
 
     /**
-     * Can they use Pro?
+     * Can they use Front-end editing features?
      *
      * @return boolean
      */
@@ -111,13 +111,8 @@ class Permission
             return true;
         }
 
-        // currently. anyone with CP access
-        // if the future, inject into Permissions service
-        if ($this->has('can_access_cp')) {
-            $assigned_modules = ee()->session->getMember()->getAssignedModules()->pluck('module_name');
-            if (in_array('Pro', $assigned_modules)) {
-                return true;
-            }
+        if ($this->has('can_access_cp') && $this->has('can_access_dock')) {
+            return true;
         }
 
         return false;

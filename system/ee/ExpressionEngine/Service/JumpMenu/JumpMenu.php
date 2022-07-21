@@ -714,7 +714,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Outgoing email address
                     'fieldset-webmaster_email' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'outgoing_email'
                         ],
                         'command' => 'webmaster_email webmaster_email_desc outgoing_email',
@@ -723,7 +723,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Email sent from name
                     'fieldset-webmaster_name' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'outgoing_email'
                         ],
                         'command' => 'webmaster_name webmaster_name_desc outgoing_email',
@@ -732,7 +732,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Email character encoding
                     'fieldset-email_charset' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'outgoing_email'
                         ],
                         'command' => 'email_charset outgoing_email',
@@ -741,7 +741,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Email Protocal
                     'fieldset-mail_protocol' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'outgoing_email'
                         ],
                         'command' => 'mail_protocol_desc mail_protocol outgoing_email smtp_options',
@@ -750,7 +750,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Email New Line
                     'fieldset-email_newline' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'outgoing_email'
                         ],
                         'command' => 'email_newline outgoing_email',
@@ -759,7 +759,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Email Format
                     'fieldset-mail_format' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'outgoing_email'
                         ],
                         'command' => 'mail_format mail_format_desc outgoing_email',
@@ -768,7 +768,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Email word wrap
                     'fieldset-word_wrap' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'outgoing_email'
                         ],
                         'command' => 'word_wrap outgoing_email',
@@ -787,7 +787,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Error Visibility
                     'fieldset-fieldset-debug' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'debugging_output'
                         ],
                         'command' => 'enable_errors enable_errors_desc debug_0 debug_1 debug_2',
@@ -796,7 +796,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable debugging?
                     'fieldset-show_profiler' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'debugging_output'
                         ],
                         'command' => 'show_profiler show_profiler_desc',
@@ -805,7 +805,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable Developer Log Alerts?
                     'fieldset-enable_devlog_alerts' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'debugging_output'
                         ],
                         'command' => 'enable_devlog_alerts enable_devlog_alerts_desc',
@@ -814,7 +814,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable GZIP compression?
                     'fieldset-gzip_output' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'debugging_output'
                         ],
                         'command' => 'gzip_output',
@@ -823,7 +823,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Force URL query strings?
                     'fieldset-force_query_string' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'debugging_output'
                         ],
                         'command' => 'force_query_string',
@@ -832,7 +832,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Use HTTP page headers?
                     'fieldset-send_headers' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'debugging_output'
                         ],
                         'command' => 'send_headers',
@@ -841,7 +841,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Redirection type
                     'fieldset-redirect_method' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'debugging_output'
                         ],
                         'command' => 'redirect_method',
@@ -850,7 +850,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Caching Driver
                     'fieldset-cache_driver' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'debugging_output'
                         ],
                         'command' => 'caching_driver',
@@ -859,7 +859,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Cachable URIs
                     'fieldset-max_caches' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'debugging_output'
                         ],
                         'command' => 'max_caches max_caches_desc',
@@ -878,7 +878,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Clear cache for new entries?
                     'fieldset-new_posts_clear_caches' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'content_and_design'
                         ],
                         'command' => 'new_posts_clear_caches new_posts_clear_caches_desc',
@@ -887,7 +887,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Cache dynamic channel queries?
                     'fieldset-enable_sql_caching' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'content_and_design'
                         ],
                         'command' => 'enable_sql_caching',
@@ -896,16 +896,25 @@ class JumpMenu extends AbstractJumpMenu
                     // Assign category parents?
                     'fieldset-auto_assign_cat_parents' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'content_and_design'
                         ],
                         'command' => 'auto_assign_cat_parents auto_assign_cat_parents_desc',
                         'command_title' => 'auto_assign_cat_parents'
                     ),
-                    // Assign category parents?
+                    // Enable entry cloning
+                    'fieldset-enable_entry_cloning' => array(
+                        'trail' => [
+                            //'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'enable_entry_cloning enable_entry_cloning_desc',
+                        'command_title' => 'enable_entry_cloning'
+                    ),
+                    // Compatibility mode?
                     'fieldset-file_manager_compatibility_mode' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'content_and_design'
                         ],
                         'command' => 'file_manager_compatibility_mode',
@@ -914,7 +923,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Image Resizing -- Protocol
                     'fieldset-image_resize_protocol' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'content_and_design'
                         ],
                         'command' => 'image_resize_protocol gd gd2 imagemagick netpbm image_resizing',
@@ -923,7 +932,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Image Resizing -- Converter path
                     'fieldset-image_library_path' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'content_and_design'
                         ],
                         'command' => 'image_library_path image_resizing',
@@ -932,7 +941,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable emoticons?
                     'fieldset-enable_emoticons' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'content_and_design'
                         ],
                         'command' => 'enable_emoticons enable_emoticons_desc',
@@ -941,7 +950,7 @@ class JumpMenu extends AbstractJumpMenu
                     // emoticons URL
                     'fieldset-emoticon_url' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'content_and_design'
                         ],
                         'command' => 'emoticon_url emoticon_url_desc',
@@ -960,7 +969,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable comment module?
                     'fieldset-enable_comments' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'comment_settings'
                         ],
                         'command' => 'enable_comments',
@@ -970,7 +979,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable word censoring?
                     'ffieldset-comment_word_censoring' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'comment_settings'
                         ],
                         'command' => 'comment_word_censoring comment_word_censoring_desc',
@@ -979,7 +988,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Moderate after comments expire?
                     'fieldset-comment_moderation_override' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'comment_settings'
                         ],
                         'command' => 'comment_moderation_override comment_moderation_override_desc',
@@ -988,7 +997,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Comment edit time limit (in seconds)
                     'fieldset-comment_edit_time_limit' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'comment_settings'
                         ],
                         'command' => 'comment_edit_time_limit comment_edit_time_limit_desc',
@@ -1015,7 +1024,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable Strict URLs
                     'fieldset-strict_urls' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'template_settings'
                         ],
                         'command' => 'strict_urls',
@@ -1024,7 +1033,7 @@ class JumpMenu extends AbstractJumpMenu
                     // 404 page
                     'fieldset-site_404' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'template_settings'
                         ],
                         'command' => 'site_404 site_404_desc',
@@ -1033,7 +1042,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Save Template Revisions
                     'fieldset-save_tmpl_revisions' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'template_settings'
                         ],
                         'command' => 'save_tmpl_revisions',
@@ -1042,7 +1051,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Maximum Number of Revisions to Keep
                     'fieldset-max_tmpl_revisions' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'template_settings'
                         ],
                         'command' => 'max_tmpl_revisions max_tmpl_revisions_desc',
@@ -1061,7 +1070,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable tracking cookie?
                     'fieldset-enable_tracking_cookie' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'tracking'
                         ],
                         'command' => 'enable_tracking_cookie enable_tracking_cookie_desc',
@@ -1070,7 +1079,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable online user tracking?
                     'fieldset-enable_online_user_tracking' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'tracking'
                         ],
                         'command' => 'enable_online_user_tracking enable_online_user_tracking_desc',
@@ -1079,7 +1088,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable template hit tracking?
                     'fieldset-enable_hit_tracking' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'tracking'
                         ],
                         'command' => 'enable_hit_tracking enable_hit_tracking_desc',
@@ -1088,7 +1097,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable entry view tracking?
                     'fieldset-enable_entry_view_tracking' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'tracking'
                         ],
                         'command' => 'enable_entry_view_tracking enable_entry_view_tracking_desc',
@@ -1097,7 +1106,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Suspend threshold?
                     'fieldset-dynamic_tracking_disabling' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'tracking'
                         ],
                         'command' => 'dynamic_tracking_disabling dynamic_tracking_disabling_desc',
@@ -1116,7 +1125,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Enable censorship?
                     'fieldset-enable_censoring' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'word_censoring'
                         ],
                         'command' => 'enable_censoring enable_censoring_desc',
@@ -1125,7 +1134,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Replacement characters
                     'fieldset-censor_replacement' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'word_censoring'
                         ],
                         'command' => 'censor_replacement censor_replacement_desc',
@@ -1134,7 +1143,7 @@ class JumpMenu extends AbstractJumpMenu
                     // Words to censor
                     'fieldset-censored_words' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'word_censoring'
                         ],
                         'command' => 'censored_words',
@@ -1149,6 +1158,71 @@ class JumpMenu extends AbstractJumpMenu
                 'addon' => false,
                 'target' => 'settings/menu-manager',
                 'permission' => 'can_access_sys_prefs'
+            ),
+            'systemSettingsFrontedit' => array(
+                'icon' => 'fa-wrench',
+                'command' => 'system_settings frontedit ',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'settings/pro/frontedit',
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Enable dock?
+                    'fieldset-enable_dock' => array(
+                        'trail' => [
+                            //'settings',
+                            'frontedit'
+                        ],
+                        'command' => 'enable_dock enable_dock_desc',
+                        'command_title' => 'enable_dock'
+                    ),
+                    // Enable front-end editing
+                    'fieldset-enable_frontedit' => array(
+                        'trail' => [
+                            //'settings',
+                            'frontedit'
+                        ],
+                        'command' => 'enable_frontedit enable_frontedit_desc',
+                        'command_title' => 'enable_frontedit'
+                    ),
+                    // Enable automatic front-end editing links?
+                    'fieldset-automatic_frontedit_links' => array(
+                        'trail' => [
+                            //'settings',
+                            'frontedit'
+                        ],
+                        'command' => 'automatic_frontedit_links automatic_frontedit_links_desc',
+                        'command_title' => 'automatic_frontedit_links'
+                    ),
+                )
+            ),
+            'systemSettingsBranding' => array(
+                'icon' => 'fa-wrench',
+                'command' => 'system_settings branding ',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'settings/pro/branding',
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Logo to show on login screen
+                    'fieldset-login_logo' => array(
+                        'trail' => [
+                            //'settings',
+                            'branding'
+                        ],
+                        'command' => 'login_logo',
+                        'command_title' => 'login_logo'
+                    ),
+                    // Favicon
+                    'fieldset-favicon' => array(
+                        'trail' => [
+                            //'settings',
+                            'branding'
+                        ],
+                        'command' => 'favicon',
+                        'command_title' => 'favicon'
+                    ),
+                )
             ),
             'systemSettingsMembers' => array(
                 'icon' => 'fa-wrench',
@@ -1192,6 +1266,13 @@ class JumpMenu extends AbstractJumpMenu
                         ],
                         'command' => 'require_terms_of_service require_terms_of_service_desc',
                         'command_title' => 'require_terms_of_service'
+                    ),
+                    'fieldset-enable_mfa' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'enable_mfa enable_mfa_desc MFA',
+                        'command_title' => 'enable_mfa'
                     ),
                     'fieldset-allow_member_localization' => array(
                         'trail' => [
@@ -1292,7 +1373,7 @@ class JumpMenu extends AbstractJumpMenu
                 'anchors' => array(
                     'fieldset-avatar_url' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'avatar_settings'
                         ],
                         'command' => 'avatar_url avatar_url_desc',
@@ -1300,7 +1381,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-avatar_path' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'avatar_settings'
                         ],
                         'command' => 'avatar_path avatar_path_desc',
@@ -1308,7 +1389,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-avatar_max_width' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'avatar_settings'
                         ],
                         'command' => 'avatar_max_width avatar_max_width_desc',
@@ -1316,7 +1397,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-avatar_max_height' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'avatar_settings'
                         ],
                         'command' => 'avatar_max_height avatar_max_height_desc',
@@ -1324,7 +1405,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-avatar_max_kb' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'avatar_settings'
                         ],
                         'command' => 'avatar_max_kb avatar_max_kb_desc',
@@ -1342,7 +1423,7 @@ class JumpMenu extends AbstractJumpMenu
                 'anchors' => array(
                     'fieldset-cp_session_type' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'security_privacy'
                         ],
                         'command' => 'cp_session_type cp_session_type_desc',
@@ -1350,7 +1431,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-website_session_type' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'security_privacy'
                         ],
                         'command' => 'website_session_type website_session_type_desc',
@@ -1358,7 +1439,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-share_analytics' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'security_privacy'
                         ],
                         'command' => 'share_analytics share_analytics_desc',
@@ -1366,7 +1447,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-cli_enabled' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'security_privacy'
                         ],
                         'command' => 'cli_enabled cli_enabled_shorthand cli_enabled_desc',
@@ -1524,7 +1605,7 @@ class JumpMenu extends AbstractJumpMenu
                 'anchors' => array(
                     'fieldset-enable_throttling' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'access_throttling'
                         ],
                         'command' => 'enable_throttling enable_throttling_desc',
@@ -1532,7 +1613,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-max_page_loads' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'access_throttling'
                         ],
                         'command' => 'max_page_loads max_page_loads_desc',
@@ -1540,7 +1621,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-time_interval' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'access_throttling'
                         ],
                         'command' => 'time_interval time_interval_desc',
@@ -1548,7 +1629,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-lockout_time' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'access_throttling'
                         ],
                         'command' => 'lockout_time lockout_time_desc',
@@ -1556,7 +1637,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-banishment_type' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'access_throttling'
                         ],
                         'command' => 'banishment_type banishment_type_desc',
@@ -1564,7 +1645,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-banishment_url' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'access_throttling'
                         ],
                         'command' => 'banishment_url banishment_url_desc',
@@ -1572,7 +1653,7 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                     'fieldset-banishment_message' => array(
                         'trail' => [
-                            'settings',
+                            //'settings',
                             'access_throttling'
                         ],
                         'command' => 'banishment_message banishment_message_desc',
@@ -1639,6 +1720,14 @@ class JumpMenu extends AbstractJumpMenu
                 'addon' => false,
                 'target' => 'settings/consents',
                 'permission' => 'can_manage_consents',
+            ),
+            'systemSettingsCookies' => array(
+                'icon' => 'fa-wrench',
+                'command' => 'system_settings cookie_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'settings/pro/cookies',
+                'permission' => 'can_access_sys_prefs',
             ),
             //utilities
             'systemUtilitiesCommunicate' => array(
@@ -1863,6 +1952,7 @@ class JumpMenu extends AbstractJumpMenu
         ee()->lang->load('design');
         ee()->lang->load('utilities');
         ee()->lang->load('logs');
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
 
         $items = self::$items;
 
@@ -1915,6 +2005,18 @@ class JumpMenu extends AbstractJumpMenu
                 'permission' => 'can_access_logs'
             ),
         ]);
+
+        //MFA profile link if that is enabled
+        if (ee()->config->item('enable_mfa') === 'y') {
+            $items[1]['myProfileMfa'] = [
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account MFA',
+                'command_title' => lang('jump_mfa'),
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/pro/mfa',
+            ];
+        }
 
         //add superadmin-only stuff
         if (ee('Permission')->isSuperAdmin()) {

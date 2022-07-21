@@ -13,7 +13,7 @@ namespace ExpressionEngine\Controller\Settings;
 use CP_Controller;
 
 /**
- * Template Settings Controller
+ * Pro Settings Controller
  */
 class Pro extends Settings
 {
@@ -23,10 +23,6 @@ class Pro extends Settings
     public function __construct()
     {
         parent::__construct();
-
-        if (!ee('pro:Access')->hasRequiredLicense() || !ee('Permission')->canUsePro()) {
-            show_error(lang('unauthorized_access'), 403);
-        }
     }
 
     public function __call($name, $arguments)

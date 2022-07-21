@@ -22,7 +22,7 @@ if (! isset($alerts_name)) {
         <div class="panel-heading">
             <div class="form-btns form-btns-top">
                 <div class="title-bar title-bar--large">
-                    <h3 class="title-bar__title">
+                    <h3 class="title-bar__title" title="<?=$file->title?>">
                         <?=$file->title?>
 
                     </h3>

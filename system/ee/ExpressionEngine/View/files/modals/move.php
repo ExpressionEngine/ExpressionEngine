@@ -10,7 +10,7 @@
         <div class="dialog__body">
             <?=isset($alert) ? $alert : lang('select_new_destinatin_for')?>
 
-            <ul class="checklist">
+            <ul class="checklist" style="margin-bottom: 20px;">
                 <?php if (isset($checklist)):
                     $end = end($checklist); ?>
                     <?php foreach ($checklist as $item): ?>
@@ -21,20 +21,21 @@
                 endif ?>
             </ul>
 
-            <p>
+            <fieldset>
                 <label for="upload_location"><?= lang('destination') ?></label>
-            </p>
 
-            <div class="button-toolbar toolbar multilevel-select">
-                <?php
-                    echo ee('View')->make('ee:_shared/form/fields/dropdown')->render([
-                        'field_name' => 'upload_location',
-                        'choices' => $choices,
-                        'value' => $selected,
-                        'fileManager' => true,
-                    ]);
-                ?>
-            </div>
+
+                <div class="button-toolbar toolbar multilevel-select" style="margin-top: 0px;">
+                    <?php
+                        echo ee('View')->make('ee:_shared/form/fields/dropdown')->render([
+                            'field_name' => 'upload_location',
+                            'choices' => $choices,
+                            'value' => $selected,
+                            'fileManager' => true,
+                        ]);
+                    ?>
+                </div>
+            </fieldset>
 
             <div class="ajax"><?=isset($ajax_default) ? $ajax_default : '' ?></div>
         </div>

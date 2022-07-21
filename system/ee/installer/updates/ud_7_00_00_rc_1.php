@@ -40,6 +40,7 @@ class Updater
                 'setFileManagerCompatibilityMode',
                 'installPro',
                 'addProTrialSeenToSession',
+                'addDockPermissionsToRoles'
             ]
         );
 
@@ -380,6 +381,37 @@ class Updater
                     ]
                 ]
             );
+        }
+    }
+
+    private function addDockPermissionsToRoles()
+    {
+        $insert = [];
+        //get Pro module ID
+        $proIdQuery = ee('db')->select('module_id')->from('exp_modules')->where('module_name', 'Pro')->get();
+        $proModuleId = $proIdQuery->row('module_id');
+
+        $canAccessProQuery = ee('db')->select('role_id')->from('module_member_roles')->where('module_id', $proModuleId)->get();
+        $roles = [1];
+        foreach ($canAccessProQuery->result_array() as $row)
+        {
+            $roles[] = $row['role_id'];
+        }
+
+        $sites = ee()->db->select('site_id')->get('sites')->result_array();
+
+        foreach ($roles as $roleId) {
+            foreach ($sites as $site) {
+                $insert[] = [
+                    'role_id' => $roleId,
+                    'site_id' => $site['site_id'],
+                    'permission' => 'can_access_dock'
+                ];
+            }
+        }
+
+        if (! empty($insert)) {
+            ee()->db->insert_batch('permissions', $insert);
         }
     }
 }
