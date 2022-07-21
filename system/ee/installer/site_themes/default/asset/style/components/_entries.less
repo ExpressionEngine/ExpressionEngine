@@ -1,0 +1,23 @@
+/*
+	_entries.less
+	-------------
+	define entries
+*/
+
+.entries{
+	.entry:extend(.item){
+		border-bottom-color: @light-gray;
+			h2 + p{ color: @gray; margin-top: -10px; }
+	}
+}
+
+	.home .entries h2{ font-size: @font-base + 4; }
+
+// responsibility
+@media screen and (min-width: @min-width){
+	.entries{
+		.entry{
+			&:last-child{ border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+		}
+	}
+}

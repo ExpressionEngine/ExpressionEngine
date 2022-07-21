@@ -1,0 +1,26 @@
+/*
+	_video.less
+	-------------
+	define video
+*/
+
+// responsive video
+// allows videos to resize with the browser view-port
+.video{
+	.player{
+		height: 0;
+		overflow: hidden;
+		padding-bottom: 56.25%; /* 16/9 ratio */
+		padding-top: 30px; /* IE6 workaround */
+		position: relative;
+			// set dimensions and position of elements inside .video
+			embed, iframe, img, object, video{
+				height: 100%;
+				left: 0;
+				position: absolute;
+				top: 0;
+				width: 100%;
+				.corners;
+			}
+	}
+}

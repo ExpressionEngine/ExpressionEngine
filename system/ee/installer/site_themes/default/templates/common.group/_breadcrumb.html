@@ -1,0 +1,30 @@
+		<section class="row pad breadcrumb">
+			<section class="w-16">
+				<ul>
+					{!-- always show the homepage --}
+					<li><a href="{homepage}">{site_name}</a></li>
+					{!-- check for channel, category --}
+					{if embed:entry_ch}
+						<li><a href="{path='{embed:p_url}'}">{embed:p_title}</a></li>
+						{exp:channel:entries channel='{embed:entry_ch}' limit='1'}
+							<li>{title}</li>
+						{/exp:channel:entries}
+					{if:elseif embed:cat_ch}
+						<li><a href="{path='{embed:p_url}'}">{embed:p_title}</a></li>
+						<li>{exp:channel:category_heading channel='{embed:cat_ch}'}{category_name}{/exp:channel:category_heading}</li>
+					{if:else}
+						{!-- check for search results --}
+						{if embed:search}
+							<li><a href="{path='{embed:p_url}'}">{embed:p_title}</a></li>
+							{if embed:search == 'y'}
+								<li>{exp:search:total_results} search result{if '{exp:search:total_results}' != 1}s{/if} for <mark>{exp:search:keywords}</mark></li>
+							{if:else}
+								<li>0 search results for <mark>{exp:search:keywords}</mark></li>
+							{/if}
+						{if:else}
+							<li>{embed:p_title}</li>
+						{/if}
+					{/if}
+				</ul>
+			</section>
+		</section>

@@ -1,0 +1,67 @@
+/*
+	_btn.less
+	-------------
+	define btn
+*/
+
+.btn{
+	margin-right: 5px;
+	text-decoration: none;
+		&:before{ font-family: @fam-ico; }
+		&.contrast{
+			&:before{ content: @fa-var-adjust; }
+		}
+		&.copy{
+			&:before{ content: @fa-var-clone; }
+		}
+		.ctrls &{
+			background-color: lighten(@green,30%);
+			border: 1px solid lighten(@green,20%);
+			color: darken(@green,20%);
+			font-weight: bold;
+			padding: 10px 15px 8px;
+			.shadow(0 4px 0 0 lighten(@green,20%));
+				&:hover{
+					background-color: lighten(@green,25%);
+					color: darken(@green,20%);
+					.shadow(0 3px 0 0 lighten(@green,20%));
+				}
+				&.disable,
+				&.disable:hover{
+					background-color: lighten(@gray,45%);
+					border: 1px solid lighten(@gray,35%);
+					color: @medium-gray;
+					cursor: not-allowed;
+					.shadow(0 4px 0 0 lighten(@gray,35%));
+				}
+				&.remove,
+				&.remove:hover{
+					background-color: lighten(@red,45%);
+					border: 1px solid lighten(@red,35%);
+					color: @red;
+					.shadow(0 4px 0 0 lighten(@red,35%));
+				}
+				&.work,
+				&.work:hover{
+					background-color: @white;
+					border: 1px dashed darken(@light-gray,5%);
+					.breathe;
+					.shadow(0 4px 0 0 lighten(@medium-gray,20%));
+				}
+		}
+		h1 &{
+			background-color: @light-gray;
+			border: 0;
+			color: @primary;
+			font-size: @font-base;
+			margin: 0;
+			padding: 5px 10px;
+			position: absolute;
+			right: 0;
+			top: 0;
+				&:hover{
+					background-color: @primary;
+					color: @white;
+				}
+		}
+}

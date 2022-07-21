@@ -1,0 +1,135 @@
+/*
+	_base-grid.less
+	-------------
+	define base-grid
+	-------------
+		.row
+		.full
+		.fill
+		.col-width
+*/
+
+.row{
+	[class*='w-']{ .boxsize; }
+	&.pad{ padding: 0 20px; }
+}
+
+// fill viewport columns
+// use section.fill wrapped around a default column structure
+// limited to 2 columns, and top level layout
+.fill{
+	> .row{
+		[class*='w-']{
+			margin-bottom: 0;
+		}
+	}
+}
+
+// math for column widths
+.col-width(@span, @columns: 16){ width: 100/@columns * @span * 1%; }
+
+// responsibility
+@media screen and (min-width: @min-width){
+	.row{
+		margin: 0 auto;
+		max-width: @max-width;
+			[class*='w-']{ padding: 0 @h-gutter; .left; }
+			.row{ margin: 0 -@h-gutter; }
+			&.pad{ padding: 0 10px; }
+			// allows a fixed width column and a flexible column
+			// the .fluid, must contain a div.box around it's content
+			// limited to 2 columns
+			&.fluid-fix{
+				> .fluid{
+					margin-right: -@fixed-width;
+					width: 100%;
+					.left;
+						> .box{ margin-right: @fixed-width; }
+				}
+				> .fixed{ width: @fixed-width; .right; }
+			}
+			// reverses the display of w-[n] html order
+			// instead of 1,2,3 displays 3,2,1
+			&.reverse{
+				> [class*='w-']{ .right; }
+				// reverses the .fluid-fix
+				&.fluid-fix{
+					> .fluid{
+						margin-left: -@fixed-width;
+						margin-right: 0;
+						.right;
+							> .box{ margin-left: @fixed-width; margin-right: 0; }
+					}
+					> .fixed{ .left; }
+				}
+			}
+			&.first{
+				> [class*='w-']{ h1,h2,h3,h4,h5,h6{ margin-top: 0; } }
+			}
+			fieldset&{
+				border: 0;
+				padding-bottom: 10px;
+				position: relative;
+					// fake the border so that the columns can be the same width.
+					&:before{
+						background-color: @form-sep;
+						bottom: 0;
+						content: '';
+						left: 10px;
+						display: block;
+						height: 1px;
+						position: absolute;
+						right: 10px;
+						.boxsize;
+					}
+			}
+			&:after{ .clear; }
+	}
+
+	// responsive overrides for fill
+	.fill{
+		> .row{
+			max-width: 100%;
+				[class*='w-']{
+					height: 100%;
+						&:first-child{ left: 0; }
+						&:last-child{ right: 0; }
+				}
+				&.fluid-fix{
+					> .fixed{ position: fixed; overflow: auto; }
+				}
+				&.reverse{
+					[class*='w-']{
+						&:first-child{ left: auto; right: 0; }
+						&:last-child{ left: 0; right: auto; }
+					}
+				}
+		}
+	}
+
+	// column widths.
+	// ==============
+	// each represents the number of columns
+	// within a 16 column grid, the current column
+	// should cover. All cols within a group need to add up to 16.
+	// e.g. .w-1 + .w-15 = 16, .w-8 + .w-8 = 16
+	.w-1{ .col-width(1); }
+	.w-2{ .col-width(2); }
+	.w-3{ .col-width(3); }
+	.w-4{ .col-width(4); }
+	.w-5{ .col-width(5); }
+	.w-6{ .col-width(6); }
+	.w-7{ .col-width(7); }
+	.w-8{ .col-width(8); }
+	.w-9{ .col-width(9); }
+	.w-10{ .col-width(10); }
+	.w-11{ .col-width(11); }
+	.w-12{ .col-width(12); }
+	.w-13{ .col-width(13); }
+	.w-14{ .col-width(14); }
+	.w-15{ .col-width(15); }
+	.w-16{ .col-width(16); }
+
+	// oddball widths
+	.w-3rds{ width: 33.33%; }
+}

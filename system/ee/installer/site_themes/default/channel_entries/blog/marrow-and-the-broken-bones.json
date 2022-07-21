@@ -1,0 +1,35 @@
+{
+	"title": "Entry with BandCamp audio, comments, and comments disabled",
+	"url_title": "marrow-and-the-broken-bones",
+	"status": "open",
+	"allow_comments": "n",
+	"categories": [
+		"Music"
+	],
+	"custom_fields":
+	{
+		"blog_content": "Lorem ipsum dolor sit amet, <b>this is bold text</b> consectetur <strong>this text is strongly emphasized</strong> adipisicing elit, sed do eiusmod tempor incididunt <i>this is italic text</i> ut labore <em>this text is emphasized</em> et dolore magna aliqua. Ut enim ad minim veniam, <a href=\"\">this is a link</a> quis nostrud <a href=\"\" rel=\"external\">this is an external link</a> laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse <del>This text is deleted</del> <ins>this text is inserted</ins> cillum <code>this is a code sample</code> dolore eu <mark>this text is highlighted</mark> fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+		"seo_title": "Marrow and the broken bones.",
+		"seo_desc": "An album for the intelligent and uncommon.",
+		"blog_audio":
+		{
+			"rows": [
+				{
+					"id": "3925868830",
+					"type": "bandcamp"
+				}
+			]
+		}
+	},
+	"comments": [
+		{
+			"author_id": 1,
+			"comment": "This is a comment.\n\nfugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+		},
+		{
+			"name": "Quest one",
+			"email": "example@example.com",
+			"comment": "This is a comment from a Quest ;)\n\nfugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+		}
+	]
+}

@@ -1,0 +1,21 @@
+/*
+	_item-list.less
+	-------------
+	define item-list
+*/
+
+.item-list:extend(.menu){
+	background-color: @off-white;
+	margin: @v-gutter 0;
+		li{
+			border-bottom: 1px solid @medium-gray;
+			padding: @v-gutter;
+				&:last-child{ border-bottom: 0; }
+				h1, h2, h3, h4, h5, h6{ &:first-of-type{ margin-top: 0; } }
+				p, ul, ol{
+					&:first-child{ .top; }
+					&:last-child{ .bottom; }
+					&:only-of-type{ margin: 0; }
+				}
+		}
+}

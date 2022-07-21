@@ -1,0 +1,31 @@
+/*
+	_table.less
+	-------------
+	define table
+*/
+
+@table-pad: 1px;
+
+table{
+	background-color: @white;
+	border: 1px solid @medium-gray;
+	padding: @table-pad;
+	table-layout: fixed;
+		tr{
+			&:last-child{
+				td{ border-bottom: 0; }
+			}
+		}
+		tbody{
+			// zebra striped tables!
+			// this affects even rows, 2nd, 4th, 6th row, etc...
+			tr:nth-child(2n){ background-color: @off-white; }
+		}
+		th, td{
+			border-right: 1px solid @medium-gray;
+			padding: 10px;
+				&:last-child{ border-right: 0; }
+		}
+		th{ background-color: @gray; color: @white; }
+		td{ border-bottom: 1px solid @medium-gray; border-right-color: @medium-gray; }
+}

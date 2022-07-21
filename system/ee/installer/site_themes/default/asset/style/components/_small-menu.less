@@ -1,0 +1,35 @@
+/*
+	_small-menu.less
+	-------------
+	define small-menu
+*/
+
+.small-menu{
+	background-color: @menu-bg;
+	border: 0;
+	color: @white;
+	display: block;
+	font-weight: normal;
+	letter-spacing: 1px;
+	padding: 5px 10px 3px;
+	position: absolute;
+	right: 20px;
+	text-decoration: none;
+	top: 22px;
+	.corners(3px);
+		&.act,
+		&:hover{
+			background-color: @menu-hover;
+			color: @primary;
+		}
+		&:after{
+			content: @fa-var-bars;
+			font-family: @fam-ico;
+			.font-wk;
+		}
+}
+
+// responsibility
+@media screen and (min-width: @min-width){
+	.small-menu{ display: none; }
+}
