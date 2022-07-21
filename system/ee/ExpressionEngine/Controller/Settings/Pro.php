@@ -23,10 +23,6 @@ class Pro extends Settings
     public function __construct()
     {
         parent::__construct();
-
-        if (!ee('Permission')->canUsePro()) {
-            show_error(lang('unauthorized_access'), 403);
-        }
     }
 
     public function __call($name, $arguments)

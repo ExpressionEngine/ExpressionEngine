@@ -1676,6 +1676,7 @@ class EE_Schema
             1 => [
                 'can_view_offline_system',
                 'can_access_cp',
+                'can_access_dock',
                 'can_access_footer_report_bug',
                 'can_access_footer_new_ticket',
                 'can_access_footer_user_guide',

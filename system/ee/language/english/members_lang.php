@@ -511,6 +511,10 @@ $lang = array(
 
     'can_access_cp_desc' => 'When enabled, users assigned to this group may access the control panel.',
 
+    'can_access_dock' => 'Access Front-End Content Management Tools',
+
+    'can_access_dock_desc' => 'When enabled, users assigned to this group may can access Front-End Content Management Tools.',
+
     'can_access_data' => 'Data Operations',
 
     'can_access_design' => 'Access template manager',

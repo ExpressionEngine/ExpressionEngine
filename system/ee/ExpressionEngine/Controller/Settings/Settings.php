@@ -86,10 +86,8 @@ class Settings extends CP_Controller
             $list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
         }
 
-        if (ee('Permission')->canUsePro()) {
-            $sidebar->addItem(lang('frontedit'), ee('CP/URL')->make('settings/pro/frontedit'));
-            $sidebar->addItem(lang('branding_settings'), ee('CP/URL')->make('settings/pro/branding'));
-        }
+        $sidebar->addItem(lang('frontedit'), ee('CP/URL')->make('settings/pro/frontedit'));
+        $sidebar->addItem(lang('branding_settings'), ee('CP/URL')->make('settings/pro/branding'));
 
         $list->addItem(lang('tracking'), ee('CP/URL')->make('settings/tracking'));
 
@@ -129,9 +127,7 @@ class Settings extends CP_Controller
             }
         }
 
-        if (ee('Permission')->canUsePro()) {
-            $sidebar->addItem(lang('cookie_settings'), ee('CP/URL')->make('settings/pro/cookies'));
-        }
+        $sidebar->addItem(lang('cookie_settings'), ee('CP/URL')->make('settings/pro/cookies'));
     }
 
     /**

@@ -653,36 +653,21 @@ class Roles extends AbstractRolesController
             ]
         ];
 
-        if (ee('pro:Access')->hasRequiredLicense()) {
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-            $section = array_merge($section, [
-                [
-                    'title' => 'require_mfa',
-                    'desc' => 'require_mfa_desc',
-                    'group' => 'can_access_cp',
-                    'caution' => true,
-                    'fields' => [
-                        'require_mfa' => [
-                            'type' => 'yes_no',
-                            'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
-                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
-                        ]
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        $section = array_merge($section, [
+            [
+                'title' => 'require_mfa',
+                'desc' => 'require_mfa_desc',
+                'group' => 'can_access_cp',
+                'caution' => true,
+                'fields' => [
+                    'require_mfa' => [
+                        'type' => 'yes_no',
+                        'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
                     ]
-                ],
-            ]);
-            if (version_compare(PHP_VERSION, 7.1, '<')) {
-                ee()->lang->load('addons');
-                $section = array_merge($section, [
-                    ee('CP/Alert')->makeInline('mfa_not_available')
-                        ->asWarning()
-                        ->withTitle(lang('mfa_not_available'))
-                        ->addToBody(sprintf(lang('version_required'), 'PHP', 7.1))
-                        ->cannotClose()
-                        ->render()
-                        . form_hidden('require_mfa', 'n')
-                ]);
-            }
-        }
+                ]
+            ],
+        ]);
 
         if ($role->getId() != Member::SUPERADMIN) {
             $section = array_merge($section, [
@@ -983,6 +968,15 @@ class Roles extends AbstractRolesController
                     'caution' => true,
                     'fields' => [
                         'can_access_cp' => $permissions['fields']['can_access_cp']
+                    ]
+                ],
+                [
+                    'title' => 'can_access_dock',
+                    'desc' => 'can_access_dock_desc',
+                    'group' => 'can_access_cp',
+                    'caution' => true,
+                    'fields' => [
+                        'can_access_dock' => $permissions['fields']['can_access_dock']
                     ]
                 ],
             ]
@@ -1641,6 +1635,12 @@ class Roles extends AbstractRolesController
                     'type' => 'yes_no',
                     'group_toggle' => [
                         'y' => 'can_access_cp'
+                    ]
+                ],
+                'can_access_dock' => [
+                    'type' => 'yes_no',
+                    'group_toggle' => [
+                        'y' => 'can_access_dock'
                     ]
                 ],
                 'can_view_homepage_news' => [
