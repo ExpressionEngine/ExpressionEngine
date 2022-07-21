@@ -114,10 +114,12 @@ class Permission
         // currently. anyone with CP access
         // if the future, inject into Permissions service
         if ($this->has('can_access_cp')) {
-            $assigned_modules = ee()->session->getMember()->getAssignedModules()->pluck('module_name');
+            //since Pro is built-in into EE7, we can't do this check anymore, so grant access to everyone who has CP access
+            /*$assigned_modules = ee()->session->getMember()->getAssignedModules()->pluck('module_name');
             if (in_array('Pro', $assigned_modules)) {
                 return true;
-            }
+            }*/
+            return true;
         }
 
         return false;

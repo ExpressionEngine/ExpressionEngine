@@ -256,6 +256,7 @@ context('Install with default theme', () => {
       cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
+      cy.wait(1000)//give JS some extra time
       let ocean_id = null
       cy.get('.modal-file .app-listing__row a').contains('ocean.jpg').parents('tr').invoke('attr', 'data-id').then((id) => {
         ocean_id = id;
@@ -327,6 +328,7 @@ context('Install with default theme', () => {
       cy.get('.textarea-field-filepicker').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
+      cy.wait(1000)//give JS some extra time
       cy.get('.modal-file .app-listing__row a').contains('path.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
       cy.wait(1000)//give JS some extra time
@@ -341,6 +343,7 @@ context('Install with default theme', () => {
       cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
+      cy.wait(1000)//give JS some extra time
       cy.get('.modal-file .app-listing__row a').contains('sky.jpg').click()
       cy.get('.modal-file').should('not.be.visible')
       cy.wait(1000)//give JS some extra time

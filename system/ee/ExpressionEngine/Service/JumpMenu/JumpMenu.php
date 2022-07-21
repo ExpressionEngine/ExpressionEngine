@@ -902,7 +902,16 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'auto_assign_cat_parents auto_assign_cat_parents_desc',
                         'command_title' => 'auto_assign_cat_parents'
                     ),
-                    // Assign category parents?
+                    // Enable entry cloning
+                    'fieldset-enable_entry_cloning' => array(
+                        'trail' => [
+                            'settings',
+                            'content_and_design'
+                        ],
+                        'command' => 'enable_entry_cloning enable_entry_cloning_desc',
+                        'command_title' => 'enable_entry_cloning'
+                    ),
+                    // Compatibility mode?
                     'fieldset-file_manager_compatibility_mode' => array(
                         'trail' => [
                             'settings',
@@ -1150,6 +1159,71 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'settings/menu-manager',
                 'permission' => 'can_access_sys_prefs'
             ),
+            'systemSettingsFrontedit' => array(
+                'icon' => 'fa-wrench',
+                'command' => 'system_settings frontedit ',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'settings/pro/frontedit',
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Enable dock?
+                    'fieldset-enable_dock' => array(
+                        'trail' => [
+                            'settings',
+                            'frontedit'
+                        ],
+                        'command' => 'enable_dock enable_dock_desc',
+                        'command_title' => 'enable_dock'
+                    ),
+                    // Enable front-end editing
+                    'fieldset-enable_frontedit' => array(
+                        'trail' => [
+                            'settings',
+                            'frontedit'
+                        ],
+                        'command' => 'enable_frontedit enable_frontedit_desc',
+                        'command_title' => 'enable_frontedit'
+                    ),
+                    // Enable automatic front-end editing links?
+                    'fieldset-automatic_frontedit_links' => array(
+                        'trail' => [
+                            'settings',
+                            'frontedit'
+                        ],
+                        'command' => 'automatic_frontedit_links automatic_frontedit_links_desc',
+                        'command_title' => 'automatic_frontedit_links'
+                    ),
+                )
+            ),
+            'systemSettingsBranding' => array(
+                'icon' => 'fa-wrench',
+                'command' => 'system_settings branding ',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'settings/pro/branding',
+                'permission' => 'can_access_sys_prefs',
+                'anchors' => array(
+                    // Logo to show on login screen
+                    'fieldset-login_logo' => array(
+                        'trail' => [
+                            'settings',
+                            'branding'
+                        ],
+                        'command' => 'login_logo',
+                        'command_title' => 'login_logo'
+                    ),
+                    // Favicon
+                    'fieldset-favicon' => array(
+                        'trail' => [
+                            'settings',
+                            'branding'
+                        ],
+                        'command' => 'favicon',
+                        'command_title' => 'favicon'
+                    ),
+                )
+            ),
             'systemSettingsMembers' => array(
                 'icon' => 'fa-wrench',
                 'command' => 'system_settings member_settings',
@@ -1192,6 +1266,13 @@ class JumpMenu extends AbstractJumpMenu
                         ],
                         'command' => 'require_terms_of_service require_terms_of_service_desc',
                         'command_title' => 'require_terms_of_service'
+                    ),
+                    'fieldset-enable_mfa' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'enable_mfa enable_mfa_desc MFA',
+                        'command_title' => 'enable_mfa'
                     ),
                     'fieldset-allow_member_localization' => array(
                         'trail' => [
@@ -1640,6 +1721,14 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'settings/consents',
                 'permission' => 'can_manage_consents',
             ),
+            'systemSettingsCookies' => array(
+                'icon' => 'fa-wrench',
+                'command' => 'system_settings cookie_settings',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'settings/pro/cookies',
+                'permission' => 'can_access_sys_prefs',
+            ),
             //utilities
             'systemUtilitiesCommunicate' => array(
                 'icon' => 'fa-hammer',
@@ -1863,6 +1952,7 @@ class JumpMenu extends AbstractJumpMenu
         ee()->lang->load('design');
         ee()->lang->load('utilities');
         ee()->lang->load('logs');
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
 
         $items = self::$items;
 
@@ -1915,6 +2005,18 @@ class JumpMenu extends AbstractJumpMenu
                 'permission' => 'can_access_logs'
             ),
         ]);
+
+        //MFA profile link if that is enabled
+        if (ee()->config->item('enable_mfa') === 'y') {
+            $items[1]['myProfileMfa'] = [
+                'icon' => 'fa-user',
+                'command' => 'my_profile my_account MFA',
+                'command_title' => lang('jump_mfa'),
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'members/profile/pro/mfa',
+            ];
+        }
 
         //add superadmin-only stuff
         if (ee('Permission')->isSuperAdmin()) {

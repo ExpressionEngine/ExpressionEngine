@@ -411,7 +411,7 @@ class EE_Core
         }
 
         // Is MFA required?
-        if (REQ == 'PAGE' && ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (REQ == 'PAGE' && ee()->session->userdata('mfa_flag') != 'skip') {
             if (ee()->session->userdata('mfa_flag') == 'show') {
                 ee('pro:Mfa')->invokeMfaDialog();
             }
@@ -539,7 +539,7 @@ class EE_Core
             ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
         }
 
-        if (ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee()->session->userdata('mfa_flag') != 'skip') {
             //only allow MFA code page
             if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset', 'logout'])) && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
@@ -555,7 +555,7 @@ class EE_Core
         }
 
         //is member role forced to use MFA?
-        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
                 ee('CP/Alert')->makeInline('shared-form')
