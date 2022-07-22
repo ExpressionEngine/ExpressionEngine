@@ -141,7 +141,7 @@ class NavigationSidebar extends AbstractSidebar
             }
 
             if (ee('Permission')->has('can_access_design')) {
-                $section->addItem(lang('templates'), ee('CP/URL')->make('design'))->withIcon('file');
+                $section->addItem(lang('templates'), ee('CP/URL')->make('design'))->withIcon('file-code');
             }
 
             $tools = [];
