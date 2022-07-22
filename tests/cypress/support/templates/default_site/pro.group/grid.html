@@ -1,0 +1,27 @@
+{layout="cypress/layout"}
+{exp:channel:entries dynamic="no" entry_id="5" limit="1"}
+<table>
+{file_grid}
+<tr id="row_{count}">
+    <td>
+        {file_grid:file wrap="image"}
+    </td>
+    <td>
+        {file_grid:text}
+    </td>
+    <td>
+        {file_grid:checkboxes markup='ul'}
+    </td>
+    <td>
+        {file_grid:date format="%Y-%m-%d"}
+    </td>
+    <td>
+        {file_grid:rte}
+    </td>
+    <td>
+        {file_grid:toggle}
+    </td>
+</tr>
+{/file_grid}
+</table>
+{/exp:channel:entries}

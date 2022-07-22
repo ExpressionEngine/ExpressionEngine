@@ -175,7 +175,7 @@ class Fields extends AbstractFieldsController
         $vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('fields')), 'href' => $vars['create_url']];
 
         $breadcrumbs = array(
-            '#developer' => '<i class="fas fa-database"></i>'
+            '#developer' => '<i class="fal fa-database"></i>'
         );
         if (!$group) {
             ee()->view->cp_breadcrumbs = array(
@@ -262,7 +262,7 @@ class Fields extends AbstractFieldsController
                 if (ee('Request')->post('field_is_conditional') == 'y') {
                     ee()->functions->redirect(
                         ee('CP/URL')->make('fields/syncConditions/' . $field->getId())
-                        ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                            ->setQueryStringVariable('return', base64_encode($redirectUrl))
                     );
                 }
 
@@ -453,7 +453,7 @@ class Fields extends AbstractFieldsController
                 if ($conditionalEntriesRequireSync) {
                     ee()->functions->redirect(
                         ee('CP/URL')->make('fields/syncConditions/' . $field->getId())
-                        ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                            ->setQueryStringVariable('return', base64_encode($redirectUrl))
                     );
                 }
 
@@ -612,7 +612,7 @@ class Fields extends AbstractFieldsController
                             'type' => 'html',
                             'content' => ee()->load->view('_shared/message', array(
                                 'cp_messages' => [
-                                    'field-instruct' => '<em>'.lang('field_conditions_sync_in_progress_message').'</em>'
+                                    'field-instruct' => '<em>' . lang('field_conditions_sync_in_progress_message') . '</em>'
                                 ]), true)
                         )
                     )
@@ -628,7 +628,6 @@ class Fields extends AbstractFieldsController
                 ->setQueryStringVariable('channel_ids', implode(',', $channelIds));
             $defaultReturnUrl = ee('CP/URL')->make('fields');
         }
-
 
         $return = ee()->input->get('return') ? base64_decode(ee()->input->get('return')) : $defaultReturnUrl->compile();
 
@@ -681,6 +680,7 @@ class Fields extends AbstractFieldsController
 
             $comparable[] = [$conditionSet->match => $conditions];
         }
+
         return $comparable;
     }
 
@@ -701,6 +701,7 @@ class Fields extends AbstractFieldsController
                 return false;
             }
         }
+
         return true;
     }
 
@@ -830,7 +831,7 @@ class Fields extends AbstractFieldsController
             ),
         );
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee('pro:Access')->hasRequiredLicense()) {
             ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
             $sections['pro_settings'][] = array(
                 'title' => 'enable_frontedit',
@@ -993,7 +994,7 @@ class Fields extends AbstractFieldsController
         if (!empty($dependentChannels)) {
             ee()->functions->redirect(
                 ee('CP/URL')->make('fields/syncConditions')
-                ->setQueryStringVariable('channel_ids', implode(',', $dependentChannels))
+                    ->setQueryStringVariable('channel_ids', implode(',', $dependentChannels))
             );
         }
     }

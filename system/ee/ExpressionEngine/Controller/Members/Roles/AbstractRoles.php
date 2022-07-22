@@ -61,7 +61,7 @@ abstract class AbstractRoles extends CP_Controller
 
         $sidebar = ee('CP/Sidebar')->makeNew();
 
-        $all_roles = $sidebar->addItem(lang('all_roles'), ee('CP/URL')->make('members/roles'));
+        $all_roles = $sidebar->addItem(lang('all_roles'), ee('CP/URL')->make('members/roles'))->withIcon('user-tag');
 
         if ($active) {
             $all_roles->isInactive();
@@ -119,6 +119,7 @@ abstract class AbstractRoles extends CP_Controller
         }
 
         ee()->view->left_nav = $sidebar->render();
+        ee()->view->left_nav_collapsed = $sidebar->collapsedState;
     }
 }
 

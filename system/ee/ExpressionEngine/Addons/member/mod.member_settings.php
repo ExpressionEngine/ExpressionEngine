@@ -759,7 +759,7 @@ class Member_settings extends Member
 
         //		$result_row = $result->row_array()
 
-        $this->member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $this->member = ee()->session->getMember();
 
         if (empty($this->member)) {
             if (! empty($tagdata)) {

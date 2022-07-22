@@ -103,8 +103,7 @@ class TemplateGroup extends Model
             $new_path = $this->getFolderPath();
 
             if ($old_path !== null && $new_path !== null) {
-                $fs = new Filesystem();
-                $fs->rename($old_path, $new_path);
+                ee('Filesystem')->rename($old_path, $new_path);
             }
         }
 
@@ -138,11 +137,10 @@ class TemplateGroup extends Model
      */
     public function ensureFolderExists()
     {
-        $fs = new Filesystem();
         $path = $this->getFolderPath();
 
-        if (isset($path) && ! $fs->isDir($path)) {
-            $fs->mkDir($path, false);
+        if (isset($path) && ! ee('Filesystem')->isDir($path)) {
+            ee('Filesystem')->mkDir($path, false);
         }
     }
 
@@ -181,11 +179,10 @@ class TemplateGroup extends Model
      */
     public function onAfterDelete()
     {
-        $fs = new Filesystem();
         $path = $this->getFolderPath();
 
-        if (isset($path) && $fs->isDir($path)) {
-            $fs->deleteDir($path);
+        if (isset($path) && ee('Filesystem')->isDir($path)) {
+            ee('Filesystem')->deleteDir($path);
         }
     }
 

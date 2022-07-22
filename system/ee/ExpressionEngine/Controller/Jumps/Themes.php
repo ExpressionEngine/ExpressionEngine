@@ -14,7 +14,12 @@ use CP_Controller;
 
 class Themes extends Jumps
 {
-    private $themes = array('light' => 'fa-sun', 'dark' => 'fa-moon');
+    private $themes = array(
+        'light' => 'fa-sun',
+        'dark' => 'fa-moon',
+        'slate' => 'fa-mountain-sun',
+        // 'snow' => 'fa-snowflake',
+    );
 
     public function __construct()
     {

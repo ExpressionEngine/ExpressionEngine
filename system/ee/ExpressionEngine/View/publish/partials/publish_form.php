@@ -103,9 +103,9 @@
                 }
             ?>
             <?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid'): ?>
-            <div class="fieldset-faux <?=$field_class?>"  data-field_id="<?=$field->getId()?>">
+            <div class="fieldset-faux <?=$field_class?>"  data-field_id="<?=$field->getId()?>" <?php if (!isset($pro_class)) : ?> style="width:<?php echo $field->getWidth()?>%" <?php endif; ?>>
             <?php else: ?>
-            <fieldset class="<?=$field_class?>" data-field_id="<?=$field->getId()?>">
+            <fieldset class="<?=$field_class?>" data-field_id="<?=$field->getId()?>" <?php if (!isset($pro_class)) : ?> style="width:<?php echo $field->getWidth()?>%" <?php endif; ?>>
             <?php endif; ?>
                 <div class="field-instruct">
                     <?php if (! $field->titleIsHidden()):?>
@@ -119,7 +119,7 @@
                 </div>
                 <div class="field-control">
                     <?php if ($field->get('field_id') == 'revisions'): ?>
-                        <div class="panel">
+                        <div class="panel panel__with-border">
                             <?=$revisions?>
                         </div>
                     <?php elseif ($field->getSetting('string_override') !== null): ?>

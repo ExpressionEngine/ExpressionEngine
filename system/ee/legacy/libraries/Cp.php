@@ -86,10 +86,10 @@ class Cp
             'table_open' => '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">'
         );
 
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
-
-        if (! $member) {
+        if (ee()->session->userdata('member_id') == 0) {
             $member = ee('Model')->make('Member');
+        } else {
+            $member = ee()->session->getMember();
         }
 
         $notepad_content = ($member->notepad) ?: '';
@@ -151,6 +151,8 @@ class Cp
             'searching' => lang('searching'),
             'dark_theme' => lang('dark_theme'),
             'light_theme' => lang('light_theme'),
+            'slate_theme' => lang('slate_theme'),
+            'snow_theme' => lang('snow_theme'),
             'many_jump_results' => lang('many_jump_results'),
         );
 
@@ -178,7 +180,8 @@ class Cp
             'site_name' => ee()->config->item('site_name'),
             'site_url' => ee()->config->item('site_url'),
             'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
-            'cp.dismissBannerURL' => ee('CP/URL', 'homepage/dismiss-banner')->compile(),
+            'cp.collapseSecondaryNavURL' => ee('CP/URL', 'homepage/toggle-secondary-sidebar-nav')->compile(),
+            'fileManagerCompatibilityMode' => bool_config_item('file_manager_compatibility_mode'),
         ));
 
         if (ee()->session->flashdata('update:completed')) {
@@ -279,8 +282,6 @@ class Cp
      */
     public function render($view, $data = array(), $return = false)
     {
-        $this->_menu();
-
         $date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
 
         ee()->load->helper('text');
@@ -297,22 +298,24 @@ class Cp
         }
 
         ee()->view->pro_license_status = '';
-        if (IS_PRO) {
-            $pro_status = (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
-            switch ($pro_status) {
+
+        $pro_status = (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
+        switch ($pro_status) {
                 case 'update_available':
                     ee()->view->pro_license_status = 'valid';
+
                     break;
 
                 case '':
                     ee()->view->pro_license_status = 'na';
+
                     break;
 
                 default:
                     ee()->view->pro_license_status = $pro_status;
+
                     break;
             }
-        }
 
         $this->_notices();
 
@@ -333,6 +336,7 @@ class Cp
 
         if (! empty($sidebar)) {
             ee()->view->left_nav = $sidebar;
+            ee()->view->left_nav_collapsed = ee('CP/Sidebar')->collapsedState;
         }
 
         return ee()->view->render($view, $data, $return);
@@ -681,18 +685,22 @@ class Cp
         switch ($type) {
             case 'ui':
                 $file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/jquery/ui/jquery.ui.' . $name . '.js';
+
                 break;
 
             case 'plugin':
                 $file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/jquery/plugins/' . $name . '.js';
+
                 break;
 
             case 'file':
                 $file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/' . $name . '.js';
+
                 break;
 
             case 'pro_file':
                 $file = PATH_PRO_THEMES . 'js/' . $name . '.js';
+
                 break;
 
             case 'package':
@@ -703,10 +711,12 @@ class Cp
                 }
 
                 $file = PATH_THIRD . $package . '/javascript/' . $name . '.js';
+
                 break;
 
             case 'fp_module':
                 $file = PATH_ADDONS . $name . '/javascript/' . $name . '.js';
+
                 break;
 
             default:

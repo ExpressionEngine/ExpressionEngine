@@ -58,9 +58,7 @@ class File extends SplFileObject
 
     public function getMimeType()
     {
-        ee()->load->library('mime_type');
-
-        return ee()->mime_type->ofFile($this->getRealPath());
+        return ee('MimeType')->ofFile($this->getRealPath());
     }
 
     public function isImage()

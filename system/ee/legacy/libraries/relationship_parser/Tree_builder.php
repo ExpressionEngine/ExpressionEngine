@@ -138,9 +138,10 @@ class EE_relationship_tree_builder
      * it.
      *
      * @param	object	Root query node of the relationship tree
+     * @param array $disabledFeatures
      * @return	object	The new relationships parser
      */
-    public function get_parser(EE_TreeNode $root)
+    public function get_parser(EE_TreeNode $root, $disabledFeatures = [])
     {
         $unique_entry_ids = $this->_unique_ids;
 
@@ -148,13 +149,59 @@ class EE_relationship_tree_builder
         $entries_result = array();
 
         if (! empty($unique_entry_ids)) {
-            // @todo reduce to only those that have a categories pair or parameter
-            ee()->load->model('category_model');
-            $category_lookup = ee()->category_model->get_entry_categories($unique_entry_ids);
+            $entriesQueryWith = ['Channel', 'Author'];
+            if (! in_array('relationship_categories', $disabledFeatures)) {
+                ee()->load->model('category_model');
+                $category_lookup = ee()->category_model->get_entry_categories($unique_entry_ids);
+                $entriesQueryWith[] = 'Categories';
+            }else{
+                $disabledFeatures[] = 'categories';
+            }
 
             // ready set, main query.
-            ee()->load->model('channel_entries_model');
-            $entries_result = ee()->channel_entries_model->get_entry_data($unique_entry_ids);
+            if (in_array('relationship_custom_fields', $disabledFeatures)) {
+                $channelEntryFields = ee('Model')->make('ChannelEntry')->getFields();
+                $channelFields = ee('Model')->make('Channel')->getFields();
+                $authorFields = ee('Model')->make('Member')->getFields();
+                $disabled = ['custom_fields', 'categories'];
+                $entriesQuery = ee('Model')->get('ChannelEntry', $unique_entry_ids)->with($entriesQueryWith);
+                foreach ($channelEntryFields as $field) {
+                    $entriesQuery->fields($field);
+                }
+                foreach ($channelFields as $field) {
+                    $entriesQuery->fields('Channel.' . $field);
+                }
+                foreach ($authorFields as $field) {
+                    $entriesQuery->fields('Author.' . $field);
+                }
+                $entries_result = $entriesQuery->all()
+                    ->getModChannelResultsArray($disabled);
+                unset($entriesQuery);
+            } else {
+                $entries_result = ee('Model')->get('ChannelEntry', $unique_entry_ids)
+                    ->with($entriesQueryWith)
+                    ->all()
+                    ->getModChannelResultsArray($disabledFeatures);
+            }
+
+            if (! is_array($entries_result)) {
+                $entries_result = array();
+            }
+
+            if (ee('LivePreview')->hasEntryData()) {
+                $data = ee('LivePreview')->getEntryData();
+                $found = false;
+                foreach ($entries_result as $i => $datum) {
+                    if ($datum['entry_id'] == $data['entry_id']) {
+                        $entries_result[$i] = $data;
+                        $found = true;
+                        break;
+                    }
+                }
+                if (! $found) {
+                    $entries_result[] = $data;
+                }
+            }
         }
 
         // Build an id => data map for quick retrieval during parsing

@@ -190,7 +190,7 @@ function (_React$Component) {
               };
               var children = $(node).find('> ul > [data-id]');
 
-              if (children.size()) {
+              if (children.length) {
                 item['children'] = getNestedItems(children.toArray());
               }
 
@@ -493,7 +493,9 @@ function (_React$Component) {
             parent: parent ? parent : null,
             component: items[key].component != undefined ? items[key].component : null,
             sectionLabel: currentSection,
-            entry_id: items[key].entry_id ? items[key].entry_id : ''
+            entry_id: items[key].entry_id ? items[key].entry_id : '',
+            upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
+            path: items[key].path ? items[key].path : ''
           };
 
           if (items[key].children) {
@@ -615,7 +617,7 @@ function (_React$Component2) {
         href: "",
         className: "button button--default flyout-edit flyout-edit-icon"
       }, React.createElement("i", {
-        "class": "fas fa-pencil-alt"
+        "class": "fal fa-pencil-alt"
       })), props.removable && React.createElement("a", {
         href: "",
         className: "button button--default js-button-delete",
@@ -623,7 +625,7 @@ function (_React$Component2) {
           return props.handleRemove(e, props.item);
         }
       }, React.createElement("i", {
-        "class": "fas fa-fw fa-trash-alt"
+        "class": "fal fa-fw fa-trash-alt"
       })))));
 
       if (props.nested) {
@@ -669,13 +671,13 @@ function (_React$Component3) {
       return React.createElement("div", {
         className: "lots-of-checkboxes__selection"
       }, React.createElement("i", {
-        className: "fas fa-check-circle"
+        className: "fal fa-check-circle"
       }), " ", label, props.selectionRemovable && React.createElement("a", {
         className: "button button--default float-right",
         href: "",
         onClick: props.clearSelection
       }, React.createElement("i", {
-        "class": "fas fa-trash-alt"
+        "class": "fal fa-trash-alt"
       })));
     }
   }]);

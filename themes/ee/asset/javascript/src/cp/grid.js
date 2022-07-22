@@ -957,6 +957,34 @@ $(document).ready(function () {
 	FluidField.on('grid', 'add', function(el) {
   		EE.grid($('div', el));
 	});
+
+	// Toggle grid item
+	$('body').on('click', '.grid-field .js-toggle-grid-item', function() {
+		$(this).parents('tr').toggleClass('grid__item--collapsed');
+
+		return false;
+	});
+
+	// Hide all grid items
+	$('body').on('click', '.grid-field .js-hide-all-grid-field-items', function() {
+		$(this).parents('tbody').find('tr:not(.hidden)').addClass('grid__item--collapsed');
+
+		// Hide the dropdown menu
+		$('.js-dropdown-toggle.dropdown-open').trigger('click');
+
+		return false;
+	});
+
+	// Show all grid items
+	$('body').on('click', '.grid-field .js-show-all-grid-field-items', function() {
+		$(this).parents('tbody').find('tr:not(.hidden)').removeClass('grid__item--collapsed');
+
+		// Hide the dropdown menu
+		$('.js-dropdown-toggle.dropdown-open').trigger('click');
+
+		return false;
+	});
+
 });
 
 })(jQuery);

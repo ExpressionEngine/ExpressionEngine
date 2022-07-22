@@ -18,7 +18,7 @@ class Installer {
 	enable_installer() {
 		if (fs.existsSync(path.resolve(env))) {
 			let dotenv = fs.readFileSync(path.resolve(env), "utf8");
-			dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=FALSE');", "putenv('EE_INSTALL_MODE=TRUE');")
+			dotenv = dotenv.replace("EE_INSTALL_MODE=FALSE", "EE_INSTALL_MODE=TRUE")
 			fs.writeFileSync(path.resolve(env), dotenv)
 		}
 
@@ -31,7 +31,7 @@ class Installer {
 	disable_installer() {
 		if (fs.existsSync(path.resolve(env))) {
 			let dotenv = fs.readFileSync(path.resolve(env), "utf8");
-			dotenv = dotenv.replace("putenv('EE_INSTALL_MODE=TRUE');", "putenv('EE_INSTALL_MODE=FALSE');")
+			dotenv = dotenv.replace("EE_INSTALL_MODE=TRUE", "EE_INSTALL_MODE=FALSE")
 			fs.writeFileSync(path.resolve(env), dotenv)
 		}
 

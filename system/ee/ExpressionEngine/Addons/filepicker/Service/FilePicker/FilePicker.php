@@ -50,10 +50,12 @@ class FilePicker
      */
     public function getUrl()
     {
-        $qs = array('directories' => $this->directories);
+        $qs = array('requested_directory' => $this->directories);
 
         if (is_numeric($this->directories)) {
-            $qs['directory'] = $this->directories;
+            $qs['field_upload_locations'] = $this->directories;
+        } else {
+            $qs['field_upload_locations'] = 'all';
         }
 
         return $this->url->make(static::CONTROLLER, $qs);

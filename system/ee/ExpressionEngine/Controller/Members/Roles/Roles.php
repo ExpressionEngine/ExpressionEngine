@@ -281,10 +281,10 @@ class Roles extends AbstractRolesController
         }
 
         ee()->javascript->output('
-			$("input[name=name]").bind("keyup keydown", function() {
-				$(this).ee_url_title("input[name=short_name]");
-			});
-		');
+            $("input[name=name]").bind("keyup keydown", function() {
+                $(this).ee_url_title("input[name=short_name]");
+            });
+        ');
 
         ee()->view->cp_page_title = lang('create_new_role');
 
@@ -417,7 +417,7 @@ class Roles extends AbstractRolesController
     private function setWithPost(Role $role)
     {
         $site_id = ee()->config->item('site_id');
-        
+
         $role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
 
         $role->name = ee('Request')->post('name');
@@ -427,7 +427,7 @@ class Roles extends AbstractRolesController
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
         unset($settings['id'], $settings['role_id'], $settings['site_id']);
-        
+
         foreach (array_keys($settings) as $key) {
             if (ee('Request')->post($key) !== null) {
                 $settings[$key] = ee('Request')->post($key);
@@ -454,6 +454,7 @@ class Roles extends AbstractRolesController
         //We don't allow much editing for SuperAdmin role, so just enforce it's locked and return here
         if ($role->getId() == 1) {
             $role->is_locked = 'y';
+
             return $role;
         }
         $role->is_locked = ee('Request')->post('is_locked');
@@ -652,36 +653,21 @@ class Roles extends AbstractRolesController
             ]
         ];
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-            $section = array_merge($section, [
-                [
-                    'title' => 'require_mfa',
-                    'desc' => 'require_mfa_desc',
-                    'group' => 'can_access_cp',
-                    'caution' => true,
-                    'fields' => [
-                        'require_mfa' => [
-                            'type' => 'yes_no',
-                            'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
-                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
-                        ]
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        $section = array_merge($section, [
+            [
+                'title' => 'require_mfa',
+                'desc' => 'require_mfa_desc',
+                'group' => 'can_access_cp',
+                'caution' => true,
+                'fields' => [
+                    'require_mfa' => [
+                        'type' => 'yes_no',
+                        'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
                     ]
-                ],
-            ]);
-            if (version_compare(PHP_VERSION, 7.1, '<')) {
-                ee()->lang->load('addons');
-                $section = array_merge($section, [
-                    ee('CP/Alert')->makeInline('mfa_not_available')
-                        ->asWarning()
-                        ->withTitle(lang('mfa_not_available'))
-                        ->addToBody(sprintf(lang('version_required'), 'PHP', 7.1))
-                        ->cannotClose()
-                        ->render()
-                        . form_hidden('require_mfa', 'n')
-                ]);
-            }
-        }
+                ]
+            ],
+        ]);
 
         if ($role->getId() != Member::SUPERADMIN) {
             $section = array_merge($section, [
@@ -948,12 +934,15 @@ class Roles extends AbstractRolesController
 
         $addons = ee('Model')->get('Module')
             ->fields('module_id', 'module_name')
-            ->filter('module_name', 'NOT IN', array('Channel', 'Comment', 'Member', 'File', 'Filepicker')) // @TODO This REALLY needs abstracting.
             ->all()
             ->filter(function ($addon) {
                 $provision = ee('Addon')->get(strtolower($addon->module_name));
 
                 if (! $provision) {
+                    return false;
+                }
+
+                if ($provision->get('built_in')) {
                     return false;
                 }
 
@@ -979,6 +968,15 @@ class Roles extends AbstractRolesController
                     'caution' => true,
                     'fields' => [
                         'can_access_cp' => $permissions['fields']['can_access_cp']
+                    ]
+                ],
+                [
+                    'title' => 'can_access_dock',
+                    'desc' => 'can_access_dock_desc',
+                    'group' => 'can_access_cp',
+                    'caution' => true,
+                    'fields' => [
+                        'can_access_dock' => $permissions['fields']['can_access_dock']
                     ]
                 ],
             ]
@@ -1413,7 +1411,7 @@ class Roles extends AbstractRolesController
             foreach ($templates as $template) {
                 $template_name = $template->template_name;
                 if ($template->enable_http_auth == 'y') {
-                    $template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
+                    $template_name = '<i class="fal fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
                 }
                 $children[$template->getId()] = $template_name;
             }
@@ -1637,6 +1635,12 @@ class Roles extends AbstractRolesController
                     'type' => 'yes_no',
                     'group_toggle' => [
                         'y' => 'can_access_cp'
+                    ]
+                ],
+                'can_access_dock' => [
+                    'type' => 'yes_no',
+                    'group_toggle' => [
+                        'y' => 'can_access_dock'
                     ]
                 ],
                 'can_view_homepage_news' => [
@@ -1903,7 +1907,7 @@ class Roles extends AbstractRolesController
      *
      * Warning message shown when you try to delete a role
      *
-     * @return	mixed
+     * @return  mixed
      */
     public function confirm()
     {

@@ -310,7 +310,11 @@ class Publish extends AbstractPublishController
                 'ee_fileuploader',
             ),
             'ui' => ['draggable'],
-            'file' => array('cp/publish/publish', 'cp/channel/category_edit')
+            'file' => array(
+                'cp/publish/publish', 
+                'cp/publish/entry-list',
+                'cp/channel/category_edit',
+            )
         ));
 
         ee()->view->cp_breadcrumbs = array(

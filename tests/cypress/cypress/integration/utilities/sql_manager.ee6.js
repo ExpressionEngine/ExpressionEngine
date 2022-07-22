@@ -39,10 +39,10 @@ context('SQL manager', () => {
 			let x = [];
 			var z;
 			for(z=0; z< groups.length;z++){
-				x.push(groups[z]["Tables_in_ee-test"])
+				x.push(groups[z]["Tables_in_" + Cypress.env("DB_DATABASE")])
 			}
 			console.log(x);
-			console.log(groups[0]["Tables_in_ee-test"]);
+			console.log(groups[0]["Tables_in_" + Cypress.env("DB_DATABASE")]);
 			expect(tables).to.deep.equal(x);
 		});
 
@@ -74,7 +74,7 @@ context('SQL manager', () => {
 	    });
 	    page.get('search_field').clear()
 	    page.get('search_field').type('data').type('{enter}')
-	    cy.get('h2 > i').contains('Found 7 results for "data"')
+	    cy.get('h2 > i').contains('Found 8 results for "data"')
     })
 
     it('should sort search results', () =>{
@@ -88,7 +88,7 @@ context('SQL manager', () => {
 
 	    page.get('search_field').clear()
 	    page.get('search_field').type('data').type('{enter}')
-	    cy.get('h2 > i').contains('Found 7 results for "data"')
+	    cy.get('h2 > i').contains('Found 8 results for "data"')
 	    cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_category_field_data')
 	    page.get('sort_links').eq(0).click()
 	    cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_message_data')
@@ -96,7 +96,7 @@ context('SQL manager', () => {
 
 	it('should validate the table operations submission', () =>{
 		//page.get('select_all').click()
-		cy.get('input[type="checkbox"][title="Select All"]').first().click()
+		cy.get('th input[type="checkbox"]').first().click()
 		cy.wait(500)
 		page.get('op_submit').click()
 		page.get('wrap').contains('You must select an action to perform on the selected tables.')
@@ -105,7 +105,7 @@ context('SQL manager', () => {
 
 	it('should repair the tables and sort and search the results', () =>{
 		//page.get('select_all').click()
-		cy.get('input[type="checkbox"][title="Select All"]').first().click()
+		cy.get('th input[type="checkbox"]').first().click()
 		page.get('op_select').select('Repair')
 		page.get('op_submit').click()
 		cy.hasNoErrors()
@@ -132,7 +132,7 @@ context('SQL manager', () => {
 
 	it('should optimize the tables and sort and search the results', () =>{
 		//page.get('select_all').click()
-		cy.get('input[type="checkbox"][title="Select All"]').first().click()
+		cy.get('th input[type="checkbox"]').first().click()
 		page.get('op_select').select('Optimize')
 		page.get('op_submit').click()
 		cy.hasNoErrors()

@@ -36,9 +36,17 @@ $lang = array(
 
     'light_theme' => 'Light Theme',
 
+    'snow_theme' => 'Snow Theme',
+
+    'slate_theme' => 'Slate Theme',
+
     'dark' => 'Dark',
 
     'light' => 'Light',
+
+    'snow' => 'Snow',
+
+    'slate' => 'Slate',
 
     'jump_menu_item' => 'Jump Menu',
 
@@ -71,6 +79,8 @@ $lang = array(
 
     'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
 
+    'category' => 'Category',
+
     'categories' => 'Categories',
 
     'channels' => 'Channels',
@@ -89,6 +99,8 @@ $lang = array(
 
     'custom_limit' => 'custom limit',
 
+    'custom_date' => 'custom date',
+
     'details' => 'Details',
 
     'do_not_duplicate' => 'Do not duplicate',
@@ -98,6 +110,8 @@ $lang = array(
     'edit_quicklinks' => 'Edit Quick Links',
 
     'fields' => 'Fields',
+
+    'sort_filter' => 'Sort by',
 
     'forgot_password' => 'Forgot your password?',
 
@@ -178,6 +192,8 @@ $lang = array(
     'submit_email_address' => 'Submit your email address',
 
     'templates' => 'Templates',
+
+    'toggle_sidebar' => 'Toggle Sidebar',
 
     'unauthorized' => 'Unauthorized',
 
@@ -333,6 +349,8 @@ $lang = array(
     'select_row' => 'Select Row',
 
     'select_all' => 'Select All',
+
+    'select_all_files' => 'Select All Files',
 
     'search_in' => 'Search in',
 
@@ -575,7 +593,7 @@ $lang = array(
 
     'none' => 'None',
 
-    'preferences_updated' => 'Preferences updated',
+    'preferences_updated' => 'Preferences Updated',
 
     'preferences_updated_desc' => 'Your preferences have been saved successfully.',
 
@@ -731,6 +749,9 @@ $lang = array(
 
     'confirm_show_all_desc' => 'Viewing more than %d items at a time may result in reduced performance.',
 
+    /* moving */
+    'btn_confirm_and_move' => 'Confirm and Move',
+
     /* HTML Buttons */
     'html_btn_anchor' => 'Link',
 
@@ -801,6 +822,8 @@ $lang = array(
     'dashboard_layout_save_error' => 'Could not save layout',
 
     'dashboard_needs_some_widgets' => 'Please enable at least one widget',
+
+    'unexpected_error' => 'Unexpected error',
 
 );
 

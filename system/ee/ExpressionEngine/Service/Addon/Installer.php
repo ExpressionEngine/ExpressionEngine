@@ -56,6 +56,8 @@ class Installer
 
         ee('Migration')->migrateAllByType($this->shortname);
 
+        ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
+
         return true;
     }
 

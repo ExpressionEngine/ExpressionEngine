@@ -1,4 +1,3 @@
-
 class DropDownButton extends React.Component {
     constructor(props) {
         super(props)
@@ -35,8 +34,27 @@ class DropDownButton extends React.Component {
         event.preventDefault()
     }
 
+    dropdownRecursion = (items) => {
+        return (
+            <React.Fragment>
+            <ul>
+            {items.map(item => (
+
+                <li>
+                    <a href="#" key={item.value} className={"dropdown__link " + this.props.itemClass} rel={this.props.rel} onClick={(e) => this.selectItem(e, item)}>
+                    {item.path.trim() == "" ? <i class="fal fa-hdd"></i> : <i class="fal fa-folder"></i>}
+                    {item.label}
+                    </a>
+                    {item.children && !this.props.ignoreChild && item.children.length ? this.dropdownRecursion(item.children) : null}
+                </li>
+            ))}
+            </ul>
+            </React.Fragment>
+        )
+    }
+
     render() {
-        let dropdownItems = this.state.items.filter(el => el != this.state.selected)
+        let dropdownItems = this.state.items.filter(el => el != this.state.selected);
 
         return (
             <>
@@ -59,10 +77,16 @@ class DropDownButton extends React.Component {
                         }
                     </> }
                     <div className="dropdown__scroll">
-                        {dropdownItems.map(item =>
-                            <a href="#" key={item.value} className={"dropdown__link " + this.props.itemClass} rel={this.props.rel} onClick={(e) => this.selectItem(e, item)}>{item.label}</a>
-                        )}
+                        {this.props.addInput &&
+                            <input type="file" className="f_open-filepicker" style={{display: 'none'}} data-upload_location_id={''} data-path={''} />
+                        }
+                        {this.dropdownRecursion(dropdownItems)}
                     </div>
+                    {this.props.createNewDirectory &&
+                        <p className="create_new_direction">
+                            <a href="#" rel="add_new" className='js-modal-link--side submit'><i className="fal fa-plus icon-left"></i> {EE.lang.file_dnd_create_directory}</a>
+                        </p>
+                    }
                 </div>
             </>
         )

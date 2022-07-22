@@ -42,6 +42,8 @@
  *  Load the autoloader and register it
  * ------------------------------------------------------
  */
+    // Include composer autoloader
+    require SYSPATH . 'ee/vendor-build/autoload.php';
     require SYSPATH . 'ee/ExpressionEngine/Core/Autoloader.php';
 
     ExpressionEngine\Core\Autoloader::getInstance()
@@ -51,6 +53,18 @@
         ->addPrefix('Michelf', SYSPATH . 'ee/legacy/libraries/typography/Markdown/Michelf/')
         ->addPrefix('Mexitek', SYSPATH . 'ee/Mexitek/')
         ->register();
+
+/*
+ * ------------------------------------------------------
+ *  Load the environment
+ * ------------------------------------------------------
+ */
+    try{
+        $dotenv = ExpressionEngine\Dependency\Dotenv\Dotenv::createImmutable(SYSPATH .'../', '.env.php');
+        $dotenv->load();
+        // force the installer/updater?
+        defined('INSTALL_MODE') || define('INSTALL_MODE', getenv('EE_INSTALL_MODE') === 'TRUE');
+    }catch(\Exception $e){}
 
 /*
  * ------------------------------------------------------
@@ -121,6 +135,7 @@
  *  is relying on that instead of get_instance()
  * ------------------------------------------------------
  */
+    global $CI;
     $CI = $core->getLegacyApp()->getFacade();
 
     function get_instance()
@@ -143,6 +158,10 @@
         }
 
         return $facade;
+    }
+
+    if(defined('BOOT_CORE_ONLY')) {
+        return $core;
     }
 
 /*

@@ -58,6 +58,24 @@ function (_React$Component) {
       event.preventDefault();
     });
 
+    _defineProperty(_assertThisInitialized(_this), "dropdownRecursion", function (items) {
+      return React.createElement(React.Fragment, null, React.createElement("ul", null, items.map(function (item) {
+        return React.createElement("li", null, React.createElement("a", {
+          href: "#",
+          key: item.value,
+          className: "dropdown__link " + _this.props.itemClass,
+          rel: _this.props.rel,
+          onClick: function onClick(e) {
+            return _this.selectItem(e, item);
+          }
+        }, item.path.trim() == "" ? React.createElement("i", {
+          "class": "fal fa-hdd"
+        }) : React.createElement("i", {
+          "class": "fal fa-folder"
+        }), item.label), item.children && !_this.props.ignoreChild && item.children.length ? _this.dropdownRecursion(item.children) : null);
+      })));
+    });
+
     _this.initialItems = SelectList.formatItems(props.items);
     _this.state = {
       items: _this.initialItems,
@@ -102,17 +120,23 @@ function (_React$Component) {
         className: "dropdown__divider"
       })), React.createElement("div", {
         className: "dropdown__scroll"
-      }, dropdownItems.map(function (item) {
-        return React.createElement("a", {
-          href: "#",
-          key: item.value,
-          className: "dropdown__link " + _this2.props.itemClass,
-          rel: _this2.props.rel,
-          onClick: function onClick(e) {
-            return _this2.selectItem(e, item);
-          }
-        }, item.label);
-      }))));
+      }, this.props.addInput && React.createElement("input", {
+        type: "file",
+        className: "f_open-filepicker",
+        style: {
+          display: 'none'
+        },
+        "data-upload_location_id": '',
+        "data-path": ''
+      }), this.dropdownRecursion(dropdownItems)), this.props.createNewDirectory && React.createElement("p", {
+        className: "create_new_direction"
+      }, React.createElement("a", {
+        href: "#",
+        rel: "add_new",
+        className: "js-modal-link--side submit"
+      }, React.createElement("i", {
+        className: "fal fa-plus icon-left"
+      }), " ", EE.lang.file_dnd_create_directory))));
     }
   }]);
 

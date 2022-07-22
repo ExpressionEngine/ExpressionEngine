@@ -3,9 +3,9 @@
 
 		<?=form_open($form_url, '', (isset($hidden)) ? $hidden : array())?>
 		<div class="dialog__header">
-			<div class="dialog__icon"><i class="fas fa-trash-alt"></i></div>
+			<div class="dialog__icon"><i class="fal fa-trash-alt"></i></div>
 			<h2 class="dialog__title"><?=isset($title) ? $title : lang('confirm_delete') ?></h2>
-			<div class="dialog__close js-modal-close"><i class="fas fa-times"></i></div>
+			<div class="dialog__close js-modal-close"><i class="fal fa-times"></i></div>
 		</div>
 
 		<div class="dialog__body">

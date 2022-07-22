@@ -63,7 +63,11 @@ EE.namespace('EE.publish.file_browser');
 				props = EE.upload_directories[file.upload_location_id].file_properties;
 
 				open = EE.upload_directories[file.upload_location_id].file_pre_format;
-				open += "<a href=\"{filedir_"+file.upload_location_id+"}"+file.file_name+'" '+props+" >";
+				if (EE.fileManagerCompatibilityMode) {
+					open += "<a href=\"{filedir_"+file.upload_location_id+"}"+file.file_name+'" '+props+" >";
+				} else {
+					open += "<a href=\"{file:"+file.file_id+":url}"+'" '+props+" >";
+				}
 
 				close = "</a>";
 				close += EE.upload_directories[file.upload_location_id].file_post_format;
@@ -76,7 +80,11 @@ EE.namespace('EE.publish.file_browser');
 				image_tag = (button_id == null) ? EE.filebrowser.image_tag : EE.filebrowser['image_tag_'+button_id];
 
 				// Include any user additions before or after the image link
-				replace = image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.upload_location_id+'}'+file.file_name+'$2"');
+				if (EE.fileManagerCompatibilityMode) {
+					replace = image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.upload_location_id+'}'+file.file_name+'$2"');
+				} else {
+					replace = image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{file:'+file.file_id+':url}'+'$2"');
+				}
 
 				// Figure out dimensions
 				dimensions = '';

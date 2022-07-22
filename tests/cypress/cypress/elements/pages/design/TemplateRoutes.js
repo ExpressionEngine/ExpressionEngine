@@ -21,7 +21,7 @@ class TemplateRoutes extends ControlPanel {
             "no_results": 'tr.no-results',
 
             "new_route_button": '.grid-field .tbl-action a.button.button--default.button--small',
-            "update_button": '.container .form-btns input[type=submit]',
+            "update_button": '.container .form-btns [type=submit]',
 
 
         })

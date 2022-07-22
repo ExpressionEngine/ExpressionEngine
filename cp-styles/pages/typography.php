@@ -8,7 +8,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 
     <p><code>$font-family</code></p>
     <p>
-      'Roboto', 'Helvetica Neue', Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', Arial, sans-serif<br>
+      -apple-system, BlinkMacSystemFont, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif<br>
       <em>italic</em>, <strong>bold</strong>, <strong><em>bold italic</em></strong>
     </p>
 

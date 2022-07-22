@@ -239,7 +239,7 @@
 
 .icon-reorder {
 	@extend %fa-icon;
-	@extend .fas;
+	@extend .fal;
 
 	color: color(text-secondary);
 	content: fa-content($fa-var-bars);
@@ -296,22 +296,25 @@
   .field-inputs label.field-reorder-placeholder,
   .field-inputs label.field-reorder-drag,
   .field-inputs label.field-reorder-drop {
-	border: 2px dashed
+	border: 1px dashed
   }
 
   ul.field-reorder-placeholder,
   .field-inputs li.field-reorder-placeholder,
   .field-inputs label.field-reorder-placeholder {
-	background-color: #f9f9f9;
-	border-color: #ccc;
-	padding: 15px
+	background-color: color(bg-0);
+	border-color: color(border);
+	padding: 20px;
+  width: 100%;
+  border-radius: $border-radius-base;
   }
 
   ul.field-reorder-drag,
   .field-inputs li.field-reorder-drag,
   .field-inputs label.field-reorder-drag {
-	background-color: #fefff3;
-	border-color: #fc0;
+	background-color: color(bg-0);
+	border-color: color(border);
+  border-radius: $border-radius-base;
 	cursor: move;
 	height: auto!important;
 	pointer-events: none;
@@ -322,21 +325,21 @@
   ul.field-reorder-drag .icon-reorder:before,
   .field-inputs li.field-reorder-drag .icon-reorder:before,
   .field-inputs label.field-reorder-drag .icon-reorder:before {
-	color: #009ae1
+	color: color(accent);
   }
 
   ul.field-reorder-drop,
   .field-inputs li.field-reorder-drop,
   .field-inputs label.field-reorder-drop {
-	background-color: #f5fefb;
-	border-color: #01bf75
+	background-color: color(bg-0);
+	border-color: color(border);
   }
 
   .drag-placeholder{
   	.none{
   		background-color: color(bg-0);
-  		border: 1px dashed color(border-dark);
-  		padding: 10px;
+  		border: 1px dashed color(border);
+  		padding: 20px;
       border-radius: $border-radius-base;
   	}
 

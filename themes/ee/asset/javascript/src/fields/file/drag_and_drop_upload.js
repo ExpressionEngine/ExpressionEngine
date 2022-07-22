@@ -39,15 +39,32 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(DragAndDropUpload).call(this, props));
 
+    _defineProperty(_assertThisInitialized(_this), "checkChildDirectory", function (items, directory) {
+      items.map(function (item) {
+        var value;
+
+        if (typeof item.value == 'number') {
+          value = item.value;
+        } else {
+          value = item.value.substr(item.value.indexOf('.') + 1);
+          value = parseInt(value);
+        }
+
+        if (value == directory) {
+          return window.list = item;
+        } else if (value != directory && Array.isArray(item.children) && item.children.length) {
+          _this.checkChildDirectory(item.children, directory);
+        }
+      });
+      return window.list;
+    });
+
     _defineProperty(_assertThisInitialized(_this), "handleDroppedFiles", function (droppedFiles) {
       _this.setState({
         pendingFiles: null
       });
 
-      var files = Array.from(droppedFiles);
-      files = files.filter(function (file) {
-        return file.type != '';
-      });
+      var files = Array.from(droppedFiles); // files = files.filter(file => file.type != '')
 
       if (!_this.props.multiFile && files.length > 1) {
         return _this.setState({
@@ -89,21 +106,101 @@ function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "setDirectory", function (directory) {
+      if (directory == 'all' || directory == null) return null;
+
+      if (typeof directory == 'number') {
+        directory = directory;
+      } else {
+        directory = parseInt(directory.substr(directory.indexOf('.') + 1));
+      }
+
+      var item = _this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
+      var directory_id;
+
+      if (directory == item.upload_location_id) {
+        directory_id = 0;
+      } else {
+        directory_id = directory;
+      }
+
       _this.setState({
-        directory: directory || 'all'
+        directory: directory || 'all',
+        directory_id: directory_id,
+        path: item.path || '',
+        upload_location_id: item.upload_location_id || null
       });
     });
 
     _defineProperty(_assertThisInitialized(_this), "chooseExisting", function (directory) {
-      var url = _this.props.filebrowserEndpoint.replace('=all', '=' + directory);
+      var url = _this.props.filebrowserEndpoint.replace('requested_directory=all', 'requested_directory=' + directory).replace('field_upload_locations=all', 'field_upload_locations=' + _this.props.allowedDirectory);
 
       _this.presentFilepicker(url, false);
+
+      window.globalDropzone = $(_this.dropZone);
     });
 
     _defineProperty(_assertThisInitialized(_this), "uploadNew", function (directory) {
-      var url = _this.props.uploadEndpoint + '&directory=' + directory;
+      var that = _assertThisInitialized(_this);
 
-      _this.presentFilepicker(url, true);
+      if (typeof directory == 'number') {
+        directory = directory;
+      } else {
+        directory = parseInt(directory.substr(directory.indexOf('.') + 1));
+      }
+
+      var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      var directory_id;
+
+      if (directory == item.upload_location_id) {
+        directory_id = 0;
+      } else {
+        directory_id = directory;
+      }
+
+      that.setState({
+        directory_id: directory_id,
+        path: item.path || '',
+        upload_location_id: item.upload_location_id || null
+      });
+      window.globalDropzone = $(_this.dropZone);
+      var el = $(_this.dropZone).parents('div[data-file-field-react]');
+
+      if (!el.length) {
+        el = $(_this.dropZone).parents('div[data-file-grid-react]');
+      }
+
+      el.find('.f_open-filepicker').click();
+      el.find('.f_open-filepicker').change(function (e) {
+        var files = e.target.files;
+        that.handleDroppedFiles(files);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "hiddenUpload", function (el) {
+      var that = _assertThisInitialized(_this);
+
+      var upload_location_id = el.target.getAttribute('data-upload_location_id');
+      var directory_id = el.target.getAttribute('data-directory_id');
+      var directory;
+
+      if (directory_id == 0) {
+        directory = upload_location_id;
+      } else {
+        directory = directory_id;
+      }
+
+      var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      that.setState({
+        directory_id: directory_id,
+        path: item.path || '',
+        upload_location_id: upload_location_id
+      });
+      $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
+      $(_this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').on('change', function (e) {
+        var files = e.target.files;
+        that.handleDroppedFiles(files);
+      });
     });
 
     _defineProperty(_assertThisInitialized(_this), "assignDropZoneRef", function (dropZone) {
@@ -124,16 +221,34 @@ function (_React$Component) {
       _this.setState({
         files: _this.state.files
       });
+
+      var el = $(_this.dropZone).parents('div[data-file-field-react]');
+
+      if (!el.length) {
+        el = $(_this.dropZone).parents('div[data-file-grid-react]');
+      }
+
+      el.find('.f_open-filepicker').val('');
     });
 
+    window.list;
+    window.globalDropzone;
+
     var directoryName = _this.getDirectoryName(props.allowedDirectory);
+
+    var _item = _this.getDirectoryItem(props.allowedDirectory);
 
     _this.state = {
       files: [],
       directory: directoryName ? props.allowedDirectory : 'all',
       directoryName: directoryName,
       pendingFiles: null,
-      error: null
+      error: null,
+      path: _item.path,
+      upload_location_id: _item.upload_location_id,
+      //main folder ID
+      directory_id: _item.directory_id //subfolder ID
+
     };
     _this.queue = new ConcurrencyQueue({
       concurrency: _this.props.concurrency
@@ -173,10 +288,29 @@ function (_React$Component) {
     key: "getDirectoryName",
     value: function getDirectoryName(directory) {
       if (directory == 'all') return null;
-      directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
-        return thisDirectory.value == directory;
-      });
+      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
       return directory.label;
+    }
+  }, {
+    key: "getDirectoryItem",
+    value: function getDirectoryItem(directory) {
+      if (directory == 'all') {
+        var directory = {
+          upload_location_id: null,
+          path: '',
+          directory_id: 0
+        };
+      } else {
+        var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
+        if (directory.value == directory.upload_location_id) {
+          directory.directory_id = 0;
+        } else {
+          directory.directory_id = parseInt(directory.value.substr(directory.value.indexOf('.') + 1));
+        }
+      }
+
+      return directory;
     }
   }, {
     key: "bindDragAndDropEvents",
@@ -201,6 +335,8 @@ function (_React$Component) {
             pendingFiles: droppedFiles
           });
         }
+
+        window.globalDropzone = $(_this2.dropZone);
 
         _this2.handleDroppedFiles(droppedFiles);
       });
@@ -227,13 +363,25 @@ function (_React$Component) {
 
       return new Promise(function (resolve, reject) {
         var formData = new FormData();
-        formData.append('directory', _this3.state.directory);
-        formData.append('file', file);
+        formData.append('directory_id', _this3.state.directory_id);
         formData.append('csrf_token', EE.CSRF_TOKEN);
+        formData.append('upload_location_id', _this3.state.upload_location_id);
+        formData.append('path', _this3.state.path);
         var xhr = new XMLHttpRequest();
         xhr.open('POST', EE.dragAndDrop.endpoint, true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.upload.addEventListener('progress', function (e) {
+          if ($('.file-upload-widget').hasClass('open-dd')) {
+            $('.file-upload-widget').css({
+              'height': 'auto',
+              'position': 'static'
+            });
+          }
+
+          if ($('.file-upload-widget').length && $('.file-upload-widget').hasClass('hidden')) {
+            $('.file-upload-widget').show();
+          }
+
           file.progress = e.loaded * 100.0 / e.total || 100;
 
           _this3.setState({
@@ -248,25 +396,86 @@ function (_React$Component) {
               case 'success':
                 _this3.removeFile(file);
 
-                _this3.props.onFileUploadSuccess(JSON.parse(xhr.responseText));
-
                 resolve(file);
+
+                if ($('div[data-file-field-react]').find('.file-field__items .list-item').length > 0) {
+                  if ($('div[data-file-field-react]').parent().hasClass('file-upload-widget')) {
+                    $('div[data-file-field-react]').parent().show();
+                  }
+                } else {
+                  if ($('.file-upload-widget').length) {
+                    $('.file-upload-widget').hide();
+                    $('body .f_manager-wrapper > form').submit();
+                  }
+
+                  _this3.props.onFileUploadSuccess(JSON.parse(xhr.responseText), window.globalDropzone);
+                }
+
                 break;
 
               case 'duplicate':
                 file.duplicate = true;
                 file.fileId = _response.fileId;
                 file.originalFileName = _response.originalFileName;
+
+                if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+                  window.globalDropzone.parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+                    $(this).attr('disabled', 'disabled');
+                  });
+                }
+
+                if ($('.title-bar a.upload').length) {
+                  $('.title-bar a.upload').addClass('disabled');
+                }
+
+                if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                  $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled');
+                }
+
                 reject(file);
                 break;
 
               case 'error':
                 file.error = _this3.stripTags(_response.error);
+
+                if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+                  $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+                    $(this).attr('disabled', 'disabled');
+                  });
+                }
+
+                if ($('.title-bar a.upload').length) {
+                  $('.title-bar a.upload').addClass('disabled');
+                }
+
+                if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                  $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled');
+                }
+
                 reject(file);
                 break;
 
               default:
-                file.error = EE.lang.file_dnd_unexpected_error;
+                if (typeof _response.message !== 'undefined') {
+                  file.error = _response.message;
+                } else {
+                  file.error = EE.lang.file_dnd_unexpected_error;
+                }
+
+                if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+                  $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+                    $(this).attr('disabled', 'disabled');
+                  });
+                }
+
+                if ($('.title-bar a.upload').length) {
+                  $('.title-bar a.upload').addClass('disabled');
+                }
+
+                if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                  $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled');
+                }
+
                 console.error(xhr);
                 reject(file);
                 break;
@@ -280,8 +489,24 @@ function (_React$Component) {
 
                 if (typeof response.error != 'undefined') {
                   file.error = response.error;
+                } else if (typeof response.message !== 'undefined') {
+                  file.error = response.message;
                 }
               } catch (err) {}
+
+              if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+                $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+                  $(this).attr('disabled', 'disabled');
+                });
+              }
+
+              if ($('.title-bar a.upload').length) {
+                $('.title-bar a.upload').addClass('disabled');
+              }
+
+              if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+                $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled');
+              }
 
               console.error(xhr);
               reject(file);
@@ -330,7 +555,38 @@ function (_React$Component) {
     key: "resolveConflict",
     value: function resolveConflict(file, response) {
       this.removeFile(file);
-      this.props.onFileUploadSuccess(response);
+
+      if ($('div[data-file-field-react]').find('.file-field__items .list-item').length > 0) {
+        if ($('div[data-file-field-react]').parent().hasClass('file-upload-widget')) {
+          $('div[data-file-field-react]').parent().show();
+        }
+      } else {
+        this.props.onFileUploadSuccess(response, window.globalDropzone);
+
+        if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+          $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+            $(this).removeAttr('disabled');
+          });
+        }
+
+        if ($('.title-bar a.upload').length) {
+          $('.title-bar a.upload').removeClass('disabled');
+        }
+
+        if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+          $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled');
+        }
+
+        if ($('.file-upload-widget').length) {
+          if ($('.file-upload-widget').hasClass('open-dd')) {
+            $('.file-upload-widget').removeClass('open-dd');
+            $('.file-upload-widget').removeAttr('style');
+          }
+
+          $('.file-upload-widget').hide();
+          $('body .f_manager-wrapper > form').submit();
+        }
+      }
     }
   }, {
     key: "showErrorWithInvalidState",
@@ -338,7 +594,7 @@ function (_React$Component) {
       this.toggleErrorState(true);
       var errorElement = $(this.dropZone).closest('.field-control').find('> em');
 
-      if (errorElement.size() == 0) {
+      if (errorElement.length == 0) {
         errorElement = $('<em/>');
       }
 
@@ -376,7 +632,11 @@ function (_React$Component) {
         ref: function ref(dropZone) {
           return _this5.assignDropZoneRef(dropZone);
         }
-      }, this.state.files.length == 0 && React.createElement(React.Fragment, null, React.createElement("div", {
+      }, !this.props.showActionButtons && React.createElement("p", {
+        "class": "file-field_upload-icon"
+      }, React.createElement("i", {
+        "class": "fal fa-cloud-upload-alt"
+      })), this.state.files.length == 0 && React.createElement(React.Fragment, null, React.createElement("div", {
         className: "file-field__dropzone-title"
       }, heading), React.createElement("div", {
         "class": "file-field__dropzone-button"
@@ -391,17 +651,42 @@ function (_React$Component) {
         onSelect: function onSelect(directory) {
           return _this5.setDirectory(directory);
         },
-        buttonClass: "button--default button--small"
+        buttonClass: "button--default button--small",
+        createNewDirectory: this.props.createNewDirectory,
+        ignoreChild: false,
+        addInput: false
       })), React.createElement("div", {
         "class": "file-field__dropzone-icon"
       }, React.createElement("i", {
-        "class": "fas fa-cloud-upload-alt"
+        "class": "fal fa-cloud-upload-alt"
       })))), this.state.files.length > 0 && React.createElement(FileUploadProgressTable, {
         files: this.state.files,
         onFileErrorDismiss: function onFileErrorDismiss(e, file) {
           e.preventDefault();
 
           _this5.removeFile(file);
+
+          if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+            $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+              $(this).removeAttr('disabled');
+            });
+          }
+
+          if ($('.title-bar a.upload').length) {
+            $('.title-bar a.upload').removeClass('disabled');
+          }
+
+          if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+            $('.main-nav .main-nav__toolbar .js-dropdown-toggle').removeAttr('disabled');
+          }
+
+          if ($('.file-upload-widget').length) {
+            if ($('.file-upload-widget').hasClass('hidden')) {
+              $('.file-upload-widget').hide();
+            }
+
+            $('body .f_manager-wrapper > form').submit();
+          }
         },
         onResolveConflict: function onResolveConflict(file, response) {
           return _this5.resolveConflict(file, response);
@@ -422,13 +707,19 @@ function (_React$Component) {
       }, EE.lang.file_dnd_choose_existing), React.createElement("a", {
         href: "#",
         className: "button button--default button--small m-link",
-        rel: "modal-file",
         onClick: function onClick(e) {
           e.preventDefault();
 
           _this5.uploadNew(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_upload_new))), this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement("div", {
+      }, EE.lang.file_dnd_upload_new), React.createElement("input", {
+        type: "file",
+        className: "f_open-filepicker",
+        style: {
+          display: 'none'
+        },
+        multiple: "multiple"
+      }))), this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement("div", {
         className: "button-segment"
       }, React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
@@ -442,7 +733,10 @@ function (_React$Component) {
         },
         rel: "modal-file",
         itemClass: "m-link",
-        buttonClass: "button--default button--small"
+        buttonClass: "button--default button--small",
+        createNewDirectory: false,
+        ignoreChild: true,
+        addInput: false
       }), React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_upload_new,
         action: true,
@@ -453,9 +747,29 @@ function (_React$Component) {
         onSelect: function onSelect(directory) {
           return _this5.uploadNew(directory);
         },
-        rel: "modal-file",
-        itemClass: "m-link",
-        buttonClass: "button--default button--small"
+        buttonClass: "button--default button--small",
+        createNewDirectory: this.props.createNewDirectory,
+        ignoreChild: false,
+        addInput: true
+      })), this.props.imitationButton && React.createElement(React.Fragment, null, React.createElement("a", {
+        href: "#",
+        style: {
+          display: 'none'
+        },
+        onClick: function onClick(el) {
+          return _this5.hiddenUpload(el);
+        },
+        "data-upload_location_id": '',
+        "data-directory_id": '',
+        "data-path": '',
+        className: "imitation_button"
+      }, "Imitation"), React.createElement("input", {
+        type: "file",
+        className: "f_open-filepicker",
+        style: {
+          display: 'none'
+        },
+        multiple: "multiple"
       }))));
     }
   }]);

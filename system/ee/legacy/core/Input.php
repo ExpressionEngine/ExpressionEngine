@@ -151,7 +151,7 @@ class EE_Input
                     $cookieSettings->save();
                     ee('CookieRegistry')->registerCookieSettings($cookieSettings);
                 } else {
-                    if (IS_PRO && is_numeric($loadedCookieSettings['cookie_lifetime'])) {
+                    if (is_numeric($loadedCookieSettings['cookie_lifetime'])) {
                         $data['expire'] = ($loadedCookieSettings['cookie_enforced_lifetime'] !== null) ? $loadedCookieSettings['cookie_enforced_lifetime'] : $loadedCookieSettings['cookie_lifetime'];
                     }
                 }

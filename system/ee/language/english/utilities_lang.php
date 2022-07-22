@@ -471,6 +471,40 @@ $lang = array(
 
     'uptime' => 'Uptime',
 
+    /* File Usage */
+
+    'update_file_usage' => 'Update Files Usage',
+
+    'update_file_usage_explained_desc' => 'In order to get all features of File Manager to work correctly (that includes subfolders support, cloud storage adapters, file usage stats) the file data need to be stored differently from what they were before ExpressionEngine 7.<br /><br />
+
+    To update the file data to new format, run this utility.<br /><br />
+    
+    After you do this, visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode for File Manager.<br /><br />
+    
+    Be aware that some third-party add-ons that are not compatible with the new File Manager might malfunction.',
+
+    'update_file_usage_desc' => 'Will update content in %d database tables',
+
+    'update_file_usage_started' => 'Started updating file usage',
+
+    'update_file_usage_completed' => 'File usage update complete. %s database tables were affected.',
+
+    'update_file_usage_success' => 'File Usage Updated',
+
+    'update_file_usage_success_desc' => 'The file data has been converted to new format',
+
+    'update_file_usage_fail' => 'Unable to update file usage',
+
+    'file_manager_compatibility_mode_warning' => 'File Manager is set to Compatibility Mode',
+
+    'file_manager_compatibility_mode_warning_desc' => 'Since ExpressionEngine 7, the File Manager offers new bigger set of features.<br /><br />
+
+However in order to use some of those the file data need to be stored differently, which might cause issues with third-party add-ons that don\'t support new File Manager yet.<br /><br />
+
+To prevent that, we have disabled some features by setting File Manager to run in Compatibility Mode.<br /><br />
+
+Once you are ready to experience File Manager features fully, please run <a href="%s">Update Files Usage</a> Utility and then visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode.',
+
     /* Search Reindex */
 
     'search_reindex_fail' => 'Reindexing Failed',

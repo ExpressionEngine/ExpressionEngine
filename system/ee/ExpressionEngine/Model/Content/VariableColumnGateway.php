@@ -22,8 +22,8 @@ class VariableColumnGateway extends Gateway
      */
     public function getFieldList($cached = true)
     {
-        if ($cached && isset($this->_field_list_cache)) {
-            return $this->_field_list_cache;
+        if ($cached && isset(static::$_field_list_cache[get_class($this)])) {
+            return static::$_field_list_cache[get_class($this)];
         }
 
         $all = ee('Database')
@@ -32,7 +32,11 @@ class VariableColumnGateway extends Gateway
 
         $known = parent::getFieldList();
 
-        return $this->_field_list_cache = array_merge($known, $all);
+        if (!is_array(static::$_field_list_cache)) {
+            static::$_field_list_cache = [];
+        }
+
+        return static::$_field_list_cache[get_class($this)] = array_merge($known, $all);
     }
 }
 

@@ -48,18 +48,18 @@
                             </svg>
                             <span class="ee-sidebar__collapsed-hidden">ExpressionEngine <span class="ee-sidebar__version-number"><?=ee()->view->formatted_version?></span></span>
                         </a>
-            <?php if (IS_PRO): ?>
+
               <div class="ee-pro__indicator-badge-wrapper">
                 <?php if (ee()->view->pro_license_status == 'valid'): ?>
 
-                    <a href="<?= ee('CP/URL')->make('addons/settings/pro/general') ?>" class="ee-pro__indicator-badge">Pro</a>
+                    <a href="<?= ee('CP/URL')->make('settings/pro/general') ?>" class="ee-pro__indicator-badge">Pro</a>
 
                 <?php else: ?>
 
-                    <a href="" data-dropdown-use-root="true" data-dropdown-pos="top" data-toggle-dropdown="app-pro-validation-dropdown" class="ee-pro__indicator-badge ee-pro__indicator-badge-<?=ee()->view->pro_license_status?> js-dropdown-toggle js-about"><i class="fas fa-exclamation-circle ee-sidebar__collapsed-hidden"></i> Pro</a>
+                    <a href="" data-dropdown-use-root="true" data-dropdown-pos="top" data-toggle-dropdown="app-pro-validation-dropdown" class="ee-pro__indicator-badge ee-pro__indicator-badge-<?=ee()->view->pro_license_status?> js-dropdown-toggle js-about"><i class="fal fa-exclamation-circle ee-sidebar__collapsed-hidden"></i> Pro</a>
                 <?php endif; ?>
 
               </div>
-            <?php endif; ?>
+
                     </div>
                 </div>

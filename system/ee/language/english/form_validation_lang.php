@@ -56,6 +56,10 @@ $lang = array(
 
     'required' => 'This field is required.',
 
+    'starts_with' => 'This field should start with <code>%s</code>.',
+
+    'not_starts_with' => 'This field should not start with <code>%s</code>.',
+
     'unique' => 'This field must be unique.',
 
     'unique_email' => 'This field must contain a unique email address.',

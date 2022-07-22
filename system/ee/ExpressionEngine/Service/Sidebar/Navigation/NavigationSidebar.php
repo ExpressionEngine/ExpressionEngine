@@ -51,15 +51,16 @@ class NavigationSidebar extends AbstractSidebar
                 $channels = ee('Model')->get('Channel', $allowed_channel_ids)
                     ->fields('channel_id', 'channel_title', 'max_entries', 'total_records')
                     ->filter('site_id', ee()->config->item('site_id'))
-                    ->order('channel_title', 'ASC');
+                    ->order('channel_title', 'ASC')
+                    ->all();
 
                 $list = $section->addList(lang('menu_entries'));
 
-                if (count($channels->all())) {
-                    $list->addItem('<i class="fas fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
+                if (count($channels)) {
+                    $list->addItem('<i class="fal fa-eye"></i> ' . lang('view_all'), ee('CP/URL', 'publish/edit'))->withDivider();
                 }
 
-                foreach ($channels->all() as $channel) {
+                foreach ($channels as $channel) {
                     $editLink = null;
                     $publishLink = null;
                     if (ee('Permission')->can('create_entries_channel_id_' . $channel->getId())) {
@@ -73,6 +74,7 @@ class NavigationSidebar extends AbstractSidebar
                         // If there's a limit of 1, just send them to the edit screen for that entry
                         if ($channel->total_records == 1 && $channel->maxEntriesLimitReached()) {
                             $entry = ee('Model')->get('ChannelEntry')
+                                ->fields('entry_id')
                                 ->filter('channel_id', $channel->channel_id)
                                 ->first();
                             // Just in case $channel->total_records is inaccurate
@@ -88,7 +90,7 @@ class NavigationSidebar extends AbstractSidebar
                 }
             }
             if (ee('Permission')->has('can_access_files')) {
-                $section->addItem(lang('menu_files'), ee('CP/URL', 'files'))->withIcon('folder');
+                $section->addItem(lang('menu_files'), ee('CP/URL', 'files'))->withIcon('archive');
             }
             if (ee('Permission')->has('can_admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories')) {
                 $section->addItem(lang('categories'), ee('CP/URL', 'categories'))->withIcon('tags');
@@ -135,7 +137,7 @@ class NavigationSidebar extends AbstractSidebar
                     'can_delete_channel_fields'
                 )
             ) {
-                $section->addItem(lang('fields'), ee('CP/URL')->make('fields'))->withIcon('i-cursor');
+                $section->addItem(lang('fields'), ee('CP/URL')->make('fields'))->withIcon('pen-field');
             }
 
             if (ee('Permission')->has('can_access_design')) {

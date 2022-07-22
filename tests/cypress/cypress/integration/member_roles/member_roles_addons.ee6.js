@@ -37,20 +37,12 @@ context('Test Member roles Addons ', () => {
 	   cy.get('button').contains('CP Access').click()
 	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
 
-
 		cy.get('#fieldset-can_access_addons .toggle-btn').click();
 		cy.get('#fieldset-can_admin_addons .toggle-btn').click();
 		cy.get('#fieldset-addons_access .checkbox-label:nth-child(1) > input').click();
 		cy.get('#fieldset-addons_access .checkbox-label:nth-child(2) > input').click();
 		cy.get('#fieldset-addons_access .checkbox-label:nth-child(3) > input').click();
 		cy.get('#fieldset-addons_access .checkbox-label:nth-child(4) > input').click();
-		cy.get('#fieldset-addons_access .checkbox-label:nth-child(5) > input').click();
-		cy.get('#fieldset-addons_access .checkbox-label:nth-child(6) > input').click();
-		//cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(1) > input').click();
-		//cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(2) > input').click();
-		//cy.get('#fieldset-rte_toolsets .checkbox-label:nth-child(3) > input').click(); //lets them do anything with addons
-
-
 
 		cy.get('button').contains('save').eq(0).click()
 	})
@@ -64,6 +56,7 @@ context('Test Member roles Addons ', () => {
 		cy.hasNoErrors()
 
 		cy.visit('admin.php?/cp/members/profile/settings')
+		cy.dismissLicenseAlert()
 		cy.get('h1').contains('AddonManager1')
 		cy.get('.main-nav__account-icon > img').click()
 		//
@@ -91,6 +84,7 @@ context('Test Member roles Addons ', () => {
 		cy.visit('admin.php?/cp/members/profile/settings')
 
 	   cy.get('h1').contains('AddonManager1')
+	   cy.dismissLicenseAlert()
 	   cy.get('.main-nav__account-icon > img').click()
 	   //
 
@@ -100,13 +94,13 @@ context('Test Member roles Addons ', () => {
 	   cy.contains('Rich Text Editor')
 	   cy.contains('Statistics')
 
-
 	   addonManager.get('addons').eq(1).then((addon_card) => {
 		const addon_name = addon_card.find('.add-on-card__title').contents().filter(function(){ return this.nodeType == 3; }).text().trim();
 		cy.log(addon_name);
 		let btn = addon_card.find('.js-dropdown-toggle')
-		btn.click()
-		btn.next('.dropdown').find('a:contains("Uninstall")').click()
+		cy.get(btn).should('exist')
+		cy.get(btn).trigger('click')
+		cy.get(btn).next('.dropdown').find('a:contains("Uninstall")').click()
 
 		addonManager.get('modal_submit_button').contains('Confirm, and Uninstall').click() // Submits a form
 		cy.hasNoErrors()

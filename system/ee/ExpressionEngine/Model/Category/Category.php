@@ -48,6 +48,15 @@ class Category extends ContentModel
                 'right' => 'file_id'
             )
         ),
+        'FileFolders' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Directory',
+            'pivot' => array(
+                'table' => 'file_categories',
+                'left' => 'cat_id',
+                'right' => 'file_id'
+            )
+        ),
         'Parent' => array(
             'type' => 'belongsTo',
             'model' => 'Category',
@@ -57,7 +66,23 @@ class Category extends ContentModel
             'type' => 'hasMany',
             'model' => 'Category',
             'to_key' => 'parent_id'
-        )
+        ),
+        'CategoryFiles' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'File',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
+        'CategoryFileFolders' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Directory',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
     );
 
     protected static $_field_data = array(
@@ -76,8 +101,15 @@ class Category extends ContentModel
 
     protected static $_events = array(
         'beforeInsert',
-        'beforeDelete'
+        'beforeSave',
+        'beforeDelete',
+        'afterAssociationsSave',
+        'beforeAssociationsBulkDelete',
+        'afterAssociationsBulkDelete'
     );
+
+    protected $_filesNeedTotalRecordsRecount = [];
+    protected static $_filesNeedTotalRecordsRecountStatic = [];
 
     // Properties
     protected $cat_id;
@@ -130,6 +162,70 @@ class Category extends ContentModel
         if (empty($parent_id)) {
             $this->setProperty('parent_id', 0);
         }
+    }
+
+    public function onBeforeSave()
+    {
+        $this->updateFilesUsage();
+    }
+
+    public function onAfterAssociationsSave()
+    {
+        self::updateFilesTotalRecords($this->_filesNeedTotalRecordsRecount);
+    }
+
+    public static function onBeforeAssociationsBulkDelete($entry_ids = [])
+    {
+        if (!empty($entry_ids)) {
+            $key = implode('_', $entry_ids);
+            $existingCategoryFilesQuery = ee('db')->select('file_id')->from('file_usage')->where_in('cat_id', $entry_ids)->get();
+            $existingCategoryFiles = [];
+            foreach ($existingCategoryFilesQuery->result_array() as $row) {
+                $existingCategoryFiles[] = $row['file_id'];
+            }
+            self::$_filesNeedTotalRecordsRecountStatic = [$key => $existingCategoryFiles];
+        }
+    }
+
+    public static function onAfterAssociationsBulkDelete($entry_ids = [])
+    {
+        $key = implode('_', $entry_ids);
+        if (!empty(self::$_filesNeedTotalRecordsRecountStatic) && isset(self::$_filesNeedTotalRecordsRecountStatic[$key]) && !empty(self::$_filesNeedTotalRecordsRecountStatic[$key])) {
+            self::updateFilesTotalRecords(self::$_filesNeedTotalRecordsRecountStatic[$key]);
+            unset(self::$_filesNeedTotalRecordsRecountStatic[$key]);
+        }
+    }
+
+    private function updateFilesUsage()
+    {
+        $data = $_POST ?: $this->getValues();
+
+        $usage = [];
+        array_walk_recursive($data, function ($item) use (&$usage) {
+            if (! is_string($item) || strpos($item, '{file:') === false ) {
+                return;
+            }
+            if (preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
+                $file_id = $matches[1];
+                if (! isset($usage[$file_id])) {
+                    $usage[$file_id] = 1;
+                } else {
+                    $usage[$file_id]++;
+                }
+            }
+        });
+
+        //just before we set relationship, grab existing records to find out what files need recount
+        if (! $this->isNew()) {
+            $existingCategoryFiles = ee('db')->select('file_id')->from('file_usage')->where('cat_id', $this->getId())->get();
+            foreach ($existingCategoryFiles->result_array() as $row) {
+                $this->_filesNeedTotalRecordsRecount[] = $row['file_id'];
+            }
+        }
+        $this->_filesNeedTotalRecordsRecount = array_unique(array_merge($this->_filesNeedTotalRecordsRecount, array_keys($usage)));
+        
+        $entryFiles = ee('Model')->get('File', array_keys($usage))->all();
+        $this->getAssociation('CategoryFiles')->set($entryFiles);
     }
 
     /**

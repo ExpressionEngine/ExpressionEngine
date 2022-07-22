@@ -11,6 +11,7 @@
 use ExpressionEngine\Library;
 use ExpressionEngine\Library\Filesystem;
 use ExpressionEngine\Library\Curl;
+use ExpressionEngine\Library\Emoji;
 use ExpressionEngine\Library\Resource;
 use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
@@ -111,6 +112,10 @@ $setup = [
             return $grid;
         },
 
+        'CP/Form' => function ($ee) {
+            return new Library\CP\Form();
+        },
+
         'CP/JumpMenu' => function ($ee) {
             return new JumpMenu\JumpMenu();
         },
@@ -186,10 +191,6 @@ $setup = [
             return new Event\Emitter();
         },
 
-        'Filesystem' => function ($ee) {
-            return new Filesystem\Filesystem();
-        },
-
         'Format' => function ($ee) {
             static $format_opts;
             if ($format_opts === null) {
@@ -202,8 +203,6 @@ $setup = [
                 'foreign_chars' => ee()->config->loadFile('foreign_chars'),
                 'stopwords' => ee()->config->loadFile('stopwords'),
                 'word_separator' => ee()->config->item('word_separator'),
-                'emoji_regex' => EMOJI_REGEX,
-                'emoji_map' => ee()->config->loadFile('emoji'),
             ];
 
             return new Formatter\FormatterFactory(ee()->lang, ee()->session, $config_items, $format_opts);
@@ -250,20 +249,6 @@ $setup = [
 
         'Profiler' => function ($ee) {
             return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri, ee('Format'));
-        },
-
-        'Permission' => function ($ee, $site_id = null) {
-            $userdata = ee()->session->all_userdata();
-            $member = ee()->session->getMember();
-            $site_id = ($site_id) ?: ee()->config->item('site_id');
-
-            return new Permission\Permission(
-                $ee->make('Model'),
-                $userdata,
-                ($member) ? $member->getPermissions() : [],
-                ($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
-                $site_id
-            );
         },
 
         'Resource' => function () {
@@ -499,12 +484,24 @@ $setup = [
             return $db;
         },
 
+        'Emoji' => function ($ee) {
+            return new Emoji\Emoji();
+        },
+
         'Encrypt/Cookie' => function ($ee) {
             return new Encrypt\Cookie();
         },
 
         'File' => function ($ee) {
             return new File\Factory();
+        },
+
+        'Filesystem' => function ($ee) {
+            return new Filesystem\Filesystem();
+        },
+
+        'Filesystem/Adapter' => function ($ee) {
+            return new Filesystem\AdapterManager();
         },
 
         'IpAddress' => function ($ee) {
@@ -520,6 +517,13 @@ $setup = [
 
         'Member' => function ($ee) {
             return new Member\Member();
+        },
+
+        'MimeType' => function($ee) {
+            $mimeType = new ExpressionEngine\Library\Mime\MimeType();
+            $mimeType->whitelistMimesFromConfig();
+            
+            return $mimeType;
         },
 
         'Model/Datastore' => function ($ee) {
@@ -541,6 +545,20 @@ $setup = [
             $app->setClassAliases();
 
             return new Model\DataStore($ee->make('Database'), $config);
+        },
+
+        'Permission' => function ($ee, $site_id = null) {
+            $userdata = ee()->session->all_userdata();
+            $member = ee()->session->getMember();
+            $site_id = ($site_id) ?: ee()->config->item('site_id');
+
+            return new Permission\Permission(
+                $ee->make('Model'),
+                $userdata,
+                ($member) ? $member->getPermissions() : [],
+                ($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
+                $site_id
+            );
         },
 
         'Request' => function ($ee) {
@@ -590,7 +608,10 @@ $setup = [
         // ..\File
         'UploadDestination' => 'Model\File\UploadDestination',
         'FileDimension' => 'Model\File\FileDimension',
+        'FileSystemEntity' => 'Model\File\FileSystemEntity',
         'File' => 'Model\File\File',
+        'Directory' => 'Model\File\Directory',
+        //'FileField' => 'Model\File\FileField',
         'Watermark' => 'Model\File\Watermark',
 
         // ..\Log
@@ -698,7 +719,9 @@ $setup = [
 
         // ..\EntryManager
         'EntryManagerView' => 'Model\EntryManager\View',
-        'EntryManagerViewColumn' => 'Model\EntryManager\ViewColumn',
+
+        // ..\FileManager
+        'FileManagerView' => 'Model\File\FileManagerView',
     ),
 
     'cookies.necessary' => [
@@ -716,6 +739,7 @@ $setup = [
         'viewtype',
         'cp_last_site_id',
         'ee_cp_viewmode',
+        'secondary_sidebar',
         'collapsed_nav'
     ],
     'cookie_settings' => [
@@ -756,6 +780,10 @@ $setup = [
         ],
         'collapsed_nav' => [
             'description' => 'lang:cookie_collapsed_nav_desc',
+            'provider' => 'cp',
+        ],
+        'secondary_sidebar' => [
+            'description' => 'lang:cookie_secondary_sidebar_desc',
             'provider' => 'cp',
         ],
         'ee_cp_viewmode' => [

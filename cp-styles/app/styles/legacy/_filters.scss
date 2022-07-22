@@ -76,7 +76,7 @@
 
 					&:before{
 						@extend %fa-icon;
-						@extend .fas;
+						@extend .fal;
 
 						content: fa-content($fa-var-plus);
 						font-size: 10px;
@@ -222,7 +222,7 @@
 
 				&:before{
 					@extend %fa-icon;
-					@extend .fas;
+					@extend .fal;
 
 					content: fa-content($fa-var-minus-square);
 					font-size: 12px;
