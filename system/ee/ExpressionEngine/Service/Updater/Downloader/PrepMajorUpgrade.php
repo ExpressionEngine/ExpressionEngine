@@ -42,7 +42,8 @@ class PrepMajorUpgrade
      */
     public function isMajorUpgrade($update_version_major = null)
     {
-        $version_major = (int) explode('.', APP_VER, 2)[0];
+        $app_ver = defined('APP_VER') ?: ee()->config->item('app_version');
+        $version_major = (int) explode('.', $app_ver, 2)[0];
 
         if (empty($update_version_major)) {
             ee()->load->library('el_pings');

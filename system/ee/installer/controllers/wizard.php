@@ -162,6 +162,26 @@ class Wizard extends CI_Controller
 
         // Third party constants
         define('PATH_THIRD', SYSPATH . 'user/addons/');
+        // Set the path to the "themes" folder
+        if (ee()->config->item('theme_folder_path') !== false &&
+            ee()->config->item('theme_folder_path') != '') {
+            $theme_path = preg_replace("#/+#", "/", ee()->config->item('theme_folder_path') . '/');
+        } else {
+            $theme_path = substr(APPPATH, 0, - strlen(SYSDIR . '/expressionengine/')) . 'themes/';
+            $theme_path = preg_replace("#/+#", "/", $theme_path);
+        }
+
+        // Maybe the site has been moved.
+        // Let's try some basic autodiscovery if config items are set
+        // But the directory does not exist.
+        if (! is_dir($theme_path . '/ee')) {
+            if (is_dir(FCPATH . '../themes/')) { // We're in the system directory
+                $theme_path = FCPATH . '../themes/';
+            } elseif (is_dir(FCPATH . 'themes/')) { // Front end.
+                $theme_path = FCPATH . 'themes/';
+            }
+        }
+        define('PATH_THIRD_THEMES', $theme_path . 'user/');
 
         $req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
         define('AJAX_REQUEST', ($req_source == 'XMLHttpRequest') ? true : false);
