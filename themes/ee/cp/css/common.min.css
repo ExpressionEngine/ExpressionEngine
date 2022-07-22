@@ -32524,6 +32524,7 @@ body[data-theme=dark] .select-popup {
 }
 .dialog__body ul {
   margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .dialog-input-wrap {
