@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -83,6 +82,8 @@ class Pro_variables_upd
         $lowVars = ee('Addon')->get('low_variables');
         if ($lowVars && $lowVars->isInstalled()) {
             $this->migrateFromLow();
+            $this->update($this->version);
+            $this->updateVersionNumber();
 
             return true;
         }
@@ -489,6 +490,30 @@ class Pro_variables_upd
             ee()->db->where('variable_id', $row['variable_id']);
             ee()->db->update('pro_variables', array('variable_settings' => $settings));
         }
+    }
+
+    public function updateVersionNumber()
+    {
+        // Update Extension version
+        ee()->db->update(
+            'extensions',
+            ['version' => $this->version],
+            ['class' => $this->class_name . '_ext'],
+        );
+
+        // Update Module version
+        ee()->db->update(
+            'modules',
+            ['module_version' => $this->version],
+            ['module_name' => $this->class_name],
+        );
+
+        // Update FT version
+        ee()->db->update(
+            'fieldtypes',
+            ['version' => $this->version],
+            ['name' => lcfirst($this->class_name)],
+        );
     }
 
     // --------------------------------------------------------------------
