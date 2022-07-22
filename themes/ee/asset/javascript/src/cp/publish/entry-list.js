@@ -77,7 +77,10 @@ $(document).ready(function () {
 					makeDirectoryDroppable();
 
 					$('.f_manager-wrapper tbody').sortable({
-						axis: "y"
+						axis: "y",
+						sort: function( event, ui ) {
+							$('#preview').remove();
+						}
 					});
 					$('.f_manager-wrapper .file-grid__wrapper').sortable({
 						start: function( event, ui ) {
@@ -369,7 +372,10 @@ $(document).ready(function () {
 	ddFileToNotEmptyTable();
 
 	$('.f_manager-wrapper tbody').sortable({
-		axis: "y"
+		axis: "y",
+		sort: function( event, ui ) {
+			$('#preview').remove();
+		}
 	});
 	$('.f_manager-wrapper .file-grid__wrapper').sortable({
 		start: function( event, ui ) {
