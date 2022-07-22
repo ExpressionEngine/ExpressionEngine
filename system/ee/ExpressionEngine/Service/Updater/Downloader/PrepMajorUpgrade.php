@@ -40,13 +40,15 @@ class PrepMajorUpgrade
     /**
      * Runs all necessary pre-major upgrade steps
      */
-    public function isMajorUpgrade()
+    public function isMajorUpgrade($update_version_major = null)
     {
-        ee()->load->library('el_pings');
-        $version_file = ee()->el_pings->get_version_info();
-
         $version_major = (int) explode('.', APP_VER, 2)[0];
-        $update_version_major = (int) explode('.', $version_file['latest_version'], 2)[0];
+
+        if (empty($update_version_major)) {
+            ee()->load->library('el_pings');
+            $version_file = ee()->el_pings->get_version_info();
+            $update_version_major = (int) explode('.', $version_file['latest_version'], 2)[0];
+        }
 
         // Is the upcoming release a major version?
         return ($update_version_major > $version_major);
@@ -55,10 +57,10 @@ class PrepMajorUpgrade
     /**
      * Runs all necessary pre-major upgrade steps
      */
-    public function prepMajorIfApplicable()
+    public function prepMajorIfApplicable($update_version_major = null)
     {
         // If the next version is a major version upgrade
-        if (!$this->isMajorUpgrade()) {
+        if (!$this->isMajorUpgrade($update_version_major)) {
             return false;
         }
 
