@@ -430,6 +430,7 @@ $(document).ready(function () {
 				}
 				timer = setTimeout(function(){
 					modal.trigger('modal:open')
+					$("#preview").remove();
 					el.trigger('mouseup');
 				}, 1000);
 			},

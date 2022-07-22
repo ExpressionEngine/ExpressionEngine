@@ -38155,6 +38155,9 @@ body[data-theme="dark"] {
   max-width: 350px;
   overflow-wrap: break-word;
 }
+.f_manager-wrapper .ui-sortable-helper {
+  background: var(--ee-sidebar-bg-active);
+}
 
 .f_manager-table-breadcrumbs .breadcrumb {
   padding: 10px 20px;
@@ -38433,7 +38436,7 @@ body[data-theme="dark"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 12000;
+  z-index: 90;
   padding: 5px;
   border: 1px solid var(--ee-button-default-border);
   box-shadow: 0 1px 4px 0 var(--ee-shadow-dropdown);
