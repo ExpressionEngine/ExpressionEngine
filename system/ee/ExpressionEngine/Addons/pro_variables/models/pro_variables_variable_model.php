@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
@@ -11,11 +19,6 @@ if (! class_exists('Pro_variables_model')) {
 
 /**
  * Pro Variables Variable Model class
- *
- * @package        pro_variables
- * @author         EEHarbor
- * @link           https://eeharbor.com/pro-variables
- * @copyright      Copyright (c) 2009-2022, EEHarbor
  */
 class Pro_variables_variable_model extends Pro_variables_model
 {

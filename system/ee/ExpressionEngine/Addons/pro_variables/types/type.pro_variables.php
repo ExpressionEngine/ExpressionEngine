@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
@@ -8,11 +16,6 @@ if (! defined('BASEPATH')) {
  * Pro Variables Type Class
  *
  * The Pro Variables Type base class, to be extended by other classes
- *
- * @package        pro_variables
- * @author         EEHarbor
- * @link           https://eeharbor.com/pro-variables
- * @copyright      Copyright (c) 2009-2022, EEHarbor
  */
 class Pro_variables_type
 {

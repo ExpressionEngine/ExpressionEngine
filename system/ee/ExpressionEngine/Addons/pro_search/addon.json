@@ -3,7 +3,6 @@
     "shortname": "pro_search",
     "version": "8.0.0",
     "description": "Powerful site search and Find &amp; Replace utility",
-    "license": "EEHarbor",
     "trial": true,
     "namespace": "Pro\\Search",
     "require": {

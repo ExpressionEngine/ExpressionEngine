@@ -1,4 +1,12 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
@@ -6,11 +14,6 @@ if (! defined('BASEPATH')) {
 
 /**
  * Pro Search Index class
- *
- * @package        pro_search
- * @author         ExpressionEngine
- * @link           https://eeharbor.com/pro-search
- * @copyright      Copyright (c) 2022, ExpressionEngine
  */
 class Pro_search_index
 {
