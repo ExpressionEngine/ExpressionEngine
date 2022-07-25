@@ -566,21 +566,6 @@ INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `m
 	(10, 1, 'staff_howard.png', 2, 'image/png', 'staff_howard.png', 51488, NULL, NULL, NULL, 1, 1302880304, 1, 1302880304, '');
 /*!40000 ALTER TABLE `exp_files` ENABLE KEYS */;
 
-DELETE FROM `exp_file_data`;
-/*!40000 ALTER TABLE `exp_file_data` DISABLE KEYS */;
-INSERT INTO `exp_file_data` (`file_id`) VALUES
-	(1),
-	(2),
-	(3),
-	(4),
-	(5),
-	(6),
-	(7),
-	(8),
-	(9),
-	(10);
-/*!40000 ALTER TABLE `exp_file_data` ENABLE KEYS */;
-
 -- Dumping data for table ee-test.exp_file_categories: ~0 rows (approximately)
 DELETE FROM `exp_file_categories`;
 /*!40000 ALTER TABLE `exp_file_categories` DISABLE KEYS */;
