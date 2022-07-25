@@ -150,7 +150,7 @@ class Wizard extends CI_Controller
         define('PATH_CACHE', SYSPATH . 'user/cache/');
         define('PATH_TMPL', SYSPATH . 'user/templates/');
         define('PATH_DICT', SYSPATH . 'user/config/');
-        define('DOC_URL', 'https://docs.expressionengine.com/v6/');
+        define('DOC_URL', 'https://docs.expressionengine.com/latest/');
         define('SLASH', '&#47;');
         define('LD', '{');
         define('RD', '}');
