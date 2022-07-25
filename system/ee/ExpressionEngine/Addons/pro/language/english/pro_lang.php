@@ -4,7 +4,7 @@ $lang = array(
 
     //CP
     'pro_module_name' => 'ExpressionEngine Pro',
-    'pro_settings_updated' => 'ExpressionEngine Pro settings have been updated',
+    'pro_settings_updated' => 'The settings have been updated',
     'branding' => 'Branding',
     'branding_settings' => 'Branding',
     'login_logo' => 'Logo to show on login screen',

@@ -1202,4 +1202,11 @@ $(document).ready(function(){
 			$('.imitation_button').attr('data-directory_id', directoryId);
 			$('.imitation_button')[0].click();
 		})
+
+		$('body').on('click', '.toolbar-wrap .settings', function(e) {
+			e.preventDefault();
+			var href = $(this).attr('href');
+			location.href = href;
+		})
+
 }); // close (document).ready

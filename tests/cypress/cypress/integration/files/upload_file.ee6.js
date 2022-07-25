@@ -131,13 +131,13 @@ context('File Manager / Upload File', () => {
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
     cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-    page.get('file_input').find('.file-field__dropzone').attachFile('../../support/sql/database_6.0.0.sql', { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').attachFile('../../support/sql/database_7.0.0.sql', { subjectType: 'drag-n-drop' })
     cy.wait('@upload')
     cy.wait('@table')
     cy.hasNoErrors()
 
     returnPage.get('selected_file').should('exist')
-    returnPage.get('selected_file').contains("database_6.0.0.sql")
+    returnPage.get('selected_file').contains("database_7.0.0.sql")
   })
 
   it('cannot upload a shell script', () => {

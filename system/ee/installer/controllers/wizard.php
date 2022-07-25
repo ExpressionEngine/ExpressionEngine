@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '7.0.0-rc.1'; // The version being installed
+    public $version = '7.0.0-rc.2'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -150,7 +150,7 @@ class Wizard extends CI_Controller
         define('PATH_CACHE', SYSPATH . 'user/cache/');
         define('PATH_TMPL', SYSPATH . 'user/templates/');
         define('PATH_DICT', SYSPATH . 'user/config/');
-        define('DOC_URL', 'https://docs.expressionengine.com/v6/');
+        define('DOC_URL', 'https://docs.expressionengine.com/latest/');
         define('SLASH', '&#47;');
         define('LD', '{');
         define('RD', '}');
@@ -162,6 +162,26 @@ class Wizard extends CI_Controller
 
         // Third party constants
         define('PATH_THIRD', SYSPATH . 'user/addons/');
+        // Set the path to the "themes" folder
+        if (ee()->config->item('theme_folder_path') !== false &&
+            ee()->config->item('theme_folder_path') != '') {
+            $theme_path = preg_replace("#/+#", "/", ee()->config->item('theme_folder_path') . '/');
+        } else {
+            $theme_path = substr(APPPATH, 0, - strlen(SYSDIR . '/expressionengine/')) . 'themes/';
+            $theme_path = preg_replace("#/+#", "/", $theme_path);
+        }
+
+        // Maybe the site has been moved.
+        // Let's try some basic autodiscovery if config items are set
+        // But the directory does not exist.
+        if (! is_dir($theme_path . '/ee')) {
+            if (is_dir(FCPATH . '../themes/')) { // We're in the system directory
+                $theme_path = FCPATH . '../themes/';
+            } elseif (is_dir(FCPATH . 'themes/')) { // Front end.
+                $theme_path = FCPATH . 'themes/';
+            }
+        }
+        define('PATH_THIRD_THEMES', $theme_path . 'user/');
 
         $req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
         define('AJAX_REQUEST', ($req_source == 'XMLHttpRequest') ? true : false);

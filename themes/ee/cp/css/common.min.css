@@ -30586,12 +30586,18 @@ fieldset .field-control #eye {
 }
 .panel-body__publish fieldset, .panel-body__publish .fieldset-faux {
   width: 100%;
-  display: inline-block;
+  display: inline-flex;
+  flex-wrap: wrap;
   margin-bottom: 30px;
   padding-left: 15px;
   padding-right: 15px;
   vertical-align: top;
   font-size: 1rem;
+}
+.panel-body__publish fieldset .field-instruct,
+.panel-body__publish fieldset .field-control, .panel-body__publish .fieldset-faux .field-instruct,
+.panel-body__publish .fieldset-faux .field-control {
+  width: 100%;
 }
 .panel-body__publish fieldset.hide-block, .panel-body__publish .fieldset-faux.hide-block {
   display: none;

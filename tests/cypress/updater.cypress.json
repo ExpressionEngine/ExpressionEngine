@@ -17,7 +17,7 @@
         "DB_USER": "root",
         "DB_PASSWORD": "root",
         "DB_DATABASE": "ee-test",
-        "DB_DUMP": "database_6.0.0.sql",
+        "DB_DUMP": "database_6.1.5.sql",
         "TEMP_DIR": "/tmp"
     }
 }

@@ -227,7 +227,7 @@ $setup = [
             return $facade;
         },
 
-        'Migration' => function ($ee, $migration=null) {
+        'Migration' => function ($ee, $migration = null) {
             return new Migration\Factory($ee->make('db'), $ee->make('Filesystem'), $migration);
         },
 
@@ -294,6 +294,13 @@ $setup = [
                 $ee->make('Updater/Logger'),
                 $ee->make('Config')->getFile(),
                 array_unique($theme_paths)
+            );
+        },
+
+        'Updater/PrepMajorUpgrade' => function ($ee) {
+            return new Updater\Downloader\PrepMajorUpgrade(
+                $ee->make('Filesystem'),
+                $ee->make('Updater/Logger'),
             );
         },
 

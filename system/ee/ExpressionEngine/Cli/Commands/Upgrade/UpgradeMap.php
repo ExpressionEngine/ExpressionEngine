@@ -17,6 +17,7 @@ class UpgradeMap
     public static $versionsSupported = [];
 
     public static $versionNaming = [
+        '7.0.0_rc.2' => '7.0.0-rc.2',
         '7.0.0_rc.1' => '7.0.0-rc.1',
         '6.1.0_rc_2' => '6.1.0_rc.2',
         '6.1.0_rc_1' => '6.1.0_rc.1',

@@ -20,9 +20,6 @@ class Branding extends Settings\Pro
     {
         ee()->load->library('file_field');
 
-        ee()->view->header = array(
-            'title' => lang('branding_settings'),
-        );
         $this->base_url = ee('CP/URL')->make('settings/pro/branding');
     }
 
@@ -99,9 +96,15 @@ class Branding extends Settings\Pro
             ]
         ];
 
+        ee()->cp->add_js_script(array(
+            'file' => array(
+                'cp/publish/entry-list',
+            ),
+        ));
+
         $vars += array(
             'base_url' => ee('CP/URL')->make('settings/pro/branding'),
-            'cp_page_title' => lang('branding'),
+            'cp_page_title' => lang('branding_settings'),
             'save_btn_text' => 'btn_save_settings',
             'save_btn_text_working' => 'btn_saving'
         );
@@ -109,9 +112,6 @@ class Branding extends Settings\Pro
         ee()->view->cp_breadcrumbs = array(
             '' => lang('branding_settings')
         );
-
-        ee()->view->cp_page_title = lang('branding_settings');
-        ee()->view->cp_heading = lang('branding_settings');
 
         ee()->cp->render('settings/form', $vars);
     }

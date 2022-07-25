@@ -66,6 +66,16 @@
                 <div class="app-about__status app-about__status--update-major hidden">
                     <?=lang('out_of_date_upgrade_major')?>
 
+                    <br>
+
+                    <?php
+                    // IF the user is not currently using pro AND they have multiple members
+                    //   OR they have pro installed but dont have a valid license
+                    // THEN theyre gonna need a license
+                     if ((! IS_PRO && (ee('Model')->get('Member')->count() > 1))
+                        || (IS_PRO && ! ee('pro:Access')->hasValidLicense())): ?>
+                        <br><div><?=lang('one_click_major_update_pro_license_required')?></div>
+                    <?php endif;?>
                     <div class="app-about__status--update_major_version <?=isset(ee()->view->major_update) ? '' : 'hidden'?>">
                         <?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name' => 'one_click_major_update_confirm'])?>
                             <input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
@@ -105,21 +115,21 @@
 
         echo ee()->javascript->get_global();
 
-        echo ee()->cp->render_footer_js();
+    echo ee()->cp->render_footer_js();
 
-        if (isset($_extra_library_src)) {
-            echo $_extra_library_src;
-        }
+    if (isset($_extra_library_src)) {
+        echo $_extra_library_src;
+    }
 
-        echo ee()->javascript->script_foot();
+    echo ee()->javascript->script_foot();
 
-        foreach (ee()->cp->get_foot() as $item) {
-            echo $item . "\n";
-        }
+    foreach (ee()->cp->get_foot() as $item) {
+        echo $item . "\n";
+    }
 
-        $this->embed('ee:_shared/idle-modal');
+    $this->embed('ee:_shared/idle-modal');
 
-        ?>
+    ?>
 
         <script type="text/javascript" src="<?=ee('CP/URL')->make('jumps/js')->compile()?>"></script>
 

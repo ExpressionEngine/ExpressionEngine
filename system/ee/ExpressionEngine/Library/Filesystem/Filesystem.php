@@ -578,7 +578,7 @@ class Filesystem
      */
     public function exists($path)
     {
-        if (DIRECTORY_SEPARATOR == '\\' && strpos($path, '/') === 0) {
+        if ($this->isLocal() && DIRECTORY_SEPARATOR == '\\' && strpos($path, '/') === 0) {
             //on Windows server, the path can't start with /
             return false;
         }
@@ -588,7 +588,7 @@ class Filesystem
 
         // If the path is the root of this filesystem it must exist or the
         // filesystem would have thrown an exception during construction
-        if($path === '') {
+        if ($path === '') {
             return true;
         }
 
@@ -1063,7 +1063,7 @@ class Filesystem
     protected function removePathPrefix($path)
     {
         $prefix = $this->getPathPrefix();
-        return (strpos($path, $prefix) === 0) ? str_replace($prefix, '', $path) : $path;
+        return (!empty($prefix) && strpos($path, $prefix) === 0) ? str_replace($prefix, '', $path) : $path;
     }
 
     /**
