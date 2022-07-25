@@ -31,6 +31,7 @@ class Updater
                 'addLegacyFieldsConfig',
                 'addExtensionsEnabledKey',
                 //7.x
+                'prepMajorUpgrade',
                 'addFileDataTable',
                 'addFileManagerViewsTable',
                 'addFilesTableColumns',
@@ -84,6 +85,11 @@ class Updater
     private function addExtensionsEnabledKey()
     {
         ee()->smartforge->add_key('extensions', 'enabled');
+    }
+
+    private function prepMajorUpgrade()
+    {
+        ee('Updater/PrepMajorUpgrade')->prepMajorIfApplicable(7);
     }
 
     private function addFileDataTable()
