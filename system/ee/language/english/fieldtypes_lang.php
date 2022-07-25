@@ -149,7 +149,7 @@ $lang = array(
 
     'file_dnd_choose_file_directory' => 'Choose a File Directory',
 
-    'file_dnd_upload_to' => 'Upload To',
+    'file_dnd_upload_to' => 'Upload to',
 
     'file_dnd_choose_directory_before_uploading' => 'You must choose a directory to upload files',
 
