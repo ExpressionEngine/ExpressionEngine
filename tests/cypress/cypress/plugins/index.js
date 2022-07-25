@@ -56,7 +56,7 @@ module.exports = (on, config) => {
     })
 
     on('task', {
-        'db:seed': () => {
+        'db:seed': (dumpFile = null) => {
             var tempSeed = 'seed.sql';
             fs.delete('../../system/user/cache/default_site/');
 
@@ -91,7 +91,7 @@ module.exports = (on, config) => {
                 }
 
                 // Load content from dump
-                return db.load(config.env.DB_DUMP).then(() => {;
+                return db.load(dumpFile !== null ? dumpFile : config.env.DB_DUMP).then(() => {;
                     // Store database changes to skip initDb step in subsequent test runs
                     return db.dump(tempSeed);
                 });

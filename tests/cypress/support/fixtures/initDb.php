@@ -135,7 +135,7 @@ $install = $schema->install_tables_and_data();
 
 write_config_data($schema);
 
-install_modules();
+install_modules($schema->version);
 
 exit(!(int) $install);
 
@@ -383,10 +383,9 @@ function write_config_data($schema)
     ee()->db->insert_batch('config', $inserts);
 }
 
-function install_modules()
+function install_modules($version)
 {
     $required_modules = [
-        'pro',
         'channel',
         'comment',
         'consent',
@@ -398,6 +397,10 @@ function install_modules()
         'relationship',
         'search',
     ];
+
+    if (version_compare($version, '7.0.0-rc.1', '>=')) {
+        array_unshift($required_modules, 'pro');
+    }
 
     ee()->load->library('addons');
     ee()->addons->install_modules($required_modules);

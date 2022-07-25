@@ -33,7 +33,7 @@
         "DB_PASSWORD": "root",
         "DB_PORT": "3306",
         "DB_DATABASE": "ee-test",
-        "DB_DUMP": "database_6.0.0.sql",
+        "DB_DUMP": "database_7.0.0.sql",
         "TEMP_DIR": "/tmp",
         "MAILDEV_PROTOCOL": "http",
         "MAILDEV_HOST": "127.0.0.1",
