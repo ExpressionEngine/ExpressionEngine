@@ -249,7 +249,7 @@ $(document).ready(function () {
 	});
 
 	// Saving the width state of fields
-	$('[data-publish] form').on('click', '.field-option-width select', function(e) {
+	$('[data-publish] form').on('change', '.field-option-width select', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 
