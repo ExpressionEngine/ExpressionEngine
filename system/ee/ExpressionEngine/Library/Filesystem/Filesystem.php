@@ -1063,7 +1063,7 @@ class Filesystem
     protected function removePathPrefix($path)
     {
         $prefix = $this->getPathPrefix();
-        return (strpos($path, $prefix) === 0) ? str_replace($prefix, '', $path) : $path;
+        return (!empty($prefix) && strpos($path, $prefix) === 0) ? str_replace($prefix, '', $path) : $path;
     }
 
     /**
