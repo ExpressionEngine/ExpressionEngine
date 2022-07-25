@@ -231,6 +231,14 @@ function (_React$Component) {
       el.find('.f_open-filepicker').val('');
     });
 
+    _defineProperty(_assertThisInitialized(_this), "directoryHasChild", function (directory) {
+      if (directory == 'all') return null;
+      directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
+        return thisDirectory.value == directory;
+      });
+      return directory;
+    });
+
     window.list;
     window.globalDropzone;
 
@@ -622,6 +630,7 @@ function (_React$Component) {
         subheading = EE.lang.file_dnd_choose_directory_before_uploading;
       }
 
+      var checkChildren = this.directoryHasChild(this.props.allowedDirectory);
       return React.createElement(React.Fragment, null, React.createElement("div", {
         className: "file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')
       }, React.createElement("div", {
@@ -640,7 +649,22 @@ function (_React$Component) {
         className: "file-field__dropzone-title"
       }, heading), React.createElement("div", {
         "class": "file-field__dropzone-button"
-      }, subheading, this.state.directory == 'all' && ':', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
+      }, subheading, this.state.directory == 'all' && ':', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.directory != 'all' && this.props.allowedDirectory != 'all' && checkChildren && checkChildren.children.length > 0 && React.createElement(DropDownButton, {
+        key: EE.lang.file_dnd_choose_existing,
+        action: this.state.directory == 'all',
+        center: true,
+        keepSelectedState: true,
+        title: EE.lang.file_dnd_choose_directory_btn,
+        placeholder: EE.lang.file_dnd_filter_directories,
+        items: [checkChildren],
+        onSelect: function onSelect(directory) {
+          return _this5.setDirectory(directory);
+        },
+        buttonClass: "button--default button--small",
+        createNewDirectory: this.props.createNewDirectory,
+        ignoreChild: false,
+        addInput: false
+      }), this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: this.state.directory == 'all',
         center: true,

@@ -522,6 +522,14 @@ class DragAndDropUpload extends React.Component {
     }
   }
 
+  directoryHasChild = (directory) => {
+    if (directory == 'all') return null;
+    directory = EE.dragAndDrop.uploadDesinations.find(
+      thisDirectory => thisDirectory.value == directory
+    )
+    return directory
+  }
+
   render() {
     let heading = this.props.multiFile
       ? EE.lang.file_dnd_drop_files
@@ -535,6 +543,8 @@ class DragAndDropUpload extends React.Component {
       heading = EE.lang.file_dnd_choose_file_directory
       subheading = EE.lang.file_dnd_choose_directory_before_uploading
     }
+
+    let checkChildren = this.directoryHasChild(this.props.allowedDirectory);
 
     return (
       <React.Fragment>
@@ -550,6 +560,21 @@ class DragAndDropUpload extends React.Component {
                 {this.state.directory == 'all' && ':'}
                 {this.state.directory != 'all' && <b>{this.getDirectoryName(this.state.directory)}</b>}
                 &nbsp;
+                {this.state.directory != 'all' && this.props.allowedDirectory != 'all' && checkChildren && checkChildren.children.length > 0 &&
+                  <DropDownButton key={EE.lang.file_dnd_choose_existing}
+                    action={this.state.directory == 'all'}
+                    center={true}
+                    keepSelectedState={true}
+                    title={EE.lang.file_dnd_choose_directory_btn}
+                    placeholder={EE.lang.file_dnd_filter_directories}
+                    items={[checkChildren]}
+                    onSelect={(directory) => this.setDirectory(directory)}
+                    buttonClass="button--default button--small"
+                    createNewDirectory={this.props.createNewDirectory}
+                    ignoreChild={false}
+                    addInput={false}
+                  />
+                }
                 {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
                     <DropDownButton key={EE.lang.file_dnd_choose_existing}
                         action={this.state.directory == 'all'}
