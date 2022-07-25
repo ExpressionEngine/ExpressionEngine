@@ -98,6 +98,30 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
     /**
      * @inheritdoc
      */
+    public function applyPathPrefix($path)
+    {
+        //if it's already absolute path, no need to apply prefix
+        if ((DIRECTORY_SEPARATOR == '/' && strpos($path, '/') === 0) || (DIRECTORY_SEPARATOR == '\\' && strpos($path, ':') === 1)) {
+            return $path;
+        }
+        return parent::applyPathPrefix($path);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removePathPrefix($path)
+    {
+        $prefix = $this->getPathPrefix();
+        if (!empty($prefix) && strpos($path, $prefix) === 0) {
+            return parent::removePathPrefix($path);
+        }
+        return $path;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function has($path)
     {
         return $this->rootExists && parent::has($path);
