@@ -17,9 +17,6 @@ class Frontedit extends Settings\Pro
 {
     public function __construct()
     {
-        ee()->view->header = array(
-            'title' => lang('frontedit_settings'),
-        );
         $this->base_url = ee('CP/URL')->make('settings/pro/frontedit');
     }
 
@@ -111,17 +108,14 @@ class Frontedit extends Settings\Pro
 
         $vars += array(
             'base_url' => ee('CP/URL')->make('settings/pro/frontedit'),
-            'cp_page_title' => lang('settings'),
+            'cp_page_title' => lang('frontedit_settings'),
             'save_btn_text' => 'btn_save_settings',
             'save_btn_text_working' => 'btn_saving'
         );
 
         ee()->view->cp_breadcrumbs = array(
-            '' => lang('pro_settings')
+            '' => lang('frontedit')
         );
-
-        ee()->view->cp_page_title = lang('pro_settings');
-        ee()->view->cp_heading = lang('pro_settings');
 
         ee()->cp->render('settings/form', $vars);
     }

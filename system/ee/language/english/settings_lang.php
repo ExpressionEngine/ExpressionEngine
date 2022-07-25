@@ -720,6 +720,8 @@ $lang = array(
 
     'cs_session' => 'Cookies and session ID',
 
+    'no_cookies_registered' => 'No cookies registered',
+
     'deny_duplicate_data' => 'Deny duplicate data?',
 
     'deny_duplicate_data_desc' => 'When enabled, forms will disregard any submission that is an exact duplicate of existing data.',

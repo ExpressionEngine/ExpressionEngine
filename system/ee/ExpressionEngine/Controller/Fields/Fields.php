@@ -831,19 +831,17 @@ class Fields extends AbstractFieldsController
             ),
         );
 
-        if (ee('pro:Access')->hasRequiredLicense()) {
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-            $sections['pro_settings'][] = array(
-                'title' => 'enable_frontedit',
-                'desc' => 'enable_frontedit_field_desc',
-                'fields' => array(
-                    'enable_frontedit' => array(
-                        'type' => 'yes_no',
-                        'value' => $field->enable_frontedit
-                    )
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        $sections['pro_settings'][] = array(
+            'title' => 'enable_frontedit',
+            'desc' => 'enable_frontedit_field_desc',
+            'fields' => array(
+                'enable_frontedit' => array(
+                    'type' => 'yes_no',
+                    'value' => $field->enable_frontedit
                 )
-            );
-        }
+            )
+        );
 
         $field_options = $field->getSettingsForm();
         if (is_array($field_options) && ! empty($field_options)) {
