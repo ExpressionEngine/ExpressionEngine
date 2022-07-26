@@ -63,11 +63,11 @@ module.exports = (on, config) => {
         }
     })
 
-    on('after:spec', (spec, results) => {
+    /*on('after:spec', (spec, results) => {
         var filename = spec.name.split('/');
         fs.create('cypress/downloads');
         fs.createFile('cypress/downloads/' + filename[1].split('.')[0] + '.console.log', consoleLog.getLogs().join("\r\n"));
-    })
+    })*/
 
     on('task', {
         'db:clear': () => {

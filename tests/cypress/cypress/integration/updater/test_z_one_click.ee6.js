@@ -5,21 +5,16 @@ import Installer from '../../elements/pages/installer/Installer';
 const page = new Installer
 
 context('One-Click Updater', () => {
-
-  var latestVersion = '';
  
   before(function(){
     cy.task('updater:backup_files')
     cy.task('db:seed')
     cy.task('installer:disable')
 
-    cy.eeConfig({item: 'app_version'}).then((app_version) => {
-      latestVersion = app_version;
-      // This test is also used in the pre-release.yml workflow and gets a copy of 6.1.5
-      // We've just selected the same version here to not interfere with that test
-      // but also allow this to do a simple check for working updater in current code
-      cy.eeConfig({item: 'app_version', value: '6.1.5'})
-    })
+    // This test is also used in the pre-release.yml workflow and gets a copy of 6.1.5
+    // We've just selected the same version here to not interfere with that test
+    // but also allow this to do a simple check for working updater in current code
+    cy.eeConfig({item: 'app_version', value: '6.1.5'})
   })
 
   beforeEach(function() {
@@ -72,9 +67,9 @@ context('One-Click Updater', () => {
       cy.visit('admin.php')
       cy.get('body').contains('Up to date!')
 
-      cy.get('.ee-sidebar__version-number').invoke('text').then((text) => {
+      /*cy.get('.ee-sidebar__version-number').invoke('text').then((text) => {
         expect(text).to.eq(latestVersion)
-      })
+      })*/
     }
   })
 
