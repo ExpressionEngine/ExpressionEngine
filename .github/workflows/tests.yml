@@ -7,7 +7,7 @@ on:
       - release/6.3.0
       - release/6.4.0
       - release/6.5.0
-      - feature/html-title-to-file-EECORE-1680
+      - bug/6.x/full-tests
 
 jobs:
 

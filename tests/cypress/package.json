@@ -23,6 +23,7 @@
         "cypress-maildev": "^1.1.0",
         "cypress-otp": "^1.0.3",
         "cypress-xpath": "^1.6.2",
+        "cypress-log-to-output": "^1.1.2",
         "del": "^6.0.0",
         "fs-extra": "^9.0.0",
         "glob": "^8.0.1",
