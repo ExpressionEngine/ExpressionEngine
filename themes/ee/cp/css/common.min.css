@@ -28055,7 +28055,7 @@ input[type=button].btn-block {
   text-align: center;
   font-size: 10px;
   line-height: 16px;
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 6 Pro";
   font-style: normal;
   font-weight: 900;
   border-radius: 1000px;
@@ -28226,7 +28226,7 @@ input[type=button].btn-block {
   text-align: center;
   font-size: 10px;
   line-height: 16px;
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 6 Pro";
   font-style: normal;
   font-weight: 900;
   border-radius: 1000px;
@@ -34672,7 +34672,7 @@ table .field-no-results {
   color: var(--ee-text-tertiary);
 }
 .promo-banner-outer .banner-dismiss::before {
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 6 Pro";
   font-weight: 900;
   content: "\f00d";
   font-size: 24px;
@@ -35213,7 +35213,7 @@ table .field-no-results {
 
 .field-loading span:after {
   content: "\f141";
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome 6 Pro";
   margin-left: 0.2em;
   position: relative;
   top: 0.1em;
@@ -39164,7 +39164,7 @@ body[data-theme="dark"] {
   color: #333333;
   content: "\f0c9";
   font-size: 12px;
-  font-family: 'Font Awesome 5 Free';
+  font-family: 'Font Awesome 6 Pro';
 }
 .fluid-ctrls .reorder:hover {
   background-color: #E9F7FD;
@@ -39188,7 +39188,7 @@ body[data-theme="dark"] {
   color: #E0251C;
   content: "\f1f8";
   font-size: 12px;
-  font-family: 'Font Awesome 5 Free';
+  font-family: 'Font Awesome 6 Pro';
 }
 .fluid-ctrls .filters {
   position: absolute;
@@ -39265,7 +39265,7 @@ body[data-theme="dark"] {
 }
 .filter-clear a:before {
   content: "\f146";
-  font-family: 'Font Awesome 5 Free';
+  font-family: 'Font Awesome 6 Pro';
   font-size: 12px;
   line-height: 1;
   margin-right: 5px;

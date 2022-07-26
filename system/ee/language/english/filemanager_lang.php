@@ -34,8 +34,6 @@ $lang = array(
 
     'credit' => 'Credit',
 
-    'custom_fields' => 'custom fields',
-
     'date_added' => 'Date Added',
 
     'date_modified' => 'Date Modified',
@@ -102,8 +100,6 @@ $lang = array(
 
     'last_modified' => 'Last Modified',
 
-    'location' => 'Location',
-
     'limit_subfolder_toggle' => 'Limit layers of subfolders?',
 
     'limit_subfolders_toggle_desc' => 'Include a limit to the number of nested subfolder layers',
@@ -126,11 +122,7 @@ $lang = array(
 
     'create_folder_location' => 'Create a folder in the following location:',
 
-    'subfolder_directory_created' => 'Subfolder directory created',
-
     'subfolder_directory_renamed' => 'Subfolder directory renamed',
-
-    'upload_directory_deleted_desc' => 'The upload directory <b>%s</b> has been deleted.',
 
     'subfolder_already_exists' => 'Subfolder directory already exists',
 
@@ -163,8 +155,6 @@ $lang = array(
     'replace_file' => 'Replace',
 
     'replace_no_metadata' => 'Only the file was replaced. The Title, Description, Credit, Location, and Categories were not updated.',
-
-    'search_files' => 'Search Files',
 
     'security_failure' => 'The file type you are attempting to upload is not allowed.',
 

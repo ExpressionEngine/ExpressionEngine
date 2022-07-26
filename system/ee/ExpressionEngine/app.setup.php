@@ -300,7 +300,7 @@ $setup = [
         'Updater/PrepMajorUpgrade' => function ($ee) {
             return new Updater\Downloader\PrepMajorUpgrade(
                 $ee->make('Filesystem'),
-                $ee->make('Updater/Logger'),
+                $ee->make('Updater/Logger')
             );
         },
 

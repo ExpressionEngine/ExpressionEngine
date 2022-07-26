@@ -83,7 +83,7 @@ context('Operate the site with many members', () => {
 
         cy.visit('admin.php?/cp/utilities/communicate');
         page.hasAlert('important')
-        page.get('alert').contains("The mumber of members for each role might be inaccurate")
+        page.get('alert').contains("The number of members for each role might be inaccurate")
         cy.hasNoErrors()
         cy.logCPPerformance()
 
@@ -98,7 +98,7 @@ context('Operate the site with many members', () => {
         cy.hasNoErrors()
         cy.get('.panel-body .list-item__content:contains("Members")').find('.faded').contains('50002')
         page.hasAlert('important')
-        page.get('alert').contains("The mumber of members for each role might be inaccurate")
+        page.get('alert').contains("The number of members for each role might be inaccurate")
       })
     })
 

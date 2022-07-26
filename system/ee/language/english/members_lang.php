@@ -273,7 +273,7 @@ $lang = array(
 
     'roles_remove_problem' => 'There was a problem deleting roles.',
 
-    'roles_counter_warning' => 'The mumber of members for each role might be inaccurate because of <code>ignore_member_stats</code> configuration override being set to <code>y</code>. Plese use Statistics Utility to recount.',
+    'roles_counter_warning' => 'The number of members for each role might be inaccurate because of <code>ignore_member_stats</code> configuration override being set to <code>y</code>. Please use Statistics Utility to recount.',
 
     'member_has_cp_access' => 'Can access the control panel',
 
