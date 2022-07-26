@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'addConditionalFieldRequiredSyncFlag',
+                'syncMemberStats',
             ]
         );
 
@@ -37,6 +38,7 @@ class Updater
 
         return true;
     }
+
 
     private function addConditionalFieldRequiredSyncFlag()
     {
@@ -51,6 +53,16 @@ class Updater
                     )
                 )
             );
+        }
+    }
+
+    private function syncMemberStats()
+    {
+        if (ee()->config->item('ignore_member_stats') != 'y') {
+            foreach (ee('Model')->get('Role')->all() as $role) {
+                $role->total_members = null;
+                $role->save();
+            }
         }
     }
 }

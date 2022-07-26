@@ -345,7 +345,11 @@ class EntryListing
                     break;
             }
 
-            $entries->search($search_fields, $this->search_value);
+            if (is_numeric($this->search_value) && strlen($this->search_value) < 3) {
+                $entries->filter('entry_id', $this->search_value);
+            } else {
+                $entries->search($search_fields, $this->search_value);
+            }
         }
 
         $filter_values = $this->filters->values();

@@ -35,6 +35,18 @@ $lang = array(
     'updating_to_from' =>
     'Updating <b>%s</b> from %s to %s',
 
+    'prepMajorUpgrade_step' =>
+    'Checking for major upgrade and running preparations if necessary.',
+
+    'preflight_moving_addons_to_user_folder' =>
+    'Moving add-ons to user folder',
+
+    'preflight_verifying_php_version' =>
+    'Verifying PHP Version before upgrading to ExpressionEngine 7',
+
+    'preflight_verifying_php_version_error' =>
+    'ExpressionEngine 7 requires PHP 7.2.5 or higher.<br>Current PHP version: %s',
+
     'preflight_step' =>
     'Preflight check',
 

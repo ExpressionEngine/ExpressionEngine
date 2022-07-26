@@ -273,6 +273,8 @@ $lang = array(
 
     'url_ft_protocol_relative_url' => 'Protocol Relative URL',
 
+    'url_ft_single_slash_protocol_relative_url' => 'Root Relative URL',
+
     'url_ft_url_scheme_placeholder' => 'URL Scheme Placeholder',
 
     'url_ft_url_scheme_placeholder_desc' => 'Displayed as placeholder text when no URL has been submitted.',

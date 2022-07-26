@@ -6,7 +6,7 @@ $lang = array(
 
     /* Menu */
 
-    'backup_database' => 'Backup Database',
+    'backup_database' => 'Back Up Database',
 
     'cache_manager' => 'Cache Manager',
 
@@ -218,7 +218,7 @@ $lang = array(
 
     'sandr_search_text' => 'Search for this text',
 
-    'sandr_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p><p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
+    'sandr_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p><p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and back up your database.</p>',
 
     'site_preferences' => 'Site Preferences',
 
@@ -381,17 +381,17 @@ $lang = array(
     /* Database Backup Utility */
     'backing_up' => 'Backing up...',
 
-    'backup_database' => 'Backup Database',
+    'backup_database' => 'Back Up Database',
 
     'backup_error' => 'Cannot Make Backup',
 
     'backup_out_of_memory' => 'Your server ran out of memory while trying to export your database. Try setting the <a href="%s" rel="external noreferrer"><code>db_backup_row_limit</code></a> config to a lower number.',
 
-    'backup_success' => 'Backup Succeeded',
+    'backup_success' => 'Back Up Succeeded',
 
     'backup_success_desc' => 'Your backup has been stored in your system folder at: <b>%s</b>',
 
-    'backup_tables' => 'Backup tables',
+    'backup_tables' => 'Back up tables',
 
     'cache_path_not_writable' => 'Your cache path is not writable. This folder must be writable to write your backup.',
 
@@ -434,7 +434,7 @@ $lang = array(
 
     'sql_query_to_run' => 'Query to run',
 
-    'sql_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p><p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
+    'sql_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p><p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and back up your database.</p>',
 
     'total_results' => 'Total Results',
 
