@@ -21,7 +21,6 @@ context('One-Click Updater', () => {
     // We've just selected the same version here to not interfere with that test
     // but also allow this to do a simple check for working updater in current code
     cy.eeConfig({item: 'app_version', value: '6.1.5'})
-    cy.task('filesystem:delete', '../../system/user/cache/current_version')
   })
 
   beforeEach(function() {
@@ -32,6 +31,11 @@ context('One-Click Updater', () => {
     @themespath = File.expand_path('../../themes/ee/');*/
 
     cy.auth();
+    cy.get('.ee-sidebar__version').should('be.visible')
+
+    cy.task('filesystem:delete', '../../system/user/cache/current_version')
+
+    cy.visit('admin.php')
 
     cy.get('.ee-sidebar__version').click();
     cy.get('.app-about__status .button--primary').should('be.visible');
