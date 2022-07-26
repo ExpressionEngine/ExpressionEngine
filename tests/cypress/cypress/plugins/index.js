@@ -65,7 +65,7 @@ module.exports = (on, config) => {
 
     on('after:spec', (spec, results) => {
         var filename = spec.name.split('/');
-        fs.createFile('cypress/downloads/' + filename[1].split('.')[0] + '.console.log', consoleLog.getLogs().join("\r\n"));
+        fs.createFile('cypress/downloads/' + filename[1].split('.')[0] + '.console.log', consoleLog.getLogs().join("\r\n"), { flag: 'w' });
     })
 
     on('task', {
