@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -34,8 +33,8 @@ class Pro_checkbox_group extends Pro_variables_type
     public function display_settings()
     {
         return $this->settings_form(array(
-            LVUI::setting('options', $this->setting_name('options'), $this->settings('options')),
-            LVUI::setting('separator', $this->setting_name('separator'), $this->settings('separator'))
+            PVUI::setting('options', $this->setting_name('options'), $this->settings('options')),
+            PVUI::setting('separator', $this->setting_name('separator'), $this->settings('separator'))
         ));
     }
 
@@ -48,8 +47,8 @@ class Pro_checkbox_group extends Pro_variables_type
     {
         return array($this->input_name() => array(
             'type' => 'checkbox',
-            'choices' => LVUI::choices($this->settings('options')),
-            'value' => LVUI::explode($this->settings('separator'), $var_data),
+            'choices' => PVUI::choices($this->settings('options')),
+            'value' => PVUI::explode($this->settings('separator'), $var_data),
             'wrap' => true
         ));
     }
@@ -62,7 +61,7 @@ class Pro_checkbox_group extends Pro_variables_type
     public function save($var_data)
     {
         return is_array($var_data)
-            ? LVUI::implode($this->settings('separator'), $var_data)
+            ? PVUI::implode($this->settings('separator'), $var_data)
             : '';
     }
 

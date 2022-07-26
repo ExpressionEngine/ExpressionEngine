@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -181,7 +180,7 @@ class Pro_variables_mcp
 
         // Group instructions
         if (! empty($group['group_notes'])) {
-            $sections[$section][] = LVUI::text($group['group_notes']);
+            $sections[$section][] = PVUI::text($group['group_notes']);
         }
 
         // -------------------------------------
@@ -213,7 +212,7 @@ class Pro_variables_mcp
                 // If we have a header, overwrite $section var
                 if (count($tmp) == 2) {
                     list($section, $var['variable_notes']) = $tmp;
-                    //$sections[0][] = LVUI::text($text);
+                    //$sections[0][] = PVUI::text($text);
                 }
 
                 // Attributes to add to this field
@@ -542,15 +541,15 @@ class Pro_variables_mcp
             $row[] = $types[$type]['name'];
 
             // Hidden
-            $row[] = LVUI::onoff($this->mcp_url('toggle/is_hidden/' . $id), $var['is_hidden']);
+            $row[] = PVUI::onoff($this->mcp_url('toggle/is_hidden/' . $id), $var['is_hidden']);
 
             // Early
             if ($early) {
-                $row[] = LVUI::onoff($this->mcp_url('toggle/early_parsing/' . $id), $var['early_parsing']);
+                $row[] = PVUI::onoff($this->mcp_url('toggle/early_parsing/' . $id), $var['early_parsing']);
             }
 
             // File
-            // if ($file) $row[] = LVUI::onoff($this->mcp_url('toggle/save_as_file/'.$id), $var['save_as_file']);
+            // if ($file) $row[] = PVUI::onoff($this->mcp_url('toggle/save_as_file/'.$id), $var['save_as_file']);
 
             // Toolbar
             $row[] = array('toolbar_items' => array(

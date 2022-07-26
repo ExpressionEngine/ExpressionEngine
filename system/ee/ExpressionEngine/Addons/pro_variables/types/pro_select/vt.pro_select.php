@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -36,10 +35,10 @@ class Pro_select extends Pro_variables_type
     public function display_settings()
     {
         return $this->settings_form(array(
-            LVUI::setting('options', $this->setting_name('options'), $this->settings('options')),
-            LVUI::setting('multiple', $this->setting_name('multiple'), $this->settings('multiple')),
-            LVUI::setting('separator', $this->setting_name('separator'), $this->settings('separator')),
-            LVUI::setting('interface', $this->setting_name('multi_interface'), $this->settings('multi_interface'))
+            PVUI::setting('options', $this->setting_name('options'), $this->settings('options')),
+            PVUI::setting('multiple', $this->setting_name('multiple'), $this->settings('multiple')),
+            PVUI::setting('separator', $this->setting_name('separator'), $this->settings('separator')),
+            PVUI::setting('interface', $this->setting_name('multi_interface'), $this->settings('multi_interface'))
         ));
     }
 
@@ -54,7 +53,7 @@ class Pro_select extends Pro_variables_type
         //  Prep options to choices
         // -------------------------------------
 
-        $choices = LVUI::choices($this->settings('options'));
+        $choices = PVUI::choices($this->settings('options'));
 
         // -------------------------------------
         //  Single choice
@@ -73,13 +72,13 @@ class Pro_select extends Pro_variables_type
             $data = array(
                 'name' => $this->input_name(),
                 'choices' => $choices,
-                'value' => LVUI::explode($this->settings('separator'), $var_data),
+                'value' => PVUI::explode($this->settings('separator'), $var_data),
                 'multiple' => true
             );
 
             return array(array(
                 'type' => 'html',
-                'content' => LVUI::view_field($this->settings('multi_interface'), $data)
+                'content' => PVUI::view_field($this->settings('multi_interface'), $data)
             ));
         }
     }
@@ -92,7 +91,7 @@ class Pro_select extends Pro_variables_type
     public function save($var_data)
     {
         return is_array($var_data)
-            ? LVUI::implode($this->settings('separator'), $var_data)
+            ? PVUI::implode($this->settings('separator'), $var_data)
             : $var_data;
     }
 

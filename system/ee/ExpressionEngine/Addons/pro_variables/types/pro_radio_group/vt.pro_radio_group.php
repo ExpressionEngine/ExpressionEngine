@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -33,7 +32,7 @@ class Pro_radio_group extends Pro_variables_type
     public function display_settings()
     {
         return $this->settings_form(array(
-            LVUI::setting('options', $this->setting_name('options'), $this->settings('options'))
+            PVUI::setting('options', $this->setting_name('options'), $this->settings('options'))
         ));
     }
 
@@ -46,7 +45,7 @@ class Pro_radio_group extends Pro_variables_type
     {
         return array($this->input_name() => array(
             'type' => 'radio',
-            'choices' => LVUI::choices($this->settings('options')),
+            'choices' => PVUI::choices($this->settings('options')),
             'value' => $var_data
         ));
     }
