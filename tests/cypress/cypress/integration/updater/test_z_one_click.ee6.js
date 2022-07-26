@@ -34,6 +34,7 @@ context('One-Click Updater', () => {
     cy.get('.ee-sidebar__version').should('be.visible')
 
     cy.task('filesystem:delete', '../../system/user/cache/current_version')
+    cy.wait(5000)
 
     cy.visit('admin.php')
 
