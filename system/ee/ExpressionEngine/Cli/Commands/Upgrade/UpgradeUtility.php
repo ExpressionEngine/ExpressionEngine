@@ -33,7 +33,7 @@ class UpgradeUtility
             'filepicker',
             'relationship',
             'search',
-            'pro',
+            'pro'
         ];
 
         ee()->load->library('addons');
