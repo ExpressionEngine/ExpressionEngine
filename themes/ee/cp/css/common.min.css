@@ -30607,6 +30607,10 @@ fieldset .field-control #eye {
     width: 100% !important;
   }
 }
+.panel-body__publish tr.ui-sortable-helper {
+  box-shadow: var(--ee-shadow-dropdown);
+  background: var(--ee-accent-light);
+}
 
 .note-fieldtype {
   color: var(--ee-note-fieldtype-color);

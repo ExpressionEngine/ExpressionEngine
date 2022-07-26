@@ -454,4 +454,9 @@ fieldset {
       width: 100% !important;
     }
   }
+
+  tr.ui-sortable-helper {
+		box-shadow: color(shadow-dropdown);
+		background: color(accent-light);
+	}
 }
