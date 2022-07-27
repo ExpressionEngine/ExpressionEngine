@@ -27,7 +27,6 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
-                'addConditionalFieldRequiredSyncFlag',
                 'syncMemberStats',
             ]
         );
@@ -37,23 +36,6 @@ class Updater
         }
 
         return true;
-    }
-
-
-    private function addConditionalFieldRequiredSyncFlag()
-    {
-        if (!ee()->db->field_exists('conditional_sync_required', 'channels')) {
-            ee()->smartforge->add_column(
-                'channels',
-                array(
-                    'conditional_sync_required' => array(
-                        'type' => 'CHAR(1)',
-                        'null' => false,
-                        'default' => 'n'
-                    )
-                )
-            );
-        }
     }
 
     private function syncMemberStats()

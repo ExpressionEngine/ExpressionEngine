@@ -1158,38 +1158,37 @@ class ChannelEntry extends ContentModel
     {
         $cacheKey = "populate.channels.{$this->Channel->getId()}." . ee()->session->userdata('member_id');
 
-        $cached = $this->getFromCache($cacheKey);
-        if ($cached !== false) {
-            return $cached;
-        }
+        $channel_filter_options = $this->getFromCache($cacheKey);
 
-        $allowed_channel_ids = (ee()->session->userdata('member_id') == 0
-            or ee('Permission')->isSuperAdmin()
-            or ! is_array(ee()->session->userdata('assigned_channels')))
-            ? null : array_keys(ee()->session->userdata('assigned_channels'));
+        if ($channel_filter_options === false) {
+            $allowed_channel_ids = (ee()->session->userdata('member_id') == 0
+                or ee('Permission')->isSuperAdmin()
+                or ! is_array(ee()->session->userdata('assigned_channels')))
+                ? null : array_keys(ee()->session->userdata('assigned_channels'));
 
-        $my_fields = $this->Channel->getAllCustomFields()->pluck('field_id');
-        $my_statuses = $this->Channel->Statuses->getIds();
+            $my_fields = $this->Channel->getAllCustomFields()->pluck('field_id');
+            $my_statuses = $this->Channel->Statuses->getIds();
 
-        $channel_filter_options = array();
+            $channel_filter_options = array();
 
-        $channels = $this->getModelFacade()->get('Channel', $allowed_channel_ids)
-            ->with('Statuses', 'CustomFields', ['FieldGroups' => 'ChannelFields'])
-            ->filter('site_id', ee()->config->item('site_id'))
-            // Include custom field information because it may be cached for later calls
-            ->fields('channel_id', 'channel_title', 'ChannelFields.*', 'CustomFields.*')
-            ->all();
+            $channels = $this->getModelFacade()->get('Channel', $allowed_channel_ids)
+                ->with('Statuses', 'CustomFields', ['FieldGroups' => 'ChannelFields'])
+                ->filter('site_id', ee()->config->item('site_id'))
+                // Include custom field information because it may be cached for later calls
+                ->fields('channel_id', 'channel_title', 'ChannelFields.*', 'CustomFields.*')
+                ->all();
 
-        foreach ($channels as $channel) {
-            $channel_statuses = $channel->Statuses->getIds();
+            foreach ($channels as $channel) {
+                $channel_statuses = $channel->Statuses->getIds();
 
-            if ($my_fields == $channel->getAllCustomFields()->pluck('field_id') &&
-                sort($my_statuses) == sort($channel_statuses)) {
-                $channel_filter_options[$channel->channel_id] = $channel->channel_title;
+                if ($my_fields == $channel->getAllCustomFields()->pluck('field_id') &&
+                    sort($my_statuses) == sort($channel_statuses)) {
+                    $channel_filter_options[$channel->channel_id] = $channel->channel_title;
+                }
             }
-        }
 
-        $this->saveToCache($cacheKey, $channel_filter_options);
+            $this->saveToCache($cacheKey, $channel_filter_options);
+        }
 
         $field->setItem('field_list_items', $channel_filter_options);
     }
@@ -1212,30 +1211,29 @@ class ChannelEntry extends ContentModel
     {
         $cacheKey = "populate.authors.{$this->Channel->getId()}." . ee()->session->userdata('member_id');
 
-        $cached = $this->getFromCache($cacheKey);
-        if ($cached !== false) {
-            return $cached;
-        }
+        $author_options = $this->getFromCache($cacheKey);
 
-        $author_options = array();
+        if ($author_options === false) {
+            $author_options = array();
 
-        // Default author
-        $author = $this->Author;
+            // Default author
+            $author = $this->Author;
 
-        if ($author) {
-            $author_options[$author->getId()] = $author->getMemberName();
-        }
-
-        if (ee('Permission')->can('assign_post_authors')) {
-            if (! $author or ($author->getId() != ee()->session->userdata('member_id'))) {
-                $author_options[ee()->session->userdata('member_id')] =
-                ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
+            if ($author) {
+                $author_options[$author->getId()] = $author->getMemberName();
             }
 
-            $author_options += ee('Member')->getAuthors();
-        }
+            if (ee('Permission')->can('assign_post_authors')) {
+                if (! $author or ($author->getId() != ee()->session->userdata('member_id'))) {
+                    $author_options[ee()->session->userdata('member_id')] =
+                    ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
+                }
 
-        $this->saveToCache($cacheKey, $author_options);
+                $author_options += ee('Member')->getAuthors();
+            }
+
+            $this->saveToCache($cacheKey, $author_options);
+        }
 
         $field->setItem('field_list_items', $author_options);
     }
@@ -1253,53 +1251,52 @@ class ChannelEntry extends ContentModel
     {
         $cacheKey = "populate.status.{$this->Channel->getId()}." . ee()->session->userdata('member_id');
 
-        $cached = $this->getFromCache($cacheKey);
-        if ($cached !== false) {
-            return $cached;
-        }
+        $field_items = $this->getFromCache($cacheKey);
 
-        // This generates an inscrutable error when installing the default theme, bail out
-        $all_statuses = ! INSTALLER ? $this->Channel->Statuses->sortBy('status_order') : [];
+        if ($field_items === false) {
+            // This generates an inscrutable error when installing the default theme, bail out
+            $all_statuses = ! INSTALLER ? $this->Channel->Statuses->sortBy('status_order') : [];
 
-        $status_options = array();
+            $status_options = array();
 
-        if (! count($all_statuses)) {
-            $status_options = [
-                [
-                    'value' => 'open',
-                    'label' => lang('open')
-                ],
-                [
-                    'value' => 'closed',
-                    'label' => lang('closed')
-                ]
-            ];
-        }
+            if (! count($all_statuses)) {
+                $status_options = [
+                    [
+                        'value' => 'open',
+                        'label' => lang('open')
+                    ],
+                    [
+                        'value' => 'closed',
+                        'label' => lang('closed')
+                    ]
+                ];
+            }
 
-        $member = ee()->session->getMember();
-        $channelFormSettings = ee('Model')->get('ChannelFormSettings')->filter('channel_id', $this->Channel->channel_id)->first();
-        if (!empty($member) || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y')) {
-            $assigned_statuses = !empty($member) ? $member->getAssignedStatuses()->pluck('status_id') : [];
+            $member = ee()->session->getMember();
+            $channelFormSettings = ee('Model')->get('ChannelFormSettings')->filter('channel_id', $this->Channel->channel_id)->first();
+            if (!empty($member) || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y')) {
+                $assigned_statuses = !empty($member) ? $member->getAssignedStatuses()->pluck('status_id') : [];
 
-            foreach ($all_statuses as $status) {
-                if (ee('Permission')->isSuperAdmin() || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y') || in_array($status->getId(), $assigned_statuses)) {
+                foreach ($all_statuses as $status) {
+                    if (ee('Permission')->isSuperAdmin() || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y') || in_array($status->getId(), $assigned_statuses)) {
+                        $status_options[] = $status->getSelectOptionComponent();
+                    }
+                }
+            } else {
+                //fallback to guest assigned statuses
+                foreach (ee('Model')->get('Role', 3)->first()->AssignedStatuses as $status) {
                     $status_options[] = $status->getSelectOptionComponent();
                 }
             }
-        } else {
-            //fallback to guest assigned statuses
-            foreach (ee('Model')->get('Role', 3)->first()->AssignedStatuses as $status) {
-                $status_options[] = $status->getSelectOptionComponent();
+
+            $field_items = [];
+
+            foreach ($status_options as $option) {
+                $field_items[$option['value']] = $option['label'];
             }
+
+            $this->saveToCache($cacheKey, $field_items);
         }
-
-        $field_items = [];
-
-        foreach ($status_options as $option) {
-            $field_items[$option['value']] = $option['label'];
-        }
-
-        $this->saveToCache($cacheKey, $field_items);
 
         $field->setItem('field_list_items', $field_items);
     }
