@@ -455,6 +455,9 @@ class CommandUpdate extends Cli
     {
         $version = $this->getCurrentVersion();
         $versionNamingMap = UpgradeMap::$versionNaming;
+        if (empty($version)) {
+            $version = $this->currentVersion;
+        }
 
         if (isset($versionNamingMap[$version])) {
             ee()->config

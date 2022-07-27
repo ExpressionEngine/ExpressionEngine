@@ -116,6 +116,22 @@ class ChannelEntry extends ContentModel
             ),
             'weak' => true
         ),
+        'EntryFiles' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'File',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
+        'EntryFileFolders' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Directory',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
     );
 
     protected static $_field_data = array(
@@ -145,10 +161,15 @@ class ChannelEntry extends ContentModel
         'afterDelete',
         'afterInsert',
         'afterSave',
-        'afterUpdate'
+        'afterUpdate',
+        'afterAssociationsSave',
+        'beforeAssociationsBulkDelete',
+        'afterAssociationsBulkDelete'
     );
 
     protected $_default_fields;
+    protected $_filesNeedTotalRecordsRecount = [];
+    protected static $_filesNeedTotalRecordsRecountStatic = [];
 
     // Properties
     protected $entry_id;
@@ -405,12 +426,15 @@ class ChannelEntry extends ContentModel
         }
         // Validate the conditional fields
         $this->evaluateConditionalFields();
+
+        $this->updateFilesUsage();
     }
 
     public function onAfterSave()
     {
         parent::onAfterSave();
-        if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
+        //front-end editing needs to treat autosaves in a special way
+        if (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
             foreach ($this->Autosaves as $autosave) {
                 $deleteThisAutosave = true;
                 $autosavedEntryData = $autosave->entry_data;
@@ -446,6 +470,33 @@ class ChannelEntry extends ContentModel
             ee()->functions->clear_caching('all');
         } else {
             ee()->functions->clear_caching('sql');
+        }
+    }
+
+    public function onAfterAssociationsSave()
+    {
+        self::updateFilesTotalRecords($this->_filesNeedTotalRecordsRecount);
+    }
+
+    public static function onBeforeAssociationsBulkDelete($entry_ids = [])
+    {
+        if (!empty($entry_ids)) {
+            $key = implode('_', $entry_ids);
+            $existingEntryFilesQuery = ee('db')->select('file_id')->from('file_usage')->where_in('entry_id', $entry_ids)->get();
+            $existingEntryFiles = [];
+            foreach ($existingEntryFilesQuery->result_array() as $row) {
+                $existingEntryFiles[] = $row['file_id'];
+            }
+            self::$_filesNeedTotalRecordsRecountStatic = [$key => $existingEntryFiles];
+        }
+    }
+
+    public static function onAfterAssociationsBulkDelete($entry_ids = [])
+    {
+        $key = implode('_', $entry_ids);
+        if (!empty(self::$_filesNeedTotalRecordsRecountStatic) && isset(self::$_filesNeedTotalRecordsRecountStatic[$key]) && !empty(self::$_filesNeedTotalRecordsRecountStatic[$key])) {
+            self::updateFilesTotalRecords(self::$_filesNeedTotalRecordsRecountStatic[$key]);
+            unset(self::$_filesNeedTotalRecordsRecountStatic[$key]);
         }
     }
 
@@ -652,6 +703,77 @@ class ChannelEntry extends ContentModel
         $this->Channel->updateEntryStats();
     }
 
+    private function updateFilesUsage()
+    {
+        $data = $_POST ?: $this->getValues();
+
+        ee()->load->model('file_upload_preferences_model');
+        $file_dirs = ee()->file_upload_preferences_model->get_paths();
+
+        $usage = [];
+        array_walk_recursive($data, function ($item) use (&$usage, $file_dirs) {
+            if (! is_string($item)) {
+                return;
+            }
+            if (strpos($item, '{file:') !== false && preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
+                $file_id = $matches[1];
+                if (! isset($usage[$file_id])) {
+                    $usage[$file_id] = 1;
+                } else {
+                    $usage[$file_id]++;
+                }
+            }
+            $dirUrlsMatches = [];
+            foreach ($file_dirs as $dir_id => $dir_url) {
+                if (strpos($item, $dir_url) !== false) {
+                    $dirUrlsMatches['{filedir_' . $dir_id . '}'] = $dir_url;
+                }
+            }
+            if (! empty($dirUrlsMatches)) {
+                $item = str_replace(array_keys($dirUrlsMatches), $dirUrlsMatches, $item);
+            }
+            if (strpos($item, '{filedir_') !== false) {
+                if (preg_match_all('/{filedir_(\d+)}(.*)\"/', $item, $matches, PREG_SET_ORDER)) {
+                    $dirsAndFiles = [];
+                    foreach ($matches as $match) {
+                        $dirsAndFiles[$match[1]][] = $match[2];
+                    }
+                    $files = ee('Model')
+                        ->get('File')
+                        ->fields('file_id', 'upload_location_id', 'file_name');
+                    $files->filterGroup();
+                    foreach ($dirsAndFiles as $dir_id => $file_names) {
+                        $files->orFilterGroup()
+                            ->filter('upload_location_id', $dir_id)
+                            ->filter('file_name', 'IN', $file_names)
+                            ->endFilterGroup();
+                    }
+                    $files->endFilterGroup();
+                    foreach ($files->all() as $file) {
+                        $file_id = $file->file_id;
+                        if (! isset($usage[$file_id])) {
+                            $usage[$file_id] = 1;
+                        } else {
+                            $usage[$file_id]++;
+                        }
+                    }
+                }
+            }
+        });
+
+        //just before we set relationship, grab existing records to find out what files need recount
+        if (! $this->isNew()) {
+            $existingEntryFiles = ee('db')->select('file_id')->from('file_usage')->where('entry_id', $this->getId())->get();
+            foreach ($existingEntryFiles->result_array() as $row) {
+                $this->_filesNeedTotalRecordsRecount[] = $row['file_id'];
+            }
+        }
+        $this->_filesNeedTotalRecordsRecount = array_unique(array_merge($this->_filesNeedTotalRecordsRecount, array_keys($usage)));
+
+        $entryFiles = ee('Model')->get('File', array_keys($usage))->all();
+        $this->getAssociation('EntryFiles')->set($entryFiles);
+    }
+
     /**
      * A link back to the owning channel object.
      *
@@ -711,7 +833,7 @@ class ChannelEntry extends ContentModel
             $modules = [];
             $providers = ee('App')->getProviders();
             $installed_modules = $this->getModelFacade()->get('Module')
-                ->all()
+                ->all(true)
                 ->pluck('module_name');
 
             foreach (array_keys($providers) as $name) {
@@ -1103,7 +1225,7 @@ class ChannelEntry extends ContentModel
             if ($this->Channel) {
                 $cat_groups = $this->getModelFacade()->get('CategoryGroup')
                     ->filter('group_id', 'IN', explode('|', (string) $this->Channel->cat_group))
-                    ->all();
+                    ->all(true);
 
                 foreach ($cat_groups as $cat_group) {
                     $metadata = $cat_group->getFieldMetadata();
@@ -1306,7 +1428,13 @@ class ChannelEntry extends ContentModel
         return ($this->author_id && $this->Author) ? $this->Author->getMemberName() : '';
     }
 
-    public function getModChannelResultsArray()
+    /**
+     * Get the data and format as array to be used by exp:channel:entries
+     *
+     * @param array $disable ('categories')
+     * @return void
+     */
+    public function getModChannelResultsArray($disable = [])
     {
         $data = array_merge($this->getValues(), $this->Channel->getRawValues(), $this->Author->getValues());
         $data['entry_site_id'] = $this->site_id;
@@ -1317,11 +1445,13 @@ class ChannelEntry extends ContentModel
             $data['recent_comment_date'] = $this->recent_comment_date->format('U');
         }
 
-        foreach ($this->getStructure()->getAllCustomFields() as $field) {
-            $key = 'field_id_' . $field->getId();
+        if (!in_array('custom_fields', $disable)) {
+            foreach ($this->getStructure()->getAllCustomFields() as $field) {
+                $key = 'field_id_' . $field->getId();
 
-            if (! array_key_exists($key, $data)) {
-                $data[$key] = null;
+                if (! array_key_exists($key, $data)) {
+                    $data[$key] = null;
+                }
             }
         }
 
@@ -1329,11 +1459,13 @@ class ChannelEntry extends ContentModel
             $data[$key] = ($data[$key]) ? 'y' : 'n';
         }
 
-        $cat_ids = [];
-        foreach ($this->Categories as $cat) {
-            $cat_ids[] = $cat->getId();
+        if (!in_array('categories', $disable)) {
+            $cat_ids = [];
+            foreach ($this->Categories as $cat) {
+                $cat_ids[] = $cat->getId();
+            }
+            $data['cat_id'] = $cat_ids;
         }
-        $data['cat_id'] = $cat_ids;
 
         return $data;
     }
@@ -1385,22 +1517,6 @@ class ChannelEntry extends ContentModel
     {
         if ($this->Channel->allow_preview == 'y') {
             return true;
-        }
-
-        return false;
-    }
-
-    protected function saveToCache($key, $data)
-    {
-        if (isset(ee()->session)) {
-            ee()->session->set_cache(__CLASS__, $key, $data);
-        }
-    }
-
-    protected function getFromCache($key)
-    {
-        if (isset(ee()->session)) {
-            return ee()->session->cache(__CLASS__, $key, false);
         }
 
         return false;

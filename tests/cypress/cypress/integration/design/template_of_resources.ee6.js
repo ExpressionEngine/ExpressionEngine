@@ -16,6 +16,7 @@ context('Design', () => {
 
 		const siteManager = new SiteManager;
 		siteManager.load();
+		cy.dismissLicenseAlert()
 
 		cy.get('.main-nav a').contains('Add Site').first().click()
 

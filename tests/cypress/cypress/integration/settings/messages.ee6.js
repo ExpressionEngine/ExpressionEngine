@@ -180,7 +180,7 @@ context('Messaging Settings', () => {
    // page.submit()
    cy.get('button').contains('Save Settings').first().click()
 
-    page.get('wrap').contains('Preferences updated')
+    page.get('wrap').contains('Preferences Updated')
     page.get('prv_msg_max_chars').invoke('val').then((val) => { expect(val).to.be.equal('100')})
     page.get('prv_msg_html_format').filter('[value=none]').should('be.checked')
     page.get('prv_msg_auto_links').invoke('val').then((val) => { expect(val).to.be.equal('n')})

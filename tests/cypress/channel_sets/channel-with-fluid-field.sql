@@ -553,31 +553,7 @@ INSERT INTO `exp_relationships` (`relationship_id`, `parent_id`, `child_id`, `fi
 # Dump of table exp_upload_prefs
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `exp_upload_prefs`;
-
-CREATE TABLE `exp_upload_prefs` (
-  `id` int(4) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `name` varchar(50) NOT NULL,
-  `server_path` varchar(255) NOT NULL DEFAULT '',
-  `url` varchar(100) NOT NULL,
-  `allowed_types` varchar(3) NOT NULL DEFAULT 'img',
-  `default_modal_view` varchar(5) NOT NULL DEFAULT 'list',
-  `max_size` varchar(16) DEFAULT NULL,
-  `max_height` varchar(6) DEFAULT NULL,
-  `max_width` varchar(6) DEFAULT NULL,
-  `properties` varchar(120) DEFAULT NULL,
-  `pre_format` varchar(120) DEFAULT NULL,
-  `post_format` varchar(120) DEFAULT NULL,
-  `file_properties` varchar(120) DEFAULT NULL,
-  `file_pre_format` varchar(120) DEFAULT NULL,
-  `file_post_format` varchar(120) DEFAULT NULL,
-  `cat_group` varchar(255) DEFAULT NULL,
-  `batch_location` varchar(255) DEFAULT NULL,
-  `module_id` int(4) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+DELETE FROM `exp_upload_prefs`;
 
 LOCK TABLES `exp_upload_prefs` WRITE;
 /*!40000 ALTER TABLE `exp_upload_prefs` DISABLE KEYS */;

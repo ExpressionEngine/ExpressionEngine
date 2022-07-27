@@ -91,7 +91,7 @@ context('System Templates', () => {
        
     })
 
-    describe('Forums', function() {
+    describe.skip('Forums', function() {
         before(function() {
             cy.authVisit('/admin.php?/cp/addons')
             cy.get('a[data-post-url*="cp/addons/install/forum"]').click()

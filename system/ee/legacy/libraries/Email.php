@@ -1231,8 +1231,7 @@ class EE_Email
                     return false;
                 }
 
-                ee()->load->library('mime_type');
-                $ctype = ee()->mime_type->ofFile($filename);
+                $ctype = ee('MimeType')->ofFile($filename);
                 $file_content = fread($fp, $file);
                 fclose($fp);
             } else {

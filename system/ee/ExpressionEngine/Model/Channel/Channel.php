@@ -579,22 +579,22 @@ class Channel extends StructureModel
      */
     public function getAllCustomFields()
     {
-        $fields = $this->CustomFields->indexBy('field_name');
-
-        $cache_key = "ChannelFieldGroups/{$this->getId()}/";
-        if (($field_groups = ee()->session->cache(__CLASS__, $cache_key, false)) == false) {
+        $cache_key = "ChannelCustomFields/{$this->getId()}/";
+        if (($fields = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
+            $fields = $this->CustomFields->indexBy('field_name');
             $field_groups = $this->FieldGroups;
-        }
 
-        foreach ($field_groups as $field_group) {
-            foreach ($field_group->ChannelFields as $field) {
-                $fields[$field->field_name] = $field;
+            foreach ($field_groups as $field_group) {
+                foreach ($field_group->ChannelFields as $field) {
+                    $fields[$field->field_name] = $field;
+                }
             }
+
+            $fields = new Collection($fields);
+
+            ee()->session->set_cache(__CLASS__, $cache_key, $fields);
         }
-
-        ee()->session->set_cache(__CLASS__, $cache_key, $field_groups);
-
-        return new Collection($fields);
+        return $fields;
     }
 
     /**

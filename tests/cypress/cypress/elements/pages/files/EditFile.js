@@ -16,11 +16,11 @@ class EditFile extends FileManagerSection {
         'preview_image': '.modal-view-file .file-preview-modal__preview-file',
 
         // Edit form
-        'title_input': '.modal-view-file fieldset input[type!=hidden][name="title"]',
-        'description_input': '.modal-view-file fieldset textarea[name="description"]',
-        'credit_input': '.modal-view-file fieldset input[type!=hidden][name="credit"]',
-        'location_input': '.modal-view-file fieldset input[type!=hidden][name="location"]',
-        'form_submit_button': '.modal-view-file .form-btns button[type="submit"]'
+        'title_input': '#fieldset-title input[type!=hidden][name="title"]',
+        'description_input': '#fieldset-description textarea[name="description"]',
+        'credit_input': '#fieldset-credit input[type!=hidden][name="credit"]',
+        'location_input': '#fieldset-location input[type!=hidden][name="location"]',
+        'form_submit_button': '.form-btns.form-btns-top button[value="save"]'
       })
     }
     load() {

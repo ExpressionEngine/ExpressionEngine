@@ -11,7 +11,7 @@ define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH . 'ee/legacy/');
 define('PATH_CACHE', SYSPATH . 'user/cache/');
 define('APPPATH', BASEPATH);
-define('APP_VER', '6.4.0');
+define('APP_VER', '7.0.0-rc.2');
 define('PATH_THEMES', realpath(SYSPATH . '/../themes') . '/');
 define('DOC_URL', 'http://our.doc.url/');
 
@@ -35,6 +35,7 @@ function log_message()
 
 // add the composer autoloader
 require_once __DIR__ . '/vendor/autoload.php';
+require_once SYSPATH . 'ee/vendor-build/autoload.php';
 
 function lang($str)
 {

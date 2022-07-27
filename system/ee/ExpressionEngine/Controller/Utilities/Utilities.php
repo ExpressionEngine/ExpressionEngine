@@ -125,6 +125,7 @@ class Utilities extends CP_Controller
                 ->addBasicList();
             $data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
             $data_list->addItem(lang('search_reindex'), ee('CP/URL')->make('utilities/reindex'));
+            $data_list->addItem(lang('update_file_usage'), ee('CP/URL')->make('utilities/file-usage'));
             $data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
             $data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
         }

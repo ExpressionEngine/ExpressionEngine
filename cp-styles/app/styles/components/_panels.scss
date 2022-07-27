@@ -7,8 +7,19 @@
 .panel {
   margin-bottom: 20px;
   background-color: color(panel-bg);
-  border: 1px solid color(panel-border);
+  border: 1px solid color(panel-border-outer);
   border-radius: $border-radius-large;
+  @include shadow-panel;
+}
+
+[data-theme="light"] .panel,
+[data-theme="snow"] .panel,
+[data-theme="pink"] .panel {
+  border-width: 0px;
+
+  &.panel__with-border {
+    border: 1px solid color(border);
+  }
 }
 
 // Panel contents

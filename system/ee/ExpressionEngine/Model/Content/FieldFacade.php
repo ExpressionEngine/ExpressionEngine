@@ -20,6 +20,7 @@ class FieldFacade
     private $format;  // field_ft_*
     private $timezone; // field_dt_*
     private $hidden; // field_hide_*
+    private $width = 100;
     private $metadata;
     private $required;
     private $field_name;
@@ -103,6 +104,7 @@ class FieldFacade
     {
         return $this->hidden;
     }
+
 
     public function getSettings()
     {

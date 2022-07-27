@@ -25,7 +25,7 @@ class View extends Model
         'member_id' => 'int',
         'channel_id' => 'int',
         'name' => 'string',
-        'colums' => 'serialized'
+        'columns' => 'serialized'
     ];
 
     protected static $_relationships = [
@@ -51,7 +51,7 @@ class View extends Model
 
     public function getColumns()
     {
-        if (!is_array($this->columns)) {
+        if (!is_array($this->columns) && !is_null($this->columns)) {
             return json_decode($this->columns);
         }
 

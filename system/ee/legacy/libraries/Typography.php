@@ -562,7 +562,7 @@ class EE_Typography
      */
     public function parse_file_paths($str)
     {
-        if ($this->parse_images == false or strpos($str, 'filedir_') === false) {
+        if ($this->parse_images == false or (strpos($str, '{filedir_') === false && strpos($str, '{file:') === false)) {
             return $str;
         }
 
@@ -1382,7 +1382,9 @@ class EE_Typography
         $this->html_format = $existing_format;
 
         // hit emoji shortands
-        $title = ee('Format')->make('Text', $title)->emojiShorthand();
+        if (bool_config_item('disable_emoji_shorthand') === false) {
+            $title = ee('Format')->make('Text', $title)->emojiShorthand();
+        }
 
         // and finally some basic curly quotes, em dashes, etc.
         $title = $this->format_characters($title);

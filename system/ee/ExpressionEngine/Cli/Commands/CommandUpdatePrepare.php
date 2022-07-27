@@ -197,8 +197,6 @@ class CommandUpdatePrepare extends Cli
             return;
         }
 
-        $filesystem = new Filesystem();
-
         $customConfig = $this->getConfigPath();
 
         if (! $customConfig) {
@@ -286,30 +284,27 @@ class CommandUpdatePrepare extends Cli
     private function moveOriginalSiteToTmp()
     {
         // Need to copy system/, index.php, admin.php and themes folder
-        $filesystem = new Filesystem();
 
         $tmp_folder = $this->prepTmpDirectory();
 
-        $filesystem->rename($this->upgradeConfig['old_public_path'] . $this->filemap['index_file_old'], $tmp_folder . $this->filemap['index_file_old']);
-        $filesystem->rename($this->upgradeConfig['old_public_path'] . $this->filemap['admin_file_old'], $tmp_folder . $this->filemap['admin_file_old']);
+        ee('Filesystem')->rename($this->upgradeConfig['old_public_path'] . $this->filemap['index_file_old'], $tmp_folder . $this->filemap['index_file_old']);
+        ee('Filesystem')->rename($this->upgradeConfig['old_public_path'] . $this->filemap['admin_file_old'], $tmp_folder . $this->filemap['admin_file_old']);
 
-        $filesystem->rename($this->upgradeConfig['old_system_path'], $tmp_folder . 'system');
+        ee('Filesystem')->rename($this->upgradeConfig['old_system_path'], $tmp_folder . 'system');
 
         if ($this->upgradeConfig['should_move_theme_path']) {
-            $filesystem->rename($this->upgradeConfig['old_theme_path'], $tmp_folder . 'themes');
+            ee('Filesystem')->rename($this->upgradeConfig['old_theme_path'], $tmp_folder . 'themes');
         }
     }
 
     private function prepTmpDirectory()
     {
-        $filesystem = new Filesystem();
-
         $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'];
 
-        if ($filesystem->isDir($tmp_folder)) {
-            $filesystem->delete($tmp_folder);
+        if (ee('Filesystem')->isDir($tmp_folder)) {
+            ee('Filesystem')->delete($tmp_folder);
         } else {
-            $filesystem->mkdir($tmp_folder);
+            ee('Filesystem')->mkdir($tmp_folder);
         }
 
         return rtrim($tmp_folder, '/') . '/';
@@ -317,31 +312,29 @@ class CommandUpdatePrepare extends Cli
 
     private function copyNewEEFiles()
     {
-        $filesystem = new Filesystem();
-
         $filesystem->copy(
             SYSPATH,
             $this->upgradeConfig['new_system_path']
         );
 
         if ($this->upgradeConfig['should_move_theme_path']) {
-            $filesystem->copy(
+            ee('Filesystem')->copy(
                 FCPATH . 'themes',
                 $this->upgradeConfig['new_theme_path']
             );
         }
 
-        $filesystem->copy(
+        ee('Filesystem')->copy(
             FCPATH . $this->filemap['admin_file'],
             $this->upgradeConfig['new_public_path'] . $this->filemap['admin_file']
         );
 
-        $filesystem->copy(
+        ee('Filesystem')->copy(
             FCPATH . $this->filemap['index_file'],
             $this->upgradeConfig['new_public_path'] . $this->filemap['index_file']
         );
 
-        $filesystem->copy(
+        ee('Filesystem')->copy(
             FCPATH . 'eecli',
             $this->upgradeConfig['new_base_path'] . 'eecli'
         );
@@ -349,20 +342,18 @@ class CommandUpdatePrepare extends Cli
 
     private function copyOriginalConfig()
     {
-        $filesystem = new Filesystem();
-
         $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'] . '/';
 
         // We should check if this is EE2 or EE3+
-        if ($filesystem->exists($tmp_folder . '/system/expressionengine')) {
+        if (ee('Filesystem')->exists($tmp_folder . '/system/expressionengine')) {
             // It's EE2!
-            $filesystem->copy(
+            ee('Filesystem')->copy(
                 $tmp_folder . rtrim($this->filemap['config_path'], '/') . '/' . $this->filemap['config_file'],
                 rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['config_file'], '/')
             );
 
             if (isset($this->filemap['database_file']) && $this->filemap['database_file'] !== 'config.php') {
-                $filesystem->copy(
+                ee('Filesystem')->copy(
                     $tmp_folder . rtrim($this->filemap['config_path'], '/') . '/' . $this->filemap['database_file'],
                     rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['database_file'], '/')
                 );
@@ -371,12 +362,12 @@ class CommandUpdatePrepare extends Cli
             }
         } else {
             // It's EE3+!
-            $filesystem->copy(
+            ee('Filesystem')->copy(
                 $tmp_folder . $this->filemap['config_path'] . $this->filemap['config_file'],
                 rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['config_file'], '/')
             );
 
-            $filesystem->copy(
+            ee('Filesystem')->copy(
                 $tmp_folder . $this->filemap['config_path'] . $this->filemap['database_file'],
                 rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['database_file'], '/')
             );
@@ -389,11 +380,9 @@ class CommandUpdatePrepare extends Cli
             return;
         }
 
-        $filesystem = new Filesystem();
-
         // $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'] . '/';
 
-        $filesystem->rename(
+        ee('Filesystem')->rename(
             rtrim($this->upgradeConfig['old_template_path'], '/'),
             rtrim($this->upgradeConfig['new_template_path'], '/')
         );

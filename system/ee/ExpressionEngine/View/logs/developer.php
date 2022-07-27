@@ -21,7 +21,7 @@
   			<?php foreach ($rows as $row): ?>
   			<div class="list-item">
   				<div class="list-item__content">
-  					<a href="" class="m-link button button--default button--small float-right" rel="modal-confirm-<?=$row['log_id']?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"><span class="hidden"><?=lang('delete')?></span></i></a>
+  					<a href="" class="m-link button button--default button--small float-right" rel="modal-confirm-<?=$row['log_id']?>" title="<?=lang('delete')?>"><i class="fal fa-trash-alt"><span class="hidden"><?=lang('delete')?></span></i></a>
 
   					<div style="margin-bottom: 20px;"><b><?=lang('date_logged')?>:</b> <?=$row['timestamp']?></div>
   					<div class="list-item__body">

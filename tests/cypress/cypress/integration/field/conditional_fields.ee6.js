@@ -37,7 +37,8 @@ context('Conditional Fields', () => {
         cy.get('.dropdown--open .select__dropdown-item').contains('is not').click();
 
         cy.get('.condition-rule-value-wrap:visible input').type('hide');
-
+        
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         // Create entry with conditionally hidden field
@@ -72,6 +73,7 @@ context('Conditional Fields', () => {
 
         cy.get('textarea[name="field_id_1"]').clear().type('some text');
 
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         cy.log('Assert field is shown on entry page after save');
@@ -90,6 +92,7 @@ context('Conditional Fields', () => {
             cy.get('textarea[name="field_id_2"]').clear().type('hide').blur()
             cy.wait('@validation')
             cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             // Assert field is not shown in the template
@@ -102,6 +105,7 @@ context('Conditional Fields', () => {
             cy.authVisit(edit_url);
             cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
             cy.get('textarea[name="field_id_2"]').clear().type('hide')
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
         })
     })
@@ -119,6 +123,7 @@ context('Conditional Fields', () => {
 
         cy.get('.condition-rule-value-wrap:visible input').type('show');
 
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         cy.get('.ee-sidebar__items-section').contains('Entries').trigger('mouseover');
@@ -132,6 +137,7 @@ context('Conditional Fields', () => {
         cy.wait('@validation')
         cy.get('input[name="field_id_3"]').parent('.field-control').find('div[data-file-field-react]').should('not.be.visible');
 
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         cy.log('Assert field is not shown on entry page after save');
@@ -152,6 +158,7 @@ context('Conditional Fields', () => {
             cy.get('button').contains('Choose Existing').eq(0).click()
             cy.get('a[rel="modal-file"]').contains('About').eq(0).click()
             cy.get('tr[data-id="1"]').click()
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
             cy.get('input[name="field_id_3"]').parent('.field-control').should('be.visible');
             // Assert field shows up
@@ -165,6 +172,7 @@ context('Conditional Fields', () => {
     it('can be used in a grid field', function() {
         // Create grid field
         cy.authVisit('admin.php?/cp/fields/create/1')
+        cy.get('#fieldset-field_type .select__button.js-dropdown-toggle').should('exist');
         cy.get('#fieldset-field_type .select__button').click();
         cy.get('.dropdown--open .select__dropdown-item').contains(/^Grid$/).click({ force: true });
         cy.get('input[name="field_label"]').type('CF Grid');
@@ -177,6 +185,7 @@ context('Conditional Fields', () => {
         cy.get('.dropdown--open .select__dropdown-item').contains('is not').click({force: true});
         cy.get('.condition-rule-value-wrap:visible input').type('hide');
 
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         cy.log('Edit entry to conditionally hide the field');
@@ -187,6 +196,7 @@ context('Conditional Fields', () => {
         cy.intercept('**/publish/**').as('validation')
         cy.get('.grid-field__table a[rel=add_row]').click()
         cy.get('.grid-field__table td[data-new-row-id="new_row_1"] input[type=text]').type('grid column, row 1')
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         cy.url().then(edit_url => {
@@ -202,6 +212,7 @@ context('Conditional Fields', () => {
             cy.get('textarea[name="field_id_1"]').clear().type('hide').blur();
             cy.wait('@validation')
             cy.get('.grid-field__table').should('not.be.visible')
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             cy.visit('index.php/fields/conditional/cf-grid-test')
@@ -227,6 +238,7 @@ context('Conditional Fields', () => {
 
         cy.get('.condition-rule-value-wrap:visible input').type('show');
 
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         // Create entry with conditionally hidden field
@@ -236,6 +248,7 @@ context('Conditional Fields', () => {
         cy.log('Edit entry to conditionally hide the field');
         cy.get('input[name="title"]').type('CF relationship test');
         cy.get('textarea[name="field_id_1"]').type('hide', { force: true });
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
         
         cy.intercept('**/publish/**').as('validation')
@@ -250,6 +263,7 @@ context('Conditional Fields', () => {
         cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('.dropdown__link').contains('Getting to Know ExpressionEngine').click();
         cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('.dropdown__link').contains('Welcome to the Example Site!').click();
 
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         // Assert field is not shown in the template
@@ -268,6 +282,7 @@ context('Conditional Fields', () => {
             cy.get('textarea[name="field_id_1"]').clear().type('hide').blur();
             cy.wait('@validation')
             cy.get('input[name="field_id_8[data][]"]').closest('.field-control').find('div[data-relationship-react]').should('not.be.visible')
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             cy.visit('index.php/fields/conditional/cf-relationship-test')
@@ -283,7 +298,9 @@ context('Conditional Fields', () => {
     it('can be used in a fluid field', function() {
         // Create fluid field in News Group
         cy.authVisit('admin.php?/cp/fields&group_id=1')
+        cy.dismissLicenseAlert()
         cy.get('.button--primary').contains('New Field').click();
+        cy.get('#fieldset-field_type .select__button.js-dropdown-toggle').should('exist');
         cy.get('#fieldset-field_type .select__button').click();
         cy.get('.dropdown--open .select__dropdown-item').contains('Fluid').click({ force: true });
         cy.get('input[name="field_label"]').type('CF Fluid');
@@ -299,6 +316,7 @@ context('Conditional Fields', () => {
 
         cy.get('.condition-rule-value-wrap:visible input').type('show');
 
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         // Create entry with conditionally hidden field
@@ -317,6 +335,7 @@ context('Conditional Fields', () => {
         cy.get('.fluid').should('be.visible');
         cy.get('.fluid__footer [data-field-name="news_body"]').click()
         cy.get('.fluid textarea:visible').type('fluid field content')
+        cy.dismissLicenseAlert()
         cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
         cy.url().then(edit_url => {
@@ -333,6 +352,7 @@ context('Conditional Fields', () => {
             cy.get('textarea[name="field_id_1"]').clear().type('hide').blur();
             cy.wait('@validation')
             cy.get('.fluid').should('not.be.visible')
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             cy.visit('index.php/fields/conditional/cf-fluid-test')
@@ -351,6 +371,7 @@ context('Conditional Fields', () => {
             cy.get('body').then((body) => {
                 if (body.find('#fieldset-field_is_conditional button[data-state="on"]').length > 0) {
                     cy.get('#fieldset-field_is_conditional button[data-state="on"]').click();
+                    cy.dismissLicenseAlert()
                     cy.get('button[data-submit-text="Save"]:eq(0)').click();
                     // cy.get('.delete_rule:visible').click({multiple: true});
                 }
@@ -381,6 +402,7 @@ context('Conditional Fields', () => {
             cy.get('#new_conditionset_block_2 .condition-rule-value-wrap:visible input').type('shown');
 
 
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             // Create entry with conditionally hidden field
@@ -398,6 +420,7 @@ context('Conditional Fields', () => {
             cy.wait('@validation')
             cy.get('textarea[name="field_id_1"]').should('be.visible')
             cy.get('textarea[name="field_id_1"]').type('some text');
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             cy.log('Assert field is shown on entry page after save');
@@ -416,6 +439,7 @@ context('Conditional Fields', () => {
                 cy.get('textarea[name="field_id_2"]').clear().type('hide').blur()
                 cy.wait('@validation')
                 cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
@@ -428,6 +452,7 @@ context('Conditional Fields', () => {
                 cy.authVisit(edit_url);
                 cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
                 cy.get('textarea[name="field_id_2"]').clear().type('hide')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
             })
         })
@@ -458,6 +483,7 @@ context('Conditional Fields', () => {
             cy.get('.rules .rule:visible:eq(1) .dropdown--open .select__dropdown-item').contains('is').click();
             cy.get('.rules .rule:visible:eq(1) .condition-rule-value-wrap:visible input').type('shown');
 
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             // Create entry with conditionally hidden field
@@ -475,6 +501,7 @@ context('Conditional Fields', () => {
             cy.wait('@validation')
             cy.get('textarea[name="field_id_1"]').should('be.visible')
             cy.get('textarea[name="field_id_1"]').type('some text');
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             cy.log('Assert field is shown on entry page after save');
@@ -493,6 +520,7 @@ context('Conditional Fields', () => {
                 cy.get('textarea[name="field_id_2"]').clear().type('hide').blur()
                 cy.wait('@validation')
                 cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
@@ -508,6 +536,7 @@ context('Conditional Fields', () => {
                 cy.get('textarea[name="field_id_2"]').clear().type('hidden').blur()
                 cy.wait('@validation')
                 cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
@@ -523,6 +552,7 @@ context('Conditional Fields', () => {
                 cy.get('textarea[name="field_id_2"]').clear().type('show').blur()
                 cy.wait('@validation')
                 cy.get('textarea[name="field_id_1"]').should('be.visible')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
@@ -535,6 +565,7 @@ context('Conditional Fields', () => {
                 cy.authVisit(edit_url);
                 cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
                 cy.get('textarea[name="field_id_2"]').clear().type('hide')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
             })
         })
@@ -562,6 +593,7 @@ context('Conditional Fields', () => {
             cy.get('.rules .rule:visible:eq(1) .dropdown--open .select__dropdown-item').contains('contains').click();
             cy.get('.rules .rule:visible:eq(1) .condition-rule-value-wrap:visible input').type('this field');
 
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             // Create entry with conditionally hidden field
@@ -579,6 +611,7 @@ context('Conditional Fields', () => {
             cy.wait('@validation')
             cy.get('textarea[name="field_id_1"]').should('be.visible')
             cy.get('textarea[name="field_id_1"]').type('some text');
+            cy.dismissLicenseAlert()
             cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
             cy.log('Assert field is shown on entry page after save');
@@ -597,6 +630,7 @@ context('Conditional Fields', () => {
                 cy.get('textarea[name="field_id_2"]').clear().type('hide').blur()
                 cy.wait('@validation')
                 cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
@@ -612,6 +646,7 @@ context('Conditional Fields', () => {
                 cy.get('textarea[name="field_id_2"]').clear().type('hidden').blur()
                 cy.wait('@validation')
                 cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
@@ -628,6 +663,7 @@ context('Conditional Fields', () => {
                 cy.get('textarea[name="field_id_2"]').clear().type('show').blur()
                 cy.wait('@validation')
                 cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
@@ -644,6 +680,7 @@ context('Conditional Fields', () => {
                 cy.get('textarea[name="field_id_2"]').clear().type('this field').blur()
                 cy.wait('@validation')
                 cy.get('textarea[name="field_id_1"]').should('not.be.visible')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
@@ -659,6 +696,7 @@ context('Conditional Fields', () => {
                 cy.get('textarea[name="field_id_2"]').clear().type('this field extra text, and we want to show').blur()
                 cy.wait('@validation')
                 cy.get('textarea[name="field_id_1"]').should('be.visible')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
 
                 // Assert field is not shown in the template
@@ -671,6 +709,7 @@ context('Conditional Fields', () => {
                 cy.authVisit(edit_url);
                 cy.get('label:contains("Extended text")').parent().find('.js-toggle-field').click();
                 cy.get('textarea[name="field_id_2"]').clear().type('hide')
+                cy.dismissLicenseAlert()
                 cy.get('button[data-submit-text="Save"]:eq(0)').click();
             })
         })

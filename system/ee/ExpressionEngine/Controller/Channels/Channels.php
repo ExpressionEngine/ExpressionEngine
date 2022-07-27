@@ -267,6 +267,7 @@ class Channels extends AbstractChannelsController
                     foreach ($fields as $field) {
                         if ($field->field_is_conditional) {
                             $syncNeeded = true;
+
                             break;
                         }
                     }
@@ -280,6 +281,7 @@ class Channels extends AbstractChannelsController
                         foreach ($fieldGroup->ChannelFields as $field) {
                             if ($field->field_is_conditional) {
                                 $syncNeeded = true;
+
                                 break;
                             }
                         }
@@ -1318,7 +1320,7 @@ class Channels extends AbstractChannelsController
             )
         );
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense() && (ee()->config->item('enable_entry_cloning') === false || ee()->config->item('enable_entry_cloning') === 'y')) {
+        if (ee('pro:Access')->hasRequiredLicense() && (ee()->config->item('enable_entry_cloning') === false || ee()->config->item('enable_entry_cloning') === 'y')) {
             $sections['publishing'][] = array(
                 'title' => 'enable_entry_cloning',
                 'desc' => 'enable_entry_cloning_desc',

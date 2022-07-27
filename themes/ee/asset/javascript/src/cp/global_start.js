@@ -100,11 +100,10 @@ $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
 		originalOptions.eeResponseHeaders || {}
 	);
 
-	jqXHR.complete(function(xhr) {
-
+	jqXHR.always(function(xhr) {
 		if (options.crossDomain === false) {
 			_.each(eeResponseHeaders, function(callback, name) {
-				var headerValue = xhr.getResponseHeader('X-'+name);
+				var headerValue = jqXHR.getResponseHeader('X-'+name);
 
 				if (headerValue) {
 					callback(headerValue);
@@ -343,7 +342,7 @@ EE.cp.bindCpMessageClose = function() {
 
 	// Clear floating alerts after some time
 	var floatingAlerts = $('.app-notice--alert')
-	if (floatingAlerts.size()) {
+	if (floatingAlerts.length) {
 		setTimeout(function() {
 			floatingAlerts.fadeOut(function() {
 				floatingAlerts.remove()

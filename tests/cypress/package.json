@@ -14,10 +14,10 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@4tw/cypress-drag-drop": "^2.1.0"
+        "@4tw/cypress-drag-drop": "^2.2.0"
     },
     "dependencies": {
-        "cypress": "^9.5.4",
+        "cypress": "^9.7.0",
         "cypress-audit": "^1.1.0",
         "cypress-file-upload": "^5.0.8",
         "cypress-maildev": "^1.1.0",

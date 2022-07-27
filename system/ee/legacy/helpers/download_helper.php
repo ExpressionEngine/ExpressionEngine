@@ -37,7 +37,7 @@ if (! function_exists('force_download')) {
         ee()->load->library('mime_type');
         ee()->load->helper('multibyte');
 
-        $mime = ee()->mime_type->ofBuffer($data);
+        $mime = ee('MimeType')->ofBuffer($data);
 
         $len = ee_mb_strlen($data, '8bit');
 

@@ -3,7 +3,9 @@
 <div class="panel">
 	<div class="tbl-ctrls">
 		<?php if (empty($layouts) && empty($channel_id)): ?>
-			<?php $this->embed('_shared/table-list', ['data' => []]); ?>
+      <div class="panel-body">
+  			<?php $this->embed('_shared/table-list', ['data' => []]); ?>
+      </div>
 		<?php else: ?>
 			<?=form_open($base_url)?>
         <div class="panel-heading">
