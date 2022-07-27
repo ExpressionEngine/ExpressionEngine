@@ -90,10 +90,16 @@ class Javascript_loader
                     }
                 }
 
-                $file = $path . $file . '.js';
+                $fullFilePath = $path . $file . '.js';
 
-                if (file_exists($file)) {
-                    $contents .= file_get_contents($file) . "\n\n";
+                if (file_exists($fullFilePath)) {
+                    $contents .= file_get_contents($fullFilePath) . "\n\n";
+                } else if ($type == 'package') {
+                    //fallback to first-party addon package
+                    $fullFilePath = PATH_ADDONS . $file . '.js';
+                    if (file_exists($fullFilePath)) {
+                        $contents .= file_get_contents($fullFilePath) . "\n\n";
+                    }
                 }
             }
         }
