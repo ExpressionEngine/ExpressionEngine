@@ -1754,6 +1754,14 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'utilities/translate',
                 'permission' => 'can_access_translate'
             ),
+            'systemUtilitiesSyncConditionalFields' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities sync_conditional_fields',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/sync-conditional-fields',
+                'permission' => 'edit_channel_fields'
+            ),
             'systemUtilitiesPHPInfo' => array(
                 'icon' => 'fa-hammer',
                 'command' => 'system_utilities phpinfo',

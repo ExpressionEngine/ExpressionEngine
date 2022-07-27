@@ -289,6 +289,24 @@ $lang = array(
     'command_update_run_hook_what_is_path_to_upgrade_config'    => 'What is the path to your upgrade.config.php? (defaults to SYSPATH)',
     'command_update_run_hook_custom_config_not_found'           => 'Custom config not found.',
 
+    // Lang entries for command sync:conditional-fields
+    'command_sync_conditional_fields_name'              => 'Sync Conditional Field Logic',
+    'command_sync_conditional_fields_description'       => 'Sync channel entry conditional logic',
+    'command_sync_conditional_fields_summary'           => 'Checks each channel entry to see if its connditional logic is correct. If it is not, it updates the conditional logic and saves the entry.',
+
+    // sync:conditional-fields options
+    'command_sync_conditional_fields_option_channel_id' => 'Channel ID to sync. Defaults to all channels',
+    'command_sync_conditional_fields_option_verbose'    => 'Verbose',
+    'command_sync_conditional_fields_option_clear'      => 'Clear',
+
+    // sync:conditional-fields output
+    'command_sync_conditional_fields_sync_utility'      => 'Conditional logic sync utility',
+    'command_sync_conditional_fields_syncing'           => 'Syncing %d channel entries',
+    'command_sync_conditional_fields_current_entry'     => 'Current channel entry: %s',
+    'command_sync_conditional_fields_entries_processed' => "Entries processed: %d\t%s\t%s",
+    'command_sync_conditional_fields_sync_complete'     => "Sync complete: %d entries\t%s\t%s",
+    'command_sync_conditional_fields_cleared_all_hidden_fields' => "Cleared all hidden fields",
+    'command_sync_conditional_fields_database_info'             => "Database: %d queries in %f seconds",
 );
 
 // EOF
