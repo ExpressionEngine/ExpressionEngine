@@ -27,7 +27,9 @@ EE.fieldManager.sync_listen = function() {
 	$('.form-standard form .button').click(function(event) {
 		event.preventDefault();
 		// Disable sync button
-		$('.button', this).prop('disabled', true);
+		$('.button', $('.form-standard form')).each(function() {
+			$(this).val($(this).data('work-text')).addClass('work').prop('disabled', true);
+		});
 
 		// Remove any existing alerts
 		$('.app-notice--inline').remove();

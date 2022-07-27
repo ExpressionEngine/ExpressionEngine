@@ -71,17 +71,6 @@ class Utilities extends CP_Controller
             }
         }
 
-        if (ee('Permission')->can('edit_channel_fields')) {
-            $conditional_field_sync = $sidebar->addItem(lang('sync_conditional_fields'), ee('CP/URL')->make('utilities/sync-conditional-fields'));
-
-            // If we use a subpage like utilities/sync-conditional-fields/sync make it match the nav
-            $url = ee('CP/URL')->make('utilities/sync-conditional-fields');
-
-            if ($url->matchesTheRequestedURI()) {
-                $conditional_field_sync->isActive();
-            }
-        }
-
         $sidebar->addItem(lang('php_info'), ee('CP/URL')->make('utilities/php'))
             ->urlIsExternal();
 
@@ -125,6 +114,14 @@ class Utilities extends CP_Controller
                 ->addBasicList();
             $data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
             $data_list->addItem(lang('search_reindex'), ee('CP/URL')->make('utilities/reindex'));
+            if (ee('Permission')->can('edit_channel_fields')) {
+                // If we use a subpage like utilities/sync-conditional-fields/sync make it match the nav
+                $sync_conditional_fields_url = ee('CP/URL')->make('utilities/sync-conditional-fields');
+                $conditional_field_sync = $data_list->addItem(lang('sync_conditional_fields'), $sync_conditional_fields_url);
+                if ($sync_conditional_fields_url->matchesTheRequestedURI()) {
+                    $conditional_field_sync->isActive();
+                }
+            }
             $data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
             $data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
         }
