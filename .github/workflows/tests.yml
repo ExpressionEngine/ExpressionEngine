@@ -7,7 +7,7 @@ on:
       - release/6.3.0
       - release/6.4.0
       - release/6.5.0
-      - feature/html-title-to-file-EECORE-1680
+      - bug/6.x/full-tests
 
 jobs:
 
@@ -46,7 +46,7 @@ jobs:
           - name: Setup node
             uses: actions/setup-node@v2
             with:
-              node-version: '17'
+              node-version: '10'
 
           - name: Install build tool dependencies
             working-directory: build-tools
