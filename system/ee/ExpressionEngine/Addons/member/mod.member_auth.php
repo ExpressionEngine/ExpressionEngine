@@ -648,10 +648,35 @@ class Member_auth extends Member
 
         $this->_set_page_title(lang('mbr_forgotten_password'));
 
+        $forgot_form = $this->_load_element('forgot_form');
+
+        // match {form_declaration} or {form_declaration form_class="foo"}
+        // [0] => {form_declaration form_class="foo"}
+        // [1] => form_declaration form_class="foo"
+        // [2] =>  form_class="foo"
+        // [3] => "
+        // [4] => foo
+        preg_match(
+            "/" . LD . "(form_declaration" . "(\s+form_class\s*=\s*(\042|\047)([^\\3]*?)\\3)?)" . RD . "/s",
+            $forgot_form,
+            $match
+        );
+
+        if (empty($match)) {
+            // don't even return the template because the form will not work since
+            // the template does not contain a {form_declaration}
+            return;
+        }
+
+        // check for the form_class variable from the template and add to $data
+        if (isset($match['4'])) {
+            $data['class'] = $match['4'];
+        }
+
         return $this->_var_swap(
-            $this->_load_element('forgot_form'),
+            $forgot_form,
             array(
-                'form_declaration' => ee()->functions->form_declaration($data)
+                $match[1] => ee()->functions->form_declaration($data)
             )
         );
     }
