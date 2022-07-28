@@ -716,6 +716,7 @@ JSC;
     public function replace_tag_catchall($data = [], $params = array(), $tagdata = false, $modifier = '')
     {
         // These are single variable tags only, so no need for replace_tag
+        $full_path = isset($data['url']) ? $data['url'] : '';
         if ($modifier) {
             if ($modifier == 'frontedit') {
                 return $tagdata;
@@ -725,10 +726,10 @@ JSC;
 
             if ($modifier == 'thumbs') {
                 if (isset($data['path']) && isset($data['filename']) && isset($data['extension'])) {
-                    $data = $data['path'] . '_thumbs/' . $data['filename'] . '.' . $data['extension'];
+                    $full_path = $data['path'] . '_thumbs/' . $data['filename'] . '.' . $data['extension'];
                 }
             } elseif (isset($data[$key])) {
-                $data = $data[$key];
+                $full_path = $data[$key];
             }
 
             if (empty($data)) {
@@ -736,10 +737,10 @@ JSC;
             }
 
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($data, $params['wrap'], $data);
+                return $this->_wrap_it($data, $params['wrap'], $full_path);
             }
 
-            return $data;
+            return $full_path;
         }
     }
 

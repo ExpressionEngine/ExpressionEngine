@@ -313,7 +313,7 @@ context('File Manager', () => {
 
 	it('displays a bulk confirmation modal when attempting to remove more than 5 files', () => {
 		page.get('checkbox_header').click()
-		//page.get('bulk_action').should('be.visible')
+		page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
 
@@ -352,7 +352,7 @@ context('File Manager', () => {
 		beforeEach_all_files();
 		beforeEach_perpage_50();
 		page.get('checkbox_header').click()
-		//page.get('bulk_action').should('be.visible')
+		page.get('bulk_action').should('be.visible')
 		page.get('bulk_action').select("Delete")
 		page.get('action_submit_button').click()
 		//page.get('modal').should('be.visible')
