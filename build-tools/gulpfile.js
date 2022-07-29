@@ -948,6 +948,7 @@ var getBuildSignature = function(path, version) {
                         fs.writeFile(paths.builds + '/signature.txt', signature, function (err) {
                             if (err) return console.log(err);
                         });
+
 						resolve(signature);
 					}
 				);
