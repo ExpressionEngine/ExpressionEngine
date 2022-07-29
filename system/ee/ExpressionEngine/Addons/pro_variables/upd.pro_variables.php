@@ -261,6 +261,13 @@ class Pro_variables_upd
             ['field_type' => 'low_variables'],
         );
 
+        // Migrate content type
+        ee()->db->update(
+            'content_types',
+            ['name' => strtolower($this->class_name)],
+            ['name' => 'low_variables'],
+        );
+
         // Migrate settings
         $settings = ee()->pro_variables_settings->get();
         foreach ($settings['enabled_types'] as $k => $v) {
@@ -357,13 +364,13 @@ class Pro_variables_upd
         //  Upgrade to 5.0.0
         // ------------------------------------
 
-        if (version_compare($current, '5.0.0', '<')) {
-            // Check to see if pro variables is in the user folder. If so, leave a developer log item
-            if (ee('Filesystem')->isDir(PATH_THIRD . 'pro_variables')) {
-                echo "<pre>";
-                var_dump('log it');
-                exit;
-            }
+        if (version_compare($current, '5.0.1', '<')) {
+            // Migrate content type
+            ee()->db->update(
+                'content_types',
+                ['name' => strtolower($this->class_name)],
+                ['name' => 'low_variables'],
+            );
         }
 
         // Update the extension and fieldtype in the DB
