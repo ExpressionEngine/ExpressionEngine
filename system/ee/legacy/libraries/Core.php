@@ -692,7 +692,7 @@ class EE_Core
 
         if ($forum_trigger &&
             in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))) {
-            require PATH_MOD . 'forum/mod.forum.php';
+            require PATH_THIRD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
 

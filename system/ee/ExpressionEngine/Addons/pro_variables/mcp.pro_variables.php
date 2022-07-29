@@ -1499,7 +1499,7 @@ class Pro_variables_mcp
         $this->data = array(
             'base_url' => $this->mcp_url('save_group'),
             'save_btn_text' => 'save_group',
-            'save_btn_text_working' => 'saving',
+            'save_btn_text_working' => 'btn_saving',
             'sections' => $sections
         );
 
@@ -1591,7 +1591,7 @@ class Pro_variables_mcp
         //  Process group insert/update
         // -------------------------------------
 
-        if ($group_id == 'new') {
+        if ($group_id === 'new') {
             // Insert new group in DB
             $group_id = $this->groups->insert($data);
 
