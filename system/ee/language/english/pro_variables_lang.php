@@ -197,7 +197,7 @@ $lang = array(
     // General items
 
     'variable_name_help' =>
-    'Name of the variable you can use in your templates, e.g.: <code>lv_myvar</code>',
+    'Name of the variable you can use in your templates, e.g.: <code>pv_myvar</code>',
 
     'variable_label_help' =>
     'Label of the variable users see in the Low Variables module home page',
