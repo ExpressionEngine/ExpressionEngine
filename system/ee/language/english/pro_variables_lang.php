@@ -578,6 +578,9 @@ $lang = array(
     'var_saved' =>
     'Variable saved',
 
+    'low_vars_in_third_party_folder_message' =>
+    'Low Variables files were found found in the user/addons folder. We recommend you remove it and only use Pro Variables.',
+
     //----------------------------------------
     // Required for EXTENSION page
     //----------------------------------------

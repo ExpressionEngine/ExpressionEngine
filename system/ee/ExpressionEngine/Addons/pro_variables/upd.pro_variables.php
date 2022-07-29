@@ -63,11 +63,6 @@ class Pro_variables_upd
     {
         // Initialize base data for addon
         $this->initializeBaseData();
-
-        if (ee('Filesystem')->isDir(PATH_THIRD . 'reupdate')) {
-            ee()->load->library('logger');
-            ee()->logger->developer('pro vars is in third party addon folder. please remove ', true, 1209600);
-        }
     }
 
     /**
@@ -373,6 +368,8 @@ class Pro_variables_upd
             );
         }
 
+        $this->logMessageAboutLowVersion();
+
         // Update the extension and fieldtype in the DB
         ee()->db->update('extensions', $ext_data, "class = '{$this->class_name}_ext'");
         ee()->db->update('fieldtypes', array('version' => $this->version), "name = '{$this->package}'");
@@ -381,6 +378,14 @@ class Pro_variables_upd
         return true;
     }
 
+    private function logMessageAboutLowVersion()
+    {
+        // Check to see if low variables is in the user folder. If so, leave a developer log item
+        if (ee('Filesystem')->isDir(PATH_THIRD . 'low_variables')) {
+            ee()->load->library('logger');
+            ee()->logger->developer(lang('low_vars_in_third_party_folder_message'), true, 1209600);
+        }
+    }
     // --------------------------------------------------------------------
 
     /**
