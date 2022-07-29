@@ -329,6 +329,8 @@ class Pro_search_upd
             $this->_v700();
         }
 
+        $this->logMessageAboutLowVersion();
+
         // --------------------------------------
         // Update extension version
         // --------------------------------------
@@ -684,6 +686,15 @@ class Pro_search_upd
 
         $this->_add_hook('after_channel_entry_insert');
         $this->_add_hook('after_channel_entry_update');
+    }
+
+    private function logMessageAboutLowVersion()
+    {
+        // Check to see if low search is in the user folder. If so, leave a developer log item
+        if (ee('Filesystem')->isDir(PATH_THIRD . 'low_search')) {
+            ee()->load->library('logger');
+            ee()->logger->developer(lang('low_search_in_third_party_folder_message'), true, 1209600);
+        }
     }
 }
 // End class

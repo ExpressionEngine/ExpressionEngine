@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -59,7 +58,7 @@ class Pro_table extends Pro_variables_type
         $cols = array_map('trim', explode('|', $cols));
 
         // Return the view based on these vars
-        return LVUI::view_field('table', array(
+        return PVUI::view_field('table', array(
             'name'   => $this->input_name(),
             'var_id' => $this->id(),
             'cols'   => $cols,

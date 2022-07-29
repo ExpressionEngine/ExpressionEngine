@@ -591,6 +591,9 @@ of these words.",
     "no_entries_selected" =>
     "No entries selected",
 
+    'low_search_in_third_party_folder_message' =>
+    'Low Search files were found in the user/addons folder. We recommend you remove it and only use Pro Search.',
+
     //----------------------------------------
     // License
     //----------------------------------------
