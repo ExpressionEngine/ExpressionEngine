@@ -74,9 +74,9 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20220506');
-        define('APP_VER', '7.0.0-rc.2');
-        define('APP_VER_ID', 'rc.1');
+        define('APP_BUILD', '20220727');
+        define('APP_VER', '7.0.0-rc.3');
+        define('APP_VER_ID', 'rc.3');
         define('SLASH', '&#47;');
         define('LD', '{');
         define('RD', '}');
@@ -692,7 +692,7 @@ class EE_Core
 
         if ($forum_trigger &&
             in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))) {
-            require PATH_MOD . 'forum/mod.forum.php';
+            require PATH_THIRD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
 
@@ -907,7 +907,7 @@ class EE_Core
                 )
             ) {
                 $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('site_url'));
+                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos(ee()->config->item('site_url'), $cookie_domain);
                 if ($domain_matches === false) {
                     $error = lang('cookie_domain_mismatch');
                 }

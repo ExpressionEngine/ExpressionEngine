@@ -10,7 +10,7 @@ context('One-Click Updater', () => {
     cy.task('updater:backup_files')
     cy.task('db:seed', 'database_6.1.5.sql')
     cy.task('installer:disable')
-    
+
     // This test is also used in the pre-release.yml workflow and gets a copy of 6.1.5
     // We've just selected the same version here to not interfere with that test
     // but also allow this to do a simple check for working updater in current code
@@ -25,6 +25,12 @@ context('One-Click Updater', () => {
     @themespath = File.expand_path('../../themes/ee/');*/
 
     cy.auth();
+    cy.get('.ee-sidebar__version').should('be.visible')
+
+    cy.task('filesystem:delete', '../../system/user/cache/current_version')
+    cy.wait(5000)
+
+    cy.visit('admin.php')
 
     cy.get('.ee-sidebar__version').click();
     cy.get('.app-about__status .button--primary').should('be.visible');
@@ -60,6 +66,10 @@ context('One-Click Updater', () => {
       cy.wait('@selfDestruct');
       cy.visit('admin.php')
       cy.get('body').contains('Up to date!')
+
+      /*cy.get('.ee-sidebar__version-number').invoke('text').then((text) => {
+        expect(text).to.eq(latestVersion)
+      })*/
     }
   })
 

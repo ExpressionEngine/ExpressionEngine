@@ -57,7 +57,6 @@ jobs:
               echo "::set-output name=BUILD_VERSION::$content"
 
           - name: Run build process
-            if:  github.event.push.base_ref == '7.dev'
             working-directory: build-tools
             env:
               RELEASE_KEY: ${{ secrets.RELEASE_KEY }}

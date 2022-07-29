@@ -50,6 +50,12 @@ class Css extends CI_Controller
             if (file_exists($path . 'css/' . $file . '.css')) {
                 return $this->_load_css_file($path, $file);
             }
+
+            //fallback to first-party addons
+            $path = PATH_ADDONS . $package . '/';
+            if (file_exists($path . 'css/' . $file . '.css')) {
+                return $this->_load_css_file($path, $file);
+            }
         } elseif ($this->input->get_post('M') !== false) {
             $file = $this->input->get_post('M');
         }
