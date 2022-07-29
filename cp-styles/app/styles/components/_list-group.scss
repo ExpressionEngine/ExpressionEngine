@@ -131,6 +131,7 @@
 	border-radius: $border-radius-base;
 	//color: color(text-normal);
 	transition: background $t-speed ease, border $t-speed ease;
+  @include shadow-input;
 }
 
 // Clickable list items

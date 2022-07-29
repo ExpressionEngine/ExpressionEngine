@@ -21,7 +21,6 @@ class EE_Template_Router extends CI_Router
     {
         require_once APPPATH . 'libraries/template_router/Match.php';
         require_once APPPATH . 'libraries/template_router/Route.php';
-        ee()->lang->loadfile('template_router');
         $this->set_routes();
     }
 

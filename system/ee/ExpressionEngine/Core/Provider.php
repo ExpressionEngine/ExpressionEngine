@@ -413,6 +413,23 @@ class Provider extends InjectionBindingDecorator
     }
 
     /**
+     * Registers filesystem adapters
+     *
+     * @return void
+     */
+    public function registerFilesystemAdapters()
+    {
+        $filesystem_adapters = $this->get('filesystem_adapters', array());
+        if (!empty($filesystem_adapters)) {
+            ee()->lang->loadfile($this->getPrefix());
+            foreach ($filesystem_adapters as $adapter) {
+                ee('Filesystem/Adapter')->registerAdapter($adapter);
+            }
+        }
+        unset($filesystem_adapters);
+    }
+
+    /**
      * Forcably override the first parameter on a given closure
      *
      * @param Closure $closure Function to partially apply

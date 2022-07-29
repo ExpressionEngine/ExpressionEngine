@@ -70,7 +70,7 @@ class BulkEditEntries extends React.Component {
           )}
         </ul>
         <div className="meta-info">
-          {lang.showing} {limitedItems.length} {lang.of} {totalItems} &mdash; <a href className="danger-link" onClick={(e) => this.handleRemoveAll()}><i className="fas fa-sm fa-times"></i> {lang.clearAll}</a>
+          {lang.showing} {limitedItems.length} {lang.of} {totalItems} &mdash; <a href className="danger-link" onClick={(e) => this.handleRemoveAll()}><i className="fal fa-sm fa-times"></i> {lang.clearAll}</a>
         </div>
       </div>
     )
@@ -83,7 +83,7 @@ function BulkEditEntryItem (props) {
         <div className="list-item__content">
             <div>{props.item.label}</div>
             <div className="list-item__secondary">
-                <a href="#" className="danger-link" onClick={(e) => props.handleRemove(props.item)}><i className="fas fa-sm fa-times"></i> {props.lang.removeFromSelection}</a>
+                <a href="#" className="danger-link" onClick={(e) => props.handleRemove(props.item)}><i className="fal fa-sm fa-times"></i> {props.lang.removeFromSelection}</a>
             </div>
         </div>
     </li>

@@ -45,6 +45,7 @@ class Settings extends CP_Controller
     protected function generateSidebar($active = null)
     {
         $sidebar = ee('CP/Sidebar')->make();
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
 
         $list = $sidebar->addHeader(lang('general'))
             ->addBasicList();
@@ -85,7 +86,10 @@ class Settings extends CP_Controller
             $list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
         }
 
-        $list->addItem(lang('hit_tracking'), ee('CP/URL')->make('settings/hit-tracking'));
+        $sidebar->addItem(lang('frontedit'), ee('CP/URL')->make('settings/pro/frontedit'));
+        $sidebar->addItem(lang('branding_settings'), ee('CP/URL')->make('settings/pro/branding'));
+
+        $list->addItem(lang('tracking'), ee('CP/URL')->make('settings/tracking'));
 
         $list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
 
@@ -123,14 +127,7 @@ class Settings extends CP_Controller
             }
         }
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee('Permission')->canUsePro()) {
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-            $list = $sidebar->addHeader(lang('pro_settings'))
-                ->addBasicList();
-
-            $sidebar->addItem(lang('cookie_settings'), ee('CP/URL')->make('settings/pro/cookies'));
-        }
-
+        $sidebar->addItem(lang('cookie_settings'), ee('CP/URL')->make('settings/pro/cookies'));
     }
 
     /**
@@ -164,8 +161,8 @@ class Settings extends CP_Controller
      * view, check POST for their values, and then save the values in site
      * preferences
      *
-     * @param	array	$sections	Array of sections passed to form view
-     * @return	bool	Success or failure of saving the settings
+     * @param   array   $sections   Array of sections passed to form view
+     * @return  bool    Success or failure of saving the settings
      */
     protected function saveSettings($sections)
     {

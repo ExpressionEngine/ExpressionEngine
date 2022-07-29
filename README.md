@@ -10,7 +10,7 @@ Visit [expressionengine.com](https://expressionengine.com/) to see what it's all
 
 ExpressionEngine requires a web server running PHP & MySQL. We recommend:
 
-- PHP 7 or newer
+- PHP 7.2 or newer
 - MySQL 5.6 or newer
 
 ExpressionEngine _can_ run on PHP 5.6+ and MySQL 5.5.3+. For full details and a server compatibility wizard, please visit the system requirements [in the User Guide](https://docs.expressionengine.com/latest/installation/requirements.html).
@@ -28,10 +28,11 @@ Read [Installing ExpressionEngine](https://docs.expressionengine.com/latest/inst
 ### If you're installing from the repository:
 1. Create a database
 2. Clone repo into your site's root directory or clone locally and upload files.
-3. Verify file permissions
-4. add an empty config file, e.g. `touch system/user/config/config.php`
-5. route requests to the installer app instead of the main app by changing `EE_INSTALL_MODE` to `TRUE` in [.env.php](.env.php). You can change this back when you're done.
-6. Point your browser to `/admin.php` and run the Installation Wizard.
+3. Run `composer install`
+4. Verify file permissions
+5. add an empty config file, e.g. `touch system/user/config/config.php`
+6. route requests to the installer app instead of the main app by changing `EE_INSTALL_MODE` to `TRUE` in [.env.php](.env.php). You can change this back when you're done.
+7. Point your browser to `/admin.php` and run the Installation Wizard.
 
 ### Finding Previous Versions
 To install/download previous versions of ExpressionEngine navigate to [Releases](https://github.com/ExpressionEngine/ExpressionEngine/releases) and download the Source Code (.zip or .tar.gz) from the from the release you wish to download.

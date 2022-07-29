@@ -1,0 +1,32 @@
+{layout="cypress/layout"}
+<p>Testing Relationships</p>
+{exp:channel:entries dynamic="no" entry_id="1" limit="1"}
+<div id="with-tag">
+
+{rel_item} 
+    <h3>{rel_item:title}</h3>
+{/rel_item}
+
+</div>
+<div id="no-tag">
+
+{rel_item} 
+    {rel_item:title}
+{/rel_item}
+
+</div>
+<div id="disabled-with-comment">
+{!-- disable frontedit --}
+{rel_item} 
+    {rel_item:title}
+{/rel_item}
+{!--//disable frontedit--}
+</div>
+<div id="disabled-with-param">
+
+{rel_item disable="frontedit"} 
+    <p>{rel_item:title}</p>
+{/rel_item}
+
+</div>
+{/exp:channel:entries}

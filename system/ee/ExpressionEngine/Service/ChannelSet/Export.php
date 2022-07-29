@@ -49,8 +49,7 @@ class Export
         $location = PATH_CACHE . "cset/{$channels[0]->channel_name}.zip";
 
         if (! is_dir(PATH_CACHE . 'cset/')) {
-            $filesystem = new Filesystem();
-            $filesystem->mkdir(PATH_CACHE . 'cset/');
+            ee('Filesystem')->mkdir(PATH_CACHE . 'cset/');
         }
 
         $this->zip->open($location, ZipArchive::CREATE | ZipArchive::OVERWRITE);

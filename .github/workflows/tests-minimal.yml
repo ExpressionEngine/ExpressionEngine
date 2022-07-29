@@ -4,11 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
-      - 6.dev
-      - 6.2.0
-      - 6.3.0
-      - 6.4.0
-      - 6.5.0
+      - '*.dev'
 
 jobs:
     cancel-running-tests:
@@ -30,43 +26,25 @@ jobs:
         steps:
           - name: Checkout code
             uses: actions/checkout@v2
-          
+
           - name: Cache repository info
             uses: actions/cache@v2
             with:
               path: .git
               key: cache-ee-git-${{ github.sha }}
 
-          - name: Find Pro reference
-            uses: packettide/url-extractor-gh-action@main
-            id: pro_reference
+          - name: Setup PHP
+            uses: shivammathur/setup-php@v2
             with:
-              body: ${{ github.event.pull_request.body }}
-              pattern: "https://github.com/EllisLab/ExpressionEngine-Pro/tree/"
-
-          - name: Save Pro branch to variable
-            id: pro_branch
-            run: |
-              pattern="https://github.com/EllisLab/ExpressionEngine-Pro/tree/"
-              ref="${url/$pattern/}"
-              echo $ref
-              [ '' != $ref ] && echo "::set-output name=ref::$ref" || echo "::set-output name=ref::1.dev"
-            env:
-              url: ${{ steps.pro_reference.outputs.url }}
-
-          - name: Checkout Pro
-            if: github.event.pull_request.head.repo.full_name == github.repository
-            uses: actions/checkout@v2
-            with:
-              repository: EllisLab/ExpressionEngine-Pro
-              token: ${{ secrets.ORG_ACCESS_TOKEN }}
-              ref: ${{ steps.pro_branch.outputs.ref }}
-              path: __pro
+                php-version: '7.4'
+                extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                coverage: none
+                ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
           - name: Setup node
             uses: actions/setup-node@v2
             with:
-              node-version: '17'
+              node-version: '10'
 
           - name: Install build tool dependencies
             working-directory: build-tools
@@ -79,24 +57,12 @@ jobs:
               content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
               echo "::set-output name=BUILD_VERSION::$content"
 
-          - name: Run build process (with Pro)
-            if: github.event.pull_request.head.repo.full_name == github.repository
+          - name: Run build process 
             working-directory: build-tools
             env:
               RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
-              PRO_REPO_PATH: ${{ github.workspace }}/__pro
-            run: gulp build-app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
-
-          - name: Run build process (without Pro)
-            if: github.event.pull_request.head.repo.full_name != github.repository
-            working-directory: build-tools
-            env:
-              RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
-              RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-              APP_REPO_PATH: ${{ github.workspace }}
-              PRO_REPO_PATH: ${{ github.workspace }}/__pro
             run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
@@ -193,7 +159,7 @@ jobs:
                 mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
                 mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
 
-            - name: Install PHP dependencies
+            - name: Install Testing PHP dependencies
               working-directory: tests/cypress
               run: composer install
 
@@ -229,7 +195,6 @@ jobs:
               uses: cypress-io/github-action@v2
               if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
               with:
-                # spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
                 headless: true
                 working-directory: tests/cypress

@@ -105,7 +105,7 @@
         <button type="button" rel="remove_row" class="button button--small button--default">
         
             <span class="danger-link" title="<?=lang('remove_row')?>">
-                <i class="fas fa-trash-alt">
+                <i class="fal fa-trash-alt">
                     <span class="hidden"><?=lang('remove_row')?></span>
                 </i>
             </span>

@@ -99,6 +99,14 @@ class ChannelLayout extends Model implements LayoutInterface
 
                 $field = $fields[$field_id];
 
+                //set the width of a field
+                //if width isn't set then default is 100%
+                if (isset($field_info['width'])) {
+                    $field->setWidth($field_info['width']);
+                } else {
+                    $field->setWidth(100);
+                }
+
                 // Fields can be configured to start collapsed or expaned, but
                 // a layout should always override it.
                 if (isset($field_info['collapsed'])) {

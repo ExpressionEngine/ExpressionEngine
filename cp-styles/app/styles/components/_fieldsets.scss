@@ -106,7 +106,7 @@ fieldset {
 
 				&:after{
 					@extend %fa-icon;
-					@extend .fas;
+					@extend .fal;
 					// @extend .fa-xs;
 
 					// content: "*";
@@ -130,7 +130,7 @@ fieldset {
 
 			&:after{
 				@extend %fa-icon;
-				@extend .fas;
+				@extend .fal;
 				color: color(security-caution);
 				margin-left: 10px;
 
@@ -161,7 +161,7 @@ fieldset {
 
 			&:after{
 				@extend %fa-icon;
-				@extend .fas;
+				@extend .fal;
 				font-size: $font-size-small;
 				color: color(error);
 				content: fa-content($fa-var-exclamation-triangle);
@@ -191,6 +191,10 @@ fieldset {
 		.c-colorpicker-input{
 			border: 1px solid color(error);
 			// box-shadow: 0 0 0 1px color(error);
+
+      &:focus {
+        @include focus-outline-validation;
+    	}
 		}
 
 		.field-drop-choices{
@@ -222,7 +226,7 @@ fieldset {
 
 		&:after{
 			@extend %fa-icon;
-			@extend .fas;
+			@extend .fal;
 			font-size: $font-size-small;
 			color: color(error);
 			content: fa-content($fa-var-exclamation-triangle);
@@ -341,7 +345,7 @@ td.invalid {
 .sub-arrow:before {
     color: color(text-placeholder);
     @extend %fa-icon;
-    @extend .fas;
+    @extend .fal;
     content: fa-content($fa-var-chevron-down);
     font-size: 10px;
     line-height: 0;
@@ -353,7 +357,7 @@ td.invalid {
 
 .field-closed .sub-arrow:before, .fieldset---closed .sub-arrow:before, .fluid-closed .sub-arrow:before {
     @extend %fa-icon;
-    @extend .fas;
+    @extend .fal;
     content: fa-content($fa-var-chevron-right);
     top: -1px;
 }
@@ -395,8 +399,8 @@ fieldset {
 	#eye {
 		cursor: pointer;
 		position: absolute;
-		right: 25px;
-		top: 46px;
+		right: 15px;
+		top: 48px;
 	}
 	.field-control {
 		.eye,
@@ -422,5 +426,37 @@ fieldset {
 				}
 			}
 		}
+	}
+}
+
+// Publish form behavior for fieldsets
+.panel-body__publish {
+
+  fieldset, .fieldset-faux {
+    width: 100%;
+    display: inline-flex;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    padding-left: 15px;
+    padding-right: 15px;
+    vertical-align: top;
+    font-size: 1rem; // reset for side-by-side fields
+
+    .field-instruct,
+    .field-control {
+    	width: 100%;
+    }
+
+	&.hide-block { display: none;}
+
+    // Override custom field widths
+    @media (max-width: 899px) {
+      width: 100% !important;
+    }
+  }
+
+  tr.ui-sortable-helper {
+		box-shadow: color(shadow-dropdown);
+		background: color(accent-light);
 	}
 }

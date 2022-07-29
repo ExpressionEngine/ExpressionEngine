@@ -186,10 +186,15 @@ $pink-theme: (
   sidebar-icon-active: #ffffff,
   sidebar-bg-active: darken($gray-70, 15%),
   sidebar-bg: $gray-70,
+  sidebar-title-text: $gray-30,
   sidebar-title-bg: lighten($gray-70, 5%),
+  sidebar-title-border-bottom: lighten($gray-70, 5%),
+  sidebar-bottom-bg: lighten($gray-70, 5%),
+  sidebar-bottom-border-top: lighten($gray-70, 5%),
   sidebar-title-bg-hover: lighten($gray-70, 7%),
   sidebar-version-bg: lighten($gray-70, 5%),
   sidebar-version-bg-hover: lighten($gray-70, 7%),
+  sidebar-border: $gray-70,
 
   secondary-sidebar-item-bg: $gray-5,
   secondary-sidebar-item-icon: $text-secondary,
@@ -202,10 +207,14 @@ $pink-theme: (
   // Panels
   panel-bg: $gray-blank,
   panel-border: $gray-10,
+  panel-border-outer: transparent,
 
   // Shadows
   shadow-modal: rgba(69, 68, 85, 0.2),
   shadow-dropdown: rgba(23, 27, 40, 0.1),
+  shadow-panel: rgba(23, 27, 40, 0.1),
+  shadow-input: rgba(23, 27, 40, 0.05),
+  shadow-button: rgba(23, 27, 40, 0.05),
 
   // Fieldtypes
   note-fieldtype-bg: $gray-0,

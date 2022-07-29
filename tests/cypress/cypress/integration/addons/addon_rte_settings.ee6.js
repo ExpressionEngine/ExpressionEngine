@@ -96,15 +96,17 @@ context('RTE Settings', () => {
 
         it('can reverse sort tool sets by name', function() {
             cy.authVisit(page.url);
-            let toolsets = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
+            page.get('tool_set_names').should('exist').then(() => {
+                let toolsets = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
 
-            page.get('tool_set_name_header').find('a.column-sort').click().then(function() {
+                page.get('tool_set_name_header').find('a.column-sort').click();
                 cy.hasNoErrors()
-
-                page.get('tool_set_name_header').should('have.class', 'column-sort-header--active')
-                let toolsetsReversed = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
-
-                expect(toolsetsReversed).to.deep.equal(toolsets.reverse())
+    
+                page.get('tool_set_name_header').should('have.class', 'column-sort-header--active').then(() => {
+                    let toolsetsReversed = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
+    
+                    expect(toolsetsReversed).to.deep.equal(toolsets.reverse())
+                })
             })
         })
 

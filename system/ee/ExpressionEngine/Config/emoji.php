@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+// this file is deprecated and needs to be removed in ExpressionEngine 6.4.0
+
 /**
  * Emoji Character Map
  */

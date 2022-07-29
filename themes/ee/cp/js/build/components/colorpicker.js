@@ -245,7 +245,7 @@ var ColorPicker = /** @class */ (function (_super) {
 // Render color picker inputs when created:
 $(document).ready(function () {
     // Using window.load to make sure this code gets called after all document.readys
-    $(window).load(function () {
+    $(window).on('load', function () {
         ColorPicker.renderFields();
     });
 });
@@ -264,4 +264,26 @@ FluidField.on('colorpicker', 'add', function (field) {
 // Load any color pickers when the field manager selects a fieldtype
 FieldManager.on('fieldModalDisplay', function (modal) {
     ColorPicker.renderFields(modal[0]);
+});
+
+$('input.color-picker').each(function() {
+    var input = this;
+    var inputName = input.name;
+    var inputValue = input.value;
+
+    $(input).wrap('<div>');
+
+    var newContainer = $(input).parent();
+
+    ReactDOM.render(React.createElement(ColorPicker, {
+        inputName: inputName,
+        initialColor: inputValue,
+        allowedColors: 'any',
+        swatches: ['FA5252', 'FD7E14', 'FCC419', '40C057', '228BE6', 'BE4BDB', 'F783AC'],
+
+        onChange: function(newColor) {
+            // Change colors
+            input.value = newColor;
+        }
+    }, null), newContainer[0]);
 });

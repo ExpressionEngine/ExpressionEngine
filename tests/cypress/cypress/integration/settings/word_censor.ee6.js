@@ -61,7 +61,7 @@ context('Word Censorship Settings', () => {
     //page.submit()
     cy.get('button').contains('Save Settings').first().click()
 
-    page.get('wrap').contains('Preferences updated')
+    page.get('wrap').contains('Preferences Updated')
     page.get('enable_censoring').invoke('val').then((val) => { expect(val).to.be.equal('y') })
     page.get('censor_replacement').invoke('val').then((val) => { expect(val).to.be.equal('####') })
     page.get('censored_words').invoke('val').then((val) => { expect(val).to.be.equal("Poop\nPerl") })

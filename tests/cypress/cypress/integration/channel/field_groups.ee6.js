@@ -51,7 +51,8 @@ context('Field Groups', () => {
     it('deletes a field group', function() {
         page.get('field_groups').its('length').then((length) => {
 
-            page.get('field_groups').eq(0).find('a[rel="modal-confirm-field_groups"]').first().click({force: true})//AJ
+            page.get('field_groups').eq(0).find('.button-toolbar.toolbar').invoke('show')
+            page.get('field_groups').eq(0).find('a[rel="modal-confirm-field_groups"]').first().click()//AJ
 
 
             //page.get('modal_submit_button').click()

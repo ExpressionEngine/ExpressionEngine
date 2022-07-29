@@ -94,7 +94,7 @@
 		flex-shrink: 0;
 	}
 
-	.fas {
+	.fas, .fal {
 		@extend .fa-fw;
 		margin-right: 5px;
 		color: color(text-secondary);

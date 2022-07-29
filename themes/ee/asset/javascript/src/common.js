@@ -326,6 +326,24 @@ $(document).ready(function(){
 
 	// Collapse navigation sidebar
 	// -------------------------------------------------------------------
+	$('body').on('click', '.secondary-sidebar-toggle .secondary-sidebar-toggle__target', function(e){
+		e.preventDefault();
+		let isSecondaryHidden = $('.secondary-sidebar').hasClass('secondary-sidebar__collapsed');
+
+		if (isSecondaryHidden) {
+			$('.secondary-sidebar').removeClass('secondary-sidebar__collapsed');
+			$(this).removeClass('collapsed');
+			$(this).find('i').removeClass('fa-angle-right').addClass('fa-angle-left');
+		} else {
+			$('.secondary-sidebar').addClass('secondary-sidebar__collapsed');
+			$(this).addClass('collapsed');
+			$(this).find('i').removeClass('fa-angle-left').addClass('fa-angle-right');
+		}
+		$.get(EE.cp.collapseSecondaryNavURL, {owner: $('.secondary-sidebar').data('owner'), collapsed: (!isSecondaryHidden ? 1 : 0)});
+	})
+
+	// Collapse navigation sidebar
+	// -------------------------------------------------------------------
 	$('.banner-dismiss').on('click', function (e) {
 		e.preventDefault();
 		$(this).parent().remove();
@@ -359,7 +377,7 @@ $(document).ready(function(){
 
 	function updateMenuText(newTheme) {
 		if ($('.js-dark-theme-toggle').length) {
-			$('.js-dark-theme-toggle').html('<i class="fas fa-adjust fa-fw"></i> ' + (newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme));
+			$('.js-dark-theme-toggle').html('<i class="fal fa-adjust fa-fw"></i> ' + (newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme));
 		}
 	}
 
@@ -517,6 +535,14 @@ $(document).ready(function(){
 			// Open the new tab
 			_this.addClass(active_class);
 			$('.'+active_group_class+' .tab.'+tabClassIs).addClass('tab-open');
+
+			//set the hidden input if needed
+			if (typeof(_this.data('action')) !== 'undefined') {
+				var _hiddenAction = _this.parents('form').find('input[type=hidden][name=action]');
+				if (_hiddenAction.length) {
+					_hiddenAction.val(_this.data('action'));
+				}
+			}
 		}
 
 
@@ -637,6 +663,10 @@ $(document).ready(function(){
 						.addClass('app-overlay--warning');
 				}
 			}
+
+				if ($(this).find('div[data-dropdown-react]').length) {
+					Dropdown.renderFields();
+				}
 
 			// reveal the modal
 			if ($(this).hasClass('modal-wrap')) {
@@ -782,7 +812,13 @@ $(document).ready(function(){
 
 		// listen for clicks on the element with a class of overlay
 		$('body').on('click', '.m-close, .js-modal-close', function(e) {
-			$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+			var thisModal = $(this).closest('.modal-wrap, .modal-form-wrap, .app-modal');
+			var thisModalParent = thisModal.parents('.modal-wrap, .modal-form-wrap, .app-modal');
+			if (thisModalParent.length) {
+				thisModal.hide();
+			} else {
+				$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+			}
 
 			// stop THIS from reloading the source window
 			e.preventDefault();
@@ -952,8 +988,8 @@ $(document).ready(function(){
 
 		$('body').on('click', 'button.toggle-btn', function (e) {
 			if ($(this).hasClass('disabled') ||
-				$(this).parents('.toggle-tools').size() > 0 ||
-				$(this).parents('[data-reactroot]').size() > 0) {
+				$(this).parents('.toggle-tools').length > 0 ||
+				$(this).parents('[data-reactroot]').length > 0) {
 				return;
 			}
 
@@ -1018,6 +1054,16 @@ $(document).ready(function(){
 			if( $('#fieldset-relationship_allow_multiple button.toggle-btn').data('state') == 'off' ){
 				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_min').hide();
 				$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_max').hide();
+			}
+		});
+
+		$('#fieldset-limit_subfolders_layers button.toggle-btn').each(function(){
+			if( $(this).data('state') == 'on' ) {
+				$('#fieldset-limit_subfolders_layers').siblings('#fieldset-limit_subfolders_layers').show();
+			}
+
+			if( $(this).data('state') == 'off' ){
+				$('#fieldset-limit_subfolders_layers').siblings('#fieldset-limit_subfolders_layers').hide();
 			}
 		});
 
@@ -1123,28 +1169,44 @@ $(document).ready(function(){
 
 		// Check the Entry page for existence and compliance with the conditions
 		// to show or hide fields depending on conditions
-        if(window.EE) {
-            EE.cp.hide_show_entries_fields = function(idArr) {
-                var hide_block = $('.hide-block');
+		if(window.EE) {
+			EE.cp.hide_show_entries_fields = function(idArr) {
+				var hide_block = $('.hide-block');
 
-                $(hide_block).removeClass('hide-block');
+				$(hide_block).removeClass('hide-block');
 
-                $.each(idArr, function(index, id) {
-                    $('[data-field_id="'+id+'"]').each(function(){
-                        $(this).addClass('hide-block').removeClass('fieldset-invalid');
-                    })
-                });
-            }
-        }
+				$.each(idArr, function(index, id) {
+					$('[data-field_id="'+id+'"]').each(function(){
+						$(this).addClass('hide-block').removeClass('fieldset-invalid');
+					})
+				});
+			}
+		}
 
-        if ($('.range-slider').length) {
+		if ($('.range-slider').length) {
+			$('.range-slider').each(function() {
+				var minValue = $(this).find('input[type="range"]').attr('min');
+				var maxValue = $(this).find('input[type="range"]').attr('max');
 
-        	$('.range-slider').each(function() {
-	        	var minValue = $(this).find('input[type="range"]').attr('min');
-	        	var maxValue = $(this).find('input[type="range"]').attr('max');
+				$(this).attr('data-min', minValue);
+				$(this).attr('data-max', maxValue);
+			});
+		}
 
-	        	$(this).attr('data-min', minValue);
-	        	$(this).attr('data-max', maxValue);
-        	});
-        }
+
+		$('body').on('click', '.title-bar a.upload, .main-nav__toolbar a.dropdown__link', function(e){
+			e.preventDefault();
+			var uploadLocationId = $(this).attr('data-upload_location_id');
+			var directoryId = $(this).attr('data-directory_id');
+			$('.imitation_button').attr('data-upload_location_id', uploadLocationId);
+			$('.imitation_button').attr('data-directory_id', directoryId);
+			$('.imitation_button')[0].click();
+		})
+
+		$('body').on('click', '.toolbar-wrap .settings', function(e) {
+			e.preventDefault();
+			var href = $(this).attr('href');
+			location.href = href;
+		})
+
 }); // close (document).ready

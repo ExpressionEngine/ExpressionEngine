@@ -45,4 +45,9 @@ class Checkbox extends Column
             ]
         ];
     }
+
+    public function getEntryManagerColumnSortField()
+    {
+        return 'entry_id';
+    }
 }

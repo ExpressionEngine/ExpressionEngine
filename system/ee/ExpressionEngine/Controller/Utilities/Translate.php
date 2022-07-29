@@ -341,7 +341,7 @@ class Translate extends Utilities
                     'fields' => [
                         $key => [
                             'type' => (strlen($val) > 100) ? 'textarea' : 'text',
-                            'value' => isset($M[$key]) ? $M[$key] : ''
+                            'value' => isset($M[$key]) ? stripslashes($M[$key]) : ''
                         ]
                     ]
                 ];
@@ -357,7 +357,7 @@ class Translate extends Utilities
         $vars['base_url'] = ee('CP/URL')->make('utilities/translate/' . $language . '/save/' . $file);
         $vars['buttons'] = array(
             array(
-                'name' => 'submit',
+                'name' => '',
                 'type' => 'submit',
                 'value' => 'save',
                 'shortcut' => 's',

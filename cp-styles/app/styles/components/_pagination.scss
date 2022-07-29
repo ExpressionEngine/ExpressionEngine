@@ -2,7 +2,7 @@
 .pagination {
 	list-style-type: none;
 	// margin-top: -10px;
-  padding: 20px 25px;
+  padding: 20px 25px 10px;
   border-top: 1px solid color(border);
 
 	@include clear-float;
@@ -11,6 +11,11 @@
     padding: 20px 0px;
     border-top: none;
   }
+}
+
+.bulk-action-bar:not(.hidden) + .pagination {
+  border-top: none;
+  padding-top: 0;
 }
 
 .pagination__item {
@@ -74,4 +79,13 @@
 		position: relative;
 		top: 1px;
 	}
+}
+
+// Adjust when displayed within panel-body
+.panel-body {
+  .pagination {
+    border-top: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

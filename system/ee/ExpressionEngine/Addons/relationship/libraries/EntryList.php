@@ -122,7 +122,7 @@ class EntryList
             }
 
             if (count($roles)) {
-                foreach (ee('Model')->get('Role', $roles)->all() as $role) {
+                foreach (ee('Model')->get('Role', $roles)->all(true) as $role) {
                     $members = array_merge($role->getAllMembersData('member_id'), $members);
                 }
             }

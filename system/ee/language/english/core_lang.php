@@ -121,6 +121,8 @@ If you made these changes, please accept the modifications on the control panel 
 
     'file_not_found' => 'File %s does not exist.',
 
+    'file_manager' => 'File Manager',
+
     'general_error' => 'The following errors were encountered',
 
     'generic_fatal_error' => 'Something has gone wrong and this URL cannot be processed at this time.',
@@ -163,6 +165,10 @@ If you made these changes, please accept the modifications on the control panel 
 
     'php72_intl_error' => 'Your <code>intl</code> PHP extentsion is out-of-date. Please ensure you have <code>ICU 4.6</code> or newer installed.',
 
+    'license_error' => 'License error',
+    'license_error_file_not_writable' => 'The cache folder needs to be writable in order for ExpressionEngine Pro to work',
+    'license_error_file_broken' => 'There has been an error validating ExpressionEngine Pro license status',
+
     /* Member Groups */
     'banned' => 'Banned',
 
@@ -178,6 +184,8 @@ If you made these changes, please accept the modifications on the control panel 
 
     /* Template.php */
     'error_fix_module_processing' => 'Please check that the \'%x\' module is installed and that \'%y\' is an available method of the module',
+
+    'error_fix_install_addon' => 'Please check that the \'%x\' add-on is installed.',
 
     'error_fix_syntax' => 'Please correct the syntax in your template.',
 
@@ -196,6 +204,8 @@ If you made these changes, please accept the modifications on the control panel 
     'template_load_order' => 'Template load order',
 
     'template_loop' => 'You have caused a template loop due to improperly nested sub-templates (\'%s\' recursively called)',
+
+    'route_not_found' => 'Template route not found.',
 
     /* Email */
     'error_sending_email' => 'Unable to send email at this time.',
@@ -482,12 +492,15 @@ If you made these changes, please accept the modifications on the control panel 
     'cookie_collapsed_nav' => 'Collapsed Navigation',
     'cookie_collapsed_nav_desc' => 'Determines whether navigation sidebar is control panel should be collapsed.',
 
+    'cookie_secondary_sidebar' => 'Secondary Sidebar State',
+    'cookie_secondary_sidebar_desc' => 'Determines whether secondary navigation sidebar is control panel should be collapsed for each corresponding section.',
+
     'cookie_ee_cp_viewmode' => 'CP View Mode',
     'cookie_ee_cp_viewmode_desc' => 'Determines view mode for control panel.',
 
     'cp' => 'Control Panel',
 
-    
+    'adapter_local' => 'Local',
 
 );
 

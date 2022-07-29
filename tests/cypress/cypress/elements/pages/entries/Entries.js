@@ -10,7 +10,7 @@ import ControlPanel from '../ControlPanel'
 			   "ChannelSort" : 'button[data-filter-label="channel"]',
 			   "StatusSort" : 'button[data-filter-label="status"]',
 			   "DateSort" : 'button[data-filter-label="date"]',
-			   "SearchIn" : 'button[data-filter-label="search in"]',
+			   "SearchIn" : 'input[type="checkbox"][name="search_in"]',
 			   "AuthorSort" : 'button[data-filter-label="author"]',
 			   "ColumnsSort" : 'button[data-filter-label="columns"]',
 			   		"Author" : 'input[value="author"]',

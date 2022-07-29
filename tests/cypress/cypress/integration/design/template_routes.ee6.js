@@ -65,23 +65,24 @@ context('Template Routes', () => {
 
             page.get('routes').its('length').should('eq', 2)
 
-            let first = page.$('routes').eq(0).find('td:nth-child(3) input').val()
-            let second = page.$('routes').eq(1).find('td:nth-child(3) input').val()
-
-            page.get('routes').eq(0).find('.js-grid-reorder-handle').then(function(target) {
-                page.get('routes').eq(1).find('.js-grid-reorder-handle').dragTo(target)
+            page.get('routes').eq(0).find('td:nth-child(3) input').invoke('val').then((first) => {
+                page.get('routes').eq(1).find('td:nth-child(3) input').invoke('val').then((second) => {
+                    page.get('routes').eq(0).find('.js-grid-reorder-handle').then(function(target) {
+                        page.get('routes').eq(1).find('.js-grid-reorder-handle').dragTo(target)
+                    })
+        
+                    page.get('update_button').first().click({force:true})
+        
+                    page.get('routes').eq(0).find('td:nth-child(3) input').should('have.value', second)
+                    page.get('routes').eq(1).find('td:nth-child(3) input').should('have.value', first)
+                })
             })
-
-            page.get('update_button').first().click({force:true})
-
-            page.get('routes').eq(0).find('td:nth-child(3) input').should('have.value', second)
-            page.get('routes').eq(1).find('td:nth-child(3) input').should('have.value', first)
         })
     })
 
     it('can remove a route', function() {
 
-        page.get('update_button').click({force:true})
+        page.get('update_button').filter(':visible').first().click()
 
         page.get('routes').its('length').should('eq', 2)
 

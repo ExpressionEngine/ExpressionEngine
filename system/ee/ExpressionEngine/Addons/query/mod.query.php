@@ -77,7 +77,7 @@ class Query
             $parsed = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $results);
         }
 
-        if (get_bool_from_string(ee()->TMPL->fetch_param('parse_files', config_item('parse_variables_query_results_by_default'))) && strpos($parsed, LD . 'filedir_') !== false) {
+        if (get_bool_from_string(ee()->TMPL->fetch_param('parse_files', config_item('parse_variables_query_results_by_default'))) && (strpos($parsed, LD . 'filedir_') !== false || strpos($parsed, LD . 'file:') !== false)) {
             ee()->load->library('file_field');
             $parsed = ee()->file_field->parse_string($parsed);
         }

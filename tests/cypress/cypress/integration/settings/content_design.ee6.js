@@ -46,11 +46,6 @@ context('Content & Design Settings', () => {
         expect(val).to.be.equal(config)
       })
     })
-    cy.eeConfig({item: 'thumbnail_prefix'}) .then((config) => {
-      page.get('thumbnail_prefix').invoke('val').then((val) => {
-        expect(val).to.be.equal(config)
-      })
-    })
     cy.eeConfig({item: 'enable_emoticons'}) .then((config) => {
       page.get('enable_emoticons').invoke('val').then((val) => {
         expect(val).to.be.equal(config)
@@ -117,13 +112,6 @@ context('Content & Design Settings', () => {
     //page.hasErrors()AJ
 //should_have_form_errors(page)
 
-    page.get('thumbnail_prefix').clear().type(page.messages.xss_vector)
-    page.get('thumbnail_prefix').blur()
-    //page.hasErrorsCount(2)AJ
-    page.hasError(page.get('thumbnail_prefix'), page.messages.xss_error)
-    //page.hasErrors()AJ
-//should_have_form_errors(page)
-
     page.get('emoticon_url').clear().type(page.messages.xss_vector)
     page.get('emoticon_url').blur()
     //page.hasErrorsCount(3)AJ
@@ -153,14 +141,13 @@ context('Content & Design Settings', () => {
     page.get('auto_assign_cat_parents_toggle').click()
     page.get('image_resize_protocol').filter('[value=imagemagick]').check()
     page.get('image_library_path').clear().type('/')
-    page.get('thumbnail_prefix').clear().type('mysuffix')
     page.get('enable_emoticons_toggle').click()
     // Don't test this, we manually override this path in config.php for the tests
     //page.get('emoticon_url').clear().type('http://myemoticons/'
     //page.submit()AJ
     cy.get('button').contains('Save Settings').first().click()
 
-    page.get('wrap').contains('Preferences updated')
+    page.get('wrap').contains('Preferences Updated')
     page.get('new_posts_clear_caches').invoke('val').then((val) => {
       expect(val).not.to.be.equal(new_posts_clear_caches)
     })
@@ -172,7 +159,6 @@ context('Content & Design Settings', () => {
     })
     page.get('image_resize_protocol').filter('[value=imagemagick]').should('be.checked')
     page.get('image_library_path').invoke('val').then((val) => { expect(val).to.be.equal('/') })
-    page.get('thumbnail_prefix').invoke('val').then((val) => { expect(val).to.be.equal('mysuffix')})
     page.get('enable_emoticons').invoke('val').then((val) => {
       expect(val).not.to.be.equal(enable_emoticons)
     })

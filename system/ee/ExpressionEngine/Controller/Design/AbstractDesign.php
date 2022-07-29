@@ -455,15 +455,15 @@ abstract class AbstractDesign extends CP_Controller
             }
 
             if ($template->enable_http_auth == 'y') {
-                $template_name = '<i class="fas fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
+                $template_name = '<i class="fal fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
             }
 
             if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0) {
-                $template_name = '<i class="fas fa-sm fa-eye-slash icon-left"></i>' . $template_name;
+                $template_name = '<i class="fal fa-sm fa-eye-slash icon-left"></i>' . $template_name;
             }
 
             if ($template->template_name == 'index') {
-                $template_name = '<i class="fas fa-home fa-sm icon-left"></i>' . $template_name;
+                $template_name = '<i class="fal fa-home fa-sm icon-left"></i>' . $template_name;
             }
 
             $view_url = ee()->functions->fetch_site_index();
@@ -491,11 +491,10 @@ abstract class AbstractDesign extends CP_Controller
                     'title' => lang('edit')
                 ),
                 'settings' => array(
-                    'href' => '',
-                    'rel' => 'modal-template-settings',
+                    'href' => $edit_url.'#tab=t-2',
                     'class' => 'm-link',
                     'title' => lang('settings'),
-                    'data-template-id' => $template->template_id
+                    'data-template-id' => $template->template_id,
                 )
             );
 

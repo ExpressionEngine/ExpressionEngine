@@ -101,7 +101,7 @@
 			});
 
 			$submit_button.off('click', '**').on('click', function(event) {
-				if ($('.'+options.oversized_class).size()) {
+				if ($('.'+options.oversized_class).length) {
 					var confirmation = confirm(options.resize_confirm);
 
 					if (confirmation == false) {
@@ -114,7 +114,7 @@
 				}
 			});
 
-			if ($cancel_button.size()) {
+			if ($cancel_button.length) {
 				$cancel_button.click(function(event) {
 					event.preventDefault();
 

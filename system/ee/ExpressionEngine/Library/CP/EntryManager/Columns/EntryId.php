@@ -32,6 +32,6 @@ class EntryId extends Column
 
     public function renderTableCell($data, $field_id, $entry)
     {
-        return $entry->entry_id;
+        return $entry->getId();
     }
 }

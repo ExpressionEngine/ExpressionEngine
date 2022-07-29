@@ -155,7 +155,7 @@ context('Search Log', () => {
     })
 
     it('can remove a single entry', () => {
-      cy.get('i[class="fas fa-trash-alt"]').first().click()
+      cy.get('i[class="fal fa-trash-alt"]').first().click()
       page.get('confirm').filter(':visible').first().click()
       cy.get('body').contains('1 log(s) deleted')
     })

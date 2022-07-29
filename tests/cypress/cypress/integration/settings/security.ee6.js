@@ -265,7 +265,7 @@ context('Security & Privacy Settings', () => {
     cy.login({ email: 'admin', password: 'BojVMZA2xj74QGTNzmuL' });
     page.load()
 
-    //page.get('wrap').contains('Preferences updated')
+    //page.get('wrap').contains('Preferences Updated')
     page.get('cp_session_type').filter('[value=s]').should('be.checked')
     page.get('website_session_type').filter('[value=s]').should('be.checked')
     page.get('cookie_domain').invoke('val').then((val) => { expect(val).to.be.equal('.yourdomain.com')})

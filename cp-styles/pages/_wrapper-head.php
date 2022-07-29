@@ -21,32 +21,32 @@ include(dirname(__FILE__) . '/_header.php');
 <div class="ee-wrapper-overflow">
 <div class="ee-wrapper">
     <div class="ee-sidebar">
-		<div class="ee-sidebar__title"><span class="ee-sidebar__title-name"><i class="fas fa-desktop fa-fw"></i> Balk's Hardware</span> <!-- <span class="ee-sidebar__title-down-arrow"><i class="fas fa-angle-down"></i></span> --></div>
+		<div class="ee-sidebar__title"><span class="ee-sidebar__title-name"><i class="fal fa-desktop fa-fw"></i> Balk's Hardware</span> <!-- <span class="ee-sidebar__title-down-arrow"><i class="fal fa-angle-down"></i></span> --></div>
         <div class="ee-sidebar__items">
             <div class="ee-sidebar__items-top">
-				<a href="./homepage.php"  class="ee-sidebar__item <?=($current_page == 'homepage' ? 'active' : '')?>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-				<a href="./entries.php" class="ee-sidebar__item <?=($current_page == 'entries' ? 'active' : '')?>"><i class="fas fa-newspaper"></i> Entries</a>
-				<a href="./entry.php" class="ee-sidebar__item <?=(($current_page == 'entry') ? 'active' : '')?>"><i class="fas fa-newspaper"></i> Single Entry</a>
-				<a href="./files.php"  class="ee-sidebar__item <?=($current_page == 'files' ? 'active' : '')?>"><i class="fas fa-folder"></i> Files</a>
-				<a href="./members.php"  class="ee-sidebar__item <?=($current_page == 'members' ? 'active' : '')?>"><i class="fas fa-users"></i> Members</a>
-				<!-- <a href="./categories.php"  class="ee-sidebar__item <?=($current_page == 'categories' ? 'active' : '')?>"><i class="fas fa-tags"></i> Categories</a> -->
-				<a href="./add-ons.php"  class="ee-sidebar__item <?=($current_page == 'add-ons' ? 'active' : '')?>"><i class="fas fa-bolt"></i> Add-Ons</a>
+				<a href="./homepage.php"  class="ee-sidebar__item <?=($current_page == 'homepage' ? 'active' : '')?>"><i class="fal fa-tachometer-alt"></i> Dashboard</a>
+				<a href="./entries.php" class="ee-sidebar__item <?=($current_page == 'entries' ? 'active' : '')?>"><i class="fal fa-newspaper"></i> Entries</a>
+				<a href="./entry.php" class="ee-sidebar__item <?=(($current_page == 'entry') ? 'active' : '')?>"><i class="fal fa-newspaper"></i> Single Entry</a>
+				<a href="./files.php"  class="ee-sidebar__item <?=($current_page == 'files' ? 'active' : '')?>"><i class="fal fa-folder"></i> Files</a>
+				<a href="./members.php"  class="ee-sidebar__item <?=($current_page == 'members' ? 'active' : '')?>"><i class="fal fa-users"></i> Members</a>
+				<!-- <a href="./categories.php"  class="ee-sidebar__item <?=($current_page == 'categories' ? 'active' : '')?>"><i class="fal fa-tags"></i> Categories</a> -->
+				<a href="./add-ons.php"  class="ee-sidebar__item <?=($current_page == 'add-ons' ? 'active' : '')?>"><i class="fal fa-bolt"></i> Add-Ons</a>
 			</div>
 
 			<div class="ee-sidebar__items-custom">
-				<a href="./foundation.php"  class="ee-sidebar__item <?=($current_page == 'foundation' ? 'active' : '')?>"><i class="fas fa-tint"></i> Colors</a>
-				<a href="./typography.php"  class="ee-sidebar__item <?=($current_page == 'typography' ? 'active' : '')?>"><i class="fas fa-heading"></i> Typography</a>
-				<a href="./components.php"  class="ee-sidebar__item <?=($current_page == 'components' ? 'active' : '')?>"><i class="fas fa-cubes"></i> Components</a>
-				<a href="./fields.php"  class="ee-sidebar__item <?=($current_page == 'fields' ? 'active' : '')?>"><i class="fas fa-i-cursor"></i> Fields</a>
-				<a href="./support.php"  class="ee-sidebar__item <?=($current_page == 'support' ? 'active' : '')?>"><i class="fas fa-life-ring"></i> Support</a>
+				<a href="./foundation.php"  class="ee-sidebar__item <?=($current_page == 'foundation' ? 'active' : '')?>"><i class="fal fa-tint"></i> Colors</a>
+				<a href="./typography.php"  class="ee-sidebar__item <?=($current_page == 'typography' ? 'active' : '')?>"><i class="fal fa-heading"></i> Typography</a>
+				<a href="./components.php"  class="ee-sidebar__item <?=($current_page == 'components' ? 'active' : '')?>"><i class="fal fa-cubes"></i> Components</a>
+				<a href="./fields.php"  class="ee-sidebar__item <?=($current_page == 'fields' ? 'active' : '')?>"><i class="fal fa-pen-field"></i> Fields</a>
+				<a href="./support.php"  class="ee-sidebar__item <?=($current_page == 'support' ? 'active' : '')?>"><i class="fal fa-life-ring"></i> Support</a>
 			</div>
 
 			<div class="ee-sidebar__items-bottom">
-				<a href="" class="ee-sidebar__item"><i class="fas fa-database"></i> Developer</a>
-				<a href="./settings.php" class="ee-sidebar__item"><i class="fas fa-sliders-h"></i> Settings</a>
-				<!-- <a href="./settings.php" class="ee-sidebar__item ee-sidebar__whats-new"><i class="fas fa-gift"></i> What's New?</a> -->
+				<a href="" class="ee-sidebar__item"><i class="fal fa-database"></i> Developer</a>
+				<a href="./settings.php" class="ee-sidebar__item"><i class="fal fa-sliders-h"></i> Settings</a>
+				<!-- <a href="./settings.php" class="ee-sidebar__item ee-sidebar__whats-new"><i class="fal fa-gift"></i> What's New?</a> -->
 				<a href="" class="ee-sidebar__item ee-sidebar__version">ExpressionEngine <span>6.0.0</span></a>
-				<!-- <a href="" class="ee-sidebar__whats-new"><i class="fas fa-gift"></i></a> -->
+				<!-- <a href="" class="ee-sidebar__whats-new"><i class="fal fa-gift"></i></a> -->
 			</div>
 
 		</div>
@@ -55,11 +55,11 @@ include(dirname(__FILE__) . '/_header.php');
 	<div class="ee-main">
 
     <div class="ee-main-header">
-      <a href="" class="sidebar-toggle" title="Collapse Sidebar"><i class="fas fa-angle-left"></i></a>
+      <a href="" class="sidebar-toggle" title="Collapse Sidebar"><i class="fal fa-angle-left"></i></a>
 
       <div class="breadcrumb-wrapper">
         <ul class="breadcrumb">
-            <li><a href=""><i class="fas fa-home"></i></a></li>
+            <li><a href=""><i class="fal fa-home"></i></a></li>
             <li><a href="">Breadcrumb</a></li>
             <li><a href="">Breadcrumb</a></li>
             <li><span>Breadcrumb</span></li>
@@ -67,7 +67,7 @@ include(dirname(__FILE__) . '/_header.php');
       </div>
 
       <div class="field-control field-control_input--jump with-icon-start with-input-shortcut">
-        <i class="fas fa-bullseye fa-fw icon-start"></i>
+        <i class="fal fa-bullseye fa-fw icon-start"></i>
         <input type="text" class="input--jump input--rounded" placeholder="Jump to...">
         <span class="input-shortcut">⌘J</span>
       </div>
@@ -89,7 +89,7 @@ include(dirname(__FILE__) . '/_header.php');
 
 					<a href="" class="dropdown__link">My Profile</a>
 					<!-- <a href="" class="dropdown__link">Get Support</a> -->
-					<!-- <a href="" class="dropdown__link account-menu__dark-theme-toggle"><i class="fas fa-moon"></i> Dark Theme</a> -->
+					<!-- <a href="" class="dropdown__link account-menu__dark-theme-toggle"><i class="fal fa-moon"></i> Dark Theme</a> -->
 					<a href="" class="dropdown__link">Go To <span class="dropdown__link-shortcut">&#8984;J</span></a>
 					<a href="" class="dropdown__link js-dark-theme-toggle">Dark Theme</a>
 
@@ -99,7 +99,7 @@ include(dirname(__FILE__) . '/_header.php');
 					<div class="dropdown__divider"></div>
 
 					<h3 class="dropdown__header">Quick Links</h3>
-					<a href="" class="dropdown__link"><i class="fas fa-plus fa-sm"></i> New Link</a>
+					<a href="" class="dropdown__link"><i class="fal fa-plus fa-sm"></i> New Link</a>
 				</div>
 			</div>
 
@@ -139,14 +139,14 @@ include(dirname(__FILE__) . '/_header.php');
 						<img class="account-menu__icon" src="../app/assets/images/profile-icon.png" alt="">
 					</div>
 
-					<!-- <a href="" class="dropdown__link"><i class="fas fa-user"></i> My Profile</a>
-					<a href="" class="dropdown__link"><i class="fas fa-life-ring"></i> Get Support</a>
-					<a href="" class="dropdown__link account-menu__dark-theme-toggle"><i class="fas fa-moon"></i> Dark Theme</a>
-					<a href="" class="dropdown__link"><i class="fas fa-sign-out-alt"></i> Log Out</a> -->
+					<!-- <a href="" class="dropdown__link"><i class="fal fa-user"></i> My Profile</a>
+					<a href="" class="dropdown__link"><i class="fal fa-life-ring"></i> Get Support</a>
+					<a href="" class="dropdown__link account-menu__dark-theme-toggle"><i class="fal fa-moon"></i> Dark Theme</a>
+					<a href="" class="dropdown__link"><i class="fal fa-sign-out-alt"></i> Log Out</a> -->
 
 					<a href="" class="dropdown__link">My Profile</a>
 					<!-- <a href="" class="dropdown__link">Get Support</a> -->
-					<!-- <a href="" class="dropdown__link account-menu__dark-theme-toggle"><i class="fas fa-moon"></i> Dark Theme</a> -->
+					<!-- <a href="" class="dropdown__link account-menu__dark-theme-toggle"><i class="fal fa-moon"></i> Dark Theme</a> -->
 					<a href="" class="dropdown__link">Go To <span class="dropdown__link-shortcut">&#8984;J</span></a>
 					<a href="" class="dropdown__link js-dark-theme-toggle">Dark Theme</a>
 
@@ -156,7 +156,7 @@ include(dirname(__FILE__) . '/_header.php');
 					<div class="dropdown__divider"></div>
 
 					<h3 class="dropdown__header">Quick Links</h3>
-					<a href="" class="dropdown__link"><i class="fas fa-plus fa-sm"></i> New Link</a>
+					<a href="" class="dropdown__link"><i class="fal fa-plus fa-sm"></i> New Link</a>
 				</div>
 			</div>
 		</div>

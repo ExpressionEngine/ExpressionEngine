@@ -9,6 +9,10 @@
 	text-align: center;
 	line-height: $line-height-normal;
 
+  &.file-upload-widget {
+    background-color: transparent;
+  }
+
 	p {
 		margin: 0 0 $s-s;
 
@@ -47,4 +51,8 @@ table .field-no-results {
 
 .field-no-results {
 	&.hidden { display: none !important;}
+}
+
+.f_manager-wrapper .no-results.file-upload-widget:not(.hidden) + .panel-body {
+  display: none;
 }

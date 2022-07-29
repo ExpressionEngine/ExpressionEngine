@@ -11,8 +11,11 @@
     "chromeWebSecurity": false,
     "failOnStatusCode": false,
     "redirectionLimit": 200,
-    "testFiles": "**/*.ee6.js",
-    "retries": 1,
+    "testFiles": "!(updater)/**.ee6.js",
+    "retries": {
+        "runMode": 1,
+        "openMode": 0
+    },
     "viewportWidth": 1920,
     "viewportHeight": 1080,
     "lighthouse": {
@@ -30,7 +33,7 @@
         "DB_PASSWORD": "root",
         "DB_PORT": "3306",
         "DB_DATABASE": "ee-test",
-        "DB_DUMP": "database_6.0.0.sql",
+        "DB_DUMP": "database_7.0.0.sql",
         "TEMP_DIR": "/tmp",
         "MAILDEV_PROTOCOL": "http",
         "MAILDEV_HOST": "127.0.0.1",

@@ -51,7 +51,7 @@ class Status extends Column
         static $statuses;
 
         if (! $statuses) {
-            $statuses = ee('Model')->get('Status')->all()->indexBy('status');
+            $statuses = ee('Model')->get('Status')->all(true)->indexBy('status');
         }
 
         return $statuses;

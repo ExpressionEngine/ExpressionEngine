@@ -135,6 +135,10 @@
 		color: color(accent);
 		border-bottom: 2px solid color(accent);
 		margin-bottom: -2px;
+
+    .tab-bar__tab-notification.tab-notification-generic {
+      color: color(accent);
+    }
 	}
 
 	&.invalid, &.invalid:hover {
@@ -150,25 +154,41 @@
 }
 
 .tab-bar__tab-notification {
-	$bubble-size: 16px;
+	$bubble-size: 20px;
 
 	position: relative;
 	display: inline-block;
-	width: $bubble-size;
-	height: $bubble-size;
-	line-height: $bubble-size;
-	top: -2px;
+	min-width: $bubble-size;
+	min-height: $bubble-size;
+	line-height: 0;
+	top: -1px;
 
-	border-radius: 50%;
+	border-radius: $border-radius-small;
 	text-align: center;
 	font-size: 11px;
 	color: #fff;
 	background: color(notification);
+  padding: 10px 5px;
+  margin-bottom: -4px;
+
+  &.tab-notification-generic {
+    color: color(text-secondary);
+    background-color: color(bg-0);
+  }
 }
 
 
 .tab {
 	display: none;
+}
+
+// Adjust margins on Publish form
+.panel-body__publish {
+  .tab {
+    margin-left: -15px;
+    margin-right: -15px;
+    font-size: 0; // allow fields side-by-side
+  }
 }
 
 .tab-open {
@@ -219,7 +239,7 @@
 
 		&:before{
 			@extend %fa-icon;
-			@extend .fas;
+			@extend .fal;
 
 			// position: relative;
 			display: inline;

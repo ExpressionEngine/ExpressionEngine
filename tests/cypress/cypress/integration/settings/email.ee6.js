@@ -86,7 +86,7 @@ context('Outgoing Email Settings', () => {
       cy.get('button').contains('Save Settings').first().click()
       //page.submit()Aj
 
-      page.get('wrap').contains('Preferences updated')
+      page.get('wrap').contains('Preferences Updated')
       page.get('webmaster_email').invoke('val').then((val) => { expect(val).to.be.equal('test@test.com') })
       page.get('webmaster_name').invoke('val').then((val) => { expect(val).to.be.equal('Trey Anastasio') })
       page.get('email_charset').invoke('val').then((val) => { expect(val).to.be.equal('somecharset') })
