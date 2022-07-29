@@ -504,7 +504,7 @@ $lang = array(
 
     'update_file_usage_explained_desc' => 'In order to get all features of File Manager to work correctly (that includes subfolders support, cloud storage adapters, file usage stats) the file data need to be stored differently from what they were before ExpressionEngine 7.<br /><br />
 
-    To update the file data to new format, run this utility.<br /><br />
+    To update the file data to new format, run this utility (make sure to <a href="%s">back up your database</a> first).<br /><br />
     
     After you do this, visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode for File Manager.<br /><br />
     
