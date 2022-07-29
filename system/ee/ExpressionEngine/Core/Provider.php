@@ -379,7 +379,6 @@ class Provider extends InjectionBindingDecorator
                             ee()->lang->load('pro', ee()->lang->getIdiom(), false, true, PATH_ADDONS . 'pro/', false);
                             break;
                         case 'comment':
-                        case 'forum':
                             ee()->lang->load($cookieParams['cookie_provider']);
                             break;
                         case 'ee':
