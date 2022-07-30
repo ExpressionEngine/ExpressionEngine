@@ -97,7 +97,7 @@ $lang = array(
 The following files are affected:
 {changed}
 
-If you made these changes, please accept the modifications on the control panel homepage. If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and see: ' . DOC_URL . 'troubleshooting/error-messages.html#expressionengine-has-detected-the-modification-of-a-core-file',
+If you made these changes, please accept the modifications on the Control Panel homepage. If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and see: ' . DOC_URL . 'troubleshooting/error-messages.html#expressionengine-has-detected-the-modification-of-a-core-file',
 
     'checksum_email_subject' => 'A core file was modified on your site.',
 
@@ -487,16 +487,16 @@ If you made these changes, please accept the modifications on the control panel 
     'cookie_viewtype_desc' => 'Determines View Type to be used in Filemanager (table or thumbs view)',
 
     'cookie_cp_last_site_id' => 'CP Last Site ID',
-    'cookie_cp_last_site_id_desc' => 'MSM cookie indicating the last site accessed in the control panel.',
+    'cookie_cp_last_site_id_desc' => 'MSM cookie indicating the last site accessed in the Control Panel.',
 
     'cookie_collapsed_nav' => 'Collapsed Navigation',
-    'cookie_collapsed_nav_desc' => 'Determines whether navigation sidebar is control panel should be collapsed.',
+    'cookie_collapsed_nav_desc' => 'Determines whether navigation sidebar in the Control Panel should be collapsed.',
 
     'cookie_secondary_sidebar' => 'Secondary Sidebar State',
-    'cookie_secondary_sidebar_desc' => 'Determines whether secondary navigation sidebar is control panel should be collapsed for each corresponding section.',
+    'cookie_secondary_sidebar_desc' => 'Determines whether secondary navigation sidebar in the Control Panel should be collapsed for each corresponding section.',
 
     'cookie_ee_cp_viewmode' => 'CP View Mode',
-    'cookie_ee_cp_viewmode_desc' => 'Determines view mode for control panel.',
+    'cookie_ee_cp_viewmode_desc' => 'Determines view mode for the Control Panel.',
 
     'cp' => 'Control Panel',
 

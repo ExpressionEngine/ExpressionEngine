@@ -133,6 +133,7 @@ class FileUsage extends Utilities
             ->cannotClose()
             ->addToBody(sprintf(
                 lang('update_file_usage_explained_desc'),
+                DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
                 ee('CP/URL')->make('utilities/db-backup')->compile(),
                 ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
             )
