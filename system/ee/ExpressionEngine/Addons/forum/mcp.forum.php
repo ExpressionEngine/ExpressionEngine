@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,7 +24,7 @@ class Forum_mcp extends CP_Controller
      */
     public function __construct()
     {
-        ee()->lang->loadfile('forum_cp');
+        ee()->lang->loadfile('forum_cp', 'forum');
 
         // Garbage collection.  Delete old read topic data
         $year_ago = ee()->localize->now - (60 * 60 * 24 * 365);
@@ -83,12 +83,14 @@ class Forum_mcp extends CP_Controller
             }
         }
 
-        $sidebar->addHeader(lang('templates'))
-            ->withUrl(ee('CP/URL')->make('design/forums'));
+        $templates = $sidebar->addHeader(lang('templates'))
+            ->withUrl(ee('CP/URL')->make($this->base . 'templates'));
+        if ($active == 'templates') {
+            $templates->isActive();
+        }
 
         $ranks = $sidebar->addHeader(lang('member_ranks'))
             ->withUrl(ee('CP/URL')->make($this->base . 'ranks'));
-
         if ($active == 'ranks') {
             $ranks->isActive();
         }
@@ -105,15 +107,15 @@ class Forum_mcp extends CP_Controller
         $html = '';
 
         switch ($status) {
-            case 'o': $html = '<b class="yes">' . lang('live') . '</b>';
-
-break;
-            case 'c': $html = '<b class="no">' . lang('hidden') . '</b>';
-
-break;
-            case 'a': $html = '<i>' . lang('read_only') . '</i>';
-
-break;
+            case 'o':
+                $html = '<b class="yes">' . lang('live') . '</b>';
+                break;
+            case 'c':
+                $html = '<b class="no">' . lang('hidden') . '</b>';
+                break;
+            case 'a':
+                $html = '<i>' . lang('read_only') . '</i>';
+                break;
         }
 
         return strtolower($html);
@@ -301,6 +303,9 @@ break;
             $collection[$forum_id]->forum_order = $i++;
             $collection[$forum_id]->forum_parent = ($forum_id == $current_category) ? 0 : $current_category;
             $collection[$forum_id]->save();
+
+            // Unset collection so it cant get saved again
+            unset($collection[$forum_id]);
         }
 
         ee()->output->send_ajax_response(null);
@@ -2613,6 +2618,28 @@ break;
         ee()->functions->redirect($return);
     }
 
+    public function templates($arguments = [])
+    {
+        $name = 'Forums';
+        if (!is_array($arguments)) {
+            $arguments = explode('/', $arguments);
+        }
+        $function = array_shift($arguments);
+        if (empty($function)) {
+            $function = 'index';
+        }
+        $name = ucfirst($name);
+        $class = "\ExpressionEngine\Addons\Forum\Controller\Design\Forums";
+        $controller = new $class();
+
+        $this->generateSidebar('templates');
+
+        return array(
+            'body' => $controller->$function($arguments),
+            'heading' => lang('forum_templates'),
+        );
+    }
+
     public function ranks()
     {
         if (ee()->input->post('bulk_action') == 'remove') {
@@ -3782,7 +3809,11 @@ break;
      */
     private function getDefaultForumPermissions()
     {
-        require_once PATH_ADDONS . 'forum/upd.forum.php';
+        if (file_exists(PATH_THIRD . 'forum/upd.forum.php')) {
+            require_once PATH_THIRD . 'forum/upd.forum.php';
+        } else {
+            require_once PATH_ADDONS . 'forum/upd.forum.php';
+        }
 
         $UPD = new Forum_upd();
 

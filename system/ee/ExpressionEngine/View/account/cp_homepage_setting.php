@@ -17,10 +17,12 @@
 		</li>
 		<li>
 		<label class="checkbox-label <?php if ($member->cp_homepage == 'publish_form'): ?>act<?php endif ?>">
-			<input type="radio" name="cp_homepage" value="publish_form"<?php if ($member->cp_homepage == 'publish_form'): ?> checked<?php endif ?>> <div class="checkbox-label__text"><?=lang('publish_form')?></div>
+			<input type="radio" name="cp_homepage" value="publish_form"<?php if ($member->cp_homepage == 'publish_form'): ?> checked<?php endif ?>> <div class="checkbox-label__text"><?=lang('publish_form')?>
 			<?php if (bool_config_item('multiple_sites_enabled')): ?>
 				&mdash; <i><?=lang('choose_channels_per_site')?></i>
+			</div>
 			<?php else: ?>
+				</div>
 				<?=form_dropdown('cp_homepage_channel[' . ee()->config->item('site_id') . ']', $allowed_channels, $selected_channel)?>
 			<?php endif ?>
 		</label>
@@ -30,7 +32,7 @@
 					<li>
 						<label>
 							<?=$sites[$site_id]?> &mdash;
-							<?=form_dropdown('cp_homepage_channel[' . $site_id . ']', $channels, isset($member->cp_homepage_channel[$site_id]) ? $member->cp_homepage_channel[$site_id] : 0)?>
+							<?=form_dropdown('cp_homepage_channel[' . $site_id . ']', $channels, isset($member->cp_homepage_channel[$site_id]) ? $member->cp_homepage_channel[$site_id] : 0, 'class="select-popup button--small"')?>
 						</label>
 					</li>
 				<?php endforeach ?>

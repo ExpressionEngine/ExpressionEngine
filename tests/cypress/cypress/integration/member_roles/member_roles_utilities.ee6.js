@@ -56,7 +56,7 @@ context('Test Member roles Utilities ', () => {
 	   cy.get('.box').contains('File Converter')
 	   cy.get('.box').contains('Member Import')
 
-	   cy.get('.box').contains('Backup Database')
+	   cy.get('.box').contains('Back Up Database')
 	   cy.get('.box').contains('SQL Manager')
 	   cy.get('.box').contains('Query Form')
 
@@ -100,7 +100,7 @@ context('Test Member roles Utilities ', () => {
 	   cy.get('.box').contains('File Converter')
 	   cy.get('.box').contains('Member Import')
 
-	   cy.get('.box').contains('Backup Database')
+	   cy.get('.box').contains('Back Up Database')
 	   cy.get('.box').contains('SQL Manager')
 	   cy.get('.box').contains('Query Form')
 
@@ -147,7 +147,7 @@ context('Test Member roles Utilities ', () => {
 	   cy.get('.box').contains('File Converter')
 	   cy.get('.box').contains('Member Import')
 
-	   cy.get('.box').contains('Backup Database')
+	   cy.get('.box').contains('Back Up Database')
 	   cy.get('.box').contains('SQL Manager')
 	   cy.get('.box').contains('Query Form')
 
@@ -195,7 +195,7 @@ context('Test Member roles Utilities ', () => {
 
 
 
-	   cy.get('.box').contains('Backup Database')
+	   cy.get('.box').contains('Back Up Database')
 	   cy.get('.box').contains('SQL Manager')
 	   cy.get('.box').contains('Query Form')
 
@@ -259,7 +259,7 @@ context('Test Member roles Utilities ', () => {
 	   cy.get('.box').should('not.contain','CP Translations')
 	   cy.get('.box').should('not.contain','File Converter')
 	   cy.get('.box').should('not.contain','Member Import')
-	   cy.get('.box').should('not.contain','Backup Database')
+	   cy.get('.box').should('not.contain','Back Up Database')
 	   cy.get('.box').should('not.contain','SQL Manager')
 	   cy.get('.box').should('not.contain','Query Form')
 

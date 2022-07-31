@@ -45,7 +45,29 @@ module.exports = (on, config) => {
         config.baseUrl = baseUrl;
     }
 
+    const { lighthouse, prepareAudit } = require('cypress-audit');
+
     const child_process = require('child_process');
+
+    const consoleLog = require('cypress-log-to-output');
+    consoleLog.install(on, (type, event) => {
+        if (event.level === 'error' || event.type === 'error') {
+          return true
+        }
+        return false
+      }, { recordLogs: true });
+
+    on('task', {
+        'console:getLogs': () => {
+            return consoleLog.getLogs()
+        }
+    })
+
+    /*on('after:spec', (spec, results) => {
+        var filename = spec.name.split('/');
+        fs.create('cypress/downloads');
+        fs.createFile('cypress/downloads/' + filename[1].split('.')[0] + '.console.log', consoleLog.getLogs().join("\r\n"));
+    })*/
 
     on('task', {
         'db:clear': () => {
@@ -311,6 +333,14 @@ module.exports = (on, config) => {
 
 
     on('before:browser:launch', (browser, launchOptions) => {
+        launchOptions.args = consoleLog.browserLaunchHandler(
+            browser,
+            launchOptions.args
+        )
+
+        if (browser.name === 'chrome') {
+            prepareAudit(launchOptions);
+        }
         if (browser.name === 'chrome' && browser.isHeadless) {
             launchOptions.args.push('--disable-gpu');
 
@@ -341,6 +371,10 @@ module.exports = (on, config) => {
 
             return launchOptions
         }
+    });
+
+    on('task', {
+        lighthouse: lighthouse()
     });
 
     return config;

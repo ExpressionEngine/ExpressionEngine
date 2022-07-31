@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -287,14 +287,16 @@ EE.cp.validateLicense = function() {
 
 					},
 					error: function (data, textStatus, errorThrown) {
-						console.log('Error Data:', data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+						console.error('Error Data:', (typeof(data.responseJSON) !== 'undefined') ? data.responseJSON : data, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+						return true;
 					}
 				});
 			}
 		},
 
 		error: function(data, textStatus, errorThrown) {
-			console.log('Error Data:', data.responseJSON.message, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+			console.error('Error Data:', (typeof(data.responseJSON) !== 'undefined') ? data.responseJSON : data, 'textStatus:', textStatus, 'errorThrown:', errorThrown);
+			return true;
 		}
 	});
 }

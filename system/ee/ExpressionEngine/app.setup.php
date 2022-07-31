@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -228,7 +228,7 @@ $setup = [
             return $facade;
         },
 
-        'Migration' => function ($ee, $migration=null) {
+        'Migration' => function ($ee, $migration = null) {
             return new Migration\Factory($ee->make('db'), $ee->make('Filesystem'), $migration);
         },
 
@@ -309,6 +309,13 @@ $setup = [
                 $ee->make('Updater/Logger'),
                 $ee->make('Config')->getFile(),
                 array_unique($theme_paths)
+            );
+        },
+
+        'Updater/PrepMajorUpgrade' => function ($ee) {
+            return new Updater\Downloader\PrepMajorUpgrade(
+                $ee->make('Filesystem'),
+                $ee->make('Updater/Logger')
             );
         },
 

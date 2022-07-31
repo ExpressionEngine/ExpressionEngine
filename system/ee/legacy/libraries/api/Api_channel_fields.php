@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -268,7 +268,7 @@ class Api_channel_fields extends Api
     }
 
     /**
-     * Setup or re-initialize field type handler
+     * Setup or re-initialize fieldtype handler
      *
      * @access	public
      */
@@ -509,7 +509,7 @@ class Api_channel_fields extends Api
 
         $this->setup_handler($query->row($type_field));
 
-        // Field type changed ?
+        // fieldtype changed ?
         $type = ($query->row($type_field) == $field_type) ? 'get_data' : 'delete';
 
         $old_data = $query->row_array();
@@ -524,7 +524,7 @@ class Api_channel_fields extends Api
 
         $old_fields = $this->apply($col_settings_method, array($old_data));
 
-        // Switch handler back to the new field type
+        // Switch handler back to the new fieldtype
         $this->setup_handler($field_type);
 
         if (! isset($old_fields[$id_field_name])) {
@@ -568,7 +568,7 @@ class Api_channel_fields extends Api
      * @param	array (new custom field data)
      * @param	array (old custom field data)
      * @param	bool (TRUE if it is a new field)
-     * @param	bool (TRUE if the field type changed)
+     * @param	bool (TRUE if the fieldtype changed)
      * @return	void
      */
     public function set_datatype($field_id, $data, $old_fields = array(), $new = true, $type_change = false, $overrides = array())
@@ -1149,7 +1149,7 @@ class Api_channel_fields extends Api
             return false;
         }
 
-        // Get the field type settings
+        // Get the fieldtype settings
         $this->fetch_all_fieldtypes();
         $this->setup_handler($field_type);
         $ft_settings = $this->apply('save_settings', array($this->get_posted_field_settings($field_type)));
@@ -1465,7 +1465,7 @@ class Api_channel_fields extends Api
     }
 
     /**
-     * Notify any extensions of incoming field type data
+     * Notify any extensions of incoming fieldtype data
      *
      * @param	object	Fieldtype that will be called
      * @param	string	Method that will be called on the fieldtype

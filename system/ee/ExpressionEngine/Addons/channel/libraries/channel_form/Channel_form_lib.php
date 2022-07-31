@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'channel/libraries/channel_form/Channel_form_exception.php';
@@ -1307,6 +1307,9 @@ GRID_FALLBACK;
         }
 
         ee()->legacy_api->instantiate('channel_fields');
+        //added for EE2.1.2
+        ee()->legacy_api->instantiate('channel_categories');
+        ee()->load->library('api/api_channel_form_channel_entries');
 
         // If any checkbox fields are missing from the POST array,
         // add them in as blank values for form validation to catch
@@ -1374,7 +1377,7 @@ GRID_FALLBACK;
                 //change field_name'd POSTed keys to field_id's
                 if ($key == $field->field_name) {
                     //@TODO what to do about xss_clean and "naughty" html
-                    //for now you can crack open this file and manually add fields_ids and/or field types to the respective arrays
+                    //for now you can crack open this file and manually add fields_ids and/or fieldtypes to the respective arrays
                     //to prevent xss_clean
                     //i had some people complain about not being able to submit <object>'s
                     $xss_clean = (! in_array($field->field_id, $this->skip_xss_field_ids) && ! in_array($field->field_type, $this->skip_xss_fieldtypes));
@@ -1447,10 +1450,6 @@ GRID_FALLBACK;
         $_POST['revision_post'] = $_POST;
 
         $this->_member_group_override();
-
-        //added for EE2.1.2
-        ee()->legacy_api->instantiate('channel_categories');
-        ee()->load->library('api/api_channel_form_channel_entries');
 
         foreach ($this->form_validation_methods as $method) {
             ee()->form_validation->set_message($method, lang('channel_form_' . $method));
@@ -1582,12 +1581,6 @@ GRID_FALLBACK;
         //load the just created entry into memory
         $this->fetch_entry($new_id);
 
-        foreach ($this->field_errors as $field => $error) {
-            if (isset($id_to_name_map[$field])) {
-                $this->field_errors[$id_to_name_map[$field]] = $error;
-            }
-        }
-
         // Reset their group_id back to 0
         $this->_member_group_override(true);
 
@@ -1614,6 +1607,13 @@ GRID_FALLBACK;
         }
 
         if (! $this->json && ($this->errors || $this->field_errors) && $this->error_handling == 'inline') {
+            
+            foreach ($this->field_errors as $field => $error) {
+                if (isset($id_to_name_map[$field])) {
+                    $this->field_errors[$id_to_name_map[$field]] = $error;
+                }
+            }
+            
             $this->entry->set($_POST);
 
             $this->form_error = true;
@@ -1638,6 +1638,13 @@ GRID_FALLBACK;
         }
 
         if ($this->json) {
+            
+            foreach ($this->field_errors as $field => $error) {
+                if (isset($id_to_name_map[$field])) {
+                    $this->field_errors[$id_to_name_map[$field]] = $error;
+                }
+            }
+            
             return ee()->output->send_ajax_response(
                 array(
                     'success' => (empty($this->errors) && empty($this->field_errors)) ? 1 : 0,

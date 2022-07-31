@@ -83,6 +83,7 @@
         @extend .sidebar__link;
         color: color(text-normal);
         margin: -6px -12px;
+        padding-left: 12px !important;
       }
 
       .button {

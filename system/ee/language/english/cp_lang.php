@@ -636,6 +636,8 @@ $lang = array(
 
     'one_click_major_update_instructions' => '<a href="https://docs.expressionengine.com/latest/installation/updating.html#upgrading-major-version" target="_blank">Read update warnings before continuing!</a><br>Enter your password to continue:',
 
+    'one_click_major_update_pro_license_required' => 'Due to the current number of members, you will need to <a href="https://expressionengine.com/pro" target="_blank">purchase an ExpressionEngine Pro license</a> after upgrading to ExpressionEngine 7.<br><br>Starting in ExpressionEngine 7, all sites with multiple members require a Pro license.',
+
     'one_click_major_update_confirm_error' => '<b>Unable to Authenticate</b><br><br>More details may be available in your browser console',
 
     'checking_for_updates' => 'Checking for updates...',
@@ -762,7 +764,7 @@ $lang = array(
 
     'reindex_not_needed_desc' => 'Your search index is up-to-date!',
 
-    'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL . '/control-panel/utilities.html#search-reindex">user guide</a> for more details.',
+    'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain fieldtypes are searchable.<br>Please see the <a href="' . DOC_URL . '/control-panel/utilities.html#search-reindex">user guide</a> for more details.',
 
     /* Permissions */
 

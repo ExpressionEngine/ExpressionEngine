@@ -10,7 +10,7 @@ use ExpressionEngine\Addons\Comment\Service\Variables\Comment as CommentVars;
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1130,8 +1130,6 @@ class Comment
         if (ee()->session->userdata('member_id') != 0) {
             $name = ee()->session->userdata('screen_name') ? ee()->session->userdata('screen_name') : ee()->session->userdata('username');
             $email = ee()->session->userdata('email');
-            $url = (string) ee()->session->userdata('url');
-            $location = (string) ee()->session->userdata('location');
         }
 
         /** ----------------------------------------

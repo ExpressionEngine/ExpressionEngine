@@ -1,12 +1,12 @@
 {
     "name": "ee-tests",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "private": true,
     "description": "",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "cypress:open": "rm -f support/sql/seed.sql && cypress open",
+        "cypress:open": "rm -f support/sql/seed.sql && rm -f cypress/downloads/* && cypress open",
         "cypress:run": "cypress run --browser chrome --headless",
         "cypress:publish": "cypress run --browser chrome --headless --config-file config/publish.json",
         "cypress:cp": "cypress run --browser chrome --headless --config-file config/cp.json"
@@ -14,20 +14,22 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@4tw/cypress-drag-drop": "^2.0.0"
+        "@4tw/cypress-drag-drop": "^2.1.0"
     },
     "dependencies": {
-        "cypress": "~8.4.1",
-        "cypress-file-upload": "^5.0.7",
-        "cypress-maildev": "^1.0.1",
+        "cypress": "^9.5.4",
+        "cypress-audit": "^1.1.0",
+        "cypress-file-upload": "^5.0.8",
+        "cypress-maildev": "^1.1.0",
         "cypress-otp": "^1.0.3",
-        "cypress-xpath": "^1.6.0",
-        "del": "^5.1.0",
+        "cypress-xpath": "^1.6.2",
+        "cypress-log-to-output": "^1.1.2",
+        "del": "^6.0.0",
         "fs-extra": "^9.0.0",
-        "glob": "^7.1.6",
-        "image-size": "^0.8.3",
-        "lorem-ipsum": "^2.0.3",
-        "mysql2": "^2.1.0",
+        "glob": "^8.0.1",
+        "image-size": "^1.0.0",
+        "lorem-ipsum": "^2.0.4",
+        "mysql2": "^2.3.3",
         "mysqldump": "^3.2.0"
     }
 }
