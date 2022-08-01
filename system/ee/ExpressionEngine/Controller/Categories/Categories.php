@@ -202,7 +202,7 @@ class Categories extends AbstractCategoriesController
             if (! empty($cat_ids)) {
                 $cats = ee('Model')->get('Category')
                     ->filter('cat_id', 'IN', $cat_ids);
-                
+
                 // Grab the group ID for the possible AJAX return below
                 $cat_group = ee('Model')->get('Category', $cat_ids[0])->first()->CategoryGroup;
                 $can_delete = explode('|', rtrim((string) $cat_group->can_delete_categories, '|'));
@@ -342,7 +342,7 @@ class Categories extends AbstractCategoriesController
 
             ee()->javascript->output('
 				$("input[name=cat_name]").bind("keyup keydown", function() {
-					$(this).ee_url_title("input[name=cat_url_title]");
+					$(this).ee_url_title("input[name=cat_url_title]", {}, false);
 				});
 			');
         } else {

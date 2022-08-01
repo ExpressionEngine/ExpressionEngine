@@ -42,6 +42,9 @@ EE.namespace = function(namespace_string) {
 // Create the base cp namespace
 EE.namespace('EE.cp');
 
+//
+	EE.cp.useRTL = !!((document.querySelector('html') && document.querySelector('html').dir) && document.querySelector('html').dir === "rtl");
+
 /**
  * Hook into jQuery's ajax functionality to build in handling of our
  * csrf tokens and custom response headers.

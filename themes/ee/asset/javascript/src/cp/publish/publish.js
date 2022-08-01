@@ -51,7 +51,7 @@ $(document).ready(function () {
 	if (EE.publish.which == 'new') {
 		publishForm.find("input[name=title]").bind("keyup blur", function() {
 			publishForm.find('input[name=title]')
-				.ee_url_title(publishForm.find('input[name=url_title]'));
+				.ee_url_title(publishForm.find('input[name=url_title]'), {}, false);
 		});
 	}
 
@@ -67,11 +67,11 @@ $(document).ready(function () {
 	$('body').on('click', 'a', function(e) {
 		if (
 			sessionStorage.getItem("preventNavigateAway") == 'true' &&
-			$(this).attr('href') != null && 
-			$(this).attr('href') != '' && 
-			$(this).attr('href').indexOf('#') != 0  && 
+			$(this).attr('href') != null &&
+			$(this).attr('href') != '' &&
+			$(this).attr('href').indexOf('#') != 0  &&
 			$(this).attr('href').indexOf('javascript:') != 0 &&
-			$(this).attr('target') != '_blank' && 
+			$(this).attr('target') != '_blank' &&
 			(!e.target.closest('[data-publish]') || (typeof(e.target.closest('[data-publish]').length)!=='undefined' && !e.target.closest('[data-publish]').length))
 		) {
 			isNavigatingAway = confirm(EE.lang.confirm_exit);
@@ -80,12 +80,12 @@ $(document).ready(function () {
 	});
 
 	//prevent navigating away using browser buttons
-	
+
 	window.addEventListener('beforeunload', preventNavigateAway);
 	publishForm.on('submit', function(){
 		window.removeEventListener('beforeunload', preventNavigateAway);
 	});
-	
+
 
 	// Autosaving
 	if (EE.publish.autosave && EE.publish.autosave.interval) {

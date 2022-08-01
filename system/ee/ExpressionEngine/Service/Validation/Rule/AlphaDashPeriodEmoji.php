@@ -26,7 +26,8 @@ class AlphaDashPeriodEmoji extends ValidationRule
             return true;
         }
 
-        return (bool) preg_match("/^([-a-z0-9_.-])+$/i", $emojiless);
+        // Support Arabic characters
+        return (bool) preg_match("/^([-\p{Arabic}\-\p{Ll}0-9_.-])+$/ui", $emojiless);
     }
 
     protected function stripEmojis($value)
