@@ -109,8 +109,6 @@ system/ee/installer_*
 
 system/ee/installer/updater/ExpressionEngine/Updater/Boot/boot.common.php
 system/ee/installer/updater/ExpressionEngine/Updater/Core/Autoloader.php
-system/ee/installer/updater/ExpressionEngine/Updater/Library/Filesystem/Filesystem.php
-system/ee/installer/updater/ExpressionEngine/Updater/Library/Filesystem/FilesystemException.php
 system/ee/installer/updater/ExpressionEngine/Updater/Protocol/Config/Config.php
 system/ee/installer/updater/ExpressionEngine/Updater/Service/Config/ConfigWithDefaults.php
 system/ee/installer/updater/ExpressionEngine/Updater/Service/Config/Directory.php
