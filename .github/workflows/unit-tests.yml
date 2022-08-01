@@ -99,6 +99,11 @@ jobs:
         name: PHPUnit, php${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
+            - name: "Use GNU tar instead BSD tar"
+              if: matrix.os == 'windows-latest'
+              shell: cmd
+              run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
             - name: Install locales
               if: runner.os != 'Windows'
               run: |
