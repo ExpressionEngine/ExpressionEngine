@@ -44,7 +44,7 @@ jobs:
         if:  github.event.pull_request.base.ref == '7.x'
         working-directory: build-tools
         env:
-          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
         run: |
