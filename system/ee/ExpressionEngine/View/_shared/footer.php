@@ -72,8 +72,7 @@
                     // IF the user is not currently using pro AND they have multiple members
                     //   OR they have pro installed but dont have a valid license
                     // THEN theyre gonna need a license
-                     if ((! IS_PRO && (ee('Model')->get('Member')->count() > 1))
-                        || (IS_PRO && ! ee('pro:Access')->hasValidLicense())): ?>
+                     if (ee('pro:Access')->requiresValidLicense() && ! ee('pro:Access')->hasValidLicense()): ?>
                         <br><div><?=lang('one_click_major_update_pro_license_required')?></div>
                     <?php endif;?>
                     <div class="app-about__status--update_major_version <?=isset(ee()->view->major_update) ? '' : 'hidden'?>">

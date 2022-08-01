@@ -299,7 +299,7 @@ class Cp
 
         ee()->view->pro_license_status = '';
 
-        $pro_status = (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
+        $pro_status = !ee('pro:Access')->requiresValidLicense() ? 'skip' : (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
         switch ($pro_status) {
                 case 'update_available':
                     ee()->view->pro_license_status = 'valid';

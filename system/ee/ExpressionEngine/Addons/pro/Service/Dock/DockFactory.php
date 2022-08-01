@@ -61,7 +61,7 @@ class DockFactory
                     - Member has access to frontedit feature
                 */
                 $proAccess = ee('pro:Access');
-                if ($proAccess->hasValidLicense() && $proAccess->hasDockPermission()) {
+                if ((!ee('pro:Access')->requiresValidLicense() || $proAccess->hasValidLicense()) && $proAccess->hasDockPermission()) {
                     // enable frontedit and load required assets
                     ee('pro:FrontEdit')->ensureEntryId();
                     if (ee()->input->cookie('frontedit') != 'off' && $proAccess->hasAnyFrontEditPermission()) {
