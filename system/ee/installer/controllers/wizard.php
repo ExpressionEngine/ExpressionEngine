@@ -159,6 +159,7 @@ class Wizard extends CI_Controller
         define('BR', '<br />');
         define('NL', "\n");
         define('BASE', EESELF . '?D=cp');
+        defined('APP_VER') || define('APP_VER', ee()->config->item('app_version'));
 
         // Third party constants
         define('PATH_THIRD', SYSPATH . 'user/addons/');
