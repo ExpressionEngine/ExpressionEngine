@@ -385,6 +385,9 @@ class FileSystemEntity extends ContentModel
 
     public function deleteAllFiles()
     {
+        if (! $this->UploadDestination->exists()) {
+            return false;
+        }
         $this->deleteOriginalFile();
         $this->deleteGeneratedFiles();
     }
