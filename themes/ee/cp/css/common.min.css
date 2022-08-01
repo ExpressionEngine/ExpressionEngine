@@ -38166,7 +38166,7 @@ body[data-theme="dark"] {
   overflow-wrap: break-word;
 }
 .f_manager-wrapper .ui-sortable-helper {
-  background: var(--ee-sidebar-bg-active);
+  background: var(--ee-gray-5);
 }
 
 .f_manager-table-breadcrumbs .breadcrumb {
