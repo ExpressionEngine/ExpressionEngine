@@ -389,7 +389,7 @@ $(document).ready(function () {
 	// Move files to subfolder
 	function makeDirectoryDroppable() {
 		let modal_rel = 'modal-confirm-move-file';
-		let ajax_url = 'admin.php?/cp/files/confirm';
+		let ajax_url = $('.f_manager-wrapper [name=bulk_action_submit]').attr('data-confirm-ajax');
 		let timer;
 		$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').find('.drop-target').droppable({
 			accept: "table .app-listing__row, .file-grid__wrapper .filepicker-item",
