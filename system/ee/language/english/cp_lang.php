@@ -706,6 +706,7 @@ $lang = array(
 
     'your_license_is' => 'Your license is:',
 
+    'license_skip' => 'Free',
     'license_trial' => 'Trial',
     'license_expired' => 'Expired',
     'license_invalid' => 'Unlicensed',
