@@ -188,8 +188,8 @@ class Updater
                     'file_type' => [
                         'type' => 'varchar',
                         'constraint' => '50',
-                        'default' => 'other',
-                        'null' => false
+                        'default' => null,
+                        'null' => true
                     ]
                 ],
                 'mime_type'

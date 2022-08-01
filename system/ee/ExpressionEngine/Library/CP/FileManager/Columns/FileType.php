@@ -27,6 +27,21 @@ class FileType extends EntryManager\Columns\Column
         if ($file->model_type == 'Directory') {
             return lang('directory');
         }
+        // if file_type is empty, we have likely just ran the migration
+        // try to set it based on mime
+        if ($file->file_type === null) {
+            $file->setProperty('file_type', 'other'); // default
+            $mimes = ee()->config->loadFile('mimes');
+            $fileTypes = array_filter(array_keys($mimes), 'is_string');
+            foreach ($fileTypes as $fileType) {
+                if (in_array($file->getProperty('mime_type'), $mimes[$fileType])) {
+                    $file->setProperty('file_type', $fileType);
+                    break;
+                }
+            }
+            ee('db')->where('file_id', $file->file_id)->update('files', ['file_type' => $file->file_type]);
+        }
+
         return lang('type_' . $file->file_type);
     }
 

@@ -417,7 +417,7 @@ trait FileManagerTrait
      */
     private function createTypeFilter($uploadLocation = null)
     {
-        $typesQuery = ee('db')->select('file_type')->distinct()->from('files');
+        $typesQuery = ee('db')->select('file_type')->distinct()->from('files')->where('file_type', '!=', null);
         if (! empty($uploadLocation)) {
             $typesQuery->where('upload_location_id', $uploadLocation->getId());
         } else {
