@@ -135,7 +135,7 @@ class Filesystem
 
         if ($overwrite == false && $append == true) {
             $flags = FILE_APPEND | LOCK_EX;
-            file_put_contents($path, $data, $flags);
+            file_put_contents($this->ensurePrefixedPath($path), $data, $flags);
         } else {
             $this->flysystem->put($path, $data);
         }
