@@ -488,6 +488,9 @@ class Wizard extends CI_Controller
     {
         ee()->functions->clear_caching('all');
 
+        // reset the flag for dismissed banner for members
+        ee('db')->update('members', ['dismissed_banner' => 'n']);
+
         foreach (ee('Model')->get('Channel')->all() as $channel) {
             $channel->updateEntryStats();
         }
