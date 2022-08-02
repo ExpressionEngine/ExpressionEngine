@@ -129,7 +129,7 @@ class Forum_upd
     public function install()
     {
         if (! is_really_writable(ee()->config->config_path)) {
-            ee()->lang->loadfile('forum_cp');
+            ee()->lang->loadfile('forum_cp', 'forum');
 
             return ee()->output->fatal_error(ee()->lang->line('config_not_writable'));
         }
