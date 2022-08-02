@@ -42,7 +42,8 @@ class PrepMajorUpgrade
      */
     public function isMajorUpgrade($update_version_major = null)
     {
-        $version_major = (int) explode('.', APP_VER, 2)[0];
+        $app_ver = defined('APP_VER') ?: ee()->config->item('app_version');
+        $version_major = (int) explode('.', $app_ver, 2)[0];
 
         if (empty($update_version_major)) {
             ee()->load->library('el_pings');
@@ -100,10 +101,13 @@ class PrepMajorUpgrade
                 }
 
                 // Move the templates folder
-                $systemAddonTemplatesPath = PATH_THEME_TEMPLATES . $addonName;
-                $userAddonTemplatesPath = PATH_THIRD_THEME_TEMPLATES . $addonName;
+                $systemAddonTemplatesPath = SYSPATH . 'ee/templates/_themes/' . $addonName;
+                $userAddonTemplatesPath = SYSPATH . 'user/templates/_themes/' . $addonName;
                 // Check to make sure the directory exists and it doesnt exist in the user folder
                 if ($this->filesystem->isDir($systemAddonTemplatesPath) && !$this->filesystem->isDir($userAddonTemplatesPath)) {
+                    if (!$this->filesystem->isDir(SYSPATH . 'user/templates/_themes')) {
+                        $this->filesystem->mkDir(SYSPATH . 'user/templates/_themes');
+                    }
                     $this->filesystem->rename($systemAddonTemplatesPath, $userAddonTemplatesPath);
                 }
             }
