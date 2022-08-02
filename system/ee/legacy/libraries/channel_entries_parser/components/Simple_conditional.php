@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -61,6 +61,12 @@ class EE_Channel_simple_conditional_parser implements EE_Channel_parser_componen
         if (strpos($key, '|') !== false && is_array($val)) {
             foreach ($val as $item) {
                 // Basic fields
+
+                //if the field is conditionally hidden, do not parse
+                if (isset($obj->channel()->hidden_fields[$data['entry_id']]) && isset($cfields[$data['site_id']][$item]) && in_array($cfields[$data['site_id']][$item], $obj->channel()->hidden_fields[$data['entry_id']])) {
+                    $tagdata = str_replace(LD . $prefix . $key . RD, '', $tagdata);
+                    continue;
+                }
 
                 if (isset($data[$item]) and $data[$item] != "") {
                     $tagdata = str_replace(LD . $prefix . $key . RD, $data[$item], $tagdata);

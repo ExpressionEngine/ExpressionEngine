@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,28 +25,28 @@ class Forum_upd
     {
         $tabs['forum'] = array(
             'forum_title' => array(
-                'visible' => true,
-                'collapse' => false,
+                'visible'     => true,
+                'collapse'    => false,
                 'htmlbuttons' => true,
-                'width' => '100%'
+                'width'       => '100%'
             ),
             'forum_body' => array(
-                'visible' => true,
-                'collapse' => false,
+                'visible'     => true,
+                'collapse'    => false,
                 'htmlbuttons' => true,
-                'width' => '100%'
+                'width'       => '100%'
             ),
             'forum_id' => array(
-                'visible' => true,
-                'collapse' => false,
+                'visible'     => true,
+                'collapse'    => false,
                 'htmlbuttons' => true,
-                'width' => '100%'
+                'width'       => '100%'
             ),
             'forum_topic_id' => array(
-                'visible' => true,
-                'collapse' => false,
+                'visible'     => true,
+                'collapse'    => false,
                 'htmlbuttons' => true,
-                'width' => '100%'
+                'width'       => '100%'
             )
         );
 
@@ -107,14 +107,14 @@ class Forum_upd
         /**  Define the permission array
         /** ------------------------------------*/
         $perms = array(
-            'can_view_forum' => '|1|3|4' . $group_ids . '|',
-            'can_view_hidden' => '|1' . $group_ids . '|',
-            'can_view_topics' => ($is_category == true) ? '' : '|1|3|4' . $group_ids . '|',
-            'can_post_topics' => ($is_category == true) ? '' : '|1' . $group_ids . '|',
-            'can_post_reply' => ($is_category == true) ? '' : '|1' . $group_ids . '|',
-            'can_report' => ($is_category == true) ? '' : '|1' . $group_ids . '|',
+            'can_view_forum'   => '|1|3|4' . $group_ids . '|',
+            'can_view_hidden'  => '|1' . $group_ids . '|',
+            'can_view_topics'  => ($is_category == true) ? '' : '|1|3|4' . $group_ids . '|',
+            'can_post_topics'  => ($is_category == true) ? '' : '|1' . $group_ids . '|',
+            'can_post_reply'   => ($is_category == true) ? '' : '|1' . $group_ids . '|',
+            'can_report'       => ($is_category == true) ? '' : '|1' . $group_ids . '|',
             'can_upload_files' => ($is_category == true) ? '' : '|1' . $group_ids . '|',
-            'can_search' => ($is_category == true) ? '' : '|1|3|4' . $group_ids . '|'
+            'can_search'       => ($is_category == true) ? '' : '|1|3|4' . $group_ids . '|'
         );
 
         return $perms;
@@ -123,13 +123,13 @@ class Forum_upd
     /**
      * Module Installer
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function install()
     {
         if (! is_really_writable(ee()->config->config_path)) {
-            ee()->lang->loadfile('forum_cp');
+            ee()->lang->loadfile('forum_cp', 'forum');
 
             return ee()->output->fatal_error(ee()->lang->line('config_not_writable'));
         }
@@ -148,260 +148,260 @@ class Forum_upd
         $sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'move_reply')";
 
         $sql[] = "CREATE TABLE exp_forum_boards (
-			board_id int(5) unsigned NOT NULL auto_increment,
-			board_label varchar(150) NOT NULL,
-			board_name varchar(50) NOT NULL,
-			board_enabled char(1) NOT NULL default 'y',
-			board_forum_trigger varchar(70) NOT NULL default '',
-			board_site_id INT(5) unsigned NOT NULL default 1,
-			board_alias_id INT(5) unsigned NOT NULL default 0,
-			board_allow_php char(1) NOT NULL default 'n',
-			board_php_stage char(1) NOT NULL default 'o',
-			board_install_date int(10) unsigned default '0' NOT NULL,
-			board_forum_url varchar(150) NOT NULL,
-			board_default_theme varchar(75) NOT NULL,
-			board_upload_path varchar(150) NULL,
-			board_topics_perpage SMALLINT(4) NOT NULL default 25,
-			board_posts_perpage smallint(4) NOT NULL default 10,
-			board_topic_order char(1) NOT NULL default 'r',
-			board_post_order char(1) NOT NULL default 'a',
-			board_hot_topic smallint(4) NOT NULL default 10,
-			board_max_post_chars int(6) unsigned NOT NULL default 6000,
-			board_post_timelock int(5) unsigned NOT NULL default '0',
-			board_display_edit_date char(1) NOT NULL default 'n',
-			board_text_formatting varchar(50) NOT NULL default 'xhtml',
-			board_html_formatting char(4) NOT NULL default 'safe',
-			board_allow_img_urls char(1) NOT NULL default 'n',
-			board_auto_link_urls char(1) NOT NULL default 'y',
-			board_notify_emails varchar(255) NULL,
-			board_notify_emails_topics varchar(255) NULL,
-			board_max_attach_perpost smallint(4) NOT NULL default 3,
-			board_max_attach_size int(6) unsigned NOT NULL default 75,
-			board_max_width int(4) unsigned NOT NULL default 800,
-			board_max_height int(4) unsigned NOT NULL default 600,
-			board_attach_types char(3) NOT NULL default 'img',
-			board_use_img_thumbs char(1) NOT NULL default 'y',
-			board_thumb_width int(4) unsigned NOT NULL default 100,
-			board_thumb_height int(4) unsigned NOT NULL default 100,
-			board_forum_permissions text NOT NULL,
-			board_use_deft_permissions char(1) NOT NULL default 'n',
-			board_recent_poster_id int(10) unsigned NOT NULL default '0',
-			board_recent_poster varchar(70) NULL DEFAULT NULL,
-			board_enable_rss char(1) NOT NULL default 'y',
-			board_use_http_auth char(1) NOT NULL default 'n',
-			PRIMARY KEY `board_id` (`board_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            board_id int(5) unsigned NOT NULL auto_increment,
+            board_label varchar(150) NOT NULL,
+            board_name varchar(50) NOT NULL,
+            board_enabled char(1) NOT NULL default 'y',
+            board_forum_trigger varchar(70) NOT NULL default '',
+            board_site_id INT(5) unsigned NOT NULL default 1,
+            board_alias_id INT(5) unsigned NOT NULL default 0,
+            board_allow_php char(1) NOT NULL default 'n',
+            board_php_stage char(1) NOT NULL default 'o',
+            board_install_date int(10) unsigned default '0' NOT NULL,
+            board_forum_url varchar(150) NOT NULL,
+            board_default_theme varchar(75) NOT NULL,
+            board_upload_path varchar(150) NULL,
+            board_topics_perpage SMALLINT(4) NOT NULL default 25,
+            board_posts_perpage smallint(4) NOT NULL default 10,
+            board_topic_order char(1) NOT NULL default 'r',
+            board_post_order char(1) NOT NULL default 'a',
+            board_hot_topic smallint(4) NOT NULL default 10,
+            board_max_post_chars int(6) unsigned NOT NULL default 6000,
+            board_post_timelock int(5) unsigned NOT NULL default '0',
+            board_display_edit_date char(1) NOT NULL default 'n',
+            board_text_formatting varchar(50) NOT NULL default 'xhtml',
+            board_html_formatting char(4) NOT NULL default 'safe',
+            board_allow_img_urls char(1) NOT NULL default 'n',
+            board_auto_link_urls char(1) NOT NULL default 'y',
+            board_notify_emails varchar(255) NULL,
+            board_notify_emails_topics varchar(255) NULL,
+            board_max_attach_perpost smallint(4) NOT NULL default 3,
+            board_max_attach_size int(6) unsigned NOT NULL default 75,
+            board_max_width int(4) unsigned NOT NULL default 800,
+            board_max_height int(4) unsigned NOT NULL default 600,
+            board_attach_types char(3) NOT NULL default 'img',
+            board_use_img_thumbs char(1) NOT NULL default 'y',
+            board_thumb_width int(4) unsigned NOT NULL default 100,
+            board_thumb_height int(4) unsigned NOT NULL default 100,
+            board_forum_permissions text NOT NULL,
+            board_use_deft_permissions char(1) NOT NULL default 'n',
+            board_recent_poster_id int(10) unsigned NOT NULL default '0',
+            board_recent_poster varchar(70) NULL DEFAULT NULL,
+            board_enable_rss char(1) NOT NULL default 'y',
+            board_use_http_auth char(1) NOT NULL default 'n',
+            PRIMARY KEY `board_id` (`board_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forums (
-			forum_id int(6) unsigned NOT NULL auto_increment,
-			board_id int(6) unsigned NOT NULL DEFAULT '1',
-			forum_name varchar(100) NOT NULL,
-			forum_description text NULL default NULL,
-			forum_is_cat char(1) NOT NULL default 'n',
-			forum_parent int(6) unsigned NULL default NULL,
-			forum_order int(6) unsigned NULL default NULL,
-			forum_status char(1) NOT NULL default 'o',
-			forum_total_topics mediumint(8) default '0' NOT NULL,
-			forum_total_posts mediumint(8) default '0' NOT NULL,
-			forum_last_post_id int(6) unsigned NULL default NULL,
-			forum_last_post_type char(1) NOT NULL default 'p',
-			forum_last_post_title varchar(150) NULL default NULL,
-			forum_last_post_date int(10) unsigned default '0' NOT NULL,
-			forum_last_post_author_id int(10) unsigned NULL default NULL,
-			forum_last_post_author varchar(50) NULL default NULL,
-			forum_permissions text NOT NULL,
-			forum_topics_perpage smallint(4) NOT NULL,
-			forum_posts_perpage smallint(4) NOT NULL,
-			forum_topic_order char(1) NOT NULL default 'r',
-			forum_post_order char(1) NOT NULL default 'a',
-			forum_hot_topic smallint(4) NOT NULL,
-			forum_max_post_chars int(6) unsigned NOT NULL,
-			forum_post_timelock int(5) unsigned NOT NULL default '0',
-			forum_display_edit_date char(1) NOT NULL default 'n',
-			forum_text_formatting varchar(50) NOT NULL default 'xhtml',
-			forum_html_formatting char(4) NOT NULL default 'safe',
-			forum_allow_img_urls char(1) NOT NULL default 'n',
-			forum_auto_link_urls char(1) NOT NULL default 'y',
-			forum_notify_moderators_topics char(1) NOT NULL default 'n',
-			forum_notify_moderators_replies char(1) NOT NULL default 'n',
-			forum_notify_emails varchar(255) NULL default NULL,
-			forum_notify_emails_topics varchar(255) NULL default NULL,
-			forum_enable_rss char(1) NOT NULL default 'n',
-			forum_use_http_auth char(1) NOT NULL default 'n',
-			PRIMARY KEY `forum_id` (`forum_id`),
-			KEY `board_id` (`board_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            forum_id int(6) unsigned NOT NULL auto_increment,
+            board_id int(6) unsigned NOT NULL DEFAULT '1',
+            forum_name varchar(100) NOT NULL,
+            forum_description text NULL default NULL,
+            forum_is_cat char(1) NOT NULL default 'n',
+            forum_parent int(6) unsigned NULL default NULL,
+            forum_order int(6) unsigned NULL default NULL,
+            forum_status char(1) NOT NULL default 'o',
+            forum_total_topics mediumint(8) default '0' NOT NULL,
+            forum_total_posts mediumint(8) default '0' NOT NULL,
+            forum_last_post_id int(6) unsigned NULL default NULL,
+            forum_last_post_type char(1) NOT NULL default 'p',
+            forum_last_post_title varchar(150) NULL default NULL,
+            forum_last_post_date int(10) unsigned default '0' NOT NULL,
+            forum_last_post_author_id int(10) unsigned NULL default NULL,
+            forum_last_post_author varchar(50) NULL default NULL,
+            forum_permissions text NOT NULL,
+            forum_topics_perpage smallint(4) NOT NULL,
+            forum_posts_perpage smallint(4) NOT NULL,
+            forum_topic_order char(1) NOT NULL default 'r',
+            forum_post_order char(1) NOT NULL default 'a',
+            forum_hot_topic smallint(4) NOT NULL,
+            forum_max_post_chars int(6) unsigned NOT NULL,
+            forum_post_timelock int(5) unsigned NOT NULL default '0',
+            forum_display_edit_date char(1) NOT NULL default 'n',
+            forum_text_formatting varchar(50) NOT NULL default 'xhtml',
+            forum_html_formatting char(4) NOT NULL default 'safe',
+            forum_allow_img_urls char(1) NOT NULL default 'n',
+            forum_auto_link_urls char(1) NOT NULL default 'y',
+            forum_notify_moderators_topics char(1) NOT NULL default 'n',
+            forum_notify_moderators_replies char(1) NOT NULL default 'n',
+            forum_notify_emails varchar(255) NULL default NULL,
+            forum_notify_emails_topics varchar(255) NULL default NULL,
+            forum_enable_rss char(1) NOT NULL default 'n',
+            forum_use_http_auth char(1) NOT NULL default 'n',
+            PRIMARY KEY `forum_id` (`forum_id`),
+            KEY `board_id` (`board_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_topics (
-			topic_id int(10) unsigned NOT NULL auto_increment,
-			forum_id int(6) unsigned NOT NULL,
-			board_id int(6) unsigned NOT NULL DEFAULT '1',
-			moved_forum_id int(6) unsigned NOT NULL default '0',
-			author_id int(10) unsigned NOT NULL default '0',
-			ip_address varchar(45) NOT NULL,
-			title varchar(150) NOT NULL,
-			body text NOT NULL,
-			status char(1) NOT NULL default 'o',
-			sticky char(1) NOT NULL default 'n',
-			poll char(1) NOT NULL default 'n',
-			announcement char(1) NOT NULL default 'n',
-			topic_date int(10) NOT NULL,
-			topic_edit_date int(10) NOT NULL DEFAULT 0,
-			topic_edit_author INT(10) UNSIGNED NOT NULL DEFAULT 0,
-			thread_total int(5) unsigned NOT NULL default '0',
-			thread_views int(6) unsigned NOT NULL default '0',
-			last_post_date int(10) unsigned default '0' NOT NULL,
-			last_post_author_id int(10) unsigned NOT NULL default '0',
-			last_post_id int(10) unsigned NOT NULL default '0',
-			notify char(1) NOT NULL default 'n',
-			parse_smileys char(1) NOT NULL default 'y',
-			PRIMARY KEY `topic_id` (`topic_id`),
-			KEY `forum_id` (`forum_id`),
-			KEY `board_id` (`board_id`),
-			KEY `author_id` (`author_id`),
-			KEY `last_post_author_id` (`last_post_author_id`),
-			KEY `topic_date` (`topic_date`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            topic_id int(10) unsigned NOT NULL auto_increment,
+            forum_id int(6) unsigned NOT NULL,
+            board_id int(6) unsigned NOT NULL DEFAULT '1',
+            moved_forum_id int(6) unsigned NOT NULL default '0',
+            author_id int(10) unsigned NOT NULL default '0',
+            ip_address varchar(45) NOT NULL,
+            title varchar(150) NOT NULL,
+            body text NOT NULL,
+            status char(1) NOT NULL default 'o',
+            sticky char(1) NOT NULL default 'n',
+            poll char(1) NOT NULL default 'n',
+            announcement char(1) NOT NULL default 'n',
+            topic_date int(10) NOT NULL,
+            topic_edit_date int(10) NOT NULL DEFAULT 0,
+            topic_edit_author INT(10) UNSIGNED NOT NULL DEFAULT 0,
+            thread_total int(5) unsigned NOT NULL default '0',
+            thread_views int(6) unsigned NOT NULL default '0',
+            last_post_date int(10) unsigned default '0' NOT NULL,
+            last_post_author_id int(10) unsigned NOT NULL default '0',
+            last_post_id int(10) unsigned NOT NULL default '0',
+            notify char(1) NOT NULL default 'n',
+            parse_smileys char(1) NOT NULL default 'y',
+            PRIMARY KEY `topic_id` (`topic_id`),
+            KEY `forum_id` (`forum_id`),
+            KEY `board_id` (`board_id`),
+            KEY `author_id` (`author_id`),
+            KEY `last_post_author_id` (`last_post_author_id`),
+            KEY `topic_date` (`topic_date`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_posts (
-			post_id int(10) unsigned NOT NULL auto_increment,
-			topic_id int(10) unsigned NOT NULL,
-			forum_id int(6) unsigned NOT NULL,
-			board_id int(6) unsigned NOT NULL DEFAULT '1',
-			author_id int(10) unsigned NOT NULL default '0',
-			ip_address varchar(45) NOT NULL,
-			body text NOT NULL,
-			post_date int(10) NOT NULL,
-			post_edit_date int(10) NOT NULL DEFAULT 0,
-			post_edit_author INT(10) UNSIGNED NOT NULL DEFAULT 0,
-			notify char(1) NOT NULL default 'n',
-			parse_smileys char(1) NOT NULL default 'y',
-			PRIMARY KEY `post_id` (`post_id`),
-			KEY `topic_id` (`topic_id`),
-			KEY `forum_id` (`forum_id`),
-			KEY `board_id` (`board_id`),
-			KEY `author_id` (`author_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            post_id int(10) unsigned NOT NULL auto_increment,
+            topic_id int(10) unsigned NOT NULL,
+            forum_id int(6) unsigned NOT NULL,
+            board_id int(6) unsigned NOT NULL DEFAULT '1',
+            author_id int(10) unsigned NOT NULL default '0',
+            ip_address varchar(45) NOT NULL,
+            body text NOT NULL,
+            post_date int(10) NOT NULL,
+            post_edit_date int(10) NOT NULL DEFAULT 0,
+            post_edit_author INT(10) UNSIGNED NOT NULL DEFAULT 0,
+            notify char(1) NOT NULL default 'n',
+            parse_smileys char(1) NOT NULL default 'y',
+            PRIMARY KEY `post_id` (`post_id`),
+            KEY `topic_id` (`topic_id`),
+            KEY `forum_id` (`forum_id`),
+            KEY `board_id` (`board_id`),
+            KEY `author_id` (`author_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_ranks (
-			rank_id int(6) unsigned NOT NULL auto_increment,
-			rank_title varchar(100) NOT NULL,
-			rank_min_posts int(6) NOT NULL,
-  			rank_stars smallint(3) NOT NULL,
-			PRIMARY KEY `rank_id` (`rank_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            rank_id int(6) unsigned NOT NULL auto_increment,
+            rank_title varchar(100) NOT NULL,
+            rank_min_posts int(6) NOT NULL,
+            rank_stars smallint(3) NOT NULL,
+            PRIMARY KEY `rank_id` (`rank_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_administrators (
-			admin_id int(6) unsigned NOT NULL auto_increment,
-			board_id int(6) unsigned NOT NULL DEFAULT '1',
-			admin_group_id int(10) unsigned NOT NULL default '0',
-			admin_member_id int(10) unsigned NOT NULL default '0',
-			PRIMARY KEY `admin_id` (`admin_id`),
-			KEY `board_id` (`board_id`),
-			KEY `admin_group_id` (`admin_group_id`),
-			KEY `admin_member_id` (`admin_member_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            admin_id int(6) unsigned NOT NULL auto_increment,
+            board_id int(6) unsigned NOT NULL DEFAULT '1',
+            admin_group_id int(10) unsigned NOT NULL default '0',
+            admin_member_id int(10) unsigned NOT NULL default '0',
+            PRIMARY KEY `admin_id` (`admin_id`),
+            KEY `board_id` (`board_id`),
+            KEY `admin_group_id` (`admin_group_id`),
+            KEY `admin_member_id` (`admin_member_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_moderators (
-			mod_id int(6) unsigned NOT NULL auto_increment,
-			board_id int(6) unsigned NOT NULL DEFAULT '1',
-			mod_forum_id int(6) unsigned NOT NULL,
-			mod_member_id int(10) unsigned NOT NULL default '0',
-			mod_member_name varchar(50) NOT NULL,
-			mod_group_id int(10) unsigned NOT NULL default '0',
-			mod_can_edit char(1) NOT NULL default 'n',
-			mod_can_move char(1) NOT NULL default 'n',
-			mod_can_delete char(1) NOT NULL default 'n',
-			mod_can_split char(1) NOT NULL default 'n',
-			mod_can_merge char(1) NOT NULL default 'n',
-			mod_can_change_status char(1) NOT NULL default 'n',
-			mod_can_announce char(1) NOT NULL default 'n',
-			mod_can_view_ip char(1) NOT NULL default 'n',
-			PRIMARY KEY `mod_id` (`mod_id`),
-			KEY `board_id` (`board_id`),
-			KEY `mod_forum_id` (`mod_forum_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            mod_id int(6) unsigned NOT NULL auto_increment,
+            board_id int(6) unsigned NOT NULL DEFAULT '1',
+            mod_forum_id int(6) unsigned NOT NULL,
+            mod_member_id int(10) unsigned NOT NULL default '0',
+            mod_member_name varchar(50) NOT NULL,
+            mod_group_id int(10) unsigned NOT NULL default '0',
+            mod_can_edit char(1) NOT NULL default 'n',
+            mod_can_move char(1) NOT NULL default 'n',
+            mod_can_delete char(1) NOT NULL default 'n',
+            mod_can_split char(1) NOT NULL default 'n',
+            mod_can_merge char(1) NOT NULL default 'n',
+            mod_can_change_status char(1) NOT NULL default 'n',
+            mod_can_announce char(1) NOT NULL default 'n',
+            mod_can_view_ip char(1) NOT NULL default 'n',
+            PRIMARY KEY `mod_id` (`mod_id`),
+            KEY `board_id` (`board_id`),
+            KEY `mod_forum_id` (`mod_forum_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_subscriptions (
-			topic_id int(10) unsigned NOT NULL,
-			board_id int(6) unsigned NOT NULL DEFAULT '1',
-			member_id int(10) unsigned NOT NULL default '0',
-			subscription_date int(10) NOT NULL,
-			notification_sent char(1) NOT NULL default 'n',
-			hash varchar(15) NOT NULL,
-			PRIMARY KEY `topic_id_member_id` (`topic_id`, `member_id`),
-			KEY `board_id` (`board_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            topic_id int(10) unsigned NOT NULL,
+            board_id int(6) unsigned NOT NULL DEFAULT '1',
+            member_id int(10) unsigned NOT NULL default '0',
+            subscription_date int(10) NOT NULL,
+            notification_sent char(1) NOT NULL default 'n',
+            hash varchar(15) NOT NULL,
+            PRIMARY KEY `topic_id_member_id` (`topic_id`, `member_id`),
+            KEY `board_id` (`board_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_attachments (
-			attachment_id int(10) unsigned NOT NULL auto_increment,
-			topic_id int(10) unsigned NOT NULL default '0',
-			post_id int(10) unsigned NOT NULL default '0',
-			board_id int(5) unsigned NOT NULL default '1',
-			member_id int(10) unsigned NOT NULL default '0',
-			filename varchar(200) NOT NULL,
-			filehash varchar(40) NOT NULL,
-			filesize int(10) NOT NULL default '0',
-			extension varchar(20) NOT NULL,
-			hits int(10) NOT NULL default '0',
-			attachment_date int(10) NOT NULL,
-			is_temp char(1) NOT NULL default 'n',
-			width int(5) unsigned NOT NULL,
-			height int(5) unsigned NOT NULL,
-			t_width int(5) unsigned NOT NULL,
-			t_height int(5) unsigned NOT NULL,
-			is_image char(1) NOT NULL default 'y',
-			PRIMARY KEY `attachment_id` (`attachment_id`),
-			KEY `topic_id` (`topic_id`),
-			KEY `post_id` (`post_id`),
-			KEY `board_id` (`board_id`),
-			KEY `member_id` (`member_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            attachment_id int(10) unsigned NOT NULL auto_increment,
+            topic_id int(10) unsigned NOT NULL default '0',
+            post_id int(10) unsigned NOT NULL default '0',
+            board_id int(5) unsigned NOT NULL default '1',
+            member_id int(10) unsigned NOT NULL default '0',
+            filename varchar(200) NOT NULL,
+            filehash varchar(40) NOT NULL,
+            filesize int(10) NOT NULL default '0',
+            extension varchar(20) NOT NULL,
+            hits int(10) NOT NULL default '0',
+            attachment_date int(10) NOT NULL,
+            is_temp char(1) NOT NULL default 'n',
+            width int(5) unsigned NOT NULL,
+            height int(5) unsigned NOT NULL,
+            t_width int(5) unsigned NOT NULL,
+            t_height int(5) unsigned NOT NULL,
+            is_image char(1) NOT NULL default 'y',
+            PRIMARY KEY `attachment_id` (`attachment_id`),
+            KEY `topic_id` (`topic_id`),
+            KEY `post_id` (`post_id`),
+            KEY `board_id` (`board_id`),
+            KEY `member_id` (`member_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_search (
-			 search_id varchar(32) NOT NULL,
-			 board_id int(6) unsigned NOT NULL DEFAULT '1',
-			 search_date int(10) NOT NULL,
-			 keywords varchar(60) NOT NULL,
-			 member_id int(10) unsigned NOT NULL,
-			 ip_address varchar(45) NOT NULL,
-			 topic_ids text NOT NULL,
-			 post_ids text NOT NULL,
-			 sort_order varchar(200) NOT NULL,
-			 PRIMARY KEY `search_id` (`search_id`),
-			 KEY `board_id` (`board_id`)
- 		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+             search_id varchar(32) NOT NULL,
+             board_id int(6) unsigned NOT NULL DEFAULT '1',
+             search_date int(10) NOT NULL,
+             keywords varchar(60) NOT NULL,
+             member_id int(10) unsigned NOT NULL,
+             ip_address varchar(45) NOT NULL,
+             topic_ids text NOT NULL,
+             post_ids text NOT NULL,
+             sort_order varchar(200) NOT NULL,
+             PRIMARY KEY `search_id` (`search_id`),
+             KEY `board_id` (`board_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_polls (
-			poll_id int(10) unsigned NOT NULL auto_increment,
-			topic_id int(10) unsigned NOT NULL,
-			author_id int(10) unsigned NOT NULL default '0',
-			poll_question varchar(150) NOT NULL,
-			poll_answers text NOT NULL,
-			poll_date int(10) NOT NULL,
-			total_votes int(10) unsigned NOT NULL default '0',
-			PRIMARY KEY `poll_id` (`poll_id`),
-			KEY `topic_id` (`topic_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            poll_id int(10) unsigned NOT NULL auto_increment,
+            topic_id int(10) unsigned NOT NULL,
+            author_id int(10) unsigned NOT NULL default '0',
+            poll_question varchar(150) NOT NULL,
+            poll_answers text NOT NULL,
+            poll_date int(10) NOT NULL,
+            total_votes int(10) unsigned NOT NULL default '0',
+            PRIMARY KEY `poll_id` (`poll_id`),
+            KEY `topic_id` (`topic_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_pollvotes (
-			vote_id int(10) unsigned NOT NULL auto_increment,
-			poll_id int(10) unsigned NOT NULL,
-			topic_id int(10) unsigned NOT NULL,
-			member_id int(10) unsigned NOT NULL,
-			choice_id  int(10) unsigned NOT NULL,
-			PRIMARY KEY `vote_id` (`vote_id`),
-			KEY `member_id` (`member_id`),
-			KEY `topic_id` (`topic_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+            vote_id int(10) unsigned NOT NULL auto_increment,
+            poll_id int(10) unsigned NOT NULL,
+            topic_id int(10) unsigned NOT NULL,
+            member_id int(10) unsigned NOT NULL,
+            choice_id  int(10) unsigned NOT NULL,
+            PRIMARY KEY `vote_id` (`vote_id`),
+            KEY `member_id` (`member_id`),
+            KEY `topic_id` (`topic_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "CREATE TABLE exp_forum_read_topics (
-		 member_id int(10) unsigned NOT NULL,
-		 board_id int(6) unsigned NOT NULL DEFAULT '1',
-		 topics text NOT NULL,
-		 last_visit int(10) NOT NULL,
-		 PRIMARY KEY `member_id_board_id` (`member_id`, `board_id`)
-		) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
+         member_id int(10) unsigned NOT NULL,
+         board_id int(6) unsigned NOT NULL DEFAULT '1',
+         topics text NOT NULL,
+         last_visit int(10) NOT NULL,
+         PRIMARY KEY `member_id_board_id` (`member_id`, `board_id`)
+        ) DEFAULT CHARACTER SET " . ee()->db->escape_str(ee()->db->char_set) . " COLLATE " . ee()->db->escape_str(ee()->db->dbcollat);
 
         $sql[] = "INSERT INTO exp_forum_ranks (rank_title, rank_min_posts, rank_stars) VALUES ('Newbie', 0, 1)";
         $sql[] = "INSERT INTO exp_forum_ranks (rank_title, rank_min_posts, rank_stars) VALUES ('Jr. Member', 30, 2)";
@@ -459,8 +459,8 @@ class Forum_upd
     /**
      * Module Uninstaller
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function uninstall()
     {
@@ -508,8 +508,8 @@ class Forum_upd
     /**
      * Module Updater
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function update($current = '')
     {
@@ -633,48 +633,48 @@ class Forum_upd
         /** -------------------------------------------*/
         if (version_compare($current, '2.0', '<')) {
             ee()->db->query("CREATE TABLE exp_forum_boards (
-						board_id int(5) unsigned NOT NULL auto_increment,
-						board_label varchar(150) NOT NULL,
-						board_name varchar(50) NOT NULL,
-						board_enabled char(1) NOT NULL default 'y',
-						board_forum_trigger varchar(70) NOT NULL default '',
-						board_site_id INT(5) unsigned NOT NULL default 1,
-						board_alias_id INT(5) unsigned NOT NULL default 0,
-						board_allow_php char(1) NOT NULL default 'n',
-						board_php_stage char(1) NOT NULL default 'o',
-						board_install_date int(10) unsigned default '0' NOT NULL,
-						board_forum_url varchar(150) NOT NULL,
-						board_default_theme varchar(75) NOT NULL,
-						board_upload_path varchar(150) NOT NULL,
-						board_topics_perpage smallint(4) NOT NULL,
-						board_posts_perpage smallint(4) NOT NULL,
-						board_topic_order char(1) NOT NULL default 'r',
-						board_post_order char(1) NOT NULL default 'a',
-						board_hot_topic smallint(4) NOT NULL,
-						board_max_post_chars int(6) unsigned NOT NULL,
-						board_post_timelock int(5) unsigned NOT NULL default '0',
-						board_display_edit_date char(1) NOT NULL default 'n',
-						board_text_formatting varchar(50) NOT NULL default 'xhtml',
-						board_html_formatting char(4) NOT NULL default 'safe',
-						board_allow_img_urls char(1) NOT NULL default 'n',
-						board_auto_link_urls char(1) NOT NULL default 'y',
-						board_notify_emails varchar(255) NOT NULL,
-						board_notify_emails_topics varchar(255) NOT NULL,
-						board_max_attach_perpost smallint(4) NOT NULL,
-						board_max_attach_size int(6) unsigned NOT NULL,
-						board_max_width int(4) unsigned NOT NULL,
-						board_max_height int(4) unsigned NOT NULL,
-						board_attach_types char(3) NOT NULL default 'img',
-						board_use_img_thumbs char(1) NOT NULL default 'y',
-						board_thumb_width int(4) unsigned NOT NULL,
-						board_thumb_height int(4) unsigned NOT NULL,
-						board_forum_permissions text NOT NULL,
-						board_use_deft_permissions char(1) NOT NULL default 'n',
-						board_recent_poster_id int(10) unsigned NOT NULL default '0',
-						board_recent_poster varchar(70) NOT NULL,
-						board_enable_rss char(1) NOT NULL default 'y',
-						board_use_http_auth char(1) NOT NULL default 'n',
-						PRIMARY KEY `board_id` (`board_id`))");
+                        board_id int(5) unsigned NOT NULL auto_increment,
+                        board_label varchar(150) NOT NULL,
+                        board_name varchar(50) NOT NULL,
+                        board_enabled char(1) NOT NULL default 'y',
+                        board_forum_trigger varchar(70) NOT NULL default '',
+                        board_site_id INT(5) unsigned NOT NULL default 1,
+                        board_alias_id INT(5) unsigned NOT NULL default 0,
+                        board_allow_php char(1) NOT NULL default 'n',
+                        board_php_stage char(1) NOT NULL default 'o',
+                        board_install_date int(10) unsigned default '0' NOT NULL,
+                        board_forum_url varchar(150) NOT NULL,
+                        board_default_theme varchar(75) NOT NULL,
+                        board_upload_path varchar(150) NOT NULL,
+                        board_topics_perpage smallint(4) NOT NULL,
+                        board_posts_perpage smallint(4) NOT NULL,
+                        board_topic_order char(1) NOT NULL default 'r',
+                        board_post_order char(1) NOT NULL default 'a',
+                        board_hot_topic smallint(4) NOT NULL,
+                        board_max_post_chars int(6) unsigned NOT NULL,
+                        board_post_timelock int(5) unsigned NOT NULL default '0',
+                        board_display_edit_date char(1) NOT NULL default 'n',
+                        board_text_formatting varchar(50) NOT NULL default 'xhtml',
+                        board_html_formatting char(4) NOT NULL default 'safe',
+                        board_allow_img_urls char(1) NOT NULL default 'n',
+                        board_auto_link_urls char(1) NOT NULL default 'y',
+                        board_notify_emails varchar(255) NOT NULL,
+                        board_notify_emails_topics varchar(255) NOT NULL,
+                        board_max_attach_perpost smallint(4) NOT NULL,
+                        board_max_attach_size int(6) unsigned NOT NULL,
+                        board_max_width int(4) unsigned NOT NULL,
+                        board_max_height int(4) unsigned NOT NULL,
+                        board_attach_types char(3) NOT NULL default 'img',
+                        board_use_img_thumbs char(1) NOT NULL default 'y',
+                        board_thumb_width int(4) unsigned NOT NULL,
+                        board_thumb_height int(4) unsigned NOT NULL,
+                        board_forum_permissions text NOT NULL,
+                        board_use_deft_permissions char(1) NOT NULL default 'n',
+                        board_recent_poster_id int(10) unsigned NOT NULL default '0',
+                        board_recent_poster varchar(70) NOT NULL,
+                        board_enable_rss char(1) NOT NULL default 'y',
+                        board_use_http_auth char(1) NOT NULL default 'n',
+                        PRIMARY KEY `board_id` (`board_id`))");
 
             $query = ee()->db->query("SELECT * FROM exp_forum_prefs");
             $data = array();
@@ -695,15 +695,15 @@ class Forum_upd
 
             // Tables need board_id added
 
-            $adjust = array('exp_forums' => 'forum_id',
-                'exp_forum_topics' => 'forum_id',
-                'exp_forum_posts' => 'forum_id',
+            $adjust = array('exp_forums'   => 'forum_id',
+                'exp_forum_topics'         => 'forum_id',
+                'exp_forum_posts'          => 'forum_id',
                 'exp_forum_administrators' => 'admin_id',
-                'exp_forum_moderators' => 'mod_id',
-                'exp_forum_subscriptions' => 'topic_id',
-                'exp_forum_search' => 'search_id',
-                'exp_forum_read_topics' => 'member_id',
-                'exp_forum_attachments' => 'post_id');
+                'exp_forum_moderators'     => 'mod_id',
+                'exp_forum_subscriptions'  => 'topic_id',
+                'exp_forum_search'         => 'search_id',
+                'exp_forum_read_topics'    => 'member_id',
+                'exp_forum_attachments'    => 'post_id');
 
             foreach ($adjust as $table => $after) {
                 ee()->db->query("ALTER TABLE `" . ee()->db->escape_str($table) . "` ADD board_id INT(5) UNSIGNED NOT NULL DEFAULT 1 AFTER `" . ee()->db->escape_str($after) . "`");
@@ -750,10 +750,10 @@ class Forum_upd
             // multiple identical rows if a member was subscribed to two or more threads that were later merged.
             // Find them.  Eliminate them!
             $query = ee()->db->query("SELECT COUNT(*) AS count, topic_id, member_id
-											FROM exp_forum_subscriptions
-											GROUP BY topic_id, member_id
-											HAVING count > 1
-											ORDER BY count DESC");
+                                            FROM exp_forum_subscriptions
+                                            GROUP BY topic_id, member_id
+                                            HAVING count > 1
+                                            ORDER BY count DESC");
 
             if ($query->num_rows() > 0) {
                 foreach ($query->result_array() as $row) {
@@ -768,10 +768,10 @@ class Forum_upd
 
             // Remove any duplicates from exp_forum_read_topics before we set a primary key of member_id-board_id
             $query = ee()->db->query("SELECT COUNT(*) AS count, member_id, board_id
-											FROM exp_forum_read_topics
-											GROUP BY member_id, board_id
-											HAVING count > 1
-											ORDER BY count DESC");
+                                            FROM exp_forum_read_topics
+                                            GROUP BY member_id, board_id
+                                            HAVING count > 1
+                                            ORDER BY count DESC");
 
             if ($query->num_rows() > 0) {
                 foreach ($query->result_array() as $row) {
@@ -860,10 +860,10 @@ class Forum_upd
                     $table,
                     array(
                         'ip_address' => array(
-                            'name' => 'ip_address',
-                            'type' => 'varchar',
+                            'name'       => 'ip_address',
+                            'type'       => 'varchar',
                             'constraint' => '45',
-                            'null' => false
+                            'null'       => false
                         )
                     )
                 );
@@ -880,9 +880,9 @@ class Forum_upd
             $fields = array(
                 'mod_member_name' => array(
                     'mod_member_name' => 'mod_member_name',
-                    'type' => 'varchar',
-                    'constraint' => '50',
-                    'null' => true)
+                    'type'            => 'varchar',
+                    'constraint'      => '50',
+                    'null'            => true)
             );
 
             ee()->smartforge->modify_column('forum_moderators', $fields);
@@ -901,13 +901,49 @@ class Forum_upd
 
         if (version_compare($current, '5.0.1', '<')) {
             ee('Model')->make('Extension', [
-                'class' => 'Forum_ext',
-                'method' => 'anonymizeMember',
-                'hook' => 'member_anonymize',
+                'class'    => 'Forum_ext',
+                'method'   => 'anonymizeMember',
+                'hook'     => 'member_anonymize',
                 'settings' => [],
-                'version' => $current,
-                'enabled' => 'y'
+                'version'  => $current,
+                'enabled'  => 'y'
             ])->save();
+        }
+
+        // Adjust board order so it is always right
+        if (version_compare($current, '5.0.3', '<')) {
+            $boards = ee('Model')->get('forum:Board')
+                ->order('board_id', 'asc')
+                ->all();
+
+            // Loop through each board, and set the order of all the forums in that board
+            foreach ($boards as $board) {
+                $order = 1;
+
+                $boards_categories = ee('Model')->get('forum:Forum')
+                    ->filter('board_id', $board->board_id)
+                    ->filter('forum_is_cat', 'y')
+                    ->order('forum_order', 'asc')
+                    ->all();
+
+                foreach ($boards_categories as $cat) {
+                    // Set the forum order and save it
+                    $cat->forum_order = $order++;
+                    $cat->save();
+
+                    $forumsInCategory = ee('Model')->get('forum:Forum')
+                        ->filter('board_id', $board->board_id)
+                        ->filter('forum_parent', $cat->forum_id)
+                        ->order('forum_order', 'asc')
+                        ->all();
+
+                    foreach ($forumsInCategory as $forum) {
+                        // Set the forum order and save it
+                        $forum->forum_order = $order++;
+                        $forum->save();
+                    }
+                }
+            }
         }
 
         return true;

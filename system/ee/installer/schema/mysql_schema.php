@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -681,6 +681,7 @@ class EE_Schema
 			field_text_direction CHAR(3) NOT NULL default 'ltr',
 			field_search char(1) NOT NULL default 'n',
 			field_is_hidden char(1) NOT NULL default 'n',
+			field_is_conditional char(1) NOT NULL default 'n',
 			field_fmt varchar(40) NOT NULL default 'xhtml',
 			field_show_fmt char(1) NOT NULL default 'y',
 			field_order int(3) unsigned NOT NULL,
@@ -1196,6 +1197,39 @@ class EE_Schema
 			has_global_settings char(1) default 'n',
 			PRIMARY KEY `fieldtype_id` (`fieldtype_id`)
 		)";
+
+        // Field conditions
+        $Q[] = "CREATE TABLE `exp_field_conditions` (
+			`condition_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`condition_set_id` int(10) unsigned NOT NULL,
+			`condition_field_id` int(10) unsigned NOT NULL,
+			`evaluation_rule` varchar(100) NOT NULL DEFAULT '',
+			`value` varchar(255) DEFAULT NULL,
+			`order` int(10) unsigned NOT NULL DEFAULT 0,
+			PRIMARY KEY `condition_id` (`condition_id`),
+			KEY `condition_set_id` (`condition_set_id`),
+			KEY `condition_field_id` (`condition_field_id`)
+		)";
+
+        $Q[] = "CREATE TABLE `exp_field_condition_sets` (
+			`condition_set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`match` varchar(20) NOT NULL DEFAULT 'all',
+			`order` int(10) unsigned NOT NULL DEFAULT 0,
+			PRIMARY KEY `condition_set_id` (`condition_set_id`)
+		)";
+
+        $Q[] = "CREATE TABLE exp_field_condition_sets_channel_fields (
+			`condition_set_id` int(10) unsigned NOT NULL,
+			`field_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY `condition_set_id_field_id` (`condition_set_id`, `field_id`)
+		)";
+
+        $Q[] = "CREATE TABLE exp_channel_entry_hidden_fields (
+			`entry_id` int(10) unsigned NOT NULL,
+			`field_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY `entry_id_field_id` (`entry_id`, `field_id`)
+		)";
+
 
         // Files table
         $Q[] = "CREATE TABLE `exp_files` (
@@ -1732,7 +1766,7 @@ class EE_Schema
 				values (1, '0', '" . $predefined_buttons[$button]['tag_name'] . "', '" . $predefined_buttons[$button]['tag_open'] . "', '" . $predefined_buttons[$button]['tag_close'] . "', '" . $predefined_buttons[$button]['accesskey'] . "', '" . $buttoncount++ . "', '1', '" . $predefined_buttons[$button]['classname'] . "')";
         }
 
-        // Default field types
+        // Default fieldtypes
         $default_fts = array('select', 'text', 'number', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'slider', 'range_slider', 'toggle', 'url', 'colorpicker', 'selectable_buttons', 'notes');
 
         foreach ($default_fts as $name) {

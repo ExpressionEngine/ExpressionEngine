@@ -153,7 +153,7 @@ context('Installer (should fail)', () => {
     })
 
     it('shows an error when using a too-long username', () => {
-      Cypress.$('input[maxlength=50]').prop('maxlength', 80);
+      Cypress.$('input[name=username]').prop('maxlength', 80);
       install_form.get('username').clear().type('12345678901234567890123456789012345678901234567890123456789012345678901234567890')
       install_form.get('install_submit').click()
       page.get('inline_errors').its('length').should('gte', 1)

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -81,22 +81,22 @@ class AlertCollection
                 switch ($value['severity']) {
                     case 'error':
                         $alert->asIssue();
-
                         break;
 
                     case 'success':
                         $alert->asSuccess();
-
                         break;
 
                     case 'tip':
                         $alert->asTip();
-
                         break;
 
                     case 'important':
                         $alert->asWarning();
+                        break;
 
+                    case 'attention':
+                        $alert->asAttention();
                         break;
                 }
 
@@ -113,22 +113,22 @@ class AlertCollection
                     switch ($value['sub_alert']['severity']) {
                         case 'error':
                             $sub_alert->asIssue();
-
                             break;
 
                         case 'success':
                             $sub_alert->asSuccess();
-
                             break;
 
                         case 'tip':
                             $sub_alert->asTip();
-
                             break;
 
                         case 'important':
                             $sub_alert->asWarning();
+                            break;
 
+                        case 'attention':
+                            $sub_alert->asAttention();
                             break;
                     }
                     $alert->setSubAlert($sub_alert);

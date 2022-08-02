@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -264,7 +264,7 @@ class LegacyParser
             // date variables
             elseif (strpos($val, 'format') !== false && preg_match("/.+?\s+?format/", $val)) {
                 $var_single[$val] = $this->extractDateFormat($val);
-            } else {  // single variables
+            } elseif (!is_numeric($val)) {  // single variables
                 $var_single[$val] = $val;
             }
         }

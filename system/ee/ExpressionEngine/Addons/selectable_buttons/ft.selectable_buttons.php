@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -26,7 +26,7 @@ class Selectable_buttons_ft extends Multi_select_ft
     public $entry_manager_compatible = true;
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */
@@ -93,6 +93,25 @@ class Selectable_buttons_ft extends Multi_select_ft
                 $extra
             );
         }
+    }
+
+    /**
+     * :value modifier
+     */
+    public function replace_value($data, $params = array(), $tagdata = false)
+    {
+        ee()->load->helper('custom_field');
+        $data = decode_multi_field($data);
+
+        return $this->_parse_single($data, $params, true);
+    }
+
+    /**
+     * :label modifier
+     */
+    public function replace_label($data, $params = array(), $tagdata = false)
+    {
+        return $this->replace_tag($data, $params, $tagdata);
     }
 
     public function display_settings($data)

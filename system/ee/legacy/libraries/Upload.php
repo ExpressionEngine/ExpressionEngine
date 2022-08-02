@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -725,7 +725,12 @@ class EE_Upload
             return false;
         }
 
-        return ee('Security/XSS')->clean($data, true);
+        $checkAsImage = true;
+        if (strpos($this->file_type, 'image/svg') === 0) {
+            $checkAsImage = false;
+        }
+
+        return ee('Security/XSS')->clean($data, $checkAsImage);
     }
 
     public function do_embedded_php_check()

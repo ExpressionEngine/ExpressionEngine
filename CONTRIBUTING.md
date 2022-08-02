@@ -16,7 +16,7 @@ Table of Contents:
 One of the best and easiest ways to give back to the ExpressionEngine community is by answering questions and helping fellow users. Pay it forward and help new users get up to speed, or help other experts with challenging problems. Here's where you can find each other:
 
 - the [Forums](https://expressionengine.com/forums)
-- the official [Slack](https://expressionengine.com/community#slack)
+- the official [Slack](https://expressionengine.com//blog/join-us-in-slack)
 - over at [StackExchange](https://expressionengine.stackexchange.com)
 - on Twitter using the **#eecms** hashtag
 - start or join a [local Meetup](https://www.meetup.com/topics/expressionengine/)!
@@ -116,13 +116,7 @@ If your idea is not useful to 80% of users and typical use cases, it may be bett
 
 ### Documentation
 
-Every pull request should have a single line descriptive changelog message in the appropriate changelog file. When a version is released, these items are moved to the User Guide release branch to publish the changes.
-
-| File | Semantic Version |
-| ---- | ---------------- |
-| changelogs/patch.rst | x.x.**X** |
-| changelogs/minor.rst | x.**X**.x |
-| changelogs/major.rst | **X**.x.x |
+Every pull request should have its title set to line that will form a changelog entry, ex. `Resolved #1234 where switching theme to pink did not work for non-superadmins`, referencing the corresponding GitHub issue. When a version is released, these items are moved to the User Guide release branch to publish the changes.
 
 All additive changes and new features should have a corresponding pull request in the [User Guide repository](https://github.com/ExpressionEngine/ExpressionEngine-User-Guide) that documents the changes.
 
@@ -179,7 +173,7 @@ On the off chance that your contribution adds new source files, use the language
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */</code></pre>
 
@@ -190,7 +184,7 @@ On the off chance that your contribution adds new source files, use the language
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */</code></pre>
 

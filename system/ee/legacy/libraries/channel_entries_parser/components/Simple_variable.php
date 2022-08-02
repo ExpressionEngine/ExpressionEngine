@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -383,7 +383,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
     {
         if ($raw_val = preg_replace('/^' . $prefix . '/', '', $val)) {
             if (array_key_exists($raw_val, $data)) {
-                $tagdata = str_replace(LD . $val . RD, $data[$raw_val], $tagdata);
+                $tagdata = str_replace(LD . $val . RD, $data[$raw_val] ?: '', $tagdata);
             } else {
                 $field = ee('Variables/Parser')->parseVariableProperties($key, $prefix);
                 $method = 'replace_' . $field['modifier'];

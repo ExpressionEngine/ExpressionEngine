@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,6 +32,7 @@ class Runner
         // through the browser
         $this->setSteps([
             'preflight',
+            'prepMajorUpgrade',
             'download',
             'unpack'
         ]);
@@ -55,6 +56,11 @@ class Runner
         $preflight->cleanUpOldUpgrades();
         $preflight->checkDiskSpace();
         $preflight->stashConfig();
+    }
+
+    public function prepMajorUpgrade()
+    {
+        ee('Updater/PrepMajorUpgrade')->prepMajorIfApplicable();
     }
 
     public function download()

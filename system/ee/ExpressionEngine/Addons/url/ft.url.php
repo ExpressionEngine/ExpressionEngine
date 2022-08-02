@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,6 +13,7 @@
  */
 class Url_Ft extends EE_Fieldtype
 {
+
     /**
      * @var array $info Legacy Fieldtype info array
      */
@@ -25,6 +26,8 @@ class Url_Ft extends EE_Fieldtype
      * @var bool $has_array_data Whether or not this Fieldtype is setup to parse as a tag pair
      */
     public $has_array_data = false;
+
+    public $defaultEvaluationRule = 'isNotEmpty';
 
     /**
      * Validate Field
@@ -56,6 +59,14 @@ class Url_Ft extends EE_Fieldtype
         // is the scheme valid?
         if (! isset($parsed_url['host']) or ! isset($parsed_url['scheme'])) {
             // check for protocol relativity allowance before bailing
+            if (
+                in_array('/', $this->get_setting('allowed_url_schemes'))
+                && strncasecmp($data, '/', 1) === 0
+                ) {
+                // I'll allow it!
+                return true;
+            }
+
             if (
                 in_array('//', $this->get_setting('allowed_url_schemes'))
                 && strncasecmp($data, '//', 2) === 0
@@ -142,13 +153,15 @@ class Url_Ft extends EE_Fieldtype
     {
         ee()->lang->loadfile('fieldtypes');
 
+        $schemes  =$this->getSchemes();
+
         $settings = array(
             array(
                 'title' => 'url_ft_allowed_url_schemes',
                 'fields' => array(
                     'allowed_url_schemes' => array(
                         'type' => 'checkbox',
-                        'choices' => $this->getSchemes(),
+                        'choices' => $schemes,
                         'value' => (isset($data['allowed_url_schemes'])) ? $data['allowed_url_schemes'] : $this->getSchemes(true),
                         'required' => true
                     )
@@ -160,8 +173,8 @@ class Url_Ft extends EE_Fieldtype
                 'fields' => array(
                     'url_scheme_placeholder' => array(
                         'type' => 'radio',
-                        'choices' => $this->getSchemes(),
-                        'value' => (isset($data['url_scheme_placeholder'])) ? $data['url_scheme_placeholder'] : '',
+                        'choices' => $schemes,
+                        'value' => (isset($data['url_scheme_placeholder'])) ? $data['url_scheme_placeholder'] : array_shift($schemes),
                         'required' => true
                     )
                 )
@@ -226,6 +239,7 @@ class Url_Ft extends EE_Fieldtype
         }
 
         $protocols += [
+            '/' => '/ (' . lang('url_ft_single_slash_protocol_relative_url') . ')',
             '//' => '// (' . lang('url_ft_protocol_relative_url') . ')',
             'ftp://' => 'ftp://',
             'mailto:' => 'mailto:',

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,7 +13,7 @@ namespace ExpressionEngine\Service\Addon;
 use ExpressionEngine\Core\Provider;
 
 /**
- * Addon Service
+ * Add-on Service
  */
 class Addon
 {
@@ -41,7 +41,7 @@ class Addon
     }
 
     /**
-     * Is this addon installed?
+     * Is this add-on installed?
      *
      * @return bool Is installed?
      */
@@ -104,7 +104,7 @@ class Addon
 
             // Check for an installed plugin
             // @TODO restore the model approach once we have solved the
-            // circular dependency between the Addon service and the
+            // circular dependency between the Add-on service and the
             // Model/Datastore service.
             /*
             $plugin = ee('Model')->get('Plugin')
@@ -144,7 +144,7 @@ class Addon
     }
 
     /**
-     * Does this addon have an update available?
+     * Does this add-on have an update available?
      *
      * @return bool Does it have an update available?
      */
@@ -377,6 +377,11 @@ class Addon
         $class = ucfirst($this->shortname) . '_rtefb';
 
         return $this->getFullyQualified($class);
+    }
+
+    public function getEvaluationRuleClass($rule)
+    {
+        return $this->getFullyQualified("EvaluationRules\\" . ucfirst($rule));
     }
 
     /**

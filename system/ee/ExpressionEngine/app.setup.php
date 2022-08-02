@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,6 +17,7 @@ use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
 use ExpressionEngine\Service\Channel;
 use ExpressionEngine\Service\ChannelSet;
+use ExpressionEngine\Service\ConditionalFields;
 use ExpressionEngine\Service\Config;
 use ExpressionEngine\Service\Consent;
 use ExpressionEngine\Service\Cookie;
@@ -56,6 +57,7 @@ use ExpressionEngine\Service\Generator\CommandGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
+use ExpressionEngine\Model\Channel\ChannelEntry;
 
 // TODO should put the version in here at some point ...
 $setup = [
@@ -226,7 +228,7 @@ $setup = [
             return $facade;
         },
 
-        'Migration' => function ($ee, $migration=null) {
+        'Migration' => function ($ee, $migration = null) {
             return new Migration\Factory($ee->make('db'), $ee->make('Filesystem'), $migration);
         },
 
@@ -307,6 +309,13 @@ $setup = [
                 $ee->make('Updater/Logger'),
                 $ee->make('Config')->getFile(),
                 array_unique($theme_paths)
+            );
+        },
+
+        'Updater/PrepMajorUpgrade' => function ($ee) {
+            return new Updater\Downloader\PrepMajorUpgrade(
+                $ee->make('Filesystem'),
+                $ee->make('Updater/Logger')
             );
         },
 
@@ -397,6 +406,9 @@ $setup = [
             );
         },
 
+        'ConditionalFieldEvaluator' => function ($ee, ChannelEntry $channelEntry) {
+            return new ConditionalFields\Evaluator($channelEntry);
+        },
     ),
 
     'services.singletons' => array(
@@ -461,6 +473,10 @@ $setup = [
             $view = $ee->make('View');
 
             return new Sidebar\Navigation\NavigationSidebar($view);
+        },
+
+        'ConditionalFields' => function ($ee) {
+            return new ConditionalFields\Factory();
         },
 
         'Config' => function ($ee) {
@@ -616,6 +632,10 @@ $setup = [
         'ChannelFormSettings' => 'Model\Channel\ChannelFormSettings',
         'ChannelLayout' => 'Model\Channel\ChannelLayout',
         'FieldData' => 'Model\Content\FieldData',
+
+        // ..\ConditionalFields
+        'FieldConditionSet' => 'Model\ConditionalFields\FieldConditionSet',
+        'FieldCondition' => 'Model\ConditionalFields\FieldCondition',
 
         // ..\Comment
         'Comment' => 'Model\Comment\Comment',

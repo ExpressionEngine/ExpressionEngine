@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,13 +25,13 @@ class Slider_ft extends Text_ft
     public $settings_form_field_name = 'slider';
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */
-    public $supportedEvaluationRules = ['lessThan', 'lessOrEqualThan', 'equal', 'greaterThan', 'greaterOrEqualThan', 'isEmpty', 'isNotEmpty'];
+    public $supportedEvaluationRules = ['lessThan', 'lessOrEqualThan', 'equal', 'greaterThan', 'greaterOrEqualThan'];
 
-    public $defaultEvaluationRule = 'isNotEmpty';
+    public $defaultEvaluationRule = 'equal';
 
     /**
      * Display the field
@@ -42,7 +42,7 @@ class Slider_ft extends Text_ft
     public function display_field($data)
     {
         //some fallback if we switched from double to single slider
-        if (strpos($data, '|') !== false) {
+        if (!is_null($data) && strpos($data, '|') !== false) {
             ee()->load->helper('custom_field');
             $data = decode_multi_field($data);
             if (isset($data[0])) {
@@ -52,10 +52,10 @@ class Slider_ft extends Text_ft
 
         $field = array(
             'name' => $this->field_name,
-            'value' => !is_null($data) ? $data : $this->settings['field_min_value'],
-            'min' => (isset($this->settings['field_min_value']) && $this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0,
-            'max' => (isset($this->settings['field_max_value']) && $this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100,
-            'step' => (isset($this->settings['field_step']) && $this->settings['field_step'] != '') ? $this->settings['field_step'] : 1,
+            'value' => is_numeric($data) ? $data : $this->settings['field_min_value'],
+            'min' => (isset($this->settings['field_min_value']) && is_numeric($this->settings['field_min_value'])) ? $this->settings['field_min_value'] : 0,
+            'max' => (isset($this->settings['field_max_value']) && is_numeric($this->settings['field_max_value'])) ? $this->settings['field_max_value'] : 100,
+            'step' => (isset($this->settings['field_step']) && is_numeric($this->settings['field_step'])) ? $this->settings['field_step'] : 1,
             'suffix' => isset($this->settings['field_suffix']) ? $this->settings['field_suffix'] : '',
             'prefix' => isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : ''
         );
@@ -102,12 +102,12 @@ class Slider_ft extends Text_ft
 
     public function replace_min($data, $params = '', $tagdata = '')
     {
-        return ($this->settings['field_min_value'] != '') ? (int) $this->settings['field_min_value'] : 0;
+        return (is_numeric($this->settings['field_min_value'])) ? $this->settings['field_min_value'] : 0;
     }
 
     public function replace_max($data, $params = '', $tagdata = '')
     {
-        return ($this->settings['field_max_value'] != '') ? (int) $this->settings['field_max_value'] : 100;
+        return (is_numeric($this->settings['field_max_value'])) ? $this->settings['field_max_value'] : 100;
     }
 
     public function replace_prefix($data, $params = '', $tagdata = '')
