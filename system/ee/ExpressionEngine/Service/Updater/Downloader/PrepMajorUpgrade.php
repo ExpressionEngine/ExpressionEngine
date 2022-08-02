@@ -87,7 +87,6 @@ class PrepMajorUpgrade
                 // Move the main addon folder
                 $systemAddonPath = PATH_ADDONS . $addonName;
                 $userAddonPath = PATH_THIRD . $addonName;
-
                 // Check to make sure the directory exists and it doesnt exist in the user folder
                 if ($this->filesystem->isDir($systemAddonPath) && !$this->filesystem->isDir($userAddonPath)) {
                     $this->filesystem->rename($systemAddonPath, $userAddonPath);
@@ -96,10 +95,17 @@ class PrepMajorUpgrade
                 // Move the themes folder
                 $systemAddonThemesPath = PATH_THEMES . $addonName;
                 $userAddonThemesPath = PATH_THIRD_THEMES . $addonName;
-
                 // Check to make sure the directory exists and it doesnt exist in the user folder
                 if ($this->filesystem->isDir($systemAddonThemesPath) && !$this->filesystem->isDir($userAddonThemesPath)) {
                     $this->filesystem->rename($systemAddonThemesPath, $userAddonThemesPath);
+                }
+
+                // Move the templates folder
+                $systemAddonTemplatesPath = PATH_THEME_TEMPLATES . $addonName;
+                $userAddonTemplatesPath = PATH_THIRD_THEME_TEMPLATES . $addonName;
+                // Check to make sure the directory exists and it doesnt exist in the user folder
+                if ($this->filesystem->isDir($systemAddonTemplatesPath) && !$this->filesystem->isDir($userAddonTemplatesPath)) {
+                    $this->filesystem->rename($systemAddonTemplatesPath, $userAddonTemplatesPath);
                 }
             }
         }
