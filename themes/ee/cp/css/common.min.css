@@ -15791,17 +15791,17 @@ input[type=button].btn-block {
   opacity: 0.4;
   margin-right: 3px;
 }
-.upgrade-success-banner__wrapper .banner-dismiss {
+.upgrade-success-banner__wrapper .upgrade-banner-dismiss {
   color: var(--ee-text-secondary);
   position: absolute;
   right: 30px;
   text-decoration: none;
   top: 20px;
 }
-.upgrade-success-banner__wrapper .banner-dismiss:hover {
+.upgrade-success-banner__wrapper .upgrade-banner-dismiss:hover {
   color: var(--ee-text-tertiary);
 }
-.upgrade-success-banner__wrapper .banner-dismiss::before {
+.upgrade-success-banner__wrapper .upgrade-banner-dismiss::before {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   content: "\f00d";
