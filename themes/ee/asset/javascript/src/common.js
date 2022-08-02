@@ -339,14 +339,6 @@ $(document).ready(function(){
 		$(this).parent().remove();
 		$.get(EE.cp.dismissBannerURL);
 	})
-	
-	// Collapse navigation sidebar
-	// -------------------------------------------------------------------
-	$('.upgrade-banner-dismiss').on('click', function (e) {
-		e.preventDefault();
-		$(this).parent().remove();
-		$.get(EE.cp.upgradeSuccessBannerURL);
-	})
 
 	// Toggle Developer Menu
 	// -------------------------------------------------------------------

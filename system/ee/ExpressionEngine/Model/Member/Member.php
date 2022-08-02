@@ -305,7 +305,7 @@ class Member extends ContentModel
     protected $cp_homepage;
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
-    protected $dismissed_pro_banner;
+    protected $dismissed_banner;
     protected $enable_mfa;
 
     /**
