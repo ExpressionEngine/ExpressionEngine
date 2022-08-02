@@ -189,7 +189,7 @@ class Forum_tab
                 ->where('topic_id', (int) $value)
                 ->get('forum_topics');
 
-            ee()->lang->loadfile('forum_cp');
+            ee()->lang->loadfile('forum_cp', 'forum');
 
             if (isset($values['forum_title'], $values['forum_body'])
                 && (! empty($values['forum_title']) || ! empty($values['forum_body']))) {
