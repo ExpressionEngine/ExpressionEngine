@@ -68,16 +68,16 @@
                 <div class="app-about__status app-about__status--update-major hidden">
                     <?=lang('out_of_date_upgrade_major')?>
 
-                    <br>
+                    <br><br>
 
                     <?php
                     // IF the user is not currently using pro AND they have multiple members
                     //   OR they have pro installed but dont have a valid license
                     // THEN theyre gonna need a license
                      if (ee('Model')->get('Member')->count() > 1 && (! IS_PRO || ee()->view->pro_license_status !== 'valid')): ?>
-                        <br><div><?=lang('one_click_major_update_pro_license_required')?></div>
+                        <?=lang('one_click_major_update_pro_license_required')?><br><br>
                     <?php endif;?>
-                    <div><?=lang('one_click_major_update_pro_license_info')?><br></div>
+                        <?=lang('one_click_major_update_pro_license_info')?><br><br>
                     <div class="app-about__status--update_major_version">
                         <?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name' => 'one_click_major_update_confirm'])?>
                             <input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
