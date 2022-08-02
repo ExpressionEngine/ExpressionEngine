@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'clearJumpCaches',
+                'addDismissedBannerToMember',
             ]
         );
 
@@ -41,6 +42,23 @@ class Updater
     private function clearJumpCaches()
     {
         ee('CP/JumpMenu')->clearAllCaches();
+    }
+
+    private function addDismissedBannerToMember()
+    {
+        if (!ee()->db->field_exists('dismissed_banner', 'members')) {
+            ee()->smartforge->add_column(
+                'members',
+                [
+                    'dismissed_banner' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'n',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
     }
 }
 
