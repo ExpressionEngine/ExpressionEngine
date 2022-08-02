@@ -243,6 +243,9 @@ else: ?>
                 // Don't do reordering logic if the table is empty
                 $reorder = $reorder && ! empty($data);
                 $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+                if (isset($vertical_layout)): ?>
+                    <th class="hidden"></th>
+                <?php endif;
 
                 foreach ($columns as $settings):
                     $attrs = (isset($settings['attrs'])) ? $settings['attrs'] : array();
@@ -338,7 +341,7 @@ else: ?>
                 ?>
                     <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
                         <?php if (isset($vertical_layout)):?>
-                        <td class="grid-field__item-fieldset">
+                        <td class="grid-field__item-fieldset hidden">
                             <div class="grid-field__item-tools grid-field__item-tools--item-open">
                                 <a href class="grid-field__item-tool js-toggle-grid-item">
                                     <span class="sr-only"><?=lang('collapse')?></span>
