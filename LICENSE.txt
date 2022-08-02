@@ -223,6 +223,11 @@ separate copyright notices and license terms. Your use of the source
 code for the these subcomponents is subject to the terms and
 conditions of the following licenses.
 
+The following subcomponents are licensed under the Apache 2.0 License:
+    PHP Option Type
+
+
+
 The following subcomponents are licensed under the MIT License:
 
     The CodeMirror component:
@@ -280,10 +285,30 @@ The following subcomponents are licensed under the MIT License:
     The CKEditor component:
         Copyright (c) 2003-2020 CKSource
 
+    The Composer bin plugin
+        Copyright (c) 2016 Bilal Amarni
+
+    Flysystem
+        Copyright (c) 2013-2022 Frank de Jonge
+
+    Flysystem Cached CachedAdapter
+        Copyright (c) 2013-2022 Frank de Jonge
+
+    League Mime Type Detection
+        Copyright (c) 2013-2022 Frank de Jonge
+
+    Caching Interface
+        Copyright (c) 2015 PHP Framework Interoperability Group
+
+    Symfony Polyfill / Ctype
+        Copyright (c) 2018-2019 Fabien Potencier
+
+
     The Selection and Range components use code heavily inspired by:
 
         Rangy: Copyright (c) 2014 Tim Down
         IERange: Copyright (c) 2009 Tim Cameron Ryan
+
 
     MIT License
 
@@ -386,6 +411,10 @@ The following subcomponents are licensed with a BSD-3-Clause license:
         All rights reserved.
 
         For a copy of this license, see licenses/LICENSE-smartypants.txt
+
+    PHP dotenv
+        Copyright (c) 2014, Graham Campbell.
+        Copyright (c) 2013, Vance Lucas.
 
 For the Simple Pie's idna_convert.class.php component:
 
