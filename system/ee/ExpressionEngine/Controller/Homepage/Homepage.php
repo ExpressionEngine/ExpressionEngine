@@ -188,16 +188,7 @@ class Homepage extends CP_Controller
     public function dismissBanner()
     {
         $member = ee()->session->getMember();
-        $member->dismissed_pro_banner = 'y';
-        $member->save();
-
-        ee()->output->send_ajax_response(['success']);
-    }
-
-    public function upgradeSuccessBanner()
-    {
-        $member = ee()->session->getMember();
-        $member->upgrade_success_banner = 'y';
+        $member->dismissed_banner = 'y';
         $member->save();
 
         ee()->output->send_ajax_response(['success']);
