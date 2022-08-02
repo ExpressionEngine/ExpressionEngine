@@ -25,7 +25,34 @@ class Updater
      */
     public function do_update()
     {
+        $steps = new \ProgressIterator(
+            [
+                'addDismissedBannerToMember',
+            ]
+        );
+
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+
         return true;
+    }
+
+    private function addDismissedBannerToMember()
+    {
+        if (!ee()->db->field_exists('dismissed_banner', 'members')) {
+            ee()->smartforge->add_column(
+                'members',
+                [
+                    'dismissed_banner' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'n',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
     }
 }
 
