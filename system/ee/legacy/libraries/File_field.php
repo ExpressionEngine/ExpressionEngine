@@ -78,6 +78,9 @@ class File_field
         $vars['thumb'] = $thumb_info['thumb'];
         $vars['alt'] = $vars['filename'];
 
+        $file = $this->getFileModelForFieldData($data);
+        $vars['thumb'] = ee('Thumbnail')->get($file)->tag;
+
         //  Legacy paths will not have a filename but DO have a file_name
         // Show it
         if (empty($vars['filename']) && ! empty($vars['file_name'])) {
@@ -145,7 +148,7 @@ class File_field
         $vars['existing_files'] = $existing_files;
 
         ee()->load->add_package_path(PATH_THEMES . 'cp/default');
-        //return ee()->load->view('_shared/file/field', $vars, TRUE);
+
         return ee('View')->make('_shared/file/field')->render($vars);
     }
 
