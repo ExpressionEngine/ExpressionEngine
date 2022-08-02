@@ -31447,9 +31447,6 @@ fieldset .field-control #eye {
   display: none;
 }
 
-.grid-field__item-fieldset {
-  display: none;
-}
 .grid-field__item-fieldset .grid-field__column-label {
   display: block;
 }
