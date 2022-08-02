@@ -101,10 +101,13 @@ class PrepMajorUpgrade
                 }
 
                 // Move the templates folder
-                $systemAddonTemplatesPath = PATH_THEME_TEMPLATES . $addonName;
-                $userAddonTemplatesPath = PATH_THIRD_THEME_TEMPLATES . $addonName;
+                $systemAddonTemplatesPath = SYSPATH . 'ee/templates/_themes/' . $addonName;
+                $userAddonTemplatesPath = SYSPATH . 'user/templates/_themes/' . $addonName;
                 // Check to make sure the directory exists and it doesnt exist in the user folder
                 if ($this->filesystem->isDir($systemAddonTemplatesPath) && !$this->filesystem->isDir($userAddonTemplatesPath)) {
+                    if (!$this->filesystem->isDir(SYSPATH . 'user/templates/_themes')) {
+                        $this->filesystem->mkDir(SYSPATH . 'user/templates/_themes');
+                    }
                     $this->filesystem->rename($systemAddonTemplatesPath, $userAddonTemplatesPath);
                 }
             }
