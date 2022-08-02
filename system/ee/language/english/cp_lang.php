@@ -203,9 +203,13 @@ $lang = array(
 
     'version_identifier' => 'identifier:',
 
-    'version_update_available' => 'A newer version of ExpressionEngine is available',
+    'version_update_available' => "ExpressionEngine %s is available",
 
-    'version_update_inst' => "ExpressionEngine %s is available. <a href='#' data-post-url='%s'>Click here to upgrade</a> or follow the <a href='%s' rel='external'>manual upgrade instructions</a>.",
+    'version_update_is_vital' => 'This is recommended upgrade.',
+
+    'version_update_is_major' => 'This is major upgrade.',
+
+    'version_update_inst' => "<a href='#' data-post-url='%s'>Click here to upgrade</a> or follow the <a href='%s' rel='external'>manual upgrade instructions</a>.",
 
     'navigation_toggle' => 'Toggle Navigation',
 
@@ -636,7 +640,9 @@ $lang = array(
 
     'one_click_major_update_instructions' => '<a href="https://docs.expressionengine.com/latest/installation/updating.html#upgrading-major-version" target="_blank">Read update warnings before continuing!</a><br>Enter your password to continue:',
 
-    'one_click_major_update_pro_license_required' => 'Due to the current number of members, you will need to <a href="https://expressionengine.com/pro" target="_blank">purchase an ExpressionEngine Pro license</a> after upgrading to ExpressionEngine 7.<br><br>Starting in ExpressionEngine 7, all sites with multiple members require a Pro license.',
+    'one_click_major_update_pro_license_required' => "Due to the current number of members, you will need to <a href='https://expressionengine.com/pro' target='_blank'>purchase an ExpressionEngine Pro license</a> after upgrading to ExpressionEngine 7.",
+
+    'one_click_major_update_pro_license_info' => "Starting in ExpressionEngine 7, all sites with multiple members require a Pro license.",
 
     'one_click_major_update_confirm_error' => '<b>Unable to Authenticate</b><br><br>More details may be available in your browser console',
 
