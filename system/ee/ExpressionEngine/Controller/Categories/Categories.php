@@ -342,7 +342,7 @@ class Categories extends AbstractCategoriesController
 
             ee()->javascript->output('
 				$("input[name=cat_name]").bind("keyup keydown", function() {
-					$(this).ee_url_title("input[name=cat_url_title]", {}, false);
+					$(this).ee_url_title("input[name=cat_url_title]", {});
 				});
 			');
         } else {

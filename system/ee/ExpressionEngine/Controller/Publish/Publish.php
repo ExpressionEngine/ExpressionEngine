@@ -313,12 +313,6 @@ class Publish extends AbstractPublishController
             'file' => array('cp/publish/publish', 'cp/channel/category_edit')
         ));
 
-//        ee()->javascript->output('
-//				$("input[name=title]").bind("keyup keydown", function() {
-//					$(this).ee_url_title("input[name=title]", {}, false);
-//				});
-//		');
-
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('publish/edit')->compile() => lang('entries'),
             ee('CP/URL')->make('publish/edit', ['filter_by_channel' => $channel_id])->compile() => $channel->channel_title,
