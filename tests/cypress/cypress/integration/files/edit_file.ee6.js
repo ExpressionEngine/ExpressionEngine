@@ -87,7 +87,7 @@ context('File Manager / Edit File', () => {
     })
   })
 
-  context('editing non-image', function() {
+  context.only('editing non-image', function() {
 
     before(function() {
       cy.auth();
@@ -95,7 +95,7 @@ context('File Manager / Edit File', () => {
       
       cy.get('button').contains('Upload').first().click()
       
-      const fileName = '../../support/file/README.md'
+      const fileName = '../../support/file/text.txt'
       cy.get('.file-upload-widget').then(function(widget) {
         $(widget).removeClass('hidden')
       })
@@ -110,7 +110,7 @@ context('File Manager / Edit File', () => {
     beforeEach(function() {
       cy.auth();
       page.load()
-      cy.get('a').contains('README.md').filter(':visible').first().click()
+      cy.get('a').contains('text.txt').filter(':visible').first().click()
       cy.hasNoErrors()
     })
 

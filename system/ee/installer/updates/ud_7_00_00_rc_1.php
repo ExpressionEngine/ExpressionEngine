@@ -188,8 +188,8 @@ class Updater
                     'file_type' => [
                         'type' => 'varchar',
                         'constraint' => '50',
-                        'default' => 'other',
-                        'null' => false
+                        'default' => null,
+                        'null' => true
                     ]
                 ],
                 'mime_type'
@@ -366,10 +366,12 @@ class Updater
     {
         $addon = ee('Addon')->get('pro');
         if (! $addon or ! $addon->isInstalled()) {
+            $enableDock = bool_config_item('enable_dock');
             if (!isset(ee()->addons)) {
                 ee()->load->library('addons');
             }
             ee()->addons->install_modules(['pro']);
+            ee()->config->update_site_prefs(['enable_dock' => $enableDock ? 'y' : 'n'], 'all');
         }
     }
 

@@ -162,17 +162,6 @@ abstract class AbstractDesign extends CP_Controller
             }
         }
 
-        if (ee()->config->item('forum_is_installed') == "y") {
-            $item = $system_templates->addItem(lang('forums'), ee('CP/URL')->make('design/forums'))
-                ->withEditUrl(ee('CP/URL')->make('design/forums'))
-                ->cannotEdit()
-                ->cannotRemove();
-
-            if ($active == 'forums') {
-                $item->isActive();
-            }
-        }
-
         $sidebar->addDivider();
 
         // Template Partials

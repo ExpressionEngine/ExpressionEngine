@@ -465,5 +465,8 @@ class CommandUpdate extends Cli
                     'app_version' => $versionNamingMap[$version]
                 ]);
         }
+
+        // reset the flag for dismissed banner for members
+        ee('db')->update('members', ['dismissed_banner' => 'n']);
     }
 }

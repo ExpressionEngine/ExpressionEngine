@@ -23,9 +23,9 @@ class Filesystem
     public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = [])
     {
         if (is_null($adapter)) {
-            $basePath = array_key_exists('base_path', get_config()) ? get_config()['base_path'] : '';
-            $default = ($_SERVER['DOCUMENT_ROOT']) ?: realpath(SYSPATH .'../');
-            $adapter = new Adapter\Local(['path' => $this->normalizeAbsolutePath($basePath ?: $default)]);
+            $adapter = new Adapter\Local([
+                'path' => $this->normalizeAbsolutePath(realpath(SYSPATH . '../'))
+            ]);
         }else{
             // Fix prefixes
             $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
@@ -135,7 +135,7 @@ class Filesystem
 
         if ($overwrite == false && $append == true) {
             $flags = FILE_APPEND | LOCK_EX;
-            file_put_contents($path, $data, $flags);
+            file_put_contents($this->ensurePrefixedPath($path), $data, $flags);
         } else {
             $this->flysystem->put($path, $data);
         }

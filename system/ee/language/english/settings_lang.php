@@ -322,7 +322,7 @@ $lang = array(
 
     'file_manager_compatibility_mode' => 'Run File Manager in Compatibility Mode?',
 
-    'file_manager_compatibility_mode_desc' => 'Since ExpressionEngine 7, the File Manager offers new bigger set of features. Some of the features like subfolders support, cloud storage adapters, file usage stats require that data would be stored differently from how they were stored in older version. This might cause some add-ons to malfunction. Use the Compatibility Mode if you want the data to be stored an old way.',
+    'file_manager_compatibility_mode_desc' => 'Compatibility Mode stores files using the file format from ExpressionEngine versions previous to version 6. Compatibility Mode disables many newer File Manager features and prevents issues with add-ons that are not ExpressionEngine 7+ compatible.',
 
     'gd' => 'GD',
 

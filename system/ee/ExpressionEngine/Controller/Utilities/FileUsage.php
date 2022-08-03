@@ -133,6 +133,8 @@ class FileUsage extends Utilities
             ->cannotClose()
             ->addToBody(sprintf(
                 lang('update_file_usage_explained_desc'),
+                DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
+                ee('CP/URL')->make('utilities/db-backup')->compile(),
                 ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
             )
             ->now();
@@ -176,7 +178,11 @@ class FileUsage extends Utilities
                     continue;
                 }
                 $idField = ($table == 'categories') ? 'cat_id' : 'entry_id';
-                $query = ee('db')->select($idField . ', ' . implode(', ', $fields))->from($table)->limit($this->entriesLimit)->offset($this->offset)->get();
+                $fieldsList = $idField . ', ' . implode(', ', $fields);
+                if (strpos($table, 'channel_grid_field') === 0) {
+                    $fieldsList .= ', row_id';
+                }
+                $query = ee('db')->select($fieldsList)->from($table)->limit($this->entriesLimit)->offset($this->offset)->get();
                 // if we got less entries then expected, we come to end of DB table - shift the pointers
                 if ($query->num_rows() < $this->entriesLimit) {
                     $this->offset = 0;
@@ -245,7 +251,11 @@ class FileUsage extends Utilities
                     }
                     if (! empty($update)) {
                         //update the data table
-                        ee('db')->where($idField, $row[$idField])->update($table, $update);
+                        if (strpos($table, 'channel_grid_field') === 0) {
+                            ee('db')->where('row_id', $row['row_id'])->update($table, $update);
+                        } else {
+                            ee('db')->where($idField, $row[$idField])->update($table, $update);
+                        }
                         //add as many records for file usage as needed
                         foreach ($countFilesUsed as $customFieldId => $fieldFileUsageData) {
                             foreach ($fieldFileUsageData as $fileId => $numberOfReplacements) {

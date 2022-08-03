@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -103,19 +102,19 @@ class Pro_select_files extends Pro_variables_type
         //  Build setting: multiple?
         // -------------------------------------
 
-        $r[] = LVUI::setting('multiple', $this->setting_name('multiple'), $this->settings('multiple'));
+        $r[] = PVUI::setting('multiple', $this->setting_name('multiple'), $this->settings('multiple'));
 
         // -------------------------------------
         //  Build setting: separator
         // -------------------------------------
 
-        $r[] = LVUI::setting('separator', $this->setting_name('separator'), $this->settings('separator'));
+        $r[] = PVUI::setting('separator', $this->setting_name('separator'), $this->settings('separator'));
 
         // -------------------------------------
         //  Build setting: multi interface
         // -------------------------------------
 
-        $r[] = LVUI::setting('interface', $this->setting_name('multi_interface'), $this->settings('multi_interface'), 'drag-list-thumbs');
+        $r[] = PVUI::setting('interface', $this->setting_name('multi_interface'), $this->settings('multi_interface'), 'drag-list-thumbs');
 
         // -------------------------------------
         //  Return output
@@ -187,7 +186,7 @@ class Pro_select_files extends Pro_variables_type
             $view = 'select';
         } else {
             //  Multiple choice
-            $data['value'] = LVUI::explode($this->settings('separator'), $var_data);
+            $data['value'] = PVUI::explode($this->settings('separator'), $var_data);
             $data['thumbs'] = false;
             $data['multiple'] = true;
 
@@ -213,14 +212,14 @@ class Pro_select_files extends Pro_variables_type
         }
 
         // Process view
-        $html = LVUI::view_field($view, $data);
+        $html = PVUI::view_field($view, $data);
 
         // -------------------------------------
         //  Add upload file thing?
         // -------------------------------------
 
         if ($this->settings('upload')) {
-            $html .= LVUI::view_field('upload', array('name' => 'newfile-' . $this->id));
+            $html .= PVUI::view_field('upload', array('name' => 'newfile-' . $this->id));
         }
 
         // -------------------------------------
@@ -279,7 +278,7 @@ class Pro_select_files extends Pro_variables_type
 
         // Return stuff
         return is_array($var_data)
-            ? LVUI::implode($this->settings('separator'), $var_data)
+            ? PVUI::implode($this->settings('separator'), $var_data)
             : $var_data;
     }
 
@@ -310,7 +309,7 @@ class Pro_select_files extends Pro_variables_type
         }
 
         // Get the files as an array
-        $files = LVUI::explode($this->settings('separator'), $this->data());
+        $files = PVUI::explode($this->settings('separator'), $this->data());
 
         // Initiate rows
         $rows = array();

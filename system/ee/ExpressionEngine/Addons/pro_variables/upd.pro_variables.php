@@ -63,11 +63,6 @@ class Pro_variables_upd
     {
         // Initialize base data for addon
         $this->initializeBaseData();
-
-        if (ee('Filesystem')->isDir(PATH_THIRD . 'reupdate')) {
-            ee()->load->library('logger');
-            ee()->logger->developer('pro vars is in third party addon folder. please remove ', true, 1209600);
-        }
     }
 
     /**
@@ -261,6 +256,13 @@ class Pro_variables_upd
             ['field_type' => 'low_variables'],
         );
 
+        // Migrate content type
+        ee()->db->update(
+            'content_types',
+            ['name' => strtolower($this->class_name)],
+            ['name' => 'low_variables'],
+        );
+
         // Migrate settings
         $settings = ee()->pro_variables_settings->get();
         foreach ($settings['enabled_types'] as $k => $v) {
@@ -357,14 +359,16 @@ class Pro_variables_upd
         //  Upgrade to 5.0.0
         // ------------------------------------
 
-        if (version_compare($current, '5.0.0', '<')) {
-            // Check to see if pro variables is in the user folder. If so, leave a developer log item
-            if (ee('Filesystem')->isDir(PATH_THIRD . 'pro_variables')) {
-                echo "<pre>";
-                var_dump('log it');
-                exit;
-            }
+        if (version_compare($current, '5.0.1', '<')) {
+            // Migrate content type
+            ee()->db->update(
+                'content_types',
+                ['name' => strtolower($this->class_name)],
+                ['name' => 'low_variables'],
+            );
         }
+
+        $this->logMessageAboutLowVersion();
 
         // Update the extension and fieldtype in the DB
         ee()->db->update('extensions', $ext_data, "class = '{$this->class_name}_ext'");
@@ -374,6 +378,14 @@ class Pro_variables_upd
         return true;
     }
 
+    private function logMessageAboutLowVersion()
+    {
+        // Check to see if low variables is in the user folder. If so, leave a developer log item
+        if (ee('Filesystem')->isDir(PATH_THIRD . 'low_variables')) {
+            ee()->load->library('logger');
+            ee()->logger->developer(lang('low_vars_in_third_party_folder_message'), true, 1209600);
+        }
+    }
     // --------------------------------------------------------------------
 
     /**

@@ -32,6 +32,7 @@ class Manage extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $file)
     {
+        $confirmationUrl = ee('CP/URL')->make('files/confirm')->compile();
         $toolbar = [];
         if ($file->model_type == 'Directory') {
             $toolbar['open'] = array(
@@ -45,7 +46,7 @@ class Manage extends EntryManager\Columns\Column
                 'class' => 'm-link',
                 'data-file-id' => $file->file_id,
                 'data-file-name' => $file->file_name,
-                'data-confirm-ajax' => ee('CP/URL')->make('files/confirm'),
+                'data-confirm-ajax' => $confirmationUrl,
             );
             $toolbar['move'] = array(
                 'href' => '#',
@@ -53,7 +54,7 @@ class Manage extends EntryManager\Columns\Column
                 'rel' => 'modal-confirm-move-file',
                 'data-file-id' => $file->file_id,
                 'data-file-name' => $file->file_name,
-                'data-confirm-ajax' => ee('CP/URL')->make('files/confirm'),
+                'data-confirm-ajax' => $confirmationUrl,
             );
         }
         if ($file->model_type == 'File') {
@@ -82,7 +83,7 @@ class Manage extends EntryManager\Columns\Column
                     'rel' => 'modal-confirm-move-file',
                     'data-file-id' => $file->file_id,
                     'data-file-name' => $file->file_name,
-                    'data-confirm-ajax' => ee('CP/URL')->make('files/confirm'),
+                    'data-confirm-ajax' =>$confirmationUrl,
                 );
             }
         }
@@ -94,7 +95,7 @@ class Manage extends EntryManager\Columns\Column
                 'rel' => 'modal-confirm-delete-file',
                 'data-file-id' => $file->file_id,
                 'data-file-name' => $file->file_name,
-                'data-confirm-ajax' => ee('CP/URL')->make('files/confirm'),
+                'data-confirm-ajax' => $confirmationUrl,
                 'title' => lang('delete'),
             ];
         }

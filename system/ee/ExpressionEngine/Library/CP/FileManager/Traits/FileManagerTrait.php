@@ -85,6 +85,8 @@ trait FileManagerTrait
                 $vars['breadcrumbs'] = array_merge([$base_url->compile() => $uploadLocation->name], array_reverse($breadcrumbs));
                 $base_url->setQueryStringVariable('directory_id', (int) ee('Request')->get('directory_id'));
             }
+        } else if (bool_config_item('file_manager_compatibility_mode')) {
+            $files->filter('directory_id', 0);
         }
 
         $filters = ee('CP/Filter');
@@ -415,7 +417,7 @@ trait FileManagerTrait
      */
     private function createTypeFilter($uploadLocation = null)
     {
-        $typesQuery = ee('db')->select('file_type')->distinct()->from('files');
+        $typesQuery = ee('db')->select('file_type')->distinct()->from('files')->where('file_type IS NOT NULL');
         if (! empty($uploadLocation)) {
             $typesQuery->where('upload_location_id', $uploadLocation->getId());
         } else {

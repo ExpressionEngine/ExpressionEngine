@@ -180,6 +180,7 @@ class Cp
             'site_name' => ee()->config->item('site_name'),
             'site_url' => ee()->config->item('site_url'),
             'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
+            'cp.dismissBannerURL' => ee('CP/URL', 'homepage/dismiss-banner')->compile(),
             'cp.collapseSecondaryNavURL' => ee('CP/URL', 'homepage/toggle-secondary-sidebar-nav')->compile(),
             'fileManagerCompatibilityMode' => bool_config_item('file_manager_compatibility_mode'),
         ));
@@ -299,7 +300,7 @@ class Cp
 
         ee()->view->pro_license_status = '';
 
-        $pro_status = (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
+        $pro_status = !ee('pro:Access')->requiresValidLicense() ? 'skip' : (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
         switch ($pro_status) {
                 case 'update_available':
                     ee()->view->pro_license_status = 'valid';
@@ -866,7 +867,7 @@ class Cp
     public function load_package_js($file)
     {
         $current_top_path = ee()->load->first_package_path();
-        $package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
+        $package = trim(str_replace(array(PATH_THIRD, PATH_ADDONS, 'views'), '', $current_top_path), '/');
 
         $this->add_js_script(array('package' => $package . ':' . $file));
     }
@@ -882,7 +883,7 @@ class Cp
     public function load_package_css($file)
     {
         $current_top_path = ee()->load->first_package_path();
-        $package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
+        $package = trim(str_replace(array(PATH_THIRD, PATH_ADDONS, 'views'), '', $current_top_path), '/');
 
         if (REQ == 'CP') {
             $url = BASE . AMP . 'C=css' . AMP . 'M=third_party' . AMP . 'package=' . $package . AMP . 'file=' . $file;

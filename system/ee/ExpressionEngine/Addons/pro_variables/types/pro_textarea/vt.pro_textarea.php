@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -32,7 +31,7 @@ class Pro_textarea extends Pro_variables_type
     public function display_settings()
     {
         $rows = array(
-            LVUI::setting('dir', $this->setting_name('text_direction'), $this->settings('text_direction')),
+            PVUI::setting('dir', $this->setting_name('text_direction'), $this->settings('text_direction')),
             array(
                 'title' => 'enable_code_format',
                 'fields' => array(

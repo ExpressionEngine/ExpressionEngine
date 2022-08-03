@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -91,7 +90,7 @@ class Pro_text_input extends Pro_variables_type
         //  Build settings text_direction
         // -------------------------------------
 
-        $r[] = LVUI::setting('dir', $this->setting_name('text_direction'), $this->settings('text_direction'));
+        $r[] = PVUI::setting('dir', $this->setting_name('text_direction'), $this->settings('text_direction'));
 
         // -------------------------------------
         //  Return output

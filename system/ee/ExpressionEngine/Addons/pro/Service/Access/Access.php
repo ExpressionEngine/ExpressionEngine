@@ -197,7 +197,7 @@ class Access
      */
     public function shouldInjectLinks()
     {
-        if ($this->hasValidLicense() && $this->hasDockPermission() && $this->hasAnyFrontEditPermission() && ee()->input->cookie('frontedit') != 'off') {
+        if ((!$this->requiresValidLicense() || $this->hasValidLicense()) && $this->hasDockPermission() && $this->hasAnyFrontEditPermission() && ee()->input->cookie('frontedit') != 'off') {
             return true;
         }
 

@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '7.0.0-rc.2'; // The version being installed
+    public $version = '7.0.0'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -159,6 +159,7 @@ class Wizard extends CI_Controller
         define('BR', '<br />');
         define('NL', "\n");
         define('BASE', EESELF . '?D=cp');
+        defined('APP_VER') || define('APP_VER', ee()->config->item('app_version'));
 
         // Third party constants
         define('PATH_THIRD', SYSPATH . 'user/addons/');
@@ -508,6 +509,9 @@ class Wizard extends CI_Controller
     private function postflight()
     {
         ee()->functions->clear_caching('all');
+
+        // reset the flag for dismissed banner for members
+        ee('db')->update('members', ['dismissed_banner' => 'n']);
 
         foreach (ee('Model')->get('Channel')->all() as $channel) {
             $channel->updateEntryStats();

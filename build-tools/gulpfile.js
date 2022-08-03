@@ -890,8 +890,6 @@ var fillUpdaterDependencies = function (path) {
 	var filesToCopy = [
 		properties.namespaced_path + '/Boot/boot.common.php',
 		properties.namespaced_path + '/Core/Autoloader.php',
-		properties.namespaced_path + '/Library/Filesystem/Filesystem.php',
-		properties.namespaced_path + '/Library/Filesystem/FilesystemException.php',
 		properties.namespaced_path + '/Service/Logger/File.php',
 		properties.namespaced_path + '/Service/Updater/Logger.php',
 		properties.namespaced_path + '/Service/Updater/SteppableTrait.php',
@@ -948,6 +946,7 @@ var getBuildSignature = function(path, version) {
                         fs.writeFile(paths.builds + '/signature.txt', signature, function (err) {
                             if (err) return console.log(err);
                         });
+
 						resolve(signature);
 					}
 				);

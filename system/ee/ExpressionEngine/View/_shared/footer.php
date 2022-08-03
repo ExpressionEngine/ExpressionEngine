@@ -19,7 +19,7 @@
         <?php elseif (ee()->view->pro_license_status == 'invalid_domain'): ?>
             <a class="button button--primary button--small" href="https://expressionengine.com/store/licenses" target="_blank"><?=lang('update_site_domain')?></a>
         <?php else: ?>
-            <a class="button button--primary button--small" href="https://expressionengine.com/store/purchase-pro" target="_blank"><?=lang('purchase_pro_license')?></a>
+            <a class="button button--primary button--small" href="https://expressionengine.com/store/purchase-pro/pro-yearly" target="_blank"><?=lang('purchase_pro_license')?></a>
         <?php endif; ?>
 
       </div>
@@ -66,17 +66,17 @@
                 <div class="app-about__status app-about__status--update-major hidden">
                     <?=lang('out_of_date_upgrade_major')?>
 
-                    <br>
+                    <br><br>
 
                     <?php
                     // IF the user is not currently using pro AND they have multiple members
                     //   OR they have pro installed but dont have a valid license
                     // THEN theyre gonna need a license
-                     if ((! IS_PRO && (ee('Model')->get('Member')->count() > 1))
-                        || (IS_PRO && ! ee('pro:Access')->hasValidLicense())): ?>
-                        <br><div><?=lang('one_click_major_update_pro_license_required')?></div>
+                    if (ee('Model')->get('Member')->count() > 1 && (! IS_PRO || ee()->view->pro_license_status !== 'valid')): ?>
+                        <?=lang('one_click_major_update_pro_license_required')?><br><br>
                     <?php endif;?>
-                    <div class="app-about__status--update_major_version <?=isset(ee()->view->major_update) ? '' : 'hidden'?>">
+                        <?=lang('one_click_major_update_pro_license_info')?><br><br>
+                    <div class="app-about__status--update_major_version">
                         <?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name' => 'one_click_major_update_confirm'])?>
                             <input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
                             <fieldset>
@@ -94,7 +94,7 @@
                         <?=form_close()?>
                     </div>
 
-                    <div class="app-about__status--update_regular <?=isset(ee()->view->major_update) ? 'hidden' : ''?>">
+                    <div class="app-about__status--update_regular hidden">
                         <a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--primary"><?=lang('update_btn')?></a>
                     </div>
                     <div class="app-about__status-version"></div>

@@ -51,7 +51,7 @@ jobs:
       - name: Run build process
         working-directory: build-tools
         env:
-          RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
         run: |
@@ -71,7 +71,7 @@ jobs:
         continue-on-error: true
         uses: oprypin/find-latest-tag@v1
         with:
-          repository: packettide/expressionengine-private
+          repository: ExpressionEngine/ExpressionEngine
           prefix: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.
 
       - name: Increase DP version
@@ -85,7 +85,7 @@ jobs:
         continue-on-error: true
         uses: oprypin/find-latest-tag@v1
         with:
-          repository: packettide/expressionengine-private
+          repository: ExpressionEngine/ExpressionEngine
           regex: '^\d+\.\d+\.\d+$'
 
       - name: Fetch list of tags
@@ -138,13 +138,13 @@ jobs:
             - name: Checkout repo
               uses: actions/checkout@v2
               with:
-                repository: packettide/expressionengine-private
+                repository: ExpressionEngine/ExpressionEngine
                 path: __repo
 
             - name: Download EE 6
               run: |
-                  wget -q https://github.com/ExpressionEngine/ExpressionEngine/releases/download/6.1.5/ExpressionEngine6.1.5.zip
-                  unzip -q ExpressionEngine6.1.5.zip
+                  wget -q https://github.com/ExpressionEngine/ExpressionEngine/releases/download/7.0.0/ExpressionEngine7.0.0.zip
+                  unzip -q ExpressionEngine7.0.0.zip
                   mv ./__repo/tests ./
                   mv ./__repo/build-tools ./
                   sudo apt-get install -yq rpl
@@ -167,8 +167,8 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-                rpl -v '${{ needs.build.outputs.version }}' '6.1.5' system/user/config/config.php
-                rpl -v '${{ needs.build.outputs.version }}' '6.1.5' build-tools/build.json
+                rpl -v '${{ needs.build.outputs.version }}' '7.0.0' system/user/config/config.php
+                rpl -v '${{ needs.build.outputs.version }}' '7.0.0' build-tools/build.json
 
             - name: Remove installer
               run: |

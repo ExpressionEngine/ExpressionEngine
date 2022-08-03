@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -488,7 +487,7 @@ class Pro_variables_type
         // if (ee()->TMPL->fetch_param('multiple') == 'yes')
         if ($sep = $this->settings('separator', false)) {
             // We need a separator for multi-parsing
-            $labels = LVUI::choices($this->settings('options'));
+            $labels = PVUI::choices($this->settings('options'));
 
             // Empty data? No results
             if (! strlen($this->data)) {
@@ -496,7 +495,7 @@ class Pro_variables_type
             }
 
             // Get values
-            $values = LVUI::explode($sep, $this->data);
+            $values = PVUI::explode($sep, $this->data);
             $total = count($values);
 
             // Limit results?

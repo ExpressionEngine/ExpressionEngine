@@ -1,7 +1,7 @@
 {
     "name": "Pro Variables",
     "shortname": "pro_variables",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "description": "Global settings and content",
     "license": "ExpressionEngine",
     "namespace": "Pro\\Variables",

@@ -60,7 +60,7 @@ jobs:
           - name: Run build process 
             working-directory: build-tools
             env:
-              RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+              RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
             run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
@@ -99,6 +99,11 @@ jobs:
         name: PHPUnit, php${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
+            - name: "Use GNU tar instead BSD tar"
+              if: matrix.os == 'windows-latest'
+              shell: cmd
+              run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+
             - name: Install locales
               if: runner.os != 'Windows'
               run: |

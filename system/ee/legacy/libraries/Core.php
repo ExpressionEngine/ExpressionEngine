@@ -74,9 +74,9 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20220506');
-        define('APP_VER', '7.0.0-rc.2');
-        define('APP_VER_ID', 'rc.1');
+        define('APP_BUILD', '20220802');
+        define('APP_VER', '7.0.0');
+        define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
         define('RD', '}');
@@ -616,6 +616,7 @@ class EE_Core
                     ->withTitle(lang('file_manager_compatibility_mode_warning'))
                     ->addToBody(sprintf(
                         lang('file_manager_compatibility_mode_warning_desc'),
+                        DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
                         ee('CP/URL')->make('utilities/file-usage')->compile(),
                         ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
                     )
@@ -692,7 +693,7 @@ class EE_Core
 
         if ($forum_trigger &&
             in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))) {
-            require PATH_MOD . 'forum/mod.forum.php';
+            require PATH_THIRD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
 
@@ -907,7 +908,7 @@ class EE_Core
                 )
             ) {
                 $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('site_url'));
+                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos(ee()->config->item('site_url'), $cookie_domain);
                 if ($domain_matches === false) {
                     $error = lang('cookie_domain_mismatch');
                 }

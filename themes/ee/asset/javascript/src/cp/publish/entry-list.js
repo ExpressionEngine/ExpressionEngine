@@ -389,17 +389,12 @@ $(document).ready(function () {
 	// Move files to subfolder
 	function makeDirectoryDroppable() {
 		let modal_rel = 'modal-confirm-move-file';
-		let ajax_url = 'admin.php?/cp/files/confirm';
+		let ajax_url = $('.f_manager-wrapper [name=bulk_action_submit]').attr('data-confirm-ajax');
 		let timer;
 		$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').find('.drop-target').droppable({
 			accept: "table .app-listing__row, .file-grid__wrapper .filepicker-item",
 			tolerance: "intersect",
 			drop: function(e, ui) {
-				clearTimeout(timer);
-				window.selectedFolder = null
-				$(e.target).removeAttr('style');
-			},
-			over: function(e, ui) {
 				var el = ui.draggable;
 				var subfolder = e.target;
 				var file_id = el.attr('file_id');
@@ -407,7 +402,6 @@ $(document).ready(function () {
 				var checkboxInput = el.find('input[type=checkbox]').attr('data-confirm');
 				var subfolder_file_id = $(subfolder).attr('file_upload_id');
 
-				$(subfolder).css('backgroundColor', 'var(--ee-accent-light)');
 				e.preventDefault();
 
 				// First adjust the checklist
@@ -434,14 +428,15 @@ $(document).ready(function () {
 						Dropdown.renderFields();
 					});
 				}
-				timer = setTimeout(function(){
-					modal.trigger('modal:open')
-					$("#preview").remove();
-					el.trigger('mouseup');
-				}, 1000);
+
+				modal.trigger('modal:open')
+				$("#preview").remove();
+			},
+			over: function(e, ui) {
+				var subfolder = e.target;
+				$(subfolder).css('backgroundColor', 'var(--ee-accent-light)');
 			},
 			out: function(e, ui) {
-				clearTimeout(timer);
 				window.selectedFolder = null
 				$(e.target).removeAttr('style');
 			},

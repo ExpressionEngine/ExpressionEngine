@@ -10,6 +10,7 @@
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
     "failOnStatusCode": false,
+    "experimentalInteractiveRunEvents": true,
     "redirectionLimit": 200,
     "testFiles": "!(updater)/**.ee6.js",
     "retries": {

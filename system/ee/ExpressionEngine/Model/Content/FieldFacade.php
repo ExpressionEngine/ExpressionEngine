@@ -29,6 +29,7 @@ class FieldFacade
     private $value;
     private $api;
     private $icon;
+    private $conditionSets;
 
     /**
      * @var Flag to ensure defaults are only loaded once
@@ -467,10 +468,18 @@ class FieldFacade
         if (! $this->getItem('field_is_conditional')) {
             return [];
         }
+        
+        if($this->conditionSets) {
+            return $this->conditionSets;
+        }
 
         $field = ee('Model')->get('ChannelField', $this->getId())->first();
-
         return $field->FieldConditionSets;
+    }
+
+    public function setConditionSets($conditionSets = [])
+    {
+        $this->conditionSets = $conditionSets;
     }
 
     public function initField()

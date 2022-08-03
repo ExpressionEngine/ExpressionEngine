@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -247,7 +246,7 @@ class Pro_variables
         //  No options? Bail out
         // -------------------------------------
 
-        if (! ($options = LVUI::choices($options))) {
+        if (! ($options = PVUI::choices($options))) {
             $this->_log('No options found, returning no results');
 
             return ee()->TMPL->no_results();
@@ -258,7 +257,7 @@ class Pro_variables
         // -------------------------------------
 
         $active = ($sep = $obj->settings('separator'))
-            ? LVUI::explode($sep, $row['variable_data'])
+            ? PVUI::explode($sep, $row['variable_data'])
             : array($row['variable_data']);
 
         // -------------------------------------

@@ -16,6 +16,7 @@ class EE_Config
     public $config = array();
     public $is_loaded = array();
     public $_config_paths = array();
+    public $loadedFromFile = array(); // config arrays that are loaded from separate files
 
     public $config_path = ''; // Set in the constructor below
     public $default_ini = array();
@@ -213,6 +214,10 @@ class EE_Config
     public function loadFile($file)
     {
         $file = str_replace('..', '', $file);
+        if (isset($this->loadedFromFile[$file])) {
+            return $this->loadedFromFile[$file];
+        }
+
         $syspath = SYSPATH . 'ee/ExpressionEngine/Config/' . $file . '.php';
         $userpath = SYSPATH . 'user/config/' . $file . '.php';
 
@@ -228,6 +233,8 @@ class EE_Config
                 $out = array_replace_recursive($out, $userout);
             }
         }
+
+        $this->loadedFromFile[$file] = $out;
 
         return $out;
     }

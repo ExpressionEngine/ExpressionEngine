@@ -42,7 +42,7 @@ class PrepMajorUpgrade
      */
     public function isMajorUpgrade($update_version_major = null)
     {
-        $app_ver = defined('APP_VER') ?: ee()->config->item('app_version');
+        $app_ver = defined('APP_VER') ? APP_VER : ee()->config->item('app_version');
         $version_major = (int) explode('.', $app_ver, 2)[0];
 
         if (empty($update_version_major)) {
@@ -87,7 +87,6 @@ class PrepMajorUpgrade
                 // Move the main addon folder
                 $systemAddonPath = PATH_ADDONS . $addonName;
                 $userAddonPath = PATH_THIRD . $addonName;
-
                 // Check to make sure the directory exists and it doesnt exist in the user folder
                 if ($this->filesystem->isDir($systemAddonPath) && !$this->filesystem->isDir($userAddonPath)) {
                     $this->filesystem->rename($systemAddonPath, $userAddonPath);
@@ -96,10 +95,20 @@ class PrepMajorUpgrade
                 // Move the themes folder
                 $systemAddonThemesPath = PATH_THEMES . $addonName;
                 $userAddonThemesPath = PATH_THIRD_THEMES . $addonName;
-
                 // Check to make sure the directory exists and it doesnt exist in the user folder
                 if ($this->filesystem->isDir($systemAddonThemesPath) && !$this->filesystem->isDir($userAddonThemesPath)) {
                     $this->filesystem->rename($systemAddonThemesPath, $userAddonThemesPath);
+                }
+
+                // Move the templates folder
+                $systemAddonTemplatesPath = SYSPATH . 'ee/templates/_themes/' . $addonName;
+                $userAddonTemplatesPath = SYSPATH . 'user/templates/_themes/' . $addonName;
+                // Check to make sure the directory exists and it doesnt exist in the user folder
+                if ($this->filesystem->isDir($systemAddonTemplatesPath) && !$this->filesystem->isDir($userAddonTemplatesPath)) {
+                    if (!$this->filesystem->isDir(SYSPATH . 'user/templates/_themes')) {
+                        $this->filesystem->mkDir(SYSPATH . 'user/templates/_themes');
+                    }
+                    $this->filesystem->rename($systemAddonTemplatesPath, $userAddonTemplatesPath);
                 }
             }
         }
