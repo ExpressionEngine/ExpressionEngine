@@ -36,7 +36,7 @@ $lang = array(
     'Updating <b>%s</b> from %s to %s',
 
     'prepMajorUpgrade_step' =>
-    'Checking for major upgrade and running preparations if necessary.',
+    'Running checks and preparations',
 
     'preflight_moving_addons_to_user_folder' =>
     'Moving add-ons to user folder',
