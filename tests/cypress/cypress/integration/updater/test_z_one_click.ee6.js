@@ -14,7 +14,13 @@ context('One-Click Updater', () => {
     // This test is also used in the pre-release.yml workflow and gets a copy of 6.1.5
     // We've just selected the same version here to not interfere with that test
     // but also allow this to do a simple check for working updater in current code
-    cy.eeConfig({item: 'app_version', value: '6.1.5'})
+    cy.eeConfig({item: 'app_version'}) .then((config) => {
+      if (config != '6.1.5') {
+        cy.eeConfig({item: 'app_version', value: '6.1.5'})
+        // add column that gets removed in 6.3.5
+        cy.task('db:query', "ALTER TABLE exp_members ADD COLUMN `dismissed_pro_banner` CHAR(1) NULL DEFAULT 'n'")
+      }
+    })
   })
 
   beforeEach(function() {
@@ -64,7 +70,9 @@ context('One-Click Updater', () => {
 
       cy.intercept("POST", "**C=updater&M=run&step=selfDestruct").as("selfDestruct");
       cy.wait('@selfDestruct');
-      cy.visit('admin.php')
+      cy.screenshot({capture: 'fullPage'});
+      cy.visit('admin.php', {failOnStatusCode: false})
+      cy.screenshot({capture: 'fullPage'});
       cy.get('body').contains('Up to date!')
 
       /*cy.get('.ee-sidebar__version-number').invoke('text').then((text) => {
