@@ -275,6 +275,8 @@ class Pro_variables_upd
             ['settings' => serialize($settings)],
             ['class' => $this->class_name . '_ext']
         );
+        // This converts the types
+        $this->convertLowVarsContentTypesToPro();
     }
 
     // --------------------------------------------------------------------
@@ -369,6 +371,10 @@ class Pro_variables_upd
             );
         }
 
+        if (version_compare($current, '5.0.2', '<')) {
+            $this->convertLowVarsContentTypesToPro();
+        }
+
         $this->logMessageAboutLowVersion();
 
         // Update the extension and fieldtype in the DB
@@ -377,6 +383,37 @@ class Pro_variables_upd
 
         // Return TRUE to update version number in DB
         return true;
+    }
+
+    private function convertLowVarsContentTypesToPro()
+    {
+        // Update the grid columns to use the new name
+        ee()->db->update(
+            'grid_columns',
+            ['content_type' => strtolower($this->class_name)],
+            ['content_type' => 'low_variables']
+        );
+
+        // Update all variable types to pro types
+        $vars = ee()->pro_variables_variable_model->get_all();
+        foreach ($vars as $var) {
+            if (!is_null($var['variable_type'])) {
+                $var['variable_type'] = str_replace('low_', 'pro_', $var['variable_type']);
+                ee()->pro_variables_variable_model->update($var['variable_id'], ['variable_type' => $var['variable_type']]);
+            }
+
+            // If we have a grid, migrate the table
+            if ($var['variable_type'] === 'pro_grid') {
+                ee()->load->library('smartforge');
+
+                $lowTable = 'low_variables_grid_field_' . $var['variable_id'];
+                $proTable = 'pro_variables_grid_field_' . $var['variable_id'];
+
+                if (ee()->db->table_exists($lowTable)) {
+                    ee()->smartforge->rename_table($lowTable, $proTable);
+                }
+            }
+        }
     }
 
     private function logMessageAboutLowVersion()
