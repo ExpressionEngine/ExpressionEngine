@@ -14,7 +14,7 @@ context('One-Click Updater', () => {
     // This test is also used in the pre-release.yml workflow and gets a copy of 6.1.5
     // We've just selected the same version here to not interfere with that test
     // but also allow this to do a simple check for working updater in current code
-    cy.eeConfig({item: 'app_version', value: '7.0.0-rc.4'})
+    cy.eeConfig({item: 'app_version', value: '7.0.0'})
   })
 
   beforeEach(function() {
