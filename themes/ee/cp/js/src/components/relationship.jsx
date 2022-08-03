@@ -212,14 +212,14 @@ class Relationship extends React.Component {
 
 		$(this.listGroup).sortable({
 			axis: 'y',
-			// containment: 'parent',
+			containment: 'parent',
 			handle: '.list-item__handle',
 			items: '.list-item',
 			sort: (event, ui) => {
-				try {
-					EE.sortable_sort_helper(event, ui)
-				} catch (error) {}
-			},
+                try {
+                    EE.sortable_sort_helper(event, ui)
+                } catch (error) {}
+            },
 			start: (event, ui) => {
 				// Save the start index for later
 				$(this).attr('data-start-index', ui.item.index());

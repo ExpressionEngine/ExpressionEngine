@@ -134,7 +134,7 @@ function (_React$Component) {
 
       $(_this.listGroup).sortable({
         axis: 'y',
-        // containment: 'parent',
+        containment: 'parent',
         handle: '.list-item__handle',
         items: '.list-item',
         sort: function sort(event, ui) {
