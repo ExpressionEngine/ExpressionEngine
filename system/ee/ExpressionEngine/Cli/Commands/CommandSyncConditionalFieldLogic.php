@@ -118,7 +118,7 @@ class CommandSyncConditionalFieldLogic extends Cli
                         lang('command_sync_conditional_fields_entries_processed'),
                         $syncCount,
                         '(' . $timediff . ' s)',
-                        '(' . $this->getMemoryUsage() . ')',
+                        '(' . $this->getMemoryUsage() . ')'
                     ));
                 }
             }
@@ -134,7 +134,7 @@ class CommandSyncConditionalFieldLogic extends Cli
             lang('command_sync_conditional_fields_sync_complete'),
             $syncCount,
             '(' . $timediff . ' s)',
-            '(' . $this->getMemoryUsage() . ')',
+            '(' . $this->getMemoryUsage() . ')'
         ));
 
         $this->info(vsprintf(
