@@ -66,7 +66,9 @@ context('One-Click Updater', () => {
 
       cy.intercept("POST", "**C=updater&M=run&step=selfDestruct").as("selfDestruct");
       cy.wait('@selfDestruct');
-      cy.visit('admin.php')
+      cy.screenshot({capture: 'fullPage'});
+      cy.visit('admin.php', {failOnStatusCode: false})
+      cy.screenshot({capture: 'fullPage'});
       cy.get('body').contains('Up to date!')
 
       /*cy.get('.ee-sidebar__version-number').invoke('text').then((text) => {

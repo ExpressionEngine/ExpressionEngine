@@ -3,7 +3,7 @@ name: Minimal feature Cypress tests
 on:
   push:
     branches:
-      - NO_TEST
+      - bug/6.x/6-3-5-updater
 
 jobs:
     cypress-tests:
