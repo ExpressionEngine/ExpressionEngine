@@ -41,7 +41,6 @@ jobs:
           npm run build:old-js
 
       - name: Run build process
-        if:  github.event.pull_request.base.ref == '7.x'
         working-directory: build-tools
         env:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
