@@ -368,7 +368,7 @@ class Pro_search_upd
         ee()->db->update(
             'modules',
             ['module_name' => $this->class_name],
-            ['module_name' => 'Low_search'],
+            ['module_name' => 'Low_search']
         );
 
         // --------------------------------------
@@ -377,12 +377,13 @@ class Pro_search_upd
         ee()->db->update(
             'actions',
             ['class' => $this->class_name],
-            ['class' => 'Low_search'],
+            ['class' => 'Low_search']
         );
+
         ee()->db->update(
             'actions',
             ['class' => $this->class_name],
-            ['class' => 'Low_search_mcp'],
+            ['class' => 'Low_search_mcp']
         );
 
         // --------------------------------------
@@ -391,7 +392,7 @@ class Pro_search_upd
         ee()->db->update(
             'extensions',
             ['class' => $this->class_name . '_ext'],
-            ['class' => 'Low_search_ext'],
+            ['class' => 'Low_search_ext']
         );
 
         return true;
@@ -403,14 +404,14 @@ class Pro_search_upd
         ee()->db->update(
             'extensions',
             ['version' => $this->version],
-            ['class' => $this->class_name . '_ext'],
+            ['class' => $this->class_name . '_ext']
         );
 
         // Update Module version
         ee()->db->update(
             'modules',
             ['module_version' => $this->version],
-            ['module_name' => $this->class_name],
+            ['module_name' => $this->class_name]
         );
     }
     // --------------------------------------------------------------------

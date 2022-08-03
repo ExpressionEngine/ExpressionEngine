@@ -214,7 +214,7 @@ class Pro_variables_upd
         ee()->db->update(
             'modules',
             ['module_name' => $this->class_name],
-            ['module_name' => 'Low_variables'],
+            ['module_name' => 'Low_variables']
         );
 
         // --------------------------------------
@@ -223,12 +223,13 @@ class Pro_variables_upd
         ee()->db->update(
             'actions',
             ['class' => $this->class_name],
-            ['class' => 'Low_variables'],
+            ['class' => 'Low_variables']
         );
+
         ee()->db->update(
             'actions',
             ['class' => $this->class_name],
-            ['class' => 'Low_variables_mcp'],
+            ['class' => 'Low_variables_mcp']
         );
 
         // --------------------------------------
@@ -237,7 +238,7 @@ class Pro_variables_upd
         ee()->db->update(
             'extensions',
             ['class' => $this->class_name . '_ext'],
-            ['class' => 'Low_variables_ext'],
+            ['class' => 'Low_variables_ext']
         );
 
         // --------------------------------------
@@ -246,21 +247,21 @@ class Pro_variables_upd
         ee()->db->update(
             'fieldtypes',
             ['name' => strtolower($this->class_name)],
-            ['name' => 'low_variables'],
+            ['name' => 'low_variables']
         );
 
         // Migrate active FTs
         ee()->db->update(
             'channel_fields',
             ['field_type' => strtolower($this->class_name)],
-            ['field_type' => 'low_variables'],
+            ['field_type' => 'low_variables']
         );
 
         // Migrate content type
         ee()->db->update(
             'content_types',
             ['name' => strtolower($this->class_name)],
-            ['name' => 'low_variables'],
+            ['name' => 'low_variables']
         );
 
         // Migrate settings
@@ -272,7 +273,7 @@ class Pro_variables_upd
         ee()->db->update(
             'extensions',
             ['settings' => serialize($settings)],
-            ['class' => $this->class_name . '_ext'],
+            ['class' => $this->class_name . '_ext']
         );
     }
 
@@ -364,7 +365,7 @@ class Pro_variables_upd
             ee()->db->update(
                 'content_types',
                 ['name' => strtolower($this->class_name)],
-                ['name' => 'low_variables'],
+                ['name' => 'low_variables']
             );
         }
 
