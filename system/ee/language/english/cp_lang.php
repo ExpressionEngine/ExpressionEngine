@@ -658,7 +658,7 @@ $lang = array(
 
     'one_click_major_update_instructions' => '<a href="https://docs.expressionengine.com/latest/installation/updating.html#upgrading-major-version" target="_blank">Read update warnings before continuing!</a><br>Enter your password to continue:',
 
-    'one_click_major_update_pro_license_required' => "Due to the current number of members, you will need to <a href='https://expressionengine.com/pro' target='_blank'>purchase an ExpressionEngine Pro license</a> after upgrading to ExpressionEngine 7.",
+    'one_click_major_update_pro_license_required' => "Due to the current number of members, you will need to <a href='https://expressionengine.com/store/purchase-pro/pro-yearly' target='_blank'>purchase an ExpressionEngine Pro license</a> after upgrading to ExpressionEngine 7.",
 
     'one_click_major_update_pro_license_info' => "Starting in ExpressionEngine 7, all sites with multiple members require a Pro license.",
 
