@@ -435,7 +435,7 @@ $lang = array(
 
     'right' => 'Right',
 
-    'sync_alt_title' => 'Syncronize %s',
+    'sync_alt_title' => 'Synchronize %s',
 
     'sync_title' => 'Directory Sync',
 
