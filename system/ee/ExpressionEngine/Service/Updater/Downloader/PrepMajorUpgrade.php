@@ -47,7 +47,7 @@ class PrepMajorUpgrade
 
         if (empty($update_version_major)) {
             ee()->load->library('el_pings');
-            $version_file = ee()->el_pings->get_version_info();
+            $version_file = ee()->el_pings->get_version_info(true);
             $update_version_major = (int) explode('.', $version_file['latest_version'], 2)[0];
         }
 
