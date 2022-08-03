@@ -38359,7 +38359,6 @@ body[data-theme="dark"] {
   -moz-transition: background-color 0.15s ease-in-out;
   -o-transition: background-color 0.15s ease-in-out;
   cursor: grab;
-  position: relative;
 }
 .file-grid__wrapper .file-grid__file.missing {
   background-color: var(--ee-warning-light);

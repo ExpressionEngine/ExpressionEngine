@@ -261,7 +261,6 @@
     -moz-transition: background-color .15s ease-in-out;
     -o-transition: background-color .15s ease-in-out;
     cursor: grab;
-    position: relative;
 
     &.missing {
       background-color: color(warning-light);
