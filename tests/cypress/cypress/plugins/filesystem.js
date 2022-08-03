@@ -31,9 +31,9 @@ class Filesystem {
         })
     }
 
-    createFile(target) {
+    createFile(target, content = '') {
         target = path.resolve(target);
-        fs.writeFileSync(target, '');
+        fs.writeFileSync(target, content);
         return true;
     }
 

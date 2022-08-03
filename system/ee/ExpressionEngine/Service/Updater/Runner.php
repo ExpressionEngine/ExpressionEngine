@@ -32,6 +32,7 @@ class Runner
         // through the browser
         $this->setSteps([
             'preflight',
+            'prepMajorUpgrade',
             'download',
             'unpack'
         ]);
@@ -55,6 +56,11 @@ class Runner
         $preflight->cleanUpOldUpgrades();
         $preflight->checkDiskSpace();
         $preflight->stashConfig();
+    }
+
+    public function prepMajorUpgrade()
+    {
+        ee('Updater/PrepMajorUpgrade')->prepMajorIfApplicable();
     }
 
     public function download()
