@@ -15,6 +15,8 @@ context('One-Click Updater', () => {
     // We've just selected the same version here to not interfere with that test
     // but also allow this to do a simple check for working updater in current code
     cy.eeConfig({item: 'app_version', value: '6.1.5'})
+    // add column that gets removed in 6.3.5
+    cy.task('db:query', "ALTER TABLE exp_modules ADD COLUMN `dismissed_pro_banner` CHAR(1) NULL DEFAULT 'n'")
   })
 
   beforeEach(function() {
