@@ -258,7 +258,7 @@ abstract class ContentModel extends VariableColumnModel
         $facades = $this->getCustomFields();
 
         foreach ($facades as $name => $facade) {
-            // If this field is hidden by conditional logic or it is being 
+            // If this field is hidden by conditional logic or it is being
             // edited but has not changed then we are not concerned with validation
             if (get_bool_from_string($facade->getHidden()) || (!$this->isNew() && !$this->isDirty($name))) {
                 continue;
@@ -537,7 +537,7 @@ abstract class ContentModel extends VariableColumnModel
     protected static function updateFilesTotalRecords($file_ids = [])
     {
         if (!empty($file_ids)) {
-            $updateQuery = 'UPDATE exp_files SET total_records = (SELECT COUNT(exp_file_usage.file_id) FROM exp_file_usage WHERE exp_file_usage.file_id = exp_files.file_id AND exp_file_usage.file_id IN (' . implode(', ', $file_ids) . '))';
+            $updateQuery = 'UPDATE exp_files SET total_records = (SELECT COUNT(exp_file_usage.file_id) FROM exp_file_usage WHERE exp_file_usage.file_id = exp_files.file_id AND exp_file_usage.file_id IN (' . implode(', ', $file_ids) . ')) WHERE exp_files.file_id IN (' . implode(', ', $file_ids) . ')';
             ee('db')->query($updateQuery);
         }
     }
