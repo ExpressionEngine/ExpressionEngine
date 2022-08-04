@@ -200,9 +200,10 @@ class FileUsage extends Utilities
                     $update = [];
                     foreach ($fields as $fieldName) {
                         $data = $row[$fieldName];
-                        if (strpos((string) $data, '{filedir_') !== false) {
+                        if (strpos((string) $data, '{filedir_') !== false || strpos((string) $data, '{file:') !== false) {
                             $dirsAndFiles = [];
                             $currentReplacement = [];
+                            //grab the files in old format
                             if (preg_match_all('/{filedir_(\d+)}([^\"\'\s]*)/', $data, $matches, PREG_SET_ORDER)) {
                                 foreach ($matches as $match) {
                                     //set the data for files to be fetched - or use what we have
@@ -211,6 +212,15 @@ class FileUsage extends Utilities
                                     } else {
                                         $currentReplacement[$match[0]] = $replacement[$match[0]];
                                     }
+                                }
+                            }
+                            //and make sure the new format is still not lost
+                            if (preg_match_all('/{file\:(\d+)\:url}/', $data, $matches, PREG_SET_ORDER)) {
+                                foreach ($matches as $match) {
+                                    $currentReplacement[$match[0]] = $replacement[$match[0]] = [
+                                        'file_id' => $match[1],
+                                        'tag' => $match[0],
+                                    ];
                                 }
                             }
                             //only fetch the files data if we don't have those set to variable from previous loops
