@@ -214,7 +214,7 @@ class Pro_variables_upd
         ee()->db->update(
             'modules',
             ['module_name' => $this->class_name],
-            ['module_name' => 'Low_variables'],
+            ['module_name' => 'Low_variables']
         );
 
         // --------------------------------------
@@ -223,12 +223,13 @@ class Pro_variables_upd
         ee()->db->update(
             'actions',
             ['class' => $this->class_name],
-            ['class' => 'Low_variables'],
+            ['class' => 'Low_variables']
         );
+
         ee()->db->update(
             'actions',
             ['class' => $this->class_name],
-            ['class' => 'Low_variables_mcp'],
+            ['class' => 'Low_variables_mcp']
         );
 
         // --------------------------------------
@@ -237,7 +238,7 @@ class Pro_variables_upd
         ee()->db->update(
             'extensions',
             ['class' => $this->class_name . '_ext'],
-            ['class' => 'Low_variables_ext'],
+            ['class' => 'Low_variables_ext']
         );
 
         // --------------------------------------
@@ -246,21 +247,21 @@ class Pro_variables_upd
         ee()->db->update(
             'fieldtypes',
             ['name' => strtolower($this->class_name)],
-            ['name' => 'low_variables'],
+            ['name' => 'low_variables']
         );
 
         // Migrate active FTs
         ee()->db->update(
             'channel_fields',
             ['field_type' => strtolower($this->class_name)],
-            ['field_type' => 'low_variables'],
+            ['field_type' => 'low_variables']
         );
 
         // Migrate content type
         ee()->db->update(
             'content_types',
             ['name' => strtolower($this->class_name)],
-            ['name' => 'low_variables'],
+            ['name' => 'low_variables']
         );
 
         // Migrate settings
@@ -272,8 +273,10 @@ class Pro_variables_upd
         ee()->db->update(
             'extensions',
             ['settings' => serialize($settings)],
-            ['class' => $this->class_name . '_ext'],
+            ['class' => $this->class_name . '_ext']
         );
+        // This converts the types
+        $this->convertLowVarsContentTypesToPro();
     }
 
     // --------------------------------------------------------------------
@@ -364,8 +367,12 @@ class Pro_variables_upd
             ee()->db->update(
                 'content_types',
                 ['name' => strtolower($this->class_name)],
-                ['name' => 'low_variables'],
+                ['name' => 'low_variables']
             );
+        }
+
+        if (version_compare($current, '5.0.2', '<')) {
+            $this->convertLowVarsContentTypesToPro();
         }
 
         $this->logMessageAboutLowVersion();
@@ -376,6 +383,37 @@ class Pro_variables_upd
 
         // Return TRUE to update version number in DB
         return true;
+    }
+
+    private function convertLowVarsContentTypesToPro()
+    {
+        // Update the grid columns to use the new name
+        ee()->db->update(
+            'grid_columns',
+            ['content_type' => strtolower($this->class_name)],
+            ['content_type' => 'low_variables']
+        );
+
+        // Update all variable types to pro types
+        $vars = ee()->pro_variables_variable_model->get_all();
+        foreach ($vars as $var) {
+            if (!is_null($var['variable_type'])) {
+                $var['variable_type'] = str_replace('low_', 'pro_', $var['variable_type']);
+                ee()->pro_variables_variable_model->update($var['variable_id'], ['variable_type' => $var['variable_type']]);
+            }
+
+            // If we have a grid, migrate the table
+            if ($var['variable_type'] === 'pro_grid') {
+                ee()->load->library('smartforge');
+
+                $lowTable = 'low_variables_grid_field_' . $var['variable_id'];
+                $proTable = 'pro_variables_grid_field_' . $var['variable_id'];
+
+                if (ee()->db->table_exists($lowTable)) {
+                    ee()->smartforge->rename_table($lowTable, $proTable);
+                }
+            }
+        }
     }
 
     private function logMessageAboutLowVersion()
