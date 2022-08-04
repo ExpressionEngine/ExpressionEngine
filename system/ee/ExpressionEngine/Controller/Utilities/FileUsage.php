@@ -277,7 +277,7 @@ class FileUsage extends Utilities
                                     ]);
                                 }
                                 //update the file usage counter on file
-                                ee('db')->set('total_records', 'total_records + ' . $numberOfReplacements, false)->where('file_id', $fileId)->update('files');
+                                ee('db')->set('total_records', $numberOfReplacements, false)->where('file_id', $fileId)->update('files');
                             }
                         }
                     }
