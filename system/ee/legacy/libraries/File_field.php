@@ -264,13 +264,13 @@ class File_field
             $file = ee('Model')->get('File', $data)->with('UploadDestination')->first(true);
         }
         // If the file field is in the "{file:XX:url}" format
-        elseif (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+        elseif (is_string($data) && preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
             // Set upload directory ID and file name
             $file_id = $matches[1];
             $file = ee('Model')->get('File', $file_id)->with('UploadDestination')->first(true);
         }
         // If the file field is in the "{filedir_n}image.jpg" format
-        elseif (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+        elseif (is_string($data) && preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);
@@ -650,13 +650,13 @@ class File_field
             $file = $this->get_file($data);
         }
         // If the file field is in the "{file:XX:url}" format
-        elseif (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+        elseif (is_string($data) && preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
             // Set upload directory ID and file name
             $file_id = $matches[1];
             $file = $this->get_file($file_id);
         }
         // If the file field is in the "{filedir_n}image.jpg" format
-        elseif (preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
+        elseif (is_string($data) && preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);
@@ -670,17 +670,20 @@ class File_field
         // don't recognize it because it's in a URL format. So, we'll return
         // the URL so that people's category images continue to work.
         if (empty($file) and ! empty($data)) {
-            $file = array(
-                'url' => $data,
-                'file_name' => $data,
-                'filename' => '',
-                'extension' => '',
-                'path' => '',
-                'upload_location_id' => '',
-                'file_hw_original' => ''
-            );
-
-            return $file;
+            if (is_array($data)) {
+                $file = $data;
+            } else {
+                $file = array(
+                    'url' => $data,
+                    'file_name' => $data,
+                    'filename' => '',
+                    'extension' => '',
+                    'path' => '',
+                    'upload_location_id' => '',
+                    'file_hw_original' => ''
+                );
+                return $file;
+            }
         } elseif (empty($file) and empty($data)) {
             return false;
         }
@@ -749,6 +752,8 @@ class File_field
 
                 $size = $upload_dir->getFilesystem()->getSize('_' . $manipulation->short_name . '/' . $fs_file_name);
 
+                $file['width:' . $manipulation->short_name] = $manipulation->width;
+                $file['height:' . $manipulation->short_name] = $manipulation->height;
                 $file['file_size:' . $manipulation->short_name] = $size;
                 $file['file_size:' . $manipulation->short_name . ':human'] = (string) ee('Format')->make('Number', $size)->bytes();
                 $file['file_size:' . $manipulation->short_name . ':human_long'] = (string) ee('Format')->make('Number', $size)->bytes(false);
@@ -757,6 +762,12 @@ class File_field
                     $file['width:' . $manipulation->short_name] = $dimensions['width'];
                     $file['height:' . $manipulation->short_name] = $dimensions['height'];
                 }
+
+                // backwards compat variable
+                $file[$manipulation->short_name . '_size'] = $file['file_size:' . $manipulation->short_name];
+                $file[$manipulation->short_name . '_height'] = $file['height:' . $manipulation->short_name];
+                $file[$manipulation->short_name . '_width'] = $file['width:' . $manipulation->short_name];
+                $file[$manipulation->short_name . '_file_url'] = $file['url:' . $manipulation->short_name];
             }
         }
 
