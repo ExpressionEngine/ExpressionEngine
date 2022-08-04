@@ -128,14 +128,22 @@ class FileUsage extends Utilities
             ],
         ];
 
+        // ee('CP/Alert')->makeInline('update_file_usage_explained')
+        //     ->asTip()
+        //     ->cannotClose()
+        //     ->addToBody(sprintf(
+        //         lang('update_file_usage_explained_desc'),
+        //         DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
+        //         ee('CP/URL')->make('utilities/db-backup')->compile(),
+        //         ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
+        //     )
+        //     ->now();
+
         ee('CP/Alert')->makeInline('update_file_usage_explained')
             ->asTip()
             ->cannotClose()
-            ->addToBody(sprintf(
-                lang('update_file_usage_explained_desc'),
-                DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
-                ee('CP/URL')->make('utilities/db-backup')->compile(),
-                ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
+            ->addToBody(
+                'This feature has been temporarily disabled due to a bug. The ExpressionEngine team is aware of this issue and a fix is in progress.'
             )
             ->now();
 
@@ -147,7 +155,7 @@ class FileUsage extends Utilities
             '' => lang('update_file_usage')
         );
 
-        ee()->cp->render('settings/form', $vars);
+        ee()->cp->render('settings/page', $vars);
     }
 
     /**
@@ -277,7 +285,7 @@ class FileUsage extends Utilities
                                     ]);
                                 }
                                 //update the file usage counter on file
-                                ee('db')->set('total_records', 'total_records + ' . $numberOfReplacements, false)->where('file_id', $fileId)->update('files');
+                                ee('db')->set('total_records', $numberOfReplacements, false)->where('file_id', $fileId)->update('files');
                             }
                         }
                     }
