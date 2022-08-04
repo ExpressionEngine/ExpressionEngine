@@ -345,17 +345,6 @@ html.color-theme-in-transition *:after {
   --ee-ee-update-vital-bg: #640303;
   --ee-modal-overlay-bg: #f7f7fb;
 }
-.slate-theme .fal, .slate-theme .ee-debugger .tab-bar--editable .tab-remove:before, .ee-debugger .tab-bar--editable .slate-theme .tab-remove:before,
-.slate-theme .ee-debugger .tab-bar--editable .tab-on:before,
-.ee-debugger .tab-bar--editable .slate-theme .tab-on:before,
-.slate-theme .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .slate-theme .tab-off:before, .slate-theme .fas, body[data-theme=slate] .fal, body[data-theme=slate] .ee-debugger .tab-bar--editable .tab-remove:before, .ee-debugger .tab-bar--editable body[data-theme=slate] .tab-remove:before,
-body[data-theme=slate] .ee-debugger .tab-bar--editable .tab-on:before,
-.ee-debugger .tab-bar--editable body[data-theme=slate] .tab-on:before,
-body[data-theme=slate] .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable body[data-theme=slate] .tab-off:before, body[data-theme=slate] .fas {
-  font-weight: 600;
-}
 
 .dark-theme, body[data-theme=dark] {
   --ee-brand-primary: #5D63F1;

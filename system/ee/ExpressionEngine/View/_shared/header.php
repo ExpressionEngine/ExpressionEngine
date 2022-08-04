@@ -110,7 +110,7 @@ $current_page = ee()->uri->segment(2);
                     </div>
 
                     <a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><i class="fal fa-user fa-fw"></i> <?=lang('my_profile')?></a>
-              <a class="dropdown__link js-dark-theme-toggle" href=""><i class="fal fa-adjust fa-fw"></i> <?= lang('toggle_theme') ?></a>
+              <a class="dropdown__link js-modal-link" rel="theme-modal" href=""><i class="fal fa-adjust fa-fw"></i> <?= lang('toggle_theme') ?></a>
 
                     <div class="dropdown__divider"></div>
 

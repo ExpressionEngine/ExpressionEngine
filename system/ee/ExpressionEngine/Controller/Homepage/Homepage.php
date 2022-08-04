@@ -219,7 +219,7 @@ class Homepage extends CP_Controller
     }
 
     /**
-     * Dismiss post-update banner from CP homepage, until next update
+     * Switch CP theme to another one
      *
      * @return void
      */

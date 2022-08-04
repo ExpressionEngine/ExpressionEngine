@@ -43,9 +43,6 @@ html.color-theme-in-transition *:after {
 	@each $name, $value in $slate-theme {
 		--ee-#{$name}: #{$value};
 	}
-	.fal, .fas {
-		font-weight: 600;
-	}
 }
 
 .dark-theme, body[data-theme="dark"] {

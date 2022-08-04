@@ -363,9 +363,9 @@ $(document).ready(function(){
 	// -------------------------------------------------------------------
 
 	// Toggle theme button
-	$('.js-dark-theme-toggle').on('click', (e) => {
+	$('#theme-modal').on('click', '.js-theme-toggle', (e) => {
 		e.preventDefault()
-		toggleDarkTheme(e)
+		toggleTheme($(e.target).data('theme'), e)
 	})
 
 	// Don't allow changing the theme when it's in the middle of changing
@@ -375,7 +375,7 @@ $(document).ready(function(){
 
 	var currentTheme = themes.includes($('body').data('theme')) ? $('body').data('theme') : 'light';
 
-	function toggleDarkTheme(event = null) {
+	function toggleTheme(newTheme = 'light', event = null) {
 		if (isChangingTheme) {
 			return
 		}
@@ -393,11 +393,9 @@ $(document).ready(function(){
 		}, 1000)
 
 		// Toggle the theme
-		var nextThemeIndex = themes.indexOf(currentTheme) + 1;
-		if (nextThemeIndex >= themes.length) {
-			nextThemeIndex = 0;
+		if (!themes.includes(newTheme)) {
+			newTheme = 'light'
 		}
-		var newTheme = themes[nextThemeIndex];
 
 		document.body.dataset.theme = newTheme;
 		$.get(EE.cp.switchThemeURL + '&theme=' + newTheme);
