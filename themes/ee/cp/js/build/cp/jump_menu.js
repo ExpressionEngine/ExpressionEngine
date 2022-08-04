@@ -218,9 +218,14 @@ EE.cp.JumpMenu = {
   },
   handleClick: function handleClick(commandKey) {
     // Check if we're changing the theme.
-    if (EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.indexOf('theme/') !== -1) {
-      jumpContainer.document.body.dataset.theme = EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.replace('theme/', '');
-      localStorage.setItem('theme', jumpContainer.document.body.dataset.theme);
+    if (EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.indexOf('switch-theme') !== -1) {
+      // Add the transition class to the html. This will make the theme change transition smoothly
+      document.documentElement.classList.add('color-theme-in-transition')
+      window.setTimeout(() => {
+        document.documentElement.classList.remove('color-theme-in-transition')
+      }, 1000)
+      jumpContainer.document.body.dataset.theme = EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].command;
+      $.get(EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target);
     } else {
       // Save the command key we selected into an array for the level we're on (i.e. top level command or a sub-command).
       EE.cp.JumpMenu.commandKeys[EE.cp.JumpMenu.currentFocus] = commandKey;

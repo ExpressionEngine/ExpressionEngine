@@ -40,6 +40,8 @@ $lang = array(
 
     'slate_theme' => 'Slate Theme',
 
+    'toggle_theme' => 'Toggle Theme',
+
     'dark' => 'Dark',
 
     'light' => 'Light',

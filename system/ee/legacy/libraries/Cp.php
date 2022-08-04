@@ -149,10 +149,6 @@ class Cp
             'keyword_search' => lang('keyword_search'),
             'loading' => lang('loading'),
             'searching' => lang('searching'),
-            'dark_theme' => lang('dark_theme'),
-            'light_theme' => lang('light_theme'),
-            'slate_theme' => lang('slate_theme'),
-            'snow_theme' => lang('snow_theme'),
             'many_jump_results' => lang('many_jump_results'),
         );
 
@@ -181,6 +177,7 @@ class Cp
             'site_url' => ee()->config->item('site_url'),
             'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
             'cp.dismissBannerURL' => ee('CP/URL', 'homepage/dismiss-banner')->compile(),
+            'cp.switchThemeURL' => ee('CP/URL', 'homepage/switch-theme')->compile(),
             'cp.collapseSecondaryNavURL' => ee('CP/URL', 'homepage/toggle-secondary-sidebar-nav')->compile(),
             'fileManagerCompatibilityMode' => bool_config_item('file_manager_compatibility_mode'),
         ));

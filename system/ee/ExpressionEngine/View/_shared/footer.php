@@ -129,6 +129,8 @@
 
     $this->embed('ee:_shared/idle-modal');
 
+    $this->embed('ee:_shared/theme-modal');
+
     ?>
 
         <script type="text/javascript" src="<?=ee('CP/URL')->make('jumps/js')->compile()?>"></script>

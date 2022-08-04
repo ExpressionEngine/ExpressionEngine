@@ -50,11 +50,11 @@ class Themes extends Jumps
                     if (preg_match('/' . $keyword . '/', $theme)) {
                         $response['switchTheme' . $theme] = array(
                             'icon' => $icon,
-                            'command' => lang($theme),
-                            'command_title' => $theme,
+                            'command' => $theme,
+                            'command_title' => lang($theme),
                             'dynamic' => true,
                             'addon' => false,
-                            'target' => 'theme/' . $theme
+                            'target' => ee('CP/URL')->make('homepage/switch-theme', ['theme' => $theme])->compile()
                         );
                     }
                 }
@@ -64,21 +64,21 @@ class Themes extends Jumps
                 $response['switchThemePink'] = array(
                     'icon' => 'fa-heart',
                     'command' => 'pink',
-                    'command_title' => 'pink',
+                    'command_title' => lang('pink'),
                     'dynamic' => true,
                     'addon' => false,
-                    'target' => 'theme/pink'
+                    'target' => ee('CP/URL')->make('homepage/switch-theme', ['theme' => 'pink'])->compile()
                 );
             }
         } else {
             foreach ($this->themes as $theme => $icon) {
                 $response['switchTheme' . $theme] = array(
                     'icon' => $icon,
-                    'command' => lang($theme),
-                    'command_title' => $theme,
+                    'command' => $theme,
+                    'command_title' => lang($theme),
                     'dynamic' => true,
                     'addon' => false,
-                    'target' => 'theme/' . $theme
+                    'target' => ee('CP/URL')->make('homepage/switch-theme', ['theme' => $theme])->compile()
                 );
             }
         }
