@@ -128,6 +128,7 @@ class File
         // Start pulling File IDs to both paginate on then pull data
         ee()->db->select('exp_files.file_id');
         ee()->db->from('files');
+        ee()->db->where('model_type', 'File');
 
         // Specify file ID(s) if supplied
         if ($file_id != '') {
@@ -361,19 +362,22 @@ class File
         }
 
         $parse_data = array();
+        ee()->load->library('file_field');
         foreach ($this->query->result_array() as $count => $row) {
+
+            $row['model_object'] = ee()->file_field->getFileModelForFieldData($row['file_id']);
+            $row = ee()->file_field->parse_field($row);
             $row_prefs = $upload_prefs[$row['upload_location_id']];
 
             //  More Variables, Mostly for Conditionals
             $row['absolute_count'] = (int) $offset + $count + 1;
             $row['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
             $row['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
+            $row['folder_id'] = $row['directory_id'];
             $row['directory_id'] = $row['id'];
             $row['directory_title'] = $row['name'];
             $row['entry_id'] = $row['file_id'];
-            $row['extension'] = substr(strrchr($row['file_name'], '.'), 1);
-            $row['path'] = $row_prefs['url'];
-            $row['url'] = rtrim($row_prefs['url'], '/') . '/' . $row['file_name'];
+
             $row['viewable_image'] = $this->is_viewable_image($row['file_name']);
 
             // Add in the path variable
@@ -399,55 +403,6 @@ class File
             $row['edit_date'] = $row['modified_date'];
             $row['filename'] = $row['file_name'];
             $row['file_url'] = $row['url'];
-
-            // Get File Size/H/W data
-            $size_data = $this->get_file_sizes(reduce_double_slashes($row_prefs['server_path'] . '/' . $row['filename']));
-
-            foreach ($size_data as $k => $v) {
-                $row[$k] = $v;
-            }
-
-            $row['file_size'] = $row['size'];
-            $row['file_size:human'] = (string) ee('Format')->make('Number', $row['size'])->bytes();
-            $row['file_size:human_long'] = (string) ee('Format')->make('Number', $row['size'])->bytes(false);
-
-            foreach ($this->valid_thumbs as $data) {
-                if ($row['viewable_image'] && $row['id'] == $data['dir']) {
-                    $size_data = array();
-
-                    $row['url:' . $data['name']] = rtrim($row_prefs['url'], '/') . '/_' . $data['name'] . '/' . $row['file_name'];
-                    // backwards compat variable
-                    $row[$data['name'] . '_file_url'] = $row['url:' . $data['name']];
-
-                    $size_data = $this->get_file_sizes(reduce_double_slashes($row_prefs['server_path'] . '/_' . $data['name'] . '/' . $row['file_name']));
-
-                    $row['height:' . $data['name']] = $size_data['height'];
-                    $row['width:' . $data['name']] = $size_data['width'];
-                    $row['file_size:' . $data['name']] = (int) $size_data['size'];
-                    $row['file_size:' . $data['name'] . ':human'] = (string) ee('Format')->make('Number', (int) $size_data['size'])->bytes();
-                    $row['file_size:' . $data['name'] . ':human_long'] = (string) ee('Format')->make('Number', (int) $size_data['size'])->bytes(false);
-
-                    // backwards compat variables
-                    foreach ($size_data as $k => $v) {
-                        $row[$data['name'] . '_' . $k] = $v;
-                    }
-                }
-                // if the file doesn't exist this key is null, and fails isset(), so use array_key_exists
-                elseif (! array_key_exists($data['name'] . '_height', $row)) {
-                    $row['url:' . $data['name']] = '';
-                    $row['height:' . $data['name']] = '';
-                    $row['width:' . $data['name']] = '';
-                    $row['file_size:' . $data['name']] = '';
-                    $row['file_size:' . $data['name'] . ':human'] = '';
-                    $row['file_size:' . $data['name'] . ':human_long'] = '';
-
-                    // backwards compat
-                    $row[$data['name'] . '_height'] = '';
-                    $row[$data['name'] . '_width'] = '';
-                    $row[$data['name'] . '_size'] = '';
-                    $row[$data['name'] . '_file_url'] = '';
-                }
-            }
 
             // Category variables
             $row['categories'] = ($this->enable['categories'] && isset($this->categories[$row['file_id']])) ? $this->categories[$row['file_id']] : array();
