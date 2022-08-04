@@ -41,14 +41,13 @@ jobs:
           npm run build:old-js
 
       - name: Run build process
-        if:  github.event.pull_request.base.ref == '7.x'
         working-directory: build-tools
         env:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
         run: |
-          gulp app --local --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+          gulp app --local --head --skip-lint --skip-pro --version=${{ steps.tagName.outputs.tag }}
   
       - name: Archive Build files
         uses: actions/upload-artifact@v2
