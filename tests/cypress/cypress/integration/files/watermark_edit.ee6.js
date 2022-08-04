@@ -50,7 +50,6 @@ context('Watermark Create/Edit', () => {
     page.get('wm_padding').clear().type('sdfsd')
     page.get('wm_padding').blur()
     page.hasError(page.get('wm_padding'), page.messages.validation.natural_number)
-    cy.screenshot({capture: 'fullPage'});
     page.hasErrorsCount(3)
     page.hasErrors()
 //should_have_form_errors(page)
@@ -89,6 +88,8 @@ context('Watermark Create/Edit', () => {
 
     page.get('wm_image_path').clear().type('sdfsd')
     page.get('wm_image_path').blur()
+    cy.wait(2000)
+    cy.screenshot({capture: 'fullPage'});
     page.hasErrorsCount(3)
     page.hasError(page.get('wm_image_path'), page.messages.validation.invalid_path)
     page.hasErrors()
