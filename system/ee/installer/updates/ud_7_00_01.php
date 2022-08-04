@@ -25,7 +25,34 @@ class Updater
      */
     public function do_update()
     {
+        $steps = new \ProgressIterator(
+            [
+                'addCpThemeToMember'
+            ]
+        );
+
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+
         return true;
+    }
+
+    private function addCpThemeToMember()
+    {
+        if (!ee()->db->field_exists('cp_theme', 'members')) {
+            ee()->smartforge->add_column(
+                'members',
+                [
+                    'cp_theme' => [
+                        'type' => 'varchar',
+                        'constraint' => 20,
+                        'default' => null,
+                        'null' => true
+                    ]
+                ]
+            );
+        }
     }
 }
 

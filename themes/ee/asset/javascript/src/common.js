@@ -371,15 +371,9 @@ $(document).ready(function(){
 	// Don't allow changing the theme when it's in the middle of changing
 	var isChangingTheme = false
 
-	var currentTheme = localStorage.getItem('theme');
+	var themes = ['light', 'dark', 'slate'];
 
-	updateMenuText(currentTheme)
-
-	function updateMenuText(newTheme) {
-		if ($('.js-dark-theme-toggle').length) {
-			$('.js-dark-theme-toggle').html('<i class="fal fa-adjust fa-fw"></i> ' + (newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme));
-		}
-	}
+	var currentTheme = themes.includes($('body').data('theme')) ? $('body').data('theme') : 'light';
 
 	function toggleDarkTheme(event = null) {
 		if (isChangingTheme) {
@@ -399,12 +393,15 @@ $(document).ready(function(){
 		}, 1000)
 
 		// Toggle the theme
-		var newTheme = document.body.dataset.theme == 'dark' ? 'light' : 'dark'
+		var nextThemeIndex = themes.indexOf(currentTheme) + 1;
+		if (nextThemeIndex >= themes.length) {
+			nextThemeIndex = 0;
+		}
+		var newTheme = themes[nextThemeIndex];
 
 		document.body.dataset.theme = newTheme;
-		localStorage.setItem('theme', newTheme);
-
-		updateMenuText(newTheme)
+		$.get(EE.cp.switchThemeURL + '&theme=' + newTheme);
+		currentTheme = newTheme;
 
 		// Show a circle animation if there's a click event
 		if (event) {

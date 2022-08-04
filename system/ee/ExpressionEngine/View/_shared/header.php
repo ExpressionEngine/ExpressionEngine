@@ -4,7 +4,7 @@
         <?=ee()->view->head_title($cp_page_title)?>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
-        <?php if (ee('pro:Access')->hasRequiredLicense() && ee()->config->item('favicon')) : ?>
+        <?php if (ee()->config->item('favicon')) : ?>
         <link rel="icon" type="image/x-icon" href="<?=ee()->config->item('favicon')?>" />
         <?php endif; ?>
         <?php if (isset($meta_refresh)): ?>
@@ -39,16 +39,7 @@
         }
         ?>
     </head>
-    <body data-ee-version="<?=APP_VER?>" id="top"<?php echo isset($body_class) ? ' class="' . $body_class . '"' : ''; ?>>
-        <script type="text/javascript">
-        var currentTheme = localStorage.getItem('theme');
-
-        // Restore the currently selected theme
-        // This is at the top of the body to prevent the default theme from flashing
-        if (currentTheme) {
-            document.body.dataset.theme = currentTheme;
-        }
-        </script>
+    <body data-ee-version="<?=APP_VER?>" id="top"<?php echo isset($body_class) ? ' class="' . $body_class . '"' : ''; ?> data-theme="<?=ee()->session->getMember()->cp_theme?>">
 
         <div class="global-alerts">
         <?=ee('CP/Alert')->getAllBanners()?>
@@ -119,7 +110,7 @@ $current_page = ee()->uri->segment(2);
                     </div>
 
                     <a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><i class="fal fa-user fa-fw"></i> <?=lang('my_profile')?></a>
-              <a class="dropdown__link js-dark-theme-toggle" href=""><i class="fal fa-adjust fa-fw"></i> <?= lang('dark_theme') ?></a>
+              <a class="dropdown__link js-dark-theme-toggle" href=""><i class="fal fa-adjust fa-fw"></i> <?= lang('toggle_theme') ?></a>
 
                     <div class="dropdown__divider"></div>
 

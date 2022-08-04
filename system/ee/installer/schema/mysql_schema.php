@@ -349,6 +349,7 @@ class EE_Schema
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
 			dismissed_banner char(1) NOT NULL DEFAULT 'n',
 			enable_mfa char(1) NOT NULL default 'n',
+			cp_theme varchar(20) NULL DEFAULT NULL,
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `role_id` (`role_id`),
 			KEY `unique_id` (`unique_id`),

@@ -204,10 +204,29 @@ class Homepage extends CP_Controller
         ee()->output->send_ajax_response(['success']);
     }
 
+    /**
+     * Dismiss post-update banner from CP homepage, until next update
+     *
+     * @return void
+     */
     public function dismissBanner()
     {
         $member = ee()->session->getMember();
         $member->dismissed_banner = 'y';
+        $member->save();
+
+        ee()->output->send_ajax_response(['success']);
+    }
+
+    /**
+     * Dismiss post-update banner from CP homepage, until next update
+     *
+     * @return void
+     */
+    public function switchTheme()
+    {
+        $member = ee()->session->getMember();
+        $member->cp_theme = ee('Request')->isPost() ? ee('Request')->post('theme') : ee('Request')->get('theme');
         $member->save();
 
         ee()->output->send_ajax_response(['success']);

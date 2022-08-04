@@ -14,18 +14,8 @@
         }
         ?>
 	</head>
-	<body data-ee-version="<?=APP_VER?>" class="<?php if (isset($pro_class)) echo $pro_class; ?> app-modal-inner">
-		<?php if (!isset($pro_class)): ?>
-		<script type="text/javascript">
-		var currentTheme = localStorage.getItem('theme');
+	<body data-ee-version="<?=APP_VER?>" class="<?php if (isset($pro_class)) echo $pro_class; ?> app-modal-inner"<?php if (!isset($pro_class)): ?> data-theme="<?=ee()->session->getMember()->cp_theme?>"<?php endif; ?>>
 
-		// Restore the currently selected theme
-		// This is at the top of the body to prevent the default theme from flashing
-		if (currentTheme) {
-			document.body.dataset.theme = currentTheme;
-		}
-		</script>
-		<?php endif; ?>
 		<?php if (!isset($hide_topbar) || !$hide_topbar) : ?>
 		<div class="app-modal__dismiss">
 			<a class="js-modal-close" rel="modal-form" href="#"><?=lang('close_modal')?></a> <span class="txt-fade">[esc]</span>

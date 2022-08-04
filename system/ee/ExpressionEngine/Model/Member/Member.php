@@ -311,6 +311,7 @@ class Member extends ContentModel
     protected $cp_homepage_custom;
     protected $dismissed_banner;
     protected $enable_mfa;
+    protected $cp_theme;
 
     protected $_cpHomepageUrl;
 
