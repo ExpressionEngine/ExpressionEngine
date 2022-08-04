@@ -111,11 +111,11 @@ class Pro_variables
         if (defined('IS_PRO') && IS_PRO) {
             $local_vars = array();
             foreach ($this->vars as $t) {
-                if (strpos($tagdata, $t['variable_name']) !== false && $t['is_hidden'] === 'n') {
+                if (strpos($tagdata, "${t['variable_name']}") !== false && $t['is_hidden'] === 'n') {
                     array_push($local_vars, $t);
                 }
                 //Get the early parsed variables
-                elseif (strpos($tagdata, $t['variable_data']) !== false && $t['is_hidden'] === 'n') {
+                elseif (strpos($tagdata, "${t['variable_data']}") !== false && $t['is_hidden'] === 'n') {
                     array_push($local_vars, $t);
                 }
             }
@@ -401,7 +401,7 @@ class Pro_variables
         //  Get cached vars
         // -------------------------------------
 
-        $var_cache = pro_get_cache($this->package, 'vars');
+        $var_cache = pro_get_cache($this->package, 'vars') ?: [];
 
         if (isset($var_cache[$site_id])) {
             $this->_log('Getting variables from Session Cache');
