@@ -42,9 +42,9 @@ context('Developer Log', () => {
 	it('filters by date', () => {
 		//clear all
 		page.get('delete_all').click()
-        page.get('confirm').filter(':visible').first().click()
+		page.get('confirm').filter(':visible').first().click()
 
-
+    cy.wait(3000)
 		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today', '');")
 		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (1, 'n', 'Hello from 1969', '');")
 		cy.reload()

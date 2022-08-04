@@ -47,7 +47,7 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
         run: |
-          gulp app --local --head --skip-lint --skip-pro --version=7.0.0
+          gulp app --local --head --skip-lint --skip-pro --version=${{ steps.tagName.outputs.tag }}
   
       - name: Archive Build files
         uses: actions/upload-artifact@v2

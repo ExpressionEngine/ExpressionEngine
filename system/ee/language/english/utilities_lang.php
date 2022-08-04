@@ -500,7 +500,7 @@ $lang = array(
 
     /* File Usage */
 
-    'update_file_usage' => 'Update Files Usage',
+    'update_file_usage' => 'Update File Usage',
 
     'update_file_usage_explained_desc' => 'Run this utility to convert all files stored in the database from sites previous to ExpressionEngine 7 to the new ExpressionEngine 7 file format. This must be completed before newer File Manager features may be used. <a href="%s">Read more on Compatiblity Mode in the docs</a> <br /><br />
 
@@ -526,7 +526,7 @@ $lang = array(
 
     To prevent unexpected issues, we have disabled some features by setting File Manager to run in Compatibility Mode. <a href="%s">Read more on Compatiblity Mode in the docs</a><br /><br />
 
-Once you are ready to experience the new File Manager features, please run <a href="%s">Update Files Usage</a> Utility and then visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode.',
+Once you are ready to experience the new File Manager features, please run the <a href="%s">Update File Usage</a> Utility and then visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode.',
 
     /* Search Reindex */
 
