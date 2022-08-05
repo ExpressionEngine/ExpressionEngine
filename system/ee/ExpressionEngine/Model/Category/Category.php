@@ -198,6 +198,10 @@ class Category extends ContentModel
 
     private function updateFilesUsage()
     {
+        if (bool_config_item('file_manager_compatibility_mode')) {
+            return false;
+        }
+
         $data = $_POST ?: $this->getValues();
 
         $usage = [];

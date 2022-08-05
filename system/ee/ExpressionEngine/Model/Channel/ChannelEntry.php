@@ -16,6 +16,7 @@ use ExpressionEngine\Model\Content\ContentModel;
 use ExpressionEngine\Model\Content\Display\FieldDisplay;
 use ExpressionEngine\Model\Content\Display\LayoutInterface;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Library\CP\FileManager\Traits\FileUsageTrait;
 
 /**
  * Channel Entry
@@ -29,6 +30,8 @@ use ExpressionEngine\Service\Validation\Result as ValidationResult;
  */
 class ChannelEntry extends ContentModel
 {
+    use FileUsageTrait;
+
     protected static $_primary_key = 'entry_id';
     protected static $_table_name = 'channel_titles';
     protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
@@ -705,6 +708,10 @@ class ChannelEntry extends ContentModel
 
     private function updateFilesUsage()
     {
+        if (bool_config_item('file_manager_compatibility_mode')) {
+            return false;
+        }
+
         $data = $_POST ?: $this->getValues();
 
         ee()->load->model('file_upload_preferences_model');
@@ -715,6 +722,7 @@ class ChannelEntry extends ContentModel
             if (! is_string($item)) {
                 return;
             }
+            //if the file data is in new format, add the counter immediately
             if (strpos($item, '{file:') !== false && preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
                 $file_id = $matches[1];
                 if (! isset($usage[$file_id])) {
@@ -729,34 +737,15 @@ class ChannelEntry extends ContentModel
                     $dirUrlsMatches['{filedir_' . $dir_id . '}'] = $dir_url;
                 }
             }
+            //things like RTE submit real image path, so we need to get that converted to contain {filedir_} tags
             if (! empty($dirUrlsMatches)) {
                 $item = str_replace(array_keys($dirUrlsMatches), $dirUrlsMatches, $item);
             }
-            if (strpos($item, '{filedir_') !== false) {
-                if (preg_match_all('/{filedir_(\d+)}([^\"\'\s]*)/', $item, $matches, PREG_SET_ORDER)) {
-                    $dirsAndFiles = [];
-                    foreach ($matches as $match) {
-                        $dirsAndFiles[$match[1]][] = $match[2];
-                    }
-                    $files = ee('Model')
-                        ->get('File')
-                        ->fields('file_id', 'upload_location_id', 'file_name');
-                    $files->filterGroup();
-                    foreach ($dirsAndFiles as $dir_id => $file_names) {
-                        $files->orFilterGroup()
-                            ->filter('upload_location_id', $dir_id)
-                            ->filter('file_name', 'IN', $file_names)
-                            ->endFilterGroup();
-                    }
-                    $files->endFilterGroup();
-                    foreach ($files->all() as $file) {
-                        $file_id = $file->file_id;
-                        if (! isset($usage[$file_id])) {
-                            $usage[$file_id] = 1;
-                        } else {
-                            $usage[$file_id]++;
-                        }
-                    }
+
+            $filedirReplacements = static::getFileUsageReplacements($item);
+            if (!empty($filedirReplacements)) {
+                foreach ($filedirReplacements as $file_id => $replacements) {
+                    $usage[$file_id] = count($replacements);
                 }
             }
         });
