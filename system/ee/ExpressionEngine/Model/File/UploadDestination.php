@@ -454,7 +454,7 @@ class UploadDestination extends StructureModel
                 ->filter('upload_location_id', $this->getId())
                 ->filter('directory_id', $directory_id)
                 ->filter('file_name', $fileOrDirName)
-                ->first(true);
+                ->first();
             if (! empty($file)) {
                 $directory_id = $file->file_id;
             }
