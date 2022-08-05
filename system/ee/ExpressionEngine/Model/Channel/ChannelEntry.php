@@ -739,13 +739,17 @@ class ChannelEntry extends ContentModel
             }
             //things like RTE submit real image path, so we need to get that converted to contain {filedir_} tags
             if (! empty($dirUrlsMatches)) {
-                $item = str_replace(array_keys($dirUrlsMatches), $dirUrlsMatches, $item);
+                $item = str_replace($dirUrlsMatches, array_keys($dirUrlsMatches), $item);
             }
 
             $filedirReplacements = static::getFileUsageReplacements($item);
             if (!empty($filedirReplacements)) {
                 foreach ($filedirReplacements as $file_id => $replacements) {
-                    $usage[$file_id] = count($replacements);
+                    if (! isset($usage[$file_id])) {
+                        $usage[$file_id] = 1;
+                    } else {
+                        $usage[$file_id]++;
+                    }
                 }
             }
         });
