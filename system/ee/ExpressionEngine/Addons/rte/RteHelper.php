@@ -77,7 +77,7 @@ class RteHelper
         
         if (!bool_config_item('file_manager_compatibility_mode') && strpos((string) $data, '{filedir_') !== false) {
             $dirsAndFiles = [];
-            if (preg_match_all('/{filedir_(\d+)}(.*)\"/', $data, $matches, PREG_SET_ORDER)) {
+            if (preg_match_all('/{filedir_(\d+)}([^\"\'\s]*)/', $data, $matches, PREG_SET_ORDER)) {
                 foreach ($matches as $match) {
                     $dirsAndFiles[$match[1]][] = $match[2];
                 }
