@@ -733,7 +733,7 @@ class ChannelEntry extends ContentModel
                 $item = str_replace(array_keys($dirUrlsMatches), $dirUrlsMatches, $item);
             }
             if (strpos($item, '{filedir_') !== false) {
-                if (preg_match_all('/{filedir_(\d+)}(.*)\"/', $item, $matches, PREG_SET_ORDER)) {
+                if (preg_match_all('/{filedir_(\d+)}([^\"\'\s]*)/', $item, $matches, PREG_SET_ORDER)) {
                     $dirsAndFiles = [];
                     foreach ($matches as $match) {
                         $dirsAndFiles[$match[1]][] = $match[2];
