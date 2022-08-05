@@ -730,7 +730,7 @@ class ChannelEntry extends ContentModel
                 }
             }
             if (! empty($dirUrlsMatches)) {
-                $item = str_replace(array_keys($dirUrlsMatches), $dirUrlsMatches, $item);
+                $item = str_replace( $dirUrlsMatches,array_keys($dirUrlsMatches), $item);
             }
             if (strpos($item, '{filedir_') !== false) {
                 if (preg_match_all('/{filedir_(\d+)}(.*)\"/', $item, $matches, PREG_SET_ORDER)) {
@@ -743,6 +743,8 @@ class ChannelEntry extends ContentModel
                         ->fields('file_id', 'upload_location_id', 'file_name');
                     $files->filterGroup();
                     foreach ($dirsAndFiles as $dir_id => $file_names) {
+                        //file_names is an array of the files in this index. Ideally we need to loop here? not sure yet? Is still putting them all on one string though
+                        $file_names = strtok($file_names[0],  '"');
                         $files->orFilterGroup()
                             ->filter('upload_location_id', $dir_id)
                             ->filter('file_name', 'IN', $file_names)
