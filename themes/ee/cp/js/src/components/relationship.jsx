@@ -212,14 +212,14 @@ class Relationship extends React.Component {
 
 		$(this.listGroup).sortable({
 			axis: 'y',
-			containment: 'parent',
+			// containment: 'parent',
 			handle: '.list-item__handle',
 			items: '.list-item',
 			sort: (event, ui) => {
-                try {
-                    EE.sortable_sort_helper(event, ui)
-                } catch (error) {}
-            },
+				try {
+					EE.sortable_sort_helper(event, ui)
+				} catch (error) {}
+			},
 			start: (event, ui) => {
 				// Save the start index for later
 				$(this).attr('data-start-index', ui.item.index());
@@ -288,7 +288,7 @@ class Relationship extends React.Component {
                             return (
                                 <li className="list-item">
 									{this.state.selected.length > 1 &&
-									<div class="list-item__handle"><i class="fas fa-bars"></i></div>
+									<div class="list-item__handle"><i class="fal fa-bars"></i></div>
 									}
                                     <div className="list-item__content">
                                         <div class="list-item__title">{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
@@ -298,7 +298,7 @@ class Relationship extends React.Component {
                                     </div>
                                     <div class="list-item__content-right">
                                         <div className="button-group">
-                                            <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--default"><i class="fas fa-fw fa-trash-alt"></i></button>
+                                            <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--default"><i class="fal fa-fw fa-trash-alt"></i></button>
                                         </div>
                                     </div>
                                 </li>
@@ -319,7 +319,7 @@ class Relationship extends React.Component {
                 }
 
                 <div style={{display: showAddButton ? 'block' : 'none' }}>
-                <button type="button" className="js-dropdown-toggle button button--default"><i class="fas fa-plus icon-left"></i> {props.button_label ? props.button_label : EE.relationship.lang.relateEntry}</button>
+                <button type="button" className="js-dropdown-toggle button button--default"><i class="fal fa-plus icon-left"></i> {props.button_label ? props.button_label : EE.relationship.lang.relateEntry}</button>
                     <div className="dropdown js-dropdown-auto-focus-input">
                         <div className="dropdown__search d-flex">
                             <div className="filter-bar flex-grow">
@@ -328,7 +328,7 @@ class Relationship extends React.Component {
                                         <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={EE.relationship.lang.search} />
                                     </div>
                                 </div>
-                                {props.channels.length > 1 && 
+                                {props.channels.length > 1 &&
                                 <div className="filter-bar__item">
                                     <DropDownButton
                                         keepSelectedState={true}
@@ -346,7 +346,7 @@ class Relationship extends React.Component {
                                     }
                                     {props.channels.length > 1 &&
                                     <div>
-                                    <button type="button" className="js-dropdown-toggle button button--primary button--small">New Entry <i class="fas fa-caret-down icon-right"></i></button>
+                                    <button type="button" className="js-dropdown-toggle button button--primary button--small">New Entry <i class="fal fa-chevron-down icon-right"></i></button>
                                     <div className="dropdown">
                                         {props.channels.map((channel) => {
                                             return (

@@ -19,8 +19,8 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
     /**
      * There are always simple variables. Let me tell you ...
      *
-     * @param array		A list of "disabled" features
-     * @return Boolean	Is disabled?
+     * @param array     A list of "disabled" features
+     * @return Boolean  Is disabled?
      */
     public function disabled(array $disabled, EE_Channel_preparser $pre)
     {
@@ -30,26 +30,26 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
     /**
      * Parse out $search_link for the {member_search_path} variable
      *
-     * @param String	The tagdata to be parsed
-     * @param Object	The preparser object.
-     * @return String	The $search_link path
+     * @param String    The tagdata to be parsed
+     * @param Object    The preparser object.
+     * @return String   The $search_link path
      */
     public function pre_process($tagdata, EE_Channel_preparser $pre)
     {
         $result_path = (preg_match("/" . LD . $pre->prefix() . "member_search_path\s*=(.*?)" . RD . "/s", $tagdata, $match)) ? $match[1] : 'search/results';
         $result_path = str_replace(array('"',"'"), "", $result_path);
 
-        return (strpos($tagdata, 'member_search_path') !== false ) ? ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;result_path=' . $result_path . '&amp;mbr=' : '';
+        return (strpos($tagdata, 'member_search_path') !== false) ? ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;result_path=' . $result_path . '&amp;mbr=' : '';
     }
 
     /**
      * Replace all variables.
      *
-     * @param String	The tagdata to be parsed
-     * @param Object	The channel parser object
-     * @param Mixed		The results from the preparse method
+     * @param String    The tagdata to be parsed
+     * @param Object    The channel parser object
+     * @param Mixed     The results from the preparse method
      *
-     * @return String	The processed tagdata
+     * @return String   The processed tagdata
      */
     public function replace($tagdata, EE_Channel_data_parser $obj, $search_link)
     {
@@ -76,16 +76,14 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
         // @todo remove
         $key = $tag;
         $val = $tag_options;
-        if (strpos($key, 'disable') !== false && strpos($key, 'frontedit') !== false ) {
+        if (strpos($key, 'disable') !== false && strpos($key, 'frontedit') !== false) {
             $key = trim(str_replace(['disable="frontedit"', "disable='frontedit'"], '', $key));
             $tagdata = str_replace($tag, $key, $tagdata);
         }
 
         if ($key == $prefix . 'title:frontedit') {
-            if (IS_PRO) {
-                $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], 'title');
-                $tagdata = str_replace(LD . $key . RD, $frontEditLink, $tagdata);
-            }
+            $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], 'title');
+            $tagdata = str_replace(LD . $key . RD, $frontEditLink, $tagdata);
         }
         //  parse {title}
         if ($key == $prefix . 'title') {
@@ -145,14 +143,14 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
     /**
      * Handle variables that end in _path or contain "permalink".
      *
-     * @param Array		The row data
-     * @param String	The template text
-     * @param String	The var_single key (tag name)
-     * @param String	The var_single value
-     * @param String	The current parsing prefix
-     * @param String	The search link for search paths
+     * @param Array     The row data
+     * @param String    The template text
+     * @param String    The var_single key (tag name)
+     * @param String    The var_single value
+     * @param String    The current parsing prefix
+     * @param String    The search link for search paths
      *
-     * @return String	The processed tagdata
+     * @return String   The processed tagdata
      */
     protected function _paths($data, $tagdata, $key, $val, $prefix, $search_link)
     {
@@ -262,13 +260,13 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
     /**
      * Handle variables that end in _url.
      *
-     * @param Array		The row data
-     * @param String	The template text
-     * @param String	The var_single key (tag name)
-     * @param String	The var_single value
-     * @param String	The current parsing prefix
+     * @param Array     The row data
+     * @param String    The template text
+     * @param String    The var_single key (tag name)
+     * @param String    The var_single value
+     * @param String    The current parsing prefix
      *
-     * @return String	The processed tagdata
+     * @return String   The processed tagdata
      */
     protected function _urls($data, $tagdata, $key, $val, $prefix, $mfields)
     {
@@ -371,13 +369,13 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
      * presets. We fallback on urls and paths because third parties can add
      * anything they want to the entry data. (@see bug #19337)
      *
-     * @param Array		The row data
-     * @param String	The template text
-     * @param String	The var_single key (tag name)
-     * @param String	The var_single value
-     * @param String	The current parsing prefix
+     * @param Array     The row data
+     * @param String    The template text
+     * @param String    The var_single key (tag name)
+     * @param String    The var_single value
+     * @param String    The current parsing prefix
      *
-     * @return String	The processed tagdata
+     * @return String   The processed tagdata
      */
     protected function _basic($data, $tagdata, $key, $val, $prefix)
     {

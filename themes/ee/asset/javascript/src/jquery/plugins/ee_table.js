@@ -69,7 +69,7 @@ $.widget('ee.table', {
 		// cache content parent and no results
 		self.tbody = self.element.find('tbody');
 
-		if ( ! self.tbody.size()) {
+		if ( ! self.tbody.length) {
 			self.tbody = $('<tbody/>');
 			self.element.append(self.tbody);
 		}

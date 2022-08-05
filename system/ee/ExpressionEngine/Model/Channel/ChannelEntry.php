@@ -116,6 +116,22 @@ class ChannelEntry extends ContentModel
             ),
             'weak' => true
         ),
+        'EntryFiles' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'File',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
+        'EntryFileFolders' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Directory',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
     );
 
     protected static $_field_data = array(
@@ -145,10 +161,15 @@ class ChannelEntry extends ContentModel
         'afterDelete',
         'afterInsert',
         'afterSave',
-        'afterUpdate'
+        'afterUpdate',
+        'afterAssociationsSave',
+        'beforeAssociationsBulkDelete',
+        'afterAssociationsBulkDelete'
     );
 
     protected $_default_fields;
+    protected $_filesNeedTotalRecordsRecount = [];
+    protected static $_filesNeedTotalRecordsRecountStatic = [];
 
     // Properties
     protected $entry_id;
@@ -405,12 +426,15 @@ class ChannelEntry extends ContentModel
         }
         // Validate the conditional fields
         $this->evaluateConditionalFields();
+
+        $this->updateFilesUsage();
     }
 
     public function onAfterSave()
     {
         parent::onAfterSave();
-        if (IS_PRO && ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
+        //front-end editing needs to treat autosaves in a special way
+        if (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('hide_closer') == 'y') {
             foreach ($this->Autosaves as $autosave) {
                 $deleteThisAutosave = true;
                 $autosavedEntryData = $autosave->entry_data;
@@ -422,6 +446,7 @@ class ChannelEntry extends ContentModel
                 foreach ($autosavedEntryData as $key => $val) {
                     if ($key == 'title' || strpos($key, 'field_id_') === 0) {
                         $deleteThisAutosave = false;
+
                         break;
                     }
                 }
@@ -445,6 +470,33 @@ class ChannelEntry extends ContentModel
             ee()->functions->clear_caching('all');
         } else {
             ee()->functions->clear_caching('sql');
+        }
+    }
+
+    public function onAfterAssociationsSave()
+    {
+        self::updateFilesTotalRecords($this->_filesNeedTotalRecordsRecount);
+    }
+
+    public static function onBeforeAssociationsBulkDelete($entry_ids = [])
+    {
+        if (!empty($entry_ids)) {
+            $key = implode('_', $entry_ids);
+            $existingEntryFilesQuery = ee('db')->select('file_id')->from('file_usage')->where_in('entry_id', $entry_ids)->get();
+            $existingEntryFiles = [];
+            foreach ($existingEntryFilesQuery->result_array() as $row) {
+                $existingEntryFiles[] = $row['file_id'];
+            }
+            self::$_filesNeedTotalRecordsRecountStatic = [$key => $existingEntryFiles];
+        }
+    }
+
+    public static function onAfterAssociationsBulkDelete($entry_ids = [])
+    {
+        $key = implode('_', $entry_ids);
+        if (!empty(self::$_filesNeedTotalRecordsRecountStatic) && isset(self::$_filesNeedTotalRecordsRecountStatic[$key]) && !empty(self::$_filesNeedTotalRecordsRecountStatic[$key])) {
+            self::updateFilesTotalRecords(self::$_filesNeedTotalRecordsRecountStatic[$key]);
+            unset(self::$_filesNeedTotalRecordsRecountStatic[$key]);
         }
     }
 
@@ -651,6 +703,77 @@ class ChannelEntry extends ContentModel
         $this->Channel->updateEntryStats();
     }
 
+    private function updateFilesUsage()
+    {
+        $data = $_POST ?: $this->getValues();
+
+        ee()->load->model('file_upload_preferences_model');
+        $file_dirs = ee()->file_upload_preferences_model->get_paths();
+
+        $usage = [];
+        array_walk_recursive($data, function ($item) use (&$usage, $file_dirs) {
+            if (! is_string($item)) {
+                return;
+            }
+            if (strpos($item, '{file:') !== false && preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
+                $file_id = $matches[1];
+                if (! isset($usage[$file_id])) {
+                    $usage[$file_id] = 1;
+                } else {
+                    $usage[$file_id]++;
+                }
+            }
+            $dirUrlsMatches = [];
+            foreach ($file_dirs as $dir_id => $dir_url) {
+                if (strpos($item, $dir_url) !== false) {
+                    $dirUrlsMatches['{filedir_' . $dir_id . '}'] = $dir_url;
+                }
+            }
+            if (! empty($dirUrlsMatches)) {
+                $item = str_replace(array_keys($dirUrlsMatches), $dirUrlsMatches, $item);
+            }
+            if (strpos($item, '{filedir_') !== false) {
+                if (preg_match_all('/{filedir_(\d+)}(.*)\"/', $item, $matches, PREG_SET_ORDER)) {
+                    $dirsAndFiles = [];
+                    foreach ($matches as $match) {
+                        $dirsAndFiles[$match[1]][] = $match[2];
+                    }
+                    $files = ee('Model')
+                        ->get('File')
+                        ->fields('file_id', 'upload_location_id', 'file_name');
+                    $files->filterGroup();
+                    foreach ($dirsAndFiles as $dir_id => $file_names) {
+                        $files->orFilterGroup()
+                            ->filter('upload_location_id', $dir_id)
+                            ->filter('file_name', 'IN', $file_names)
+                            ->endFilterGroup();
+                    }
+                    $files->endFilterGroup();
+                    foreach ($files->all() as $file) {
+                        $file_id = $file->file_id;
+                        if (! isset($usage[$file_id])) {
+                            $usage[$file_id] = 1;
+                        } else {
+                            $usage[$file_id]++;
+                        }
+                    }
+                }
+            }
+        });
+
+        //just before we set relationship, grab existing records to find out what files need recount
+        if (! $this->isNew()) {
+            $existingEntryFiles = ee('db')->select('file_id')->from('file_usage')->where('entry_id', $this->getId())->get();
+            foreach ($existingEntryFiles->result_array() as $row) {
+                $this->_filesNeedTotalRecordsRecount[] = $row['file_id'];
+            }
+        }
+        $this->_filesNeedTotalRecordsRecount = array_unique(array_merge($this->_filesNeedTotalRecordsRecount, array_keys($usage)));
+
+        $entryFiles = ee('Model')->get('File', array_keys($usage))->all();
+        $this->getAssociation('EntryFiles')->set($entryFiles);
+    }
+
     /**
      * A link back to the owning channel object.
      *
@@ -710,7 +833,7 @@ class ChannelEntry extends ContentModel
             $modules = [];
             $providers = ee('App')->getProviders();
             $installed_modules = $this->getModelFacade()->get('Module')
-                ->all()
+                ->all(true)
                 ->pluck('module_name');
 
             foreach (array_keys($providers) as $name) {
@@ -774,7 +897,7 @@ class ChannelEntry extends ContentModel
 
     protected function setDataOnCustomFields(array $data = array())
     {
-        $currentlyHiddenFieldsIds = $this->isNew() ? $this->evaluateConditionalFields() : $this->HiddenFields->pluck('field_id');
+        $currentlyHiddenFieldsIds = $this->isNew() ? $this->evaluateConditionalFields() : $this->getHiddenFieldIds();
         $currentlyHiddenFieldsNames = [];
         foreach ($currentlyHiddenFieldsIds as $hiddenFieldId) {
             $currentlyHiddenFieldsNames[] = 'field_id_' . $hiddenFieldId;
@@ -791,10 +914,14 @@ class ChannelEntry extends ContentModel
                     $this->getCustomField($name)->setHidden('n');
                 }
             }
-            
         }
 
         parent::setDataOnCustomFields($data);
+    }
+
+    public function getHiddenFieldIds()
+    {
+        return $this->HiddenFields->pluck('field_id');
     }
 
     /**
@@ -804,24 +931,25 @@ class ChannelEntry extends ContentModel
      */
     public function conditionalFieldsOutdated()
     {
-        $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        $currentlyHiddenFieldsIds = $this->getHiddenFieldIds();
+
         $hiddenFieldIds = [];
         $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
 
-        foreach ($this->getCustomFields() as $field) {
-            // If the ID isnt numeric, we can skip it since its something like title
-            if (! is_numeric($field->getId())) {
-                continue;
-            }
+        foreach ($this->Channel->getAllCustomConditionalFields() as $field) {
+            $myField = $this->getCustomField('field_id_' . $field->getId());
+            // Pass the FieldConditionSets along to the FieldFacade so that they
+            // can be eager loaded on the ChannelEntry->Channel and improve performance
+            $myField->setConditionSets($field->FieldConditionSets);
 
-            if ($field->getItem('field_is_conditional') === true) {
-                // Lets evaluate the condition sets
-                // if false, the field should be hidden
-                if (! $evaluator->evaluate($field)) {
-                    $hiddenFieldIds[] = $field->getId();
-                }
+            // Lets evaluate the condition sets
+            // if false, the field should be hidden
+            if (! $evaluator->evaluate($myField)) {
+                $hiddenFieldIds[] = $field->getId();
             }
         }
+
+        unset($evaluator);
 
         return (!empty(array_diff($currentlyHiddenFieldsIds, $hiddenFieldIds)) || !empty(array_diff($hiddenFieldIds, $currentlyHiddenFieldsIds)));
     }
@@ -833,29 +961,27 @@ class ChannelEntry extends ContentModel
      */
     public function evaluateConditionalFields()
     {
-        $currentlyHiddenFieldsIds = $this->HiddenFields->pluck('field_id');
+        $currentlyHiddenFieldsIds = $this->getHiddenFieldIds();
+
         $hiddenFieldIds = [];
         $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
-
-        foreach ($this->getCustomFields() as $field_name => $field) {
-            // If the ID isnt numeric, we can skip it since its something like title
-            if (! is_numeric($field->getId())) {
-                continue;
-            }
-
+        foreach ($this->Channel->getAllCustomConditionalFields() as $field_name => $field) {
             // This is the default status for hidden fields
             $hidden = 'n';
 
-            if ($field->getItem('field_is_conditional') === true) {
-                // Lets evaluate the condition sets
-                // if false, the field should be hidden
-                if (! $evaluator->evaluate($field)) {
-                    $hiddenFieldIds[] = $field->getId();
-                    $hidden = 'y';
-                }
+            $myField = $this->getCustomField('field_id_' . $field->getId());
+            // Pass the FieldConditionSets along to the FieldFacade so that they
+            // can be eager loaded on the ChannelEntry->Channel and improve performance
+            $myField->setConditionSets($field->FieldConditionSets);
+
+            // Lets evaluate the condition sets
+            // if false, the field should be hidden
+            if (! $evaluator->evaluate($myField)) {
+                $hiddenFieldIds[] = $field->getId();
+                $hidden = 'y';
             }
 
-            $field->setHidden($hidden);
+            $myField->setHidden($hidden);
         }
 
         if (!empty(array_diff($currentlyHiddenFieldsIds, $hiddenFieldIds)) || !empty(array_diff($hiddenFieldIds, $currentlyHiddenFieldsIds))) {
@@ -1099,7 +1225,7 @@ class ChannelEntry extends ContentModel
             if ($this->Channel) {
                 $cat_groups = $this->getModelFacade()->get('CategoryGroup')
                     ->filter('group_id', 'IN', explode('|', (string) $this->Channel->cat_group))
-                    ->all();
+                    ->all(true);
 
                 foreach ($cat_groups as $cat_group) {
                     $metadata = $cat_group->getFieldMetadata();
@@ -1152,30 +1278,38 @@ class ChannelEntry extends ContentModel
 
     public function populateChannels($field)
     {
-        $allowed_channel_ids = (ee()->session->userdata('member_id') == 0
-            or ee('Permission')->isSuperAdmin()
-            or ! is_array(ee()->session->userdata('assigned_channels')))
-            ? null : array_keys(ee()->session->userdata('assigned_channels'));
+        $cacheKey = "populate.channels.{$this->Channel->getId()}." . ee()->session->userdata('member_id');
 
-        $my_fields = $this->Channel->getAllCustomFields()->pluck('field_id');
-        $my_statuses = $this->Channel->Statuses->getIds();
+        $channel_filter_options = $this->getFromCache($cacheKey);
 
-        $channel_filter_options = array();
+        if ($channel_filter_options === false) {
+            $allowed_channel_ids = (ee()->session->userdata('member_id') == 0
+                or ee('Permission')->isSuperAdmin()
+                or ! is_array(ee()->session->userdata('assigned_channels')))
+                ? null : array_keys(ee()->session->userdata('assigned_channels'));
 
-        $channels = $this->getModelFacade()->get('Channel', $allowed_channel_ids)
-            ->with('Statuses', 'CustomFields', ['FieldGroups' => 'ChannelFields'])
-            ->filter('site_id', ee()->config->item('site_id'))
-            // Include custom field information because it may be cached for later calls
-            ->fields('channel_id', 'channel_title', 'ChannelFields.*', 'CustomFields.*')
-            ->all();
+            $my_fields = $this->Channel->getAllCustomFields()->pluck('field_id');
+            $my_statuses = $this->Channel->Statuses->getIds();
 
-        foreach ($channels as $channel) {
-            $channel_statuses = $channel->Statuses->getIds();
+            $channel_filter_options = array();
 
-            if ($my_fields == $channel->getAllCustomFields()->pluck('field_id') &&
-                sort($my_statuses) == sort($channel_statuses)) {
-                $channel_filter_options[$channel->channel_id] = $channel->channel_title;
+            $channels = $this->getModelFacade()->get('Channel', $allowed_channel_ids)
+                ->with('Statuses', 'CustomFields', ['FieldGroups' => 'ChannelFields'])
+                ->filter('site_id', ee()->config->item('site_id'))
+                // Include custom field information because it may be cached for later calls
+                ->fields('channel_id', 'channel_title', 'ChannelFields.*', 'CustomFields.*')
+                ->all();
+
+            foreach ($channels as $channel) {
+                $channel_statuses = $channel->Statuses->getIds();
+
+                if ($my_fields == $channel->getAllCustomFields()->pluck('field_id') &&
+                    sort($my_statuses) == sort($channel_statuses)) {
+                    $channel_filter_options[$channel->channel_id] = $channel->channel_title;
+                }
             }
+
+            $this->saveToCache($cacheKey, $channel_filter_options);
         }
 
         $field->setItem('field_list_items', $channel_filter_options);
@@ -1197,22 +1331,30 @@ class ChannelEntry extends ContentModel
      */
     public function populateAuthors($field)
     {
-        $author_options = array();
+        $cacheKey = "populate.authors.{$this->Channel->getId()}." . ee()->session->userdata('member_id');
 
-        // Default author
-        $author = $this->Author;
+        $author_options = $this->getFromCache($cacheKey);
 
-        if ($author) {
-            $author_options[$author->getId()] = $author->getMemberName();
-        }
+        if ($author_options === false) {
+            $author_options = array();
 
-        if (ee('Permission')->can('assign_post_authors')) {
-            if (! $author or ($author->getId() != ee()->session->userdata('member_id'))) {
-                $author_options[ee()->session->userdata('member_id')] =
-                ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
+            // Default author
+            $author = $this->Author;
+
+            if ($author) {
+                $author_options[$author->getId()] = $author->getMemberName();
             }
 
-            $author_options += ee('Member')->getAuthors();
+            if (ee('Permission')->can('assign_post_authors')) {
+                if (! $author or ($author->getId() != ee()->session->userdata('member_id'))) {
+                    $author_options[ee()->session->userdata('member_id')] =
+                    ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
+                }
+
+                $author_options += ee('Member')->getAuthors();
+            }
+
+            $this->saveToCache($cacheKey, $author_options);
         }
 
         $field->setItem('field_list_items', $author_options);
@@ -1229,45 +1371,53 @@ class ChannelEntry extends ContentModel
 
     public function populateStatus($field)
     {
-        // This generates an inscrutable error when installing the default theme, bail out
-        $all_statuses = ! INSTALLER ? $this->Channel->Statuses->sortBy('status_order') : [];
+        $cacheKey = "populate.status.{$this->Channel->getId()}." . ee()->session->userdata('member_id');
 
-        $status_options = array();
+        $field_items = $this->getFromCache($cacheKey);
 
-        if (! count($all_statuses)) {
-            $status_options = [
-                [
-                    'value' => 'open',
-                    'label' => lang('open')
-                ],
-                [
-                    'value' => 'closed',
-                    'label' => lang('closed')
-                ]
-            ];
-        }
+        if ($field_items === false) {
+            // This generates an inscrutable error when installing the default theme, bail out
+            $all_statuses = ! INSTALLER ? $this->Channel->Statuses->sortBy('status_order') : [];
 
-        $member = ee()->session->getMember();
-        $channelFormSettings = ee('Model')->get('ChannelFormSettings')->filter('channel_id', $this->Channel->channel_id)->first();
-        if (!empty($member) || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y')) {
-            $assigned_statuses = !empty($member) ? $member->getAssignedStatuses()->pluck('status_id') : [];
+            $status_options = array();
 
-            foreach ($all_statuses as $status) {
-                if (ee('Permission')->isSuperAdmin() || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y') || in_array($status->getId(), $assigned_statuses)) {
+            if (! count($all_statuses)) {
+                $status_options = [
+                    [
+                        'value' => 'open',
+                        'label' => lang('open')
+                    ],
+                    [
+                        'value' => 'closed',
+                        'label' => lang('closed')
+                    ]
+                ];
+            }
+
+            $member = ee()->session->getMember();
+            $channelFormSettings = ee('Model')->get('ChannelFormSettings')->filter('channel_id', $this->Channel->channel_id)->first();
+            if (!empty($member) || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y')) {
+                $assigned_statuses = !empty($member) ? $member->getAssignedStatuses()->pluck('status_id') : [];
+
+                foreach ($all_statuses as $status) {
+                    if (ee('Permission')->isSuperAdmin() || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y') || in_array($status->getId(), $assigned_statuses)) {
+                        $status_options[] = $status->getSelectOptionComponent();
+                    }
+                }
+            } else {
+                //fallback to guest assigned statuses
+                foreach (ee('Model')->get('Role', 3)->first()->AssignedStatuses as $status) {
                     $status_options[] = $status->getSelectOptionComponent();
                 }
             }
-        } else {
-            //fallback to guest assigned statuses
-            foreach (ee('Model')->get('Role', 3)->first()->AssignedStatuses as $status) {
-                $status_options[] = $status->getSelectOptionComponent();
+
+            $field_items = [];
+
+            foreach ($status_options as $option) {
+                $field_items[$option['value']] = $option['label'];
             }
-        }
 
-        $field_items = [];
-
-        foreach ($status_options as $option) {
-            $field_items[$option['value']] = $option['label'];
+            $this->saveToCache($cacheKey, $field_items);
         }
 
         $field->setItem('field_list_items', $field_items);
@@ -1278,7 +1428,13 @@ class ChannelEntry extends ContentModel
         return ($this->author_id && $this->Author) ? $this->Author->getMemberName() : '';
     }
 
-    public function getModChannelResultsArray()
+    /**
+     * Get the data and format as array to be used by exp:channel:entries
+     *
+     * @param array $disable ('categories')
+     * @return void
+     */
+    public function getModChannelResultsArray($disable = [])
     {
         $data = array_merge($this->getValues(), $this->Channel->getRawValues(), $this->Author->getValues());
         $data['entry_site_id'] = $this->site_id;
@@ -1289,11 +1445,13 @@ class ChannelEntry extends ContentModel
             $data['recent_comment_date'] = $this->recent_comment_date->format('U');
         }
 
-        foreach ($this->getStructure()->getAllCustomFields() as $field) {
-            $key = 'field_id_' . $field->getId();
+        if (!in_array('custom_fields', $disable)) {
+            foreach ($this->getStructure()->getAllCustomFields() as $field) {
+                $key = 'field_id_' . $field->getId();
 
-            if (! array_key_exists($key, $data)) {
-                $data[$key] = null;
+                if (! array_key_exists($key, $data)) {
+                    $data[$key] = null;
+                }
             }
         }
 
@@ -1301,11 +1459,13 @@ class ChannelEntry extends ContentModel
             $data[$key] = ($data[$key]) ? 'y' : 'n';
         }
 
-        $cat_ids = [];
-        foreach ($this->Categories as $cat) {
-            $cat_ids[] = $cat->getId();
+        if (!in_array('categories', $disable)) {
+            $cat_ids = [];
+            foreach ($this->Categories as $cat) {
+                $cat_ids[] = $cat->getId();
+            }
+            $data['cat_id'] = $cat_ids;
         }
-        $data['cat_id'] = $cat_ids;
 
         return $data;
     }
@@ -1337,7 +1497,7 @@ class ChannelEntry extends ContentModel
 
     public function isLivePreviewable()
     {
-        if ($this->Channel->preview_url && $this->Channel->allow_preview =='y') {
+        if ($this->Channel->preview_url && $this->Channel->allow_preview == 'y') {
             return true;
         }
 
@@ -1355,9 +1515,10 @@ class ChannelEntry extends ContentModel
 
     public function livePreviewAllowed()
     {
-        if ($this->Channel->allow_preview =='y') {
+        if ($this->Channel->allow_preview == 'y') {
             return true;
         }
+
         return false;
     }
 }

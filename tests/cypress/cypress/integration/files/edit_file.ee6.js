@@ -2,8 +2,11 @@
 
 import EditFile from '../../elements/pages/files/EditFile';
 import FileManager from '../../elements/pages/files/FileManager';
+const { _, $ } = Cypress
 const page = new EditFile;
 const filemanager = new FileManager;
+
+var url = '';
 
 context('File Manager / Edit File', () => {
 
@@ -12,8 +15,6 @@ context('File Manager / Edit File', () => {
   })
 
   beforeEach(function() {
-    cy.auth();
-    page.load()
     cy.hasNoErrors()
 
     // // Check that the heder data is intact
@@ -24,61 +25,113 @@ context('File Manager / Edit File', () => {
 
   })
 
-  it('can add a picture', () => {
-    cy.get('button').contains('Upload').first().click()
-    cy.get('a[class="dropdown__link"]').contains('About').filter(':visible').first().click()
-    const fileName = 'pictureUpload.png'
-    cy.get('input[name="file"]').attachFile(fileName)
-    cy.get('[value="Upload File"]').filter(':visible').first().click()
-    cy.hasNoErrors()
+  context('editing image', function() {
 
+    before(function() {
+      cy.auth();
+      page.load()
+      cy.get('a').contains('testband300.jpg').filter(':visible').first().click()
+      cy.url().then(edit_url => {
+        url = edit_url;
+      })
+
+    })
+
+    beforeEach(function() {
+      cy.authVisit(url);
+      cy.hasNoErrors()
+    })
+
+    it('has the correct meta info', () => {
+      cy.get('.f_meta-info-dimentions').should('not.be.empty')
+      cy.get('.f_meta-info-file_type').should('contain', 'Image');
+    })
+
+    it('can edit the title', () => {
+
+      page.get('title_input').clear().type("Rspec was here")
+      page.get('form_submit_button').click()
+      cy.hasNoErrors()
+
+      filemanager.get('alert').contains("The data for the file Rspec was here has been updated.")
+    })
+
+    it('can edit the description', () => {
+
+      page.get('description_input').clear().type("Rspec was here")
+      page.get('form_submit_button').click()
+      cy.hasNoErrors()
+
+      filemanager.get('alert').contains("The data for the file")
+      filemanager.get('alert').contains("has been updated.")
+    })
+
+    it('can edit the credit', () => {
+
+      page.get('credit_input').type("Rspec was here")
+      page.get('form_submit_button').click()
+      cy.hasNoErrors()
+
+      filemanager.get('alert').contains("The data for the file")
+      filemanager.get('alert').contains("has been updated.")
+    })
+
+    it('can edit the location', () => {
+
+      page.get('location_input').clear().type("Rspec was here")
+      page.get('form_submit_button').click()
+      cy.hasNoErrors()
+
+      filemanager.get('alert').contains("The data for the file")
+      filemanager.get('alert').contains("has been updated.")
+    })
   })
 
-  it('can edit the title', () => {
-    
-    cy.get('a').contains('.jpg').filter(':visible').first().click()
+  context.only('editing non-image', function() {
 
-    page.get('title_input').clear().type("Rspec was here")
-    page.get('form_submit_button').click()
-    cy.hasNoErrors()
+    before(function() {
+      cy.auth();
+      page.load()
+      
+      cy.get('button').contains('Upload').first().click()
+      
+      const fileName = '../../support/file/text.txt'
+      cy.get('.file-upload-widget').then(function(widget) {
+        $(widget).removeClass('hidden')
+      })
+      cy.get('.file-upload-widget .js-dropdown-toggle').click();
+      cy.get('.file-upload-widget .dropdown__link').contains('Main Upload Directory').filter(':visible').first().click()
+      cy.get('.file-upload-widget .file-field__dropzone').attachFile(fileName, { subjectType: 'drag-n-drop' })
+      
+      cy.hasNoErrors()
 
-    filemanager.get('alert').contains("The meta data for the file Rspec was here has been updated.")
-  })
+    })
 
-  it('can edit the description', () => {
+    beforeEach(function() {
+      cy.auth();
+      page.load()
+      cy.get('a').contains('text.txt').filter(':visible').first().click()
+      cy.hasNoErrors()
+    })
 
-    cy.get('a').contains('.jpg').filter(':visible').first().click()
+    it('has the correct meta info', () => {
+      cy.get('.f_meta-info-dimentions').should('not.exist')
+      cy.get('.f_meta-info-file_type').should('contain', 'Document');
+    })
 
-    page.get('description_input').clear().type("Rspec was here")
-    page.get('form_submit_button').click()
-    cy.hasNoErrors()
+    it('can edit the title', () => {
 
-    filemanager.get('alert').contains("The meta data for the file")
-    filemanager.get('alert').contains("has been updated.")
-  })
+      page.get('title_input').clear().type("Rspec was here")
+      page.get('form_submit_button').click()
+      cy.hasNoErrors()
 
-  it('can edit the credit', () => {
-    
-    cy.get('a').contains('.jpg').filter(':visible').first().click()
+      filemanager.get('alert').contains("The data for the file Rspec was here has been updated.")
+    })
 
-    page.get('credit_input').type("Rspec was here")
-    page.get('form_submit_button').click()
-    cy.hasNoErrors()
-
-    filemanager.get('alert').contains("The meta data for the file")
-    filemanager.get('alert').contains("has been updated.")
-  })
-
-  it('can edit the location', () => {
-
-     
-    cy.get('a').contains('.jpg').filter(':visible').first().click()
-    page.get('location_input').clear().type("Rspec was here")
-    page.get('form_submit_button').click()
-    cy.hasNoErrors()
-
-    filemanager.get('alert').contains("The meta data for the file")
-    filemanager.get('alert').contains("has been updated.")
+    after(function() {
+      cy.task('filesystem:delete', '../../images/uploads/*')
+    })
+  
   })
 
 })

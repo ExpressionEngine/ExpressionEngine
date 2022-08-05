@@ -42,19 +42,20 @@ context('Developer Log', () => {
 	it('filters by date', () => {
 		//clear all
 		page.get('delete_all').click()
-        page.get('confirm').filter(':visible').first().click()
+		page.get('confirm').filter(':visible').first().click()
 
-
+    cy.wait(3000)
 		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today', '');")
 		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (1, 'n', 'Hello from 1969', '');")
 		cy.reload()
-		page.get('list').find('div[class="list-item"]').should('have.length',2)
+    //the 3rd log entry is the Pro license alert
+		page.get('list').find('div[class="list-item"]').should('have.length',3)
 		page.get('empty').should('not.exist')
 
 		page.get('date').filter(':visible').first().click()
 		cy.get('a').contains('24 Hours').click()
 		cy.wait(400)
-		page.get('list').find('div[class="list-item"]').should('have.length',1)
+		page.get('list').find('div[class="list-item"]').should('have.length',2)
 	})
 
 
@@ -121,7 +122,7 @@ context('Developer Log', () => {
         page.get('date').filter(':visible').first().click()
 		cy.get('a').contains('24 Hours').click()
 		cy.wait(400)
-		page.get('list').find('div[class="list-item"]').should('have.length',15)
+		page.get('list').find('div[class="list-item"]').should('have.length',16)
     })
 
     it('can combine search with filters',() => {
@@ -149,7 +150,7 @@ context('Developer Log', () => {
     })
 
     it('can remove a single entry', () => {
-      cy.get('i[class="fas fa-trash-alt"]').first().click()
+      cy.get('i[class="fal fa-trash-alt"]').first().click()
       page.get('confirm').filter(':visible').first().click()
       cy.get('body').contains('1 log(s) deleted')
     })
@@ -180,7 +181,7 @@ context('Developer Log', () => {
 		cy.wait(400)
 		page.get('list').find('div[class="list-item"]').should('have.length',25)
 		cy.get('a[class="pagination__link"]').contains('2').click()
-		page.get('list').find('div[class="list-item"]').should('have.length',5)
+		page.get('list').find('div[class="list-item"]').should('have.length',6)
 
 		page.get('delete_all').click()
         page.get('confirm').filter(':visible').first().click()

@@ -20,6 +20,12 @@ class EE_Core
     private $ee_loaded = false;
     private $cp_loaded = false;
 
+    // Store data for just this page load.
+    // Multi-dimensional array with module/class name,
+    // e.g. $this->cache['module']['var_name']
+    // Use set_cache() and cache() methods.
+    public $cache = array();
+
     /**
      * Sets constants, sets paths contants to appropriate directories, loads
      * the database and generally prepares the system to run.
@@ -68,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20220722');
-        define('APP_VER', '6.3.5');
+        define('APP_BUILD', '20220804');
+        define('APP_VER', '7.0.2');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -81,7 +87,7 @@ class EE_Core
         define('AJAX_REQUEST', ee()->input->is_ajax_request());
         define('USERNAME_MAX_LENGTH', 75);
         define('PASSWORD_MAX_LENGTH', 72);
-        define('DOC_URL', 'https://docs.expressionengine.com/v6/');
+        define('DOC_URL', 'https://docs.expressionengine.com/v7/');
         define('URL_TITLE_MAX_LENGTH', 200);
         define('CLONING_MODE', (ee('Request') && ee('Request')->post('submit') == 'save_as_new_entry'));
 
@@ -125,13 +131,15 @@ class EE_Core
         } else {
             define('IS_PRO', false);
         }
-
         // setup cookie settings for all providers
-        if (REQ != 'CLI') {
-            $providers = ee('App')->getProviders();
-            foreach ($providers as $provider) {
+        $providers = ee('App')->getProviders();
+        foreach ($providers as $provider) {
+            if (REQ == 'CP') {
                 $provider->registerCookiesSettings();
             }
+            $provider->registerFilesystemAdapters();
+        }
+        if (REQ != 'CLI') {
             ee('CookieRegistry')->loadCookiesSettings();
         }
 
@@ -167,8 +175,6 @@ class EE_Core
         // $last_site_id = the site that you're viewing
         // config->item('site_id') = the site who's URL is being used
 
-        $last_site_id = ee()->input->cookie('cp_last_site_id');
-
         if (REQ == 'CP' && ee()->config->item('multiple_sites_enabled') == 'y') {
             $cookie_prefix = ee()->config->item('cookie_prefix');
             $cookie_path = ee()->config->item('cookie_path');
@@ -179,6 +185,7 @@ class EE_Core
                 $cookie_prefix .= '_';
             }
 
+            $last_site_id = ee()->input->cookie('cp_last_site_id');
             if (! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != ee()->config->item('site_id')) {
                 ee()->config->site_prefs('', $last_site_id);
             }
@@ -250,6 +257,43 @@ class EE_Core
         ee()->load->library('functions');
         ee()->load->library('extensions');
         ee()->load->library('api');
+    }
+
+    /**
+     * Set Core Cache
+     *
+     * This method is a setter for the $cache class variable.
+     * Note, this is not persistent across requests
+     *
+     * @param 	string 	Super Class/Unique Identifier
+     * @param 	string 	Key for cached item
+     * @param 	mixed 	item to put in the cache
+     * @return 	object
+     */
+    public function set_cache($class, $key, $val)
+    {
+        if (! isset($this->cache[$class])) {
+            $this->cache[$class] = array();
+        }
+
+        $this->cache[$class][$key] = $val;
+
+        return $this;
+    }
+
+    /**
+     * Get Core Cache
+     *
+     * This method extracts a value from the session cache.
+     *
+     * @param 	string 	Super Class/Unique Identifier
+     * @param 	string 	Key to extract from the cache.
+     * @param 	mixed 	Default value to return if key doesn't exist
+     * @return 	mixed
+     */
+    public function cache($class, $key, $default = false)
+    {
+        return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
     }
 
     /**
@@ -367,7 +411,7 @@ class EE_Core
         }
 
         // Is MFA required?
-        if (REQ == 'PAGE' && ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (REQ == 'PAGE' && ee()->session->userdata('mfa_flag') != 'skip') {
             if (ee()->session->userdata('mfa_flag') == 'show') {
                 ee('pro:Mfa')->invokeMfaDialog();
             }
@@ -495,7 +539,7 @@ class EE_Core
             ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
         }
 
-        if (ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee()->session->userdata('mfa_flag') != 'skip') {
             //only allow MFA code page
             if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset', 'logout'])) && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
@@ -511,7 +555,7 @@ class EE_Core
         }
 
         //is member role forced to use MFA?
-        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
                 ee('CP/Alert')->makeInline('shared-form')
@@ -562,6 +606,22 @@ class EE_Core
                     ->addToBody($alert)
                     ->canClose()
                     ->now();
+            }
+
+            //tell them about new file manager
+            if (bool_config_item('warn_file_manager_compatibility_mode') && ee()->router->fetch_class(true) !== 'login' && ee()->router->fetch_class() != 'css') {
+                ee('CP/Alert')->makeBanner('file_manager_compatibility_mode')
+                    ->asAttention()
+                    ->canClose()
+                    ->withTitle(lang('file_manager_compatibility_mode_warning'))
+                    ->addToBody(sprintf(
+                        lang('file_manager_compatibility_mode_warning_desc'),
+                        DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
+                        ee('CP/URL')->make('utilities/file-usage')->compile(),
+                        ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
+                    )
+                    ->now();
+                ee('Model')->get('Config')->filter('key', 'warn_file_manager_compatibility_mode')->delete();
             }
         }
     }
@@ -633,7 +693,7 @@ class EE_Core
 
         if ($forum_trigger &&
             in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))) {
-            require PATH_MOD . 'forum/mod.forum.php';
+            require PATH_THIRD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
 
@@ -848,7 +908,7 @@ class EE_Core
                 )
             ) {
                 $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('site_url'));
+                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos(ee()->config->item('site_url'), $cookie_domain);
                 if ($domain_matches === false) {
                     $error = lang('cookie_domain_mismatch');
                 }

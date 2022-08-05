@@ -40,7 +40,8 @@ class Channel extends StructureModel
         'comment_notify' => 'boolString',
         'comment_notify_authors' => 'boolString',
         'enable_versioning' => 'boolString',
-        'search_excerpt' => 'int'
+        'search_excerpt' => 'int',
+        'conditional_sync_required' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -143,7 +144,8 @@ class Channel extends StructureModel
         'default_entry_title' => 'xss',
         'url_title_prefix' => 'alphaDash|xss',
         'channel_notify_emails' => 'validateEmails',
-        'comment_notify_emails' => 'validateEmails'
+        'comment_notify_emails' => 'validateEmails',
+        'conditional_sync_required' => 'enum[y,n]',
     );
 
     protected static $_events = array(
@@ -212,6 +214,7 @@ class Channel extends StructureModel
     protected $max_entries;
     protected $preview_url;
     protected $allow_preview = true;
+    protected $conditional_sync_required = false;
 
     /**
      * Custom validation callback to validate a comma-separated list of email
@@ -331,7 +334,7 @@ class Channel extends StructureModel
 
                     break;
                 case 'deft_category':
-                    if (! isset($this->cat_group) or count(array_diff(explode('|',(string) $this->cat_group), explode('|', (string) $channel->cat_group))) == 0) {
+                    if (! isset($this->cat_group) or count(array_diff(explode('|', (string) $this->cat_group), explode('|', (string) $channel->cat_group))) == 0) {
                         $this->setRawProperty($property, $channel->{$property});
                     }
 
@@ -576,7 +579,32 @@ class Channel extends StructureModel
      */
     public function getAllCustomFields()
     {
-        $fields = $this->CustomFields->indexBy('field_name');
+        $cache_key = "ChannelCustomFields/{$this->getId()}/";
+        if (($fields = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
+            $fields = $this->CustomFields->indexBy('field_name');
+            $field_groups = $this->FieldGroups;
+
+            foreach ($field_groups as $field_group) {
+                foreach ($field_group->ChannelFields as $field) {
+                    $fields[$field->field_name] = $field;
+                }
+            }
+
+            $fields = new Collection($fields);
+
+            ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+        }
+        return $fields;
+    }
+
+    /**
+     * Returns a collection of all the channel fields available for this channel that are conditional
+     *
+     * @return Collection A collection of conditional fields
+     */
+    public function getAllCustomConditionalFields()
+    {
+        $fields = $this->CustomFields->filter('field_is_conditional', true)->indexBy('field_name');
 
         $cache_key = "ChannelFieldGroups/{$this->getId()}/";
         if (($field_groups = ee()->session->cache(__CLASS__, $cache_key, false)) == false) {
@@ -584,7 +612,7 @@ class Channel extends StructureModel
         }
 
         foreach ($field_groups as $field_group) {
-            foreach ($field_group->ChannelFields as $field) {
+            foreach ($field_group->ChannelFields->filter('field_is_conditional', true) as $field) {
                 $fields[$field->field_name] = $field;
             }
         }

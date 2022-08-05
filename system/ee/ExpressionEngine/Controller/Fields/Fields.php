@@ -29,8 +29,12 @@ class Fields extends AbstractFieldsController
         }
 
         if (ee()->input->post('bulk_action') == 'remove') {
-            $this->remove(ee()->input->post('selection'));
-            ee()->functions->redirect($base_url);
+            $redirectUrl = $this->remove(ee()->input->post('selection'));
+            if (!is_null($redirectUrl)) {
+                $redirectUrl = $redirectUrl->setQueryStringVariable('return', base64_encode($base_url))->compile();
+            }
+            $redirectUrl = $redirectUrl ?: $base_url;
+            ee()->functions->redirect($redirectUrl);
         }
 
         $this->generateSidebar($group_id);
@@ -175,7 +179,7 @@ class Fields extends AbstractFieldsController
         $vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('fields')), 'href' => $vars['create_url']];
 
         $breadcrumbs = array(
-            '#developer' => '<i class="fas fa-database"></i>'
+            '#developer' => '<i class="fal fa-database"></i>'
         );
         if (!$group) {
             ee()->view->cp_breadcrumbs = array(
@@ -260,9 +264,17 @@ class Fields extends AbstractFieldsController
 
                 // If the new field is conditional, we need to sync channel entries
                 if (ee('Request')->post('field_is_conditional') == 'y') {
+                    $channels = $field->getAllChannels();
+                    foreach ($channels as $channel) {
+                        $channel->conditional_sync_required = 'y';
+                        $channel->save();
+                    }
+
                     ee()->functions->redirect(
-                        ee('CP/URL')->make('fields/syncConditions/' . $field->getId())
-                        ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                        ee('CP/URL')->make('utilities/sync-conditional-fields/sync')
+                            ->setQueryStringVariable('channel_id', $channels->pluck('channel_id'))
+                            ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                            ->compile()
                     );
                 }
 
@@ -450,10 +462,20 @@ class Fields extends AbstractFieldsController
                     $redirectUrl = ee('CP/URL')->make('fields/edit/' . $field->getId());
                 }
 
+                // If we need to sync conditions, get all channels and set the sync required flag
                 if ($conditionalEntriesRequireSync) {
+                    $channels = $field->getAllChannels();
+                    foreach ($channels as $channel) {
+                        $channel->conditional_sync_required = 'y';
+                        $channel->save();
+                    }
+
+                    // Redirect to utility page for syncing to occur
                     ee()->functions->redirect(
-                        ee('CP/URL')->make('fields/syncConditions/' . $field->getId())
-                        ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                        ee('CP/URL')->make('utilities/sync-conditional-fields/sync')
+                            ->setQueryStringVariable('channel_id', $channels->pluck('channel_id'))
+                            ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                            ->compile()
                     );
                 }
 
@@ -513,157 +535,6 @@ class Fields extends AbstractFieldsController
         ee()->cp->render('settings/form', $vars);
     }
 
-    public function evaluateConditions()
-    {
-        if (! ee('Permission')->can('edit_channel_fields') || empty($_POST)) {
-            show_error(lang('unauthorized_access'), 403);
-        }
-
-        $channel_id = (int) ee()->input->post('channel_id');
-        $limit = (int) ee()->input->post('limit');
-        $offset = (int) ee()->input->post('offset');
-        $status = ee()->input->post('status');
-
-        // Get all channel entries with post data
-        $entries = ee('Model')->get('ChannelEntry')
-            ->filter('channel_id', $channel_id)
-            ->limit($limit)
-            ->offset($offset)
-            ->all();
-
-        foreach ($entries as $entry) {
-            // Check to see if the conditional fields are outdated before saving
-            if ($entry->conditionalFieldsOutdated()) {
-                // Conditional fields are outdated, so we evaluate the conditions and save
-                $entry->evaluateConditionalFields();
-                $entry->save();
-            }
-        }
-
-        // If the sync was successful, show success banner
-        if ($status && $status === 'complete') {
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asSuccess()
-                ->withTitle(lang('field_conditions_sync_success'))
-                ->addToBody(lang('field_conditions_sync_success_desc'))
-                ->defer();
-        }
-
-        return json_encode([
-            'message_type' => 'success',
-            'entries' => $entries->pluck('entry_id'),
-            'entries_proccessed' => $entries->count()
-        ]);
-    }
-
-    public function syncConditions($field_id = null)
-    {
-        if (! ee('Permission')->can('edit_channel_fields')) {
-            show_error(lang('unauthorized_access'), 403);
-        }
-
-        if (!is_null($field_id)) {
-            $field = ee('Model')->get('ChannelField', $field_id)->first();
-        }
-
-        $channelIds = ee('Request')->get('channel_ids');
-        if ($channelIds) {
-            $channelIds = explode(',', $channelIds);
-        }
-
-        if (! $field_id && empty($channelIds)) {
-            show_404();
-        }
-
-        if (!is_null($field_id)) {
-            $field_groups = $field->ChannelFieldGroups;
-            $active_groups = $field_groups->pluck('group_id');
-            $this->generateSidebar($active_groups);
-            $channels = $field->getAllChannels();
-        } else {
-            $channels = ee('Model')->get('Channel')->filter('channel_id', 'IN', $channelIds)->all();
-        }
-
-        $channelEntryCount = 0;
-        $groupedChannelEntryCounts = [];
-
-        foreach ($channels as $channel) {
-            $count = $channel->Entries->count();
-            $channelEntryCount += $count;
-            $groupedChannelEntryCounts[] = [
-                'channel_id' => $channel->getId(),
-                'entry_count' => $count
-            ];
-        }
-
-        ksort($groupedChannelEntryCounts);
-
-        $vars['sections'] = array(
-            array(
-                array(
-                    'title' => 'field_conditions_sync_existing_entries',
-                    'desc' => sprintf(lang('field_conditions_sync_desc'), $channelEntryCount),
-                    'fields' => array(
-                        'progress' => array(
-                            'type' => 'html',
-                            'content' => ee()->load->view('_shared/progress_bar', array('percent' => 0), true)
-                        ),
-                        'message' => array(
-                            'type' => 'html',
-                            'content' => ee()->load->view('_shared/message', array(
-                                'cp_messages' => [
-                                    'field-instruct' => '<em>'.lang('field_conditions_sync_in_progress_message').'</em>'
-                                ]), true)
-                        )
-                    )
-                )
-            )
-        );
-
-        if (!is_null($field_id)) {
-            $base_url = ee('CP/URL')->make('fields/syncConditions/' . $field_id);
-            $defaultReturnUrl = ee('CP/URL')->make('fields/edit/' . $field_id);
-        } else {
-            $base_url = ee('CP/URL')->make('fields/syncConditions')
-                ->setQueryStringVariable('channel_ids', implode(',', $channelIds));
-            $defaultReturnUrl = ee('CP/URL')->make('fields');
-        }
-
-
-        $return = ee()->input->get('return') ? base64_decode(ee()->input->get('return')) : $defaultReturnUrl->compile();
-
-        if ($channelEntryCount === 0) {
-            ee()->functions->redirect($return);
-        }
-
-        ee()->cp->add_js_script('file', 'cp/fields/synchronize');
-
-        // Globals needed for JS script
-        ee()->javascript->set_global(array(
-            'fieldManager' => array(
-                'channel_entry_count' => $channelEntryCount,
-                'groupedChannelEntryCounts' => $groupedChannelEntryCounts,
-
-                'sync_baseurl' => $base_url->compile(),
-                'sync_returnurl' => $return,
-                'sync_endpoint' => ee('CP/URL')->make('fields/evaluateConditions')->compile(),
-            )
-        ));
-
-        ee()->view->base_url = $base_url;
-        ee()->view->cp_page_title = lang('field_conditions_syncing_conditional_logic');
-        ee()->view->cp_page_title_alt = lang('field_conditions_syncing_conditional_logic');
-        ee()->view->save_btn_text = 'btn_sync_conditional_logic';
-        ee()->view->save_btn_text_working = 'btn_sync_conditional_logic_working';
-
-        ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('fields')->compile() => lang('fields'),
-            '' => lang('field_conditions_sync_conditional_logic')
-        );
-
-        ee()->cp->render('settings/form', $vars);
-    }
-
     // This builds a simple array we can compare so we know if a condition has changed
     private function getConditionArray($conditionSets)
     {
@@ -681,6 +552,7 @@ class Fields extends AbstractFieldsController
 
             $comparable[] = [$conditionSet->match => $conditions];
         }
+
         return $comparable;
     }
 
@@ -701,6 +573,7 @@ class Fields extends AbstractFieldsController
                 return false;
             }
         }
+
         return true;
     }
 
@@ -830,19 +703,17 @@ class Fields extends AbstractFieldsController
             ),
         );
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-            $sections['pro_settings'][] = array(
-                'title' => 'enable_frontedit',
-                'desc' => 'enable_frontedit_field_desc',
-                'fields' => array(
-                    'enable_frontedit' => array(
-                        'type' => 'yes_no',
-                        'value' => $field->enable_frontedit
-                    )
+        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        $sections['pro_settings'][] = array(
+            'title' => 'enable_frontedit',
+            'desc' => 'enable_frontedit_field_desc',
+            'fields' => array(
+                'enable_frontedit' => array(
+                    'type' => 'yes_no',
+                    'value' => $field->enable_frontedit
                 )
-            );
-        }
+            )
+        );
 
         $field_options = $field->getSettingsForm();
         if (is_array($field_options) && ! empty($field_options)) {
@@ -970,7 +841,7 @@ class Fields extends AbstractFieldsController
                     // This is a field dependent on the field being deleted as part of it's conditions
                     // $dependentConditionalFields[$channelField->getId()] = $channelField;
                     foreach ($channelField->getAllChannels() as $channel) {
-                        $dependentChannels[$channel->getId()] = $channel->getId();
+                        $dependentChannels[$channel->getId()] = $channel;
                     }
                 }
             }
@@ -979,6 +850,7 @@ class Fields extends AbstractFieldsController
         $field_names = $fields->pluck('field_label');
 
         $fields->delete();
+
         ee('CP/Alert')->makeInline('fields')
             ->asSuccess()
             ->withTitle(lang('success'))
@@ -990,12 +862,22 @@ class Fields extends AbstractFieldsController
             ee()->logger->log_action(sprintf(lang('removed_field'), '<b>' . $field_name . '</b>'));
         }
 
+        // If there are channels with fields that were dependent on the field deleted
+        // we need to update conditional logic
         if (!empty($dependentChannels)) {
-            ee()->functions->redirect(
-                ee('CP/URL')->make('fields/syncConditions')
-                ->setQueryStringVariable('channel_ids', implode(',', $dependentChannels))
-            );
+            $channel_ids = [];
+            foreach ($dependentChannels as $channel_id => $channel) {
+                $channel_ids[] = $channel_id;
+                $channel->conditional_sync_required = 'y';
+                $channel->save();
+            }
+
+            // Return the url to redirect to
+            return ee('CP/URL')->make('utilities/sync-conditional-fields/sync')
+                ->setQueryStringVariable('channel_id', $channel_ids);
         }
+
+        return null;
     }
 }
 

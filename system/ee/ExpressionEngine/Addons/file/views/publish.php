@@ -27,6 +27,9 @@
 	<div class="fields-upload-chosen-file">
 		<figure class="<?php if (! $is_image): ?>no-img<?php endif ?> <?php if ($file && $file->isSVG()): ?>is-svg<?php endif ?>"">
 			<img src="<?=$thumbnail?>" id="<?=$field_name?>" alt="<?=($file) ? $file->title : ''?>" class="js-file-image<?php if ($file && !$is_image): ?> hidden<?php endif ?>">
+			<?php if (!$is_image) : ?>
+				<?=ee('Thumbnail')->get($file)->tag?>
+			<?php endif; ?>
 		</figure>
 	</div>
 
@@ -36,16 +39,12 @@
 $component = [
     'allowedDirectory' => $allowed_directory,
     'contentType' => $content_type,
-    'file' => $file
+    'file' => $file,
+    'createNewDirectory' => false,
+    'ignoreChild' => false,
+    'addInput' => false,
+    'imitationButton' => false
 ];
 ?>
 
-<div data-file-field-react="<?=base64_encode(json_encode($component))?>">
-	<div class="fields-select">
-		<div class="field-inputs">
-			<label class="field-loading">
-				<?=lang('loading')?><span></span>
-			</label>
-		</div>
-	</div>
-</div>
+<?php $this->embed('ee:_shared/file/upload-widget', ['component' => $component]); ?>

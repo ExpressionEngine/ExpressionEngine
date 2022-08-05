@@ -455,6 +455,9 @@ class CommandUpdate extends Cli
     {
         $version = $this->getCurrentVersion();
         $versionNamingMap = UpgradeMap::$versionNaming;
+        if (empty($version)) {
+            $version = $this->currentVersion;
+        }
 
         if (isset($versionNamingMap[$version])) {
             ee()->config
@@ -462,5 +465,8 @@ class CommandUpdate extends Cli
                     'app_version' => $versionNamingMap[$version]
                 ]);
         }
+
+        // reset the flag for dismissed banner for members
+        ee('db')->update('members', ['dismissed_banner' => 'n']);
     }
 }

@@ -156,13 +156,13 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 <div class="inner-inner-wrap">
 	<!-- <div class="sidebar-secondary">
 		<nav class="sidebar">
-			<h2 class="sidebar__section-title">Upload Directories <a href="" class="sidebar__section-title-icon"><i class="fas fa-cog"></i></a></h2>
-			<a href="" class="sidebar__link active"><i class="fas fa-folder"></i> Article Images</a>
-			<a href="" class="sidebar__link"><i class="fas fa-folder"></i> Photography</a>
-			<a href="" class="sidebar__link"><i class="fas fa-folder"></i> Team Photos</a>
+			<h2 class="sidebar__section-title">Upload Directories <a href="" class="sidebar__section-title-icon"><i class="fal fa-cog"></i></a></h2>
+			<a href="" class="sidebar__link active"><i class="fal fa-folder"></i> Article Images</a>
+			<a href="" class="sidebar__link"><i class="fal fa-folder"></i> Photography</a>
+			<a href="" class="sidebar__link"><i class="fal fa-folder"></i> Team Photos</a>
 
 			<div class="sidebar__section-divider"></div>
-			<a href="" class="sidebar__link"><i class="fas fa-tint"></i> Watermarks</a>
+			<a href="" class="sidebar__link"><i class="fal fa-tint"></i> Watermarks</a>
 		</nav>
 
 	</div> -->
@@ -181,7 +181,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 					<div class="button-group">
 						<div class="button-segment js-dropdown-link">
 							<a href="" class="button button--primary">Save</a>
-							<a href="" class="button button--primary"><i class="fas fa-caret-down"></i></a>
+							<a href="" class="button button--primary"><i class="fal fa-caret-down"></i></a>
 						</div>
 						<a href="" class="button button--action">Preview</a>
 					</div>
@@ -217,12 +217,12 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 					<div class="file-field">
 						<div class="file-field__dropzone">
 							<h4 class="file-field__dropzone-title">Drag & Drop Files Here</h4>
-							<div class="file-field__dropzone-button">Upload to: <a href class="button button--secondary-alt">Choose Directory <i class="fas fa-caret-down"></i></a></div>
-							<div class="file-field__dropzone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+							<div class="file-field__dropzone-button">Upload to: <a href class="button button--secondary-alt">Choose Directory <i class="fal fa-caret-down"></i></a></div>
+							<div class="file-field__dropzone-icon"><i class="fal fa-cloud-upload-alt"></i></div>
 						</div>
 						<div class="file-field__items list-group">
 							<div class="list-item">
-								<div class="list-item__content-left"><i class="fas fa-file-archive file-field__file-icon"></i></div>
+								<div class="list-item__content-left"><i class="fal fa-file-archive file-field__file-icon"></i></div>
 								<div class="list-item__content">
 									<div>File.zip <span class="float-right meta-info">50 / 100kb</span></div>
 									<div class="list-item__secondary">
@@ -252,7 +252,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 					<div class="file-field">
 						<div class="list-group">
 							<div class="list-item">
-								<div class="list-item__content-left"><i class="fas fa-file-archive file-field__file-icon"></i></div>
+								<div class="list-item__content-left"><i class="fal fa-file-archive file-field__file-icon"></i></div>
 								<div class="list-item__content">
 									<div>File.zip <span class="float-right meta-info">50 / 100kb</span></div>
 									<div class="list-item__secondary">
@@ -263,7 +263,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 								</div>
 							</div>
 							<div class="list-item list-item--warning">
-								<div class="list-item__content-left"><i class="fas fa-exclamation-triangle file-field__file-icon file-field__file-icon-warning"></i></div>
+								<div class="list-item__content-left"><i class="fal fa-exclamation-triangle file-field__file-icon file-field__file-icon-warning"></i></div>
 								<div class="list-item__content">
 									<div>File.pdf</div>
 									<div class="list-item__secondary">
@@ -272,11 +272,11 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 									</div>
 								</div>
 								<div class="list-item__content-right">
-									<a href="" class="button button--secondary-alt"><i class="fas fa-info-circle"></i> Resolve Conflict</a>
+									<a href="" class="button button--secondary-alt"><i class="fal fa-info-circle"></i> Resolve Conflict</a>
 								</div>
 							</div>
 							<div class="list-item list-item--error">
-								<div class="list-item__content-left"><i class="fas fa-exclamation-triangle file-field__file-icon file-field__file-icon-error"></i></div>
+								<div class="list-item__content-left"><i class="fal fa-exclamation-triangle file-field__file-icon file-field__file-icon-error"></i></div>
 								<div class="list-item__content">
 									<div>File.pdf</div>
 									<div class="list-item__secondary">
@@ -301,15 +301,15 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 				<div class="field-control">
 					<div class="file-field">
 						<div class="list-item">
-							<div class="list-item__content-left"><i class="fas fa-file-archive file-field__file-icon"></i></div>
+							<div class="list-item__content-left"><i class="fal fa-file-archive file-field__file-icon"></i></div>
 							<div class="list-item__content">
 								<div>File.zip</div>
 								<div class="list-item__secondary">32kb</div>
 							</div>
 							<div class="list-item__content-right">
 								<div class="button-group">
-									<a href="" class="button button--secondary-alt"><i class="fas fa-pen"></i></a>
-									<a href="" class="button button--secondary-alt"><i class="fas fa-trash-alt"></i></a>
+									<a href="" class="button button--secondary-alt"><i class="fal fa-pen"></i></a>
+									<a href="" class="button button--secondary-alt"><i class="fal fa-trash-alt"></i></a>
 								</div>
 							</div>
 						</div>
@@ -423,8 +423,8 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 										</td>
 										<td class="grid-field__column grid-field__column--tools">
 											<div class="grid-field__column-tools">
-												<a href="" class="grid-field__column-tool"><i class="fas fa-fw fa-trash-alt"></i></a>
-												<a href="" class="grid-field__column-tool"><i class="fas fa-fw fa-arrows-alt"></i></a>
+												<a href="" class="grid-field__column-tool"><i class="fal fa-fw fa-trash-alt"></i></a>
+												<a href="" class="grid-field__column-tool"><i class="fal fa-fw fa-arrows-alt"></i></a>
 											</div>
 										</td>
 									</tr>
@@ -462,8 +462,8 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 								</div>
 							</div>
 							<div class="fluid__item-tools">
-								<a href="" class="fluid__item-tool"><i class="fas fa-fw fa-cog"></i></a>
-								<a href="" class="fluid__item-tool"><i class="fas fa-fw fa-plus"></i></a>
+								<a href="" class="fluid__item-tool"><i class="fal fa-fw fa-cog"></i></a>
+								<a href="" class="fluid__item-tool"><i class="fal fa-fw fa-plus"></i></a>
 							</div>
 						</div>
 
@@ -480,8 +480,8 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 								</div>
 							</div>
 							<div class="fluid__item-tools">
-								<a href="" class="fluid__item-tool"><i class="fas fa-fw fa-trash-alt"></i></a>
-								<a href="" class="fluid__item-tool"><i class="fas fa-fw fa-plus"></i></a>
+								<a href="" class="fluid__item-tool"><i class="fal fa-fw fa-trash-alt"></i></a>
+								<a href="" class="fluid__item-tool"><i class="fal fa-fw fa-plus"></i></a>
 							</div>
 						</div>
 
@@ -498,8 +498,8 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 								</div>
 							</div>
 							<div class="fluid__item-tools">
-								<a href="" class="fluid__item-tool"><i class="fas fa-fw fa-cog"></i></a>
-								<a href="" class="fluid__item-tool"><i class="fas fa-fw fa-plus"></i></a>
+								<a href="" class="fluid__item-tool"><i class="fal fa-fw fa-cog"></i></a>
+								<a href="" class="fluid__item-tool"><i class="fal fa-fw fa-plus"></i></a>
 							</div>
 						</div>
 
@@ -516,7 +516,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 								</div>
 							</div>
 							<div class="fluid__item-tools">
-								<a href="" class="fluid__item-tool"><i class="fas fa-fw fa-angle-double-down"></i></a>
+								<a href="" class="fluid__item-tool"><i class="fal fa-fw fa-angle-double-down"></i></a>
 							</div>
 						</div>
 
@@ -983,7 +983,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 								</label>
 							</div>
 							<div class="lots-of-checkboxes__selection">
-								<i class="fas fa-check-circle"></i> Email Notifications
+								<i class="fal fa-check-circle"></i> Email Notifications
 							</div>
 						</div>
 					</div>
@@ -1066,7 +1066,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 
 							</div>
 							<div class="lots-of-checkboxes__selection">
-								<i class="fas fa-check-circle"></i> Email Notifications
+								<i class="fal fa-check-circle"></i> Email Notifications
 							</div>
 						</div>
 					</div>

@@ -206,7 +206,9 @@ class Updater
         ee('Model')->get('Config')->filter('key', 'IN', ['enable_avatars', 'allow_avatar_uploads'])->delete();
 
         // Remove avatar member preference
-        ee()->dbforge->drop_column('members', 'display_avatars');
+        if (ee()->db->field_exists('display_avatars', 'members')) {
+            ee()->dbforge->drop_column('members', 'display_avatars');
+        }
     }
 
     private function removeJqueryAddon()

@@ -27,7 +27,8 @@ class Utilities extends CP_Controller
 
         ee('CP/Alert')->makeDeprecationNotice()->now();
 
-        if (! ee('Permission')->can('access_utilities')) {
+        //conditional fields sync should be accessed even if the user has no general utilities access
+        if (! ee('Permission')->can('access_utilities') && ! ee('Permission')->can('edit_channel_fields')) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -114,6 +115,15 @@ class Utilities extends CP_Controller
                 ->addBasicList();
             $data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
             $data_list->addItem(lang('search_reindex'), ee('CP/URL')->make('utilities/reindex'));
+            if (ee('Permission')->can('edit_channel_fields')) {
+                // If we use a subpage like utilities/sync-conditional-fields/sync make it match the nav
+                $sync_conditional_fields_url = ee('CP/URL')->make('utilities/sync-conditional-fields');
+                $conditional_field_sync = $data_list->addItem(lang('sync_conditional_fields'), $sync_conditional_fields_url);
+                if ($sync_conditional_fields_url->matchesTheRequestedURI()) {
+                    $conditional_field_sync->isActive();
+                }
+            }
+            $data_list->addItem(lang('update_file_usage'), ee('CP/URL')->make('utilities/file-usage'));
             $data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
             $data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
         }
@@ -122,8 +132,8 @@ class Utilities extends CP_Controller
     /**
      * Index
      *
-     * @access	public
-     * @return	void
+     * @access  public
+     * @return  void
      */
     public function index()
     {

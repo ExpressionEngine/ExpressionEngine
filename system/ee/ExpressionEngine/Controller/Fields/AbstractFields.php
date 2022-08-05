@@ -18,7 +18,7 @@ use CP_Controller;
 abstract class AbstractFields extends CP_Controller
 {
     protected $validationResult;
-    
+
     /**
      * Constructor
      */
@@ -68,7 +68,7 @@ abstract class AbstractFields extends CP_Controller
 
         $sidebar = ee('CP/Sidebar')->makeNew();
 
-        $all_fields = $sidebar->addItem(lang('all_fields'), ee('CP/URL')->make('fields'));
+        $all_fields = $sidebar->addItem(lang('all_fields'), ee('CP/URL')->make('fields'))->withIcon('pen-field');
 
         if ($active) {
             $all_fields->isInactive();
@@ -125,6 +125,7 @@ abstract class AbstractFields extends CP_Controller
         }
 
         ee()->view->left_nav = $sidebar->render();
+        ee()->view->left_nav_collapsed = $sidebar->collapsedState;
     }
 
     protected function prepareFieldConditions()

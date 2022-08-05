@@ -555,7 +555,7 @@ class Rte_ft extends EE_Fieldtype
         // load the language file
         ee()->lang->loadfile('rte');
 
-        $configModels = ee('Model')->get('rte:Toolset')->all();
+        $configModels = ee('Model')->get('rte:Toolset')->all(true);
         $configOptions = array();
         foreach ($configModels as $model) {
             $configOptions[$model->toolset_id] = $model->toolset_name;

@@ -41,7 +41,7 @@ class Homepage extends CP_Controller
             'dashboard' => $dashboard_layout->generateDashboardHtml()
         ];
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee('pro:Access')->hasRequiredLicense()) {
             $vars['header']['toolbar_items'] = array(
                 'settings' => array(
                     'href' => ee('CP/URL')->make('pro/dashboard/layout/' . $member->member_id),
@@ -69,9 +69,7 @@ class Homepage extends CP_Controller
     private function redirectIfNoSegments()
     {
         if (empty(ee()->uri->segments)) {
-            $member_home_url = ee('Model')->get('Member', ee()->session->userdata('member_id'))
-                ->first()
-                ->getCPHomepageURL();
+            $member_home_url = ee()->session->getMember()->getCPHomepageURL();
 
             if ($member_home_url->path != 'homepage') {
                 // Preserve updater result status messages
@@ -185,10 +183,31 @@ class Homepage extends CP_Controller
         ee()->output->send_ajax_response(['success']);
     }
 
+    /**
+     * Toggles the secondary sidebar navigation to/from collapsed state
+     *
+     * @return void
+     */
+    public function toggleSecondarySidebarNav()
+    {
+        if (empty(ee('Request')->get('owner'))) {
+            ee()->output->send_ajax_response(['error']);
+        }
+        $state = json_decode(ee()->input->cookie('secondary_sidebar'));
+        if (is_null($state)) {
+            $state = new \stdClass();
+        }
+        $owner = ee('Security/XSS')->clean(ee('Request')->get('owner'));
+        $state->$owner = (int) ee()->input->get('collapsed');
+        ee()->input->set_cookie('secondary_sidebar', json_encode($state), 31104000);
+
+        ee()->output->send_ajax_response(['success']);
+    }
+
     public function dismissBanner()
     {
         $member = ee()->session->getMember();
-        $member->dismissed_pro_banner = 'y';
+        $member->dismissed_banner = 'y';
         $member->save();
 
         ee()->output->send_ajax_response(['success']);

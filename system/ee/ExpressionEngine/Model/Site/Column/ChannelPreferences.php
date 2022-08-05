@@ -28,7 +28,6 @@ class ChannelPreferences extends CustomType
     protected $image_resize_protocol;
     protected $new_posts_clear_caches;
     protected $reserved_category_word;
-    protected $thumbnail_prefix;
     protected $use_category_name;
     protected $word_separator;
 

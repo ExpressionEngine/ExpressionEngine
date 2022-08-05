@@ -59,7 +59,7 @@ context('Test Member roles Web access ', () => {
 		cy.get('#fieldset-website_access .checkbox-label:nth-child(2) > input').click(); //Turn offline access on for members
 		cy.get('button').contains('Save').click()
 
-		logout()
+		cy.logout()
 
 		cy.visit('admin.php?/cp/login');
 	   cy.get('#username').type('Test1');
@@ -102,35 +102,3 @@ context('Test Member roles Web access ', () => {
 	})
 
 })//End Context
-
-function logout(){
-  cy.visit('admin.php?/cp/members/profile/settings')
-  cy.get('.main-nav__account-icon > img').click()
-  cy.get('[href="admin.php?/cp/login/logout"]').click()
-}
-
-function add_members(group, count){
-  let i = 1;
-  for(i ; i <= count; i++){
-    member.load() //goes to member creation url
-
-    let email = group;
-    email += i.toString();
-    email += "@test.com";
-    let username = group + i.toString();
-    member.get('username').clear().type(username)
-      member.get('email').clear().type(email)
-      member.get('password').clear().type('password')
-      member.get('confirm_password').clear().type('password')
-
-    cy.get("body").then($body => {
-          if ($body.find("input[name=verify_password]").length > 0) {   //evaluates as true if verify is needed
-              cy.get("input[name=verify_password]").type('password');
-          }
-        });
-      cy.get('button').contains('Roles').click()
-	cy.get('label').contains(group).click()
-	cy.get('.form-btns-top .saving-options').click()
-    member.get('save_and_new_button').click()
-  }
-}

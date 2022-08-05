@@ -181,7 +181,10 @@ class Grid_ft extends EE_Fieldtype
             'grid_max_rows' => $this->settings['grid_max_rows'],
             'reorder' => isset($this->settings['allow_reorder'])
                 ? get_bool_from_string($this->settings['allow_reorder'])
-                : true
+                : true,
+            'vertical_layout' => isset($this->settings['vertical_layout'])
+                ? get_bool_from_string($this->settings['vertical_layout'])
+                : false
         ));
         $grid->loadAssets();
         $grid->setNoResultsText(
@@ -601,6 +604,16 @@ class Grid_ft extends EE_Fieldtype
                                 'value' => isset($data['allow_reorder']) ? $data['allow_reorder'] : 'y'
                             )
                         )
+                    ),
+                    array(
+                        'title' => 'grid_vertical_layout',
+                        'desc' => 'grid_vertical_layout_desc',
+                        'fields' => array(
+                            'vertical_layout' => array(
+                                'type' => 'yes_no',
+                                'value' => isset($data['vertical_layout']) ? $data['vertical_layout'] : 'n'
+                            )
+                        )
                     )
                 )
             ),
@@ -763,7 +776,8 @@ class Grid_ft extends EE_Fieldtype
         return array(
             'grid_min_rows' => empty($data['grid_min_rows']) ? 0 : $data['grid_min_rows'],
             'grid_max_rows' => empty($data['grid_max_rows']) ? '' : $data['grid_max_rows'],
-            'allow_reorder' => empty($data['allow_reorder']) ? 'y' : $data['allow_reorder']
+            'allow_reorder' => empty($data['allow_reorder']) ? 'y' : $data['allow_reorder'],
+            'vertical_layout' => empty($data['vertical_layout']) ? 'n' : $data['vertical_layout']
         );
     }
 
@@ -819,6 +833,11 @@ class Grid_ft extends EE_Fieldtype
         // Attempt to get an entry ID first
         $entry_id = (isset($this->settings['entry_id']))
             ? $this->settings['entry_id'] : ee()->input->get_post('entry_id');
+
+        // If entry id isnt set and this is an edit entry, we'll get it from the URL
+        if (!$entry_id && ee()->uri->segment(3) === 'edit' && is_numeric(ee()->uri->segment(5))) {
+            $entry_id = (int) ee()->uri->segment(5);
+        }
 
         ee()->grid_lib->entry_id = ($this->content_id() == null) ? $entry_id : $this->content_id();
         ee()->grid_lib->field_id = $this->id();

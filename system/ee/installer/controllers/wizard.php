@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '6.3.5'; // The version being installed
+    public $version = '7.0.2'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -58,7 +58,8 @@ class Wizard extends CI_Controller
         'file',
         'filepicker',
         'relationship',
-        'search'
+        'search',
+        'pro',
     );
 
     public $theme_required_modules = array();
@@ -141,7 +142,7 @@ class Wizard extends CI_Controller
 
         // retain in case third-party add-ons expect IS_CORE to be defined
         define('IS_CORE', false);
-        define('IS_PRO', false);
+        define('IS_PRO', true);
 
         define('USERNAME_MAX_LENGTH', 75);
         define('PASSWORD_MAX_LENGTH', 72);
@@ -149,7 +150,7 @@ class Wizard extends CI_Controller
         define('PATH_CACHE', SYSPATH . 'user/cache/');
         define('PATH_TMPL', SYSPATH . 'user/templates/');
         define('PATH_DICT', SYSPATH . 'user/config/');
-        define('DOC_URL', 'https://docs.expressionengine.com/v6/');
+        define('DOC_URL', 'https://docs.expressionengine.com/latest/');
         define('SLASH', '&#47;');
         define('LD', '{');
         define('RD', '}');
@@ -158,9 +159,30 @@ class Wizard extends CI_Controller
         define('BR', '<br />');
         define('NL', "\n");
         define('BASE', EESELF . '?D=cp');
+        defined('APP_VER') || define('APP_VER', ee()->config->item('app_version'));
 
         // Third party constants
         define('PATH_THIRD', SYSPATH . 'user/addons/');
+        // Set the path to the "themes" folder
+        if (ee()->config->item('theme_folder_path') !== false &&
+            ee()->config->item('theme_folder_path') != '') {
+            $theme_path = preg_replace("#/+#", "/", ee()->config->item('theme_folder_path') . '/');
+        } else {
+            $theme_path = substr(APPPATH, 0, - strlen(SYSDIR . '/expressionengine/')) . 'themes/';
+            $theme_path = preg_replace("#/+#", "/", $theme_path);
+        }
+
+        // Maybe the site has been moved.
+        // Let's try some basic autodiscovery if config items are set
+        // But the directory does not exist.
+        if (! is_dir($theme_path . '/ee')) {
+            if (is_dir(FCPATH . '../themes/')) { // We're in the system directory
+                $theme_path = FCPATH . '../themes/';
+            } elseif (is_dir(FCPATH . 'themes/')) { // Front end.
+                $theme_path = FCPATH . 'themes/';
+            }
+        }
+        define('PATH_THIRD_THEMES', $theme_path . 'user/');
 
         $req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
         define('AJAX_REQUEST', ($req_source == 'XMLHttpRequest') ? true : false);
@@ -487,6 +509,9 @@ class Wizard extends CI_Controller
     private function postflight()
     {
         ee()->functions->clear_caching('all');
+
+        // reset the flag for dismissed banner for members
+        ee('db')->update('members', ['dismissed_banner' => 'n']);
 
         foreach (ee('Model')->get('Channel')->all() as $channel) {
             $channel->updateEntryStats();
@@ -1687,13 +1712,13 @@ class Wizard extends CI_Controller
             'recount_batch_total' => '1000',
             'image_resize_protocol' => 'gd2',
             'image_library_path' => '',
-            'thumbnail_prefix' => 'thumb',
             'word_separator' => 'dash',
             'use_category_name' => 'n',
             'reserved_category_word' => 'category',
             'auto_convert_high_ascii' => 'n',
             'new_posts_clear_caches' => 'y',
             'auto_assign_cat_parents' => 'y',
+            'file_manager_compatibility_mode' => 'n',
             'new_version_check' => 'y',
             'enable_throttling' => 'n',
             'banish_masked_ips' => 'y',
@@ -1712,6 +1737,9 @@ class Wizard extends CI_Controller
             'show_ee_news' => 'y',
             'cli_enabled' => 'y',
             'theme_folder_path' => $this->userdata['theme_folder_path'],
+            'legacy_member_data' => 'n',
+            'legacy_channel_data' => 'n',
+            'legacy_category_field_data' => 'n',
         );
 
         $inserts = [];

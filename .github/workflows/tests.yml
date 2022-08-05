@@ -3,11 +3,7 @@ name: Tests (full)
 on:
   push:
     branches:
-      - 6.dev
-      - release/6.3.0
-      - release/6.4.0
-      - release/6.5.0
-      - bug/6.x/full-tests
+      - '*.dev'
 
 jobs:
 
@@ -35,13 +31,14 @@ jobs:
             with:
               path: .git
               key: cache-ee-git-${{ github.sha }}
-
-          - name: Checkout Pro
-            uses: actions/checkout@v2
+          
+          - name: Setup PHP
+            uses: shivammathur/setup-php@v2
             with:
-              repository: EllisLab/ExpressionEngine-Pro
-              token: ${{ secrets.ORG_ACCESS_TOKEN }}
-              path: __pro
+                php-version: '7.4'
+                extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                coverage: none
+                ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
           - name: Setup node
             uses: actions/setup-node@v2
@@ -62,11 +59,10 @@ jobs:
           - name: Run build process
             working-directory: build-tools
             env:
-              RELEASE_KEY: ${{ secrets.RELEASE_KEY }}
+              RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
-              PRO_REPO_PATH: ${{ github.workspace }}/__pro
-            run: gulp build-app --local --nogit --head --skip-lint --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+            run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
             working-directory: build-tools/builds
@@ -93,7 +89,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6, 7.1, 7.2, 7.4, 8.0]
+                php: [7.2, 7.3, 7.4, 8.0]
                 os: [ubuntu-18.04]
                 containers: [0, 1, 2, 3, 4 , 5]
                 include:
@@ -177,7 +173,7 @@ jobs:
                 mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
                 mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
 
-            - name: Install PHP dependencies
+            - name: Install Testing PHP dependencies
               working-directory: tests/cypress
               run: composer install
 

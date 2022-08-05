@@ -38,6 +38,18 @@ class Session
     {
         return (!empty($this->session) && $this->session->isWithinAuthTimeout());
     }
+
+    public function proBannerSeen()
+    {
+        return (!empty($this->session) && $this->session->proBannerSeen());
+    }
+
+    public function setProBannerSeen()
+    {
+        if (!empty($this->session)) {
+            $this->session->setProBannerSeen();
+        }
+    }
 }
 
 // EOF

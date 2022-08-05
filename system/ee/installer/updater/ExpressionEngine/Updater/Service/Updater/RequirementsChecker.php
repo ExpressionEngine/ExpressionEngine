@@ -15,7 +15,7 @@
 class RequirementsChecker
 {
     private $requirements = [];
-    private $minimum_php = '5.6.0';
+    private $minimum_php = '7.2.5';
     private $minimum_mysql = '5.5.3';
     private $db_config = [];
 

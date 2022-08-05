@@ -26,7 +26,7 @@ class File_upload_preferences_model extends CI_Model
      */
     public function get_file_upload_preferences($group_id = null, $id = null, $ignore_site_id = false, $parameters = array())
     {
-        if ($group_id != 1) {
+        if (!empty($group_id) && $group_id != 1) {
             // non admins need to first be checked for restrictions
             // we'll add these into a where_in() check below
             $this->db->select('upload_id');

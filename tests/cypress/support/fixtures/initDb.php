@@ -9,15 +9,15 @@ $command = array_shift($argv);
 
 $longopts = array(
     "help",
-  "version:",
-  "username:",
-  "password:",
-  "email:",
-  "url:",
-  "db_host:",
-  "db_user:",
-  'db_password:',
-  "db_database:"
+    "version:",
+    "username:",
+    "password:",
+    "email:",
+    "url:",
+    "db_host:",
+    "db_user:",
+    'db_password:',
+    "db_database:"
 );
 
 $options = getopt('h', $longopts);
@@ -105,24 +105,24 @@ ee()->load->library('auth');
 $hashed_password = ee()->auth->hash_password($schema->userdata['password']);
 $schema->userdata['password'] = $hashed_password['password'];
 $schema->userdata['salt'] = $hashed_password['salt'];
-$schema->userdata['unique_id'] = ee('Encrypt')->generateKey();
+$schema->userdata['unique_id'] = sha1(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX), true));
 
 // --------------------------------------------------------------------
 
 $db = array(
-  'port' => '3306',
-  'hostname' => $schema->userdata['db_hostname'],
-  'username' => $schema->userdata['db_username'],
-  'password' => $schema->userdata['db_password'],
-  'database' => $schema->userdata['db_name'],
-  'dbdriver' => 'mysqli',
-  'dbprefix' => 'exp_',
-  'swap_pre' => 'exp_',
-  'db_debug' => true, // We show our own errors
-  'cache_on' => false,
-  'autoinit' => false, // We'll initialize the DB manually
-  'char_set' => $schema->userdata['db_char_set'],
-  'dbcollat' => $schema->userdata['db_collat']
+    'port' => '3306',
+    'hostname' => $schema->userdata['db_hostname'],
+    'username' => $schema->userdata['db_username'],
+    'password' => $schema->userdata['db_password'],
+    'database' => $schema->userdata['db_name'],
+    'dbdriver' => 'mysqli',
+    'dbprefix' => 'exp_',
+    'swap_pre' => 'exp_',
+    'db_debug' => true, // We show our own errors
+    'cache_on' => false,
+    'autoinit' => false, // We'll initialize the DB manually
+    'char_set' => $schema->userdata['db_char_set'],
+    'dbcollat' => $schema->userdata['db_collat']
 );
 
 db_connect($db);
@@ -135,9 +135,9 @@ $install = $schema->install_tables_and_data();
 
 write_config_data($schema);
 
-install_modules();
+install_modules($schema->version);
 
-exit(!(int)$install);
+exit(!(int) $install);
 
 /**
  * Connect to the database
@@ -383,7 +383,7 @@ function write_config_data($schema)
     ee()->db->insert_batch('config', $inserts);
 }
 
-function install_modules()
+function install_modules($version)
 {
     $required_modules = [
         'channel',
@@ -395,8 +395,12 @@ function install_modules()
         'file',
         'filepicker',
         'relationship',
-        'search'
+        'search',
     ];
+
+    if (version_compare($version, '7.0.0-rc.1', '>=')) {
+        array_unshift($required_modules, 'pro');
+    }
 
     ee()->load->library('addons');
     ee()->addons->install_modules($required_modules);

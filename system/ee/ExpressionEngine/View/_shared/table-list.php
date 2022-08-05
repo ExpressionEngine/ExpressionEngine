@@ -4,7 +4,7 @@
     echo $filters;
 } ?>
 		<?php if ((!isset($disable_action) || empty($disable_action)) && !empty($data)): ?>
-			<label class="ctrl-all"><span><?=lang('select_all')?></span> <input type="checkbox" class="checkbox--small"></label>
+			<label class="ctrl-all"><span><?=lang('select_all')?></span> <input type="checkbox"></label>
 		<?php endif ?>
 	</div>
 
@@ -26,7 +26,7 @@
 
 				<?php if (isset($row['status'])): ?>
 					<div class="status-wrap">
-						<?php 
+						<?php
 							$class = $row['status'] ? 'locked' : 'unlocked';
 							$status = $row['status'] ? lang('locked') : lang('unlocked');
 						?>

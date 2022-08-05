@@ -412,11 +412,11 @@ CREATE TABLE `exp_channel_grid_field_19` (
 
 DELETE FROM `exp_channels`;
 
-INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`,  `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `preview_url`, `max_entries`)
+INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`,  `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `preview_url`, `max_entries`, `conditional_sync_required`)
 VALUES
-	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1','open',2,'2','y','y',0,'all','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','','',0),
-	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2','open',7,'','y','y',0,'all','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','','',0),
-	(3,1,'fluid_fields','Fluid Fields','',NULL,'en',0,0,0,0,0,NULL,'open',NULL,NULL,'y','y',NULL,'all','y','n','n',NULL,NULL,'y','n','n',5000,0,'y','xhtml','safe','n','y','n','n',NULL,0,NULL,NULL,'n',10,NULL,'Title',NULL,'',0);
+	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1','open',2,'2','y','y',0,'all','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','','',0,'n'),
+	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2','open',7,'','y','y',0,'all','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','','',0,'n'),
+	(3,1,'fluid_fields','Fluid Fields','',NULL,'en',0,0,0,0,0,NULL,'open',NULL,NULL,'y','y',NULL,'all','y','n','n',NULL,NULL,'y','n','n',5000,0,'y','xhtml','safe','n','y','n','n',NULL,0,NULL,NULL,'n',10,NULL,'Title',NULL,'',0,'n');
 
 
 # Dump of table exp_channels_channel_field_groups
@@ -553,31 +553,7 @@ INSERT INTO `exp_relationships` (`relationship_id`, `parent_id`, `child_id`, `fi
 # Dump of table exp_upload_prefs
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `exp_upload_prefs`;
-
-CREATE TABLE `exp_upload_prefs` (
-  `id` int(4) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `name` varchar(50) NOT NULL,
-  `server_path` varchar(255) NOT NULL DEFAULT '',
-  `url` varchar(100) NOT NULL,
-  `allowed_types` varchar(3) NOT NULL DEFAULT 'img',
-  `default_modal_view` varchar(5) NOT NULL DEFAULT 'list',
-  `max_size` varchar(16) DEFAULT NULL,
-  `max_height` varchar(6) DEFAULT NULL,
-  `max_width` varchar(6) DEFAULT NULL,
-  `properties` varchar(120) DEFAULT NULL,
-  `pre_format` varchar(120) DEFAULT NULL,
-  `post_format` varchar(120) DEFAULT NULL,
-  `file_properties` varchar(120) DEFAULT NULL,
-  `file_pre_format` varchar(120) DEFAULT NULL,
-  `file_post_format` varchar(120) DEFAULT NULL,
-  `cat_group` varchar(255) DEFAULT NULL,
-  `batch_location` varchar(255) DEFAULT NULL,
-  `module_id` int(4) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+DELETE FROM `exp_upload_prefs`;
 
 LOCK TABLES `exp_upload_prefs` WRITE;
 /*!40000 ALTER TABLE `exp_upload_prefs` DISABLE KEYS */;

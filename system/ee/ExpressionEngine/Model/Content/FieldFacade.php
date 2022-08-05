@@ -20,6 +20,7 @@ class FieldFacade
     private $format;  // field_ft_*
     private $timezone; // field_dt_*
     private $hidden; // field_hide_*
+    private $width = 100;
     private $metadata;
     private $required;
     private $field_name;
@@ -28,6 +29,7 @@ class FieldFacade
     private $value;
     private $api;
     private $icon;
+    private $conditionSets;
 
     /**
      * @var Flag to ensure defaults are only loaded once
@@ -102,6 +104,7 @@ class FieldFacade
     {
         return $this->hidden;
     }
+
 
     public function getSettings()
     {
@@ -465,10 +468,18 @@ class FieldFacade
         if (! $this->getItem('field_is_conditional')) {
             return [];
         }
+        
+        if($this->conditionSets) {
+            return $this->conditionSets;
+        }
 
         $field = ee('Model')->get('ChannelField', $this->getId())->first();
-
         return $field->FieldConditionSets;
+    }
+
+    public function setConditionSets($conditionSets = [])
+    {
+        $this->conditionSets = $conditionSets;
     }
 
     public function initField()
