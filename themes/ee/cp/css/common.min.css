@@ -30354,6 +30354,7 @@ fieldset {
   padding: 0;
   margin-bottom: 20px;
   border: 0;
+  min-width: 0;
 }
 fieldset.last {
   margin-bottom: 0;
@@ -31473,6 +31474,8 @@ fieldset .field-control #eye {
 .grid-field__table tbody td {
   vertical-align: top;
   border-right: 1px solid var(--ee-table-border);
+  min-width: 250px;
+  max-width: 600px;
 }
 @media (max-width: 767px) {
   .grid-field__table tbody td {
@@ -31485,6 +31488,7 @@ fieldset .field-control #eye {
 .grid-field__table td:last-child, .grid-field__table th:last-child {
   padding-right: 15px;
   border-right: none;
+  min-width: 80px;
 }
 .grid-field__table .file-field__dropzone {
   margin-top: 0px;
@@ -31517,6 +31521,12 @@ fieldset .field-control #eye {
 
 .grid-field__column-label {
   display: none;
+}
+.grid-field__column-label label {
+  display: block;
+  color: var(--ee-text-normal);
+  margin-bottom: 5px;
+  font-weight: 500;
 }
 
 .grid-field__column-remove {
@@ -31665,7 +31675,6 @@ fieldset .field-control #eye {
   display: block;
   border-bottom: none;
   padding: 10px 15px 10px 15px;
-  padding-bottom: 0;
   font-size: 1rem;
 }
 .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools {
@@ -31799,6 +31808,129 @@ fieldset .field-control #eye {
     display: none !important;
   }
 }
+.live-preview__form-content .grid-field .table-responsive,
+.grid-field.overwidth .table-responsive {
+  overflow-x: hidden;
+}
+.live-preview__form-content .grid-field .grid-field__table,
+.grid-field.overwidth .grid-field__table {
+  display: flex;
+}
+.live-preview__form-content .grid-field .grid-field__table thead,
+.grid-field.overwidth .grid-field__table thead {
+  display: none;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody,
+.grid-field.overwidth .grid-field__table tbody {
+  width: 100%;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-bottom: 3px solid var(--ee-table-border);
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden):last-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden):last-child {
+  border-bottom: none;
+}
+@media (max-width: 767px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden):last-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden):last-child {
+    border-bottom-width: 1px;
+  }
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--ee-table-border);
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden):last-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden):last-child {
+  border-bottom: none;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label) {
+  width: calc(100% - 135px);
+}
+@media (max-width: 1023px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label) {
+    width: calc(100% - 100px);
+  }
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .ee-form-error-message,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .ee-form-error-message {
+  margin-left: auto;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label {
+  display: block;
+  color: var(--ee-text-secondary);
+  font-weight: 500;
+  white-space: normal;
+  border-right: 1px solid var(--ee-table-border);
+  margin-right: 15px;
+  flex: 0 0 120px;
+}
+@media (max-width: 1023px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label {
+    flex: 0 0 80px;
+  }
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .pagination__link, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .no-results a, .no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a,
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .field-no-results a,
+.field-no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select-popup, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools select, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select__button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a, .markItUpHeader ul .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .filter-bar__button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .license-status-badge,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .button,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .pagination__link,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .no-results a,
+.no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .field-no-results a,
+.field-no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select-popup,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools select,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select__button,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a,
+.markItUpHeader ul .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .filter-bar__button,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .license-status-badge {
+  margin-bottom: 0;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .pagination__link:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .no-results a:first-child, .no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child,
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .field-no-results a:first-child,
+.field-no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select-popup:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools select:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select__button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a:first-child, .markItUpHeader ul .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .filter-bar__button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .license-status-badge:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .button:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .pagination__link:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .no-results a:first-child,
+.no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .field-no-results a:first-child,
+.field-no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select-popup:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools select:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select__button:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a:first-child,
+.markItUpHeader ul .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .filter-bar__button:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .license-status-badge:first-child {
+  margin-right: 10px;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr.no-results,
+.grid-field.overwidth .grid-field__table tbody tr.no-results {
+  border-bottom: none;
+  padding: 0;
+}
+
 .select {
   position: static;
   width: 100%;
@@ -33852,7 +33984,8 @@ a.ck.ck-button.ck-on {
   margin-bottom: 10px;
   background-color: var(--ee-bg-blank);
   border: 1px solid var(--ee-fluid-item-border);
-  position: relative;
+  position: static;
+  width: 100%;
 }
 .fluid__item .fluid__item-fieldset {
   padding: 10px 15px 5px 15px;
@@ -33898,8 +34031,8 @@ a.ck.ck-button.ck-on {
 .fluid__item--collapsed .field-instruct label {
   opacity: 0.7;
 }
-.fluid__item--collapsed .fluid__item-tools--item-open {
-  display: none;
+.fluid__item--collapsed .fluid__item-tools--item-open a.fluid__item-tool {
+  transform: rotate(180deg);
 }
 .fluid__item--collapsed .fluid__item-tools--item-closed {
   display: block;
@@ -34406,6 +34539,7 @@ table .field-no-results {
 
   .live-preview__form, .live-preview__preview {
     flex-basis: 50%;
+    width: 50%;
     max-height: 50vh;
   }
 
