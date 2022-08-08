@@ -7,13 +7,10 @@
 
 <div class="tab-bar">
 	<div class="tab-bar__tabs">
-		<button type="button" class="tab-bar__tab active js-tab-button" rel="t-0"><?=lang('installed')?></button>
+		<button type="button" class="tab-bar__tab active js-tab-button" rel="t-0"><?=lang('installed')?> <span class="tab-bar__tab-notification tab-notification-generic"><?=count($installed)?></span></button>
 		<button type="button" class="tab-bar__tab js-tab-button" rel="t-2">
 			<?=lang('updates')?>
-
-			<?php if (! empty($updates)) : ?>
-			<span class="tab-bar__tab-notification"><?=count($updates)?></span>
-			<?php endif; ?>
+			<span class="tab-bar__tab-notification<?php if (empty($updates)) : ?> tab-notification-generic<?php endif; ?>"><?=count($updates)?></span>
 		</button>
 	</div>
 </div>

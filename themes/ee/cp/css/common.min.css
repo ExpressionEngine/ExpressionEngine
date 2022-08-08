@@ -40,6 +40,7 @@ html.color-theme-in-transition *:after {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #bbbdf9;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #0d0d19;
   --ee-text-normal: #0d0d19;
   --ee-text-secondary: #8f90b0;
@@ -537,6 +538,7 @@ body[data-theme=dark] .inverted-theme {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #bbbdf9;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #0d0d19;
   --ee-text-normal: #0d0d19;
   --ee-text-secondary: #8f90b0;
@@ -1034,6 +1036,7 @@ body[data-theme=pink] {
   --ee-danger: #F5462A;
   --ee-keyboard-focus: #fa8ba4;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #fcbccb;
   --ee-text-primary: #1e0d11;
   --ee-text-normal: #1e0d11;
   --ee-text-secondary: #b98a95;
@@ -28417,21 +28420,20 @@ input[type=button].btn-block {
 .tab-bar__tab-notification {
   position: relative;
   display: inline-block;
-  min-width: 20px;
-  min-height: 20px;
-  line-height: 0;
-  top: -1px;
-  border-radius: 4px;
+  min-width: 22px;
+  min-height: 22px;
+  line-height: 16px;
+  top: -2px;
+  border-radius: 1000px;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   color: #fff;
   background: var(--ee-notification);
-  padding: 10px 5px;
-  margin-bottom: -4px;
+  padding: 3px 5px;
 }
 .tab-bar__tab-notification.tab-notification-generic {
   color: var(--ee-text-secondary);
-  background-color: var(--ee-bg-0);
+  background-color: var(--ee-notification-generic);
 }
 
 .tab {
@@ -32117,21 +32119,20 @@ body[data-theme=dark] .select-popup {
 .ee-debugger .tab-bar__tab-notification {
   position: relative;
   display: inline-block;
-  min-width: 20px;
-  min-height: 20px;
-  line-height: 0;
-  top: -1px;
-  border-radius: 4px;
+  min-width: 22px;
+  min-height: 22px;
+  line-height: 16px;
+  top: -2px;
+  border-radius: 1000px;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   color: #fff;
   background: var(--ee-notification);
-  padding: 10px 5px;
-  margin-bottom: -4px;
+  padding: 3px 5px;
 }
 .ee-debugger .tab-bar__tab-notification.tab-notification-generic {
   color: var(--ee-text-secondary);
-  background-color: var(--ee-bg-0);
+  background-color: var(--ee-notification-generic);
 }
 .ee-debugger .tab {
   display: none;
