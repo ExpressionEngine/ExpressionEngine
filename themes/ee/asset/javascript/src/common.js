@@ -1070,6 +1070,23 @@ $(document).ready(function(){
 			}
 		});
 
+		// Check if Toggle button has data-group-toggle and 
+		// show and hide dependent blocks depending on toggle button value
+		$('.toggle-btn').find('[data-group-toggle]').each(function() {
+			var val = $(this).val();
+			var inputData = $(this).data('groupToggle')['y'];
+
+			if (val == 'n') {
+				$('[data-group='+inputData+']').each(function() {
+					$(this).hide();
+				});
+			} else {
+				$('[data-group='+inputData+']').each(function() {
+					$(this).show();
+				});
+			}
+		});
+
 		$('body').on('click', '.js-toggle-link', function(e) {
 			e.preventDefault()
 
