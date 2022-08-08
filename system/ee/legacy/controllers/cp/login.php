@@ -48,7 +48,7 @@ class Login extends CP_Controller
             return $this->authenticate();
         }
 
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
 
         $redirect = '';
         if ($this->input->post('return_path')) {
@@ -177,7 +177,7 @@ class Login extends CP_Controller
             $this->functions->redirect($return_path);
         }
 
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
 
         if (!empty($_POST)) {
             if (md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))) == $member->backup_mfa_code) {

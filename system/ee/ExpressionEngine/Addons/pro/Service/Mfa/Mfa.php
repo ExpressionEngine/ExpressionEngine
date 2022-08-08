@@ -144,7 +144,7 @@ class Mfa
         }
 
         ee()->lang->load('login');
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
         $vars = [
             'title' => lang('mfa_required'),
             'heading' => lang('mfa'),
@@ -167,7 +167,7 @@ class Mfa
         }
 
         ee()->lang->load('login');
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
         $formVars = [
             'qr_link' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'qrCode') . AMP . 'code=' . $this->backupCode(ee()->session->cache('pro', 'backup_mfa_code')),
             'backup_code' => $this->backupCode()

@@ -20,7 +20,7 @@ class Prolet extends Pro
      */
     public function __construct()
     {
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
     }
 
     /**
