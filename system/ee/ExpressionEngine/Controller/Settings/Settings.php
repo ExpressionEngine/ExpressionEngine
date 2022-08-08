@@ -45,7 +45,7 @@ class Settings extends CP_Controller
     protected function generateSidebar($active = null)
     {
         $sidebar = ee('CP/Sidebar')->make();
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
 
         $list = $sidebar->addHeader(lang('general'))
             ->addBasicList();

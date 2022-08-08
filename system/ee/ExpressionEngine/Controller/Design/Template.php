@@ -903,7 +903,7 @@ class Template extends AbstractDesignController
             )
         );
 
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
         $sections['pro_settings'][] = array(
             'title' => 'enable_frontedit',
             'desc' => 'enable_frontedit_tmpl_desc',

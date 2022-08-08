@@ -653,7 +653,7 @@ class Roles extends AbstractRolesController
             ]
         ];
 
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
         $section = array_merge($section, [
             [
                 'title' => 'require_mfa',

@@ -214,7 +214,7 @@ class Access
     {
         ee()->load->library('logger');
         ee()->lang->load('addons');
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
         $isTrial = ($message === 'pro_license_error_trial');
 
         if (! $this->hasValidLicense()) {
