@@ -272,16 +272,13 @@ class FileUsage extends Utilities
                         } else {
                             ee('db')->where($idField, $row[$idField])->update($table, $update);
                         }
-                        //add as many records for file usage as needed
+                        //add file usage record once per entry/category, as this is pivot table for models
                         foreach ($countFilesUsed as $customFieldId => $fieldFileUsageData) {
                             foreach ($fieldFileUsageData as $fileId => $numberOfReplacements) {
-                                for ($i = 0; $i < $numberOfReplacements; $i++) {
-                                    ee('db')->insert('file_usage', [
-                                        $idField => $row[$idField],
-                                        //'field_id' => $customFieldId,
-                                        'file_id' => $fileId
-                                    ]);
-                                }
+                                ee('db')->insert('file_usage', [
+                                    $idField => $row[$idField],
+                                    'file_id' => $fileId
+                                ]);
                                 //update the file usage counter on file
                                 ee('db')->set('total_records', 'total_records + ' . $numberOfReplacements, false)->where('file_id', $fileId)->update('files');
                             }
