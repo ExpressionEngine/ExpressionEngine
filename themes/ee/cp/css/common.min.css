@@ -35394,6 +35394,14 @@ ul.field-reorder-drop,
   margin-bottom: 10px;
 }
 
+.design-system-template-body .app-notice {
+  margin: 20px 25px;
+}
+
+.single-templates-notice-wrapper {
+  padding: 0 10px;
+}
+
 .app-about-info {
   background-color: #FFFFFF;
   border: 1px solid #b3b3b3;
