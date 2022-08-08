@@ -12,7 +12,8 @@
   background-color: color(bg-blank);
 	// padding-bottom: 10px;
 	border: 1px solid color(fluid-item-border);
-  position: relative;
+  position: static;
+  width: 100%;
 
   .fluid__item-fieldset {
     padding: 10px 15px 5px 15px;
@@ -80,7 +81,9 @@
 	}
 
 	.fluid__item-tools--item-open {
-		display: none;
+		a.fluid__item-tool {
+			transform: rotate(180deg);
+		}
 	}
 
 	.fluid__item-tools--item-closed {

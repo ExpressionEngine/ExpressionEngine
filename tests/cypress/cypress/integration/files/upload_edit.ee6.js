@@ -262,7 +262,7 @@ context('Upload Destination Create/Edit', () => {
     page.get('wrap').should('not.have.text','No manipulations created')
     page.get('grid_add_no_results').should('not.be.visible')
     page.get('grid_add').should('exist').should('be.visible')
-    page.get('grid_rows').should('have.length', 2) // Includes header
+    page.get('grid_rows').should('have.length', 1) // Excludes header
 
     // Make sure watermarks are available
     const options = ["0", "1"]
@@ -398,7 +398,7 @@ context('Upload Destination Create/Edit', () => {
     page.height_for_row(1).parent().find('em.ee-form-error-message').should('not.exist')
 
     page.get('grid_add').click()
-    page.get('grid_rows').should('have.length', 3)
+    page.get('grid_rows').should('have.length', 2) //check without header
 
     cy.route("POST", "**/files/uploads/**").as("ajax33");
     page.name_for_row(2).trigger('blur')

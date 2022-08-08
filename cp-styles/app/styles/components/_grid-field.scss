@@ -61,6 +61,8 @@
   tbody td {
     vertical-align: top;
     border-right: 1px solid color(table-border);
+    min-width: 250px;
+    max-width: 600px;
 
      @include m-tablet-down {
        border-right: none;
@@ -74,6 +76,7 @@
   td:last-child, th:last-child {
     padding-right: 15px;
     border-right: none;
+    min-width: 80px;
   }
 
 
@@ -127,6 +130,13 @@
 
 .grid-field__column-label {
 	display: none;
+
+	label {
+		display: block;
+		color: var(--ee-text-normal);
+		margin-bottom: 5px;
+		font-weight: 500;
+	}
 }
 
 .grid-field__column-remove {
@@ -296,7 +306,6 @@
 					display: block;
 					border-bottom: none;
 					padding: 10px 15px 10px 15px;
-					padding-bottom: 0;
           font-size: 1rem;
 
 					&.grid-field__column--tools {
@@ -457,3 +466,94 @@
 		td.grid-field__column--tools { display: none !important;}
 	}
 }
+
+.live-preview__form-content .grid-field,
+.grid-field.overwidth {
+	.table-responsive {
+		overflow-x: hidden;
+	}
+
+	.grid-field__table {
+		display: flex;
+
+		thead {
+			display: none;
+		}
+
+		tbody {
+			width: 100%;
+
+			tr:not(.hidden) {
+				display: flex;
+				flex-direction: column;
+				width: 100%;
+				border-bottom: 3px solid var(--ee-table-border);
+
+				&:last-child {
+					border-bottom: none;
+
+					@include m-tablet-down {
+						border-bottom-width: 1px;
+					}
+				}
+
+				td:not(.hidden) {
+					width: 100%;
+					max-width: 100%;
+					display: flex;
+					flex-wrap: wrap;
+					border-bottom: 1px solid var(--ee-table-border);
+
+					&:last-child {
+						border-bottom: none;
+					}
+
+					& > *:not(.grid-field__column-label) {
+						width: calc(100% - 135px);
+
+						@include m-desktop-down {
+							width: calc(100% - 100px);
+						}
+					}
+
+					.ee-form-error-message {
+						margin-left: auto;
+					}
+
+					.grid-field__column-label {
+						display: block;
+						color: var(--ee-text-secondary);
+						font-weight: 500;
+						white-space: normal;
+						border-right: 1px solid var(--ee-table-border);
+						margin-right: 15px;
+						flex: 0 0 120px;
+
+						@include m-desktop-down {
+							flex: 0 0 80px;
+						}
+					}
+
+					.grid-field__column-tools {
+						width: 100%;
+						display: flex;
+						align-items: center;
+
+						.button {
+							margin-bottom: 0;
+
+							&:first-child {
+								margin-right: 10px;
+							}
+						}
+					}
+				}
+			}
+
+			tr.no-results {
+				border-bottom: none;
+				padding: 0;
+			}
+		}
+	}
+} 
