@@ -108,7 +108,7 @@ abstract class AbstractFiles extends CP_Controller
         }
 
         ee()->cp->add_js_script(array(
-            'ui' => array('droppable', 'sortable'),
+            'ui' => array('droppable', 'sortable', 'draggable'),
             'file' => array('cp/files/menu'),
         ));
     }
