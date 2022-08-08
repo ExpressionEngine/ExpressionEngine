@@ -834,11 +834,6 @@ class Grid_ft extends EE_Fieldtype
         $entry_id = (isset($this->settings['entry_id']))
             ? $this->settings['entry_id'] : ee()->input->get_post('entry_id');
 
-        // If entry id isnt set and this is an edit entry, we'll get it from the URL
-        if (!$entry_id && ee()->uri->segment(3) === 'edit' && is_numeric(ee()->uri->segment(5))) {
-            $entry_id = (int) ee()->uri->segment(5);
-        }
-
         ee()->grid_lib->entry_id = ($this->content_id() == null) ? $entry_id : $this->content_id();
         ee()->grid_lib->field_id = $this->id();
         ee()->grid_lib->field_name = $this->name();

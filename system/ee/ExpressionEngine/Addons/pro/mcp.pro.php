@@ -22,7 +22,7 @@ class Pro_mcp
     {
         ee()->load->library('file_field');
         ee()->lang->load('settings');
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
         $this->hasValidLicense = ee('pro:Access')->hasRequiredLicense(true);
     }
 

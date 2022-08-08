@@ -128,22 +128,14 @@ class FileUsage extends Utilities
             ],
         ];
 
-        // ee('CP/Alert')->makeInline('update_file_usage_explained')
-        //     ->asTip()
-        //     ->cannotClose()
-        //     ->addToBody(sprintf(
-        //         lang('update_file_usage_explained_desc'),
-        //         DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
-        //         ee('CP/URL')->make('utilities/db-backup')->compile(),
-        //         ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
-        //     )
-        //     ->now();
-
         ee('CP/Alert')->makeInline('update_file_usage_explained')
             ->asTip()
             ->cannotClose()
-            ->addToBody(
-                'This feature has been temporarily disabled due to a bug. The ExpressionEngine team is aware of this issue and a fix is in progress.'
+            ->addToBody(sprintf(
+                lang('update_file_usage_explained_desc'),
+                DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
+                ee('CP/URL')->make('utilities/db-backup')->compile(),
+                ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
             )
             ->now();
 
@@ -155,7 +147,7 @@ class FileUsage extends Utilities
             '' => lang('update_file_usage')
         );
 
-        ee()->cp->render('settings/page', $vars);
+        ee()->cp->render('settings/form', $vars);
     }
 
     /**
@@ -176,6 +168,7 @@ class FileUsage extends Utilities
             $this->updating = true;
             $this->cache();
             ee('db')->where('entry_id != 0')->delete('file_usage');
+            ee('db')->update('files', ['total_records' => 0]);
         }
 
         $progress = (int) ee('Request')->post('progress');
@@ -189,6 +182,9 @@ class FileUsage extends Utilities
                 $fieldsList = $idField . ', ' . implode(', ', $fields);
                 if (strpos($table, 'channel_grid_field') === 0) {
                     $fieldsList .= ', row_id';
+                }
+                if (strpos($table, 'channel_data_field') === 0) {
+                    $fieldsList .= ', id';
                 }
                 $query = ee('db')->select($fieldsList)->from($table)->limit($this->entriesLimit)->offset($this->offset)->get();
                 // if we got less entries then expected, we come to end of DB table - shift the pointers
@@ -269,23 +265,26 @@ class FileUsage extends Utilities
                     }
                     if (! empty($update)) {
                         //update the data table
-                        if (strpos($table, 'channel_grid_field') === 0) {
+                        if (strpos($table, 'channel_data_field') === 0) {
+                            ee('db')->where('id', $row['id'])->update($table, $update);
+                        } else if (strpos($table, 'channel_grid_field') === 0) {
                             ee('db')->where('row_id', $row['row_id'])->update($table, $update);
                         } else {
                             ee('db')->where($idField, $row[$idField])->update($table, $update);
                         }
-                        //add as many records for file usage as needed
+                        //add file usage record once per entry/category, as this is pivot table for models
                         foreach ($countFilesUsed as $customFieldId => $fieldFileUsageData) {
                             foreach ($fieldFileUsageData as $fileId => $numberOfReplacements) {
-                                for ($i = 0; $i < $numberOfReplacements; $i++) {
-                                    ee('db')->insert('file_usage', [
-                                        $idField => $row[$idField],
-                                        //'field_id' => $customFieldId,
-                                        'file_id' => $fileId
-                                    ]);
+                                $pivotRecord = [
+                                    $idField => $row[$idField],
+                                    'file_id' => $fileId
+                                ];
+                                $pivotExists = ee('db')->where($pivotRecord)->count_all_results('file_usage');
+                                if ($pivotExists == 0) {
+                                    ee('db')->insert('file_usage', $pivotRecord);
+                                    //update the file usage counter on file
+                                    ee('db')->set('total_records', 'total_records + 1', false)->where('file_id', $fileId)->update('files');
                                 }
-                                //update the file usage counter on file
-                                ee('db')->set('total_records', $numberOfReplacements, false)->where('file_id', $fileId)->update('files');
                             }
                         }
                     }

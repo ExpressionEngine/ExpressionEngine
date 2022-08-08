@@ -61,7 +61,7 @@ class Pro
                         $session->save();
                     }
 
-                    ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+                    ee()->lang->load('pro');
                     ee()->session->set_cache('mfa', 'errors', [lang('mfa_wrong_code_desc')]);
                     ee()->session->set_cache('mfa', 'backup_mfa_code', ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code')));
                     //sync the session
@@ -135,7 +135,7 @@ class Pro
                     $this->redirectBack();
                 } else {
                     ee()->session->save_password_lockout(ee()->session->userdata('username'));
-                    ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+                    ee()->lang->load('pro');
                     ee()->session->set_cache('mfa', 'errors', [lang('mfa_wrong_backup_code_desc')]);
                     //sync the session
                     ee()->session->mfa_flag = 'show';
@@ -143,7 +143,7 @@ class Pro
             }
 
             ee()->lang->load('login');
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            ee()->lang->load('pro');
             $vars = [
                 'title' => lang('reset_mfa'),
                 'heading' => lang('reset_mfa'),
@@ -202,14 +202,14 @@ class Pro
                         $session->mfa_flag = 'show';
                         $session->save();
                     }
-                    ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+                    ee()->lang->load('pro');
                     ee()->session->set_cache('mfa', 'errors', [lang('existing_password_mfa_reset_desc')]);
                     //sync the session
                     ee()->session->mfa_flag = 'show';
                 }
             }
             ee()->lang->load('myaccount');
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+            ee()->lang->load('pro');
             $vars = [
                 'title' => lang('disable_mfa'),
                 'heading' => lang('disable_mfa'),
@@ -247,7 +247,7 @@ class Pro
                         $session->mfa_flag = 'show';
                         $session->save();
                     }
-                    ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+                    ee()->lang->load('pro');
                     ee()->session->save_password_lockout(ee()->session->userdata('username'));
                     ee()->session->set_cache('mfa', 'errors', [lang('mfa_wrong_code_desc')]);
                     //sync the session

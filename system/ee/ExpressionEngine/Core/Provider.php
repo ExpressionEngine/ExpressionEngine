@@ -375,15 +375,16 @@ class Provider extends InjectionBindingDecorator
                 if (!isset($providerCookieSettings[$cookie_name])) {
                     $cookieSettings = ee('Model')->make('CookieSetting', $cookieParams);
                     switch ($cookieParams['cookie_provider']) {
+                        // first-party add-ons
                         case 'pro':
-                            ee()->lang->load('pro', ee()->lang->getIdiom(), false, true, PATH_ADDONS . 'pro/', false);
-                            break;
                         case 'comment':
                             ee()->lang->load($cookieParams['cookie_provider']);
                             break;
+                        // core EE
                         case 'ee':
                             ee()->lang->load('core');
                             break;
+                        // third-party add-ons
                         default:
                             ee()->lang->loadfile($cookieParams['cookie_provider'], $cookieParams['cookie_provider'], false);
                             break;

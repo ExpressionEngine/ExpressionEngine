@@ -21,7 +21,7 @@ class Mfa extends Profile\Pro
 
     public function __construct()
     {
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
 
         if (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') {
             show_error(lang('unauthorized_access'), 403);

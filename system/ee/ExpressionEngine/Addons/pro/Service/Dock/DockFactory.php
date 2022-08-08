@@ -90,7 +90,7 @@ class DockFactory
     {
         ee()->TMPL->log_item("Pro: Building the Dock.");
         ee()->lang->load('cp');
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
 
         // Get version of asset cache busting
         $addon = ee('Addon')->get('pro');

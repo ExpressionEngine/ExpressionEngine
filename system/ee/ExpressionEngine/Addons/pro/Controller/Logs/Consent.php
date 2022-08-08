@@ -22,7 +22,7 @@ class Consent extends Logs\Consent
         if (!ee('pro:Access')->hasRequiredLicense()) {
             show_error(lang('unauthorized_access'), 403);
         }
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
     }
 
     /**
