@@ -2576,7 +2576,7 @@ GRID_FALLBACK;
 
                 if (count($groups)) {
                     $where .= $where ? ' OR ' : '';
-                    $where .= ee()->db->dbprefix('members') . '.group_id IN (' . implode(', ', $groups) . ')';
+                    $where .= ee()->db->dbprefix('members') . '.role_id IN (' . implode(', ', $groups) . ')';
                     ee()->db->join('members', 'members.member_id = channel_titles.author_id');
                 }
 
