@@ -261,7 +261,12 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			this.root.toggleClass('hidden', rowCount == 0)
 		}
 
-		var gridFieldWidth = $(this.rowContainer).width();
+		if ($(this.rowContainer).parents('.fluid__item-field').length) {
+			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth()
+		} else {
+			var gridFieldWidth = $(this.rowContainer).width();
+		}
+
 		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width()
 			
 		if(rowCount == 0) {
@@ -360,7 +365,11 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			EE.cp.formValidation.bindInputs(el);
 		}
 
-		var gridFieldWidth = $(this.rowContainer).width();
+		if ($(this.rowContainer).parents('.fluid__item-field').length) {
+			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth()
+		} else {
+			var gridFieldWidth = $(this.rowContainer).width();
+		}
 		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width()
 
 		if (parentFieldControlWidth < gridFieldWidth) {
@@ -980,7 +989,12 @@ $(window).on('resize', function() {
 
 		if ( $(this).parents('.hidden').length ) return;
 
-		var tableInnerWidth = $(this).find('.grid-field__table').width();
+		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
+			var tableInnerWidth = $(this).find('.grid-field__table').parents('.fluid__item-field').innerWidth()
+		} else {
+			var tableInnerWidth = $(this).find('.grid-field__table').width();
+		}
+
 		var containerWidth = $(this).parents('.field-control').width();
 
 		if (containerWidth < tableInnerWidth) {
