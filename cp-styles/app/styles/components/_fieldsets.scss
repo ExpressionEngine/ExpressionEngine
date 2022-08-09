@@ -432,10 +432,10 @@ fieldset {
 // Publish form behavior for fieldsets
 .panel-body__publish {
 
+
   fieldset, .fieldset-faux {
     width: 100%;
-    display: inline-flex;
-    flex-wrap: wrap;
+    display: inline-block;
     margin-bottom: 30px;
     padding-left: 15px;
     padding-right: 15px;
