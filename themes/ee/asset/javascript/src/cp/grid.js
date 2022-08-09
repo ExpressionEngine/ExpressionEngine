@@ -816,6 +816,7 @@ Grid.Settings.prototype = {
 
 			// Find the container holding the settings form, replace its contents
 			customSettingsContainer.html(settings);
+			SelectField.renderFields();
 
 			// Fire displaySettings event
 			that._fireEvent('displaySettings', settings);
