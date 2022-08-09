@@ -356,7 +356,7 @@ class Groups extends AbstractFieldsController
 
         // If it's an AJAX request, we're probably in a modal; we currently
         // can't open a modal from a modal, lest inception
-        $should_allow_field_creation = ! AJAX_REQUEST;
+        $should_allow_field_creation = ! AJAX_REQUEST && ! $field_group->isNew();
 
         $add_fields_button = null;
         if ($should_allow_field_creation) {
