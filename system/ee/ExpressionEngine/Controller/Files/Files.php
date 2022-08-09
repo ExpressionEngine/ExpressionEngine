@@ -874,10 +874,12 @@ class Files extends AbstractFilesController
             });
 
         $names = array();
+        $message = lang('files_deleted_desc');
         foreach ($files as $file) {
             $names[] = $file->title;
             if ($file->isDirectory()) {
                 ee('Model')->get('Directory', $file->getId())->delete();
+                $message = lang('folder_deleted_desc'); // directories are only deleted one-by-one
             } else {
                 ee('Model')->get('File', $file->getId())->delete();
             }
@@ -886,7 +888,7 @@ class Files extends AbstractFilesController
         ee('CP/Alert')->makeInline('files-form')
             ->asSuccess()
             ->withTitle(lang('success'))
-            ->addToBody(lang('files_deleted_desc'))
+            ->addToBody($message)
             ->addToBody($names)
             ->defer();
     }

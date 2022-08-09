@@ -264,6 +264,8 @@ $lang = array(
 
     'flip_vertically' => 'Flip, vertically',
 
+    'folder_deleted_desc' => 'The folder was deleted',
+
     'height' => 'height',
 
     'no_categories_assigned_file_desc' => 'There are no categories assigned to this file. <a href="%s" rel="external">Assign a category group.</a>',
