@@ -159,17 +159,20 @@ class DashboardWidget extends Model
         switch ($this->widget_type) {
             case 'php':
                 if (empty($file_path)) {
-                    return $html;
+                    return $html; //no valid path
                 }
                 if (!$fs->exists($file_path)) {
-                    return $html;
+                    return $html; // file does not exist
                 }
                 if (empty($this->_addon)) {
-                    $addon = $this->_addon = ee('pro:Addon')->get($this->widget_source);
+                    $this->_addon = ee('pro:Addon')->get($this->widget_source);
+                }
+                if (empty($this->_addon)) {
+                    return $html; // addon does not exist
                 }
                 include_once($file_path);
                 $widgetClass = trim($this->_addon->getProvider()->getNamespace(), '\\') . '\\Widgets\\' . ucfirst($this->widget_file);
-                if (!$addon::implementsDashboardWidgetInterface($widgetClass)) {
+                if (!$this->_addon::implementsDashboardWidgetInterface($widgetClass)) {
                     return $html;
                 }
                 try {
