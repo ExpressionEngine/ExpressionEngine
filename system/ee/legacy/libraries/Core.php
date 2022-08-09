@@ -74,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20220802');
-        define('APP_VER', '7.0.0');
+        define('APP_BUILD', '20220808');
+        define('APP_VER', '7.0.3');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -87,7 +87,7 @@ class EE_Core
         define('AJAX_REQUEST', ee()->input->is_ajax_request());
         define('USERNAME_MAX_LENGTH', 75);
         define('PASSWORD_MAX_LENGTH', 72);
-        define('DOC_URL', 'https://docs.expressionengine.com/v6/');
+        define('DOC_URL', 'https://docs.expressionengine.com/v7/');
         define('URL_TITLE_MAX_LENGTH', 200);
         define('CLONING_MODE', (ee('Request') && ee('Request')->post('submit') == 'save_as_new_entry'));
 
@@ -557,7 +557,7 @@ class EE_Core
         //is member role forced to use MFA?
         if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
-                ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+                ee()->lang->load('pro');
                 ee('CP/Alert')->makeInline('shared-form')
                         ->asIssue()
                         ->withTitle(lang('mfa_required'))

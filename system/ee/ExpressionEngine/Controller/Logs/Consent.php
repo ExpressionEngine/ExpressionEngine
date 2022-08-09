@@ -53,7 +53,7 @@ class Consent extends Logs
             'form_url' => $this->base_url->compile()
         ];
 
-        ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
+        ee()->lang->load('pro');
         $header['toolbar_items'] = [
             'export' => [
                 'href' => ee('CP/URL', 'logs/pro/consent/export')->addQueryStringVariables($this->params),

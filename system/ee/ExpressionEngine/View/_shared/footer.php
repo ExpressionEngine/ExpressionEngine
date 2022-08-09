@@ -19,7 +19,7 @@
         <?php elseif (ee()->view->pro_license_status == 'invalid_domain'): ?>
             <a class="button button--primary button--small" href="https://expressionengine.com/store/licenses" target="_blank"><?=lang('update_site_domain')?></a>
         <?php else: ?>
-            <a class="button button--primary button--small" href="https://expressionengine.com/store/purchase-pro" target="_blank"><?=lang('purchase_pro_license')?></a>
+            <a class="button button--primary button--small" href="https://expressionengine.com/store/purchase-pro/pro-yearly" target="_blank"><?=lang('purchase_pro_license')?></a>
         <?php endif; ?>
 
       </div>

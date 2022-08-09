@@ -29,6 +29,7 @@ class Updater
             [
                 'clearJumpCaches',
                 'addDismissedBannerToMember',
+                'installNewProAddons',
             ]
         );
 
@@ -58,6 +59,25 @@ class Updater
                     ]
                 ]
             );
+        }
+    }
+
+    private function installNewProAddons()
+    {
+        // If a low addon is installed, install the pro version,
+        // (which will migrate from low to pro)
+        foreach (['low_search', 'low_variables'] as $lowAddon) {
+            $addon = ee('Addon')->get($lowAddon);
+
+            if ($addon && $addon->isInstalled()) {
+                if (!isset(ee()->addons)) {
+                    ee()->load->library('addons');
+                }
+
+                $proAddon = str_replace('low', 'pro', $lowAddon);
+
+                ee()->addons->install_modules([$proAddon]);
+            }
         }
     }
 }

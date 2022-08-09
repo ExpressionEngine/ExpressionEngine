@@ -1,7 +1,7 @@
 <?php if ((empty(ee()->uri->segment(2)) || ee()->uri->segment(2) == 'homepage') && ee()->session->getMember()->dismissed_banner!='y') : ?>
 <div class="upgrade-success-banner__wrapper" style="background-image: url('<?=URL_THEMES?>asset/img/ee-pro-promo-banner-bg@2x.png');">
-	<a href="<?=DOC_URL . 'installation/changelog.html#version-700'?>" class="upgrade-success-banner__title" target="_blank">&#127881; ExpressionEngine <strong>7.0.0</strong></a>
-	<a href="<?=DOC_URL . 'installation/changelog.html#version-700'?>" class="upgrade-success-banner__title-link" target="_blank"><i class="fas fa-clipboard"></i> Release Notes&hellip;</a>
+	<a href="<?=DOC_URL . 'installation/changelog.html#version-' . str_replace('.', '', APP_VER)?>" class="upgrade-success-banner__title" target="_blank">&#127881; ExpressionEngine <strong><?=APP_VER?></strong></a>
+	<a href="<?=DOC_URL . 'installation/changelog.html#version-' . str_replace('.', '', APP_VER)?>" class="upgrade-success-banner__title-link" target="_blank"><i class="fas fa-clipboard"></i> Release Notes&hellip;</a>
 
 	<!-- Change number of blurb columns via inline grid style below IF less than 3 blurbs: -->
 	<div class="upgrade-success-banner__blurb-wrapper" style="grid-template-columns: repeat(3, 1fr);">

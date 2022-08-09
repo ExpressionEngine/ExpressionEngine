@@ -435,7 +435,7 @@ $lang = array(
 
     'right' => 'Right',
 
-    'sync_alt_title' => 'Syncronize %s',
+    'sync_alt_title' => 'Synchronize %s',
 
     'sync_title' => 'Directory Sync',
 
@@ -559,13 +559,13 @@ $lang = array(
 
     'watermark_text_desc' => 'Content of this watermark',
 
-    'watermark_text_dropshadow' => 'Enable dropshadow?',
+    'watermark_text_dropshadow' => 'Enable drop shadow?',
 
-    'watermark_text_dropshadow_color' => 'Dropshadow color',
+    'watermark_text_dropshadow_color' => 'Drop shadow color',
 
-    'watermark_text_dropshadow_desc' => 'When enabled, a drop-shadow will be rendered.',
+    'watermark_text_dropshadow_desc' => 'When enabled, a drop shadow will be rendered.',
 
-    'watermark_text_dropshadow_distance' => 'Dropshadow distance',
+    'watermark_text_dropshadow_distance' => 'Drop shadow distance',
 
     'watermark_text_font' => 'Font face',
 
@@ -960,9 +960,9 @@ $lang = array(
 
     'wm_padding' => 'Padding',
 
-    'wm_shadow_color' => 'Dropshadow Color',
+    'wm_shadow_color' => 'Drop shadow Color',
 
-    'wm_shadow_distance' => 'Dropshadow Distance',
+    'wm_shadow_distance' => 'Drop shadow Distance',
 
     'wm_test' => 'Test Watermark',
 
@@ -976,7 +976,7 @@ $lang = array(
 
     'wm_type' => 'Watermark Type',
 
-    'wm_use_drop_shadow' => 'Enable Dropshadow',
+    'wm_use_drop_shadow' => 'Enable Drop shadow',
 
     'wm_use_font' => 'Use True Type Font',
 

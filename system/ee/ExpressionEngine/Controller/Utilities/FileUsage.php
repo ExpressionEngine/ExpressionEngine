@@ -168,6 +168,7 @@ class FileUsage extends Utilities
             $this->updating = true;
             $this->cache();
             ee('db')->where('entry_id != 0')->delete('file_usage');
+            ee('db')->update('files', ['total_records' => 0]);
         }
 
         $progress = (int) ee('Request')->post('progress');
@@ -181,6 +182,9 @@ class FileUsage extends Utilities
                 $fieldsList = $idField . ', ' . implode(', ', $fields);
                 if (strpos($table, 'channel_grid_field') === 0) {
                     $fieldsList .= ', row_id';
+                }
+                if (strpos($table, 'channel_data_field') === 0) {
+                    $fieldsList .= ', id';
                 }
                 $query = ee('db')->select($fieldsList)->from($table)->limit($this->entriesLimit)->offset($this->offset)->get();
                 // if we got less entries then expected, we come to end of DB table - shift the pointers
@@ -200,9 +204,10 @@ class FileUsage extends Utilities
                     $update = [];
                     foreach ($fields as $fieldName) {
                         $data = $row[$fieldName];
-                        if (strpos((string) $data, '{filedir_') !== false) {
+                        if (strpos((string) $data, '{filedir_') !== false || strpos((string) $data, '{file:') !== false) {
                             $dirsAndFiles = [];
                             $currentReplacement = [];
+                            //grab the files in old format
                             if (preg_match_all('/{filedir_(\d+)}([^\"\'\s]*)/', $data, $matches, PREG_SET_ORDER)) {
                                 foreach ($matches as $match) {
                                     //set the data for files to be fetched - or use what we have
@@ -211,6 +216,15 @@ class FileUsage extends Utilities
                                     } else {
                                         $currentReplacement[$match[0]] = $replacement[$match[0]];
                                     }
+                                }
+                            }
+                            //and make sure the new format is still not lost
+                            if (preg_match_all('/{file\:(\d+)\:url}/', $data, $matches, PREG_SET_ORDER)) {
+                                foreach ($matches as $match) {
+                                    $currentReplacement[$match[0]] = $replacement[$match[0]] = [
+                                        'file_id' => $match[1],
+                                        'tag' => $match[0],
+                                    ];
                                 }
                             }
                             //only fetch the files data if we don't have those set to variable from previous loops
@@ -251,23 +265,26 @@ class FileUsage extends Utilities
                     }
                     if (! empty($update)) {
                         //update the data table
-                        if (strpos($table, 'channel_grid_field') === 0) {
+                        if (strpos($table, 'channel_data_field') === 0) {
+                            ee('db')->where('id', $row['id'])->update($table, $update);
+                        } else if (strpos($table, 'channel_grid_field') === 0) {
                             ee('db')->where('row_id', $row['row_id'])->update($table, $update);
                         } else {
                             ee('db')->where($idField, $row[$idField])->update($table, $update);
                         }
-                        //add as many records for file usage as needed
+                        //add file usage record once per entry/category, as this is pivot table for models
                         foreach ($countFilesUsed as $customFieldId => $fieldFileUsageData) {
                             foreach ($fieldFileUsageData as $fileId => $numberOfReplacements) {
-                                for ($i = 0; $i < $numberOfReplacements; $i++) {
-                                    ee('db')->insert('file_usage', [
-                                        $idField => $row[$idField],
-                                        //'field_id' => $customFieldId,
-                                        'file_id' => $fileId
-                                    ]);
+                                $pivotRecord = [
+                                    $idField => $row[$idField],
+                                    'file_id' => $fileId
+                                ];
+                                $pivotExists = ee('db')->where($pivotRecord)->count_all_results('file_usage');
+                                if ($pivotExists == 0) {
+                                    ee('db')->insert('file_usage', $pivotRecord);
+                                    //update the file usage counter on file
+                                    ee('db')->set('total_records', 'total_records + 1', false)->where('file_id', $fileId)->update('files');
                                 }
-                                //update the file usage counter on file
-                                ee('db')->set('total_records', 'total_records + ' . $numberOfReplacements, false)->where('file_id', $fileId)->update('files');
                             }
                         }
                     }
