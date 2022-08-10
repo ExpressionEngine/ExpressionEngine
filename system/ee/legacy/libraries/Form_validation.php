@@ -443,7 +443,7 @@ class EE_Form_validation
         }
 
         $data = [
-            'username' => ee('Request')->post($username_field),
+            'username' => ee('Security/XSS')->clean($_POST[$username_field]),
             'password' => $str
         ];
 
