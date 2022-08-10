@@ -79,7 +79,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                 // Is this an edit?
                 if ($this->content_id) {
                     // Are we validating on grid data?
-                    if (isset($this->settings['grid_row_id'])) {
+                    if (isset($this->settings['grid_row_id']) || isset($this->settings['grid_row_name'])) {
                         $fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
 
                         ee()->load->model('grid_model');
