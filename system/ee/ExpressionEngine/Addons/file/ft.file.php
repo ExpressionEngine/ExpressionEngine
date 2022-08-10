@@ -84,7 +84,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                     );
 
                     // If this filed was we need to check permissions.
-                    if ($rows[$this->content_id][$this->settings['grid_row_id']] != $data) {
+                    if (! isset($this->settings['grid_row_id']) || $rows[$this->content_id][$this->settings['grid_row_id']] != $data) {
                         $check_permissions = true;
                     }
                 } else {
