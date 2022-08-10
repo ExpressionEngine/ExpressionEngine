@@ -68,6 +68,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
             $file_name = str_replace($matches[0], '', $data);
 
             $file = ee('Model')->get('File')
+                ->with('UploadDestination')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('upload_location_id', $upload_location_id)
                 ->filter('file_name', $file_name)
@@ -93,7 +94,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                         );
 
                         // If this filed was we need to check permissions.
-                        if ($rows[$this->content_id][$this->settings['grid_row_id']] != $data) {
+                        if (! isset($this->settings['grid_row_id']) || $rows[$this->content_id][$this->settings['grid_row_id']] != $data) {
                             $check_permissions = true;
                         }
                     } else {
