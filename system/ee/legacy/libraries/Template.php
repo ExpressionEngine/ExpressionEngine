@@ -1750,7 +1750,7 @@ class EE_Template
                 if ((strtolower($class_name) == strtolower($meth_name)) or ($meth_name == '__construct')) {
                     $return_data = (isset($EE->return_data)) ? $EE->return_data : '';
                 } else {
-                    $return_data = $EE->$meth_name();
+                    $return_data = (string) $EE->$meth_name();
                 }
 
                 // if it's a third party add-on or module, remove the temporarily added path for local libraries, models, etc.
@@ -1776,7 +1776,7 @@ class EE_Template
 
                 // Replace the temporary markers we added earlier with the fully parsed data
 
-                $this->template = str_replace('M' . $i . $this->marker,  $return_data ?? '', $this->template);
+                $this->template = str_replace('M' . $i . $this->marker,  $return_data, $this->template);
 
                 // Initialize data in case there are susequent loops
 
