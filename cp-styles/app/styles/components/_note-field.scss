@@ -29,6 +29,10 @@
 
   .note-fieldtype__content {
     font-size: 90%;
+
+    em {
+      display: inline;
+    }
   }
 
   h1, h2, h3 {
