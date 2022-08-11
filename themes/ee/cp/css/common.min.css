@@ -17271,6 +17271,9 @@ fieldset .field-control #eye {
 .note-fieldtype .note-fieldtype__content {
   font-size: 90%;
 }
+.note-fieldtype .note-fieldtype__content em {
+  display: inline;
+}
 .note-fieldtype h1, .note-fieldtype h2, .note-fieldtype h3 {
   margin-top: 15px;
   margin-bottom: 10px;
