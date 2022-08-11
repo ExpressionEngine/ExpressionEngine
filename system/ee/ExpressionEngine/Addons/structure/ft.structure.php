@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Structure Fieldtype
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package             Structure
- * @author              Tom Jaeger (tom@eeharbor.com)
- * @copyright           Copyright (c) 2016 EEHarbor
- * @link                http://buildwithstructure.com
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'structure/addon.setup.php';
 require_once PATH_ADDONS . 'structure/sql.structure.php';
@@ -262,4 +262,3 @@ class Structure_ft extends \EE_Fieldtype
 // END Structure_ft class
 
 /* End of file ft.structure.php */
-/* Location: ./system/expressionengine/third_party/structure/ft.structure.php */

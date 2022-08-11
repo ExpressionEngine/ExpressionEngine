@@ -1,16 +1,16 @@
 <?php
 
-namespace EEHarbor\Structure\Conduit;
+namespace ExpressionEngine\Structure\Conduit;
 
 @include_once PATH_ADDONS . 'structure/Conduit/McpNav.php';
 
 /**
- * FluxNav class
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package         FluxNav
- * @author          Tom Jaeger <Tom@EEHarbor.com>
- * @link            https://eeharbor.com
- * @copyright       Copyright (c) 2018, Tom Jaeger/EEHarbor
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 abstract class FluxNav
 {

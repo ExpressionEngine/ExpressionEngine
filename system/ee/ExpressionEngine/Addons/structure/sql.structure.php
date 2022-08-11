@@ -3,18 +3,16 @@
 require_once PATH_ADDONS . 'structure/helper.php';
 require_once PATH_ADDONS . 'structure/addon.setup.php';
 
-use EEHarbor\Structure\Conduit\StaticCache;
-use EEHarbor\Structure\Conduit\PersistentCache;
+use ExpressionEngine\Structure\Conduit\StaticCache;
+use ExpressionEngine\Structure\Conduit\PersistentCache;
 
 /**
- * SQL Model for Structure
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
  *
- * This file must be in your /system/third_party/structure directory of your ExpressionEngine installation
- *
- * @package             Structure
- * @author              Tom Jaeger (tom@eeharbor.com)
- * @copyright           Copyright (c) 2016 EEHarbor
- * @link                http://buildwithstructure.com
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 class Sql_structure
 {
@@ -688,7 +686,7 @@ class Sql_structure
     public function get_slug($uri = false, $all = false)
     {
         if ($uri !== false) {
-            $segments = explode('/', trim($uri, '/'));
+            $segments = explode('/', trim((string) $uri, '/'));
             if ($all) {
                 return $segments;
             } else {

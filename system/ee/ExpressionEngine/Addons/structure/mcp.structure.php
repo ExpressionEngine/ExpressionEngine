@@ -5,21 +5,19 @@ if (! defined('BASEPATH')) {
 }
 
 /**
- * Control Panel (MCP) File for Structure
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
  *
- * This file must be in your /system/third_party/structure directory of your ExpressionEngine installation
- *
- * @package             Structure
- * @author              Tom Jaeger (tom@eeharbor.com)
- * @copyright           Copyright (c) 2016 EEHarbor
- * @link                http://buildwithstructure.com
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'structure/addon.setup.php';
 require_once PATH_ADDONS . 'structure/helper.php';
 require_once PATH_ADDONS . 'structure/sql.structure.php';
 require_once PATH_ADDONS . 'structure/mod.structure.php';
 
-use EEHarbor\Structure\Conduit\McpNav as AddonNav;
+use ExpressionEngine\Structure\Conduit\McpNav as AddonNav;
 
 class Structure_mcp
 {
@@ -1128,4 +1126,3 @@ class Structure_mcp
 /* END Class */
 
 /* End of file mcp.structure.php */
-/* Location: ./system/expressionengine/third_party/structure/mcp.structure.php */

@@ -5,9 +5,17 @@ require_once PATH_ADDONS . 'structure/sql.structure.php';
 require_once PATH_ADDONS . 'structure/mod.structure.php';
 require_once PATH_ADDONS . 'structure/helper.php';
 
-use EEHarbor\Structure\Conduit\StaticCache;
-use EEHarbor\Structure\Conduit\PersistentCache;
+use ExpressionEngine\Structure\Conduit\StaticCache;
+use ExpressionEngine\Structure\Conduit\PersistentCache;
 
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 class Structure_tab
 {
     public function __construct()
@@ -165,9 +173,12 @@ class Structure_tab
         if ($uri == '/') {
             $slug = '/';
         } else {
-            $slug = trim($uri, '/');
-            $slug = explode('/', $slug);
-            $slug = end($slug);
+            $slug = '';
+            if ($uri !== null) {
+                $slug = trim($uri, '/');
+                $slug = explode('/', $slug);
+                $slug = end($slug);
+            }
         }
 
         $help_text = $listing_parent ? "<p class='instruction_override'><strong>URL prefix</strong><style>#sub_hold_field_structure__uri .instruction_text p {display:none;} #sub_hold_field_structure__uri .instruction_text p.instruction_override {display:block;}</style>: " . $site_pages['uris'][$parent_id] . "</p>" : '';
@@ -350,7 +361,7 @@ class Structure_tab
             $node = $this->nset->getNode($entry_id);
             $parentNode = $this->nset->getNode($parent_id);
 
-            if ($parentNode && $parentNode['left'] > $node['left'] && $parentNode['right'] < $node['right'] && $entry_id != 0) {
+            if ($node !== false && $parentNode !== false && $parentNode['left'] > $node['left'] && $parentNode['right'] < $node['right'] && $entry_id != 0) {
                 return array('You can not nest a page below itself.' => 'parent_id');
             }
         }
@@ -745,4 +756,3 @@ class Structure_tab
 /* END Class */
 
 /* End of file tab.structure.php */
-/* Location: ./system/expressionengine/third_party/structure/tab.structure.php */

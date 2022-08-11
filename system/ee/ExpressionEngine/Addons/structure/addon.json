@@ -3,8 +3,8 @@
     "shortname": "structure",
     "version": "6.0.0",
     "description": "Create pages, generate navigation, manage content through a simple interface and build robust sites faster than ever.",
-    "license": "EEHarbor",
-    "namespace": "EEHarbor\\Structure",
+    "license": "ExpressionEngine",
+    "namespace": "ExpressionEngine\\Structure",
     "require": {
         "php": ">7.2",
         "expressionengine/core": "^7"

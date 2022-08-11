@@ -1,6 +1,6 @@
 <?php
 
-namespace EEHarbor\Structure\Conduit;
+namespace ExpressionEngine\Structure\Conduit;
 
 class StaticCache
 {

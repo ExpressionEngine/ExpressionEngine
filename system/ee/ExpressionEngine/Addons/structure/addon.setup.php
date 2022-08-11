@@ -11,9 +11,9 @@
         'version'           => $addonJson->version,
         'description'       => $addonJson->description,
         'namespace'         => $addonJson->namespace,
-        'author'            => 'EEHarbor',
-        'author_url'        => 'https://eeharbor.com/',
-        'docs_url'          => 'http://buildwithstructure.com/documentation',
+        'author'            => 'ExpressionEngine',
+        'author_url'        => 'https://expressionengine.com/',
+        'docs_url'          => 'https://docs.expressionengine.com/documentation',
         'settings_exist'    => true,
         'fieldtypes' => array(
             'structure' => array(

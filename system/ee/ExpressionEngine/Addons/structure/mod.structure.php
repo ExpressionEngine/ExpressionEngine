@@ -1,14 +1,12 @@
 <?php
 
 /**
- * Module File for Structure
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
  *
- * This file must be in your /system/third_party/structure directory of your ExpressionEngine installation
- *
- * @package             Structure
- * @author              Tom Jaeger (tom@eeharbor.com)
- * @copyright           Copyright (c) 2016 EEHarbor
- * @link                http://buildwithstructure.com
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'structure/sql.structure.php';
 require_once PATH_ADDONS . 'structure/addon.setup.php';
@@ -255,7 +253,7 @@ class Structure extends Channel
         /**  XML Sitemap Output
         /** --------------------------------*/
         if ($mode == "xml") {
-            $html .= '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset' . "\n\t" . 'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' . "\n\t" . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n\t" . 'xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . "\n" . '<!-- Created with Structure for ExpressionEngine (http://buildwithstructure.com) -->' . "\n";
+            $html .= '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset' . "\n\t" . 'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' . "\n\t" . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n\t" . 'xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . "\n" . '<!-- Created with Structure for ExpressionEngine (https://eeharbor.com/structure) -->' . "\n";
             foreach ($pages as $page) {
                 if (!empty($site_pages['uris'][$page['entry_id']])) {
                     $page_uri = $site_pages['uris'][$page['entry_id']];
@@ -2117,11 +2115,6 @@ class Structure extends Channel
         }
 
         $tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $variables);
-
-        if (strpos($tagdata, '{filedir_') !== false) {
-            ee()->load->library('file_field');
-            $tagdata = ee()->file_field->parse_string($tagdata);
-        }
 
         return $tagdata;
     }

@@ -1,8 +1,8 @@
 <?php
 
-namespace EEHarbor\Structure\Conduit;
+namespace ExpressionEngine\Structure\Conduit;
 
-use EEHarbor\Structure\Conduit\StaticCache;
+use ExpressionEngine\Structure\Conduit\StaticCache;
 
 // Based on CI DB caching function
 class PersistentCache

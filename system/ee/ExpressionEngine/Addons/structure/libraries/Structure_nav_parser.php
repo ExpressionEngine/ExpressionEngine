@@ -2,12 +2,13 @@
 
 /**
  * Library File for Structure Nav by Rob Sanchez
- * Included with permission
  *
- * @package             Structure Nav Parser
- * @author              Rob Sanchez (rsanchez)
- * @copyright           Copyright (c) 2016 EEHarbor
- * @link                https://github.com/rsanchez
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 class Structure_core_nav_parser
 {
@@ -228,6 +229,17 @@ class Structure_core_nav_parser
                     // echo 'CFN: ', $prefix.$field->field_name, '<br />', "\n";
                     $property = 'field_id_' . $field->getId();
                     $variable_row[$prefix . $field->field_name] = $channelEntry->$property;
+
+                    // Custom processing if the field is a file
+                    if ($field->field_type === 'file') {
+                        if (! isset(ee()->file_field)) {
+                            ee()->load->library('file_field');
+                        }
+
+                        // Parse the file URL
+                        $fileUrl = ee()->file_field->parse_string($channelEntry->$property);
+                        $variable_row[$prefix . $field->field_name] = $fileUrl;
+                    }
                 }
 
                 if (!empty($structure_data[$channelEntry->entry_id])) {
@@ -463,4 +475,3 @@ class Structure_core_nav_parser
 }
 
 /* End of file pi.structure_nav.php */
-/* Location: /system/expressionengine/third_party/structure_nav/pi.structure_nav.php */

@@ -1,7 +1,6 @@
 <?php
 
 use ExpressionEngine\Addons\Pro\Service\Prolet;
-use EEHarbor\Structure\FluxCapacitor\FluxCapacitor;
 
 class Structure_pro extends Prolet\AbstractProlet implements Prolet\ProletInterface
 {

@@ -9,7 +9,7 @@
 
 <?php if ($channel_check === true) : ?>
     <?php   if (! $are_page_channels) :?>
-        <?=ee('CP/Alert')->makeInline('structure_assign_channels')->asAttention()->withTitle(lang('ootb_message_channel_settings'))->addToBody('<a href="http://buildwithstructure.com/documentation/channel_settings/" target="_blank">' . lang('ootb_message_channel_settings_read') . ' &rarr;</a>')->render()?>
+        <?=ee('CP/Alert')->makeInline('structure_assign_channels')->asAttention()->withTitle(lang('ootb_message_channel_settings'))->addToBody('<a href="https://eeharbor.com/structure/documentation/channel_settings/" target="_blank">' . lang('ootb_message_channel_settings_read') . ' &rarr;</a>')->render()?>
     <?php   endif; ?>
     <?php   if ($page_count == 0 && $are_page_channels) : ?>
 
@@ -23,7 +23,7 @@
         <thead>
             <tr class="odd">
                 <th><?=lang('channel')?></th>
-                <th><?=lang('type')?> <a class="structure-help-link" href="http://buildwithstructure.com/documentation/page_types_whats_the_difference_between_a_page_listing_and_asset#types" target="_blank">What are types?</a></th>
+                <th><?=lang('type')?> <a class="structure-help-link" href="https://eeharbor.com/structure/documentation/page_types" target="_blank">What are types?</a></th>
                 <th><?=lang('settings_options')?></th>
             </tr>
         </thead>

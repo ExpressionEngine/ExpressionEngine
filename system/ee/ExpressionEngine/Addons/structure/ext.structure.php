@@ -1,14 +1,12 @@
 <?php
 
 /**
- * Extension for Structure
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
  *
- * This file must be in your /system/third_party/structure directory of your ExpressionEngine installation
- *
- * @package             Structure
- * @author              Tom Jaeger (tom@eeharbor.com)
- * @copyright           Copyright (c) 2016 EEHarbor
- * @link                http://buildwithstructure.com
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 use EllisLab\ExpressionEngine\Service\URL;
@@ -1122,7 +1120,7 @@ class Structure_ext
     {
         $settings = $this->sql->get_settings();
 
-        $url = array_key_exists($m[1], $this->site_pages['uris']) ? Structure_Helper::remove_double_slashes($this->site_pages['url'] . $this->site_pages['uris'][$m[1]]) : null;
+        $url = array_key_exists($m[1], $this->site_pages['uris']) ? Structure_Helper::remove_double_slashes($this->site_pages['url'] . $this->site_pages['uris'][$m[1]]) : '';
 
         // This is to fix an EE bug that is holding us back
         // TODO
