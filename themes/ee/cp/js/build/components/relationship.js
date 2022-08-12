@@ -437,7 +437,8 @@ function (_React$Component) {
         }
       }, "New Entry"), props.channels.length > 1 && React.createElement("div", null, React.createElement("button", {
         type: "button",
-        className: "js-dropdown-toggle button button--primary button--small"
+        className: "js-dropdown-toggle button button--primary button--small",
+        "data-dropdown-pos": "bottom-end"
       }, "New Entry ", React.createElement("i", {
         "class": "fas fa-caret-down icon-right"
       })), React.createElement("div", {
