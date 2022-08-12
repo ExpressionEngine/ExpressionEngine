@@ -111,6 +111,7 @@ context('Slider fields', () => {
 		it('Switch between slider types', () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Value Slider').click()
+			cy.wait(2000)
 			cy.get('[data-input-value=field_type] .select__button').click()
 			page.get('Type_Options').contains('Range Slider').click()
 			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');
@@ -130,6 +131,7 @@ context('Slider fields', () => {
 			//------------------------------------
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Range Slider').click()
+			cy.wait(2000)
 			cy.get('[data-input-value=field_type] .select__button').click()
 			page.get('Type_Options').contains('Value Slider').click()
 			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');

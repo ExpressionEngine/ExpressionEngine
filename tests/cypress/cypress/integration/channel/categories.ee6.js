@@ -55,6 +55,7 @@ context('Categories', () => {
 
         cy.get('.button').contains('Add Field').click();
         cy.get('.app-modal__content').should('be.visible');
+        cy.wait(2000)
         cy.get('[data-input-value=field_type] .select__button').click()
         cy.get('[data-input-value=field_type] .select__dropdown .select__dropdown-item').contains('Textarea').click()
         cy.get('input[name=field_label]').type('custom textarea').blur()
@@ -63,6 +64,7 @@ context('Categories', () => {
 
         cy.get('.button').contains('Add Field').click();
         cy.get('.app-modal__content').should('be.visible');
+        cy.wait(2000)
         cy.get('[data-input-value=field_type] .select__button').click()
         cy.get('[data-input-value=field_type] .select__dropdown .select__dropdown-item').contains('Select Dropdown').click()
         cy.get('input[name=field_label]').type('custom dropdown').blur()

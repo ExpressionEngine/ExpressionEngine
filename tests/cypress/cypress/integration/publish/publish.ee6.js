@@ -650,6 +650,7 @@ context('Publish Page - Create', () => {
       it('Grid with Buttons', () => {
         cy.authVisit('admin.php?/cp/fields/create/1')
         cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')
+        cy.wait(2000)
         cy.get('[data-input-value=field_type] .select__button').click()
         cy.get('[data-input-value=field_type] .select__dropdown-item:contains("Grid")').last().click()
         cy.get('input[type="text"][name = "field_label"]').type("Grid with Buttons")

@@ -39,6 +39,7 @@ class CreateField extends ControlPanel {
         cy.get('.filter-bar').should('exist')
     
         cy.visit('admin.php?/cp/fields/create')
+        cy.wait(2000)
         cy.get('[data-input-value=field_type] .select__button').click()
         this.get('Type_Options').contains(name).click()
         let title = 'AA ' + name + ' Test'

@@ -197,6 +197,7 @@ context('Option fields', () => {
 
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Selectable Buttons Test').click()
+		cy.wait(2000)
 		cy.get('[data-input-value=field_type] .select__button').click()
 		page.get('Type_Options').contains('Checkboxes').click()
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
@@ -207,6 +208,7 @@ context('Option fields', () => {
 
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Selectable Buttons Test').click()
+		cy.wait(2000)
 		cy.get('[data-input-value=field_type] .select__button').click()
 		page.get('Type_Options').contains('Multi Select').click()
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
