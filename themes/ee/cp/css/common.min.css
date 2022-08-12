@@ -17781,6 +17781,7 @@ fieldset .field-control #eye {
 .grid-field .table-responsive {
   box-shadow: none;
   border: 1px solid var(--ee-border);
+  overflow-x: visible;
 }
 
 .grid-field__table th {
@@ -17963,10 +17964,6 @@ fieldset .field-control #eye {
 .field-no-results .grid-field__column--tools a, .grid-field__column--tools .select-popup, .grid-field__column--tools select, .grid-field__column--tools .select__button, .grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field__column--tools a, .grid-field__column--tools .filter-bar__button, .grid-field__column--tools .license-status-badge {
     margin-bottom: 0;
   }
-}
-.live-preview__form-content .grid-field .table-responsive,
-.grid-field.overwidth .table-responsive {
-  overflow-x: hidden;
 }
 .live-preview__form-content .grid-field .grid-field__table,
 .grid-field.overwidth .grid-field__table {

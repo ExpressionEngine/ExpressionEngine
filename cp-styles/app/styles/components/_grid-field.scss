@@ -5,7 +5,7 @@
 	.table-responsive {
 		box-shadow: none;
 		border: 1px solid color(border);
-		// overflow-x: visible;
+		overflow-x: visible;
 	}
 }
 
@@ -312,9 +312,6 @@
 
 .live-preview__form-content .grid-field,
 .grid-field.overwidth {
-	.table-responsive {
-		overflow-x: hidden;
-	}
 
 	.grid-field__table {
 		display: flex;
