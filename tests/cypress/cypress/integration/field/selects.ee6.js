@@ -16,6 +16,7 @@ const group = new CreateGroup;
 context('Option fields', () => {
 
 	before(function(){
+		cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
 		cy.task('db:seed')
 
 		cy.auth()
@@ -54,6 +55,8 @@ context('Option fields', () => {
 
 		page.prepareForFieldTest('Checkboxes')
 
+		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='<h1> Hi </h1>{exp:channel:entries channel=\"AATestChannel\"}<h2> {title} </h2>{aa_checkboxes_test}{item}<br>{/aa_checkboxes_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaCheckboxes'");
+
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Checkboxes Test').click()
 		cy.get('div').contains('Value/Label Pairs').click()
@@ -73,8 +76,6 @@ context('Option fields', () => {
 		cy.get('[data-id="2"] > .checkbox-label > input').click()
 
 		cy.get('button').contains('Save').eq(0).click()
-
-		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='<h1> Hi </h1>{exp:channel:entries channel=\"AATestChannel\"}<h2> {title} </h2>{aa_checkboxes_test}{item}<br>{/aa_checkboxes_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaCheckboxes'");
 
 		cy.visit('index.php/aaCheckboxes')
 		cy.get('body').contains('1')
@@ -96,6 +97,8 @@ context('Option fields', () => {
 	it('Tests Select', () => {
 		
 		page.prepareForFieldTest('Select Dropdown')
+
+		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='<h1> Hi </h1>{exp:channel:entries channel=\"AATestChannel\"}<h2> {title} </h2>{aa_select_dropdown_test}{item}<br>{/aa_select_dropdown_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaSelectDropdown'");
 		
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Select').click()
@@ -117,8 +120,6 @@ context('Option fields', () => {
 		cy.get('.select__dropdown-item:visible').last().click()
 		cy.get('button').contains('Save').eq(0).click()
 
-		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='<h1> Hi </h1>{exp:channel:entries channel=\"AATestChannel\"}<h2> {title} </h2>{aa_select_dropdown_test}{item}<br>{/aa_select_dropdown_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaSelectDropdown'");
-
 		cy.visit('index.php/aaSelectDropdown')
 
 		cy.get('body').contains('2two')
@@ -126,7 +127,7 @@ context('Option fields', () => {
 
 
 	it('Test Buttons' , () => {
-		
+
 		page.prepareForFieldTest('Selectable Buttons')
 
 		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}<h2> {title} </h2>{aa_selectable_buttons_test}{item:value}<br>{/aa_selectable_buttons_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaSelectableButtons'");

@@ -16,6 +16,7 @@ const group = new CreateGroup;
 context('Slider fields', () => {
 
 	before(function(){
+		cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
 		cy.task('db:seed')
 
 		cy.auth()
@@ -59,6 +60,9 @@ context('Slider fields', () => {
 
 		it('Test Slider' , () => {
 			cy.visit('admin.php?/cp/fields')
+
+			cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}{aa_value_slider_test:prefix}{aa_value_slider_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaValueSlider'");
+
 			cy.get('div').contains('AA Value Slider').click()
 			cy.get('[name=field_min_value]:visible').clear().type('10');
 			cy.get('[name=field_max_value]:visible').clear().type('50');
@@ -74,14 +78,14 @@ context('Slider fields', () => {
 			cy.get('.range-slider').not('.flat').find('input[type=range]').eq(0).as('range').invoke('val').should('eq', '25')
 			cy.get('@range').invoke('val', 23).trigger('change')
 			cy.get('@range').invoke('val').should('eq', '25')
-
-			cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}{aa_value_slider_test:prefix}{aa_value_slider_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaValueSlider'");
 	
 			cy.visit('index.php/aaValueSlider')
 			cy.get('body').should('contain', '$25')
 		})
 	
 		it('Test Range Slider' , () => {
+			cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}{aa_value_slider_test:prefix}{aa_range_slider_test suffix=\"yes\"}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaRangeSlider'");
+
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Range Slider').click()
 			cy.get('[name=field_min_value]:visible').clear().type('10');
@@ -100,8 +104,6 @@ context('Slider fields', () => {
 			cy.get('.range-slider.flat').find('input[type=range]').eq(1).as('range2').invoke('val').should('eq', '35')
 			cy.get('@range1').invoke('val', 23).trigger('change', {force: true})
 			cy.get('@range1').invoke('val').should('eq', '25')
-
-			cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}{aa_value_slider_test:prefix}{aa_range_slider_test suffix=\"yes\"}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaRangeSlider'");
 
 			cy.visit('index.php/aaRangeSlider')
 			cy.get('body').should('contain', '25% — 35%')

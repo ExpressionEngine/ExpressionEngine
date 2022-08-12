@@ -16,6 +16,7 @@ const group = new CreateGroup;
 context('Input fields', () => {
 
 	before(function(){
+		cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
 		cy.task('db:seed')
 
 		cy.auth()
@@ -54,14 +55,14 @@ context('Input fields', () => {
 	it('Tests Date', () => {
 		
 		page.prepareForFieldTest('Date')
+
+		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}<h1> how the Americans write it </h1> {aa_date_test format=\"%F %d %Y\"}<h1> how the Brits write it </h1> {aa_date_test format=\"%d %F %Y\"}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaDate'")
 		
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('input[data-date-format= "%n/%j/%Y %g:%i %A"]').eq(0).type('6/17/2020 12:33 PM')
 
 		cy.get('button').contains('Save').eq(0).click()
-
-		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}<h1> how the Americans write it </h1> {aa_date_test format=\"%F %d %Y\"}<h1> how the Brits write it </h1> {aa_date_test format=\"%d %F %Y\"}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaDate'");
 
 		cy.visit('index.php/aaDate')
 		cy.get('body').contains('June 17 2020')
@@ -71,14 +72,14 @@ context('Input fields', () => {
 	it('Tests Duration', () => {
 		
 		page.prepareForFieldTest('Duration')
+
+		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}<h1> {title} </h1> <br>Lap 1: {aa_duration_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaDuration'");
 		
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('input[placeholder="Duration in Minutes (or hh:mm)"]').type('1:13')
 
 		cy.get('button').contains('Save').eq(0).click()
-
-		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}<h1> {title} </h1> <br>Lap 1: {aa_duration_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaDuration'");
 
 		cy.visit('index.php/aaDuration')
 		cy.get('body').contains('Lap 1: 1:13:00')
@@ -87,6 +88,8 @@ context('Input fields', () => {
 	it('Tests Email Address', () =>{
 		
 		page.prepareForFieldTest('Email Address')
+
+		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}This is xqcs email: {aa_email_address_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaEmailAddress'");
 		
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
@@ -94,8 +97,6 @@ context('Input fields', () => {
 		cy.get('input[placeholder="username@example.com"]').type('xqc@gmail.com')
 
 		cy.get('button').contains('Save').eq(0).click()
-
-		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}This is xqcs email: {aa_email_address_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaEmailAddress'");
 
 		 cy.visit('index.php/aaEmailAddress')
 
@@ -131,6 +132,8 @@ context('Input fields', () => {
 	it('Tests Select', () => {
 		
 		page.prepareForFieldTest('Select Dropdown')
+
+		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='<h1> Hi </h1>{exp:channel:entries channel=\"AATestChannel\"}<h2> {title} </h2>{aa_select_dropdown_test}{item}<br>{/aa_select_dropdown_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaSelectDropdown'");
 		
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Select').click()
@@ -152,8 +155,6 @@ context('Input fields', () => {
 		cy.get('.select__dropdown-item:visible').last().click()
 		cy.get('button').contains('Save').eq(0).click()
 
-		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='<h1> Hi </h1>{exp:channel:entries channel=\"AATestChannel\"}<h2> {title} </h2>{aa_select_dropdown_test}{item}<br>{/aa_select_dropdown_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaSelectDropdown'");
-
 		cy.visit('index.php/aaSelectDropdown')
 
 		cy.get('body').contains('2two')
@@ -162,14 +163,14 @@ context('Input fields', () => {
 	it('Tests Textarea', () => {
 		
 		page.prepareForFieldTest('Textarea')
+
+		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='<h1> Hi </h1>{exp:channel:entries channel=\"AATestChannel\"}<h2> {title} </h2>{aa_textarea_test} {/exp:channel:entries}' WHERE template_name='index' AND group_name='aaTextarea'");
 		
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 
 		cy.get('.field-control > textarea').filter(':visible').first().type('Hello There')
 		cy.get('button').contains('Save').eq(0).click()
-
-		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='<h1> Hi </h1>{exp:channel:entries channel=\"AATestChannel\"}<h2> {title} </h2>{aa_textarea_test} {/exp:channel:entries}' WHERE template_name='index' AND group_name='aaTextarea'");
 
 		cy.visit('index.php/aaTextarea')
 
@@ -182,6 +183,8 @@ context('Input fields', () => {
 	it('Test URL' , () => {
 		
 		page.prepareForFieldTest('URL')
+
+		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}<a href=\"{aa_url_test}\">Visit us</a>{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaURL'");
 		
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
@@ -199,8 +202,6 @@ context('Input fields', () => {
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		page.get('alert_error').should('not.exist')
 
-		cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}<a href=\"{aa_url_test}\">Visit us</a>{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaURL'");
-
 		cy.visit('index.php/aaURL')
 		cy.get('a').contains('Visit us').invoke('attr', 'href').should('eq', 'https://expressionengine.com')
 	})
@@ -209,6 +210,8 @@ context('Input fields', () => {
 
 		before(function() {
 			page.prepareForFieldTest('Number')
+
+			cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}{aa_number_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaNumber'");
 		})
 
 		it('edit number input', () => {
@@ -261,8 +264,6 @@ context('Input fields', () => {
 			cy.get('input[type=number]').clear().type('-4').blur()
 			cy.wait('@validation')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-
-			cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}{aa_number_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaNumber'");
 
 			cy.visit('index.php/aaNumber')
 			cy.get('body').contains('-4')
