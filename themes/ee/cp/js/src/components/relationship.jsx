@@ -346,7 +346,7 @@ class Relationship extends React.Component {
                                     }
                                     {props.channels.length > 1 &&
                                     <div>
-                                    <button type="button" className="js-dropdown-toggle button button--primary button--small">New Entry <i class="fas fa-caret-down icon-right"></i></button>
+                                    <button type="button" className="js-dropdown-toggle button button--primary button--small" data-dropdown-pos="bottom-end">New Entry <i class="fas fa-caret-down icon-right"></i></button>
                                     <div className="dropdown">
                                         {props.channels.map((channel) => {
                                             return (
