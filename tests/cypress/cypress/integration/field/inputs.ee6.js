@@ -16,10 +16,11 @@ const group = new CreateGroup;
 context('Input fields', () => {
 
 	before(function(){
-		cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
+		
 		cy.task('db:seed')
 
 		cy.auth()
+		cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
 
 		cy.log('verifies fields page exists')
 		cy.visit('admin.php?/cp/fields')

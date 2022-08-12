@@ -16,10 +16,11 @@ const group = new CreateGroup;
 context('Slider fields', () => {
 
 	before(function(){
-		cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
+		
 		cy.task('db:seed')
 
 		cy.auth()
+		cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
 
 		cy.log('verifies fields page exists')
 		cy.visit('admin.php?/cp/fields')
@@ -64,6 +65,7 @@ context('Slider fields', () => {
 			cy.task('db:query', "UPDATE exp_templates LEFT JOIN exp_template_groups ON exp_templates.group_id=exp_template_groups.group_id SET template_data='{exp:channel:entries channel=\"AATestChannel\"}{aa_value_slider_test:prefix}{aa_value_slider_test}{/exp:channel:entries}' WHERE template_name='index' AND group_name='aaValueSlider'");
 
 			cy.get('div').contains('AA Value Slider').click()
+			cy.wait(1000)
 			cy.get('[name=field_min_value]:visible').clear().type('10');
 			cy.get('[name=field_max_value]:visible').clear().type('50');
 			cy.get('[name=field_step]:visible').clear().type('5');
@@ -88,6 +90,7 @@ context('Slider fields', () => {
 
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Range Slider').click()
+			cy.wait(1000)
 			cy.get('[name=field_min_value]:visible').clear().type('10');
 			cy.get('[name=field_max_value]:visible').clear().type('50');
 			cy.get('[name=field_step]:visible').clear().type('5');
@@ -116,6 +119,7 @@ context('Slider fields', () => {
 			cy.wait(2000)
 			cy.get('[data-input-value=field_type] .select__button').click()
 			page.get('Type_Options').contains('Range Slider').click()
+			cy.wait(1000)
 			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');
 			cy.get('[name=field_max_value]:visible').invoke('val').should('eq', '50');
 			cy.get('[name=field_step]:visible').invoke('val').should('eq', '5');
@@ -136,6 +140,7 @@ context('Slider fields', () => {
 			cy.wait(2000)
 			cy.get('[data-input-value=field_type] .select__button').click()
 			page.get('Type_Options').contains('Value Slider').click()
+			cy.wait(1000)
 			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');
 			cy.get('[name=field_max_value]:visible').invoke('val').should('eq', '50');
 			cy.get('[name=field_step]:visible').invoke('val').should('eq', '5');
