@@ -31,6 +31,34 @@ class CreateField extends ControlPanel {
                 "GridRequired" : 'button[data-toggle-for = "grid[cols][new_0][col_required]"]'
             })
         }
-       
+    
+    prepareForFieldTest(name) {
+        cy.authVisit('admin.php?/cp/fields')
+        cy.get('.main-nav__title > h1').contains('Field')
+        cy.get('.main-nav__toolbar > .button').contains('New Field')
+        cy.get('.filter-bar').should('exist')
+    
+        cy.visit('admin.php?/cp/fields/create')
+        cy.get('[data-input-value=field_type] .select__button').click()
+        this.get('Type_Options').contains(name).click()
+        let title = 'AA ' + name + ' Test'
+        this.get('Name').type(title)
+    
+        cy.hasNoErrors()
+        this.get('Save').eq(0).click()
+        cy.get('p').contains('has been created')
+    
+        cy.visit('admin.php?/cp/design/group/create')
+        cy.get('input[name="group_name"]').eq(0).type('aa' + name.replace(' ', ''))
+        cy.get('[value="Save Template Group"]').eq(0).click()
+        cy.get('p').contains('has been created')
+    
+        cy.log('Creates a Channel to work in')
+        cy.visit('admin.php?/cp/channels')
+        cy.get('.list-item__content:contains(AATestChannel)').first().click()
+        cy.get('button').contains('Fields').click()
+        cy.get('div').contains('AA ' + name + ' Test').click()
+        cy.get('button').contains('Save').eq(0).click()
+    }
 }
 export default CreateField;
