@@ -31441,6 +31441,7 @@ fieldset .field-control #eye {
 .grid-field .table-responsive {
   box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
   border: 1px solid var(--ee-border);
+  overflow-x: visible;
 }
 
 .grid-field__table th {
@@ -31807,10 +31808,6 @@ fieldset .field-control #eye {
   .entry-grid td.grid-field__column--tools, .vertical-layout td.grid-field__column--tools {
     display: none !important;
   }
-}
-.live-preview__form-content .grid-field .table-responsive,
-.grid-field.overwidth .table-responsive {
-  overflow-x: hidden;
 }
 .live-preview__form-content .grid-field .grid-field__table,
 .grid-field.overwidth .grid-field__table {
