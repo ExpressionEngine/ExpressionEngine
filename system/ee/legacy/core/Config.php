@@ -508,7 +508,7 @@ class EE_Config
      *
      * @access	public
      * @param	string	Name of the site
-     * @return	string
+     * @return	array
      */
     public function divination($which)
     {
@@ -617,6 +617,7 @@ class EE_Config
             'enable_frontedit',
             'automatic_frontedit_links',
             'enable_mfa',
+            'anonymize_consent_logs',
         );
 
         $member_default = array(
@@ -1682,8 +1683,8 @@ class EE_Config
      * Secondary lines of text used in configuration pages
      * This text appears below any given preference definition
      *
-     * @access	public
-     * @return	string[]	The secondary lines of text used in configuration pages
+     * @access public
+     * @return array The secondary lines of text used in configuration pages
      */
     public function get_config_field_subtext()
     {
