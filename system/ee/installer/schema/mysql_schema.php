@@ -548,6 +548,7 @@ class EE_Schema
 			preview_url varchar(100) NULL DEFAULT NULL,
 			allow_preview char(1) NOT NULL default 'y',
 			max_entries int(10) unsigned NOT NULL DEFAULT '0',
+			conditional_sync_required char(1) NOT NULL default 'n',
 			PRIMARY KEY `channel_id` (`channel_id`),
 			KEY `cat_group` (`cat_group`(191)),
 			KEY `channel_name` (`channel_name`),

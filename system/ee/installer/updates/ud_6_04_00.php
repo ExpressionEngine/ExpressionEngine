@@ -23,9 +23,41 @@ class Updater
      *
      * @return TRUE
      */
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
     public function do_update()
     {
+        $steps = new \ProgressIterator(
+            [
+                'addConditionalFieldRequiredSyncFlag',
+            ]
+        );
+
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+
         return true;
+    }
+
+
+    private function addConditionalFieldRequiredSyncFlag()
+    {
+        if (!ee()->db->field_exists('conditional_sync_required', 'channels')) {
+            ee()->smartforge->add_column(
+                'channels',
+                array(
+                    'conditional_sync_required' => array(
+                        'type' => 'CHAR(1)',
+                        'null' => false,
+                        'default' => 'n'
+                    )
+                )
+            );
+        }
     }
 }
 
