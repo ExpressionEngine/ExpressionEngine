@@ -303,7 +303,7 @@ class CI_DB_active_record extends CI_DB_driver
         $this->_track_aliases($table);
 
         // Strip apart the condition and protect the identifiers
-        if (is_empty($alias) && preg_match('/([\w\.]+)([\W\s]+)(.+)/', $cond, $match)) {
+        if (empty($alias) && preg_match('/([\w\.]+)([\W\s]+)(.+)/', $cond, $match)) {
             $match[1] = $this->_protect_identifiers($match[1]);
             $match[3] = $this->_protect_identifiers($match[3]);
 
@@ -312,7 +312,7 @@ class CI_DB_active_record extends CI_DB_driver
 
         // If a join alias specified, extract it now
         $join_alias = '';
-        if (! is_empty($alias)) {
+        if (! empty($alias)) {
             $join_alias = ' ' . $alias . ' ';
         }
 
