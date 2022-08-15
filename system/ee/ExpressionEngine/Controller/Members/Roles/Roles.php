@@ -326,6 +326,7 @@ class Roles extends AbstractRolesController
 
         if (! empty($_POST)) {
             $role = $this->setWithPost($role);
+            $role->total_members = null; //force recalculation
             $result = $role->validate();
 
             if ($response = $this->ajaxValidation($result)) {

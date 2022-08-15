@@ -718,7 +718,7 @@ class Updater
     }
 
     /**
-     * New "Fluid Field" Field Type in 4.0.0
+     * New "Fluid Field" fieldtype in 4.0.0
      */
     private function addFluidFieldField()
     {
@@ -832,7 +832,7 @@ class Updater
     }
 
     /**
-     * New "Duration" Field Type
+     * New "Duration" fieldtype
      */
     private function addDurationField()
     {

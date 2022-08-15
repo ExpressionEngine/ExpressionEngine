@@ -398,7 +398,7 @@ class AddonGenerator
         $name = $this->alphaFilter($this->studly($data['name']));
         $author = $this->alphaFilter($this->studly($data['author']));
 
-        // Namespace should be the Addon name
+        // Namespace should be the Add-on name
         $namespace = $name;
 
         // If there is an author, the Author name should preface the namespace

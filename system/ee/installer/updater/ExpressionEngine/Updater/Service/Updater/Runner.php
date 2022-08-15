@@ -159,6 +159,9 @@ class Runner
             }
         }
 
+        // reset the flag for dismissed banner for members
+        ee('db')->update('members', ['dismissed_banner' => 'n']);
+
         ee('Filesystem')->deleteDir(SYSPATH . 'ee/installer');
 
         $this->setNextStep('selfDestruct');
@@ -283,7 +286,7 @@ class Runner
     }
 
     /**
-     * runs addon updates if they have them
+     * runs add-on updates if they have them
      * @return void
      */
     public function updateAddons()

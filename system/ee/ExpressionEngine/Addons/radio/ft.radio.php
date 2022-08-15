@@ -36,7 +36,7 @@ class Radio_ft extends OptionFieldtype
     );
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */

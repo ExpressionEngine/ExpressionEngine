@@ -930,7 +930,7 @@ $lang = array(
 
     'm_max_length' => 'Maxlength',
 
-    'max_length_cont' => 'For text field types',
+    'max_length_cont' => 'For text fieldtypes',
 
     'member_data_will_be_deleted' => 'All member data contained in this field will be permanently deleted',
 
@@ -998,7 +998,7 @@ $lang = array(
 
     'text_area_rows' => 'Textarea Rows',
 
-    'text_area_rows_cont' => 'For textarea field types',
+    'text_area_rows_cont' => 'For textarea fieldtypes',
 
     'to' => 'To',
 

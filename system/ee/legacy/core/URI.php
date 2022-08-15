@@ -295,7 +295,7 @@ class EE_URI
      */
     public function reformat($old, $base = null)
     {
-        $new = str_replace(AMP, '&', $old);
+        $new = str_replace(AMP, '&', (string) $old);
 
         // cp use only
         if (REQ != 'CP') {

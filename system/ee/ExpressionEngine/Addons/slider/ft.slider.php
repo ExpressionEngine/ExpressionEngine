@@ -25,7 +25,7 @@ class Slider_ft extends Text_ft
     public $settings_form_field_name = 'slider';
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */

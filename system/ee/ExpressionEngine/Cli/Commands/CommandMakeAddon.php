@@ -21,7 +21,7 @@ class CommandMakeAddon extends Cli
      * name of command
      * @var string
      */
-    public $name = 'Addon Generator';
+    public $name = 'Add-on Generator';
 
     /**
      * signature of command
@@ -33,24 +33,24 @@ class CommandMakeAddon extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php make:addon "My Awesome Addon" --extension --hooks=category_save,after_category_field_update';
+    public $usage = 'php eecli.php make:addon "My Awesome Add-on" --extension --hooks=category_save,after_category_field_update';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        // Addon types
+        // Add-on types
         'extension,ext'   => 'command_make_addon_option_extension',
         'plugin,pi'       => 'command_make_addon_option_plugin',
         'fieldtype,ft'    => 'command_make_addon_option_fieldtype',
         'module,mod'      => 'command_make_addon_option_module',
 
-        // Addon setup toggles
+        // Add-on setup toggles
         'typography,t'    => 'command_make_addon_option_typography',
         'has-settings,e:' => 'command_make_addon_option_has',
 
-        // Addon values
+        // Add-on values
         'version,v:'      => 'command_make_addon_option_version',
         'description,d:'  => 'command_make_addon_option_description',
         'author,a:'       => 'command_make_addon_option_author',

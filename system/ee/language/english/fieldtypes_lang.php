@@ -135,7 +135,7 @@ $lang = array(
 
     'file_ft_limit_desc' => 'Maximum number of files to show in the drop down.<br><i>Leave blank to show all files.</i>',
 
-    'file_ft_no_upload_directories' => 'There are currently no upload directories available. Please <a href="%s">add one or more upload directories</a> to use the File field type.',
+    'file_ft_no_upload_directories' => 'There are currently no upload directories available. Please <a href="%s">add one or more upload directories</a> to use the File fieldtype.',
 
     'file_ft_select_existing' => 'Select an existing file',
 
@@ -191,6 +191,10 @@ $lang = array(
     'grid_add_some_data' => 'You have not added any rows of data yet. <a href="#" class="grid_link_add">Add some data?</a>',
 
     'grid_allow_reorder' => 'Allow reordering of rows?',
+
+    'grid_vertical_layout' => 'Always use a vertical grid layout?',
+
+    'grid_vertical_layout_desc' => 'The fields within the grid will be stacked vertically on the publish form.',
 
     'grid_chars_allowed' => 'Characters allowed.',
 
@@ -272,6 +276,8 @@ $lang = array(
     'url_ft_invalid_url_scheme' => 'Your URL must begin with a valid scheme: %s',
 
     'url_ft_protocol_relative_url' => 'Protocol Relative URL',
+
+    'url_ft_single_slash_protocol_relative_url' => 'Root Relative URL',
 
     'url_ft_url_scheme_placeholder' => 'URL Scheme Placeholder',
 

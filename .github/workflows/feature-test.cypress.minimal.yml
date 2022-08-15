@@ -3,7 +3,7 @@ name: Minimal feature Cypress tests
 on:
   push:
     branches:
-      - NO_TEST
+      - bug/6.x/6-3-5-updater
 
 jobs:
     cypress-tests:
@@ -12,7 +12,7 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                php: [7.4]
+                php: [7.1]
                 os: [ubuntu-18.04]
 
         name: PHP${{ matrix.php }} - ${{ matrix.os }}
@@ -21,21 +21,6 @@ jobs:
 
             - name: Checkout code
               uses: actions/checkout@v2
-
-            - name: Checkout Pro
-              uses: actions/checkout@v2
-              with:
-                repository: EllisLab/ExpressionEngine-Pro
-                token: ${{ secrets.ORG_ACCESS_TOKEN }}
-                path: __pro
-
-            - name: Move Pro into core
-              run: |
-                mv __pro/system/ee/ExpressionEngine/Addons/pro system/ee/ExpressionEngine/Addons/pro
-                mv __pro/themes/ee/pro themes/ee/pro
-                mv __pro/tests/cypress/cypress/integration/pro tests/cypress/cypress/integration/pro
-                mv __pro/tests/cypress/support/templates/* tests/cypress/support/templates/
-                rm -rf __pro
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -77,7 +62,6 @@ jobs:
             - name: Directory Listing
               run: |
                 ls -lar tests/cypress/support/templates/
-                ls -lar tests/cypress/support/templates/pro.group/
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2

@@ -50,15 +50,40 @@ class Query
             $results = array_slice($results, $pagination->offset, $pagination->per_page);
         }
 
-        $str = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, array_values($results));
+        $parsed = '';
 
-        if (ee()->TMPL->fetch_param('parse_files') === 'yes' && strpos($str, '{filedir_') !== false) {
-            ee()->load->library('file_field');
-            $str = ee()->file_field->parse_string($str);
+        if (get_bool_from_string(ee()->TMPL->fetch_param('parse_bases', config_item('parse_variables_query_results_by_default')))) {
+            $count = 0;
+
+            foreach ($results as $row) {
+                $row['count'] = ++$count;
+                $row['total_results'] = $query->num_rows;
+
+                $chunk = ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $row);
+
+                $chunk = ee()->TMPL->parse_switch($chunk, $count - 1);
+
+                if (strpos($chunk, LD . 'base_') !== false) {
+                    $chunk = isset($row['site_id'])
+                        ? parse_config_variables(
+                            $chunk,
+                            ee()->config->get_cached_site_prefs($row['site_id'])
+                        )
+                        : parse_config_variables($chunk);
+                }
+                $parsed .= $chunk;
+            }
+        } else {
+            $parsed = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $results);
         }
 
-        $this->return_data = $str;
-        
+        if (get_bool_from_string(ee()->TMPL->fetch_param('parse_files', config_item('parse_variables_query_results_by_default'))) && strpos($parsed, LD . 'filedir_') !== false) {
+            ee()->load->library('file_field');
+            $parsed = ee()->file_field->parse_string($parsed);
+        }
+
+        $this->return_data = $parsed;
+
         if ($pagination->paginate === true) {
             $this->return_data = $pagination->render($this->return_data);
         }

@@ -71,7 +71,7 @@ class Member_field_model extends CI_Model
         }
         // Edit existing field
         else {
-            // Alter column if field type changed
+            // Alter column if fieldtype changed
             $previous_data = $this->get_field_information($data['m_field_id']);
             if ($previous_data['m_field_type'] !== $data['m_field_type']) {
                 ee()->dbforge->modify_column(
@@ -93,7 +93,7 @@ class Member_field_model extends CI_Model
     /**
      * Creates a field settings array to pass to db forge add/modify_column
      * @param  Integer	$id		ID of the field
-     * @param  String	$type	Field type ('textarea', 'text')
+     * @param  String	$type	fieldtype ('textarea', 'text')
      * @param  Integer	$maxl	Length/constraint of the field
      * @param  Bool 	$new	Indicates new vs. modification
      * @return Array			Array to pass back to dbforge

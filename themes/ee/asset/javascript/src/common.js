@@ -8,7 +8,6 @@
  */
 
 $(document).ready(function(){
-
 	// the code is responsible for preventing the page scrolling when press on 
 	// the dropdown list using the spacebar (code 32)
 	window.addEventListener('keydown', (e) => {
@@ -539,12 +538,15 @@ $(document).ready(function(){
 					if (data.newVersionMarkup) {
 						if (data.isVitalUpdate) {
 							$('.app-about__status--update-vital').removeClass('hidden');
+							document.getElementsByClassName('app-about__status--update-vital')[0].scrollIntoView();
 							$('.app-about__status--update-vital .app-about__status-version').html(data.newVersionMarkup);
 						} else if (data.isMajorUpdate) {
 							$('.app-about__status--update-major').removeClass('hidden');
+							document.getElementsByClassName('app-about__status--update-major')[0].scrollIntoView();
 							$('.app-about__status--update-major .app-about__status-version').html(data.newVersionMarkup);
 						} else {
 							$('.app-about__status--update').removeClass('hidden');
+							document.getElementsByClassName('app-about__status--update')[0].scrollIntoView();
 							$('.app-about__status--update .app-about__status-version').html(data.newVersionMarkup);
 						}
 					} else {
@@ -1147,4 +1149,24 @@ $(document).ready(function(){
 	        	$(this).attr('data-max', maxValue);
         	});
         }
+
+    // check and remove unused for desktop screen size grid column
+    function checkScreenSize() {
+    	if (window.innerWidth > 767) {
+    		$('.grid-field').each(function() {
+    			var gridTable = $(this);
+    			if(gridTable.hasClass('entry-grid')) {
+    				var entryGrid = $(this);
+    				var deleteElement = entryGrid.find('.grid-field__item-fieldset');
+
+    				deleteElement.each(function(el) {
+    					$(this).remove();
+    				})
+    			}
+    		})
+    		
+    	}
+    }
+
+    checkScreenSize();
 }); // close (document).ready

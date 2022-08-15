@@ -59,7 +59,7 @@ class HTMLButton extends Model
 
     public function prepForJSON()
     {
-        if (strpos($this->classname, 'markItUpSeparator') !== false) {
+        if (! empty($this->classname) && strpos($this->classname, 'markItUpSeparator') !== false) {
             // separators are purely presentational
             $button_js = array('separator' => '---');
         } else {

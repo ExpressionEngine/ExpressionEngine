@@ -295,7 +295,7 @@ class Validator
      */
     protected function parseRuleString($string)
     {
-        if (preg_match("/(.*?)\[(.*?)\]/", $string, $match)) {
+        if (preg_match("/(.*?)\[(.*?)\]$/", $string, $match)) {
             $rule_name = $match[1];
             $parameters = $match[2];
 

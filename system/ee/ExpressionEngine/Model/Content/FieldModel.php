@@ -90,7 +90,7 @@ abstract class FieldModel extends Model
 
     public function set(array $data = array())
     {
-        // getField() requires that we have a field type, but we might be trying
+        // getField() requires that we have a fieldtype, but we might be trying
         // to set it! So, if we are, we'll do that first.
         if (isset($data['field_type'])) {
             $this->setProperty('field_type', $data['field_type']);
@@ -228,11 +228,11 @@ abstract class FieldModel extends Model
     }
 
     /**
-     * Simple getter for field type, override if your field type property has a
+     * Simple getter for fieldtype, override if your fieldtype property has a
      * different name.
      *
      * @access protected
-     * @return string The field type.
+     * @return string The fieldtype.
      */
     protected function getFieldType()
     {

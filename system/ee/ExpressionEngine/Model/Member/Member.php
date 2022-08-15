@@ -309,7 +309,7 @@ class Member extends ContentModel
     protected $cp_homepage;
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
-    protected $dismissed_pro_banner;
+    protected $dismissed_banner;
     protected $enable_mfa;
 
     protected $_cpHomepageUrl;
@@ -433,20 +433,14 @@ class Member extends ContentModel
         ee()->cache->file->delete('jumpmenu/' . md5($this->member_id));
     }
 
-    public function onAfterInsert()
-    {
-        parent::onAfterInsert();
-        if (! bool_config_item('ignore_member_stats')) {
-            foreach ($this->getAllRoles() as $role) {
-                $role->total_members = null;
-                $role->save();
-            }
-        }
-    }
-
     public function onAfterDelete()
     {
-        if (! bool_config_item('ignore_member_stats')) {
+        $this->updateRoleTotalMembers();
+    }
+
+    public function updateRoleTotalMembers()
+    {
+        if (!bool_config_item('ignore_member_stats')) {
             foreach ($this->getAllRoles() as $role) {
                 $role->total_members = null;
                 $role->save();

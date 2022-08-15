@@ -9,7 +9,7 @@
  */
 
 /**
- * Core Addon Installer
+ * Core Add-on Installer
  */
 class Addons_installer
 {
@@ -26,7 +26,7 @@ class Addons_installer
     }
 
     /**
-     * Addon Installer
+     * Add-on Installer
      *
      * @access	public
      * @param	string
@@ -40,7 +40,7 @@ class Addons_installer
     }
 
     /**
-     * Addon Uninstaller
+     * Add-on Uninstaller
      *
      * Install one or more components
      *
@@ -264,7 +264,7 @@ class Addons_installer
     }
 
     /**
-     * Universal Addon (Un)Installer
+     * Universal Add-on (Un)Installer
      *
      * @access	private
      * @param	string

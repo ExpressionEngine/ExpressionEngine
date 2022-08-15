@@ -346,7 +346,7 @@ class EE_Schema
 			cp_homepage varchar(20) NULL DEFAULT NULL,
 			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
-			dismissed_pro_banner char(1) NOT NULL DEFAULT 'n',
+			dismissed_banner char(1) NOT NULL DEFAULT 'n',
 			enable_mfa char(1) NOT NULL default 'n',
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `role_id` (`role_id`),
@@ -1767,7 +1767,7 @@ class EE_Schema
 				values (1, '0', '" . $predefined_buttons[$button]['tag_name'] . "', '" . $predefined_buttons[$button]['tag_open'] . "', '" . $predefined_buttons[$button]['tag_close'] . "', '" . $predefined_buttons[$button]['accesskey'] . "', '" . $buttoncount++ . "', '1', '" . $predefined_buttons[$button]['classname'] . "')";
         }
 
-        // Default field types
+        // Default fieldtypes
         $default_fts = array('select', 'text', 'number', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'slider', 'range_slider', 'toggle', 'url', 'colorpicker', 'selectable_buttons', 'notes');
 
         foreach ($default_fts as $name) {

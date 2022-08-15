@@ -34,7 +34,7 @@ class Duration_Ft extends EE_Fieldtype
     public $size = 'small';
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */

@@ -725,7 +725,12 @@ class EE_Upload
             return false;
         }
 
-        return ee('Security/XSS')->clean($data, true);
+        $checkAsImage = true;
+        if (strpos($this->file_type, 'image/svg') === 0) {
+            $checkAsImage = false;
+        }
+
+        return ee('Security/XSS')->clean($data, $checkAsImage);
     }
 
     public function do_embedded_php_check()

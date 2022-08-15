@@ -26,7 +26,7 @@ class Selectable_buttons_ft extends Multi_select_ft
     public $entry_manager_compatible = true;
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */

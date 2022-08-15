@@ -30,7 +30,7 @@ class EE_Addons
     }
 
     /**
-     * Addon File Handler
+     * Add-on File Handler
      *
      * @access	private
      * @param	string

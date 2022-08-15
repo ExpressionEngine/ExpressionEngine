@@ -203,6 +203,8 @@ case 'slider':
         'step' => isset($field['step']) ? $field['step'] : 1,
         'name' => $field_name,
         'value' => $value,
+        'suffix' => isset($field['suffix']) ? $field['suffix'] : '',
+        'prefix' => isset($field['prefix']) ? $field['prefix'] : '',
     ]); 
 break;
 

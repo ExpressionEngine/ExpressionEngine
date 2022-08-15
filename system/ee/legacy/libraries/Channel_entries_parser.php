@@ -44,7 +44,7 @@ class EE_Channel_entries_parser
      * Register a channel parser component
      *
      * These are for tags within the channel module. If you're a third
-     * party reading this, think twice! You probably want a field type.
+     * party reading this, think twice! You probably want a fieldtype.
      * If you're really sure, please make your tag names obvious!
      *
      * @param type    - single|pair depending on whether or not this is a tag

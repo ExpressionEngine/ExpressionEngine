@@ -41,7 +41,7 @@ class Api_channel_categories extends Api
      * of categories.  There are two versions of the tree. The
      * "text" version is a list of links allowing the categories
      * to be edited.  The "form" version is displayed in a
-     * multi-select form on the new entry page.
+     * multi select form on the new entry page.
      *
      * @param 	mixed		int or array of category group ids
      * @param

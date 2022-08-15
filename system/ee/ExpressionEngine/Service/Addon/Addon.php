@@ -13,7 +13,7 @@ namespace ExpressionEngine\Service\Addon;
 use ExpressionEngine\Core\Provider;
 
 /**
- * Addon Service
+ * Add-on Service
  */
 class Addon
 {
@@ -51,7 +51,7 @@ class Addon
     }
 
     /**
-     * Is this addon installed?
+     * Is this add-on installed?
      *
      * @return bool Is installed?
      */
@@ -114,7 +114,7 @@ class Addon
 
             // Check for an installed plugin
             // @TODO restore the model approach once we have solved the
-            // circular dependency between the Addon service and the
+            // circular dependency between the Add-on service and the
             // Model/Datastore service.
             /*
             $plugin = ee('Model')->get('Plugin')
@@ -154,7 +154,7 @@ class Addon
     }
 
     /**
-     * Does this addon have an update available?
+     * Does this add-on have an update available?
      *
      * @return bool Does it have an update available?
      */

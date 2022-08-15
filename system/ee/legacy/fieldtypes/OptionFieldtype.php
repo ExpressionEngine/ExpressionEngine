@@ -9,7 +9,7 @@
  */
 
 /**
- * Option Field type
+ * Option fieldtype
  */
 abstract class OptionFieldtype extends EE_Fieldtype
 {
@@ -423,7 +423,7 @@ abstract class OptionFieldtype extends EE_Fieldtype
     }
 
     /**
-     * Parses a multi-selection field as a single variable
+     * Parses a multi select field as a single variable
      *
      * @param	string	$data	Entry field data
      * @param	array	$params	Params passed to the field via the template
@@ -473,7 +473,7 @@ abstract class OptionFieldtype extends EE_Fieldtype
     }
 
     /**
-    * Parses a multi-selection field as a variable pair
+    * Parses a multi select field as a variable pair
     *
     * @param	string	$data		Entry field data
     * @param	array	$params		Params passed to the field via the template

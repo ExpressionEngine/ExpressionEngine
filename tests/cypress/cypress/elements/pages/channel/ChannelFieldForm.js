@@ -27,7 +27,7 @@ class ChannelFieldForm extends ControlPanel {
     //
     // @param[Hash] a hash containing various configuration options
     //   group_id: group ID of the field group you want to add the field to, defaults to 1
-    //   type: the field type, use a string that matches the item in the dropdown
+    //   type: the fieldtype, use a string that matches the item in the dropdown
     //   label: the field's label
     //   name: the field's name
     //   fields: any other fields on the page passed as a hash.key should be the name of the field, value should be the desired value

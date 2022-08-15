@@ -11,7 +11,7 @@
 namespace ExpressionEngine\Service\Addon;
 
 /**
- * Addon Installer Service
+ * Add-on Installer Service
  */
 class Installer
 {

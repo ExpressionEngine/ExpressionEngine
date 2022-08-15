@@ -14,7 +14,7 @@ context('Spam Module', () => {
 
   context('Installation', () => {
 
-    it('can install from addon manager', () => {
+    it('can install from add-on manager', () => {
       cy.auth();
       addon_manager.load()
       cy.intercept('https://updates.expressionengine.com/check').as('check')

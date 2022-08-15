@@ -28,7 +28,7 @@ $lang = array(
 
     // Lang entries for command make:addon
     'command_make_addon_description'            => 'Creates a new add-on',
-    'command_make_addon_summary'                => 'This interactively generates an EE addon directly in your user directory',
+    'command_make_addon_summary'                => 'This interactively generates an EE add-on directly in your user directory',
     'command_make_addon_lets_build_addon'       => 'Let\'s build your add-on!',
     'command_make_addon_description_question'   => 'description?',
     'command_make_addon_version_question'       => 'version?',
@@ -40,11 +40,11 @@ $lang = array(
     'command_make_addon_what_hooks_to_use'      => 'What hooks would you like to use? (Read more: https://docs.expressionengine.com/latest/development/extensions.html)',
     'command_make_addon_ext_hooks'              => 'Extension hooks:',
     'command_make_addon_ft_compatibility'       => 'Fieldtype compatibility?',
-    'command_make_addon_what_type_of_addon'     => 'What type of addon would you like to create?',
+    'command_make_addon_what_type_of_addon'     => 'What type of add-on would you like to create?',
     'command_make_addon_select_proper_addon'    => 'Please select a proper add-on type.',
     'command_make_addon_what_is_name'           => 'What is the name of your add-on?',
     'command_make_addon_does_your'              => 'Does your ',
-    'command_make_addon_addon_name_required'    => 'Addon name is required.',
+    'command_make_addon_addon_name_required'    => 'Add-on name is required.',
     // make:addon options
     'command_make_addon_option_extension'       => 'Create an extension',
     'command_make_addon_option_plugin'          => 'Create a plugin',
@@ -72,7 +72,7 @@ $lang = array(
     'command_make_command_lets_build'           => 'Let\'s build!',
     'command_make_command_created_successfully' => 'Your command has been created successfully!',
     'command_make_command_ask_command_name'     => 'Command name?',
-    'command_make_command_ask_addon'            => 'What addon do you want to add this to?',
+    'command_make_command_ask_addon'            => 'What add-on do you want to add this to?',
     // make:command options
     'command_make_command_option_addon'         => 'Folder for third-party add-on you want to add command to',
     'command_make_command_option_description'   => 'Description of command',
@@ -112,7 +112,7 @@ $lang = array(
     'command_make_prolet_summary'                      => 'This interactively generates an EE Prolet for an existing third-party addon',
     'command_make_prolet_lets_build_prolet'            => 'Let\'s build a new prolet!',
     'command_make_prolet_ask_prolet_name'              => 'What is the prolet name?',
-    'command_make_prolet_ask_addon'                    => 'What addon is the prolet being added to?',
+    'command_make_prolet_ask_addon'                    => 'What add-on is the prolet being added to?',
     'command_make_prolet_ask_description'              => 'What is the Prolet description?',
     'command_make_prolet_building_prolet'              => 'Building Prolet.',
     'command_make_prolet_created_successfully'         => 'Prolet created successfully!',
@@ -127,7 +127,7 @@ $lang = array(
     'command_make_prolet_option_description'           => 'Description of prolet',
     'command_make_prolet_option_has_widget'            => 'Create a widget for the add-on after generating the prolet (optional)',
     'command_make_prolet_option_widget_name'           => 'Name of widget',
-    'command_make_prolet_option_generate_icon'         => 'Generate a default addon icon file when creating a prolet',
+    'command_make_prolet_option_generate_icon'         => 'Generate a default add-on icon file when creating a prolet',
 
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',
@@ -136,7 +136,7 @@ $lang = array(
     'command_make_widget_ask_addon'                   => 'What add-on is this for?',
     'command_make_widget_building_widget'             => 'Building Widget.',
     'command_make_widget_created_successfully'        => 'Widget created successfully!',
-    'command_make_widget_option_addon'                => 'Name of addon',
+    'command_make_widget_option_addon'                => 'Name of add-on',
 
     // Lang entries for command make:model
     'command_make_model_description'                            => 'Creates a new model for an add-on',
@@ -145,7 +145,7 @@ $lang = array(
     'command_make_model_lets_build'                             => 'Let\'s build!',
     'command_make_model_created_successfully'                   => 'Your model has been created successfully!',
     'command_make_model_ask_model_name'                         => 'Model name?',
-    'command_make_model_ask_addon'                              => 'What addon do you want to add this to?',
+    'command_make_model_ask_addon'                              => 'What add-on do you want to add this to?',
     // make:model options
     'command_make_model_option_addon' => 'Folder for third-party add-on you want to add model to',
 
@@ -167,7 +167,7 @@ $lang = array(
 
     // Lang entries for command migrate:addon
     'command_migrate_addon_description'               => 'Runs add-on migrations',
-    'command_migrate_addon_summary'                   => 'Loops through the addon folders and runs all migrations that have not previously been run. If running all addons, migrations will be grouped by add-on and run together',
+    'command_migrate_addon_summary'                   => 'Loops through the add-on folders and runs all migrations that have not previously been run. If running all addons, migrations will be grouped by add-on and run together',
     'command_migrate_addon_all_migrations_ran'        => 'All available add-on migrations have already run.',
     'command_migrate_addon_ask_location_of_migration' => 'What is the location of your migration?',
     'command_migrate_addon_error_no_location_set'     => 'Please select location of migration using --everything, or --addon=addon_name.',
@@ -222,7 +222,7 @@ $lang = array(
     'command_update_success'                                    => 'Success! Create something awesome!',
     'command_update_indicated_upgrade_all_addons'               => 'You have indicated you want to upgrade all addons.',
     'command_update_confirm_addon_upgrade'                      => 'Are you sure? This may be a destructive action.',
-    'command_update_addon_update_halted'                        => 'Addon update halted',
+    'command_update_addon_update_halted'                        => 'Add-on update halted',
     'command_update_getting_info_from_local_env'                => 'Getting upgrade information from your local environment',
     'command_update_getting_info_from_ee_com'                   => 'Getting upgrade information from ExpressionEngine.com',
     'command_update_updater_failed'                             => 'Updater failed',
@@ -237,7 +237,7 @@ $lang = array(
     'command_update_option_microapp'                            => 'Run as microapp',
     'command_update_option_step'                                => 'Step in process (param required)',
     'command_update_option_no_bootstrap'                        => 'Runs with no bootstrap',
-    'command_update_option_force_addon_upgrades'                => 'Automatically runs all addon updaters at end of update (advanced)',
+    'command_update_option_force_addon_upgrades'                => 'Automatically runs all add-on updaters at end of update (advanced)',
     'command_update_option_y'                                   => 'Skip all confirmations. Don\'t do this.',
     'command_update_option_skip_cleanup'                        => 'Skip cleanup steps after update',
 
@@ -260,7 +260,7 @@ $lang = array(
     'command_update_prepare_database_file_found_move_to_config' => 'We found a database file. Please move this information in to config.php',
     // update:prepare options
     'command_update_prepare_option_upgrade_ee'                  => 'Start the upgrade after moving files',
-    'command_update_prepare_option_force_add_on_upgrade'        => 'After upgrading EE, runs addon upgrades',
+    'command_update_prepare_option_force_add_on_upgrade'        => 'After upgrading EE, runs add-on upgrades',
     'command_update_prepare_option_old_base_path'               => 'Absolute path of old site',
     'command_update_prepare_option_new_base_path'               => 'Absolute path of new site',
     'command_update_prepare_option_old_public_path'             => 'Absolute path of old site public path',

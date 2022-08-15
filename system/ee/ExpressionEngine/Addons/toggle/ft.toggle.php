@@ -31,7 +31,7 @@ class Toggle_ft extends EE_Fieldtype
     );
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */

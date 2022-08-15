@@ -110,9 +110,9 @@ class Factory
             }
         }
 
-        // In this case, location is an add-on, so we need the addon folder to exist
+        // In this case, location is an add-on, so we need the add-on folder to exist
         if ($location !== 'ExpressionEngine') {
-            // Make sure the addon exists
+            // Make sure the add-on exists
             if (!ee('Addon')->get($location)) {
                 throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
             }
@@ -265,7 +265,7 @@ class Factory
             return $ran;
         }
 
-        // If addons, loop through each addon and migrate it
+        // If addons, loop through each add-on and migrate it
         if ($type === 'addons') {
             $addons = $this->getAddonsWithMigrations();
             foreach ($addons as $addon) {
@@ -322,7 +322,7 @@ class Factory
             return $rolledback;
         }
 
-        // If addons, loop through each addon and migrate it
+        // If addons, loop through each add-on and migrate it
         if ($type === 'addons') {
             $addons = $this->getAddonsThatRanMigrations();
 
@@ -412,7 +412,7 @@ class Factory
             // now lets get all the new migrations from the shortname
             $newMigrationsForAddon = $this->getNewMigrations($addon_shortname);
             if (!empty($newMigrationsForAddon)) {
-                // If there are new migrations, add this addon to the list
+                // If there are new migrations, add this add-on to the list
                 $addons[] = $addon_shortname;
             }
         }
