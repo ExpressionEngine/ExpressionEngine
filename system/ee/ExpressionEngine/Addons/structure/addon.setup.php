@@ -13,7 +13,7 @@
         'namespace'         => $addonJson->namespace,
         'author'            => 'ExpressionEngine',
         'author_url'        => 'https://expressionengine.com/',
-        'docs_url'          => 'https://docs.expressionengine.com/documentation',
+        'docs_url'          => 'https://eeharbor.com/structure/documentation',
         'settings_exist'    => true,
         'fieldtypes' => array(
             'structure' => array(
