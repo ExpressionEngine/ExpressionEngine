@@ -17,7 +17,7 @@ var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","
 var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Notes", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL", "Number", "SelectableButtons", "ValueSlider", "RangeSlider"];
 
 //grid is tested in a seperate test
-context('Create combinations of field', () => {
+context.skip('Create combinations of field', () => {
 
 	before(function(){
 		cy.task('db:seed')
