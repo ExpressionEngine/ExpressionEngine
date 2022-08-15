@@ -12,7 +12,6 @@
     "failOnStatusCode": false,
     "experimentalInteractiveRunEvents": true,
     "redirectionLimit": 200,
-    "numTestsKeptInMemory" : 0,
     "testFiles": "!(updater)/**.ee6.js",
     "retries": {
         "runMode": 1,
