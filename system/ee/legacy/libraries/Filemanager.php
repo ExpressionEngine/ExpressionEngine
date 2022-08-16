@@ -497,7 +497,7 @@ class Filemanager
 
             // We need to reset some prefs
             if ($new_image) {
-                ee()->load->helper('number');
+                ee()->load->helper('file');
                 $f_size = get_file_info($file_path);
                 $prefs['file_height'] = $new_image['height'];
                 $prefs['file_width'] = $new_image['width'];
@@ -594,7 +594,7 @@ class Filemanager
 
         // We need to reset some prefs
         if ($new_image) {
-            ee()->load->helper('number');
+            ee()->load->helper('file');
             $f_size = get_file_info($file_path);
 
             $prefs['file_size'] = ($f_size) ? $f_size['size'] : 0;
