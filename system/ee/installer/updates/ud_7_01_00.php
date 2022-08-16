@@ -25,7 +25,31 @@ class Updater
      */
     public function do_update()
     {
+        $steps = new \ProgressIterator(
+            [
+                'modifyCpHomepageChannelColumnOnMembers',
+            ]
+        );
+
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+
         return true;
+    }
+
+    private function modifyCpHomepageChannelColumnOnMembers()
+    {
+        ee()->smartforge->modify_column(
+            'members',
+            [
+                'cp_homepage_channel' => [
+                    'name' => 'cp_homepage_channel',
+                    'type' => 'text',
+                    'null' => true
+                ]
+            ]
+        );
     }
 }
 
