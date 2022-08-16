@@ -64,12 +64,12 @@ $(document).ready(function () {
 
 	// check if command is clicked
 	var cmdPressed = false;
-	$(window).keydown(function(evt) {
-		if (evt.which == 91) { // command/Windows
+	$(window).on('keydown', function(evt) {
+		if (evt.which == 91 || evt.which == 224) { // command/Windows
 			cmdPressed = true;
 		}
-	}).keyup(function(evt) {
-		if (evt.which == 91) { // command/Windows
+	}).on('keyup', function(evt) {
+		if (evt.which == 91 || evt.which == 224) { // command/Windows
 			cmdPressed = false;
 		}
 	});
