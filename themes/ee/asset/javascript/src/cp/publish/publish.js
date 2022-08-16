@@ -62,6 +62,17 @@ $(document).ready(function () {
 		});
 	}
 
+	// check if command is clicked
+	var cmdPressed = false;
+	$(window).keydown(function(evt) {
+		if (evt.which == 91) { // command/Windows
+			cmdPressed = true;
+		}
+	}).keyup(function(evt) {
+		if (evt.which == 91) { // command/Windows
+			cmdPressed = false;
+		}
+	});
 	//prevent navigating away
 	$('body .ee-wrapper').on('click', 'a', function(e) {
 		if (
@@ -71,7 +82,8 @@ $(document).ready(function () {
 			$(this).attr('href').indexOf('#') != 0  && 
 			$(this).attr('href').indexOf('javascript:') != 0 &&
 			$(this).attr('target') != '_blank' && 
-			(!e.target.closest('[data-publish]') || (typeof(e.target.closest('[data-publish]').length)!=='undefined' && !e.target.closest('[data-publish]').length))
+			(!e.target.closest('[data-publish]') || (typeof(e.target.closest('[data-publish]').length)!=='undefined' && !e.target.closest('[data-publish]').length)) && 
+			!cmdPressed
 		) {
 			isNavigatingAway = confirm(EE.lang.confirm_exit);
 			return isNavigatingAway;
