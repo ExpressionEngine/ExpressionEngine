@@ -170,7 +170,7 @@ context('Upload Destination Subfolders', () => {
 
         cy.get('.app-listing__row').contains("README.md")
     })
-    
+
     it('Can move a file to a folder', () => {
         managerPage.load_for_dir(2)
         let filename = 'LICENSE.txt';
@@ -278,6 +278,7 @@ context('Upload Destination Subfolders', () => {
         cy.get('.app-listing__row[title="sub3"] .button-toolbar').click()
         cy.get('.toolbar.has-open-dropdown .delete').click({ force: true })
 
+        cy.get('.modal-confirm-delete-file button[data-toggle-for="confirm"]').click()
         cy.get('.modal-confirm-delete-file button[type="submit"]').click()
 
         cy.hasNoErrors()
@@ -322,22 +323,22 @@ context('Upload Destination Subfolders', () => {
             syncPage.get('alert').should('exist')
             syncPage.get('alert').contains('Upload directory synchronized')
             cy.hasNoErrors()
-    
+
             //the non-hidden folder is listed
             managerPage.load_for_dir(2)
             cy.get('.app-listing__row').should('contain', 'to-be-synced')
             cy.get('.app-listing__row').should('contain', 'empty-folder')
             cy.get('.app-listing__row').should('not.contain', '_hidden-folder')
-    
+
             //the file in folder is listed
             cy.get('.app-listing__row').contains('to-be-synced').first().click()
             cy.get('.app-listing__row').should('contain', 'LICENSE.txt')
-    
+
             //only the file from non-hidden folder is listed
             cy.visit('/admin.php?/cp/files');
             cy.get('.app-listing__row').should('contain', 'LICENSE.txt')
             cy.get('.app-listing__row').should('not.contain', 'README.md')
-    
+
         })
     })
 
