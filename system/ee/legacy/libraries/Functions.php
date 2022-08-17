@@ -889,7 +889,7 @@ class EE_Functions
         if ($which == 'jumpmenu') {
             ee('CP/JumpMenu')->clearAllCaches();
         }
-        if (ee()->extensions->active_hook('cache_clearing_end') === true) {
+        if (isset(ee()->extensions) && ee()->extensions->active_hook('cache_clearing_end') === true) {
             $result = ee()->extensions->call('cache_clearing_end', $which);
         }
     }
