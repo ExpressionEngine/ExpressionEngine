@@ -43,6 +43,7 @@
 const jumpContainer = (typeof(window.top.Cypress) !== 'undefined') ? window : window.top;
 
 EE.cp.JumpMenu = {
+	useRTL: false,
 	typingAjaxDelay: 400,
 
 	// Internal Variables
@@ -57,6 +58,11 @@ EE.cp.JumpMenu = {
 	lastSearch: '',
 
 	init: function() {
+		const currentWritingDirection = document.querySelector('html') && document.querySelector('html').dir ? document.querySelector('html').dir : 'ltr';
+		if (currentWritingDirection == 'rtl') {
+			EE.cp.JumpMenu.useRTL = true;
+		}
+
 		if (navigator.appVersion.indexOf("Mac") != -1) {
 			EE.cp.JumpMenu.shortcut = '⌘';
 		}
@@ -114,7 +120,11 @@ EE.cp.JumpMenu = {
 	},
 
 	_showJumpMenu: function(loadResults = '') {
-		jumpContainer.$('#jump-menu').css({ position:'absolute', 'z-index':150, top:'59px', right:'82px' }).show();
+		if (EE.cp.JumpMenu.useRTL) {
+			jumpContainer.$('#jump-menu').css({ position:'absolute', 'z-index':150, top:'59px', left:'82px' }).show();
+		} else {
+			jumpContainer.$('#jump-menu').css({ position:'absolute', 'z-index':150, top:'59px', right:'82px' }).show();
+		}
 		jumpContainer.document.querySelector('.input--jump').focus();
 
 		if ($('#jump-menu').hasClass('on-welcome')) {

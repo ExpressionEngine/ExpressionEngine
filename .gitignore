@@ -6,6 +6,7 @@ env_local.rb
 *.swp
 node_modules/
 .vscode/
+.idea
 cypress.env.json
 phpcs.ruleset.xml
 .phpunit.result.cache

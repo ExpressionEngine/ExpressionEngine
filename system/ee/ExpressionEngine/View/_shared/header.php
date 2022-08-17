@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="<?=ee()->lang->code()?>" dir="ltr">
+<html lang="<?=ee()->lang->code()?>" dir="<?=ee()->lang->direction()?>">
 	<head>
 		<?=ee()->view->head_title($cp_page_title)?>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -11,7 +11,11 @@
 		<meta http-equiv='refresh' content='<?=$meta_refresh['rate']?>; url=<?=$meta_refresh['url']?>'>
 		<?php endif;?>
 
+		<?php if(ee()->lang->direction() == 'rtl'):?>
+		<?=ee()->view->head_link('css/common.rtl.min.css'); ?>
+		<?php else:?>
 		<?=ee()->view->head_link('css/common.min.css'); ?>
+		<?php endif?>
 		<?php if (ee()->extensions->active_hook('cp_css_end') === true):?>
 		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext')?>" type="text/css" />
 		<?php endif;?>

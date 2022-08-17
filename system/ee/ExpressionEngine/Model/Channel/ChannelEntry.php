@@ -362,7 +362,8 @@ class ChannelEntry extends ContentModel
 
         $value = preg_replace($regex, '', $value);
 
-        if (! (bool) preg_match("/^([-a-z0-9_.-])+$/i", $value)) {
+        // Support Arabic character
+        if (! (bool) preg_match("/^([-\p{Arabic}\-\p{Ll}0-9_.-])+$/ui", $value)) {
             return 'alpha_dash_period';
         }
 
@@ -791,7 +792,7 @@ class ChannelEntry extends ContentModel
                     $this->getCustomField($name)->setHidden('n');
                 }
             }
-            
+
         }
 
         parent::setDataOnCustomFields($data);

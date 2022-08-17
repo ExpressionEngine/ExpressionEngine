@@ -43,6 +43,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  */
 var jumpContainer = typeof window.top.Cypress !== 'undefined' ? window : window.top;
 EE.cp.JumpMenu = {
+  useRTL: false,
   typingAjaxDelay: 400,
   // Internal Variables
   typingTimeout: false,
@@ -54,6 +55,12 @@ EE.cp.JumpMenu = {
   },
   lastSearch: '',
   init: function init() {
+    var currentWritingDirection = document.querySelector('html') && document.querySelector('html').dir ? document.querySelector('html').dir : 'ltr';
+
+    if (currentWritingDirection == 'rtl') {
+      EE.cp.JumpMenu.useRTL = true;
+    }
+
     if (navigator.appVersion.indexOf("Mac") != -1) {
       EE.cp.JumpMenu.shortcut = '⌘';
     }
@@ -109,12 +116,23 @@ EE.cp.JumpMenu = {
   },
   _showJumpMenu: function _showJumpMenu() {
     var loadResults = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    jumpContainer.$('#jump-menu').css({
-      position: 'absolute',
-      'z-index': 150,
-      top: '59px',
-      right: '82px'
-    }).show();
+
+    if (EE.cp.JumpMenu.useRTL) {
+      jumpContainer.$('#jump-menu').css({
+        position: 'absolute',
+        'z-index': 150,
+        top: '59px',
+        left: '82px'
+      }).show();
+    } else {
+      jumpContainer.$('#jump-menu').css({
+        position: 'absolute',
+        'z-index': 150,
+        top: '59px',
+        right: '82px'
+      }).show();
+    }
+
     jumpContainer.document.querySelector('.input--jump').focus();
 
     if ($('#jump-menu').hasClass('on-welcome')) {
