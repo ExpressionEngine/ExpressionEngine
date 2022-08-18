@@ -938,7 +938,7 @@ class EE_Upload
         //     return false;
         // }
 
-        if (! $fs->isWritable()) {
+        if (! $fs->isWritable($this->upload_path)) {
             $this->set_error('upload_not_writable');
 
             return false;
