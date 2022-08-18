@@ -57,7 +57,7 @@ $(document).ready(function () {
 	function makeTabsDroppable()
 	{
 		tabs.find('.tab-bar__tab').droppable({
-			accept: ".layout-item-wrapper .js-layout-item",
+			accept: ".js-layout-item",
 			hoverClass: "highlight",
 			tolerance: "pointer",
 			drop: function(e, ui) {
