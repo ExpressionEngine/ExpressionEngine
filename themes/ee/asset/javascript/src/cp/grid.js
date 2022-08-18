@@ -261,6 +261,14 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			this.root.toggleClass('hidden', rowCount == 0)
 		}
 
+		if ($(this.rowContainer).parents('.fluid__item-field').length) {
+			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth()
+		} else {
+			var gridFieldWidth = $(this.rowContainer).width();
+		}
+
+		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
+
 		if(rowCount == 0) {
 			var showAddButton = setInterval(function (){
 				if ( !that.find('.field-no-results').hasClass('hidden') ) {
@@ -268,6 +276,10 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 					clearInterval(showAddButton);
 				}
 			}, 50);
+
+			if (parentFieldControlWidth >= gridFieldWidth) {
+				$(this.rowContainer).parents('.grid-field').removeClass('overwidth');
+			}
 		}
 	},
 
@@ -351,6 +363,17 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Bind the new row's inputs to AJAX form validation
 		if (EE.cp && EE.cp.formValidation !== undefined) {
 			EE.cp.formValidation.bindInputs(el);
+		}
+
+		if ($(this.rowContainer).parents('.fluid__item-field').length) {
+			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth()
+		} else {
+			var gridFieldWidth = $(this.rowContainer).width();
+		}
+		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width()
+
+		if (parentFieldControlWidth < gridFieldWidth) {
+			$(this.rowContainer).parents('.grid-field').addClass('overwidth');
 		}
 
 		return el;
@@ -985,6 +1008,30 @@ $(document).ready(function () {
 		return false;
 	});
 
+});
+
+$(window).on('resize', function() {
+	var gridTables = $('.grid-field');
+
+	gridTables.each(function(el) {
+
+		if ( $(this).parents('.hidden').length ) return;
+
+		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
+			var tableInnerWidth = $(this).find('.grid-field__table').parents('.fluid__item-field').innerWidth()
+		} else {
+			var tableInnerWidth = $(this).find('.grid-field__table').width();
+		}
+		var containerWidth = $(this).parents('.field-control').width();
+
+		if (containerWidth < tableInnerWidth) {
+			$(this).addClass('overwidth');
+		}
+
+		if (containerWidth >= tableInnerWidth && $(window).width() > 1440) {
+			$(this).removeClass('overwidth');
+		}
+	});
 });
 
 })(jQuery);

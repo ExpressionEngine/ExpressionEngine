@@ -111,6 +111,8 @@
 <?php echo implode('', ee('CP/Modal')->getAllModals()); ?>
 
         <?=ee()->view->script_tag('jquery/jquery.js')?>
+        <?=ee()->view->script_tag('jquery/jquery-migrate-3.0.0.min.js')?>
+
         <?php
 
         echo ee()->javascript->get_global();

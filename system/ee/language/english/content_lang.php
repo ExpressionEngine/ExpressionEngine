@@ -148,6 +148,8 @@ $lang = array(
 
     'expiration_date_desc' => 'Date this entry should expire.',
 
+    'edit_date' => 'Last edit date',
+
     'filter_autosaves' => 'filter auto saves',
 
     'filter_by_author' => 'author',

@@ -23,6 +23,7 @@ class ColumnFactory
         'status' => Columns\Status::class,
         'sticky' => Columns\Sticky::class,
         'entry_date' => Columns\EntryDate::class,
+        'edit_date' => Columns\EditDate::class,
         'expiration_date' => Columns\ExpirationDate::class,
         'channel' => Columns\ChannelName::class,
         'comments' => Columns\Comments::class,

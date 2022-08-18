@@ -26,12 +26,35 @@ class Relationship extends React.Component {
     }
 
     static renderFields(context) {
-        $('div[data-relationship-react]', context).each(function () {
+        $('div[data-relationship-react]:not(.react-deferred-loading)', context).each(function () {
             let props = JSON.parse(window.atob($(this).data('relationshipReact')))
             props.name = $(this).data('inputValue')
 
             ReactDOM.render(React.createElement(Relationship, props, null), this)
-        })
+        });
+
+        $('.react-deferred-loading--relationship', context).each(function () {
+            var $wrapper = $(this);
+            var $button = $wrapper.find('.js-dropdown-toggle');
+
+            $button.on('click', function () {
+                $('div[data-relationship-react]', $wrapper).each(function () {
+                    var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+                    props.name = $(this).data('inputValue');
+                    ReactDOM.render(React.createElement(Relationship, props, null), this);
+                });
+            });
+        });
+
+        if ( $('.react-deferred-loading--relationship ul.list-group').length ) {
+             var $wrapper = $('.react-deferred-loading--relationship ul.list-group').parents('.react-deferred-loading');
+             
+            $($wrapper, context).each(function () {
+                var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+                props.name = $(this).data('inputValue');
+                ReactDOM.render(React.createElement(Relationship, props, null), this);
+            });
+        }
 	}
 
 	componentDidMount() {
@@ -346,7 +369,7 @@ class Relationship extends React.Component {
                                     }
                                     {props.channels.length > 1 &&
                                     <div>
-                                    <button type="button" className="js-dropdown-toggle button button--primary button--small">New Entry <i class="fal fa-chevron-down icon-right"></i></button>
+                                    <button type="button" className="js-dropdown-toggle button button--primary button--small" data-dropdown-pos="bottom-end">New Entry <i class="fal fa-chevron-down icon-right"></i></button>
                                     <div className="dropdown">
                                         {props.channels.map((channel) => {
                                             return (

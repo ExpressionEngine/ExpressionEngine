@@ -82,12 +82,21 @@ $(document).ready(function () {
 							$('#preview').remove();
 						}
 					});
-					$('.f_manager-wrapper .file-grid__wrapper').sortable({
+
+					$('.f_manager-wrapper .file-grid__wrapper .filepicker-item').draggable({
+						revert: true,
+						zIndex: 100,
 						start: function( event, ui ) {
-							ui.item.css('transform', 'scale(0.7)');
+							ui.helper.css({
+								'transform': 'scale(0.7)',
+								'background-color': 'var(--ee-accent-light)'
+							});
 						},
 						stop: function( event, ui ) {
-							ui.item.css('transform', 'none');
+							ui.helper.css({
+								'transform': 'none',
+								'background-color': 'transparent'
+							});
 						}
 					});
 				}
@@ -371,29 +380,15 @@ $(document).ready(function () {
 
 	ddFileToNotEmptyTable();
 
-	$('.f_manager-wrapper tbody').sortable({
-		axis: "y",
-		sort: function( event, ui ) {
-			$('#preview').remove();
-		}
-	});
-	$('.f_manager-wrapper .file-grid__wrapper').sortable({
-		start: function( event, ui ) {
-			ui.item.css('transform', 'scale(0.7)');
-		},
-		stop: function( event, ui ) {
-			ui.item.css('transform', 'none');
-		}
-	});
-
 	// Move files to subfolder
 	function makeDirectoryDroppable() {
 		let modal_rel = 'modal-confirm-move-file';
 		let ajax_url = $('.f_manager-wrapper [name=bulk_action_submit]').attr('data-confirm-ajax');
 		let timer;
-		$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').find('.drop-target').droppable({
+		$('.f_manager-wrapper tbody .drop-target, .f_manager-wrapper .file-grid__wrapper .drop-target').droppable({
 			accept: "table .app-listing__row, .file-grid__wrapper .filepicker-item",
 			tolerance: "intersect",
+			revert: true,
 			drop: function(e, ui) {
 				var el = ui.draggable;
 				var subfolder = e.target;
@@ -450,5 +445,28 @@ $(document).ready(function () {
 
 	if ( $('.f_manager-wrapper tbody').length || $('.f_manager-wrapper .file-grid__wrapper').length) {
 		makeDirectoryDroppable();
+		$('.f_manager-wrapper tbody').sortable({
+			axis: "y",
+			sort: function( event, ui ) {
+				$('#preview').remove();
+			}
+		});
+
+		$('.f_manager-wrapper .file-grid__wrapper .filepicker-item').draggable({
+			revert: true,
+			zIndex: 100,
+			start: function( event, ui ) {
+				ui.helper.css({
+					'transform': 'scale(0.7)',
+					'background-color': 'var(--ee-accent-light)'
+				});
+			},
+			stop: function( event, ui ) {
+				ui.helper.css({
+					'transform': 'none',
+					'background-color': 'transparent'
+				});
+			}
+		});
 	}
 });

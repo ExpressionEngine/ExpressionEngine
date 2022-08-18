@@ -184,7 +184,19 @@ class Access
     {
         // If there are multiple members, we require pro
         if (is_null(static::$requiresLicense)) {
-            static::$requiresLicense = (ee('Model')->get('Member')->count() > 1);
+            $countMemberWithCPAccessQuery = "SELECT COUNT(*) as count
+                FROM
+                (
+                    SELECT member_id FROM exp_members_role_groups WHERE group_id IN (SELECT group_id FROM exp_roles_role_groups WHERE role_id IN (SELECT role_id FROM exp_permissions WHERE permission = 'can_access_cp' GROUP BY role_id))
+                    UNION
+                    SELECT member_id FROM exp_members WHERE role_id IN (SELECT role_id FROM exp_permissions WHERE permission = 'can_access_cp' GROUP BY role_id)
+                    UNION
+                    SELECT member_id FROM exp_members_roles WHERE role_id IN (SELECT role_id FROM exp_permissions WHERE permission = 'can_access_cp' GROUP BY role_id)
+                ) as cp_member_count";
+
+            $countMemberWithCPAccess = ee()->db->query($countMemberWithCPAccessQuery)->row('count');
+
+            static::$requiresLicense = ($countMemberWithCPAccess > 1);
         }
 
         return static::$requiresLicense;
@@ -236,7 +248,7 @@ class Access
             $showAlert = false;
         }
 
-        ee()->logger->developer($message, true);
+        ee()->logger->developer($message, true, 60*60*24*7);
         if (REQ == 'CP' && $showAlert) {
             // The user has seen the banner, so we're marking it in the session
             ee('Session')->setProBannerSeen();

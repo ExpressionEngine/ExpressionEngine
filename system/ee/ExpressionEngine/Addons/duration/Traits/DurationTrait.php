@@ -89,7 +89,7 @@ trait DurationTrait
         if (strpos($duration, ':')) {
             $duration = $this->convertFromColonNotation($duration, $units);
         } else {
-            $duration = $this->applyMultiplier($duration);
+            $duration = $this->applyMultiplier($duration, $units);
         }
 
         return $duration;

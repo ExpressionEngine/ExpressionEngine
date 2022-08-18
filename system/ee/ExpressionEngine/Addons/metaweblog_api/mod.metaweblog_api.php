@@ -556,7 +556,11 @@ class Metaweblog_api
         /** ---------------------------------------
         /**  Perform Query
         /** ---------------------------------------*/
-        $query = ee('Model')->get('ChannelEntry')->filter('channel_id', $this->channel_id);
+        $query = ee('Model')->get('ChannelEntry');
+
+        if ($entry_id == '') {
+            $query->filter('channel_id', $this->channel_id);
+        }
 
         if (! ee('Permission')->can('edit_other_entries') && ! ee('Permission')->isSuperAdmin()) {
             //$sql .= "AND wt.author_id = '".$this->userdata['member_id']."' ";

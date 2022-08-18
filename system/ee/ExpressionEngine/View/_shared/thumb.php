@@ -58,7 +58,7 @@ if (count($data)) {
 
                 <?php if ($i == 1) : ?>
                     <div class="file-thumbnail__wrapper">
-                        <a<?php foreach ($row['attrs'] as $key => $value) :?> <?=$key?>="<?=$value?>"<?php endforeach; ?> data-file-id="<?=$row['attrs']['file_id']?>">
+                        <a href="<?=$row['attrs']['href']?>">
                 <?php endif; ?>
                 <?php if ($i == 2) : ?>
                         </a>

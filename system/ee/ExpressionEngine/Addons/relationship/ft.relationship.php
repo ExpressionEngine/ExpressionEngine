@@ -517,6 +517,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         }
 
         return ee('View')->make('relationship:publish')->render([
+            'deferred' => isset($this->settings['deferred_loading']) ? $this->settings['deferred_loading'] : false,
             'field_name' => $field_name,
             'choices' => $choices,
             'selected' => $selected,
@@ -752,6 +753,16 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                         'value' => ($values['display_entry_id']) ? 'y' : 'n'
                     )
                 )
+            ),
+            array(
+                'title' => 'rel_ft_deferred',
+                'desc' => 'rel_ft_deferred_desc',
+                'fields' => array(
+                    'relationship_deferred_loading' => array(
+                        'type' => 'yes_no',
+                        'value' => ($values['deferred_loading']) ? 'y' : 'n'
+                    )
+                )
             )
         );
 
@@ -784,6 +795,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         // Boolstring conversion
         $save['allow_multiple'] = get_bool_from_string($save['allow_multiple']);
         $save['display_entry_id'] = get_bool_from_string($save['display_entry_id']);
+        $save['deferred_loading'] = get_bool_from_string($save['deferred_loading']);
 
         foreach ($save as $field => $value) {
             if (is_array($value) && count($value)) {
@@ -820,6 +832,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'order_field' => 'title',
             'order_dir' => 'asc',
             'display_entry_id' => false,
+            'deferred_loading' => false,
             'allow_multiple' => 'y',
             'rel_min' => 0,
             'rel_max' => ''
@@ -837,7 +850,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         // any default values that are not the empty ones
         $default_values = array(
             'display_entry_id' => false,
-            'allow_multiple' => true
+            'allow_multiple' => true,
+            'deferred_loading' => false,
         );
 
         $form = $util->form($field_empty_values, $prefix);

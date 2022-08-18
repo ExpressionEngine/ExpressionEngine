@@ -27,6 +27,8 @@ $lang = array(
 
     'relate_entry' => 'Relate Entry',
 
+    'relate_entry_deferred' => 'Edit Relationships',
+
     'rel_ft_allow_multi' => 'Allow multiple relationships?',
 
     'rel_ft_allow_multi_desc' => 'When enabled, authors will be allowed to create multiple relationships.',
@@ -78,6 +80,10 @@ $lang = array(
     'rel_ft_display_entry_id' => 'Display Entry IDs?',
 
     'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
+
+    'rel_ft_deferred' => 'Defer field initialization?',
+
+    'rel_ft_deferred_desc' => 'When enabled, this field won’t initialize until the Edit Relationships button is clicked on. This can result in faster control panel page load times.',
 
     'rel_ft_max' => 'Maximum number of related entries',
 
