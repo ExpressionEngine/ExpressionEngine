@@ -25,7 +25,7 @@ class View extends Model
         'member_id' => 'int',
         'channel_id' => 'int',
         'name' => 'string',
-        'columns' => 'serialized'
+        'columns' => 'json'
     ];
 
     protected static $_relationships = [
