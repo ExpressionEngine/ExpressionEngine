@@ -248,7 +248,7 @@ class Access
             $showAlert = false;
         }
 
-        ee()->logger->developer($message, true);
+        ee()->logger->developer($message, true, 60*60*24*7);
         if (REQ == 'CP' && $showAlert) {
             // The user has seen the banner, so we're marking it in the session
             ee('Session')->setProBannerSeen();
