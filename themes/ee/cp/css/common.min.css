@@ -31530,7 +31530,7 @@ fieldset .field-control #eye {
 }
 
 .grid-relate .dropdown__link, .grid-relate .select__dropdown-item, .grid-relate .button__within-dropdown, .grid-multi-relate .dropdown__link, .grid-multi-relate .select__dropdown-item, .grid-multi-relate .button__within-dropdown {
-  display: inline-block;
+  display: block;
 }
 
 #routes .grid-field__table tr {
