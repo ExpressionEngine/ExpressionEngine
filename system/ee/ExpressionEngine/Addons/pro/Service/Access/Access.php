@@ -192,7 +192,8 @@ class Access
                     SELECT member_id FROM exp_members WHERE role_id IN (SELECT role_id FROM exp_permissions WHERE permission = 'can_access_cp' GROUP BY role_id)
                     UNION
                     SELECT member_id FROM exp_members_roles WHERE role_id IN (SELECT role_id FROM exp_permissions WHERE permission = 'can_access_cp' GROUP BY role_id)
-                ) as cp_member_count";
+                ) as cp_member_count
+                JOIN exp_members ON cp_member_count.member_id = exp_members.member_id";
 
             $countMemberWithCPAccess = ee()->db->query($countMemberWithCPAccessQuery)->row('count');
 
