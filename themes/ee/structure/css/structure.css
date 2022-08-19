@@ -2057,6 +2057,10 @@ body[data-ee-version^="7."] #structure-delete button:hover {
     border-color: var(--ee-button-danger-hover-border);
 }
 
+body[data-ee-version^="6."] #tree-ootb h1,
+body[data-ee-version^="7."] #tree-ootb h1 {
+    color: var(--ee-text-normal);
+}
 
 body[data-ee-version^="6."] #tree-ootb ul li,
 body[data-ee-version^="7."] #tree-ootb ul li,
