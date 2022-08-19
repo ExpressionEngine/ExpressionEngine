@@ -1913,13 +1913,58 @@ body[data-ee-version^="7."] #structure-delete
     width: auto !important;
 }
 
+body[data-ee-version^="6."] #structure-page-selector,
+body[data-ee-version^="7."] #structure-page-selector {
+    max-width: 550px;
+    padding: 0;
+    box-shadow: 0 8px 40px var(--ee-shadow-modal);
+    border-radius: 5px;
+    border: 1px solid var(--ee-border);
+    background: var(--ee-bg-blank);
+}
+
+body[data-ee-version^="6."] #structure-page-selector ul li,
+body[data-ee-version^="7."] #structure-page-selector ul li {
+    border-bottom: 1px solid var(--ee-border);
+}
+
+body[data-ee-version^="6."] #structure-page-selector ul li.last,
+body[data-ee-version^="7."] #structure-page-selector ul li.last{
+    border-bottom: none;
+}
+
+body[data-ee-version^="6."] #structure-page-selector ul li a,
+body[data-ee-version^="7."] #structure-page-selector ul li a {
+    color: var(--ee-text-normal);
+}
+
+body[data-ee-version^="6."] #structure-page-selector ul li a:hover,
+body[data-ee-version^="7."] #structure-page-selector ul li a:hover {
+    background: var(--ee-bg-5);
+}
+
+body[data-ee-version^="6."] #structure-page-selector .ui-dialog-titlebar,
+body[data-ee-version^="7."] #structure-page-selector .ui-dialog-titlebar {
+    background: var(--ee-bg-blank);
+    border: 1px solid var(--ee-border);
+    color: var(--ee-text-normal);
+}
+
 body[data-ee-version^="6."] #structure-delete .ui-dialog-content,
-body[data-ee-version^="7."] #structure-delete .ui-dialog-content
+body[data-ee-version^="7."] #structure-delete .ui-dialog-content,
+body[data-ee-version^="6."] #structure-page-selector .ui-dialog-content,
+body[data-ee-version^="7."] #structure-page-selector .ui-dialog-content
 {
     margin-top: 0;
     font-size: 1rem;
     color: var(--ee-text-normal);
     padding: 20px 30px;
+}
+
+body[data-ee-version^="6."] #structure-page-selector .ui-dialog-content,
+body[data-ee-version^="7."] #structure-page-selector .ui-dialog-content {
+    border: 1px solid var(--ee-border);
+    padding: 10px;
 }
 
 body[data-ee-version^="6."] #structure-delete .ui-dialog-buttonpane,
@@ -1928,6 +1973,42 @@ body[data-ee-version^="7."] #structure-delete .ui-dialog-buttonpane
     padding: 20px 30px;
     background-color: var(--ee-bg-0);
 
+}
+
+body[data-ee-version^="6."] #structure-page-selector .ui-dialog-buttonpane,
+body[data-ee-version^="7."] #structure-page-selector .ui-dialog-buttonpane {
+    padding: 10px;
+    background-color: var(--ee-bg-0);
+}
+
+body[data-ee-version^="6."] #structure-page-selector .ui-dialog-buttonpane .ui-dialog-buttonset button,
+body[data-ee-version^="7."] #structure-page-selector .ui-dialog-buttonpane .ui-dialog-buttonset button {
+    margin: 0;
+    -webkit-appearance: none;
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    background-image: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    -webkit-transition: background-color .15s ease-in-out;
+    -moz-transition: background-color .15s ease-in-out;
+    -o-transition: background-color .15s ease-in-out;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    padding: 8px 20px!important;
+    font-size: 1rem;
+    line-height: 1.6;
+    border-radius: 5px;
+    color: var(--ee-button-danger-color);
+    background-color: var(--ee-button-danger-bg);
+    border-color: var(--ee-button-danger-border);
+    height: auto;
 }
 
 body[data-ee-version^="6."] .ui-dialog-buttonset:after,
@@ -1974,6 +2055,56 @@ body[data-ee-version^="7."] #structure-delete button:hover {
     color: var(--ee-button-danger-color);
     background-color: var(--ee-button-danger-hover-bg);
     border-color: var(--ee-button-danger-hover-border);
+}
+
+body[data-ee-version^="6."] #tree-ootb h1,
+body[data-ee-version^="7."] #tree-ootb h1 {
+    color: var(--ee-text-normal);
+}
+
+body[data-ee-version^="6."] #tree-ootb ul li,
+body[data-ee-version^="7."] #tree-ootb ul li,
+body[data-ee-version^="6."] .note,
+body[data-ee-version^="7."] .note {
+    border: 1px solid var(--ee-panel-border);
+    background: var(--ee-panel-bg);
+    color: var(--ee-text-normal);
+    font-size: 15px;
+    position: relative;
+}
+
+body[data-ee-version^="6."] #tree-ootb ul li:before,
+body[data-ee-version^="7."] #tree-ootb ul li:before {
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    font-size: 12px;
+    font-weight: 400;
+    font-family: 'Font Awesome 5 Free';
+}
+
+body[data-ee-version^="7."] #tree-ootb ul li:before {
+    font-family: 'Font Awesome 6 Pro';
+}
+
+body[data-ee-version^="6."] #tree-ootb ul li.ootb-settings:before,
+body[data-ee-version^="7."] #tree-ootb ul li.ootb-settings:before {
+    content: '\f013';
+}
+
+body[data-ee-version^="6."] #tree-ootb ul li.ootb-navigation-tags:before,
+body[data-ee-version^="7."] #tree-ootb ul li.ootb-navigation-tags:before {
+    content: '\f0ca';
+}
+
+body[data-ee-version^="6."] #tree-ootb ul li.ootb-page-types:before {
+    content: '\f0c5';
+}
+
+body[data-ee-version^="7."] #tree-ootb ul li.ootb-page-types:before {
+    content: '\e178';
 }
 
 .pro-frontend-modal.app-modal-inner #structure-ui ul#page-ui,
