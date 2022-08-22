@@ -69,7 +69,8 @@ class Directory extends Filesystem
         //     throw new \Exception('File does not exist.');
         // }
 
-        return  $url . ltrim($filename, '/');
+        // URL Encode everything except the forward slashes
+        return implode('/', array_map('rawurlencode', explode('/', $url . ltrim($filename, '/'))));
     }
 
     public function getPath($path)
