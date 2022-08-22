@@ -70,7 +70,7 @@ class Directory extends Filesystem
         // }
 
         // URL Encode everything except the forward slashes
-        return implode('/', array_map('rawurlencode', explode('/', $url . ltrim($filename, '/'))));
+        return $url . implode('/', array_map('rawurlencode', explode('/', ltrim($filename, '/'))));
     }
 
     public function getPath($path)
