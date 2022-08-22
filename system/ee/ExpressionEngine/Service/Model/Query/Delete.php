@@ -342,11 +342,7 @@ class Delete extends Query
         $withs = $this->nest($withs);
 
         return function ($query) use ($relation, $withs) {
-            if (($relation->getSourceModel() == 'Role' || $relation->getSourceModel() == 'ee:Role') &&
-                ($relation->getTargetModel() == 'Member' || $relation->getTargetModel() == 'ee:Member')) {
-                return array();
-            }
-
+            // When delting data with a pivot table on/to Role, don’t just blindly delete everything.
             if (($relation->getTargetModel() == 'Role' || $relation->getTargetModel() == 'ee:Role') &&
                 ($relation->getPivot() != array())) {
                 return array();
