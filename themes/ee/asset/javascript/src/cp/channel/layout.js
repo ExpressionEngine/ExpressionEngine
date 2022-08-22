@@ -63,8 +63,6 @@ $(document).ready(function () {
 			drop: function(e, ui) {
 				// Stop the Timeout
 				clearTimeout(spring);
-				var start_pos = ui.draggable.data('start_pos');
-				var start_tab = ui.draggable.data('start_tab');
 
 				// Open the tab
 				$(this).trigger('click');
@@ -131,37 +129,40 @@ $(document).ready(function () {
 		helper: "clone",
 		items: ".js-layout-item",
 		placeholder: "drag-placeholder",
+		start_pos: null,
+		start_tab: null,
 		start: function (event, ui) {
 			var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
 			
 			//set original position from where item start to move
-			ui.item.data('start_pos', ui.item.index());
+			this.start_pos = ui.item.index();
 
 			// set original tab index
+			var tab_index;
 			$(EE.publish_layout).each(function(index, el) {
 				if (EE.publish_layout[getTabIndex()].id == el.id) {
-					ui.item.data('start_tab', index);
+					tab_index = index;
 				}
 			});
 
+			this.start_tab = tab_index;
+			console.log('pos', this.start_pos);
+			console.log('tab', this.start_tab);
 			// get field which changing position
 			// field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
 			field = EE.publish_layout[getTabIndex()].fields[fieldIndex];
 			ui.placeholder.append('<div class="none"></div>');
 		},
 		stop: function (event, ui) {
-			var start_pos = ui.item.data('start_pos');
-			var start_tab = ui.item.data('start_tab');
-
 			// check if the item remains in the same place in the same tab where it was
-			if (ui.item.index() == start_pos && EE.publish_layout[start_tab] == EE.publish_layout[getTabIndex()]) {
+			if (ui.item.index() == this.start_pos && EE.publish_layout[this.start_tab] == EE.publish_layout[getTabIndex()]) {
 				return;
 			}
 
 			if (field != null) {
 				var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
 				//remove item from original tab array
-				EE.publish_layout[start_tab].fields.splice(start_pos, 1)[0];
+				EE.publish_layout[this.start_tab].fields.splice(this.start_pos, 1)[0];
 
 				//add item to the new tab array
 				EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
