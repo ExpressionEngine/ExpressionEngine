@@ -452,7 +452,7 @@ $lang = array(
 
     'ip_address_banning' => 'IP Addresses',
 
-    'ip_banning_instructions' => '<b>Place each IP address on a separate line</b> <br>You may use * as a wild-card e.g. 123.345.*',
+    'ip_banning_instructions' => '<b>Place each IP address on a separate line</b> <br>You may also use partial IP addresses*',
 
     'restrict_to_viewing' => 'Allow access in view only mode',
 
