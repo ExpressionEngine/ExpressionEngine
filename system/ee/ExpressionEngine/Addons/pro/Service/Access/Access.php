@@ -184,14 +184,20 @@ class Access
     {
         // If there are multiple members, we require pro
         if (is_null(static::$requiresLicense)) {
+            $cpRoleIds = ee('db')->distinct()->select('role_id')->from('permissions')->where('permission', 'can_access_cp')->get();
+            $cpRoles = [1];
+            foreach ($cpRoleIds->result_array() as $row) {
+                $cpRoles[] = $row['role_id'];
+            }
+            $cpRolesList = implode(', ', $cpRoles);
             $countMemberWithCPAccessQuery = "SELECT COUNT(DISTINCT(exp_members.member_id)) AS count
                 FROM exp_members
-                JOIN exp_members_roles ON (exp_members.member_id = exp_members_roles.member_id)
+                LEFT JOIN exp_members_roles ON (exp_members.member_id = exp_members_roles.member_id)
                 LEFT JOIN exp_members_role_groups ON (exp_members.member_id = exp_members_role_groups.member_id)
                 LEFT JOIN exp_roles_role_groups ON (exp_members_role_groups.group_id = exp_roles_role_groups.group_id)
-                WHERE exp_members.role_id = 1
-                OR exp_members_roles.role_id IN (SELECT role_id FROM exp_permissions WHERE permission = 'can_access_cp' GROUP BY role_id)
-                OR exp_roles_role_groups.role_id IN (SELECT role_id FROM exp_permissions WHERE permission = 'can_access_cp' GROUP BY role_id)";
+                WHERE exp_members.role_id IN ({$cpRolesList})
+                OR exp_members_roles.role_id IN ({$cpRolesList})
+                OR exp_roles_role_groups.role_id IN ({$cpRolesList})";
 
             $countMemberWithCPAccess = ee()->db->query($countMemberWithCPAccessQuery)->row('count');
 
