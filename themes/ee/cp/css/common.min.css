@@ -37656,6 +37656,7 @@ body[data-theme="dark"] {
   padding-top: 0;
   padding-bottom: 0;
   position: relative;
+  align-items: flex-start;
 }
 @media (max-width: 767px) {
   .secondary-sidebar-container {
