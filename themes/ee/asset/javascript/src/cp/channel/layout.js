@@ -146,8 +146,6 @@ $(document).ready(function () {
 			});
 
 			this.start_tab = tab_index;
-			console.log('pos', this.start_pos);
-			console.log('tab', this.start_tab);
 			// get field which changing position
 			// field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
 			field = EE.publish_layout[getTabIndex()].fields[fieldIndex];
