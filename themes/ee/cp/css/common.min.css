@@ -37274,6 +37274,16 @@ body[data-theme="dark"] {
     visibility: hidden;
   }
 }
+.tab-wrap .js-layout-item {
+  margin-bottom: 10px;
+}
+.tab-wrap .custom-drag-placeholder .none {
+  background-color: var(--ee-bg-0);
+  border: 1px dashed var(--ee-border-dark);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
 .tab-wrap:after {
   clear: both;
   content: "";

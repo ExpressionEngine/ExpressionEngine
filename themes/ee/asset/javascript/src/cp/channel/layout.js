@@ -57,7 +57,7 @@ $(document).ready(function () {
 	function makeTabsDroppable()
 	{
 		tabs.find('.tab-bar__tab').droppable({
-			accept: ".layout-item-wrapper .js-layout-item",
+			accept: ".js-layout-item",
 			hoverClass: "highlight",
 			tolerance: "pointer",
 			drop: function(e, ui) {
@@ -73,6 +73,11 @@ $(document).ready(function () {
 				// Add the fieldset to the new tab
 				$('<div class="js-layout-item"></div>').append(ui.draggable.html()).prependTo($('div.tab-open .layout-item-wrapper'));
 
+				// remove custom placeholder
+				if ($('div.tab-open .layout-item-wrapper .custom-drag-placeholder').length) {
+					$('div.tab-open .layout-item-wrapper .custom-drag-placeholder').remove();
+				}
+
 				if ($(ui.draggable).has('.field-option-required')) {
 					var tab = $(this).closest('.tab-bar__tab');
 					if ($(tab).find('.tab-off').length > 0) {
@@ -81,21 +86,33 @@ $(document).ready(function () {
 				}
 
 				// Add the field to the publish_layout array
-				EE.publish_layout[getTabIndex()].fields.unshift(field);
-				field = null;
+				// EE.publish_layout[getTabIndex()].fields.unshift(field);
+				// field = null;
 			},
 			over: function(e, ui) {
 				tab = this;
 				spring = setTimeout(function() {
 					$(tab).trigger('click');
+					// add custom placeholder if wrapper doesn't have children
+					if ($('div.tab-open .layout-item-wrapper').children().length == 0) {
+						$('<div class="custom-drag-placeholder"><div class="none"></div></div>').prependTo($('div.tab-open .layout-item-wrapper'));
+					}
 					sheets.sortable("refreshPositions");
 				}, spring_delay);
 			},
 			out: function(e, ui) {
 				clearTimeout(spring);
+				// remove custom placeholder
+				if ($('div.tab-open .layout-item-wrapper .custom-drag-placeholder').length) {
+					$('div.tab-open .layout-item-wrapper .custom-drag-placeholder').remove();
+				}
 			},
 			deactivate: function(e, ui) {
 				clearTimeout(spring);
+				// remove custom placeholder
+				if ($('div.tab-open .layout-item-wrapper .custom-drag-placeholder').length) {
+					$('div.tab-open .layout-item-wrapper .custom-drag-placeholder').remove();
+				}
 			}
 		});
 	}
@@ -110,21 +127,42 @@ $(document).ready(function () {
 		forcePlaceholderSize: true,
 		handle: ".layout-item .layout-item__handle",
 		helper: "clone",
-		items: ".layout-item-wrapper .js-layout-item",
+		items: ".js-layout-item",
 		placeholder: "drag-placeholder",
+		start_pos: null,
+		start_tab: null,
 		start: function (event, ui) {
 			var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
-			field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
+
+			//set original position from where item start to move
+			this.start_pos = ui.item.index();
+
+			// set original tab index
+			var tab_index;
+			$(EE.publish_layout).each(function(index, el) {
+				if (EE.publish_layout[getTabIndex()].id == el.id) {
+					tab_index = index;
+				}
+			});
+
+			this.start_tab = tab_index;
+			// get field which changing position
+			field = EE.publish_layout[getTabIndex()].fields[fieldIndex];
+			// field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
 			ui.placeholder.append('<div class="none"></div>');
 		},
 		stop: function (event, ui) {
-			if (ui.position == ui.originalPosition) {
+			// check if the item remains in the same place in the same tab where it was
+			if (ui.item.index() == this.start_pos && EE.publish_layout[this.start_tab] == EE.publish_layout[getTabIndex()]) {
 				return;
 			}
 
 			if (field != null) {
 				var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
+				//remove item from original tab array
+				EE.publish_layout[this.start_tab].fields.splice(this.start_pos, 1)[0];
 
+				//add item to the new tab array
 				EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
 				field = null;
 			}
