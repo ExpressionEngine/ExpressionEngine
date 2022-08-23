@@ -72,7 +72,7 @@ class Login extends CP_Controller
         if (empty($return_path)) {
             $return_path = ee()->session->getMember()->getCPHomepageURL();
         }
-        if (!ee('pro:Access')->hasRequiredLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
+        if ((ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
             $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
 
             // If there is a URL= parameter in the return URL folks could end up anywhere
