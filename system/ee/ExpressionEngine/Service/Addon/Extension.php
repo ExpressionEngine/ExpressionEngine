@@ -24,7 +24,7 @@ class Extension extends Controller
      * @return string
      * @throws ControllerException
      */
-    protected function buildObject($method): string
+    protected function buildObject($method)
     {
         $object = '\\' . $this->getRouteNamespace() . '\\Extensions\\';
         $object .= Str::studly($method);

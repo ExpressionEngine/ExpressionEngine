@@ -31,7 +31,7 @@ class Mcp extends Controller
      * @return Controllers\Mcp\AbstractRoute|null
      * @throws ControllerException
      */
-    protected function process(string $domain): ?Controllers\Mcp\AbstractRoute
+    protected function process($domain)
     {
         $object = $this->buildObject($domain);
         if (class_exists($object)) {
@@ -50,7 +50,7 @@ class Mcp extends Controller
      * @return array|void
      * @throws ControllerException
      */
-    public function route(string $domain, array $params = [])
+    public function route($domain, array $params = [])
     {
         $this->parseParams($params);
         $route = $this->process($domain);
@@ -65,7 +65,7 @@ class Mcp extends Controller
      * @param array $params
      * @return $this
      */
-    protected function parseParams(array $params): Mcp
+    protected function parseParams(array $params)
     {
         if (!empty($params['0'])) {
             if (!is_numeric($params['0'])) {
@@ -87,7 +87,7 @@ class Mcp extends Controller
      * @return string
      * @throws ControllerException
      */
-    protected function buildObject(string $domain): string
+    protected function buildObject($domain)
     {
         $object = '\\' . $this->getRouteNamespace() . '\\Mcp\\' . Str::studly($domain);
 

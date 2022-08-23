@@ -31,7 +31,7 @@ class Controller
      * @param string $namespace
      * @return $this
      */
-    public function setRouteNamespace(string $namespace): Controller
+    public function setRouteNamespace($namespace)
     {
         $this->route_namespace = $namespace;
         return $this;
@@ -41,7 +41,7 @@ class Controller
      * @return string
      * @throws ControllerException
      */
-    public function getRouteNamespace(): string
+    public function getRouteNamespace()
     {
         if ($this->route_namespace == '') {
             $addon = ee('Addon')->get($this->getAddonName());
@@ -60,7 +60,7 @@ class Controller
      * @param string $addon_name
      * @return $this
      */
-    public function setAddonName(string $addon_name): Controller
+    public function setAddonName($addon_name)
     {
         $this->addon_name = $addon_name;
         return $this;
@@ -69,7 +69,7 @@ class Controller
     /**
      * @return string
      */
-    public function getAddonName(): string
+    public function getAddonName()
     {
         return $this->addon_name;
     }

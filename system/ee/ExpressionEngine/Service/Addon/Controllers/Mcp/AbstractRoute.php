@@ -68,12 +68,12 @@ abstract class AbstractRoute extends CoreAbstractRoute
     /**
      * @return AbstractRoute
      */
-    abstract public function process($id = false): AbstractRoute;
+    abstract public function process($id = false);
 
     /**
      * @return string
      */
-    public function getHeading(): string
+    public function getHeading()
     {
         return $this->heading;
     }
@@ -82,7 +82,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
      * @param string $heading
      * @return $this
      */
-    public function setHeading(string $heading): AbstractRoute
+    public function setHeading($heading)
     {
         $this->heading = $heading;
         return $this;
@@ -91,7 +91,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     /**
      * @return string
      */
-    public function getBody(): string
+    public function getBody()
     {
         return $this->body;
     }
@@ -101,7 +101,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
      * @param array $variables
      * @return $this
      */
-    public function setBody(string $view, array $variables = []): AbstractRoute
+    public function setBody($view, array $variables = [])
     {
         $variables = $this->prepareBodyVars($variables);
         $this->body = ee('View')->make($this->addon_name . ':' . $view)->render($variables);
@@ -112,7 +112,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
      * Compiles some universal variables for use in views
      * @param array $variables
      */
-    protected function prepareBodyVars(array $variables = []): array
+    protected function prepareBodyVars(array $variables = [])
     {
         return array_merge([
             'cp_page_title' => $this->getHeading(),
@@ -123,7 +123,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     /**
      * @return array
      */
-    public function getBreadcrumbs(): array
+    public function getBreadcrumbs()
     {
         return $this->breadcrumbs;
     }
@@ -133,7 +133,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
      * @param string $text
      * @return $this
      */
-    protected function addBreadcrumb(string $url, string $text): AbstractRoute
+    protected function addBreadcrumb($url, $text)
     {
         $this->breadcrumbs[$this->url($url, true)] = lang($text);
         return $this;
@@ -143,7 +143,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
      * @param array $breadcrumbs
      * @return $this
      */
-    protected function setBreadcrumbs(array $breadcrumbs = []): AbstractRoute
+    protected function setBreadcrumbs(array $breadcrumbs = [])
     {
         $this->breadcrumbs = $breadcrumbs;
         return $this;
@@ -155,7 +155,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
      * @param array $query
      * @return mixed
      */
-    protected function url(string $path, bool $with_base = true, array $query = []): string
+    protected function url($path, $with_base = true, $query = [])
     {
         if ($with_base) {
             $path = $this->getBaseUrl() . '/' . $path;
@@ -167,7 +167,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     /**
      * @return array
      */
-    public function toArray(): array
+    public function toArray()
     {
         return [
             'heading' => lang($this->getHeading()),
@@ -181,7 +181,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
      * @return string
      * @throws RouteException
      */
-    protected function getRoutePath($id = ''): string
+    protected function getRoutePath($id = '')
     {
         if ($this->route_path == '') {
             throw new RouteException("Your route_path property isn't setup in your Route object!");
@@ -193,7 +193,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     /**
      * @return string
      */
-    public function getBaseUrl(): string
+    public function getBaseUrl()
     {
         if ($this->base_url == '') {
             $this->base_url = 'addons/settings/' . $this->getAddonName();
@@ -205,7 +205,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     /**
      * @throws RouteException
      */
-    protected function generateSidebar(): void
+    protected function generateSidebar()
     {
         $this->sidebar = ee('CP/Sidebar')->make();
         $active = false;

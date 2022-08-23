@@ -23,7 +23,7 @@ class Module extends Controller
      * @param string $method
      * @return bool
      */
-    protected function isActRequest(string $method): bool
+    protected function isActRequest($method)
     {
         return substr($method, -6) == 'action' && ee()->input->get_post('ACT');
     }
@@ -32,7 +32,7 @@ class Module extends Controller
      * @param string $method
      * @return mixed
      */
-    protected function routeAction(string $method)
+    protected function routeAction($method)
     {
         $object = $this->buildObject($method, true);
         return $this->route($object);
@@ -43,7 +43,7 @@ class Module extends Controller
      * @return mixed
      * @throws ControllerException
      */
-    protected function routeTag(string $method)
+    protected function routeTag($method)
     {
         $object = $this->buildObject($method);
         return $this->route($object);
@@ -54,7 +54,7 @@ class Module extends Controller
      * @return mixed
      * @throws ControllerException
      */
-    protected function route(string $object)
+    protected function route($object)
     {
         if (class_exists($object)) {
 
@@ -77,7 +77,7 @@ class Module extends Controller
      * @return string
      * @throws ControllerException
      */
-    protected function buildObject(string $method, bool $action = false): string
+    protected function buildObject($method, $action = false)
     {
         $object = '\\' . $this->getRouteNamespace() . '\\Module\\';
         if ($action) {
