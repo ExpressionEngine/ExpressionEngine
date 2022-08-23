@@ -22,7 +22,7 @@ $component = [
 
 $placeholder = '<label class="field-loading">' . lang('loading') . '<span></span></label>';
 
-if ($deferred && empty($selected)) {
+if ($deferred) {
     echo '<div class="react-deferred-loading--relationship">';
 
     $template = '<li class="list-item">
@@ -57,7 +57,7 @@ if ($deferred && empty($selected)) {
     ';
 }
 ?>
-<div data-relationship-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" <?php echo ($deferred && empty($selected) ? 'class="react-deferred-loading"' : '') ?>>
+<div data-relationship-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" <?php echo ($deferred ? 'class="react-deferred-loading"' : '') ?>>
     <div class="fields-select">
         <div class="field-inputs">
             <?php echo $placeholder ?>
@@ -65,7 +65,7 @@ if ($deferred && empty($selected)) {
     </div>
 </div>
 <?php
-if ($deferred && empty($selected)) {
+if ($deferred) {
     echo '</div>';
 }
 ?>
