@@ -1602,6 +1602,26 @@ class Member
     }
 
     /**
+     * Allows for validation of username and password using Ajax
+     * @return void
+     */
+    public function login_validate()
+    {
+        ee()->load->library('Auth');
+        $verify = ee()->auth->verify();
+        $reasons = [];
+        if(!$verify) {
+            $reasons = ee()->auth->errors;
+        }
+
+        echo json_encode([
+            'result' => ($verify ? 'success' : 'fail'),
+            'reason' => $reasons,
+            'username' => ee()->input->get('username'),
+        ]);
+    }
+
+    /**
      * Username/password update
      */
     public function unpw_update()
