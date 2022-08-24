@@ -105,13 +105,24 @@ class CkeditorService implements RteService
             $config['image'] = new \stdClass();
             $config['image']->toolbar = [
                 'imageTextAlternative',
-                'linkImage',
-                'imageStyle:full',
+                'toggleImageCaption',
+                'linkImage'
+            ];
+            $imageStyles = new \stdClass();
+            $imageStyles->name = 'imageStyle:customDropdown';
+            $imageStyles->title = lang('alignment_rte');
+            $imageStyles->defaultItem = 'imageStyle:inline';
+            $imageStyles->items = [
+                'imageStyle:inline',
+                'imageStyle:block',
                 'imageStyle:side',
                 'imageStyle:alignLeft',
+                'imageStyle:alignBlockLeft',
                 'imageStyle:alignCenter',
+                'imageStyle:alignBlockRight',
                 'imageStyle:alignRight'
             ];
+            $config['image']->toolbar[] = $imageStyles;
             $config['image']->styles = [
                 'full',
                 'side',
@@ -272,6 +283,7 @@ class CkeditorService implements RteService
                 "superscript",
                 "blockquote",
                 "code",
+                "codeBlock",
                 "heading",
                 "removeFormat",
                 "undo",
