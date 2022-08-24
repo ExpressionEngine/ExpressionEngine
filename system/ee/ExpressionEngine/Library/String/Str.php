@@ -8,7 +8,7 @@ class Str
      * @param string $value
      * @return string
      */
-    public static function studly(string $value): string
+    public static function studly($value)
     {
         return str_replace(' ', '',
             ucwords(str_replace(['-', '_'], ' ', $value))
@@ -20,7 +20,7 @@ class Str
      * @param $value
      * @return string
      */
-    public static function path2ns(string $value): string
+    public static function path2ns($value)
     {
         return str_replace('/', '\\', $value);
     }
@@ -30,13 +30,11 @@ class Str
      * @param string $value
      * @return string
      */
-    public static function dash2ns(string $value): string
+    public static function dash2ns($value)
     {
         return self::path2ns(
             str_replace(' ', '/',
-                str_replace('cartthrob', 'CartThrob', // ;)
-                    ucwords(str_replace('_', ' ', $value))
-                )
+                ucwords(str_replace('_', ' ', $value))
             )
         );
     }
