@@ -241,11 +241,17 @@ var ColorPicker = /** @class */ (function (_super) {
     };
     return ColorPicker;
 }(React.Component));
-// TODO: The color picker overflows the grid field
+
 // Render color picker inputs when created:
+// Fields that are present on page
 $(window).on('load', function () {
-    // Using window.load to make sure this code gets called after all document.readys
     ColorPicker.renderFields();
+});
+$(document).ready(function() {
+    // Fields that get added when adding Grid rows
+    $(window).on('load', function () {
+        ColorPicker.renderFields();
+    });
 });
 Grid.bind('colorpicker', 'displaySettings', function (el) {
     ColorPicker.renderFields(el[0]);
