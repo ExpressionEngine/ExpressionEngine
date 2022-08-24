@@ -1614,9 +1614,9 @@ class Member
             $reasons = ee()->auth->errors;
         }
 
-        echo json_encode([
-            'result' => ($verify ? 'success' : 'fail'),
-            'reason' => $reasons,
+        ee()->output->send_ajax_response([
+            'messageType' => ($verify ? 'success' : 'error'),
+            'messages' => $reasons,
             'username' => ee()->input->get('username'),
         ]);
     }
