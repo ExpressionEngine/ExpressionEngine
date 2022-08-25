@@ -1,26 +1,25 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Addons\Rte\Service;
 
 use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
-class CkeditorService implements RteService
+class CkeditorService extends AbstractRteService implements RteService
 {
-    public $class = 'rte-textarea rte-ckeditor';
+    public $class = 'rte-textarea';
     public $handle;
     protected $settings;
     protected $toolset;
     private static $_includedFieldResources = false;
     private static $_includedConfigs;
-
-    public function init($settings, $toolset = null)
-    {
-        $this->settings = $settings;
-        $this->toolset = $toolset;
-        $this->includeFieldResources();
-        $this->insertConfigJsById();
-        return $this->handle;
-    }
 
     protected function includeFieldResources()
     {
@@ -49,11 +48,6 @@ class CkeditorService implements RteService
 
             static::$_includedFieldResources = true;
         }
-    }
-
-    public function getClass()
-    {
-        return $this->class;
     }
 
     protected function insertConfigJsById()
@@ -131,6 +125,8 @@ class CkeditorService implements RteService
                 'alignRight'
             ];
         }
+
+        $config['editorClass'] = 'rte_' . $configHandle;
 
         if (in_array('heading', $config['toolbar']->items)) {
             $config['heading'] = new \stdClass();
@@ -214,6 +210,10 @@ class CkeditorService implements RteService
 
         if (isset($config['height']) && !empty($config['height'])) {
             ee()->cp->add_to_head('<style type="text/css">.ck-editor__editable_inline { min-height: ' . $config['height'] . 'px; }</style>');
+        }
+
+        if (isset($config['css_template'])) {
+            $this->includeCustomCSS($configHandle, $config['css_template'], '.ck.ck-editor.rte_' . $configHandle);
         }
 
         return $configHandle;

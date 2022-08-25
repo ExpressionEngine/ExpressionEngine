@@ -415,6 +415,20 @@ class Rte_mcp
                     )
                 ),
                 array(
+                    'title' => lang('custom_stylesheet'),
+                    'desc' => lang('custom_stylesheet_desc'),
+                    'fields' => array(
+                        'settings[css_template]' => array(
+                            'type' => 'dropdown',
+                            'choices' => $this->getCSSTemplates(),
+                            'value' => isset($config->settings['css_template']) && !empty($config->settings['css_template']) ? (int) $config->settings['css_template'] : '',
+                            'no_results' => [
+                                'text' => sprintf(lang('no_found'), lang('templates'))
+                            ]
+                        )
+                    )
+                ),
+                array(
                     'title' => lang('rte_min_height'),
                     'desc' => lang('rte_min_height_desc'),
                     'fields' => array(
@@ -493,5 +507,34 @@ class Rte_mcp
         }
 
         ee()->functions->redirect($this->base_url);
+    }
+
+    /**
+     * Gets a list of the templates for the current site that do not already
+     * have a route, grouped by their template group name:
+     *   array(
+     *     'news' => array(
+     *       1 => 'index',
+     *       3 => 'about',
+     *     )
+     *   )
+     *
+     * @return array An associative array of templates
+     */
+    private function getCSSTemplates()
+    {
+        $templates = ee('Model')->get('Template')
+            ->with('TemplateGroup')
+            ->order('TemplateGroup.group_name')
+            ->filter('template_type', 'css')
+            ->order('template_name')
+            ->all();
+
+        $results = [];
+        foreach ($templates as $template) {
+            $results[$template->getId()] = $template->getPath();
+        }
+
+        return $results;
     }
 }

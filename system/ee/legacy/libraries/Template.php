@@ -2733,6 +2733,10 @@ class EE_Template
 
             if (file_exists($basepath)) {
                 $row['template_data'] = file_get_contents($basepath);
+                $templateFileEditDate = filemtime($basepath);
+                if ($templateFileEditDate > $row['edit_date']) {
+                    $this->template_edit_date = $templateFileEditDate;
+                }
             }
 
             if ($site_switch !== false) {
