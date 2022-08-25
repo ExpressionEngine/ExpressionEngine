@@ -1,10 +1,18 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Addons\Rte\Service;
 
 use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
-class RedactorService implements RteService {
+class RedactorService extends AbstractRteService implements RteService {
 
     public $class = 'rte-textarea redactor-box';
     public $handle;
@@ -12,15 +20,6 @@ class RedactorService implements RteService {
     protected $toolset;
     private static $_includedFieldResources = false;
     private static $_includedConfigs;
-
-    public function init($settings, $toolset = null)
-    {
-        $this->settings = $settings;
-        $this->toolset = $toolset;
-        $this->includeFieldResources();
-        $this->insertConfigJsById();
-        return $this->handle;
-    }
 
     protected function includeFieldResources()
     {
@@ -46,11 +45,6 @@ class RedactorService implements RteService {
 
             static::$_includedFieldResources = true;
         }
-    }
-
-    public function getClass()
-    {
-        return $this->class;
     }
 
     protected function insertConfigJsById()
@@ -97,6 +91,8 @@ class RedactorService implements RteService {
             $config['toolbar']['definedlinks'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
             $config['toolbar']['handle'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
         }
+
+        $config['toolbar']['stylesClass'] = 'redactor-styles rte_' . $configHandle;
 
         // -------------------------------------------
         //  File Browser Config
@@ -157,6 +153,10 @@ class RedactorService implements RteService {
         ]);
 
         static::$_includedConfigs[] = $configHandle;
+
+        if (isset($config['css_template'])) {
+            $this->includeCustomCSS($configHandle, $config['css_template'], '.redactor-styles.rte_' . $configHandle);
+        }
 
         return $configHandle;
     }
