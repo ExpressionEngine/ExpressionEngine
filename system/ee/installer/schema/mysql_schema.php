@@ -1021,8 +1021,8 @@ class EE_Schema
         $Q[] = "CREATE TABLE exp_revision_tracker (
 			tracker_id int(10) unsigned NOT NULL auto_increment,
 			item_id int(10) unsigned NOT NULL,
-			item_table varchar(20) NOT NULL,
-			item_field varchar(20) NOT NULL,
+			item_table varchar(50) NOT NULL,
+			item_field varchar(32) NOT NULL,
 			item_date int(10) NOT NULL,
 			item_author_id int(10) UNSIGNED NOT NULL,
 			item_data mediumtext NOT NULL,
