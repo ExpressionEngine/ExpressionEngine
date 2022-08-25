@@ -1670,7 +1670,7 @@ $R.opts = {
     // upload opts
     uploadData: false,
     dragUpload: true,
-    multipleUpload: true,
+    multipleUpload: false,
     clipboardUpload: true,
     uploadBase64: false,
 
@@ -13624,7 +13624,7 @@ $R.add('module', 'modal', {
     // private
     _isOpened: function()
     {
-        return (this.$modal && this.$modal.hasClass('open'));
+        return (this.$modal && this.$modal.hasClass('redactor-modal-open'));
     },
     _open: function(data)
     {
@@ -13687,7 +13687,7 @@ $R.add('module', 'modal', {
     },
     _opened: function()
     {
-        this.$modal.addClass('open');
+        this.$modal.addClass('open').addClass('redactor-modal-open');
         this.$box.on('mousedown.redactor.modal', this._close.bind(this));
         this.$doc.on('keyup.redactor.modal', this._handleEscape.bind(this));
         this.$win.on('resize.redactor.modal', this.resize.bind(this));
