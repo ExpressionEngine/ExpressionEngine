@@ -342,10 +342,9 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
 
 // Render color picker inputs when created:
 
-$(document).ready(function () {
-    // Using window.load to make sure this code gets called after all document.readys
-    $(window).on('load', () => {
-        ColorPicker.renderFields()
+$(window).on('load', function() {
+    $(document).ready(function() {
+        ColorPicker.renderFields();
     })
 })
 
@@ -369,6 +368,7 @@ FluidField.on('colorpicker', 'add', function(field) {
 FieldManager.on('fieldModalDisplay', function(modal) {
     ColorPicker.renderFields(modal[0])
 });
+
 
 $('input.color-picker').each(function() {
     var input = this;
