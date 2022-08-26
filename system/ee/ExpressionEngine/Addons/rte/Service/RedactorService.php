@@ -181,7 +181,14 @@ class RedactorService extends AbstractRteService implements RteService {
     {
             ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
 
-            $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+            $selection = [];
+            if (is_object($config->settings['toolbar'])) {
+                if (isset($config->settings['toolbar']->items)) {
+                    $selection = $config->settings['toolbar']->items;
+                }
+            } else {
+                $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+            }
 
             $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['buttons']);//merge to get the right order
             $fullToolset = [];
@@ -202,7 +209,14 @@ class RedactorService extends AbstractRteService implements RteService {
 
     public function pluginsInputHtml($config)
     {
-            $selection = isset($config->settings['toolbar']['plugins']) ? $config->settings['toolbar']['plugins'] : $config->settings['toolbar'];
+            $selection = [];
+            if (is_object($config->settings['toolbar'])) {
+                if (isset($config->settings['toolbar']->items)) {
+                    $selection = $config->settings['toolbar']->items;
+                }
+            } else {
+                $selection = isset($config->settings['toolbar']['plugins']) ? $config->settings['toolbar']['plugins'] : $config->settings['toolbar'];
+            }
 
             $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['plugins']);
             $fullToolset = [];

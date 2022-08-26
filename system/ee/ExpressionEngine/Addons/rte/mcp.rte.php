@@ -242,8 +242,10 @@ class Rte_mcp
                 if (empty($json)) {
                     $jsonError = true;
                     $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
-                } else {
+                } elseif ($toolsetType == 'redactor') {
                     $settings['toolbar'] = (array) $json;
+                } else {
+                    $settings = array_merge($settings, (array) $json);
                 }
             } else {
                 $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
@@ -347,7 +349,13 @@ class Rte_mcp
         $toolbarInputHtml['ckeditor'] = ee('rte:CkeditorService')->toolbarInputHtml($config);
         $toolbarInputHtml['redactor'] = ee('rte:RedactorService')->toolbarInputHtml($config);
 
-        $rte_config_json = (isset($jsonError) && $jsonError) ? $settings['rte_config_json'] : json_encode($config->settings['toolbar'], JSON_PRETTY_PRINT);
+        if (isset($config->settings['rte_advanced_config']) && !empty($config->settings['rte_advanced_config']) && $config->settings['rte_advanced_config'] == 'y') {
+            $rte_config_json = $config->settings['rte_config_json'];
+        } elseif ($toolsetType == 'redactor') {
+            $rte_config_json = json_encode($config->settings['toolbar'], JSON_PRETTY_PRINT);
+        } else {
+            $rte_config_json = json_encode(ee('rte:CkeditorService')->buildToolbarConfig($config->settings), JSON_PRETTY_PRINT);
+        }
 
         $sections = array(
             'rte_basic_settings' => array(
@@ -544,12 +552,18 @@ class Rte_mcp
         );
         if (isset($config->settings['rte_advanced_config']) && $config->settings['rte_advanced_config'] == 'y') {
             //json editor is visible, initialize immediately
-            ee()->javascript->output("$('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();");
+            ee()->javascript->output("
+                $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+                $('fieldset[data-group=ckeditor_toolbar]').hide();
+                $('fieldset[data-group=redactor_toolbar]').hide();
+            ");
         } else {
             ee()->javascript->output("
                 window.document.addEventListener('formFields:toggle', (event) => {
                     if (event.detail.group == 'rte_advanced_config' && event.detail.state == 'y') {
                         $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+                        $('fieldset[data-group=ckeditor_toolbar]').hide();
+                        $('fieldset[data-group=redactor_toolbar]').hide();
                     }
                 });
             ");

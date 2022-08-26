@@ -91,55 +91,10 @@ class CkeditorService extends AbstractRteService implements RteService
         $config['language'] = ee()->lang->code($language);
 
         // toolbar
-        if (is_array($config['toolbar'])) {
-            $toolbarObject = new \stdClass();
-            $toolbarObject->items = $config['toolbar'];
-            $toolbarObject->viewportTopOffset = 59;
-            $config['toolbar'] = $toolbarObject;
-            $config['image'] = new \stdClass();
-            $config['image']->toolbar = [
-                'imageTextAlternative',
-                'toggleImageCaption',
-                'linkImage'
-            ];
-            $imageStyles = new \stdClass();
-            $imageStyles->name = 'imageStyle:customDropdown';
-            $imageStyles->title = lang('alignment_rte');
-            $imageStyles->defaultItem = 'imageStyle:inline';
-            $imageStyles->items = [
-                'imageStyle:inline',
-                'imageStyle:block',
-                'imageStyle:side',
-                'imageStyle:alignLeft',
-                'imageStyle:alignBlockLeft',
-                'imageStyle:alignCenter',
-                'imageStyle:alignBlockRight',
-                'imageStyle:alignRight'
-            ];
-            $config['image']->toolbar[] = $imageStyles;
-            $config['image']->styles = [
-                'full',
-                'side',
-                'alignLeft',
-                'alignCenter',
-                'alignRight'
-            ];
-        }
+        $config = array_merge($config, $this->buildToolbarConfig($config));
+        $config['toolbar']->viewportTopOffset = 59;
 
         $config['editorClass'] = 'rte_' . $configHandle;
-
-        if (in_array('heading', $config['toolbar']->items)) {
-            $config['heading'] = new \stdClass();
-            $config['heading']->options = [
-                (object) ['model' => 'paragraph', 'title' => lang('paragraph_rte')],
-                (object) ['model' => 'heading1', 'view' => 'h1', 'title' => lang('heading_h1_rte'), 'class' => 'ck-heading_heading1'],
-                (object) ['model' => 'heading2', 'view' => 'h2', 'title' => lang('heading_h2_rte'), 'class' => 'ck-heading_heading2'],
-                (object) ['model' => 'heading3', 'view' => 'h3', 'title' => lang('heading_h3_rte'), 'class' => 'ck-heading_heading3'],
-                (object) ['model' => 'heading4', 'view' => 'h4', 'title' => lang('heading_h4_rte'), 'class' => 'ck-heading_heading4'],
-                (object) ['model' => 'heading5', 'view' => 'h5', 'title' => lang('heading_h5_rte'), 'class' => 'ck-heading_heading5'],
-                (object) ['model' => 'heading6', 'view' => 'h6', 'title' => lang('heading_h6_rte'), 'class' => 'ck-heading_heading6']
-            ];
-        }
 
         if (!empty(ee()->config->item('site_pages'))) {
             ee()->cp->add_to_foot('<script type="text/javascript">
@@ -219,9 +174,68 @@ class CkeditorService extends AbstractRteService implements RteService
         return $configHandle;
     }
 
+    public function buildToolbarConfig($config)
+    {
+        $toolbarConfig = [];
+        if (is_array($config['toolbar'])) {
+            $toolbarObject = new \stdClass();
+            $toolbarObject->items = $config['toolbar'];
+            $toolbarConfig['toolbar'] = $toolbarObject;
+            $toolbarConfig['image'] = new \stdClass();
+            $toolbarConfig['image']->toolbar = [
+                'imageTextAlternative',
+                'toggleImageCaption',
+                'linkImage'
+            ];
+            $imageStyles = new \stdClass();
+            $imageStyles->name = 'imageStyle:customDropdown';
+            $imageStyles->title = lang('alignment_rte');
+            $imageStyles->defaultItem = 'imageStyle:inline';
+            $imageStyles->items = [
+                'imageStyle:inline',
+                'imageStyle:block',
+                'imageStyle:side',
+                'imageStyle:alignLeft',
+                'imageStyle:alignBlockLeft',
+                'imageStyle:alignCenter',
+                'imageStyle:alignBlockRight',
+                'imageStyle:alignRight'
+            ];
+            $toolbarConfig['image']->toolbar[] = $imageStyles;
+            $toolbarConfig['image']->styles = [
+                'full',
+                'side',
+                'alignLeft',
+                'alignCenter',
+                'alignRight'
+            ];
+            if (in_array('heading', $toolbarConfig['toolbar']->items)) {
+                $toolbarConfig['heading'] = new \stdClass();
+                $toolbarConfig['heading']->options = [
+                    (object) ['model' => 'paragraph', 'title' => lang('paragraph_rte')],
+                    (object) ['model' => 'heading1', 'view' => 'h1', 'title' => lang('heading_h1_rte'), 'class' => 'ck-heading_heading1'],
+                    (object) ['model' => 'heading2', 'view' => 'h2', 'title' => lang('heading_h2_rte'), 'class' => 'ck-heading_heading2'],
+                    (object) ['model' => 'heading3', 'view' => 'h3', 'title' => lang('heading_h3_rte'), 'class' => 'ck-heading_heading3'],
+                    (object) ['model' => 'heading4', 'view' => 'h4', 'title' => lang('heading_h4_rte'), 'class' => 'ck-heading_heading4'],
+                    (object) ['model' => 'heading5', 'view' => 'h5', 'title' => lang('heading_h5_rte'), 'class' => 'ck-heading_heading5'],
+                    (object) ['model' => 'heading6', 'view' => 'h6', 'title' => lang('heading_h6_rte'), 'class' => 'ck-heading_heading6']
+                ];
+            }
+        }
+
+        return $toolbarConfig;
+    }
+
     public function toolbarInputHtml($config)
     {
-        $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+        $selection = [];
+        if (is_object($config->settings['toolbar'])) {
+            if (isset($config->settings['toolbar']->items)) {
+                $selection = $config->settings['toolbar']->items;
+            }
+        } else {
+            $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+        }
         $fullToolbar = array_merge($selection, static::defaultToolbars()['CKEditor Full']);//merge to get the right order
         $fullToolset = [];
         foreach ($fullToolbar as $i => $tool) {
