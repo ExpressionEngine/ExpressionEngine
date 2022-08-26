@@ -141,9 +141,9 @@ class RedactorService extends AbstractRteService implements RteService {
         }
 
         //link
-        $config['toolbar']['linkValidation'] = false;
-        $config['toolbar']['linkTarget'] = true;
-        $config['toolbar']['linkNewTab'] = true;
+        $config['toolbar']['linkValidation'] = isset($config['toolbar']['linkValidation']) ? (bool) $config['toolbar']['linkValidation'] : false;
+        $config['toolbar']['linkTarget'] = isset($config['toolbar']['linkTarget']) ? (bool) $config['toolbar']['linkTarget'] : true;
+        $config['toolbar']['linkNewTab'] = isset($config['toolbar']['linkNewTab']) ? (bool) $config['toolbar']['linkNewTab'] : true;
 
         // -------------------------------------------
         //  JSONify Config and Return

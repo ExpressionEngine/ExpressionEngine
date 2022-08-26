@@ -235,7 +235,19 @@ class Rte_mcp
 
             $config->toolset_name = $configName;
             $config->toolset_type = $toolsetType;
-            $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
+            $jsonError = false;
+            if ($settings['rte_advanced_config'] == 'y' && !empty($settings['rte_config_json'])) {
+                //override with JSON
+                $json = json_decode($settings['rte_config_json']);
+                if (empty($json)) {
+                    $jsonError = true;
+                    $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
+                } else {
+                    $settings['toolbar'] = (array) $json;
+                }
+            } else {
+                $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
+            }
             if ($toolsetType == 'redactor') {
                 if (!isset($settings['toolbar']['buttons'])) {
                     $settings['toolbar']['buttons'] = [];
@@ -250,7 +262,7 @@ class Rte_mcp
 
             $validate = $config->validate();
 
-            if ($validate->isValid()) {
+            if (!$jsonError && $validate->isValid()) {
                 $config->save();
 
                 ee('CP/Alert')->makeInline('shared-form')
@@ -265,8 +277,7 @@ class Rte_mcp
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
                     ->withTitle(lang('toolset_error'))
-                    ->addToBody(lang('toolset_error_desc'))
-                    //->addToBody($validate->getAllErrors())
+                    ->addToBody($jsonError ? lang('toolset_json_error_desc') : lang('toolset_error_desc'))
                     ->now();
             }
         }
@@ -335,6 +346,8 @@ class Rte_mcp
 
         $toolbarInputHtml['ckeditor'] = ee('rte:CkeditorService')->toolbarInputHtml($config);
         $toolbarInputHtml['redactor'] = ee('rte:RedactorService')->toolbarInputHtml($config);
+
+        $rte_config_json = (isset($jsonError) && $jsonError) ? $settings['rte_config_json'] : json_encode($config->settings['toolbar'], JSON_PRETTY_PRINT);
 
         $sections = array(
             'rte_basic_settings' => array(
@@ -467,16 +480,18 @@ class Rte_mcp
                     'title' => 'rte_advanced_config',
                     'desc' => 'rte_advanced_config_desc',
                     'fields' => array(
-                        'rte_advanced_config' => array(
+                        'settings[rte_advanced_config]' => array(
                             'type' => 'yes_no',
                             'group_toggle' => array(
                                 'y' => 'rte_advanced_config',
                             ),
-                            'value' => isset($config->settings['limiter']) && !empty($config->settings['limiter']) ? (int) $config->settings['limiter'] : 'n',
+                            'value' => isset($config->settings['rte_advanced_config']) && !empty($config->settings['rte_advanced_config']) ? $config->settings['rte_advanced_config'] : 'n',
                         )
                     )
                 ),
                 array(
+                    'title' => 'rte_config_json',
+                    'desc' => 'rte_config_json_desc',
                     'group' => 'rte_advanced_config',
                     'fields' => array(
                         'rte_advanced_config_warning' => array(
@@ -486,16 +501,10 @@ class Rte_mcp
                                 ->addToBody(lang('rte_advanced_config_warning'))
                                 ->cannotClose()
                                 ->render()
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_config_json',
-                    'desc' => 'rte_config_json_desc',
-                    'group' => 'rte_advanced_config',
-                    'fields' => array(
-                        'rte_config_json' => array(
+                        ),
+                        'settings[rte_config_json]' => array(
                             'type' => 'textarea',
+                            'value' => $rte_config_json
                         )
                     )
                 ),
@@ -513,7 +522,6 @@ class Rte_mcp
             'plugin' => 'ee_codemirror',
             'ui' => 'resizable',
             'file' => array(
-                'cp/utilities/sql-query-form',
                 'vendor/codemirror/codemirror',
                 'vendor/codemirror/closebrackets',
                 'vendor/codemirror/comment',
@@ -528,10 +536,24 @@ class Rte_mcp
                 'vendor/codemirror/dialog',
                 'vendor/codemirror/searchcursor',
                 'vendor/codemirror/search',
-                'vendor/codemirror/sql',
             )
         ]);
-        ee()->javascript->output("$('textarea[name=\"rte_config_json\"]').toggleCodeMirror();");
+        ee()->javascript->set_global(
+            'editor.height',
+            ee()->config->item('codemirror_height') !== false ? ee()->config->item('codemirror_height') : 200
+        );
+        if (isset($config->settings['rte_advanced_config']) && $config->settings['rte_advanced_config'] == 'y') {
+            //json editor is visible, initialize immediately
+            ee()->javascript->output("$('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();");
+        } else {
+            ee()->javascript->output("
+                window.document.addEventListener('formFields:toggle', (event) => {
+                    if (event.detail.group == 'rte_advanced_config' && event.detail.state == 'y') {
+                        $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+                    }
+                });
+            ");
+        }
 
         return [
             'body' => ee('View')->make('ee:_shared/form')->render($variables),

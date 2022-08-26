@@ -156,6 +156,8 @@ $lang = array(
 
     'toolset_error_desc' => 'We were unable to save the tool set, please review and fix errors below.',
 
+    'toolset_json_error_desc' => 'The advanced configuration provided is not valid JSON.',
+
     'toolset_not_deleted' => 'Tool set could not be deleted.',
 
     'toolset_update_failed' => 'Tool set update failed. Please try again.',
