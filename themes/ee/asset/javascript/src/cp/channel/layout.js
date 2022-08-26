@@ -151,12 +151,7 @@ $(document).ready(function () {
 			field = EE.publish_layout[getTabIndex()].fields[fieldIndex];
 			ui.placeholder.append('<div class="none"></div>');
 		},
-		stop: function (event, ui) {
-			// check if the item remains in the same place in the same tab where it was
-			if (ui.item.index() == this.start_pos && EE.publish_layout[this.start_tab] == EE.publish_layout[getTabIndex()]) {
-				return;
-			}
-
+		update: function(event, ui) {
 			if (field != null) {
 				var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
 				//remove item from original tab array
@@ -165,6 +160,12 @@ $(document).ready(function () {
 				//add item to the new tab array
 				EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
 				field = null;
+			}
+		},
+		stop: function (event, ui) {
+			// check if the item remains in the same place in the same tab where it was
+			if (ui.item.index() == this.start_pos && EE.publish_layout[this.start_tab] == EE.publish_layout[getTabIndex()]) {
+				return;
 			}
 		},
 	};
