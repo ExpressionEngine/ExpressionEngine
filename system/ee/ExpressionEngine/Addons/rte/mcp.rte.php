@@ -463,6 +463,42 @@ class Rte_mcp
                         )
                     )
                 ),
+                array(
+                    'title' => 'rte_advanced_config',
+                    'desc' => 'rte_advanced_config_desc',
+                    'fields' => array(
+                        'rte_advanced_config' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'rte_advanced_config',
+                            ),
+                            'value' => isset($config->settings['limiter']) && !empty($config->settings['limiter']) ? (int) $config->settings['limiter'] : 'n',
+                        )
+                    )
+                ),
+                array(
+                    'group' => 'rte_advanced_config',
+                    'fields' => array(
+                        'rte_advanced_config_warning' => array(
+                            'type' => 'html',
+                            'content' => ee('CP/Alert')->makeInline('rte_advanced_config_warning')
+                                ->asImportant()
+                                ->addToBody(lang('rte_advanced_config_warning'))
+                                ->cannotClose()
+                                ->render()
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'rte_config_json',
+                    'desc' => 'rte_config_json_desc',
+                    'group' => 'rte_advanced_config',
+                    'fields' => array(
+                        'rte_config_json' => array(
+                            'type' => 'textarea',
+                        )
+                    )
+                ),
             ),
         );
 
@@ -472,6 +508,30 @@ class Rte_mcp
 
         $variables['save_btn_text'] = lang('save');
         $variables['save_btn_text_working'] = lang('saving');
+
+        ee()->cp->add_js_script([
+            'plugin' => 'ee_codemirror',
+            'ui' => 'resizable',
+            'file' => array(
+                'cp/utilities/sql-query-form',
+                'vendor/codemirror/codemirror',
+                'vendor/codemirror/closebrackets',
+                'vendor/codemirror/comment',
+                'vendor/codemirror/lint',
+                'vendor/codemirror/active-line',
+                'vendor/codemirror/overlay',
+                'vendor/codemirror/xml',
+                'vendor/codemirror/css',
+                'vendor/codemirror/javascript',
+                'vendor/codemirror/htmlmixed',
+                'ee-codemirror-mode',
+                'vendor/codemirror/dialog',
+                'vendor/codemirror/searchcursor',
+                'vendor/codemirror/search',
+                'vendor/codemirror/sql',
+            )
+        ]);
+        ee()->javascript->output("$('textarea[name=\"rte_config_json\"]').toggleCodeMirror();");
 
         return [
             'body' => ee('View')->make('ee:_shared/form')->render($variables),
