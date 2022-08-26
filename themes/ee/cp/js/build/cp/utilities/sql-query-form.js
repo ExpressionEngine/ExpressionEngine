@@ -1,8 +1,7 @@
 "use strict";
 
 $(document).ready(function () {
-  // var textarea = document.querySelector('.js-sql-query-textarea')
-  var textarea = document.querySelector('[name=rte_config_json]'); // Use CodeMirror for the query form
+  var textarea = document.querySelector('.js-sql-query-textarea'); // Use CodeMirror for the query form
 
   var editor = CodeMirror.fromTextArea(textarea, {
     lineWrapping: true,
