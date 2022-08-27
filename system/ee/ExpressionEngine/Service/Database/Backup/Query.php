@@ -96,7 +96,7 @@ class Query
      *		'table' => [
      *			'rows' => 123,
      *			'size' => 123456,
-     *          'type' => self::TABLE_STRUCTURE
+     *          'type' => self::TABLE_STRUCTURE,
      *		],
      *		...
      *	]

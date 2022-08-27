@@ -120,6 +120,27 @@ class Backup
     }
 
     /**
+     * Gets an array of tables to backup (with some information data)
+     *
+     * @see Backup::getTables()
+     * @return array Array of tables data
+     */
+    protected function getTablesInformation()
+    {
+        $tablesInformation = $this->query->getTables();
+        if (empty($this->tables_to_backup)) {
+            return $tablesInformation;
+        }
+        $tablesNames = array_keys($tablesInformation);
+
+        //make sure we only try to backup existing tables
+        $this->tables_to_backup = array_intersect($this->tables_to_backup, $tablesNames);
+        $tablesInformation = array_intersect_key($tablesInformation, array_flip($this->tables_to_backup));
+
+        return $tablesInformation;
+    }
+
+    /**
      * Class will write a file with comments and helpful whitespace formatting
      */
     public function makePrettyFile()
@@ -213,7 +234,7 @@ class Backup
      */
     public function writeDropAndCreateStatements()
     {
-        $tables = $this->query->getTables();
+        $tables = $this->getTablesInformation();
 
         $this->writeSeparator('Drop old tables if exists');
 
