@@ -86,9 +86,12 @@ class CkeditorService extends AbstractRteService implements RteService
             return $configHandle;
         }
 
-        // language
+        // CKEditor does not allow specifying language direction implicitely, so we have to fake it by setting language
         $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
-        $config['language'] = ee()->lang->code($language);
+        $config['language'] = (object) [
+            'ui' => ee()->lang->code($language),
+            'content' => (isset($config['field_text_direction']) && $config['field_text_direction'] == 'rtl') ? 'ar' : ee()->lang->code($language)
+        ];
 
         // toolbar
         $config = array_merge($config, $this->buildToolbarConfig($config));
@@ -140,18 +143,13 @@ class CkeditorService extends AbstractRteService implements RteService
 
         $config['toolbar']->shouldNotGroupWhenFull = true;
 
-        //link
-        $config['link'] = (object) ['decorators' => [
-            'openInNewTab' => [
-                'mode' => 'manual',
-                'label' => lang('open_in_new_tab'),
-                'attributes' => [
-                    'target' => '_blank',
-                    'rel' => 'noopener noreferrer'
-                ]
-            ]
-        ]
-        ];
+        if (isset($config['field_text_direction'])) {
+            $config['textDirection'] = $config['field_text_direction'];
+            unset($config['field_text_direction']);
+        }
+
+        unset($config['rte_config_json']);
+        unset($config['rte_advanced_config']);
 
         // -------------------------------------------
         //  JSONify Config and Return
@@ -221,6 +219,20 @@ class CkeditorService extends AbstractRteService implements RteService
                     (object) ['model' => 'heading6', 'view' => 'h6', 'title' => lang('heading_h6_rte'), 'class' => 'ck-heading_heading6']
                 ];
             }
+
+            //link
+            $toolbarConfig['link'] = (object) [
+                'decorators' => [
+                    'openInNewTab' => [
+                        'mode' => 'manual',
+                        'label' => lang('open_in_new_tab'),
+                        'attributes' => [
+                            'target' => '_blank',
+                            'rel' => 'noopener noreferrer'
+                        ]
+                    ]
+                ]
+            ];
         }
 
         return $toolbarConfig;

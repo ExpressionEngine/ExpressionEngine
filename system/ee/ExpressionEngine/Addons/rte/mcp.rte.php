@@ -21,6 +21,7 @@ class Rte_mcp
     public function __construct()
     {
         $this->base_url = ee('CP/URL')->make('addons/settings/rte');
+        ee()->lang->load('admin_content');
     }
 
     /**
@@ -403,6 +404,19 @@ class Rte_mcp
                     )
                 ),
                 array(
+                    'title' => 'field_text_direction',
+                    'fields' => array(
+                        'settings[field_text_direction]' => array(
+                            'type' => 'radio',
+                            'choices' => array(
+                                'ltr' => lang('field_text_direction_ltr'),
+                                'rtl' => lang('field_text_direction_rtl')
+                            ),
+                            'value' => isset($config->settings['field_text_direction']) ? $config->settings['field_text_direction'] : 'ltr'
+                        )
+                    )
+                ),
+                array(
                     'title' => lang('rte_toolbar'),
                     'group' => 'ckeditor_toolbar',
                     'wide' => true,
@@ -557,17 +571,21 @@ class Rte_mcp
                 $('fieldset[data-group=ckeditor_toolbar]').hide();
                 $('fieldset[data-group=redactor_toolbar]').hide();
             ");
-        } else {
-            ee()->javascript->output("
-                window.document.addEventListener('formFields:toggle', (event) => {
-                    if (event.detail.group == 'rte_advanced_config' && event.detail.state == 'y') {
-                        $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+        }
+
+        ee()->javascript->output("
+            window.document.addEventListener('formFields:toggle', (event) => {
+                if (event.detail.for == 'settings[rte_advanced_config]') {
+                    if (event.detail.state == 'y') {
                         $('fieldset[data-group=ckeditor_toolbar]').hide();
                         $('fieldset[data-group=redactor_toolbar]').hide();
+                    } else {
+                        $('fieldset[data-group=' + $('select[name=toolset_type]').children('option:selected').val() + '_toolbar]').show();
                     }
-                });
-            ");
-        }
+                    $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+                }
+            });
+        ");
 
         return [
             'body' => ee('View')->make('ee:_shared/form')->render($variables),

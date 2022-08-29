@@ -145,6 +145,14 @@ class RedactorService extends AbstractRteService implements RteService {
         $config['toolbar']['linkTarget'] = isset($config['toolbar']['linkTarget']) ? (bool) $config['toolbar']['linkTarget'] : true;
         $config['toolbar']['linkNewTab'] = isset($config['toolbar']['linkNewTab']) ? (bool) $config['toolbar']['linkNewTab'] : true;
 
+        if (isset($config['field_text_direction'])) {
+            $config['toolbar']['direction'] = $config['field_text_direction'];
+            unset($config['field_text_direction']);
+        }
+
+        unset($config['rte_config_json']);
+        unset($config['rte_advanced_config']);
+
         // -------------------------------------------
         //  JSONify Config and Return
         // -------------------------------------------

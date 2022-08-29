@@ -163,7 +163,8 @@ EE.cp.form_group_toggle = function(element) {
 		new CustomEvent('formFields:toggle', {
 			detail: {
 				group: config[value],
-				state: value
+				state: value,
+				for: $(element).parent().data('toggle-for')
 			} 
 		})
 	);
