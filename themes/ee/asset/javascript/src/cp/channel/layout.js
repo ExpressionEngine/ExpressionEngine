@@ -118,7 +118,8 @@ $(document).ready(function () {
 	}
 
 	makeTabsDroppable();
-
+	var start_pos = null;
+	var start_tab = null;
 	var sortable_options_for_sheets = {
 		appendTo: "div.form-standard",
 		connectWith: "div.tab",
@@ -129,13 +130,13 @@ $(document).ready(function () {
 		helper: "clone",
 		items: ".js-layout-item",
 		placeholder: "drag-placeholder",
-		start_pos: null,
-		start_tab: null,
+		// start_pos: null,
+		// start_tab: null,
 		start: function (event, ui) {
 			var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
 			
 			//set original position from where item start to move
-			this.start_pos = ui.item.index();
+			start_pos = ui.item.index();
 
 			// set original tab index
 			var tab_index;
@@ -145,17 +146,18 @@ $(document).ready(function () {
 				}
 			});
 
-			this.start_tab = tab_index;
+			start_tab = tab_index;
 			// get field which changing position
 			// field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
 			field = EE.publish_layout[getTabIndex()].fields[fieldIndex];
 			ui.placeholder.append('<div class="none"></div>');
 		},
-		update: function(event, ui) {
+		receive: function(event, ui) {
+
 			if (field != null) {
 				var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
 				//remove item from original tab array
-				EE.publish_layout[this.start_tab].fields.splice(this.start_pos, 1)[0];
+				EE.publish_layout[start_tab].fields.splice(start_pos, 1)[0];
 
 				//add item to the new tab array
 				EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
@@ -164,9 +166,23 @@ $(document).ready(function () {
 		},
 		stop: function (event, ui) {
 			// check if the item remains in the same place in the same tab where it was
-			if (ui.item.index() == this.start_pos && EE.publish_layout[this.start_tab] == EE.publish_layout[getTabIndex()]) {
+			if (ui.item.index() == start_pos && EE.publish_layout[start_tab] == EE.publish_layout[getTabIndex()]) {
 				return;
 			}
+
+			if (ui.item.index() != start_pos && EE.publish_layout[start_tab] == EE.publish_layout[getTabIndex()]) {
+				if (field != null) {
+					var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
+					//remove item from original tab array
+					EE.publish_layout[start_tab].fields.splice(start_pos, 1)[0];
+
+					//add item to the new tab array
+					EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
+					field = null;
+				}
+			}
+			start_pos = null;
+			start_tab = null;
 		},
 	};
 
