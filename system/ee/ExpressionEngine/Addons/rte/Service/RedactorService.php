@@ -166,6 +166,12 @@ class RedactorService extends AbstractRteService implements RteService {
             $this->includeCustomCSS($configHandle, $config['css_template'], '.redactor-styles.rte_' . $configHandle);
         }
 
+        if (isset($config['js_template']) && !empty($config['js_template'])) {
+            ee()->cp->add_js_script([
+                'template' => $config['js_template']
+            ]);
+        }
+
         return $configHandle;
     }
 
@@ -191,9 +197,7 @@ class RedactorService extends AbstractRteService implements RteService {
 
             $selection = [];
             if (is_object($config->settings['toolbar'])) {
-                if (isset($config->settings['toolbar']->items)) {
-                    $selection = $config->settings['toolbar']->items;
-                }
+                $selection = $config->settings['toolbar'];
             } else {
                 $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
             }
@@ -219,9 +223,7 @@ class RedactorService extends AbstractRteService implements RteService {
     {
             $selection = [];
             if (is_object($config->settings['toolbar'])) {
-                if (isset($config->settings['toolbar']->items)) {
-                    $selection = $config->settings['toolbar']->items;
-                }
+                $selection = $config->settings['toolbar'];
             } else {
                 $selection = isset($config->settings['toolbar']['plugins']) ? $config->settings['toolbar']['plugins'] : $config->settings['toolbar'];
             }

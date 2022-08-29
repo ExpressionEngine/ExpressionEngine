@@ -654,7 +654,8 @@ class Cp
                 'file' => array(),
                 'package' => array(),
                 'fp_module' => array(),
-                'pro_file' => array()
+                'pro_file' => array(),
+                'template' => array()
             );
 
             $this->requests[] = $str . AMP . 'v=' . max($mtimes);
@@ -717,6 +718,17 @@ class Cp
 
             case 'fp_module':
                 $file = PATH_ADDONS . $name . '/javascript/' . $name . '.js';
+
+                break;
+
+            case 'template':
+                // edit date from database should be sufficient;
+                // in some cases the file might have more recent edits, but skipping the check here
+                // to reduce the load
+                $templateModel = ee('Model')->get('Template', $name)->with('TemplateGroup')->filter('template_type', 'js')->first(true);
+                if (! empty($templateModel)) {
+                    return $templateModel->edit_date;
+                }
 
                 break;
 

@@ -347,7 +347,7 @@ class EE_Template
             'template_id' => $this->template_id,
             'template_type' => $this->embed_type ?: $this->template_type,
             'is_ajax_request' => AJAX_REQUEST,
-            'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
+            'is_live_preview_request' => isset(ee()->session) && ee('LivePreview')->hasEntryData(),
         ];
 
         //Pro conditionals
@@ -2554,7 +2554,7 @@ class EE_Template
         }
 
         // Is the current user allowed to view this template?
-        if ($query->row('enable_http_auth') != 'y' && !ee('Permission')->isSuperAdmin()) {
+        if ($query->row('enable_http_auth') != 'y' && isset(ee()->session) && !ee('Permission')->isSuperAdmin()) {
             ee()->db->select('role_id');
             ee()->db->where('template_id', $query->row('template_id'));
             $results = ee()->db->get('templates_roles');
@@ -2654,7 +2654,7 @@ class EE_Template
             ee()->functions->template_type = $row['template_type'];
 
             // If JS or CSS request, reset Tracker Cookie
-            if ($this->template_type == 'js' or $this->template_type == 'css') {
+            if (isset(ee()->session) && ($this->template_type == 'js' or $this->template_type == 'css')) {
                 if (count(ee()->session->tracker) <= 1) {
                     ee()->session->tracker = array();
                 } else {
@@ -2679,9 +2679,11 @@ class EE_Template
 
         $cache_override = array('member');
 
-        foreach ($cache_override as $val) {
-            if (strncmp(ee()->uri->uri_string, "/{$val}/", strlen($val) + 2) == 0) {
-                $row['cache'] = 'n';
+        if (isset(ee()->uri) && !is_null(ee()->uri->uri_string)) {
+            foreach ($cache_override as $val) {
+                if (strncmp(ee()->uri->uri_string, "/{$val}/", strlen($val) + 2) == 0) {
+                    $row['cache'] = 'n';
+                }
             }
         }
 
@@ -3249,7 +3251,9 @@ class EE_Template
 
         // Add security hashes to forms
         // We do this here to keep the security hashes from being cached
-        $str = ee()->functions->add_form_security_hash($str);
+        if (defined('CSRF_TOKEN')) {
+            $str = ee()->functions->add_form_security_hash($str);
+        }
 
         // Add Action IDs form forms and links
         $str = ee()->functions->insert_action_ids($str);

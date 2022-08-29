@@ -95,7 +95,9 @@ class CkeditorService extends AbstractRteService implements RteService
 
         // toolbar
         $config = array_merge($config, $this->buildToolbarConfig($config));
-        $config['toolbar']->viewportTopOffset = 59;
+        if (REQ == 'CP') {
+            $config['toolbar']->viewportOffset = (object) ['top' => 59];
+        }
 
         $config['editorClass'] = 'rte_' . $configHandle;
 
@@ -165,8 +167,14 @@ class CkeditorService extends AbstractRteService implements RteService
             ee()->cp->add_to_head('<style type="text/css">.ck-editor__editable_inline { min-height: ' . $config['height'] . 'px; }</style>');
         }
 
-        if (isset($config['css_template'])) {
+        if (isset($config['css_template']) && !empty($config['css_template'])) {
             $this->includeCustomCSS($configHandle, $config['css_template'], '.ck.ck-editor.rte_' . $configHandle);
+        }
+
+        if (isset($config['js_template']) && !empty($config['js_template'])) {
+            ee()->cp->add_js_script([
+                'template' => $config['js_template']
+            ]);
         }
 
         return $configHandle;

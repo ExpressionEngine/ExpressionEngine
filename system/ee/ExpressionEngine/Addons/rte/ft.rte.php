@@ -187,11 +187,6 @@ class Rte_ft extends EE_Fieldtype
             ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . ($defer ? 'true' : 'false') . ');</script>');
         }
 
-        // pass the data through form_prep() if this is Channel Form
-        if (REQ == 'PAGE') {
-            $data = form_prep($data, $this->field_name);
-        }
-
         // convert file tags to URLs
         RteHelper::replaceFileTags($data);
 

@@ -352,7 +352,7 @@ class Rte_mcp
 
         if (isset($config->settings['rte_advanced_config']) && !empty($config->settings['rte_advanced_config']) && $config->settings['rte_advanced_config'] == 'y') {
             $rte_config_json = $config->settings['rte_config_json'];
-        } elseif ($toolsetType == 'redactor') {
+        } elseif ($config->toolset_type == 'redactor') {
             $rte_config_json = json_encode($config->settings['toolbar'], JSON_PRETTY_PRINT);
         } else {
             $rte_config_json = json_encode(ee('rte:CkeditorService')->buildToolbarConfig($config->settings), JSON_PRETTY_PRINT);
@@ -455,8 +455,22 @@ class Rte_mcp
                     'fields' => array(
                         'settings[css_template]' => array(
                             'type' => 'dropdown',
-                            'choices' => $this->getCSSTemplates(),
+                            'choices' => $this->getTemplates('css'),
                             'value' => isset($config->settings['css_template']) && !empty($config->settings['css_template']) ? (int) $config->settings['css_template'] : '',
+                            'no_results' => [
+                                'text' => sprintf(lang('no_found'), lang('templates'))
+                            ]
+                        )
+                    )
+                ),
+                array(
+                    'title' => lang('custom_javascript'),
+                    'desc' => lang('custom_javascript_rte_desc'),
+                    'fields' => array(
+                        'settings[js_template]' => array(
+                            'type' => 'dropdown',
+                            'choices' => $this->getTemplates('js'),
+                            'value' => isset($config->settings['js_template']) && !empty($config->settings['js_template']) ? (int) $config->settings['js_template'] : '',
                             'no_results' => [
                                 'text' => sprintf(lang('no_found'), lang('templates'))
                             ]
@@ -635,16 +649,16 @@ class Rte_mcp
      *
      * @return array An associative array of templates
      */
-    private function getCSSTemplates()
+    private function getTemplates($type = 'css')
     {
         $templates = ee('Model')->get('Template')
             ->with('TemplateGroup')
             ->order('TemplateGroup.group_name')
-            ->filter('template_type', 'css')
+            ->filter('template_type', $type)
             ->order('template_name')
             ->all();
 
-        $results = [];
+        $results = [''];
         foreach ($templates as $template) {
             $results[$template->getId()] = $template->getPath();
         }
