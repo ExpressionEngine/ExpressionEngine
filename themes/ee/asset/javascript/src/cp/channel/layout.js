@@ -133,7 +133,7 @@ $(document).ready(function () {
 		// start_pos: null,
 		// start_tab: null,
 		start: function (event, ui) {
-			var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
+			var fieldIndex = sheets.filter('.tab-open').find('.js-layout-item').index(ui.item[0]);
 
 			//set original position from where item start to move
 			start_pos = ui.item.index();
@@ -155,7 +155,7 @@ $(document).ready(function () {
 		receive: function(event, ui) {
 
 			if (field != null) {
-				var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
+				var fieldIndex = sheets.filter('.tab-open').find('.js-layout-item').index(ui.item[0]);
 				//remove item from original tab array
 				EE.publish_layout[start_tab].fields.splice(start_pos, 1)[0];
 
@@ -172,7 +172,7 @@ $(document).ready(function () {
 
 			if (ui.item.index() != start_pos && EE.publish_layout[start_tab] == EE.publish_layout[getTabIndex()]) {
 				if (field != null) {
-					var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
+					var fieldIndex = sheets.filter('.tab-open').find('.js-layout-item').index(ui.item[0]);
 					//remove item from original tab array
 					EE.publish_layout[start_tab].fields.splice(start_pos, 1)[0];
 
@@ -183,6 +183,7 @@ $(document).ready(function () {
 			}
 			start_pos = null;
 			start_tab = null;
+			console.log(EE.publish_layout);
 		}
 	};
 
