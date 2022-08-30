@@ -983,6 +983,10 @@ class Filesystem
     public function createTempFile()
     {
         $file = tmpfile();
+        if($file === false) {
+            throw new \Exception('Cannot create temp file at "'.sys_get_temp_dir().'"');
+        }
+        
         $path = stream_get_meta_data($file)['uri'];
 
         return compact('file', 'path');
