@@ -197,7 +197,7 @@ class RedactorService extends AbstractRteService implements RteService {
 
             $selection = [];
             if (is_object($config->settings['toolbar'])) {
-                $selection = $config->settings['toolbar'];
+                $selection = (array) $config->settings['toolbar'];
             } else {
                 $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
             }
@@ -223,7 +223,7 @@ class RedactorService extends AbstractRteService implements RteService {
     {
             $selection = [];
             if (is_object($config->settings['toolbar'])) {
-                $selection = $config->settings['toolbar'];
+                $selection = (array) $config->settings['toolbar'];
             } else {
                 $selection = isset($config->settings['toolbar']['plugins']) ? $config->settings['toolbar']['plugins'] : $config->settings['toolbar'];
             }
