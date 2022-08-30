@@ -61,8 +61,8 @@ abstract class AbstractRteService implements RteService {
                                 // Loop over all selector parts (the comma-separated strings in a
                                 // selector) and prepend the class.
                                 $selector = $selectorNode->getSelector();
-                                if (strpos($selector, '.redactor-toolbar') === false) {
-                                    if (strpos($selector, '.redactor-styles') === 0) {
+                                if (strpos($selector, '.redactor-toolbar') === false && strpos($selector, '.ck-toolbar') === false) {
+                                    if (strpos($selector, '.redactor-styles') === 0 || strpos($selector, '.ck-content') === 0) {
                                         $selectorNode->setSelector($cssPrefix . $selector);
                                     } else {
                                         $selectorNode->setSelector($cssPrefix . ' ' . $selector);
