@@ -464,20 +464,6 @@ class Rte_mcp
                     )
                 ),
                 array(
-                    'title' => lang('custom_javascript'),
-                    'desc' => lang('custom_javascript_rte_desc'),
-                    'fields' => array(
-                        'settings[js_template]' => array(
-                            'type' => 'dropdown',
-                            'choices' => $this->getTemplates('js'),
-                            'value' => isset($config->settings['js_template']) && !empty($config->settings['js_template']) ? (int) $config->settings['js_template'] : '',
-                            'no_results' => [
-                                'text' => sprintf(lang('no_found'), lang('templates'))
-                            ]
-                        )
-                    )
-                ),
-                array(
                     'title' => lang('rte_min_height'),
                     'desc' => lang('rte_min_height_desc'),
                     'fields' => array(
@@ -544,6 +530,21 @@ class Rte_mcp
                         )
                     )
                 ),
+                array(
+                    'title' => lang('custom_javascript'),
+                    'desc' => lang('custom_javascript_rte_desc'),
+                    'group' => 'rte_advanced_config',
+                    'fields' => array(
+                        'settings[js_template]' => array(
+                            'type' => 'dropdown',
+                            'choices' => $this->getTemplates('js'),
+                            'value' => isset($config->settings['js_template']) && !empty($config->settings['js_template']) ? (int) $config->settings['js_template'] : '',
+                            'no_results' => [
+                                'text' => sprintf(lang('no_found'), lang('templates'))
+                            ]
+                        )
+                    )
+                ),
             ),
         );
 
@@ -552,7 +553,7 @@ class Rte_mcp
         $variables['cp_page_title'] = $headingTitle;
 
         $variables['save_btn_text'] = lang('save');
-        $variables['save_btn_text_working'] = lang('saving');
+        $variables['save_btn_text_working'] = lang('btn_saving');
 
         ee()->cp->add_js_script([
             'plugin' => 'ee_codemirror',

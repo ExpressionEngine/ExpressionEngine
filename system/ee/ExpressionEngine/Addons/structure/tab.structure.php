@@ -647,6 +647,9 @@ class Structure_tab
                 $this->sql->set_listing_data($data);
             }
 
+            // clear RTE pages cache
+            ee()->cache->delete('/site_pages/', \Cache::GLOBAL_SCOPE);
+
             // capture nav history
             add_structure_nav_revision($site_id, 'Post saving entry  "' . $title . '"');
         } else {
