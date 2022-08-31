@@ -31714,6 +31714,7 @@ fieldset .field-control #eye {
 }
 .grid-field.vertical-layout .grid-field__table tbody tr.no-results td {
   padding-top: 0;
+  padding-bottom: 0;
 }
 .grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed {
   padding-bottom: 0 !important;
@@ -34985,9 +34986,9 @@ table .field-no-results {
   margin-bottom: 0px;
 }
 .add-on-layout .panel .table-responsive, .add-on-layout .table-responsive .table-responsive {
-  background-color: none;
+  background: none;
   border: none;
-  border-radius: none;
+  border-radius: 0;
 }
 .add-on-layout .filter-bar {
   margin-bottom: 10px;
