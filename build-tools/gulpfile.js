@@ -74,6 +74,7 @@ gulp.task('app', ['_preflight'], function (cb) {
 		'build/',
 		'tests/',
 		'build-tools/',
+		'js-src/',
 		
 		'images/*/*',
 		'images/about',
