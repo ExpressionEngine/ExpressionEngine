@@ -455,9 +455,17 @@ class Fields extends AbstractFieldsController
                     ->defer();
 
                 if (ee('Request')->post('submit') == 'save_and_new') {
-                    $redirectUrl = ee('CP/URL')->make('fields/create');
+                    if (count($active_groups) == 1) {
+                        $redirectUrl = ee('CP/URL')->make('fields/create', ['group_id' => $active_groups[0]]);
+                    } else {
+                        $redirectUrl = ee('CP/URL')->make('fields/create');
+                    }
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
-                    $redirectUrl = ee('CP/URL')->make('fields');
+                    if (count($active_groups) == 1) {
+                        $redirectUrl = ee('CP/URL')->make('fields', ['group_id' => $active_groups[0]]);
+                    } else {
+                        $redirectUrl = ee('CP/URL')->make('fields');
+                    }
                 } else {
                     $redirectUrl = ee('CP/URL')->make('fields/edit/' . $field->getId());
                 }
