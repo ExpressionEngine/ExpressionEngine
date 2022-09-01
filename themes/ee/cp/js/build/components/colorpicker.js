@@ -244,10 +244,15 @@ var ColorPicker = /** @class */ (function (_super) {
 // TODO: The color picker overflows the grid field
 // Render color picker inputs when created:
 $(window).on('load', function () {
-    // Using window.load to make sure this code gets called after all document.readys
-    ColorPicker.renderFields();
+    $(document).ready(function () {
+        ColorPicker.renderFields();
+    });
 });
+var miniGridInit = function (context) {
+    $('.fields-keyvalue', context).miniGrid({ grid_min_rows: 0, grid_max_rows: '' });
+};
 Grid.bind('colorpicker', 'displaySettings', function (el) {
+    miniGridInit(el[0]);
     ColorPicker.renderFields(el[0]);
 });
 Grid.bind('colorpicker', 'display', function (cell) {

@@ -1001,6 +1001,9 @@ JSC;
             return '';
         }
         $field_data = $this->pre_process($data);
+        if (!isset($field_data['title'])) {
+            return '';
+        }
         $out = '<a href="' . $this->replace_tag($field_data) . '" target="_blank">' . $field_data['title'] . '</a>';
 
         return $out;

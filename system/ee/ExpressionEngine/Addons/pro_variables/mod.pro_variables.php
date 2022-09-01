@@ -115,7 +115,7 @@ class Pro_variables
                     array_push($local_vars, $t);
                 }
                 //Get the early parsed variables
-                elseif (strpos($tagdata, "${t['variable_data']}") !== false && $t['is_hidden'] === 'n') {
+                elseif (!empty($t['variable_data']) && strpos($tagdata, "${t['variable_data']}") !== false && $t['is_hidden'] === 'n') {
                     array_push($local_vars, $t);
                 }
             }

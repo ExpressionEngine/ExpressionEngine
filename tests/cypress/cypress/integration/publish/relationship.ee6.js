@@ -352,16 +352,18 @@ context('Relationship field - Edit', () => {
 			cy.get('button:contains("Relate Entry")').should('not.be.visible')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 			cy.get('.app-notice---success').contains('Entry Updated');
-			cy.get('button:contains("Relate Entry")').should('not.be.visible')
-			cy.get('button:contains("Edit Relationships")').should('not.exist')
+			cy.get('button:contains("Relate Entry")').should('not.exist')
+			cy.get('button:contains("Edit Relationships")').should('be.visible')
 			cy.hasNoErrors()
 
-			cy.get('button:contains("Relate Entry")').should('not.be.visible')
+			cy.get('button:contains("Relate Entry")').should('not.exist')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 			cy.get('.app-notice---success').contains('Entry Updated');
-			cy.get('button:contains("Relate Entry")').should('not.be.visible')
+			cy.get('button:contains("Relate Entry")').should('not.exist')
+			cy.get('button:contains("Edit Relationships")').should('be.visible')
 			cy.hasNoErrors()
 
+			cy.get('button:contains("Edit Relationships")').first().click()
 			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').closest('.list-item').find('[title="Remove"]').click()
 			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
@@ -584,7 +586,8 @@ context('Relationship field - Edit', () => {
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 			cy.visit('admin.php?/cp/publish/edit/entry/1')
-			cy.wait(5000)
+			cy.get('.grid-field tr:not(.hidden) [data-relationship-react] button:contains("Edit Relationships")').should('be.visible')
+			cy.get('.grid-field tr:not(.hidden) [data-relationship-react] button:contains("Edit Relationships")').first().click()
 			cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').closest('.list-item').find('[title="Remove"]').click()
 			cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').should('not.exist')
 			cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()

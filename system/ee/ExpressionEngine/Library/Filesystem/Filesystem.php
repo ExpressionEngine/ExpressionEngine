@@ -23,8 +23,11 @@ class Filesystem
     public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = [])
     {
         if (is_null($adapter)) {
+            // Normalize the System Path and then find the root 
+            $syspath = str_replace('\\', '/', SYSPATH);
+            $syspathRoot = realpath($syspath . str_repeat('../', substr_count($syspath, '/') - 1));
             $adapter = new Adapter\Local([
-                'path' => $this->normalizeAbsolutePath(realpath(SYSPATH . '../'))
+                'path' => $this->normalizeAbsolutePath($syspathRoot)
             ]);
         }else{
             // Fix prefixes
@@ -980,6 +983,10 @@ class Filesystem
     public function createTempFile()
     {
         $file = tmpfile();
+        if($file === false) {
+            throw new \Exception('Cannot create temp file at "'.sys_get_temp_dir().'"');
+        }
+        
         $path = stream_get_meta_data($file)['uri'];
 
         return compact('file', 'path');
@@ -1063,7 +1070,7 @@ class Filesystem
     protected function removePathPrefix($path)
     {
         $prefix = $this->getPathPrefix();
-        return (!empty($prefix) && strpos($path, $prefix) === 0) ? str_replace($prefix, '', $path) : $path;
+        return (!empty($prefix) && strpos($path, $prefix) === 0) ? substr_replace($path, '', 0, strlen($prefix)) : $path;
     }
 
     /**
