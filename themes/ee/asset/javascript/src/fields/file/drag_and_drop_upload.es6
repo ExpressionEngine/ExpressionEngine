@@ -545,6 +545,16 @@ class DragAndDropUpload extends React.Component {
     }
 
     let checkChildren = this.directoryHasChild(this.props.allowedDirectory);
+    let uploadDirectoriesForDropdown = EE.dragAndDrop.uploadDesinations;
+    if (typeof(this.props.roleAllowedDirectoryIds) !== 'undefined' && this.props.roleAllowedDirectoryIds.length > 0) {
+      uploadDirectoriesForDropdown = [];
+      let roleAllowedDirectoryIds = this.props.roleAllowedDirectoryIds;
+      Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
+        if (roleAllowedDirectoryIds.includes(uploadDesination.value)) {
+          uploadDirectoriesForDropdown.push(uploadDesination);
+        }
+      });
+    }
 
     return (
       <React.Fragment>
@@ -582,7 +592,7 @@ class DragAndDropUpload extends React.Component {
                         keepSelectedState={true}
                         title={EE.lang.file_dnd_choose_directory_btn}
                         placeholder={EE.lang.file_dnd_filter_directories}
-                        items={EE.dragAndDrop.uploadDesinations}
+                        items={uploadDirectoriesForDropdown}
                         onSelect={(directory) => this.setDirectory(directory)}
                         buttonClass="button--default button--small"
                         createNewDirectory={this.props.createNewDirectory}
@@ -650,7 +660,7 @@ class DragAndDropUpload extends React.Component {
               keepSelectedState={false}
               title={EE.lang.file_dnd_choose_existing}
               placeholder={EE.lang.file_dnd_filter_directories}
-              items={EE.dragAndDrop.uploadDesinations}
+              items={uploadDirectoriesForDropdown}
               onSelect={(directory) => this.chooseExisting(directory)}
               rel="modal-file"
               itemClass="m-link"
@@ -665,7 +675,7 @@ class DragAndDropUpload extends React.Component {
               keepSelectedState={false}
               title={EE.lang.file_dnd_upload_new}
               placeholder={EE.lang.file_dnd_filter_directories}
-              items={EE.dragAndDrop.uploadDesinations}
+              items={uploadDirectoriesForDropdown}
               onSelect={(directory) => this.uploadNew(directory)}
               buttonClass="button--default button--small"
               createNewDirectory={this.props.createNewDirectory}

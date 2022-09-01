@@ -38,6 +38,7 @@
 <?php
 $component = [
     'allowedDirectory' => $allowed_directory,
+	'roleAllowedDirectoryIds' => isset($role_allowed_dirs) ? $role_allowed_dirs : [],
     'contentType' => $content_type,
     'file' => $file,
     'createNewDirectory' => false,

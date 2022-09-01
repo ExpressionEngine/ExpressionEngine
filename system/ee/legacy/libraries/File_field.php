@@ -169,9 +169,24 @@ class File_field
         ee()->lang->loadfile('fieldtypes');
 
         $dir = null;
+        $role_allowed_dirs = array();
         if ($allowed_file_dirs != 'all' && (int) $allowed_file_dirs) {
             $dir = ee('Model')->get('UploadDestination', $allowed_file_dirs)
                 ->first();
+        } elseif ($allowed_file_dirs == 'all') {
+            //the field might be set to 'all' directories
+            //but the role could have just one allowed
+            $upload_directories = $this->_get_upload_prefs();
+            foreach ($upload_directories as $dir_id => $destination) {
+                if ($destination->module_id != 0 || $destination->memberHasAccess(ee()->session->getMember()) === false) {
+                    continue;
+                }
+                $role_allowed_dirs[] = $dir_id;
+            }
+            if (count($role_allowed_dirs) == 1) {
+                $allowed_file_dirs = $role_allowed_dirs[0];
+                $dir = $upload_directories[$role_allowed_dirs[0]];
+            }
         }
 
         if ($allowed_file_dirs == '' or ! $dir) {
@@ -241,6 +256,7 @@ class File_field
             'fp_url' => $fp->getUrl(),
             'fp_edit' => $fp_edit,
             'allowed_directory' => $allowed_file_dirs,
+            'role_allowed_dirs' => $role_allowed_dirs,
             'content_type' => $content_type
         ));
     }
