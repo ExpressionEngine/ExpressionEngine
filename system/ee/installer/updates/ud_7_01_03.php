@@ -64,7 +64,6 @@ class Updater
             ]
         );
     }
-    }
 }
 
 // EOF
