@@ -703,6 +703,8 @@ $lang = array(
 
     'new_field_group' => 'New Field Group',
 
+    'ungrouped' => 'Ungrouped',
+
     'no_field_group_message' => 'There are currently no channel fields',
 
     'no_field_groups' => 'No <b>Field Groups</b> found.',

@@ -22,7 +22,7 @@ class Fields extends AbstractFieldsController
     {
         $group_id = ee('Request')->get('group_id');
 
-        if ($group_id) {
+        if (!is_null($group_id)) {
             $base_url = ee('CP/URL')->make('fields', ['group_id' => $group_id]);
         } else {
             $base_url = ee('CP/URL')->make('fields');
@@ -54,6 +54,9 @@ class Fields extends AbstractFieldsController
             ->order('group_name')
             ->all()
             ->getDictionary('group_id', 'group_name');
+        if ($this->hasUngroupedFields === true) {
+            $group_ids = array_merge(['0' => lang('ungrouped')], $group_ids);
+        }
 
         $filters = ee('CP/Filter');
         $group_filter = $filters->make('group_id', 'group_filter', $group_ids);
@@ -76,13 +79,14 @@ class Fields extends AbstractFieldsController
 
         $total_fields = 0;
 
-        $group = $group_id && $group_id != 'all'
+        $group = !is_null($group_id) && $group_id != 'all'
             ? ee('Model')->get('ChannelFieldGroup', $group_id)->first()
             : null;
 
         // Are we showing a specific group? If so, we need to apply filtering differently
         // because we are acting on a collection instead of a query builder
         if ($group) {
+            $vars['cp_page_title'] = $group->group_name . '&mdash;' . lang('fields');
             $fields = $group->ChannelFields->sortBy('field_label')->asArray();
 
             if ($search = ee()->input->get_post('filter_by_keyword')) {
@@ -101,6 +105,7 @@ class Fields extends AbstractFieldsController
 
             $total_fields = count($fields);
         } else {
+            $vars['cp_page_title'] = lang('all_fields');
             $fields = ee('Model')->get('ChannelField')
                 ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
 
@@ -110,6 +115,16 @@ class Fields extends AbstractFieldsController
 
             if ($fieldtype = $filter_values['fieldtype']) {
                 $fields->filter('field_type', $fieldtype);
+            }
+
+            if ((string) $group_id === '0') {
+                $ungroupedQuery = ee('db')->query('SELECT DISTINCT exp_channel_fields.field_id FROM exp_channel_fields WHERE NOT EXISTS (SELECT field_id FROM exp_channel_field_groups_fields WHERE exp_channel_fields.field_id=exp_channel_field_groups_fields.field_id)');
+                $ungroupedFieldIds = [];
+                foreach ($ungroupedQuery->result_array() as $row) {
+                    $ungroupedFieldIds[] = $row['field_id'];
+                }
+                $fields->filter('field_id', 'IN', $ungroupedFieldIds);
+                $vars['cp_page_title'] = lang('ungrouped') . '&mdash;' . lang('fields');
             }
 
             $total_fields = $fields->count();
@@ -172,9 +187,6 @@ class Fields extends AbstractFieldsController
             ->currentPage($page)
             ->render($vars['base_url']);
 
-        $vars['cp_page_title'] = $group
-            ? $group->group_name . '&mdash;' . lang('fields')
-            : lang('all_fields');
         $vars['fields'] = $data;
         $vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('fields')), 'href' => $vars['create_url']];
 
