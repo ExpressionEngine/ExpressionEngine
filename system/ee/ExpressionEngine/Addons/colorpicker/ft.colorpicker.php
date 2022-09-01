@@ -116,7 +116,7 @@ class Colorpicker_ft extends EE_Fieldtype
 
         $disabled = $disabled ? 'disabled' : '';
 
-        return "<input class=\"color-picker\" name=\"{$info['inputName']}\" data-colorpicker-react=\"{$data}\" data-input-value=\"\" {$disabled}/>";
+        return "<input name=\"{$info['inputName']}\" data-colorpicker-react=\"{$data}\" data-input-value=\"\" {$disabled}/>";
     }
 
     // -----------------------------------------------------------------------
