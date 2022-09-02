@@ -486,6 +486,20 @@ $lang = array(
 
     'versioning' => 'Versioning Preferences',
 
+    /* field channels */
+
+    'field_channels' => 'Channels',
+
+    'field_channels_desc' => 'This field is assigned to following channels',
+
+    'assigned' => 'Assigned',
+
+    'via' => 'via',
+
+    'directly' => 'directly',
+
+    'fluid_field' => 'Fluid Field',
+
     /* Generic Phrases */
     'delete' => 'Delete',
 
