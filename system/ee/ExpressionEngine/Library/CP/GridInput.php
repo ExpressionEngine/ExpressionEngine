@@ -162,7 +162,7 @@ class GridInput extends Table
     public function namespaceInputs($search, $replace)
     {
         return preg_replace(
-            '/(<[input|select|textarea][^>]*)name=["\']([^"\'\[\]]+)([^"\']*)["\']/',
+            '/(<(?:input|select|textarea)[^>]*)name=["\']([^"\'\[\]]+)([^"\']*)["\']/',
             $replace,
             $search
         );
