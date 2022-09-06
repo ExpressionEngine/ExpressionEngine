@@ -4835,6 +4835,10 @@ class Channel
             $this->fetch_custom_channel_fields();
         }
 
+        if (strpos(ee()->TMPL->tagdata, '{categories') === false) {
+            $this->enable['categories'] = false;
+        }
+
         $this->build_sql_query();
 
         if ($this->sql == '') {
@@ -4845,6 +4849,10 @@ class Channel
 
         if (ee()->TMPL->fetch_param('member_data') !== false && ee()->TMPL->fetch_param('member_data') == 'yes') {
             $this->fetch_custom_member_fields();
+        }
+
+        if ($this->enable['categories'] == true) {
+            $this->fetch_categories();
         }
 
         $this->parse_channel_entries();
