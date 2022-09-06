@@ -108,7 +108,7 @@
 
 .grid-relate, .grid-multi-relate {
 	.dropdown__link {
-		display: inline-block;
+		display: block;
 	}
 }
 
@@ -325,6 +325,7 @@
 
 				td {
 					padding-top: 0;
+					padding-bottom: 0;
 				}
 			}
 

@@ -12,7 +12,7 @@
             <?php $this->embed('ee:_shared/table', $table); ?>
             <?=$pagination?>
             <fieldset class="tbl-bulk-act hidden">
-                <select name="bulk_action">
+                <select name="bulk_action" class="select-popup button--small">
                     <option value="">-- <?=lang('with_selected')?> --</option>
                     <option value="delete" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('delete')?></option>
                     <!-- <option value="sync"><?=lang('sync')?></option> -->
@@ -45,7 +45,7 @@
                         <?php endforeach; ?>
                     </optgroup>
                 </select>
-                <input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+                <input class="btn submit button button--primary button--small" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
             </fieldset>
         </form>
     </div>

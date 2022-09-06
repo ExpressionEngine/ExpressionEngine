@@ -927,7 +927,9 @@ class EE_Upload
                 return false;
             }
 
-            if (function_exists('realpath') && @realpath($this->upload_path) !== false) {
+            // If realpath() is available and expands the upload_path into a
+            // path that exists within the filesystem we'll use that instead
+            if (function_exists('realpath') && @realpath($this->upload_path) !== false && $fs->exists(realpath($this->upload_path))) {
                 $this->upload_path = str_replace("\\", "/", realpath($this->upload_path));
             }
         }
@@ -938,7 +940,7 @@ class EE_Upload
         //     return false;
         // }
 
-        if (! $fs->isWritable()) {
+        if (! $fs->isWritable($this->upload_path)) {
             $this->set_error('upload_not_writable');
 
             return false;

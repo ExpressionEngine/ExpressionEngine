@@ -31530,7 +31530,7 @@ fieldset .field-control #eye {
 }
 
 .grid-relate .dropdown__link, .grid-relate .select__dropdown-item, .grid-relate .button__within-dropdown, .grid-multi-relate .dropdown__link, .grid-multi-relate .select__dropdown-item, .grid-multi-relate .button__within-dropdown {
-  display: inline-block;
+  display: block;
 }
 
 #routes .grid-field__table tr {
@@ -31714,6 +31714,7 @@ fieldset .field-control #eye {
 }
 .grid-field.vertical-layout .grid-field__table tbody tr.no-results td {
   padding-top: 0;
+  padding-bottom: 0;
 }
 .grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed {
   padding-bottom: 0 !important;
@@ -34985,9 +34986,9 @@ table .field-no-results {
   margin-bottom: 0px;
 }
 .add-on-layout .panel .table-responsive, .add-on-layout .table-responsive .table-responsive {
-  background-color: none;
+  background: none;
   border: none;
-  border-radius: none;
+  border-radius: 0;
 }
 .add-on-layout .filter-bar {
   margin-bottom: 10px;
@@ -37273,6 +37274,16 @@ body[data-theme="dark"] {
     height: 0;
     visibility: hidden;
   }
+}
+.tab-wrap .js-layout-item {
+  margin-bottom: 10px;
+}
+.tab-wrap .custom-drag-placeholder .none {
+  background-color: var(--ee-bg-0);
+  border: 1px dashed var(--ee-border-dark);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
 .tab-wrap:after {
   clear: both;

@@ -548,21 +548,21 @@ class Pro_variables_upd
         ee()->db->update(
             'extensions',
             ['version' => $this->version],
-            ['class' => $this->class_name . '_ext'],
+            ['class' => $this->class_name . '_ext']
         );
 
         // Update Module version
         ee()->db->update(
             'modules',
             ['module_version' => $this->version],
-            ['module_name' => $this->class_name],
+            ['module_name' => $this->class_name]
         );
 
         // Update FT version
         ee()->db->update(
             'fieldtypes',
             ['version' => $this->version],
-            ['name' => lcfirst($this->class_name)],
+            ['name' => lcfirst($this->class_name)]
         );
     }
 

@@ -616,7 +616,9 @@ class File_field
                 }
 
                 $file = $query->first();
-                $file = array_merge($file->toArray(), array('model_object' => $file));
+                if (!empty($file)) {
+                    $file = array_merge($file->toArray(), array('model_object' => $file));
+                }
             }
             // Query based on file name and directory ID
             else {
