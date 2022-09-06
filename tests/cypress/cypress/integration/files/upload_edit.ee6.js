@@ -657,13 +657,13 @@ context('Upload Destination Create/Edit', () => {
 
     // Test row deletion
     page.delete_for_row(2).click()
-    page.get('grid_rows').should('have.length', 3) // Header and two rows
+    page.get('grid_rows').should('have.length', 2) // Header and two rows
 
     page.submit()
     page.get('wrap').contains('Upload directory saved')
     cy.hasNoErrors()
 
-    page.get('grid_rows').should('have.length', 3) // Header and two rows
+    page.get('grid_rows').should('have.length', 2) // Header and two rows
 
     page.name_for_row(1).invoke('val').then((text) => {
       expect(text).equal('some_name')
