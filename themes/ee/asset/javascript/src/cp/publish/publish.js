@@ -66,11 +66,11 @@ $(document).ready(function () {
 	// check if command is clicked
 	var cmdPressed = false;
 	$(window).on('keydown', function(evt) {
-		if (evt.which == 91 || evt.which == 224 || evt.which == 17 || evt.which == 16) { // command/Windows/ctrl/shift
+		if (evt.which == 91 || evt.which == 17 || evt.which == 16) { // command/ctrl/shift
 			cmdPressed = true;
 		}
 	}).on('keyup', function(evt) {
-		if (evt.which == 91 || evt.which == 224 || evt.which == 17 || evt.which == 16) { // command/Windows/ctrl/shift
+		if (evt.which == 91 || evt.which == 17 || evt.which == 16) { // command/ctrl/shift
 			cmdPressed = false;
 		}
 	});
