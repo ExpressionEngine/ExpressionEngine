@@ -23,11 +23,25 @@ class Filesystem
     public function __construct(?Flysystem\AdapterInterface $adapter = null, $config = [])
     {
         if (is_null($adapter)) {
+            $syspathRoot = null;
             // Normalize the System Path and then find the root 
             $syspath = str_replace('\\', '/', SYSPATH);
-            $syspathRoot = realpath($syspath . str_repeat('../', substr_count($syspath, '/') - 1));
+            $openBaseDir = ini_get('open_basedir');
+            // Check if open_basedir restrictions are in effect
+            if(!empty($openBaseDir)) {
+                // Find the open_basedir root that our $syspath lives under
+                foreach (explode(':', ini_get('open_basedir')) as $path) {
+                    $normalizedPath = str_replace('\\', '/', $path);
+                    if (!$syspathRoot && strpos($syspath, $normalizedPath) === 0) {
+                        $syspathRoot = $normalizedPath;
+                    }
+                }
+            }else{
+                // If open_basedir is not enabled set our root to the top directory in the syspath
+                $syspathRoot = realpath($syspath . str_repeat('../', substr_count($syspath, '/') - 1));
+            }
             $adapter = new Adapter\Local([
-                'path' => $this->normalizeAbsolutePath($syspathRoot)
+                'path' => $this->normalizeAbsolutePath($syspathRoot ?: $syspath)
             ]);
         }else{
             // Fix prefixes
