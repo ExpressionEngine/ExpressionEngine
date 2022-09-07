@@ -20,7 +20,7 @@ class Javascript_loader
     {
         if (!defined('PATH_JAVASCRIPT')) {
             define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/');
-            define('PATH_JAVASCRIPT_BUILD', PATH_THEMES . 'cp/js/build/');
+            define('PATH_JAVASCRIPT_BUILD', PATH_THEMES . 'cp/js/' . (PATH_JS === 'src' ? 'src' : 'build') . '/');
         }
     }
 

@@ -66,7 +66,6 @@ class Cp
 
         // Javascript Path Constants
         define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/jquery/');
-        define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/');
         define('JS_FOLDER', PATH_JS);
 
         ee()->load->library('javascript', array('autoload' => false));
@@ -695,6 +694,10 @@ class Cp
                 break;
 
             case 'file':
+                $file = PATH_JAVASCRIPT_BUILD . $name . '.js';
+                if (file_exists($file)) {
+                    return filemtime($file);
+                }
                 $file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/' . $name . '.js';
 
                 break;

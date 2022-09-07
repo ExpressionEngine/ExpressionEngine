@@ -239,6 +239,9 @@ class EE_Core
         define('URL_THEMES_GLOBAL_ASSET', URL_THEMES . 'asset/');
         define('PATH_CP_THEME', PATH_THEMES . 'cp/');
 
+        define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/');
+        define('PATH_JAVASCRIPT_BUILD', PATH_THEMES . 'cp/js/' . (PATH_JS === 'src' ? 'src' : 'build') . '/');
+
         define('PATH_PRO_THEMES', PATH_THEMES . 'pro/');
         define('URL_PRO_THEMES', URL_THEMES . 'pro/');
 
