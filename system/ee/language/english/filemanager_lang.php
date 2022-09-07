@@ -992,8 +992,6 @@ $lang = array(
 
     /* Removing */
 
-    'move_toggle_to_confirm' => 'Move the toggle <b>on</b> to confirm.',
-
     'folder_not_empty' => 'The directory is not empty',
 
     'all_files_in_folder_will_be_deleted' => 'If you delete this folder, all files in it will be deleted as well.',
@@ -1003,8 +1001,6 @@ $lang = array(
     'file_is_in_use' => 'The file is being used <a href="%s"> in <span>%s</span> entries</a>',
 
     'files_is_in_use' => 'Please note some of these files are currently in use',
-
-    'confirmation_toggle_required' => 'You must confirm this action with the toggle',
 
     /* Moving the files */
 

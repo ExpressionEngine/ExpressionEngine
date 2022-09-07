@@ -738,6 +738,10 @@ $lang = array(
 
     'btn_confirm_and_save_working' => 'Saving...',
 
+    'move_toggle_to_confirm' => 'Move the toggle <b>on</b> to confirm.',
+
+    'confirmation_toggle_required' => 'You must confirm this action with the toggle',
+
     /* confirm delete modal */
     'btn_confirm_and_delete' => 'Confirm and Delete',
 

@@ -195,6 +195,7 @@ class Addons extends CP_Controller
             $addons[$key]['install_url'] = ee('CP/URL')->make('addons/install/' . $addon['package'], ['return' => $return_url->encode()]);
             $addons[$key]['update_url'] = ee('CP/URL')->make('addons/update/' . $addon['package'], ['return' => $return_url->encode()]);
             $addons[$key]['remove_url'] = ee('CP/URL')->make('addons/remove/' . $addon['package'], ['return' => $return_url->encode()]);
+            $addons[$key]['confirm_url'] = ee('CP/URL')->make('addons/confirm/' . $addon['package']);
         }
 
         // Sort the add-ons alphabetically
@@ -237,6 +238,60 @@ class Addons extends CP_Controller
         );
 
         ee()->cp->render('addons/index', $vars);
+    }
+
+    /** 
+     * Extra dialog for removal confirmation
+    */
+    public function confirm()
+    {
+        $vars = array();
+        $selected = ee()->uri->segment('4');
+        $desc = '';
+        $fields = [];
+
+        $channelFieldQuery = ee('Model')->get('ChannelField')
+            ->filter('field_type', $selected);
+        if ($channelFieldQuery->count() > 0) {
+            $title = lang('fieldtype_is_in_use');
+            $fields = array_merge($fields, $channelFieldQuery->all()->getDictionary('field_id', 'field_label'));
+        }
+
+        $gridFieldQuery = ee('db')->select('channel_fields.field_id, channel_fields.field_label')
+            ->from('channel_fields')
+            ->join('grid_columns', 'channel_fields.field_id = grid_columns.field_id', 'left')
+            ->where('col_type', $selected)
+            ->get();
+        if ($gridFieldQuery->num_rows() > 0) {
+            $title = lang('fieldtype_is_in_use');
+            foreach ($gridFieldQuery->result_array() as $row) {
+                $fields[$row['field_id']] = $row['field_label'];
+            }
+        }
+
+        if (!empty($fields)) {
+            $desc = implode(', ', $fields) . BR;
+        }
+
+        $desc .= lang('move_toggle_to_confirm');
+
+        if (isset($title)) {
+            $vars['fieldset'] = [
+                'group' => 'delete-confirm',
+                'setting' => [
+                    'title' => $title,
+                    'desc' => $desc,
+                    'fields' => [
+                        'confirm' => [
+                            'type' => 'toggle',
+                            'value' => 0,
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        ee()->cp->render('files/delete_confirm', $vars);
     }
 
     /**
