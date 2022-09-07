@@ -387,11 +387,13 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         ee()->javascript->set_global([
             'relationship.publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile(),
+            'relationship.publishEditUrl' => ee('CP/URL')->make('publish/edit/entry/###')->compile(),
             'relationship.lang.creatingNew' => lang('creating_new_in_rel'),
             'relationship.lang.relateEntry' => lang('relate_entry'),
             'relationship.lang.search' => lang('search'),
             'relationship.lang.channel' => lang('channel'),
             'relationship.lang.remove' => lang('remove'),
+            'relationship.lang.edit' => lang('edit_entry'),
         ]);
 
         ee()->cp->add_js_script([

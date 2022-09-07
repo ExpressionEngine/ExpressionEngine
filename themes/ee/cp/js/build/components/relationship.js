@@ -247,6 +247,23 @@ function (_React$Component) {
           EE.cp.ModalForm.setTitle(title);
         }
       });
+    } // Opens a modal to edit an entry
+
+  }, {
+    key: "openPublishEditForm",
+    value: function openPublishEditForm(id) {
+      EE.cp.ModalForm.openForm({
+        url: EE.relationship.publishEditUrl.replace('###', id + '&' + $.param({
+          entry_ids: [id]
+        })),
+        full: true,
+        iframe: true,
+        dataType: 'json',
+        success: function success() {
+          location.reload();
+        },
+        load: function load(modal) {}
+      });
     }
   }, {
     key: "filterItems",
@@ -372,6 +389,15 @@ function (_React$Component) {
         }, React.createElement("div", {
           className: "button-group"
         }, React.createElement("button", {
+          type: "button",
+          title: EE.relationship.lang.edit,
+          className: "button button--small button--default",
+          onClick: function onClick() {
+            return _this5.openPublishEditForm(item.value);
+          }
+        }, React.createElement("i", {
+          "class": "fal fa-pencil-alt"
+        })), React.createElement("button", {
           type: "button",
           title: EE.relationship.lang.remove,
           onClick: function onClick() {
