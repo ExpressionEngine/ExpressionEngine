@@ -110,11 +110,16 @@ abstract class FieldModel extends Model
 
         if (isset($settings['field_settings'])) {
             $field = $this->getField($this->getSettingsValues());
-            $settings_result = $field->validateSettingsForm($settings['field_settings']);
+
+            $settings_result = $field->validateSettingsForm(array_merge($settings, $settings['field_settings']));
 
             if ($settings_result instanceof ValidationResult && $settings_result->failed()) {
                 foreach ($settings_result->getFailed() as $name => $rules) {
                     foreach ($rules as $rule) {
+                        if ($name == 'field_pre_field_id') {
+                            // because this field is not visually present on page, we set error on parent field
+                            $name = 'field_pre_populate_id';
+                        }
                         $result->addFailed($name, $rule);
                     }
                 }
