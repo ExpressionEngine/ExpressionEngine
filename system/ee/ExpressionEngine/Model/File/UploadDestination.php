@@ -358,12 +358,24 @@ class UploadDestination extends StructureModel
 
         $filesystem = ee('File')->getPath($path, $adapter);
         $filesystem->setUrl($this->getProperty('url'));
+        $this->filesystem = $filesystem;
 
+        return $this->filesystem;
+    }
+
+    /**
+     * Eager load the contents of the underlying filesystem by listing the files
+     * and storing results in the cached adapter
+     *
+     * @return Filesystem
+     */
+    public function eagerLoadContents()
+    {
         // This will effectively eager load the directory and speed up checks
         // for file existence, especially in remote filesystems.  This might
         // make more sense to move into file listing controllers eventually
-        $filesystem->getDirectoryContents($path, true);
-        $this->filesystem = $filesystem;
+        $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
+        $this->filesystem->getDirectoryContents($path, true);
 
         return $this->filesystem;
     }
