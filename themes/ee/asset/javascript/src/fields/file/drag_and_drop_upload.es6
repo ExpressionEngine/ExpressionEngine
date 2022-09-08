@@ -392,7 +392,7 @@ class DragAndDropUpload extends React.Component {
     }
 
     el.find('.f_open-filepicker').click();
-    el.find('.f_open-filepicker').change(function(e){
+    el.find('.f_open-filepicker').one('change', function(e){
       var files = e.target.files;
       that.handleDroppedFiles(files)
     });
