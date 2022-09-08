@@ -297,10 +297,6 @@ class FileSystemEntity extends ContentModel
         $filesystem = ee('File')->getPath($path, $adapter);
         $filesystem->setUrl($this->getAbsoluteUrl());
 
-        // This will effectively eager load the directory and speed up checks
-        // for file existence, especially in remote filesystems.  This might
-        // make more sense to move into file listing controllers eventually
-        $filesystem->getDirectoryContents($path, true);
         $this->filesystem = $filesystem;
 
         return $this->filesystem;
