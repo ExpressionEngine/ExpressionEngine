@@ -130,6 +130,7 @@ class Sets extends AbstractChannelsController
      */
     public function doImport()
     {
+        ee()->lang->load('form_validation');
         $set_path = ee('Request')->get('set_path');
         $set_path = ee('Encrypt')->decode(
             $set_path,
@@ -197,8 +198,12 @@ class Sets extends AbstractChannelsController
             $model_errors = $result->getModelErrors();
             foreach (array('Channel Field', 'Category', 'Category Group', 'Status') as $type) {
                 if (isset($model_errors[$type])) {
-                    foreach ($model_errors[$type][0][2] as $error) {
-                        $errors[] = $error->getLanguageKey();
+                    foreach ($model_errors[$type] as $model_error) {
+                        list($model, $field, $rule) = $model_error;
+                        foreach ($rule as $error) {
+                            list($key, $params) = $error->getLanguageData();
+                            $errors[] = $type . ': ' . lang($field) . ' &mdash; ' . vsprintf(lang($key), (array) $params);
+                        }
                     }
                 }
             }
