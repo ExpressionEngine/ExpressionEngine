@@ -727,7 +727,39 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         }
       })), React.createElement("div", {
         className: "file-field__buttons"
-      }, this.props.showActionButtons && this.props.allowedDirectory != 'all' && React.createElement(React.Fragment, null, React.createElement("div", {
+      }, this.props.showActionButtons && this.props.allowedDirectory != 'all' && checkChildren && checkChildren.children.length > 0 && React.createElement("div", {
+        className: "button-segment"
+      }, React.createElement(DropDownButton, {
+        key: EE.lang.file_dnd_choose_existing,
+        action: true,
+        keepSelectedState: false,
+        title: EE.lang.file_dnd_choose_existing,
+        placeholder: EE.lang.file_dnd_filter_directories,
+        items: [checkChildren],
+        onSelect: function onSelect(directory) {
+          return _this5.chooseExisting(directory);
+        },
+        rel: "modal-file",
+        itemClass: "m-link",
+        buttonClass: "button--default button--small",
+        createNewDirectory: false,
+        ignoreChild: true,
+        addInput: false
+      }), React.createElement(DropDownButton, {
+        key: EE.lang.file_dnd_upload_new,
+        action: true,
+        keepSelectedState: false,
+        title: EE.lang.file_dnd_upload_new,
+        placeholder: EE.lang.file_dnd_filter_directories,
+        items: [checkChildren],
+        onSelect: function onSelect(directory) {
+          return _this5.uploadNew(directory);
+        },
+        buttonClass: "button--default button--small",
+        createNewDirectory: this.props.createNewDirectory,
+        ignoreChild: false,
+        addInput: true
+      })), this.props.showActionButtons && this.props.allowedDirectory != 'all' && (!checkChildren || checkChildren.children.length <= 0) && React.createElement(React.Fragment, null, React.createElement("div", {
         className: "button-segment"
       }, React.createElement("a", {
         href: "#",
