@@ -637,7 +637,41 @@ class DragAndDropUpload extends React.Component {
         </div>
 
         <div className="file-field__buttons">
-        {this.props.showActionButtons && this.props.allowedDirectory != 'all' &&
+        {this.props.showActionButtons && this.props.allowedDirectory != 'all' && 
+          checkChildren && checkChildren.children.length > 0 && (
+            <div className="button-segment">
+            <DropDownButton key={EE.lang.file_dnd_choose_existing}
+              action={true}
+              keepSelectedState={false}
+              title={EE.lang.file_dnd_choose_existing}
+              placeholder={EE.lang.file_dnd_filter_directories}
+              items={[checkChildren]}
+              onSelect={(directory) => this.chooseExisting(directory)}
+              rel="modal-file"
+              itemClass="m-link"
+              buttonClass="button--default button--small"
+              createNewDirectory={false}
+              ignoreChild={true}
+              addInput={false}
+            />
+
+            <DropDownButton key={EE.lang.file_dnd_upload_new}
+              action={true}
+              keepSelectedState={false}
+              title={EE.lang.file_dnd_upload_new}
+              placeholder={EE.lang.file_dnd_filter_directories}
+              items={[checkChildren]}
+              onSelect={(directory) => this.uploadNew(directory)}
+              buttonClass="button--default button--small"
+              createNewDirectory={this.props.createNewDirectory}
+              ignoreChild={false}
+              addInput={true}
+            />
+          </div>
+          )
+        }
+        {this.props.showActionButtons && this.props.allowedDirectory != 'all' && 
+          (!checkChildren || checkChildren.children.length <= 0) && (
           <React.Fragment>
             <div className="button-segment">
             <a href="#" className="button button--default button--small m-link" rel="modal-file" onClick={(e) => {
@@ -652,6 +686,7 @@ class DragAndDropUpload extends React.Component {
             <input type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
             </div>
           </React.Fragment>
+          )
         }
         {this.props.showActionButtons && this.props.allowedDirectory == 'all' && (
           <div className="button-segment">
