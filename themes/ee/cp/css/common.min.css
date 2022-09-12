@@ -32642,6 +32642,9 @@ body[data-theme=dark] .select-popup {
   padding: 15px 20px;
 }
 
+.layout-item-wrapper {
+  min-height: 20px;
+}
 .layout-item-wrapper .layout-item {
   margin-bottom: 10px;
 }

@@ -84,9 +84,8 @@ $(document).ready(function () {
 						$(tab).find('.tab-off').trigger('click');
 					}
 				}
-
 				// Add the field to the publish_layout array
-				// EE.publish_layout[getTabIndex()].fields.unshift(field);
+				EE.publish_layout[getTabIndex()].fields.unshift(field);
 				// field = null;
 			},
 			over: function(e, ui) {
@@ -130,8 +129,6 @@ $(document).ready(function () {
 		helper: "clone",
 		items: ".js-layout-item",
 		placeholder: "drag-placeholder",
-		// start_pos: null,
-		// start_tab: null,
 		start: function (event, ui) {
 			var fieldIndex = sheets.filter('.tab-open').find('.js-layout-item').index(ui.item[0]);
 
@@ -170,6 +167,10 @@ $(document).ready(function () {
 				return;
 			}
 
+			if ($('div.tab-open .layout-item-wrapper').children().length == 0 && ui.item.index() != -1) {
+				$('div.tab-open .layout-item-wrapper').remove();
+			}
+
 			if (ui.item.index() != start_pos && EE.publish_layout[start_tab] == EE.publish_layout[getTabIndex()]) {
 				if (field != null) {
 					var fieldIndex = sheets.filter('.tab-open').find('.js-layout-item').index(ui.item[0]);
@@ -181,9 +182,15 @@ $(document).ready(function () {
 					field = null;
 				}
 			}
+
+			if (ui.item.index() == -1) {
+				//remove item from original tab array because we added it in the makeTabsDroppable()
+				EE.publish_layout[start_tab].fields.splice(start_pos, 1)[0];
+				field = null;
+			}
 			start_pos = null;
 			start_tab = null;
-			console.log(EE.publish_layout);
+			// console.log(EE.publish_layout);
 		}
 	};
 
