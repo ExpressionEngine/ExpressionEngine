@@ -186,10 +186,12 @@ class GlobalVariable extends FileSyncedModel
             ee()->config->item('site_id') => PATH_TMPL . ee()->config->item('site_short_name') . '/_variables',
         ];
 
-        try {
-            ee('Filesystem')->getDirectoryContents($path, true, true);
-        } catch (\Exception $e) {
-            //silently continue
+        foreach ($paths as $path) {
+            try {
+                ee('Filesystem')->getDirectoryContents($path, true, true);
+            } catch (\Exception $e) {
+                //silently continue
+            }
         }
 
         // load up any variables
