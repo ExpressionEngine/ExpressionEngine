@@ -31950,6 +31950,10 @@ fieldset .field-control #eye {
   padding: 0;
 }
 
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td {
+  flex-wrap: nowrap !important;
+}
+
 .select {
   position: static;
   width: 100%;

@@ -1010,8 +1010,7 @@ $(document).ready(function () {
 	});
 
 });
-
-$(window).on('resize', function() {
+function checkGrigWidth() {
 	var gridTables = $('.grid-field');
 
 	gridTables.each(function(el) {
@@ -1023,6 +1022,7 @@ $(window).on('resize', function() {
 		} else {
 			var tableInnerWidth = $(this).find('.grid-field__table').width();
 		}
+
 		var containerWidth = $(this).parents('.field-control').width();
 
 		if (containerWidth < tableInnerWidth) {
@@ -1033,6 +1033,13 @@ $(window).on('resize', function() {
 			$(this).removeClass('overwidth');
 		}
 	});
+}
+$(window).on('load', function() {
+	checkGrigWidth();
+});
+
+$(window).on('resize', function() {
+	checkGrigWidth();
 });
 
 })(jQuery);

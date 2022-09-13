@@ -114,6 +114,8 @@ class UploadDestination extends StructureModel
     private $filesystem = null;
 
     protected $_manipulationsToOperate;
+    protected $_exists;
+
     /**
      * Because of the 'upload_preferences' Config value, the data in the DB
      * is not always authoritative. So we will need to get any override data
@@ -358,12 +360,25 @@ class UploadDestination extends StructureModel
 
         $filesystem = ee('File')->getPath($path, $adapter);
         $filesystem->setUrl($this->getProperty('url'));
+        $this->filesystem = $filesystem;
 
+        return $this->filesystem;
+    }
+
+    /**
+     * Eager load the contents of the underlying filesystem by listing the files
+     * and storing results in the cached adapter
+     *
+     * @return Filesystem
+     */
+    public function eagerLoadContents()
+    {
         // This will effectively eager load the directory and speed up checks
         // for file existence, especially in remote filesystems.  This might
         // make more sense to move into file listing controllers eventually
-        $filesystem->getDirectoryContents($path, true);
-        $this->filesystem = $filesystem;
+        $this->getFilesystem();
+        $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
+        $this->filesystem->getDirectoryContents($path, true);
 
         return $this->filesystem;
     }
@@ -535,10 +550,14 @@ class UploadDestination extends StructureModel
      */
     public function exists()
     {
+        if (! is_null($this->_exists)) {
+            return $this->_exists;
+        }
+    
         try {
-            return $this->getFilesystem()->exists('');
+            return $this->_exists = $this->getFilesystem()->exists('');
         } catch (\Exception $e) {
-            return false;
+            return $this->_exists = false;
         }
     }
 

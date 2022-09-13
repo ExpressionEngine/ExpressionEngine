@@ -983,6 +983,9 @@ class Uploads extends AbstractFilesController
 
         foreach ($current_files as $filePath) {
             $fileInfo = $filesystem->getWithMetadata($filePath);
+            if (!isset($fileInfo['basename'])) {
+                $fileInfo['basename'] = basename($fileInfo['path']);
+            }
             $mime = ($fileInfo['type'] != 'dir') ? $filesystem->getMimetype($filePath) : 'directory';
 
             if ($mime == 'directory' && (!$uploadDestination->allow_subfolders || bool_config_item('file_manager_compatibility_mode'))) {
