@@ -118,6 +118,7 @@ class FileSystemEntity extends ContentModel
 
     protected $_baseServerPath;
     protected $_subfolderPath;
+    protected $_exists;
 
     /**
      * A link back to the owning group object.
@@ -198,7 +199,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getSubfoldersPath()
     {
-        if (empty($this->_subfolderPath)) {
+        if (is_null($this->_subfolderPath)) {
             $directory_id = $this->directory_id;
             $subfolders = [];
             while ($directory_id != 0) {
@@ -328,7 +329,12 @@ class FileSystemEntity extends ContentModel
         return $this->UploadDestination->getFilesystem()->getUrl($this->getSubfoldersPath() . $this->file_name);
     }
 
-    public function getAbsoluteManupulationURL($manipulation = 'thumbs')
+    public function getAbsoluteManipulationPath($manipulation = 'thumbs')
+    {
+        return $this->getBaseServerPath() . $this->getSubfoldersPath(). '_' . $manipulation . '/' . $this->file_name;
+    }
+
+    public function getAbsoluteManipulationURL($manipulation = 'thumbs')
     {
         if (!$this->UploadDestination->exists()) {
             return null;
@@ -336,7 +342,7 @@ class FileSystemEntity extends ContentModel
 
         $filesystem = $this->UploadDestination->getFilesystem();
 
-        if (! $filesystem->exists($this->getAbsoluteThumbnailPath())) {
+        if (! $filesystem->exists($this->getAbsoluteManipulationPath($manipulation))) {
             return $this->getAbsoluteURL();
         }
 
@@ -351,7 +357,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteThumbnailURL()
     {
-        return $this->getAbsoluteManupulationURL('thumbs');
+        return $this->getAbsoluteManipulationURL('thumbs');
     }
 
     public function getThumbnailUrl()
@@ -431,13 +437,17 @@ class FileSystemEntity extends ContentModel
      */
     public function exists()
     {
+        if (! is_null($this->_exists)) {
+            return $this->_exists;
+        }
+        
         if (!$this->UploadDestination->exists()) {
-            return false;
+            return $this->_exists = false;
         }
 
         $filesystem = $this->UploadDestination->getFilesystem();
 
-        return $filesystem->exists($this->getAbsolutePath());
+        return $this->_exists = $filesystem->exists($this->getAbsolutePath());
     }
 
     /**
