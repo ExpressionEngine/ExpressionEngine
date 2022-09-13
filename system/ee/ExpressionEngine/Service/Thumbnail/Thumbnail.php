@@ -47,6 +47,8 @@ class Thumbnail
      */
     protected $filesystem = null;
 
+    protected $_exists;
+
     /**
      * Constructor: sets the url and path properties based on the arguments
      *
@@ -142,7 +144,10 @@ class Thumbnail
      */
     public function exists()
     {
-        return ($this->filesystem) ? $this->filesystem->exists($this->path) : false;
+        if (! is_null($this->_exists)) {
+            return $this->_exists;
+        }
+        return $this->_exists = ($this->filesystem) ? $this->filesystem->exists($this->path) : false;
     }
 
     /**

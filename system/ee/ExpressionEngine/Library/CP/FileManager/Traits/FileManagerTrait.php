@@ -296,7 +296,12 @@ trait FileManagerTrait
                 continue;
             }
 
-            $destinationsToEagerLoad[$file->upload_location_id] = $file->UploadDestination;
+            // We only need to eager load contents for destinations that are displaying
+            // files in this current page of the listing
+            if (! in_array($file->upload_location_id, $destinationsToEagerLoad)) {
+                $file->UploadDestination->eagerLoadContents();
+                $destinationsToEagerLoad[$file->upload_location_id] = $file->upload_location_id;
+            }
 
             $attrs = [
                 'class' => $file->isDirectory() ? 'drop-target' : '',
@@ -352,12 +357,6 @@ trait FileManagerTrait
                 'attrs' => $attrs,
                 'columns' => $column_renderer->getRenderedTableRowForEntry($file, $view_type, $filepickerMode)
             );
-        }
-
-        // We only need to eager load contents for destinations that are displaying
-        // files in this current page of the listing
-        foreach($destinationsToEagerLoad as $destination) {
-            $destination->eagerLoadContents();
         }
 
         if ($missing_files) {

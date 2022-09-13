@@ -182,16 +182,20 @@ class Snippet extends FileSyncedModel
      */
     public function loadAll()
     {
+        $paths = [
+            0 => PATH_TMPL . '_global_partials',
+            ee()->config->item('site_id') => PATH_TMPL . ee()->config->item('site_short_name') . '/_partials',
+        ];
+
+        foreach ($paths as $path) {
+            ee('Filesystem')->getDirectoryContents($path, true, true);
+        }
+
         // load up any Snippets
         $snippets = $this->getModelFacade()->get('Snippet')
             ->filter('site_id', ee()->config->item('site_id'))
             ->orFilter('site_id', 0)
             ->all();
-
-        $paths = [
-            0 => PATH_TMPL . '_global_partials',
-            ee()->config->item('site_id') => PATH_TMPL . ee()->config->item('site_short_name') . '/_partials',
-        ];
 
         $names = $snippets->pluck('snippet_name');
 
