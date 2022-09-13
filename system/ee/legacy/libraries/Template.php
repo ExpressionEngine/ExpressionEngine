@@ -162,7 +162,7 @@ class EE_Template
         // Run garbage collection about 10% of the time
         if (rand(1, 10) == 1) {
             $this->_garbage_collect_cache();
-            ee('ChannelSet')->garbageCollect();
+            ee('Portage')->garbageCollect();
         }
 
         $this->log_item("URI: " . ee()->uri->uri_string);

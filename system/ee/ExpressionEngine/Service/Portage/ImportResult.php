@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Service\ChannelSet;
+namespace ExpressionEngine\Service\Portage;
 
 /**
  * Channel Set Service: Import Result

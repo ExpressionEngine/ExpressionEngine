@@ -72,13 +72,10 @@ class Channels extends AbstractChannelsController
                 'extra' => LD . $channel->channel_name . RD,
                 'selected' => ($highlight_id && $channel->getId() == $highlight_id) or in_array($channel->getId(), $imported_channels),
                 'toolbar_items' => [
-                    'download' => [
-                        'href' => ee('CP/URL', 'channels/sets/export/' . $channel->getId()),
-                        'title' => lang('export')
-                    ],
                     'layout-set' => [
                         'href' => ee('CP/URL', 'channels/layouts/' . $channel->getId()),
-                        'title' => lang('layouts')
+                        'title' => $channel->channel_title . ' ' . lang('layouts'),
+                        'content' => lang('layouts')
                     ]
                 ],
                 'selection' => [

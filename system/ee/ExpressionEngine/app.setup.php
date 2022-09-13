@@ -17,7 +17,7 @@ use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
 use ExpressionEngine\Service\Channel;
-use ExpressionEngine\Service\ChannelSet;
+use ExpressionEngine\Service\Portage;
 use ExpressionEngine\Service\ConditionalFields;
 use ExpressionEngine\Service\Config;
 use ExpressionEngine\Service\Consent;
@@ -410,8 +410,8 @@ $setup = [
             return new Channel\ChannelEntry();
         },
 
-        'ChannelSet' => function ($ee) {
-            return new ChannelSet\Factory(
+        'Portage' => function ($ee) {
+            return new Portage\Factory(
                 ee()->config->item('site_id')
             );
         },

@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Service\ChannelSet;
+namespace ExpressionEngine\Service\Portage;
 
 use StdClass;
 use ZipArchive;
@@ -147,9 +147,10 @@ class Export
     private function exportStatus($status)
     {
         $result = new StdClass();
-
-        $result->name = $status->status;
-        $result->highlight = $status->highlight;
+        foreach ($status->getFields() as $property)
+        {
+            $result->{$property} = $status->{$property};
+        }
 
         $this->statuses[$status->status] = $result;
 
@@ -252,7 +253,7 @@ class Export
 
         $this->fields[$field->getId()] = true;
 
-        $file = '/' . $type . '_fields/' . $field->field_name . '.' . $field->field_type;
+        $file = '/' . $type . '_fields/' . $field->field_name . '.' . $field->field_type . '.json';
 
         $result = new StdClass();
 
@@ -342,9 +343,13 @@ class Export
      */
     private function exportUploadDestination($id)
     {
-        $dir = ee('Model')->get('UploadDestination', $id)->first();
+        $dir = ee('Model')->get('UploadDestination', $id)->with('FileDimensions')->all()->first();
 
         $result = new StdClass();
+        foreach ($dir->getFields() as $property)
+        {
+            $result->{$property} = $dir->{$property};
+        }
         $result->name = $dir->name;
 
         $this->upload_destinations[$dir->name] = $result;

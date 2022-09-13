@@ -12,8 +12,6 @@ $lang = array(
 
     'assigned_to' => 'assigned to',
 
-    'btn_import' => 'Import',
-
     'btn_preview_layout' => 'Preview Layout',
 
     'category_groups' => 'Category groups',

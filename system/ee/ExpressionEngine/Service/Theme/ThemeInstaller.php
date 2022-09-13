@@ -130,7 +130,7 @@ class ThemeInstaller
             $theme_name = 'default';
         }
 
-        $set = ee('ChannelSet')->importDir($this->getChannelSetPath($theme_name));
+        $set = ee('Portage')->importDir($this->getChannelSetPath($theme_name));
         $set->setSiteId(1);
         $set->validate();
         $set->save();

@@ -8,9 +8,9 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Tests\Service\ChannelSet;
+namespace ExpressionEngine\Tests\Service\Portage;
 
-use ExpressionEngine\Service\ChannelSet\Export;
+use ExpressionEngine\Service\Portage\Export;
 use PHPUnit\Framework\TestCase;
 
 class ExportTest extends TestCase

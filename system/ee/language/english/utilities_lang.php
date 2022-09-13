@@ -630,6 +630,39 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'debug_tools_members' => 'Debug Members',
 
+    /* Portage */
+
+    'portage_export' => 'Portage Export',
+
+    'portage_import' => 'Portage Import',
+
+    'portage_explained_desc' => 'Portage is the utility that allows you to migrate content structure between different environments and sites. <a href="%s">Check the documentation</a> for use cases and instructions. <br /><br />
+
+    Importing the Portage is always incremental and will add the data structures if those are missing or optionally update those that already exist.<br /><br />
+
+    You can export the Portage for the site as a whole, as well as create partial Portages for individual Channels. 
+    
+    ',
+
+    'export_full_portage' => 'Export full site portage',
+
+    'export_full_portage_desc' => 'Turn off if you need to select individual channels',
+
+    'portage_channels' => 'Portage channels',
+
+    'portage_channels_desc' => 'Select channels you need to export. <br />Note that when exporting individual channels other data structures might still be included if they are associated.',
+
+    'btn_import' => 'Import',
+
+    'btn_export' => 'Export',
+
+    'btn_processing' => 'Processing...',
+
+    'portage_file' => 'Portage file',
+
+    'portage_file_desc' => 'Select file that contains previously exported portage',
+
+
 );
 
 // EOF

@@ -8,21 +8,130 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Controller\Channels;
-
-use ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
+namespace ExpressionEngine\Controller\Utilities;
 
 /**
- * Channel Set Controller
+ * Portage Controller
  */
-class Sets extends AbstractChannelsController
+class Portage extends Utilities
 {
+    public function __construct()
+    {
+        parent::__construct();
+
+        if (! ee('Permission')->isSuperAdmin()) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+    }
+    
+    public function index()
+    {
+        show_error(lang('unauthorized_access'), 403);
+    }
+    
+    public function export()
+    {
+        if (! ee('Permission')->can('access_data')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        ee('CP/Alert')->makeInline('portage_explained')
+            ->asTip()
+            ->cannotClose()
+            ->addToBody(sprintf(
+                lang('portage_explained_desc'),
+                DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
+                ee('CP/URL')->make('utilities/db-backup')->compile(),
+                ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
+            )
+            ->now();
+
+        $vars['hide_top_buttons'] = true;
+        $vars['sections'] = array(
+            array(
+                array(
+                    'title' => 'export_full_portage',
+                    'desc' => 'export_full_portage_desc',
+                    'fields' => array(
+                        'export_full_portage' => [
+                            'type' => 'yes_no',
+                            'value' => 'y',
+                            'group_toggle' => [
+                                'n' => 'portage_channels'
+                            ]
+                        ],
+                    )
+                ),
+                array(
+                    'title' => 'portage_channels',
+                    'desc' => 'portage_channels_desc',
+                    'group' => 'portage_channels',
+                    'fields' => array(
+                        'portage_channels' => array(
+                            'type' => 'checkbox',
+                            'choices' => ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->all()->getDictionary('channel_id', 'channel_title')
+                        )
+                    )
+                )
+            )
+        );
+
+        if (ee('Request')->isPost()) {
+            $fileName = 'portage-' . ee()->config->item('site_short_name');
+            if (ee('Request')->post('export_full_portage') != 'n') {
+                $channels = ee('Model')
+                    ->get('Channel')
+                    ->filter('site_id', ee()->config->item('site_id'))
+                    ->all();
+            } else {
+                $channels = ee('Model')
+                    ->get('Channel')
+                    ->filter('site_id', ee()->config->item('site_id'))
+                    ->filter('channel_id', 'IN', ee('Request')->post('portage_channels'))
+                    ->all();
+                $fileName .= '-channels' . implode('_', ee('Request')->post('portage_channels'));
+            }
+
+            if (empty($channels)) {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('channel_set_not_exported'))
+                    ->addToBody(lang('channel_set_not_exported_desc'))
+                    ->defer();
+
+                ee()->functions->redirect(ee('CP/URL', 'utilities/portage/export'));
+            }
+
+            $file = ee('Portage')->export($channels);
+
+            $data = file_get_contents($file);
+
+            ee()->load->helper('download');
+            force_download($fileName . '-' . ee()->localize->now . '.zip', $data);
+            exit;
+        }
+
+        ee()->view->extra_alerts = ['portage_explained'];
+
+        ee()->view->ajax_validate = true;
+        ee()->view->cp_page_title = lang('portage_export');
+        ee()->view->base_url = ee('CP/URL')->make('utilities/portage/export');
+        ee()->view->save_btn_text = 'btn_export';
+        ee()->view->save_btn_text_working = 'btn_processing';
+
+        ee()->view->cp_breadcrumbs = array(
+            '' => lang('portage_export')
+        );
+
+        ee()->cp->render('settings/form', $vars);
+    }
+
     /**
      * General Settings
      */
-    public function index()
+    public function import()
     {
-        $base_url = ee('CP/URL', 'channels/sets');
+        $base_url = ee('CP/URL', 'utilities/portage/import');
 
         $vars = array(
             'ajax_validate' => true,
@@ -30,11 +139,12 @@ class Sets extends AbstractChannelsController
             'errors' => null,
             'has_file_input' => true,
             'save_btn_text' => 'btn_import',
-            'save_btn_text_working' => 'btn_saving',
+            'save_btn_text_working' => 'btn_processing',
             'sections' => array(
                 array(
                     array(
-                        'title' => 'file_upload',
+                        'title' => 'portage_file',
+                        'desc' => 'portage_file_desc',
                         'fields' => array(
                             'set_file' => array(
                                 'type' => 'file',
@@ -86,43 +196,11 @@ class Sets extends AbstractChannelsController
         }
 
         ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('channels')->compile() => lang('channels')
+            '' => lang('portage')
         );
 
-        ee()->view->cp_page_title = lang('import_channel');
+        ee()->view->cp_page_title = lang('portage_import');
         ee()->cp->render('settings/form', $vars);
-    }
-
-    /**
-     * Export a channel as a channel set
-     */
-    public function export($channel_id = null)
-    {
-        $channel = null;
-
-        if (isset($channel_id)) {
-            $channel = ee('Model')
-                ->get('Channel', $channel_id)
-                ->filter('site_id', ee()->config->item('site_id'))->first();
-        }
-
-        if (! isset($channel)) {
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asIssue()
-                ->withTitle(lang('channel_set_not_exported'))
-                ->addToBody(lang('channel_set_not_exported_desc'))
-                ->defer();
-
-            ee()->functions->redirect(ee('CP/URL', 'channels'));
-        }
-
-        $file = ee('Portage')->export(array($channel));
-
-        $data = file_get_contents($file);
-
-        ee()->load->helper('download');
-        force_download('ChannelSet.zip', $data);
-        exit;
     }
 
     /**
@@ -319,5 +397,6 @@ class Sets extends AbstractChannelsController
         return $vars;
     }
 }
+// END CLASS
 
 // EOF

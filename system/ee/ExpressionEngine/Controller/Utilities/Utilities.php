@@ -115,12 +115,16 @@ class Utilities extends CP_Controller
                 ->addBasicList();
             $data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
             $data_list->addItem(lang('search_reindex'), ee('CP/URL')->make('utilities/reindex'));
+            if (ee('Permission')->isSuperAdmin()) {
+                $data_list->addItem(lang('portage_export'), ee('CP/URL')->make('utilities/portage/export'));
+                $data_list->addItem(lang('portage_import'), ee('CP/URL')->make('utilities/portage/import'));
+            }
             if (ee('Permission')->can('edit_channel_fields')) {
                 // If we use a subpage like utilities/sync-conditional-fields/sync make it match the nav
-                $sync_conditional_fields_url = ee('CP/URL')->make('utilities/sync-conditional-fields');
-                $conditional_field_sync = $data_list->addItem(lang('sync_conditional_fields'), $sync_conditional_fields_url);
-                if ($sync_conditional_fields_url->matchesTheRequestedURI()) {
-                    $conditional_field_sync->isActive();
+                $url = ee('CP/URL')->make('utilities/sync-conditional-fields');
+                $item = $data_list->addItem(lang('sync_conditional_fields'), $url);
+                if ($url->matchesTheRequestedURI()) {
+                    $item->isActive();
                 }
             }
             $data_list->addItem(lang('update_file_usage'), ee('CP/URL')->make('utilities/file-usage'));
