@@ -188,7 +188,11 @@ class Snippet extends FileSyncedModel
         ];
 
         foreach ($paths as $path) {
-            ee('Filesystem')->getDirectoryContents($path, true, true);
+            try {
+                ee('Filesystem')->getDirectoryContents($path, true, true);
+            } catch (\Exception $e) {
+                //silently continue
+            }
         }
 
         // load up any Snippets
