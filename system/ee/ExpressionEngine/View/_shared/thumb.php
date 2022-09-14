@@ -58,10 +58,14 @@ if (count($data)) {
 
                 <?php if ($i == 1) : ?>
                     <div class="file-thumbnail__wrapper">
+                        <?php if (isset($row['attrs']['href'])) : ?>
                         <a href="<?=$row['attrs']['href']?>">
+                        <?php endif; ?>
                 <?php endif; ?>
                 <?php if ($i == 2) : ?>
+                        <?php if (isset($row['attrs']['href'])) : ?>
                         </a>
+                        <?php endif; ?>
                     </div>
                     <div class="file-metadata__wrapper">
                 <?php endif; ?>

@@ -553,4 +553,14 @@
 			}
 		}
 	}
-} 
+}
+
+.grid-field.overwidth {
+	.grid-field__table {
+		tbody tr:not(.hidden) {
+			td {
+				flex-wrap: nowrap !important;
+			}
+		}
+	}
+}

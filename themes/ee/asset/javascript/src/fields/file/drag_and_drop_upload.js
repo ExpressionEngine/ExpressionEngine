@@ -27,9 +27,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
-var DragAndDropUpload =
-/*#__PURE__*/
-function (_React$Component) {
+var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
   _inherits(DragAndDropUpload, _React$Component);
 
   function DragAndDropUpload(props) {
@@ -171,7 +169,7 @@ function (_React$Component) {
       }
 
       el.find('.f_open-filepicker').click();
-      el.find('.f_open-filepicker').change(function (e) {
+      el.find('.f_open-filepicker').one('change', function (e) {
         var files = e.target.files;
         that.handleDroppedFiles(files);
       });
@@ -490,35 +488,35 @@ function (_React$Component) {
             }
           } // Unexpected error, probably post_max_size is too low
           else if (xhr.readyState == 4 && xhr.status != 200) {
-              file.error = EE.lang.file_dnd_unexpected_error;
+            file.error = EE.lang.file_dnd_unexpected_error;
 
-              try {
-                var response = JSON.parse(xhr.responseText);
+            try {
+              var response = JSON.parse(xhr.responseText);
 
-                if (typeof response.error != 'undefined') {
-                  file.error = response.error;
-                } else if (typeof response.message !== 'undefined') {
-                  file.error = response.message;
-                }
-              } catch (err) {}
-
-              if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
-                $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
-                  $(this).attr('disabled', 'disabled');
-                });
+              if (typeof response.error != 'undefined') {
+                file.error = response.error;
+              } else if (typeof response.message !== 'undefined') {
+                file.error = response.message;
               }
+            } catch (err) {}
 
-              if ($('.title-bar a.upload').length) {
-                $('.title-bar a.upload').addClass('disabled');
-              }
-
-              if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
-                $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled');
-              }
-
-              console.error(xhr);
-              reject(file);
+            if ($(window.globalDropzone).parents('.field-control').find('.button-segment').length) {
+              $(window.globalDropzone).parents('.field-control').find('.button-segment button.js-dropdown-toggle').each(function () {
+                $(this).attr('disabled', 'disabled');
+              });
             }
+
+            if ($('.title-bar a.upload').length) {
+              $('.title-bar a.upload').addClass('disabled');
+            }
+
+            if ($('.main-nav .main-nav__toolbar .js-dropdown-toggle').length) {
+              $('.main-nav .main-nav__toolbar .js-dropdown-toggle').attr('disabled', 'disabled');
+            }
+
+            console.error(xhr);
+            reject(file);
+          }
 
           _this3.setState({
             files: _this3.state.files
@@ -631,6 +629,18 @@ function (_React$Component) {
       }
 
       var checkChildren = this.directoryHasChild(this.props.allowedDirectory);
+      var uploadDirectoriesForDropdown = EE.dragAndDrop.uploadDesinations;
+
+      if (typeof this.props.roleAllowedDirectoryIds !== 'undefined' && this.props.roleAllowedDirectoryIds.length > 0) {
+        uploadDirectoriesForDropdown = [];
+        var roleAllowedDirectoryIds = this.props.roleAllowedDirectoryIds;
+        Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
+          if (roleAllowedDirectoryIds.includes(uploadDesination.value)) {
+            uploadDirectoriesForDropdown.push(uploadDesination);
+          }
+        });
+      }
+
       return React.createElement(React.Fragment, null, React.createElement("div", {
         className: "file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')
       }, React.createElement("div", {
@@ -671,7 +681,7 @@ function (_React$Component) {
         keepSelectedState: true,
         title: EE.lang.file_dnd_choose_directory_btn,
         placeholder: EE.lang.file_dnd_filter_directories,
-        items: EE.dragAndDrop.uploadDesinations,
+        items: uploadDirectoriesForDropdown,
         onSelect: function onSelect(directory) {
           return _this5.setDirectory(directory);
         },
@@ -717,7 +727,39 @@ function (_React$Component) {
         }
       })), React.createElement("div", {
         className: "file-field__buttons"
-      }, this.props.showActionButtons && this.props.allowedDirectory != 'all' && React.createElement(React.Fragment, null, React.createElement("div", {
+      }, this.props.showActionButtons && this.props.allowedDirectory != 'all' && checkChildren && checkChildren.children.length > 0 && React.createElement("div", {
+        className: "button-segment"
+      }, React.createElement(DropDownButton, {
+        key: EE.lang.file_dnd_choose_existing,
+        action: true,
+        keepSelectedState: false,
+        title: EE.lang.file_dnd_choose_existing,
+        placeholder: EE.lang.file_dnd_filter_directories,
+        items: [checkChildren],
+        onSelect: function onSelect(directory) {
+          return _this5.chooseExisting(directory);
+        },
+        rel: "modal-file",
+        itemClass: "m-link",
+        buttonClass: "button--default button--small",
+        createNewDirectory: false,
+        ignoreChild: true,
+        addInput: false
+      }), React.createElement(DropDownButton, {
+        key: EE.lang.file_dnd_upload_new,
+        action: true,
+        keepSelectedState: false,
+        title: EE.lang.file_dnd_upload_new,
+        placeholder: EE.lang.file_dnd_filter_directories,
+        items: [checkChildren],
+        onSelect: function onSelect(directory) {
+          return _this5.uploadNew(directory);
+        },
+        buttonClass: "button--default button--small",
+        createNewDirectory: this.props.createNewDirectory,
+        ignoreChild: false,
+        addInput: true
+      })), this.props.showActionButtons && this.props.allowedDirectory != 'all' && (!checkChildren || checkChildren.children.length <= 0) && React.createElement(React.Fragment, null, React.createElement("div", {
         className: "button-segment"
       }, React.createElement("a", {
         href: "#",
@@ -751,7 +793,7 @@ function (_React$Component) {
         keepSelectedState: false,
         title: EE.lang.file_dnd_choose_existing,
         placeholder: EE.lang.file_dnd_filter_directories,
-        items: EE.dragAndDrop.uploadDesinations,
+        items: uploadDirectoriesForDropdown,
         onSelect: function onSelect(directory) {
           return _this5.chooseExisting(directory);
         },
@@ -767,7 +809,7 @@ function (_React$Component) {
         keepSelectedState: false,
         title: EE.lang.file_dnd_upload_new,
         placeholder: EE.lang.file_dnd_filter_directories,
-        items: EE.dragAndDrop.uploadDesinations,
+        items: uploadDirectoriesForDropdown,
         onSelect: function onSelect(directory) {
           return _this5.uploadNew(directory);
         },

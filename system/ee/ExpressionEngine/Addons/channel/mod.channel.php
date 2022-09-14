@@ -646,7 +646,10 @@ class Channel
                 // We're goign to repeat the search on each site
                 // so store the terms in a temp.  FIXME Necessary?
                 $terms = $search_terms;
-                if (! isset($this->cfields[$site_id][$field_name])) {
+                if (in_array($field_name, ['title', 'url_title'])) {
+                    $table = 't';
+                    $search_column_name = $table . '.' . $field_name;
+                } else if (! isset($this->cfields[$site_id][$field_name])) {
                     continue;
                 }
 
@@ -656,11 +659,11 @@ class Channel
                     $fields_sql .= ' OR ';
                 }
 
-                $field_id = $this->cfields[$site_id][$field_name];
-
-                $table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
-
-                $search_column_name = $table . '.field_id_' . $this->cfields[$site_id][$field_name];
+                if (!isset($search_column_name)) {
+                    $field_id = $this->cfields[$site_id][$field_name];
+                    $table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
+                    $search_column_name = $table . '.field_id_' . $this->cfields[$site_id][$field_name];
+                }
 
                 $fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
             } // foreach($sites as $site_id)
