@@ -714,6 +714,12 @@ class EE_Schema
 			PRIMARY KEY `channel_id_status_id` (`channel_id`, `status_id`)
 		)";
 
+		$Q[] = "CREATE TABLE exp_channel_category_groups (
+			channel_id int(6) unsigned NOT NULL,
+			group_id int(6) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_group_id` (`channel_id`, `group_id`)
+		)";
+
         // Frontend Channel Form Settings
 
         $Q[] = "CREATE TABLE `exp_channel_form_settings` (
@@ -1053,7 +1059,6 @@ class EE_Schema
 			file_properties varchar(120) NULL DEFAULT NULL,
 			file_pre_format varchar(120) NULL DEFAULT NULL,
 			file_post_format varchar(120) NULL DEFAULT NULL,
-			cat_group varchar(255) NULL DEFAULT NULL,
 			batch_location varchar(255) NULL DEFAULT NULL,
 			module_id int(4) NOT NULL DEFAULT 0,
 			PRIMARY KEY `id` (`id`),

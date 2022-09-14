@@ -220,6 +220,8 @@ class Channel_model extends CI_Model
      */
     public function create_channel($data)
     {
+        ee()->logger->deprecated('7.3.0');
+
         $this->db->insert('channels', $data);
 
         return $this->db->insert_id();

@@ -15,6 +15,8 @@ class Publish
 {
     public function build_categories_block($cat_group_ids, $entry_id, $selected_categories, $default_category = '', $file = false)
     {
+        ee()->logger->deprecated('7.3.0');
+
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_categories');
 

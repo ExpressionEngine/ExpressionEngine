@@ -32,6 +32,15 @@ class CategoryGroup extends StructureModel
             'type' => 'hasMany',
             'model' => 'Category'
         ),
+        'Channels' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Channel',
+            'pivot' => array(
+                'table' => 'channel_category_groups',
+                'left' => 'group_id',
+                'right' => 'channel_id'
+            )
+        ),
         'UploadDestinations' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'UploadDestination',

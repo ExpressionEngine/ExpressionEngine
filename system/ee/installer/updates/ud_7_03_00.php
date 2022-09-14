@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'normalizeUploadDirectoryCategoryGroups',
+                'normalizeChannelCategoryGroups',
             ]
         );
 
@@ -63,16 +64,54 @@ class Updater
         ee()->dbforge->add_key(['upload_location_id', 'group_id'], true);
         ee()->smartforge->create_table('upload_prefs_category_groups');
 
-        $upload_prefs_category_groups = [];
         $records = ee()->db->select('id, cat_group')->get('upload_prefs')->result();
         foreach ($records as $record) {
             if (!empty($record->cat_group)) {
                 $cat_groups = explode('|', $record->cat_group);
                 foreach ($cat_groups as $cat_group) {
-                    $upload_prefs_category_groups[] = [
+                    ee('db')->insert('upload_prefs_category_groups', [
                         'upload_location_id' => $record->id,
                         'group_id' => $cat_group
-                    ];
+                    ]);
+                }
+            }
+        }
+    }
+
+    private function normalizeChannelCategoryGroups()
+    {
+        if (ee()->db->table_exists('channel_category_groups')) {
+            return;
+        }
+
+        ee()->dbforge->add_field(
+            [
+                'channel_id' => [
+                    'type' => 'int',
+                    'constraint' => 4,
+                    'unsigned' => true,
+                    'null' => false
+                ],
+                'group_id' => [
+                    'type' => 'int',
+                    'constraint' => 6,
+                    'unsigned' => true,
+                    'null' => false
+                ]
+            ]
+        );
+        ee()->dbforge->add_key(['channel_id', 'group_id'], true);
+        ee()->smartforge->create_table('channel_category_groups');
+
+        $records = ee()->db->select('channel_id, cat_group')->get('channels')->result();
+        foreach ($records as $record) {
+            if (!empty($record->cat_group)) {
+                $cat_groups = explode('|', $record->cat_group);
+                foreach ($cat_groups as $cat_group) {
+                    ee('db')->insert('channel_category_groups', [
+                        'channel_id' => $record->channel_id,
+                        'group_id' => $cat_group
+                    ]);
                 }
             }
         }

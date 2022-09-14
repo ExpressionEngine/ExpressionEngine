@@ -959,16 +959,10 @@ class Moblog
         $data['category'] = array();
 
         if ($this->post_data['categories'] == 'all') {
-            $cat_groups = explode('|', $query->row('cat_group'));
-            ee()->load->model('category_model');
-
-            foreach ($cat_groups as $cat_group_id) {
-                $cats_q = ee()->category_model->get_channel_categories($cat_group_id);
-
-                if ($cats_q->num_rows() > 0) {
-                    foreach ($cats_q->result() as $row) {
-                        $data['category'][] = $row->cat_id;
-                    }
+            $channel = ee('Model')->get('Channel', $channel_id)->with('CategoryGroups')->first();
+            if (!empty($channel)) {
+                foreach ($channel->CategoryGroups as $cat_group) {
+                    $data['category'] = array_merge($data['category'], $cat_group->Categories->pluck('cat_id'));
                 }
             }
 

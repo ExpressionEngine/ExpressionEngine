@@ -158,6 +158,8 @@ class Api_channel_structure extends Api
      */
     public function create_channel($data)
     {
+        ee()->logger->deprecated('7.3.0');
+
         if (! is_array($data) or count($data) == 0) {
             return false;
         }

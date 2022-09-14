@@ -509,19 +509,22 @@ class Api_channel_entries extends Api
     public function _do_channel_switch(&$data)
     {
         if (isset($data['new_channel']) && $data['new_channel'] && $data['new_channel'] != $this->channel_id) {
-            ee()->db->select('cat_group, channel_id');
-            ee()->db->where_in('channel_id', array($this->channel_id, $data['new_channel']));
-            $query = ee()->db->get('channels');
-
-            if ($query->num_rows() == 2) {
-                $result_zero = $query->row(0);
-                $result_one = $query->row(1);
-
-                if ($result_zero->cat_group == $result_one->cat_group) {
-                    if (ee('Permission')->isSuperAdmin() or in_array($data['new_channel'], $this->_cache['assigned_channels'])) {
-                        $data['old_channel'] = $this->channel_id;
-                        $this->channel_id = $data['new_channel'];
+            $category_groups = [];
+            foreach (array($this->channel_id, $data['new_channel']) as $i => $channel_id) {
+                $result[$i] = [];
+                $query = ee()->db->select('group_id')->from('channel_category_groups')->where('channel_id', $this->channel_id)->get();
+                if ($query->num_rows() > 0) {
+                    foreach ($query->result_array() as $row) {
+                        $result[$i] = $row['group_id'];
                     }
+                    ksort(array_unique($result[$i]));
+                }
+            }
+
+            if ($result[0] == $result[1]) {
+                if (ee('Permission')->isSuperAdmin() or in_array($data['new_channel'], $this->_cache['assigned_channels'])) {
+                    $data['old_channel'] = $this->channel_id;
+                    $this->channel_id = $data['new_channel'];
                 }
             }
         }

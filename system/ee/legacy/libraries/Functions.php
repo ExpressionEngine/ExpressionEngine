@@ -1034,6 +1034,8 @@ class EE_Functions
      */
     public function get_categories($cat_group, $entry_id)
     {
+        ee()->logger->deprecated('7.3.0');
+
         // fetch the custom category fields
         $field_sqla = '';
         $field_sqlb = '';
