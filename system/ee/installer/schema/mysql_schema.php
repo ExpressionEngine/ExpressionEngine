@@ -1060,6 +1060,12 @@ class EE_Schema
 			KEY `site_id` (`site_id`)
 		)";
 
+		$Q[] = "CREATE TABLE exp_upload_prefs_category_groups (
+			upload_location_id int(4) unsigned NOT NULL,
+			group_id int(6) unsigned NOT NULL,
+			PRIMARY KEY `upload_location_id_group_id` (`upload_location_id`, `group_id`)
+		)";
+
         // Upload "no access"
         // We store the member groups that can not access various upload destinations
 

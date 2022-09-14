@@ -31,6 +31,15 @@ class CategoryGroup extends StructureModel
         'Categories' => array(
             'type' => 'hasMany',
             'model' => 'Category'
+        ),
+        'UploadDestinations' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'UploadDestination',
+            'pivot' => array(
+                'table' => 'upload_prefs_category_groups',
+                'left' => 'group_id',
+                'right' => 'upload_location_id'
+            )
         )
     );
 

@@ -479,7 +479,7 @@ trait FileManagerTrait
      */
     private function createCategoryFilter($uploadLocation = null)
     {
-        $cat_id = ($uploadLocation) ? explode('|', (string) $uploadLocation->cat_group) : null;
+        $cat_id = ($uploadLocation) ? $uploadLocation->CategoryGroups->pluck('group_id') : null;
 
         $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
             ->with('Categories')

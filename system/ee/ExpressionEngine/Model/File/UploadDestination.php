@@ -50,6 +50,15 @@ class UploadDestination extends StructureModel
             'model' => 'Module',
             'to_key' => 'module_id'
         ),
+        'CategoryGroups' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'CategoryGroup',
+            'pivot' => array(
+                'table' => 'upload_prefs_category_groups',
+                'left' => 'upload_location_id',
+                'right' => 'group_id'
+            )
+        ),
         'Files' => array(
             'type' => 'hasMany',
             'model' => 'File',
@@ -107,7 +116,6 @@ class UploadDestination extends StructureModel
     protected $file_properties;
     protected $file_pre_format;
     protected $file_post_format;
-    protected $cat_group;
     protected $batch_location;
     protected $module_id;
 
