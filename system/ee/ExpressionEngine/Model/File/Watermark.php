@@ -87,6 +87,7 @@ class Watermark extends Model
     protected $wm_use_drop_shadow;
     protected $wm_shadow_distance;
     protected $wm_shadow_color;
+    protected $uuid;
 
     /**
      * Require text only if watermark type is text

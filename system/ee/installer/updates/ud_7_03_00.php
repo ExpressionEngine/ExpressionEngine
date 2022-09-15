@@ -29,6 +29,7 @@ class Updater
             [
                 'normalizeUploadDirectoryCategoryGroups',
                 'normalizeChannelCategoryGroups',
+                'addUUIDColumns',
             ]
         );
 
@@ -113,6 +114,35 @@ class Updater
                         'group_id' => $cat_group
                     ]);
                 }
+            }
+        }
+    }
+
+    private function addUUIDColumns()
+    {
+        $models = [
+            'CategoryGroup' => 'category_groups',
+            'Category' => 'categories',
+            'CategoryField' => 'category_fields',
+            'Channel' => 'channels',
+            'ChannelField' => 'channel_fields',
+            'ChannelFieldGroup' => 'field_groups',
+            'ChannelLayout' => 'layout_publish',
+            'Status' => 'statuses',
+            'FieldCondition' => 'field_conditions',
+            'FieldConditionSet' => 'field_condition_sets',
+            'UploadDestination' => 'upload_prefs',
+            'FileDimension' => 'file_dimensions',
+            'Watermark' => 'file_watermarks',
+            'Role' => 'roles',
+            'RoleGroup' => 'role_groups',
+            'MemberField' => 'member_fields',
+            'Site' => 'sites'
+        ];
+        foreach ($models as $model => $table) {
+            if (!ee()->db->field_exists('uuid', $table)) {
+                ee()->db->query("ALTER TABLE exp_" . $table . " ADD uuid varchar(36) NULL DEFAULT UUID()");
+                ee()->db->query("ALTER TABLE exp_" . $table . " ADD UNIQUE (uuid)");
             }
         }
     }

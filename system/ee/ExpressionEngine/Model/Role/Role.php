@@ -141,6 +141,7 @@ class Role extends Model
     protected $description;
     protected $total_members;
     protected $is_locked;
+    protected $uuid;
 
     /**
      * Get all members that are assigned to this role (as primary or extra one)

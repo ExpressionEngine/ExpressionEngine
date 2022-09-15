@@ -39,6 +39,7 @@ class CategoryGroupGateway extends Gateway
     protected $field_html_formatting;
     protected $can_edit_categories;
     protected $can_delete_categories;
+    protected $uuid;
 }
 
 // EOF

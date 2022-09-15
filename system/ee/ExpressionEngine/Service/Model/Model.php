@@ -205,6 +205,18 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     }
 
     /**
+     * On the models that have UUID property, do not let setting it
+     * MySQL will do that
+     *
+     * @param string $uuid
+     * @return void
+     */
+    public function set__uuid($uuid = null)
+    {
+        //do nothing
+    }
+
+    /**
      * Get the short name
      *
      * @return String short name

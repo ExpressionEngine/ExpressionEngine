@@ -70,6 +70,7 @@ class CategoryField extends FieldModel
     protected $field_order;
     protected $field_settings;
     protected $legacy_field_data;
+    protected $uuid;
 
     public function getSettingsValues()
     {

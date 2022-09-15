@@ -127,6 +127,7 @@ class Site extends Model
     protected $site_color;
     protected $site_bootstrap_checksums;
     protected $site_pages;
+    protected $uuid;
 
     public function validateShortName($key, $value, $params, $rule)
     {

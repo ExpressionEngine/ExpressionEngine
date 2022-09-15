@@ -52,6 +52,7 @@ class CategoryGateway extends Gateway
     protected $cat_description;
     protected $cat_image;
     protected $cat_order;
+    protected $uuid;
 }
 
 // EOF

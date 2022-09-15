@@ -29,6 +29,7 @@ class FieldConditionSet extends Model
     protected $condition_set_id;
     protected $match; //'all' or 'any'
     protected $order;
+    protected $uuid;
 
     protected static $_relationships = array(
         'FieldConditions' => array(

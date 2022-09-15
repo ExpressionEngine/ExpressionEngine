@@ -56,6 +56,7 @@ class ChannelLayout extends Model implements LayoutInterface
     protected $channel_id;
     protected $layout_name;
     protected $field_layout;
+    protected $uuid;
 
     public function transform(array $fields)
     {

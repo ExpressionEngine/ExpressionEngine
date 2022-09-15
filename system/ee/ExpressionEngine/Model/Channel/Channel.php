@@ -224,6 +224,7 @@ class Channel extends StructureModel
     protected $preview_url;
     protected $allow_preview = true;
     protected $conditional_sync_required = false;
+    protected $uuid;
 
     /**
      * Custom validation callback to validate a comma-separated list of email

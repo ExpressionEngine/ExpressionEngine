@@ -32,6 +32,7 @@ class FieldCondition extends Model
     protected $evaluation_rule;
     protected $value;
     protected $order;
+    protected $uuid;
 
     protected static $_relationships = array(
         'FieldConditionSet' => array(

@@ -53,6 +53,7 @@ class RoleGroup extends Model
     // Properties
     protected $group_id;
     protected $name;
+    protected $uuid;
 }
 
 // EOF

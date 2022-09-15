@@ -118,6 +118,7 @@ class UploadDestination extends StructureModel
     protected $file_post_format;
     protected $batch_location;
     protected $module_id;
+    protected $uuid;
 
     private $filesystem = null;
 

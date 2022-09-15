@@ -121,6 +121,7 @@ class Category extends ContentModel
     protected $cat_description;
     protected $cat_image;
     protected $cat_order;
+    protected $uuid;
 
     /**
      * A link back to the owning category group object.
