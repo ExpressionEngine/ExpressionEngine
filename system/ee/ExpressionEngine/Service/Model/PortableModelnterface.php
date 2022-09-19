@@ -8,11 +8,14 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Service\Portage;
+namespace ExpressionEngine\Service\Model;
 
 /**
- * Portage Service Import Exception
+ * Portable Model Interface
  */
-class ImportException extends \Exception
+interface PortableModelnterface
 {
+    
 }
+
+// EOF

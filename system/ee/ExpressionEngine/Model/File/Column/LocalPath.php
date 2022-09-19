@@ -10,31 +10,16 @@
 
 namespace ExpressionEngine\Model\File\Column;
 
-use ExpressionEngine\Service\Model\Column\SerializedType;
+use ExpressionEngine\Service\Model\Column\StaticType;
 use ExpressionEngine\Library\Data\Collection;
 
 /**
  * Local Path Column
  */
-class LocalPath extends SerializedType
+class LocalPath extends StaticType
 {
     protected $files;
     protected $path;
-
-    /**
-    * This is a stub, since we do the actual loading when the property is accessed.
-    */
-    public function unserialize($db_data)
-    {
-        $this->path = $db_data;
-
-        return $this;
-    }
-
-    public function store($data)
-    {
-        return $data;
-    }
 
     /**
      * readPath will instatiate a collection of file models for every file in

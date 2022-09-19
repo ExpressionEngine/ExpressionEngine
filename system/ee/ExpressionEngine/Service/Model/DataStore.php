@@ -288,6 +288,11 @@ class DataStore
         if ($class instanceof Closure) {
             $model = $class();
         } else {
+            if (!class_exists($class)) {
+                throw new \Exception(
+                    'Class "' . $class . '" not found when trying instatiate "' . $name . '" model'
+                );
+            }
             $model = new $class();
         }
 

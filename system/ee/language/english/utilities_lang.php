@@ -648,6 +648,10 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'export_full_portage_desc' => 'Turn off if you need to select individual channels',
 
+    'export_portage_as_zip' => 'Export portage as Zip file',
+
+    'export_portage_as_zip_desc' => 'Turn off to save file in <code>system/user/cache/portage/export</code> directory instead',
+
     'portage_channels' => 'Portage channels',
 
     'portage_channels_desc' => 'Select channels you need to export. <br />Note that when exporting individual channels other data structures might still be included if they are associated.',
@@ -658,9 +662,27 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'btn_processing' => 'Processing...',
 
+    'portage_exported' => 'Portage exported successfully',
+
+    'portage_exported_to_folder' => 'Files have been saved in <code>system/user/cache/portage/export</code> directory',
+
     'portage_file' => 'Portage file',
 
     'portage_file_desc' => 'Select file that contains previously exported portage',
+
+    'import_zip_portage' => 'Import from Zip file',
+
+    'import_zip_portage_desc' => 'When turned off, will use Portage files located in <code>system/user/cache/portage/export</code> directory',
+
+    'portage_file_invalid' => 'Missing <code>%s</code> file or file is not valid.',
+
+    'portage_incompatible' => 'This Portage is not compatible with your ExpressionEngine version',
+
+    'portage_addon_missing' => 'Add-on <code>%s</code> is missing',
+
+    'portage_addon_not_installed' => 'Add-on <code>%s</code> is not installed',
+
+    'portage_addon_incompatible' => 'Add-on <code>%s</code> version number is not compatible',
 
 
 );

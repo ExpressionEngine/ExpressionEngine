@@ -13,7 +13,7 @@ namespace ExpressionEngine\Service\Portage;
 use ExpressionEngine\Service\File\Directory;
 
 /**
- * Channel Set Service Factory
+ * Portage Service Factory
  */
 class Factory
 {
@@ -36,18 +36,31 @@ class Factory
      * @param Array $channels Array/collection of channels
      * @return String Path to the zip file
      */
-    public function export($channels)
+    public function export($elements = [])
     {
         $export = new Export();
 
-        return $export->zip($channels);
+        return $export->zip($elements);
+    }
+
+    /**
+     * Create a zip for a channel
+     *
+     * @param Array $channels Array/collection of channels
+     * @return String Path to the zip file
+     */
+    public function exportDir($elements = [])
+    {
+        $export = new Export();
+
+        return $export->toDir($elements);
     }
 
     /**
      * Create a set object from the contents of an item in the $_FILES array
      *
      * @param Array $upload Element in the $_FILES array
-     * @return Set Channel set object
+     * @return Portage Channel set object
      */
     public function importUpload(array $upload)
     {
@@ -66,11 +79,11 @@ class Factory
      * Create a set object from a directory
      *
      * @param String $dir Path to the channel set directory
-     * @return Set Channel set object
+     * @return Portage Channel set object
      */
     public function importDir($dir)
     {
-        $set = new Set($dir);
+        $set = new Portage($dir);
         $set->setSiteId($this->site_id);
 
         return $set;

@@ -14,9 +14,9 @@ use Closure;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * Channel Set Service: Set
+ * Portage Service: Portage
  */
-class Set
+class Portage
 {
     /**
      * @var Int Id of the site to import to
@@ -122,7 +122,7 @@ class Set
      */
     public function __construct($path)
     {
-        $this->path = rtrim($path, '/');
+        $this->path = $path;
         $this->result = new ImportResult();
     }
 
@@ -137,7 +137,7 @@ class Set
     }
 
     /**
-     * Set the site id
+     * Portage the site id
      *
      * @param Int Id of the site we're on
      * @return void
@@ -347,7 +347,7 @@ class Set
     }
 
     /**
-     * Set manual overrides
+     * Portage manual overrides
      *
      * @return void
      */
@@ -363,32 +363,65 @@ class Set
      */
     private function load()
     {
-        if (! file_exists($this->path . '/channel_set.json')) {
-            $this->result->addError(lang('channel_set_invalid'));
-
-            return;
+        $base = $this->_checkJsonExistAndValid('portage.json');
+        if ($base === false) {
+            return false;
         }
 
-        $data = json_decode(file_get_contents($this->path . '/channel_set.json'));
-        $field_groups = (isset($data->field_groups)) ? $data->field_groups : [];
+        //might be worth to allow skipping version checks for EE and addons?
 
-        // Pre-4.0 sets will have status groups, post-4.0 sets will only have statuses
-        $status_groups = isset($data->status_groups) ? $data->status_groups : [];
-        $statuses = isset($data->statuses) ? $data->statuses : [];
-
-        // Version check: v3 installs cannot import v4 exports
-        $version = (isset($data->version)) ? $data->version : '3.0.0';
-        $version = explode('.', $version);
-
+        // can only import between same minor versions
+        $version = explode('.', $base->version);
         $app_version = explode('.', ee()->config->item('app_version'));
-        if ($app_version[0] == 3 && $version[0] > $app_version[0]) {
-            $this->result->addError(sprintf(lang('channel_set_incompatible'), $version[0]));
+        if ($app_version[0] != $version[0] || $app_version[1] != $version[1]) {
+            $this->result->addError(lang('portage_incompatible'));
+            return false;
+        }
 
-            return;
+        //try to install / update missing addons
+        if (in_array('addons', $base->components)) {
+            $addonsNotCompatible = false;
+            $json = $this->_checkJsonExistAndValid('addons.json');
+            if ($json === false) {
+                return false;
+            }
+            foreach ($json->addons as $addonPortage) {
+                $addon = ee('Addon')->get($addonPortage->name);
+                if (empty($addon)) {
+                    $this->result->addError(sprintf(lang('portage_addon_missing'), $addonPortage->name));
+                    $addonsNotCompatible = true;
+                    continue;
+                }
+                $version = explode('.', $addonPortage->version);
+                $addonVersion = $addon->getInstalledVersion();
+                if (empty($addonVersion)) {
+                    $this->result->addError(sprintf(lang('portage_addon_not_installed'), $addon->getName()));
+                    return false;
+                }
+                if ($addonVersion[0] != $version[0] || $addonVersion[1] != $version[1]) {
+                    $this->result->addError(sprintf(lang('portage_addon_incompatible'), $addon->getName()));
+                    return false;
+                }
+            }
+            if ($addonsNotCompatible) {
+                return false;
+            }
+        }
+
+        //first, create the records
+        foreach ($base->components as $model)
+        {
+            //enforce UUID
+        }
+
+        //then, set the relationships
+        foreach ($base->components as $model)
+        {
+
         }
 
         try {
-            $this->loadUploadDestinations($data->upload_destinations);
+            $this->loadUploadDestinations($base->upload_destinations);
             $this->loadFieldsAndGroups($field_groups);
             $this->loadStatusGroups($status_groups);
             $this->loadStatuses($statuses);
@@ -398,6 +431,25 @@ class Set
         } catch (\Exception $e) {
             $this->result->addError($e->getMessage());
         }
+
+        // let the add-ons load the components that need to be loaded late
+    }
+
+    private function _checkJsonExistAndValid($file)
+    {
+        if (! file_exists($this->path . $file)) {
+            $this->result->addError(sprintf(lang('portage_file_invalid'), $file));
+            return false;
+        }
+
+        $json = json_decode(file_get_contents($this->path . $file));
+
+        if (empty($json)) {
+            $this->result->addError(sprintf(lang('portage_file_invalid'), $file));
+            return false;
+        }
+
+        return $json;
     }
 
     /**
@@ -432,7 +484,7 @@ class Set
     /**
      * Instantiate the upload destination models
      *
-     * @param Array $destinations Destinations as described in channel_set.json
+     * @param Array $destinations Destinations as described in portage.json
      * @return void
      */
     private function loadUploadDestinations($destinations)
@@ -451,7 +503,7 @@ class Set
     /**
      * Instantiate the channel models
      *
-     * @param Array $channels Channels as described in channel_set.json
+     * @param Array $channels Channels as described in portage.json
      * @return void
      */
     private function loadChannels($channels)
@@ -558,7 +610,7 @@ class Set
     /**
      * Instantiate the category group models
      *
-     * @param Array $category_groups Category groups as described in channel_set.json
+     * @param Array $category_groups Category groups as described in portage.json
      * @return void
      */
     private function loadCategoryGroups($category_groups)
@@ -617,7 +669,7 @@ class Set
     /**
      * Import statuses nested inside legacy status group structure
      *
-     * @param Array $status_groups Status groups as described in channel_set.json
+     * @param Array $status_groups Status groups as described in portage.json
      * @return void
      */
     private function loadStatusGroups($status_groups)
@@ -630,7 +682,7 @@ class Set
     /**
      * Import status data into model objects
      *
-     * @param Array $statuses Statuses as described in channel_set.json
+     * @param Array $statuses Statuses as described in portage.json
      * @return void
      */
     private function loadStatuses($statuses)

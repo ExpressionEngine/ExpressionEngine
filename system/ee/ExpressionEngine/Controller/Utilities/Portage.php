@@ -31,6 +31,10 @@ class Portage extends Utilities
     
     public function export()
     {
+        if (AJAX_REQUEST) {
+            ee()->output->send_ajax_response(['success' => 'success']);
+        }
+
         if (! ee('Permission')->can('access_data')) {
             show_error(lang('unauthorized_access'), 403);
         }
@@ -49,6 +53,16 @@ class Portage extends Utilities
         $vars['hide_top_buttons'] = true;
         $vars['sections'] = array(
             array(
+                array(
+                    'title' => 'export_portage_as_zip',
+                    'desc' => 'export_portage_as_zip_desc',
+                    'fields' => array(
+                        'export_zip' => [
+                            'type' => 'yes_no',
+                            'value' => 'y'
+                        ],
+                    )
+                ),
                 array(
                     'title' => 'export_full_portage',
                     'desc' => 'export_full_portage_desc',
@@ -77,8 +91,10 @@ class Portage extends Utilities
         );
 
         if (ee('Request')->isPost()) {
+
+            $elements = [];
             $fileName = 'portage-' . ee()->config->item('site_short_name');
-            if (ee('Request')->post('export_full_portage') != 'n') {
+            /*if (ee('Request')->post('export_full_portage') != 'n') {
                 $channels = ee('Model')
                     ->get('Channel')
                     ->filter('site_id', ee()->config->item('site_id'))
@@ -90,6 +106,18 @@ class Portage extends Utilities
                     ->filter('channel_id', 'IN', ee('Request')->post('portage_channels'))
                     ->all();
                 $fileName .= '-channels' . implode('_', ee('Request')->post('portage_channels'));
+            }*/
+
+            if (ee('Request')->post('export_zip') != 'y') {
+                ee('Portage')->exportDir();
+
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asSuccess()
+                    ->withTitle(lang('portage_exported'))
+                    ->addToBody(lang('portage_exported_to_folder'))
+                    ->defer();
+
+                ee()->functions->redirect(ee('CP/URL', 'utilities/portage/export'));
             }
 
             if (empty($channels)) {
@@ -143,8 +171,22 @@ class Portage extends Utilities
             'sections' => array(
                 array(
                     array(
+                        'title' => 'import_zip_portage',
+                        'desc' => 'import_zip_portage_desc',
+                        'fields' => array(
+                            'import_zip' => [
+                                'type' => 'yes_no',
+                                'value' => 'y',
+                                'group_toggle' => [
+                                    'y' => 'import_zip'
+                                ]
+                            ],
+                        )
+                    ),
+                    array(
                         'title' => 'portage_file',
                         'desc' => 'portage_file_desc',
+                        'group' => 'import_zip',
                         'fields' => array(
                             'set_file' => array(
                                 'type' => 'file',
@@ -156,6 +198,23 @@ class Portage extends Utilities
             )
         );
 
+        if (ee('Request')->isPost()) {
+            if (AJAX_REQUEST) {
+                ee()->output->send_ajax_response(['success' => 'success']);
+            }
+            if (ee('Request')->post('import_zip') != 'y') {
+                $path = ee('Encrypt')->encode(
+                    PATH_CACHE . 'portage/',
+                    ee()->config->item('session_crypt_key')
+                );
+                ee()->functions->redirect(
+                    ee('CP/URL')->make(
+                        'utilities/portage/doImport',
+                        ['path' => $path]
+                    )
+                );
+            }
+        }
         if (! empty($_FILES)) {
             $set_file = ee('Request')->file('set_file');
 
@@ -182,14 +241,14 @@ class Portage extends Utilities
                     ->now();
             } else {
                 $set = ee('Portage')->importUpload($set_file);
-                $set_path = ee('Encrypt')->encode(
+                $path = ee('Encrypt')->encode(
                     $set->getPath(),
                     ee()->config->item('session_crypt_key')
                 );
                 ee()->functions->redirect(
                     ee('CP/URL')->make(
-                        'channels/sets/doImport',
-                        ['set_path' => $set_path]
+                        'utilities/portage/doImport',
+                        ['path' => $path]
                     )
                 );
             }
@@ -209,14 +268,14 @@ class Portage extends Utilities
     public function doImport()
     {
         ee()->lang->load('form_validation');
-        $set_path = ee('Request')->get('set_path');
-        $set_path = ee('Encrypt')->decode(
-            $set_path,
+        $path = ee('Request')->get('path');
+        $path = ee('Encrypt')->decode(
+            $path,
             ee()->config->item('session_crypt_key')
         );
 
         // no path or unacceptable path? abort!
-        if (! $set_path || strpos($set_path, '..') !== false || ! file_exists($set_path)) {
+        if (! $path || strpos($path, '..') !== false || ! file_exists($path)) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
                 ->withTitle(lang('channel_set_upload_error'))
@@ -227,7 +286,7 @@ class Portage extends Utilities
         }
 
         // load up the set
-        $set = ee('Portage')->importDir($set_path);
+        $set = ee('Portage')->importDir($path);
 
         // posted values? grab 'em
         if (isset($_POST)) {
@@ -385,11 +444,11 @@ class Portage extends Utilities
             $vars['form_hidden'] = $hidden;
         }
 
-        $set_path = ee('Encrypt')->encode($set->getPath(), ee()->config->item('session_crypt_key'));
+        $path = ee('Encrypt')->encode($set->getPath(), ee()->config->item('session_crypt_key'));
 
         // Final view variables we need to render the form
         $vars += array(
-            'base_url' => ee('CP/URL')->make('channels/sets/doImport', ['set_path' => $set_path]),
+            'base_url' => ee('CP/URL')->make('channels/sets/doImport', ['path' => $path]),
             'save_btn_text' => 'btn_save_settings',
             'save_btn_text_working' => 'btn_saving',
         );

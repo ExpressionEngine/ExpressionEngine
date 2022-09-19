@@ -13,7 +13,7 @@ namespace ExpressionEngine\Service\Portage;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * Channel Set Service: Zip to Set
+ * Portage Service: Zip to Portage
  */
 class ZipToSet
 {
@@ -29,7 +29,7 @@ class ZipToSet
      * Take the zip and extract it to the cache path with the given file name.
      *
      * @param String $file_name name to use for the extracted directory
-     * @return Set Channel set importer instance
+     * @return Portage Channel set importer instance
      */
     public function extractAs($file_name)
     {
@@ -60,7 +60,7 @@ class ZipToSet
             $new_path .= '/' . basename($file_name, '.zip');
         }
 
-        return new Set($new_path);
+        return new Portage($new_path);
     }
 
     /**

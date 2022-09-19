@@ -11,7 +11,7 @@
 namespace ExpressionEngine\Service\Portage;
 
 /**
- * Channel Set Service
+ * Portage Service
  * Helper class for all the crazy mixing and matching we have to do.
  */
 class Structure

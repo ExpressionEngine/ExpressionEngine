@@ -70,6 +70,7 @@ class Status extends Model
     protected $status;
     protected $status_order;
     protected $highlight;
+    protected $uuid;
 
     /**
      * Ensures the highlight field has a default value

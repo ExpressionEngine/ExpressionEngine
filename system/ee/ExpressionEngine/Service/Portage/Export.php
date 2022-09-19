@@ -13,13 +13,19 @@ namespace ExpressionEngine\Service\Portage;
 use StdClass;
 use ZipArchive;
 use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Service\Model\Association\ToOne;
+use ExpressionEngine\Service\Model\Association\ToMany;
 
 /**
- * Channel Set Service: Export
+ * Portage Service: Export
  */
 class Export
 {
     private $zip;
+
+    private $site_id;
+    private $portageData;
+    private $path;
 
     private $channels = array();
     private $fields = array();
@@ -32,6 +38,155 @@ class Export
     {
         if (! defined('JSON_PRETTY_PRINT')) {
             define('JSON_PRETTY_PRINT', 0);
+        }
+        $this->site_id = ee()->config->item('site_id');
+    }
+
+    public function toDir($elements = [])
+    {
+        $this->path = PATH_CACHE . 'portage/';
+        if (! is_dir($this->path)) {
+            ee('Filesystem')->mkdir($this->path);
+        }
+        ee('Filesystem')->emptyDir($this->path, false);
+
+        $this->portageData = new \StdClass();
+
+        $this->portageData->uniqid = uniqid();
+        $this->portageData->version = ee()->config->item('app_version');
+        $this->portageData->components = [];
+
+        // write add-ons and their versions
+        if (empty($elements) || in_array('add-ons', $elements)) {
+            $file = 'addons.json';
+            $this->portageData->components[] = 'addons';
+            $json = new \StdClass();
+            $json->addons = [];
+            $addons = ee('Addon')->installed();
+            foreach ($addons as $addon => $info) {
+                if ($info->get('built_in')) {
+                    continue;
+                }
+                $record = new \StdClass();
+                $record->name = $addon;
+                $record->version = $info->getInstalledVersion();
+                $json->records[] = $record;
+            }
+            ee('Filesystem')->write($this->path . $file, json_encode($json, JSON_PRETTY_PRINT));
+        }
+
+        //let add-ons write their early stuff
+
+        //upload directories
+        $models = ee('App')->getModels();
+        $portableModels = [];
+        foreach ($models as $model => $class) {
+            if ($model != 'ee:MemberGroup') {
+                try {
+                    $modelInstance = ee('Model')->make($model);
+                    if ($modelInstance->hasNativeProperty('uuid')) {
+                        $portableModels[$model] = [
+                            'name' => $modelInstance->getName(),
+                            'isPerSite' => $modelInstance->hasNativeProperty('site_id'),
+                            'isPerModule' => $modelInstance->hasNativeProperty('module_id')
+                        ];
+                    }
+                } catch (\Exception $e) {
+                    //silently continue
+                }
+            }
+            unset($modelInstance);
+        }
+
+        foreach ($portableModels as $modelName => $modelData) {
+            if (empty($elements) || in_array($modelName, $elements)) {
+
+                $params = [];
+                if ($modelData['isPerSite']) {
+                    $params['site_id'] = $this->site_id;
+                }
+                if ($modelData['isPerModule']) {
+                    $params['module_id'] = 0;
+                }
+                $this->writeJsonForModel($modelName, $params);
+            }
+        }
+
+        $this->portageData->components = array_unique($this->portageData->components);
+        ee('Filesystem')->write($this->path . 'portage.json', json_encode($this->portageData, JSON_PRETTY_PRINT));
+    }
+
+    private function writeJsonForModel($model, $filter = [])
+    {
+        $modelRecords = ee('Model')->get($model);
+        if (!empty($filter)) {
+            foreach ($filter as $property => $value) {
+                $modelRecords->filter($property, $value);
+            }
+        }
+        $modelRecords = $modelRecords->all();
+        if (count($modelRecords)) {
+            $json = new \StdClass();
+            $this->portageData->components[] = $model;
+            $file = str_replace(':', '_', $model) . '.json';
+            foreach ($modelRecords as $modelRecord) {
+                if (!isset($fields)) {
+                    $fields = $modelRecord->getFields();
+                    $pk = $modelRecord->getPrimaryKey();
+                    $relationships = $modelRecord->getAllAssociations();
+                    $ownRelationships = $modelRecord->getMetaData('relationships');
+                    $foreign_keys = [$pk];
+                    $associations = [
+                        'toOne' => [],
+                        'toMany' => []
+                    ];
+                    if (!empty($relationships)) {
+                        foreach ($relationships as $assocName => $relationship) {
+                            if (! array_key_exists($assocName, $ownRelationships)) {
+                                continue;
+                            }
+                            if ($relationship instanceof ToOne) {
+                                if (!empty($relationship->getForeignKey())) {
+                                    $foreign_keys[] = $relationship->getForeignKey();
+                                }
+                                $associations['toOne'][] = $assocName;
+                            } elseif ($relationship instanceof ToMany) {
+                                $associations['toMany'][] = $assocName;
+                            }
+                        }
+                    }
+                }
+
+                $record = new \StdClass();
+                foreach ($fields as $property)
+                {
+                    if (!in_array($property, $foreign_keys)) {
+                        $record->{$property} = $modelRecord->getRawProperty($property);
+                    }
+                }
+                $record->associationsByUuid = new \StdClass();
+                if (!empty($associations['toOne'])) {
+                    $record->associationsByUuid->toOne = new \StdClass();
+                    foreach ($associations['toOne'] as $property) {
+                        if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property}) && $modelRecord->{$property}->hasNativeProperty('uuid')) {
+                            $record->associationsByUuid->toOne->{$property} = $modelRecord->{$property}->uuid;
+                        }
+                    }
+                }
+                if (!empty($associations['toMany'])) {
+                    $record->associationsByUuid->toMany = new \StdClass();
+                    foreach ($associations['toMany'] as $property) {
+                        if ($modelRecord->hasAssociation($property) && isset($modelRecord->{$property}) && count($modelRecord->{$property})) {
+                            if ($modelRecord->{$property}->first()->hasNativeProperty('uuid')) {
+                                $record->associationsByUuid->toMany->{$property} = $modelRecord->{$property}->pluck('uuid');
+                            }
+                        }
+                    }
+                }
+                $json->{$modelRecord->uuid} = $record;
+            }
+
+            ee('Filesystem')->write($this->path . $file, json_encode($json, JSON_PRETTY_PRINT));
         }
     }
 
@@ -48,13 +203,18 @@ class Export
         $this->zip = new ZipArchive();
         $location = PATH_CACHE . "cset/{$channels[0]->channel_name}.zip";
 
-        if (! is_dir(PATH_CACHE . 'cset/')) {
-            ee('Filesystem')->mkdir(PATH_CACHE . 'cset/');
-        }
+        
 
         $this->zip->open($location, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         $base = new \StdClass();
+
+        
+        // write watermarks
+        // write upload locations
+        // write dimensions
+        // relate watermarks to dimensions
+        // relate dimensions to upload locations
 
         foreach ($channels as $channel) {
             $this->exportChannel($channel);

@@ -11,7 +11,7 @@
 namespace ExpressionEngine\Service\Portage;
 
 /**
- * Channel Set Service: Import Result
+ * Portage Service: Import Result
  */
 class ImportResult
 {

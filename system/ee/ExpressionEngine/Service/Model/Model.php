@@ -205,7 +205,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     }
 
     /**
-     * On the models that have UUID property, do not let setting it
+     * On the models that have UUID property, do not let setting it directly
      * MySQL will do that
      *
      * @param string $uuid
@@ -214,6 +214,28 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     public function set__uuid($uuid = null)
     {
         //do nothing
+    }
+
+    /**
+     * UUID can be set explicitely, when importing Portage
+     */
+    public function setUuid($uuid)
+    {
+        if ($this->isNew() && $this->hasProperty('uuid')) {
+            $this->setRawProperty('uuid', $uuid);
+        }
+    }
+
+    /**
+     * Check if the model has a given property natively (not in custom fields)
+     * Useful if model is using variable columns / propeties
+     *
+     * @param String $name Property name
+     * @return bool has property?
+     */
+    public function hasNativeProperty($name)
+    {
+        return (property_exists($this, $name) && $name[0] !== '_');
     }
 
     /**
