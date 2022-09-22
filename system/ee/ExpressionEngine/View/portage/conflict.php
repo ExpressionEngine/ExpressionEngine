@@ -1,4 +1,5 @@
 <div class="fields-grid-item fields-grid-item---open" data-field-name="">
+    <input type="hidden" name="<?=$baseKey?>[portage__action]" value="" >
     <div class="fields-grid-tools">
         <a class="fields-grid-tool-expand" href="" title="<?=lang('grid_expand_field')?>">Overwrite existing</a>
         <a class="fields-grid-tool-expand hidden" href="" title="<?=lang('grid_reorder_field')?>">Edit</a>
