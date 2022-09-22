@@ -10,15 +10,12 @@
 
 namespace ExpressionEngine\Service\Portage;
 
-use ExpressionEngine\Library\Filesystem\Filesystem;
-
 /**
  * Portage Service: Zip to Portage
  */
-class ZipToSet
+class PortageZip
 {
     private $path;
-    private $extracted;
 
     public function __construct($path)
     {
@@ -42,10 +39,10 @@ class ZipToSet
         $this->ensureNoPHP($zip);
 
         // create a temporary directory for the contents in our cache folder
-        if (! is_dir(PATH_CACHE . 'cset/')) {
-            ee('Filesystem')->mkdir(PATH_CACHE . 'cset/');
+        if (! is_dir(PATH_CACHE . 'portage/')) {
+            ee('Filesystem')->mkdir(PATH_CACHE . 'portage/');
         }
-        $tmp_dir = 'cset/tmp_' . ee('Encrypt')->generateKey();
+        $tmp_dir = 'portage/tmp_' . ee('Encrypt')->generateKey();
         ee('Filesystem')->mkdir(PATH_CACHE . $tmp_dir, false);
 
         // extract the archive
@@ -54,13 +51,13 @@ class ZipToSet
         }
 
         // Check for an identically named subfolder inside the extracted archive
-        $new_path = PATH_CACHE . $tmp_dir;
+        $new_path = PATH_CACHE . $tmp_dir . '/';
 
-        if (is_dir($new_path . '/' . basename($file_name, '.zip'))) {
-            $new_path .= '/' . basename($file_name, '.zip');
+        if (is_dir($new_path . basename($file_name, '.zip'))) {
+            $new_path .= basename($file_name, '.zip');
         }
 
-        return new Portage($new_path);
+        return new PortageImport($new_path);
     }
 
     /**

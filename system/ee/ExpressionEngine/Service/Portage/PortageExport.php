@@ -19,13 +19,16 @@ use ExpressionEngine\Service\Model\Association\ToMany;
 /**
  * Portage Service: Export
  */
-class Export
+class PortageExport
 {
     private $zip;
 
     private $site_id;
     private $portageData;
     private $path;
+    private $modelFields = [];
+    private $modelAssociations = [];
+    private $modelKeyFields = [];
 
     private $channels = array();
     private $fields = array();
@@ -42,9 +45,18 @@ class Export
         $this->site_id = ee()->config->item('site_id');
     }
 
+    /**
+     * Export Portage to directory in user/cache folder
+     *
+     * @param array $elements
+     * @return void
+     */
     public function toDir($elements = [])
     {
-        $this->path = PATH_CACHE . 'portage/';
+        if (! is_dir(PATH_CACHE . 'portage/')) {
+            ee('Filesystem')->mkdir(PATH_CACHE . 'portage/');
+        }
+        $this->path = PATH_CACHE . 'portage/export/';
         if (! is_dir($this->path)) {
             ee('Filesystem')->mkdir($this->path);
         }
@@ -58,8 +70,8 @@ class Export
 
         // write add-ons and their versions
         if (empty($elements) || in_array('add-ons', $elements)) {
-            $file = 'addons.json';
-            $this->portageData->components[] = 'addons';
+            $file = 'add-ons.json';
+            $this->portageData->components[] = 'add-ons';
             $json = new \StdClass();
             $json->addons = [];
             $addons = ee('Addon')->installed();
@@ -75,9 +87,8 @@ class Export
             ee('Filesystem')->write($this->path . $file, json_encode($json, JSON_PRETTY_PRINT));
         }
 
-        //let add-ons write their early stuff
-
-        //upload directories
+        // list all models, and grab those that have UUID - those are portable
+        // for each model, find whether it has site or module restrictions
         $models = ee('App')->getModels();
         $portableModels = [];
         foreach ($models as $model => $class) {
@@ -98,12 +109,13 @@ class Export
             unset($modelInstance);
         }
 
+        // write the individual model files
         foreach ($portableModels as $modelName => $modelData) {
             if (empty($elements) || in_array($modelName, $elements)) {
 
                 $params = [];
                 if ($modelData['isPerSite']) {
-                    $params['site_id'] = $this->site_id;
+                    $params['site_id'] = [0, $this->site_id];
                 }
                 if ($modelData['isPerModule']) {
                     $params['module_id'] = 0;
@@ -112,16 +124,28 @@ class Export
             }
         }
 
+        // write the main json file listing what we have in this portage
         $this->portageData->components = array_unique($this->portageData->components);
         ee('Filesystem')->write($this->path . 'portage.json', json_encode($this->portageData, JSON_PRETTY_PRINT));
     }
 
+    /**
+     * Write Portage JSON file for specific model
+     *
+     * @param [type] $model
+     * @param array $filter
+     * @return void
+     */
     private function writeJsonForModel($model, $filter = [])
     {
         $modelRecords = ee('Model')->get($model);
         if (!empty($filter)) {
             foreach ($filter as $property => $value) {
-                $modelRecords->filter($property, $value);
+                if (is_array($value)) {
+                    $modelRecords->filter($property, 'IN', $value);
+                } else {
+                    $modelRecords->filter($property, $value);
+                }
             }
         }
         $modelRecords = $modelRecords->all();
@@ -130,60 +154,7 @@ class Export
             $this->portageData->components[] = $model;
             $file = str_replace(':', '_', $model) . '.json';
             foreach ($modelRecords as $modelRecord) {
-                if (!isset($fields)) {
-                    $fields = $modelRecord->getFields();
-                    $pk = $modelRecord->getPrimaryKey();
-                    $relationships = $modelRecord->getAllAssociations();
-                    $ownRelationships = $modelRecord->getMetaData('relationships');
-                    $foreign_keys = [$pk];
-                    $associations = [
-                        'toOne' => [],
-                        'toMany' => []
-                    ];
-                    if (!empty($relationships)) {
-                        foreach ($relationships as $assocName => $relationship) {
-                            if (! array_key_exists($assocName, $ownRelationships)) {
-                                continue;
-                            }
-                            if ($relationship instanceof ToOne) {
-                                if (!empty($relationship->getForeignKey())) {
-                                    $foreign_keys[] = $relationship->getForeignKey();
-                                }
-                                $associations['toOne'][] = $assocName;
-                            } elseif ($relationship instanceof ToMany) {
-                                $associations['toMany'][] = $assocName;
-                            }
-                        }
-                    }
-                }
-
-                $record = new \StdClass();
-                foreach ($fields as $property)
-                {
-                    if (!in_array($property, $foreign_keys)) {
-                        $record->{$property} = $modelRecord->getRawProperty($property);
-                    }
-                }
-                $record->associationsByUuid = new \StdClass();
-                if (!empty($associations['toOne'])) {
-                    $record->associationsByUuid->toOne = new \StdClass();
-                    foreach ($associations['toOne'] as $property) {
-                        if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property}) && $modelRecord->{$property}->hasNativeProperty('uuid')) {
-                            $record->associationsByUuid->toOne->{$property} = $modelRecord->{$property}->uuid;
-                        }
-                    }
-                }
-                if (!empty($associations['toMany'])) {
-                    $record->associationsByUuid->toMany = new \StdClass();
-                    foreach ($associations['toMany'] as $property) {
-                        if ($modelRecord->hasAssociation($property) && isset($modelRecord->{$property}) && count($modelRecord->{$property})) {
-                            if ($modelRecord->{$property}->first()->hasNativeProperty('uuid')) {
-                                $record->associationsByUuid->toMany->{$property} = $modelRecord->{$property}->pluck('uuid');
-                            }
-                        }
-                    }
-                }
-                $json->{$modelRecord->uuid} = $record;
+                $json->{$modelRecord->uuid} = $this->getDataFromModelRecord($model, $modelRecord);
             }
 
             ee('Filesystem')->write($this->path . $file, json_encode($json, JSON_PRETTY_PRINT));
@@ -191,211 +162,103 @@ class Export
     }
 
     /**
-     * Create the channel set zip file for one or more channels.
+     * Collect the model data to be exported
      *
-     * Automatically grabs all the related data that it needs.
-     *
-     * @param Array $channels List of channel instances
-     * @return String Path to the generated zip file
+     * @param [type] $model model name
+     * @param [type] $modelRecord model instance
+     * @return object
      */
-    public function zip($channels)
+    public function getDataFromModelRecord($model, $modelRecord)
     {
-        $this->zip = new ZipArchive();
-        $location = PATH_CACHE . "cset/{$channels[0]->channel_name}.zip";
-
-        
-
-        $this->zip->open($location, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-
-        $base = new \StdClass();
-
-        
-        // write watermarks
-        // write upload locations
-        // write dimensions
-        // relate watermarks to dimensions
-        // relate dimensions to upload locations
-
-        foreach ($channels as $channel) {
-            $this->exportChannel($channel);
+        if (!isset($this->modelFields[$model])) {
+            $this->modelFields[$model] = $modelRecord->getFields();
+            $pk = $modelRecord->getPrimaryKey();
+            $relationships = $modelRecord->getAllAssociations();
+            $ownRelationships = $modelRecord->getMetaData('relationships');
+            $this->modelKeyFields[$model] = [$pk];
+            $this->modelAssociations[$model] = [
+                'toOne' => [],
+                'toMany' => []
+            ];
+            if (!empty($relationships)) {
+                foreach ($relationships as $assocName => $relationship) {
+                    if (! array_key_exists($assocName, $ownRelationships)) {
+                        continue;
+                    }
+                    if ($relationship instanceof ToOne) {
+                        if (!empty($relationship->getForeignKey())) {
+                            $this->modelKeyFields[$model][] = $relationship->getForeignKey();
+                        }
+                        $this->modelAssociations[$model]['toOne'][] = $assocName;
+                    } elseif ($relationship instanceof ToMany) {
+                        $this->modelAssociations[$model]['toMany'][] = $assocName;
+                    }
+                }
+            }
         }
 
-        $base->version = ee()->config->item('app_version');
-        $base->channels = array_values($this->channels);
-        $base->field_groups = array_values($this->field_groups);
-        $base->statuses = array_values($this->statuses);
-        $base->category_groups = $this->category_groups;
-        $base->upload_destinations = array_values($this->upload_destinations);
+        $record = new \StdClass();
+        foreach ($this->modelFields[$model] as $property)
+        {
+            if (!in_array($property, $this->modelKeyFields[$model])) {
+                $record->{$property} = $modelRecord->getRawProperty($property);
+            }
+        }
+        $record->associationsByUuid = new \StdClass();
+        if (!empty($this->modelAssociations[$model]['toOne'])) {
+            foreach ($this->modelAssociations[$model]['toOne'] as $property) {
+                if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property}) && $modelRecord->{$property}->hasNativeProperty('uuid')) {
+                    $record->associationsByUuid->{$property} = new \StdClass();
+                    $record->associationsByUuid->{$property}->model = $modelRecord->{$property}->getName();
+                    $record->associationsByUuid->{$property}->related = $modelRecord->{$property}->uuid;
+                }
+            }
+        }
+        if (!empty($this->modelAssociations[$model]['toMany'])) {
+            foreach ($this->modelAssociations[$model]['toMany'] as $property) {
+                if ($modelRecord->hasAssociation($property) && isset($modelRecord->{$property}) && count($modelRecord->{$property})) {
+                    $firstRecord = $modelRecord->{$property}->first();
+                    if ($firstRecord->hasNativeProperty('uuid')) {
+                        $record->associationsByUuid->{$property} = new \StdClass();
+                        $record->associationsByUuid->{$property}->model = $firstRecord->getName();
+                        $record->associationsByUuid->{$property}->related = $modelRecord->{$property}->pluck('uuid');
+                    }
+                }
+            }
+        }
 
-        $cset_json = json_encode($base, JSON_PRETTY_PRINT);
+        return $record;
+    }
 
-        $this->zip->addFromString('channel_set.json', $cset_json);
+    /**
+     * Export Portage to zip file
+     *
+     * @param array $elements
+     * @return void
+     */
+    public function zip($elements = [])
+    {
+        // export to directory
+        $this->toDir($elements);
+
+
+        $this->zip = new ZipArchive();
+        $location = PATH_CACHE . "portage/portage-" . $this->portageData->version . "-" . $this->portageData->uniqid . ".zip";
+
+        $this->zip->open($location, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $this->zip->addFile($this->path . 'portage.json', 'portage.json');
+
+        foreach ($this->portageData->components as $component) {
+            $file = str_replace(':', '_', $component) . '.json';
+            $this->zip->addFile($this->path . $file, $file);
+        }
+
         $this->zip->close();
 
         return $location;
     }
 
-    /**
-     * Export a channel
-     *
-     * @param Model $channel Channel to export
-     * @return void
-     */
-    private function exportChannel($channel)
-    {
-        // already in process
-        if (isset($this->channels[$channel->getId()])) {
-            return;
-        }
 
-        $result = new StdClass();
-
-        $result->channel_title = $channel->channel_title;
-        $result->channel_name = $channel->channel_name;
-
-        if ($channel->title_field_label != 'Title') {
-            $result->title_field_label = $channel->title_field_label;
-        }
-
-        // add it to the array early so that relationship can see
-        // that it is already part of the set. That's also why these
-        // are ids (that's what relationships store)
-        $this->channels[$channel->getId()] = $result;
-
-        if ($channel->Statuses) {
-            foreach ($channel->Statuses->sortBy('status_order') as $status) {
-                if (in_array($status->status, ['open', 'closed'])) {
-                    continue;
-                }
-
-                $status = $this->exportStatus($status);
-                $result->statuses[] = $status->name;
-            }
-        }
-
-        if ($channel->FieldGroups) {
-            $result->field_groups = array();
-            foreach ($channel->FieldGroups as $group) {
-                $result->field_groups[] = $this->exportFieldGroup($group);
-            }
-        }
-
-        if ($channel->CustomFields) {
-            $result->fields = array();
-            foreach ($channel->CustomFields as $field) {
-                $this->exportField($field);
-                $result->fields[] = $field->field_name;
-            }
-        }
-
-        if ($channel->getCategoryGroups()) {
-            $result->cat_groups = array();
-
-            foreach ($channel->getCategoryGroups() as $group) {
-                $group = $this->exportCategoryGroup($group);
-                $result->cat_groups[] = $group->name;
-            }
-        }
-    }
-
-    /**
-     * Export a status
-     *
-     * @param Model $status Status to export
-     * @return StdClass Status description
-     */
-    private function exportStatus($status)
-    {
-        $result = new StdClass();
-        foreach ($status->getFields() as $property)
-        {
-            $result->{$property} = $status->{$property};
-        }
-
-        $this->statuses[$status->status] = $result;
-
-        return $result;
-    }
-
-    /**
-     * Export a category group and its categories
-     *
-     * @param Model $group Category group to export
-     * @return StdClass Category group description
-     */
-    private function exportCategoryGroup($group)
-    {
-        $result = new StdClass();
-        $result->name = $group->group_name;
-        $result->sort_order = $group->sort_order;
-
-        $result->categories = array();
-
-        foreach ($group->Categories as $category) {
-            $result->categories[] = $this->exportCategory($category);
-        }
-
-        $this->category_groups[] = $result;
-
-        foreach ($group->CategoryFields as $field) {
-            $this->exportField($field, $group->group_name, 'category');
-        }
-
-        return $result;
-    }
-
-    /**
-     * Export a category
-     *
-     * @param Model $category Category export
-     * @return String Category name
-     */
-    private function exportCategory($category)
-    {
-        $fields = $category->getCustomFields();
-
-        $cat = new StdClass();
-        $cat->cat_name = $category->cat_name;
-        $cat->cat_url_title = $category->cat_url_title;
-        $cat->cat_description = $category->cat_description;
-        $cat->cat_order = $category->cat_order;
-
-        foreach ($fields as $field) {
-            $field_name = $field->getShortName();
-            $cat->$field_name = $field->getData();
-        }
-
-        return $cat;
-    }
-
-    /**
-     * Export a field group and its fields
-     *
-     * @param Model $group Field group to export
-     * @return String Field group name
-     */
-    private function exportFieldGroup($group)
-    {
-        // already in process
-        if (isset($this->field_groups[$group->getId()])) {
-            return;
-        }
-
-        $result = new StdClass();
-        $result->name = $group->group_name;
-        $result->fields = array();
-
-        $this->field_groups[$group->getId()] = $result;
-
-        $fields = $group->ChannelFields;
-
-        foreach ($fields as $field) {
-            $result->fields[] = $field->field_name;
-            $this->exportField($field);
-        }
-
-        return $group->group_name;
-    }
 
     /**
      * Export a field
@@ -517,33 +380,6 @@ class Export
         return $result->name;
     }
 
-    /**
-     * Do some extra work for file field exports
-     *
-     * @param Model $field Channel field
-     * @return StdClass Extra settings
-     */
-    private function exportFileFieldSettings($field)
-    {
-        $settings = $field->field_settings;
-
-        $settings_obj = new StdClass();
-
-        $settings_obj->num_existing = (isset($settings['num_existing']))
-            ? $settings['num_existing'] : 50;
-        $settings_obj->show_existing = (isset($settings['show_existing']))
-            ? $settings['show_existing'] : 'y';
-        $settings_obj->field_content_type = (isset($settings['field_content_type']))
-            ? $settings['field_content_type'] : 'all';
-        $settings_obj->allowed_directories = (isset($settings['allowed_directories']))
-            ? $settings['allowed_directories'] : 'all';
-
-        if ($settings_obj->allowed_directories != 'all') {
-            $settings_obj->allowed_directories = $this->exportUploadDestination($settings['allowed_directories']);
-        }
-
-        return $settings_obj;
-    }
 
     /**
      * Do some extra work for grid field exports

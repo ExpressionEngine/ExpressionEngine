@@ -10,8 +10,6 @@
 
 namespace ExpressionEngine\Service\Portage;
 
-use ExpressionEngine\Service\File\Directory;
-
 /**
  * Portage Service Factory
  */
@@ -38,7 +36,7 @@ class Factory
      */
     public function export($elements = [])
     {
-        $export = new Export();
+        $export = new PortageExport();
 
         return $export->zip($elements);
     }
@@ -51,7 +49,7 @@ class Factory
      */
     public function exportDir($elements = [])
     {
-        $export = new Export();
+        $export = new PortageExport();
 
         return $export->toDir($elements);
     }
@@ -67,7 +65,7 @@ class Factory
         $location = $upload['tmp_name'];
         $name = $upload['name'];
 
-        $extractor = new ZipToSet($location);
+        $extractor = new PortageZip($location);
 
         $set = $extractor->extractAs($name);
         $set->setSiteId($this->site_id);
@@ -83,7 +81,7 @@ class Factory
      */
     public function importDir($dir)
     {
-        $set = new Portage($dir);
+        $set = new PortageImport($dir);
         $set->setSiteId($this->site_id);
 
         return $set;

@@ -85,6 +85,10 @@ class Site extends Model
             'model' => 'UploadDestination',
             'type' => 'hasMany'
         ),
+        'FileDimensions' => array(
+            'model' => 'FileDimension',
+            'type' => 'hasMany'
+        ),
         'Permissions' => array(
             'model' => 'Permission',
             'type' => 'hasMany'

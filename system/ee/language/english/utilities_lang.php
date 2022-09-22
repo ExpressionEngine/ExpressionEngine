@@ -652,9 +652,9 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'export_portage_as_zip_desc' => 'Turn off to save file in <code>system/user/cache/portage/export</code> directory instead',
 
-    'portage_channels' => 'Portage channels',
+    'portage_elements' => 'Portage elements',
 
-    'portage_channels_desc' => 'Select channels you need to export. <br />Note that when exporting individual channels other data structures might still be included if they are associated.',
+    'portage_elements_desc' => 'Select elements you need to export.',
 
     'btn_import' => 'Import',
 
@@ -672,7 +672,7 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'import_zip_portage' => 'Import from Zip file',
 
-    'import_zip_portage_desc' => 'When turned off, will use Portage files located in <code>system/user/cache/portage/export</code> directory',
+    'import_zip_portage_desc' => 'When turned off, will use Portage files located in <code>system/user/cache/portage/import</code> directory',
 
     'portage_file_invalid' => 'Missing <code>%s</code> file or file is not valid.',
 
@@ -683,6 +683,18 @@ Once you are ready to experience the new File Manager features, please run the <
     'portage_addon_not_installed' => 'Add-on <code>%s</code> is not installed',
 
     'portage_addon_incompatible' => 'Add-on <code>%s</code> version number is not compatible',
+
+    'portage_import_error' => 'Cannot import Portage',
+
+    'portage_path_not_valid' => 'File path is not valid',
+
+    'portage_imported' => 'Portage imported',
+
+    'portage_imported_desc' => 'The site is now up-to-date with Portage provided',
+
+    'portage_duplicates_error' => 'Import Creates Duplicates',
+
+    'portage_duplicates_error_desc' => 'This Portage uses names that already exist on your site. Please rename the following items.',
 
 
 );

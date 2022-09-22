@@ -593,6 +593,10 @@ $setup = [
 
         # ExpressionEngine\Model..
 
+        // ..\Site
+        'Site' => 'Model\Site\Site',
+        'Stats' => 'Model\Site\Stats',
+
         // ..\Addon
         'Action' => 'Model\Addon\Action',
         'Extension' => 'Model\Addon\Extension',
@@ -601,18 +605,18 @@ $setup = [
         'Fieldtype' => 'Model\Addon\Fieldtype',
 
         // ..\Category
-        'Category' => 'Model\Category\Category',
         'CategoryGroup' => 'Model\Category\CategoryGroup',
+        'Category' => 'Model\Category\Category',
         'CategoryField' => 'Model\Category\CategoryField',
 
         // ..\File
         'UploadDestination' => 'Model\File\UploadDestination',
+        'Watermark' => 'Model\File\Watermark',
         'FileDimension' => 'Model\File\FileDimension',
         'FileSystemEntity' => 'Model\File\FileSystemEntity',
         'File' => 'Model\File\File',
         'Directory' => 'Model\File\Directory',
         //'FileField' => 'Model\File\FileField',
-        'Watermark' => 'Model\File\Watermark',
 
         // ..\Log
         'CpLog' => 'Model\Log\CpLog',
@@ -627,10 +631,6 @@ $setup = [
         // ..\Session
         'Session' => 'Model\Session\Session',
         'RememberMe' => 'Model\Session\RememberMe',
-
-        // ..\Site
-        'Site' => 'Model\Site\Site',
-        'Stats' => 'Model\Site\Stats',
 
         // ..\Status
         'Status' => 'Model\Status\Status',

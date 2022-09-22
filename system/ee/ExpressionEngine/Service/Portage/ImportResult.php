@@ -35,6 +35,11 @@ class ImportResult
      */
     private $fixable_errors = array();
 
+    public static $short_names = array(
+        'ee:Channel' => array('channel_name' => 'channel_title'),
+        'ee:ChannelField' => array('field_name' => 'field_label')
+    );
+
     /**
      * Add a fatal error.
      *
@@ -53,23 +58,19 @@ class ImportResult
      * Add a failed model. We'll check if it's recoverable by user input and
      * categorize them accordingly.
      *
-     * @param String $heading Descriptive heading for the model in question
      * @param Model $model The model that failed
      * @param String $field The field that errored
      * @param Array $rules The rules that failed
      * @return void
      */
-    public function addModelError($heading, $model, $field, $rules)
+    public function addModelError($model, $field, $rules)
     {
         $this->valid = false;
 
         if ($this->errorIsRecoverable($model, $field, $rules)) {
-            $ident_field = Structure::getIdentityFieldFor($model);
-            $identity = $model->$ident_field;
-
-            $this->fixable_errors[$heading][] = array($model, $field, $identity, $rules);
+            $this->fixable_errors[$model->uuid][] = array($model, $field, $rules);
         } else {
-            $this->model_errors[$heading][] = array($model, $field, $rules);
+            $this->model_errors[$model->uuid][] = array($model, $field, $rules);
         }
     }
 
@@ -124,11 +125,25 @@ class ImportResult
     }
 
     /**
-     * Proxy for cleaner controller code. Move it?
+     * For a given short name, grab the field that it's related to.
+     *
+     * For example, for `(channel, url_title)` this would return `title`
+     *
+     * @param Model $model The model instance
+     * @param String $field The potential shortname
+     * @return String Title field
      */
-    public function getLongFieldIfShortened($model, $field)
+    public static function getLongFieldIfShortened($model, $field)
     {
-        return Structure::getLongFieldIfShortened($model, $field);
+        $name = $model->getName();
+
+        if (array_key_exists($name, static::$short_names)) {
+            if (array_key_exists($field, static::$short_names[$name])) {
+                return static::$short_names[$name][$field];
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -136,7 +151,14 @@ class ImportResult
      */
     public function getTitleFieldFor($model)
     {
-        return Structure::getTitleFieldFor($model);
+        foreach ($model->getFields() as $field) {
+            foreach (['title', 'label', 'name', 'status'] as $string) {
+                if (strpos($field, $string) !== false) {
+                    return $field;
+                }
+            }
+        }
+        return 'ID: ' . $model->getId();
     }
 
     /**
@@ -155,16 +177,8 @@ class ImportResult
      */
     private function errorIsRecoverable($model, $field, $rules)
     {
-        $recoverable = array(
-            'ee:Channel' => array('channel_title', 'channel_name'),
-            'ee:ChannelFieldGroup' => array('group_name'),
-            'ee:CategoryGroup' => array('group_name'),
-            'ee:ChannelField' => array('field_name'),
-            'ee:UploadDestination' => array('name', 'server_path', 'url')
-        );
-
-        if (isset($recoverable[$model->getName()])) {
-            if (in_array($field, $recoverable[$model->getName()])) {
+        foreach (['title', 'label', 'name', 'url', 'path', 'status'] as $string) {
+            if (strpos($field, $string) !== false) {
                 return true;
             }
         }

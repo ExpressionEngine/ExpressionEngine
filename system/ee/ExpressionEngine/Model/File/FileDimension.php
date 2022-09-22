@@ -59,7 +59,6 @@ class FileDimension extends Model
     protected $id;
     protected $site_id;
     protected $upload_location_id;
-    protected $title;
     protected $short_name;
     protected $resize_type;
     protected $width;

@@ -22,6 +22,8 @@ class Portage extends Utilities
         if (! ee('Permission')->isSuperAdmin()) {
             show_error(lang('unauthorized_access'), 403);
         }
+
+        ee()->lang->load('admin_content');
     }
     
     public function index()
@@ -50,6 +52,24 @@ class Portage extends Utilities
             )
             ->now();
 
+        $portageChoices = [
+            'add-ons' => lang('addons')
+        ];
+        $models = ee('App')->getModels();
+        foreach ($models as $model => $class) {
+            if ($model != 'ee:MemberGroup') {
+                try {
+                    $modelInstance = ee('Model')->make($model);
+                    if ($modelInstance->hasNativeProperty('uuid')) {
+                        $portageChoices[$modelInstance->getName()] = array_reverse(explode(':', $modelInstance->getName()))[0];
+                    }
+                } catch (\Exception $e) {
+                    //silently continue
+                }
+            }
+            unset($modelInstance);
+        }
+
         $vars['hide_top_buttons'] = true;
         $vars['sections'] = array(
             array(
@@ -71,19 +91,20 @@ class Portage extends Utilities
                             'type' => 'yes_no',
                             'value' => 'y',
                             'group_toggle' => [
-                                'n' => 'portage_channels'
+                                'n' => 'portage_elements'
                             ]
                         ],
                     )
                 ),
                 array(
-                    'title' => 'portage_channels',
-                    'desc' => 'portage_channels_desc',
-                    'group' => 'portage_channels',
+                    'title' => 'portage_elements',
+                    'desc' => 'portage_elements_desc',
+                    'group' => 'portage_elements',
                     'fields' => array(
-                        'portage_channels' => array(
+                        'portage_elements' => array(
                             'type' => 'checkbox',
-                            'choices' => ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->all()->getDictionary('channel_id', 'channel_title')
+                            'choices' => $portageChoices,
+                            'value' => array_keys($portageChoices)
                         )
                     )
                 )
@@ -94,22 +115,21 @@ class Portage extends Utilities
 
             $elements = [];
             $fileName = 'portage-' . ee()->config->item('site_short_name');
-            /*if (ee('Request')->post('export_full_portage') != 'n') {
-                $channels = ee('Model')
-                    ->get('Channel')
-                    ->filter('site_id', ee()->config->item('site_id'))
-                    ->all();
-            } else {
-                $channels = ee('Model')
-                    ->get('Channel')
-                    ->filter('site_id', ee()->config->item('site_id'))
-                    ->filter('channel_id', 'IN', ee('Request')->post('portage_channels'))
-                    ->all();
-                $fileName .= '-channels' . implode('_', ee('Request')->post('portage_channels'));
-            }*/
+            $portage_elements = ee('Request')->post('export_full_portage') != 'n' ? [] : ee('Request')->post('portage_elements');
+
+            
+            if (ee('Request')->post('export_full_portage') == 'n' && empty($portage_elements)) {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('channel_set_not_exported'))
+                    ->addToBody(lang('channel_set_not_exported_desc'))
+                    ->defer();
+
+                ee()->functions->redirect(ee('CP/URL', 'utilities/portage/export'));
+            }
 
             if (ee('Request')->post('export_zip') != 'y') {
-                ee('Portage')->exportDir();
+                ee('Portage')->exportDir($portage_elements);
 
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
@@ -120,17 +140,7 @@ class Portage extends Utilities
                 ee()->functions->redirect(ee('CP/URL', 'utilities/portage/export'));
             }
 
-            if (empty($channels)) {
-                ee('CP/Alert')->makeInline('shared-form')
-                    ->asIssue()
-                    ->withTitle(lang('channel_set_not_exported'))
-                    ->addToBody(lang('channel_set_not_exported_desc'))
-                    ->defer();
-
-                ee()->functions->redirect(ee('CP/URL', 'utilities/portage/export'));
-            }
-
-            $file = ee('Portage')->export($channels);
+            $file = ee('Portage')->export($portage_elements);
 
             $data = file_get_contents($file);
 
@@ -204,7 +214,7 @@ class Portage extends Utilities
             }
             if (ee('Request')->post('import_zip') != 'y') {
                 $path = ee('Encrypt')->encode(
-                    PATH_CACHE . 'portage/',
+                    PATH_CACHE . 'portage/import/',
                     ee()->config->item('session_crypt_key')
                 );
                 ee()->functions->redirect(
@@ -216,33 +226,33 @@ class Portage extends Utilities
             }
         }
         if (! empty($_FILES)) {
-            $set_file = ee('Request')->file('set_file');
+            $portage_file = ee('Request')->file('set_file');
 
             $validator = ee('Validation')->make(array(
                 'set_file' => 'required',
             ));
 
-            $result = $validator->validate(array('set_file' => $set_file['name']));
+            $result = $validator->validate(array('set_file' => $portage_file['name']));
 
             if ($result->isNotValid()) {
                 $errors = $result;
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
-                    ->withTitle(lang('channel_set_upload_error'))
-                    ->addToBody(lang('channel_set_upload_error_desc'))
+                    ->withTitle(lang('portage_import_error'))
+                    ->addToBody(lang('portage_import_error_desc'))
                     ->now();
 
                 $vars['errors'] = $errors;
-            } elseif (strtolower(pathinfo($set_file['name'], PATHINFO_EXTENSION)) !== 'zip') {
+            } elseif (strtolower(pathinfo($portage_file['name'], PATHINFO_EXTENSION)) !== 'zip') {
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
                     ->withTitle(lang('channel_set_filetype_error'))
                     ->addToBody(lang('channel_set_filetype_error_desc'))
                     ->now();
             } else {
-                $set = ee('Portage')->importUpload($set_file);
+                $portage = ee('Portage')->importUpload($portage_file);
                 $path = ee('Encrypt')->encode(
-                    $set->getPath(),
+                    $portage->getPath(),
                     ee()->config->item('session_crypt_key')
                 );
                 ee()->functions->redirect(
@@ -278,93 +288,92 @@ class Portage extends Utilities
         if (! $path || strpos($path, '..') !== false || ! file_exists($path)) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
-                ->withTitle(lang('channel_set_upload_error'))
-                ->addToBody(lang('channel_set_upload_error_desc'))
+                ->withTitle(lang('portage_import_error'))
+                ->addToBody(lang('portage_path_not_valid'))
                 ->defer();
 
-            ee()->functions->redirect(ee('CP/URL', 'channels/sets'));
+            ee()->functions->redirect(ee('CP/URL', 'utilities/portage/import'));
         }
 
         // load up the set
-        $set = ee('Portage')->importDir($path);
+        $portage = ee('Portage')->importDir($path);
 
         // posted values? grab 'em
         if (isset($_POST)) {
-            $set->setAliases($_POST);
+            $portage->setAliases($_POST);
         }
 
-        $result = $set->validate();
+        $result = $portage->validate();
 
         if ($result->isValid()) {
-            $set->save();
-            $set->cleanUpSourceFiles();
+            $portage->save();
+            $portage->cleanUpSourceFiles();
 
             ee()->session->set_flashdata(
                 'imported_channels',
-                $set->getIdsForElementType('channels')
+                $portage->getIdsForElementType('channels')
             );
 
             ee()->session->set_flashdata(
                 'imported_category_groups',
-                $set->getIdsForElementType('category_groups')
+                $portage->getIdsForElementType('category_groups')
             );
 
             ee()->session->set_flashdata(
                 'imported_field_groups',
-                $set->getIdsForElementType('field_groups')
+                $portage->getIdsForElementType('field_groups')
             );
 
             $alert = ee('CP/Alert')->makeInline('shared-form')
                 ->asSuccess()
-                ->withTitle(lang('channel_set_imported'))
-                ->addToBody(lang('channel_set_imported_desc'))
+                ->withTitle(lang('portage_imported'))
+                ->addToBody(lang('portage_imported_desc'))
                 ->defer();
 
-            ee()->functions->redirect(ee('CP/URL', 'channels'));
+            ee()->functions->redirect(ee('CP/URL', 'utilities/portage/import'));
         }
 
         if ($result->isRecoverable()) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
-                ->withTitle(lang('channel_set_duplicates_error'))
-                ->addToBody(lang('channel_set_duplicates_error_desc'))
+                ->withTitle(lang('portage_duplicates_error'))
+                ->addToBody(lang('portage_duplicates_error_desc'))
                 ->now();
         } else {
-            $set->cleanUpSourceFiles();
+            $portage->cleanUpSourceFiles();
             $errors = $result->getErrors();
-            $model_errors = $result->getModelErrors();
-            foreach (array('Channel Field', 'Category', 'Category Group', 'Status') as $type) {
-                if (isset($model_errors[$type])) {
-                    foreach ($model_errors[$type] as $model_error) {
-                        list($model, $field, $rule) = $model_error;
-                        foreach ($rule as $error) {
-                            list($key, $params) = $error->getLanguageData();
-                            $errors[] = $type . ': ' . lang($field) . ' &mdash; ' . vsprintf(lang($key), (array) $params);
-                        }
+            $allModelErrors = $result->getModelErrors();
+            foreach ($allModelErrors as $uuid => $model_errors) {
+                foreach ($model_errors as $model_error) {
+                    list($model, $field, $rule) = $model_error;
+                    $title_field = $result->getTitleFieldFor($model);
+                    foreach ($rule as $error) {
+                        list($key, $params) = $error->getLanguageData();
+                        $errors[] = '<b>' . array_reverse(explode(':', $model->getName()))[0] . ':</b> <code>' . $model->$title_field . '</code>: <code>' . lang($field) . '</code> &mdash; ' . vsprintf(lang($key), (array) $params);
                     }
                 }
             }
 
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
-                ->withTitle(lang('channel_set_upload_error'))
+                ->withTitle(lang('portage_import_error'))
                 ->addToBody($errors)
                 ->defer();
 
-            ee()->functions->redirect(ee('CP/URL', 'channels/sets'));
+            ee()->functions->redirect(ee('CP/URL', 'utilities/portage/import'));
         }
 
-        $vars = $this->createAliasForm($set, $result);
+        $vars = $this->createAliasForm($portage, $result);
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('channels')->compile() => lang('channels')
         );
 
-        ee()->view->cp_page_title = lang('import_channel');
+        ee()->view->cp_page_title = lang('portage_import');
         ee()->cp->render('settings/form', $vars);
     }
 
-    private function createAliasForm($set, $result)
+    private function createAliasForm($portage, $result)
     {
         ee()->lang->loadfile('filemanager');
         $vars = array();
@@ -386,29 +395,29 @@ class Portage extends Utilities
             }
         }
 
-        foreach ($result->getRecoverableErrors() as $section => $errors) {
+        foreach ($result->getRecoverableErrors() as $uuid => $errors) {
+            $fields = [];
+            $modelErrors = new \ExpressionEngine\Service\Validation\Result();
             foreach ($errors as $error) {
-                $fields = array();
 
-                list($model, $field, $ident, $rule) = $error;
+                list($model, $field, $rule) = $error;
+                $section = $model->getName();
 
                 $model_name = $model->getName();
                 $long_field = $result->getLongFieldIfShortened($model, $field);
 
                 // Show the current model title in the section header
                 $title_field = $result->getTitleFieldFor($model);
-                $title = ee('Format')->make('Text', $model->$title_field)->convertToEntities();
 
                 // Frequently the error is on the short_name, but in those cases
                 // you really want to edit the long name as well, so we'll show it.
                 if (isset($long_field)) {
                     $key = $model_name . '[' . $ident . '][' . $long_field . ']';
-                    $encoded_key = ee('Format')->make('Text', $key)->convertToEntities()->compile();
                     if (isset($hidden[$key])) {
-                        $vars['sections'][$section . ': ' . $title][] = array(
+                        $fields[] = array(
                             'title' => $long_field,
                             'fields' => array(
-                                $encoded_key => array(
+                                $key => array(
                                     'type' => 'text',
                                     'value' => $model->$long_field,
                                     // 'required' => TRUE
@@ -419,24 +428,36 @@ class Portage extends Utilities
                     }
                 }
 
-                $key = $model_name . '[' . $ident . '][' . $field . ']';
-                $encoded_key = ee('Format')->make('Text', $key)->convertToEntities()->compile();
-                $vars['sections'][$section . ': ' . $title][] = array(
+                $key = $model_name . '[' . $model->uuid . '][' . $field . ']';
+                $fields[] = array(
                     'title' => $field,
                     'fields' => array(
-                        $encoded_key => array(
+                        $key => array(
                             'type' => 'text',
                             'value' => $model->$field,
                             'required' => true
                         )
                     )
                 );
-
                 unset($hidden[$key]);
 
                 foreach ($rule as $r) {
-                    $vars['errors']->addFailed($model_name . '[' . $ident . '][' . $field . ']', $r);
+                    $vars['errors']->addFailed($model_name . '[' . $model->uuid . '][' . $field . ']', $r);
+                    $modelErrors->addFailed($model_name . '[' . $model->uuid . '][' . $field . ']', $r);
                 }
+            }
+            if (!empty($fields)) {
+                $vars['sections'][array_reverse(explode(':', $section))[0]] = array(
+                    'group' => $section,
+                    'settings' => [
+                        ee('View')->make('portage/conflict')->render([
+                            'baseKey' => $model_name . '[' . $model->uuid . ']',
+                            'name' => $model->$title_field,
+                            'fields' => $fields,
+                            'errors' => $modelErrors
+                        ])
+                    ]
+                );
             }
         }
 
@@ -444,13 +465,13 @@ class Portage extends Utilities
             $vars['form_hidden'] = $hidden;
         }
 
-        $path = ee('Encrypt')->encode($set->getPath(), ee()->config->item('session_crypt_key'));
+        $path = ee('Encrypt')->encode($portage->getPath(), ee()->config->item('session_crypt_key'));
 
         // Final view variables we need to render the form
         $vars += array(
-            'base_url' => ee('CP/URL')->make('channels/sets/doImport', ['path' => $path]),
-            'save_btn_text' => 'btn_save_settings',
-            'save_btn_text_working' => 'btn_saving',
+            'base_url' => ee('CP/URL')->make('utilities/portage/doImport', ['path' => $path]),
+            'save_btn_text' => 'btn_import',
+            'save_btn_text_working' => 'btn_processing',
         );
 
         return $vars;
