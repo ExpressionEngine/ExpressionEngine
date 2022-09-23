@@ -91,8 +91,9 @@ class PortageExport
         // for each model, find whether it has site or module restrictions
         $models = ee('App')->getModels();
         $portableModels = [];
+        $excludedModels = ['ee:MemberGroup'];
         foreach ($models as $model => $class) {
-            if ($model != 'ee:MemberGroup') {
+            if (! in_array($model, $excludedModels)) {
                 try {
                     $modelInstance = ee('Model')->make($model);
                     if ($modelInstance->hasNativeProperty('uuid')) {
@@ -154,7 +155,15 @@ class PortageExport
             $this->portageData->components[] = $model;
             $file = str_replace(':', '_', $model) . '.json';
             foreach ($modelRecords as $modelRecord) {
-                $json->{$modelRecord->uuid} = $this->getDataFromModelRecord($model, $modelRecord);
+                $uuid = $modelRecord->uuid;
+                // make sure UUIDs are set
+                if (is_null($uuid)) {
+                    $uuid = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
+                    $modelRecord->setRawProperty('uuid', $uuid);
+                    $modelRecord = $modelRecord->save();
+                }
+                // build the data
+                $json->$uuid = $this->getDataFromModelRecord($model, $modelRecord);
             }
 
             ee('Filesystem')->write($this->path . $file, json_encode($json, JSON_PRETTY_PRINT));

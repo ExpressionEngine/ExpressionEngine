@@ -89,6 +89,8 @@ class Status extends Model
      */
     public function onBeforeInsert()
     {
+        parent::onBeforeInsert();
+
         $status_order = $this->getProperty('status_order');
 
         if (empty($status_order)) {

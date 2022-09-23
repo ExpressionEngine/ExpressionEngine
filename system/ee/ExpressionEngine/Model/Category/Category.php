@@ -149,6 +149,8 @@ class Category extends ContentModel
      */
     public function onBeforeInsert()
     {
+        parent::onBeforeInsert();
+
         $cat_order = $this->getProperty('cat_order');
 
         if (empty($cat_order)) {

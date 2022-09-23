@@ -119,6 +119,10 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
         'ExpressionEngine\Service\Model\Mixin\Relationship'
     );
 
+    protected static $_events = array(
+        'beforeInsert'
+    );
+
     /**
      * Add some default filters that we need for models. Might hardcode some
      * of these in the long run.
@@ -202,6 +206,14 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
         $footprint = get_object_vars($this);
         unset($footprint['_facade']);
         return $footprint;
+    }
+
+    public function onBeforeInsert()
+    {
+        if ($this->hasProperty('uuid') && $this->getProperty('uuid') == null) {
+            $uuid = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
+            $this->setRawProperty('uuid', $uuid);
+        }
     }
 
     /**

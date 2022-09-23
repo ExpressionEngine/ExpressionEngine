@@ -141,7 +141,7 @@ class Updater
         ];
         foreach ($models as $model => $table) {
             if (!ee()->db->field_exists('uuid', $table)) {
-                ee()->db->query("ALTER TABLE exp_" . $table . " ADD uuid varchar(36) NULL DEFAULT (UUID())");
+                ee()->db->query("ALTER TABLE exp_" . $table . " ADD uuid varchar(36) NULL DEFAULT NULL");
                 ee()->db->query("ALTER TABLE exp_" . $table . " ADD UNIQUE (uuid)");
             }
         }

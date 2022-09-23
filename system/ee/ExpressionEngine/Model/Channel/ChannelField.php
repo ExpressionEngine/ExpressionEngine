@@ -180,6 +180,8 @@ class ChannelField extends FieldModel
 
     public function onBeforeInsert()
     {
+        parent::onBeforeInsert();
+
         if ($this->field_order) {
             return;
         }

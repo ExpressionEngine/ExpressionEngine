@@ -110,6 +110,8 @@ class CategoryField extends FieldModel
      */
     public function onBeforeInsert()
     {
+        parent::onBeforeInsert();
+
         if ($this->getProperty('field_list_items') == null) {
             $this->setProperty('field_list_items', '');
         }

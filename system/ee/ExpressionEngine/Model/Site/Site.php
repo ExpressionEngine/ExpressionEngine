@@ -144,6 +144,8 @@ class Site extends Model
 
     public function onBeforeInsert()
     {
+        parent::onBeforeInsert();
+
         $current_number_of_sites = $this->getModelFacade()->get('Site')->count();
 
         $can_add = ee('License')->getEELicense()

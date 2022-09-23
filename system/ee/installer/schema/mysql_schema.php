@@ -53,7 +53,7 @@ class EE_Schema
 			`site_color` varchar(6) NOT NULL default '',
 			`site_bootstrap_checksums` TEXT NOT NULL ,
 			`site_pages` MEDIUMTEXT NOT NULL ,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `site_id` (`site_id`),
 			KEY `site_name` (`site_name`),
 			UNIQUE `uuid` (`uuid`)
@@ -364,7 +364,7 @@ class EE_Schema
 			`description` text,
 			`total_members` mediumint(8) unsigned NOT NULL DEFAULT '0',
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY (`role_id`),
 			UNIQUE `uuid` (`uuid`)
 		)";
@@ -378,7 +378,7 @@ class EE_Schema
         $Q[] = "CREATE TABLE `exp_role_groups` (
 			`group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`name` varchar(100) NOT NULL,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY (`group_id`),
 			UNIQUE `uuid` (`uuid`)
 		)";
@@ -478,7 +478,7 @@ class EE_Schema
 			m_field_text_direction char(3) DEFAULT 'ltr',
 			m_field_settings text NULL,
 			m_legacy_field_data char(1) NOT NULL default 'n',
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `m_field_id` (`m_field_id`),
 			UNIQUE `uuid` (`uuid`)
 			)";
@@ -558,7 +558,7 @@ class EE_Schema
 			allow_preview char(1) NOT NULL default 'y',
 			max_entries int(10) unsigned NOT NULL DEFAULT '0',
 			conditional_sync_required char(1) NOT NULL default 'n',
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `channel_id` (`channel_id`),
 			KEY `cat_group` (`cat_group`(191)),
 			KEY `channel_name` (`channel_name`),
@@ -664,7 +664,7 @@ class EE_Schema
 			group_id int(4) unsigned NOT NULL auto_increment,
 			site_id INT(4) UNSIGNED NULL DEFAULT 1,
 			group_name varchar(50) NOT NULL,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`),
 			UNIQUE `uuid` (`uuid`)
@@ -703,7 +703,7 @@ class EE_Schema
 			field_settings text NULL,
 			legacy_field_data char(1) NOT NULL default 'n',
 			enable_frontedit char(1) NOT NULL default 'y',
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `field_type` (`field_type`),
 			KEY `site_id` (`site_id`),
@@ -785,7 +785,7 @@ class EE_Schema
 			status varchar(50) NOT NULL,
 			status_order int(3) unsigned NOT NULL,
 			highlight varchar(30) NOT NULL default '000000',
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `status_id` (`status_id`),
 			UNIQUE `uuid` (`uuid`)
 		)";
@@ -807,7 +807,7 @@ class EE_Schema
 			`field_html_formatting` char(4) NOT NULL default 'all',
 			`can_edit_categories` TEXT NULL,
 			`can_delete_categories` TEXT NULL,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`),
 			UNIQUE `uuid` (`uuid`)
@@ -825,7 +825,7 @@ class EE_Schema
 			cat_description text NULL,
 			cat_image varchar(120) NULL,
 			cat_order int(4) unsigned NOT NULL,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `cat_id` (`cat_id`),
 			KEY `group_id` (`group_id`),
 			KEY `parent_id` (`parent_id`),
@@ -851,7 +851,7 @@ class EE_Schema
 			`field_order` int(3) unsigned NOT NULL,
 			`field_settings` text NULL,
 			`legacy_field_data` char(1) NOT NULL default 'n',
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `site_id` (`site_id`),
 			KEY `group_id` (`group_id`),
@@ -918,7 +918,7 @@ class EE_Schema
 			channel_id int(4) UNSIGNED NOT NULL default 0,
 			layout_name varchar(50) NOT NULL,
 			field_layout text,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY(`layout_id`),
 			KEY `site_id` (`site_id`),
 			KEY `channel_id` (`channel_id`),
@@ -1085,7 +1085,7 @@ class EE_Schema
 			file_post_format varchar(120) NULL DEFAULT NULL,
 			batch_location varchar(255) NULL DEFAULT NULL,
 			module_id int(4) NOT NULL DEFAULT 0,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `id` (`id`),
 			KEY `site_id` (`site_id`),
 			UNIQUE `uuid` (`uuid`)
@@ -1250,7 +1250,7 @@ class EE_Schema
 			`evaluation_rule` varchar(100) NOT NULL DEFAULT '',
 			`value` varchar(255) DEFAULT NULL,
 			`order` int(10) unsigned NOT NULL DEFAULT 0,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `condition_id` (`condition_id`),
 			KEY `condition_set_id` (`condition_set_id`),
 			KEY `condition_field_id` (`condition_field_id`),
@@ -1261,7 +1261,7 @@ class EE_Schema
 			`condition_set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`match` varchar(20) NOT NULL DEFAULT 'all',
 			`order` int(10) unsigned NOT NULL DEFAULT 0,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `condition_set_id` (`condition_set_id`),
 			UNIQUE `uuid` (`uuid`)
 		)";
@@ -1333,7 +1333,7 @@ class EE_Schema
 			`height` int(10) DEFAULT '0',
 			`quality` tinyint(1) unsigned DEFAULT '90',
 			`watermark_id` int(4) unsigned DEFAULT NULL,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY (`id`),
 			KEY `upload_location_id` (`upload_location_id`),
 			UNIQUE `uuid` (`uuid`)
@@ -1370,7 +1370,7 @@ class EE_Schema
 			`wm_use_drop_shadow` char(1) DEFAULT 'y',
 			`wm_shadow_distance` int(3) unsigned DEFAULT NULL,
 			`wm_shadow_color` varchar(7) DEFAULT NULL,
-			`uuid` VARCHAR(36) NULL DEFAULT (UUID()),
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY (`wm_id`),
 			UNIQUE `uuid` (`uuid`)
 		)";
