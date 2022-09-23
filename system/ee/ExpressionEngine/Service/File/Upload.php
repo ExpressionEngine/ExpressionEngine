@@ -485,8 +485,8 @@ class Upload
                 }
 
                 foreach ($file->UploadDestination->FileDimensions as $fd) {
-                    $src = $fd->getAbsolutePath() . $file->file_name;
-                    $dest = $fd->getAbsolutePath() . $original->file_name;
+                    $src = $file->getAbsoluteManipulationPath($fd->short_name);
+                    $dest = $original->getAbsoluteManipulationPath($fd->short_name);
 
                     // non-image files will not have manipulations
                     if ($file->getFilesystem()->exists($src)) {
