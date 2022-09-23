@@ -641,6 +641,7 @@ class Channel
                 continue;
             }
 
+            $title_field = FALSE;
             $sites = ($site_ids ? $site_ids : array(ee()->config->item('site_id')));
             foreach ($sites as $site_name => $site_id) {
                 // We're goign to repeat the search on each site
@@ -649,6 +650,7 @@ class Channel
                 if (in_array($field_name, ['title', 'url_title'])) {
                     $table = 't';
                     $search_column_name = $table . '.' . $field_name;
+                    $title_field = TRUE;
                 } else if (! isset($this->cfields[$site_id][$field_name])) {
                     continue;
                 }
@@ -659,7 +661,7 @@ class Channel
                     $fields_sql .= ' OR ';
                 }
 
-                if (!isset($search_column_name)) {
+                if (! $title_field) {
                     $field_id = $this->cfields[$site_id][$field_name];
                     $table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
                     $search_column_name = $table . '.field_id_' . $this->cfields[$site_id][$field_name];
