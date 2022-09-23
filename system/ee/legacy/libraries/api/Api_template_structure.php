@@ -227,14 +227,13 @@ class Api_template_structure extends Api
         // Check our standard template types for a file extension
         if (isset($this->file_extensions[$template_type])) {
             return $this->file_extensions[$template_type];
-        } else { // Check custom template types for a file extension
+        } elseif (isset(ee()->extensions)) { 
+            // Check custom template types for a file extension
             // -------------------------------------------
             // 'template_types' hook.
             //  - Provide information for custom template types.
             //
-            if (isset(ee()->extensions)) {
-                $template_types = ee()->extensions->call('template_types', array());
-            }
+            $template_types = ee()->extensions->call('template_types', array());
             //
             // -------------------------------------------
 
