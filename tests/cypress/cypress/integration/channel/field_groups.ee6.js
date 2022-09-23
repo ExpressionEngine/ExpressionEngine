@@ -62,8 +62,8 @@ context('Field Groups', () => {
 
              //cy.authVisit(page.url);
 
-
-            page.get('field_groups').its('length').should('eq', length-1)
+             // the Ungrouped should appear instead of the deleted one
+            page.get('field_groups').its('length').should('eq', length)
         })
     })
 })
