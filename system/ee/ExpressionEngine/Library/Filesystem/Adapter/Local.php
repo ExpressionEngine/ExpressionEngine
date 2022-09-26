@@ -146,6 +146,10 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
      */
     protected function attemptFastDelete($path)
     {
+        if (! function_exists('exec')) {
+            return false;
+        }
+
         $path = $this->applyPathPrefix($path);
 
         $delete_name = sha1($path . '_delete_' . mt_rand());
@@ -158,9 +162,9 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
             $delete_path = @escapeshellarg($delete_path);
 
             if (DIRECTORY_SEPARATOR == '/') {
-                @exec("rm -rf {$delete_path}");
+                @\exec("rm -rf {$delete_path}");
             } else {
-                @exec("rd /s /q {$delete_path}");
+                @\exec("rd /s /q {$delete_path}");
             }
 
             return  !file_exists($delete_path);
