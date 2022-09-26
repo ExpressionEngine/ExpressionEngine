@@ -29,6 +29,7 @@ class PortageExport
     private $modelFields = [];
     private $modelAssociations = [];
     private $modelKeyFields = [];
+    private $portableModels;
 
     private $channels = array();
     private $fields = array();
@@ -43,6 +44,42 @@ class PortageExport
             define('JSON_PRETTY_PRINT', 0);
         }
         $this->site_id = ee()->config->item('site_id');
+    }
+    /**
+     * list all models, and grab those that have UUID - those are portable
+     * for each model, find whether it has site or module restrictions
+     *
+     * @return array
+     */
+    public function getPortableModels()
+    {
+        $models = ee('App')->getModels();
+        $portableModels = [];
+        $excludedModels = ['ee:MemberGroup'];
+        // if we have just one site on this install, do not include site model
+        if (! bool_config_item('multiple_sites_enabled')) {
+            $excludedModels[] = 'ee:Site';
+        }
+        foreach ($models as $model => $class) {
+            if (! in_array($model, $excludedModels)) {
+                try {
+                    $modelInstance = ee('Model')->make($model);
+                    $uuidField = method_exists($modelInstance, 'getColumnPrefix') ? $modelInstance->getColumnPrefix() . 'uuid' : 'uuid';
+                    if ($modelInstance->hasNativeProperty($uuidField)) {
+                        $portableModels[$model] = [
+                            'name' => $modelInstance->getName(),
+                            'uuidField' => $uuidField,
+                            'isPerSite' => $modelInstance->hasNativeProperty('site_id'),
+                            'isPerModule' => $modelInstance->hasNativeProperty('module_id')
+                        ];
+                    }
+                } catch (\Exception $e) {
+                    //silently continue
+                }
+            }
+            unset($modelInstance);
+        }
+        return $portableModels;
     }
 
     /**
@@ -87,31 +124,16 @@ class PortageExport
             ee('Filesystem')->write($this->path . $file, json_encode($json, JSON_PRETTY_PRINT));
         }
 
-        // list all models, and grab those that have UUID - those are portable
-        // for each model, find whether it has site or module restrictions
-        $models = ee('App')->getModels();
-        $portableModels = [];
-        $excludedModels = ['ee:MemberGroup'];
-        foreach ($models as $model => $class) {
-            if (! in_array($model, $excludedModels)) {
-                try {
-                    $modelInstance = ee('Model')->make($model);
-                    if ($modelInstance->hasNativeProperty('uuid')) {
-                        $portableModels[$model] = [
-                            'name' => $modelInstance->getName(),
-                            'isPerSite' => $modelInstance->hasNativeProperty('site_id'),
-                            'isPerModule' => $modelInstance->hasNativeProperty('module_id')
-                        ];
-                    }
-                } catch (\Exception $e) {
-                    //silently continue
-                }
-            }
-            unset($modelInstance);
+        if (empty($elements)) {
+            $this->portableModels = $this->getPortableModels();
+        } else {
+            $this->portableModels = array_filter($this->getPortableModels(), function($model) use ($elements) {
+                return in_array($model, $elements);
+            }, ARRAY_FILTER_USE_KEY);
         }
 
         // write the individual model files
-        foreach ($portableModels as $modelName => $modelData) {
+        foreach ($this->portableModels as $modelName => $modelData) {
             if (empty($elements) || in_array($modelName, $elements)) {
 
                 $params = [];
@@ -121,7 +143,7 @@ class PortageExport
                 if ($modelData['isPerModule']) {
                     $params['module_id'] = 0;
                 }
-                $this->writeJsonForModel($modelName, $params);
+                $this->writeJsonForModel($modelName, $params, $modelData['uuidField']);
             }
         }
 
@@ -137,7 +159,7 @@ class PortageExport
      * @param array $filter
      * @return void
      */
-    private function writeJsonForModel($model, $filter = [])
+    private function writeJsonForModel($model, $filter = [], $uuidField = 'uuid')
     {
         $modelRecords = ee('Model')->get($model);
         if (!empty($filter)) {
@@ -155,11 +177,11 @@ class PortageExport
             $this->portageData->components[] = $model;
             $file = str_replace(':', '_', $model) . '.json';
             foreach ($modelRecords as $modelRecord) {
-                $uuid = $modelRecord->uuid;
+                $uuid = $modelRecord->$uuidField;
                 // make sure UUIDs are set
                 if (is_null($uuid)) {
                     $uuid = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
-                    $modelRecord->setRawProperty('uuid', $uuid);
+                    $modelRecord->setRawProperty($uuidField, $uuid);
                     $modelRecord = $modelRecord->save();
                 }
                 // build the data
@@ -177,7 +199,7 @@ class PortageExport
      * @param [type] $modelRecord model instance
      * @return object
      */
-    public function getDataFromModelRecord($model, $modelRecord)
+    public function getDataFromModelRecord($model, $modelRecord, $uuidField = 'uuid')
     {
         if (!isset($this->modelFields[$model])) {
             $this->modelFields[$model] = $modelRecord->getFields();
@@ -216,10 +238,14 @@ class PortageExport
         $record->associationsByUuid = new \StdClass();
         if (!empty($this->modelAssociations[$model]['toOne'])) {
             foreach ($this->modelAssociations[$model]['toOne'] as $property) {
-                if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property}) && $modelRecord->{$property}->hasNativeProperty('uuid')) {
+                if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property}) && $modelRecord->{$property}->hasNativeProperty($uuidField)) {
+                    $relatedModelName = $modelRecord->{$property}->getName();
+                    if (! array_key_exists($relatedModelName, $this->portableModels)) {
+                        continue;
+                    }
                     $record->associationsByUuid->{$property} = new \StdClass();
-                    $record->associationsByUuid->{$property}->model = $modelRecord->{$property}->getName();
-                    $record->associationsByUuid->{$property}->related = $modelRecord->{$property}->uuid;
+                    $record->associationsByUuid->{$property}->model = $relatedModelName;
+                    $record->associationsByUuid->{$property}->related = $modelRecord->{$property}->{$uuidField};
                 }
             }
         }
@@ -227,10 +253,14 @@ class PortageExport
             foreach ($this->modelAssociations[$model]['toMany'] as $property) {
                 if ($modelRecord->hasAssociation($property) && isset($modelRecord->{$property}) && count($modelRecord->{$property})) {
                     $firstRecord = $modelRecord->{$property}->first();
-                    if ($firstRecord->hasNativeProperty('uuid')) {
+                    if ($firstRecord->hasNativeProperty($uuidField)) {
+                        $relatedModelName = $firstRecord->getName();
+                        if (! array_key_exists($relatedModelName, $this->portableModels)) {
+                            continue;
+                        }
                         $record->associationsByUuid->{$property} = new \StdClass();
-                        $record->associationsByUuid->{$property}->model = $firstRecord->getName();
-                        $record->associationsByUuid->{$property}->related = $modelRecord->{$property}->pluck('uuid');
+                        $record->associationsByUuid->{$property}->model = $relatedModelName;
+                        $record->associationsByUuid->{$property}->related = $modelRecord->{$property}->pluck($uuidField);
                     }
                 }
             }

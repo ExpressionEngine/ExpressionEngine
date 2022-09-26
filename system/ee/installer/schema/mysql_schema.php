@@ -422,8 +422,10 @@ class EE_Schema
 			`cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
 			`cp_homepage_custom` varchar(100) DEFAULT NULL,
 			`require_mfa` char(1) NOT NULL DEFAULT 'n',
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY (`id`),
-			KEY `role_id_site_id` (`role_id`, `site_id`)
+			KEY `role_id_site_id` (`role_id`, `site_id`),
+			UNIQUE `uuid` (`uuid`)
 		)";
 
         // Channel access privs
@@ -478,10 +480,10 @@ class EE_Schema
 			m_field_text_direction char(3) DEFAULT 'ltr',
 			m_field_settings text NULL,
 			m_legacy_field_data char(1) NOT NULL default 'n',
-			`uuid` VARCHAR(36) NULL DEFAULT NULL,
+			`m_uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY `m_field_id` (`m_field_id`),
-			UNIQUE `uuid` (`uuid`)
-			)";
+			UNIQUE `m_uuid` (`m_uuid`)
+		)";
 
         // Member Data
         // Stores the actual data

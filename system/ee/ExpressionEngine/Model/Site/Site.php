@@ -109,6 +109,14 @@ class Site extends Model
             'model' => 'RoleSetting',
             'type' => 'hasMany'
         ),
+        'CategoryGroups' => array(
+            'model' => 'CategoryGroup',
+            'type' => 'hasMany'
+        ),
+        'Categories' => array(
+            'model' => 'Category',
+            'type' => 'hasMany'
+        ),
     );
 
     protected static $_validation_rules = array(

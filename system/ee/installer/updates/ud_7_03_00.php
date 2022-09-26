@@ -136,13 +136,15 @@ class Updater
             'Watermark' => 'file_watermarks',
             'Role' => 'roles',
             'RoleGroup' => 'role_groups',
+            'RoleSetting' => 'role_settings',
             'MemberField' => 'member_fields',
             'Site' => 'sites'
         ];
         foreach ($models as $model => $table) {
-            if (!ee()->db->field_exists('uuid', $table)) {
-                ee()->db->query("ALTER TABLE exp_" . $table . " ADD uuid varchar(36) NULL DEFAULT NULL");
-                ee()->db->query("ALTER TABLE exp_" . $table . " ADD UNIQUE (uuid)");
+            $uuidField = ($model == 'MemberField') ? 'm_uuid' : 'uuid';
+            if (!ee()->db->field_exists($uuidField, $table)) {
+                ee()->db->query("ALTER TABLE exp_" . $table . " ADD " . $uuidField . " varchar(36) NULL DEFAULT NULL");
+                ee()->db->query("ALTER TABLE exp_" . $table . " ADD UNIQUE (" . $uuidField . ")");
             }
         }
     }

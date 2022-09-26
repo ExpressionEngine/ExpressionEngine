@@ -158,7 +158,7 @@ class ImportResult
                 }
             }
         }
-        return 'ID: ' . $model->getId();
+        return null;
     }
 
     /**

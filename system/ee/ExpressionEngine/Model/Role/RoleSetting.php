@@ -70,6 +70,7 @@ class RoleSetting extends Model
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
     protected $require_mfa;
+    protected $uuid;
 }
 
 // EOF

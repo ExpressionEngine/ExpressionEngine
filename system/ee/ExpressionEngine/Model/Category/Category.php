@@ -27,6 +27,9 @@ class Category extends ContentModel
     protected static $_hook_id = 'category';
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'CategoryGroup' => array(
             'type' => 'belongsTo'
         ),

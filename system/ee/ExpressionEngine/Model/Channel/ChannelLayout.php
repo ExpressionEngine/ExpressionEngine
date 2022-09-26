@@ -31,6 +31,9 @@ class ChannelLayout extends Model implements LayoutInterface
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'Channel' => array(
             'type' => 'belongsTo',
             'key' => 'channel_id'

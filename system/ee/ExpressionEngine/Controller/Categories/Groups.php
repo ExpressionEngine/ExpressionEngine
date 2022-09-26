@@ -117,7 +117,6 @@ class Groups extends AbstractCategoriesController
 
         if (! empty($_POST)) {
             $cat_group = $this->setWithPost($cat_group);
-            $cat_group->uuid = 'uuid';
             $result = $cat_group->validate();
 
             if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result)) {

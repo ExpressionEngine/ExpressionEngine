@@ -60,6 +60,7 @@ class MemberField extends FieldModel
     protected $m_field_text_direction;
     protected $m_field_settings;
     protected $m_legacy_field_data;
+    protected $m_uuid;
 
     public function getSettingsValues()
     {
@@ -87,6 +88,12 @@ class MemberField extends FieldModel
 
     public function set(array $data = array())
     {
+        // getField() requires that we have a fieldtype, but we might be trying
+        // to set it! So, if we are, we'll do that first.
+        if (isset($data['m_field_type'])) {
+            $this->setProperty('m_field_type', $data['m_field_type']);
+        }
+
         parent::set($data);
 
         $field = $this->getField($this->getSettingsValues());
@@ -100,6 +107,8 @@ class MemberField extends FieldModel
      */
     public function onBeforeInsert()
     {
+        parent::onBeforeInsert();
+
         if ($this->getProperty('m_field_list_items') == null) {
             $this->setProperty('m_field_list_items', '');
         }

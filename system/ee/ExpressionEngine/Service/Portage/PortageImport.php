@@ -25,6 +25,13 @@ class PortageImport
     private $site_id = 1;
 
     /**
+     * Components / models that can be ste as related as part of this portage
+     *
+     * @var array
+     */
+    private $components = array();
+
+    /**
      * Valid elements / model instances that will be saved
      *
      * @var array
@@ -154,21 +161,23 @@ class PortageImport
         // now, set the relationships
         foreach ($this->elements as $uuid => $modelInstance)
         {
+            $uuidField = method_exists($modelInstance, 'getColumnPrefix') ? $modelInstance->getColumnPrefix() . 'uuid' : 'uuid';
             if (isset($this->associations[$uuid])) {
                 foreach ($this->associations[$uuid] as $relationship => $relatioshipData) {
                     $relatedUuids = $relatioshipData->related;
-                    if (! empty($relatioshipData) && ! empty($relatedUuids)) {
+                    // only if there are some data and the related models are included in portage
+                    if (! empty($relatioshipData) && ! empty($relatedUuids) && in_array($relatioshipData['model'], $this->components)) {
                         if (! is_array($relatedUuids)) {
                             if (isset($this->elements[$relatedUuids])) {
                                 $modelInstance->{$relationship} = $this->elements[$relatedUuids];
                             } else {
-                                $modelInstance->{$relationship} = ee('Model')->get($relatioshipData->model)->filter('uuid', $relatedUuids)->first();
+                                $modelInstance->{$relationship} = ee('Model')->get($relatioshipData->model)->filter($uuidField, $relatedUuids)->first();
                             }
                         } else {
                             $related = [];
                             foreach ($relatedUuids as $relatedUuid) {
                                 if (! isset($this->elements[$relatedUuid])) {
-                                    $related = ee('Model')->get($relatioshipData->model)->filter('uuid', 'IN', $relatedUuids)->all();
+                                    $related = ee('Model')->get($relatioshipData->model)->filter($uuidField, 'IN', $relatedUuids)->all();
                                     break;
                                 }
                                 $related[] = $this->elements[$relatedUuid];
@@ -180,6 +189,10 @@ class PortageImport
                 $modelInstance->save();
             }
         }
+
+        // recount stats after saving, if stats are enabled
+
+        // and clear caches
 
         foreach ($this->post_save_queue as $fn) {
             if ($fn instanceof Closure) {
@@ -235,8 +248,10 @@ class PortageImport
             return false;
         }
 
+        $this->components = $base['components'];
+
         //try to install / update missing addons
-        if (in_array('add-ons', $base['components'])) {
+        if (in_array('add-ons', $this->components)) {
             $addonsNotCompatible = false;
             $json = $this->_checkJsonExistAndValid('add-ons.json');
             if ($json === false) {
@@ -265,8 +280,11 @@ class PortageImport
             }
         }
 
+        $currentSite = ee('Model')->get('Site', $this->site_id)->first();
+
         $reverseExport = new PortageExport();
-        foreach ($base['components'] as $model)
+        $portableModels = $reverseExport->getPortableModels();
+        foreach ($this->components as $model)
         {
             if ($model == 'add-ons') {
                 continue;
@@ -277,7 +295,8 @@ class PortageImport
                 return false;
             }
             foreach ($json as $uuid => $modelPortage) {
-                $modelInstance = ee('Model')->get($model)->filter('uuid', $uuid)->first();
+                $uuidField = $portableModels[$model]['uuidField'];
+                $modelInstance = ee('Model')->get($model)->filter($uuidField, $uuid)->first();
                 //if the model exists, and is same, we just skip
                 if (!is_null($modelInstance)) {
                     $currentState = $reverseExport->getDataFromModelRecord($model, $modelInstance);
@@ -308,27 +327,33 @@ class PortageImport
                     }
                 }
 
+                // site is usually required, so set to current site by default
+                if ($modelInstance->hasAssociation('Site')) {
+                    if (in_array($model, ['ee:ChannelField', 'ee:ChannelFieldGroup'])) {
+                        // fields and groups are shared by default
+                        $modelInstance->site_id = 0;
+                    } else {
+                        $modelInstance->Site = $currentSite;
+                    }
+                }
+
                 // set the relationships with the models that already exist
+                $uuidField = method_exists($modelInstance, 'getColumnPrefix') ? $modelInstance->getColumnPrefix() . 'uuid' : 'uuid';
                 if (isset($this->associations[$uuid])) {
                     foreach ($this->associations[$uuid] as $relationship => $relatioshipData) {
                         $relatedUuids = $relatioshipData['related'];
-                        if (! empty($relatioshipData) && ! empty($relatedUuids)) {
+                        // only if there are some data and the related models are included in portage
+                        if (! empty($relatioshipData) && ! empty($relatedUuids) && in_array($relatioshipData['model'], $this->components)) {
                             if (! is_array($relatedUuids)) {
-                                $modelInstance->{$relationship} = ee('Model')->get($relatioshipData['model'])->filter('uuid', $relatedUuids)->first();
-                                if ($relationship == 'Site') {
-                                    // site is special case, set to current site temporary if it does not exist yet
-                                    if (is_null($modelInstance->{$relationship})) {
-                                        $modelInstance->{$relationship} = ee('Model')->get($relatioshipData['model'], $this->site_id)->first();
-                                    }
-                                }
+                                $modelInstance->{$relationship} = ee('Model')->get($relatioshipData['model'])->filter($uuidField, $relatedUuids)->first();
                             } else {
-                                $modelInstance->{$relationship} = ee('Model')->get($relatioshipData['model'])->filter('uuid', 'IN', $relatedUuids)->all();
+                                $modelInstance->{$relationship} = ee('Model')->get($relatioshipData['model'])->filter($uuidField, 'IN', $relatedUuids)->all();
                             }
                         }
                     }
                 }
 
-                // enfore UUID for new models
+                // enforce UUID for new models
                 $modelInstance->setUuid($uuid);
 
                 $result = $modelInstance->validate();

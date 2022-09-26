@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Controller\Utilities;
 
+use ExpressionEngine\Service\Portage\PortageExport;
+
 /**
  * Portage Controller
  */
@@ -52,22 +54,13 @@ class Portage extends Utilities
             )
             ->now();
 
+        $portageExport = new PortageExport();
         $portageChoices = [
             'add-ons' => lang('addons')
         ];
-        $models = ee('App')->getModels();
-        foreach ($models as $model => $class) {
-            if ($model != 'ee:MemberGroup') {
-                try {
-                    $modelInstance = ee('Model')->make($model);
-                    if ($modelInstance->hasNativeProperty('uuid')) {
-                        $portageChoices[$modelInstance->getName()] = array_reverse(explode(':', $modelInstance->getName()))[0];
-                    }
-                } catch (\Exception $e) {
-                    //silently continue
-                }
-            }
-            unset($modelInstance);
+        $portableModels = $portageExport->getPortableModels();
+        foreach ($portableModels as $portableModel) {
+            $portageChoices[$portableModel['name']] = array_reverse(explode(':', $portableModel['name']))[0];
         }
 
         $vars['hide_top_buttons'] = true;
@@ -347,9 +340,10 @@ class Portage extends Utilities
                 foreach ($model_errors as $model_error) {
                     list($model, $field, $rule) = $model_error;
                     $title_field = $result->getTitleFieldFor($model);
+                    $title = !empty($title_field) ? $model->$title_field : $model->getId();
                     foreach ($rule as $error) {
                         list($key, $params) = $error->getLanguageData();
-                        $errors[] = '<b>' . array_reverse(explode(':', $model->getName()))[0] . ':</b> <code>' . $model->$title_field . '</code>: <code>' . lang($field) . '</code> &mdash; ' . vsprintf(lang($key), (array) $params);
+                        $errors[] = '<b>' . array_reverse(explode(':', $model->getName()))[0] . ':</b> <code>' . $title . '</code>: <code>' . lang($field) . '</code> &mdash; ' . vsprintf(lang($key), (array) $params);
                     }
                 }
             }
@@ -408,6 +402,7 @@ class Portage extends Utilities
 
                 // Show the current model title in the section header
                 $title_field = $result->getTitleFieldFor($model);
+                $title = !empty($title_field) ? $model->$title_field : $model->getId();
 
                 // Frequently the error is on the short_name, but in those cases
                 // you really want to edit the long name as well, so we'll show it.
@@ -428,7 +423,7 @@ class Portage extends Utilities
                     }
                 }
 
-                $key = $model_name . '[' . $model->uuid . '][' . $field . ']';
+                $key = $model_name . '[' . $uuid . '][' . $field . ']';
                 $fields[] = array(
                     'title' => $field,
                     'fields' => array(
@@ -442,8 +437,8 @@ class Portage extends Utilities
                 unset($hidden[$key]);
 
                 foreach ($rule as $r) {
-                    $vars['errors']->addFailed($model_name . '[' . $model->uuid . '][' . $field . ']', $r);
-                    $modelErrors->addFailed($model_name . '[' . $model->uuid . '][' . $field . ']', $r);
+                    $vars['errors']->addFailed($model_name . '[' . $uuid . '][' . $field . ']', $r);
+                    $modelErrors->addFailed($model_name . '[' . $uuid . '][' . $field . ']', $r);
                 }
             }
             if (!empty($fields)) {
@@ -451,8 +446,8 @@ class Portage extends Utilities
                     'group' => $section,
                     'settings' => [
                         ee('View')->make('portage/conflict')->render([
-                            'baseKey' => $model_name . '[' . $model->uuid . ']',
-                            'name' => $model->$title_field,
+                            'baseKey' => $model_name . '[' . $uuid . ']',
+                            'name' => $title,
                             'fields' => $fields,
                             'errors' => $modelErrors
                         ])
