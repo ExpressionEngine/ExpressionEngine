@@ -47,7 +47,7 @@
 				}
 			}
 
-			if ($('div[data-file-field-react]').length) {
+			if ($('div[data-file-field-react]').length && typeof(FileField) !== 'undefined') {
 				FileField.renderFields();
 			}
 		});

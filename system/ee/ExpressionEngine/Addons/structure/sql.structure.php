@@ -1172,12 +1172,14 @@ class Sql_structure
      */
     public function get_listing_entry_ids()
     {
-        $listing_ids = array();
-
         $listing_ids = StaticCache::get('listing_ids');
         $listing_ids_empty = StaticCache::get('listing_ids_empty');
 
-        if (empty($listing_ids_empty) && (!is_array($listing_ids) || empty($listing_ids))) {
+        if (!is_array($listing_ids)) {
+			$listing_ids = array();
+        }
+
+        if (empty($listing_ids_empty) && empty($listing_ids)) {
             // not in cache lets get it from the DB
             $sql = "SELECT entry_id FROM exp_structure_listings WHERE site_id = $this->site_id LIMIT 99999999";
             $result = ee()->db->query($sql);

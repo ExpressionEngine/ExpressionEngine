@@ -321,7 +321,7 @@ class Profile extends CP_Controller
                         // Handle arrays of checkboxes as a special case;
                         if ($field['type'] == 'checkbox') {
                             foreach ($field['choices']  as $property => $label) {
-                                $this->member->$property = in_array($property, $post) ? 'y' : 'n';
+                                $this->member->$property = in_array($property, (array) $post) ? 'y' : 'n';
                             }
                         } else {
                             if ($post !== false) {
