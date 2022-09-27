@@ -389,8 +389,8 @@ class Portage extends Utilities
             }
         }
 
+        $sections = [];
         foreach ($result->getRecoverableErrors() as $uuid => $errors) {
-            $fields = [];
             $modelErrors = new \ExpressionEngine\Service\Validation\Result();
             foreach ($errors as $error) {
 
@@ -404,12 +404,22 @@ class Portage extends Utilities
                 $title_field = $result->getTitleFieldFor($model);
                 $title = !empty($title_field) ? $model->$title_field : $model->getId();
 
+                if (!isset($sections[$uuid])) {
+                    $sections[$uuid] = [
+                        'model' => $section,
+                        'fields' => [],
+                        'modelErrors' => $modelErrors,
+                        'title' => $title,
+                        'baseKey' => $model_name . '[' . $uuid . ']'
+                    ];
+                }
+
                 // Frequently the error is on the short_name, but in those cases
                 // you really want to edit the long name as well, so we'll show it.
                 if (isset($long_field)) {
-                    $key = $model_name . '[' . $ident . '][' . $long_field . ']';
+                    $key = $model_name . '[' . $uuid . '][' . $long_field . ']';
                     if (isset($hidden[$key])) {
-                        $fields[] = array(
+                        $sections[$uuid]['fields'][] = array(
                             'title' => $long_field,
                             'fields' => array(
                                 $key => array(
@@ -424,7 +434,7 @@ class Portage extends Utilities
                 }
 
                 $key = $model_name . '[' . $uuid . '][' . $field . ']';
-                $fields[] = array(
+                $sections[$uuid]['fields'][] = array(
                     'title' => $field,
                     'fields' => array(
                         $key => array(
@@ -437,19 +447,22 @@ class Portage extends Utilities
                 unset($hidden[$key]);
 
                 foreach ($rule as $r) {
-                    $vars['errors']->addFailed($model_name . '[' . $uuid . '][' . $field . ']', $r);
-                    $modelErrors->addFailed($model_name . '[' . $uuid . '][' . $field . ']', $r);
+                    $sections[$uuid]['modelErrors']->addFailed($model_name . '[' . $uuid . '][' . $field . ']', $r);
                 }
             }
-            if (!empty($fields)) {
-                $vars['sections'][array_reverse(explode(':', $section))[0]] = array(
-                    'group' => $section,
+        }
+
+        foreach ($sections as $uuid => $section) {
+            if (!empty($section['fields'])) {
+                $vars['sections'][$uuid] = array(
+                    'label' => array_reverse(explode(':', $section['model']))[0],
+                    'group' => $section['model'],
                     'settings' => [
                         ee('View')->make('portage/conflict')->render([
-                            'baseKey' => $model_name . '[' . $uuid . ']',
-                            'name' => $title,
-                            'fields' => $fields,
-                            'errors' => $modelErrors
+                            'baseKey' => $section['baseKey'],
+                            'name' => $section['title'],
+                            'fields' => $section['fields'],
+                            'errors' => $section['modelErrors']
                         ])
                     ]
                 );
