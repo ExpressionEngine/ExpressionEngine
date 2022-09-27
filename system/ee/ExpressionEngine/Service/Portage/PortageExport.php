@@ -79,7 +79,7 @@ class PortageExport
             }
             unset($modelInstance);
         }
-        return $portableModels;
+        return $this->portableModels = $portableModels;
     }
 
     /**
@@ -119,15 +119,14 @@ class PortageExport
                 $record = new \StdClass();
                 $record->name = $addon;
                 $record->version = $info->getInstalledVersion();
-                $json->records[] = $record;
+                $json->addons[] = $record;
             }
             ee('Filesystem')->write($this->path . $file, json_encode($json, JSON_PRETTY_PRINT));
         }
 
-        if (empty($elements)) {
-            $this->portableModels = $this->getPortableModels();
-        } else {
-            $this->portableModels = array_filter($this->getPortableModels(), function($model) use ($elements) {
+        $this->getPortableModels();
+        if (! empty($elements)) {
+            $this->portableModels = array_filter($this->portableModels, function($model) use ($elements) {
                 return in_array($model, $elements);
             }, ARRAY_FILTER_USE_KEY);
         }
@@ -231,16 +230,27 @@ class PortageExport
         $record = new \StdClass();
         foreach ($this->modelFields[$model] as $property)
         {
-            if (!in_array($property, $this->modelKeyFields[$model])) {
+            if ($property == $this->modelKeyFields[$model][0]) {
+                continue; // do not set primary key
+            }
+            if (! in_array($property, $this->modelKeyFields[$model])) {
+                // set the regular model fields
                 $record->{$property} = $modelRecord->getRawProperty($property);
+            } else {
+                // set the relationships to 0, if not empty
+                // actual relationships will be set later
+                $record->{$property} = is_null($modelRecord->$property) ? null : 0;
             }
         }
+        // set the relationships
         $record->associationsByUuid = new \StdClass();
         if (!empty($this->modelAssociations[$model]['toOne'])) {
             foreach ($this->modelAssociations[$model]['toOne'] as $property) {
                 if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property}) && $modelRecord->{$property}->hasNativeProperty($uuidField)) {
                     $relatedModelName = $modelRecord->{$property}->getName();
+                    //if the relationship is not included in portage, set the field to null
                     if (! array_key_exists($relatedModelName, $this->portableModels)) {
+                        $modelRecord->{$property} = null;
                         continue;
                     }
                     $record->associationsByUuid->{$property} = new \StdClass();
@@ -255,7 +265,9 @@ class PortageExport
                     $firstRecord = $modelRecord->{$property}->first();
                     if ($firstRecord->hasNativeProperty($uuidField)) {
                         $relatedModelName = $firstRecord->getName();
+                        //if the relationship is not included in portage, set the field to null
                         if (! array_key_exists($relatedModelName, $this->portableModels)) {
+                            $modelRecord->{$property} = null;
                             continue;
                         }
                         $record->associationsByUuid->{$property} = new \StdClass();

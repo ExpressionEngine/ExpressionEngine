@@ -117,6 +117,14 @@ class Site extends Model
             'model' => 'Category',
             'type' => 'hasMany'
         ),
+        'ChannelFieldGroups' => array(
+            'model' => 'ChannelFieldGroup',
+            'type' => 'hasMany'
+        ),
+        'ChannelFields' => array(
+            'model' => 'ChannelField',
+            'type' => 'hasMany'
+        ),
     );
 
     protected static $_validation_rules = array(

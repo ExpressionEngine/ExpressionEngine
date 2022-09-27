@@ -46,6 +46,13 @@ class PortageImport
     private $associations = array();
 
     /**
+     * Array holding the association TO given UUID
+     *
+     * @var array
+     */
+    private $reverseAssociations = array();
+
+    /**
      * @var String containing the path to the channel set
      */
     private $path;
@@ -156,7 +163,17 @@ class PortageImport
         // save everything - some relationships might still be missing
         foreach ($this->elements as $uuid => $modelInstance)
         {
+            // save the model, for the first time
             $modelInstance->save();
+            // now that we have model ID, update other models that might be referencing this one
+            if (isset($this->reverseAssociations[$uuid])) {
+                foreach ($this->reverseAssociations[$uuid] as $relatedUuid) {
+                    if (isset($this->elements[$relatedUuid])) {
+                        $this->elements[$relatedUuid] = $this->_setExistingAssociations($relatedUuid, $this->elements[$relatedUuid]);
+                    }
+                }
+            }
+            
         }
         // now, set the relationships
         foreach ($this->elements as $uuid => $modelInstance)
@@ -164,9 +181,9 @@ class PortageImport
             $uuidField = method_exists($modelInstance, 'getColumnPrefix') ? $modelInstance->getColumnPrefix() . 'uuid' : 'uuid';
             if (isset($this->associations[$uuid])) {
                 foreach ($this->associations[$uuid] as $relationship => $relatioshipData) {
-                    $relatedUuids = $relatioshipData->related;
                     // only if there are some data and the related models are included in portage
-                    if (! empty($relatioshipData) && ! empty($relatedUuids) && in_array($relatioshipData['model'], $this->components)) {
+                    if (! empty($relatioshipData) && ! empty($relatioshipData['related']) && in_array($relatioshipData['model'], $this->components)) {
+                        $relatedUuids = $relatioshipData['related'];
                         if (! is_array($relatedUuids)) {
                             if (isset($this->elements[$relatedUuids])) {
                                 $modelInstance->{$relationship} = $this->elements[$relatedUuids];
@@ -259,20 +276,26 @@ class PortageImport
             }
             foreach ($json['addons'] as $addonPortage) {
                 $addon = ee('Addon')->get($addonPortage['name']);
+                // we only check fieldtypes, but should we care about every add-on maybe?
+                if (!$addon->hasFieldtype()) {
+                    continue;
+                }
                 if (empty($addon)) {
                     $this->result->addError(sprintf(lang('portage_addon_missing'), $addonPortage['name']));
                     $addonsNotCompatible = true;
                     continue;
                 }
                 $version = explode('.', $addonPortage['version']);
-                $addonVersion = $addon->getInstalledVersion();
+                $addonVersion = explode('.', $addon->getInstalledVersion());
                 if (empty($addonVersion)) {
                     $this->result->addError(sprintf(lang('portage_addon_not_installed'), $addon->getName()));
-                    return false;
+                    $addonsNotCompatible = true;
+                    continue;
                 }
                 if ($addonVersion[0] != $version[0] || $addonVersion[1] != $version[1]) {
                     $this->result->addError(sprintf(lang('portage_addon_incompatible'), $addon->getName()));
-                    return false;
+                    $addonsNotCompatible = true;
+                    continue;
                 }
             }
             if ($addonsNotCompatible) {
@@ -306,7 +329,18 @@ class PortageImport
                 }
 
                 if (!empty($modelPortage['associationsByUuid'])) {
+                    // set the associations
                     $this->associations[$uuid] = $modelPortage['associationsByUuid'];
+                    // set the 'reverse' associations (that link here)
+                    foreach ($modelPortage['associationsByUuid'] as $rel => $relData) {
+                        if (is_array($relData['related'])) {
+                            foreach ($relData['related'] as $relUuid) {
+                                $this->reverseAssociations[$relUuid][] = $uuid;
+                            }
+                        } else {
+                            $this->reverseAssociations[$relData['related']][] = $uuid;
+                        }
+                    }
                 }
                 unset($modelPortage['associationsByUuid']);
 
@@ -338,20 +372,7 @@ class PortageImport
                 }
 
                 // set the relationships with the models that already exist
-                $uuidField = method_exists($modelInstance, 'getColumnPrefix') ? $modelInstance->getColumnPrefix() . 'uuid' : 'uuid';
-                if (isset($this->associations[$uuid])) {
-                    foreach ($this->associations[$uuid] as $relationship => $relatioshipData) {
-                        $relatedUuids = $relatioshipData['related'];
-                        // only if there are some data and the related models are included in portage
-                        if (! empty($relatioshipData) && ! empty($relatedUuids) && in_array($relatioshipData['model'], $this->components)) {
-                            if (! is_array($relatedUuids)) {
-                                $modelInstance->{$relationship} = ee('Model')->get($relatioshipData['model'])->filter($uuidField, $relatedUuids)->first();
-                            } else {
-                                $modelInstance->{$relationship} = ee('Model')->get($relatioshipData['model'])->filter($uuidField, 'IN', $relatedUuids)->all();
-                            }
-                        }
-                    }
-                }
+                $modelInstance = $this->_setExistingAssociations($uuid, $modelInstance);
 
                 // enforce UUID for new models
                 $modelInstance->setUuid($uuid);
@@ -370,6 +391,24 @@ class PortageImport
         }
 
         return $this->result;
+    }
+
+    private function _setExistingAssociations($uuid, $modelInstance)
+    {
+        $uuidField = method_exists($modelInstance, 'getColumnPrefix') ? $modelInstance->getColumnPrefix() . 'uuid' : 'uuid';
+        if (isset($this->associations[$uuid])) {
+            foreach ($this->associations[$uuid] as $relationship => $relatioshipData) {
+                // only if there are some data and the related models are included in portage
+                if (! empty($relatioshipData) && ! empty($relatioshipData['related']) && in_array($relatioshipData['model'], $this->components)) {
+                    if (! is_array($relatioshipData['related'])) {
+                        $modelInstance->{$relationship} = ee('Model')->get($relatioshipData['model'])->filter($uuidField, $relatioshipData['related'])->first();
+                    } else {
+                        $modelInstance->{$relationship} = ee('Model')->get($relatioshipData['model'])->filter($uuidField, 'IN', $relatioshipData['related'])->all();
+                    }
+                }
+            }
+        }
+        return $modelInstance;
     }
 
     /**
