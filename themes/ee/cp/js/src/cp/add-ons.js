@@ -22,7 +22,6 @@ $(document).ready(() => {
 
     if (typeof ajax_url != 'undefined') {
       $.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
-        console.log(data);
         $(modalIs + " .ajax").html(data);
         Dropdown.renderFields();
       });
