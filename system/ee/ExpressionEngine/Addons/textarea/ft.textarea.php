@@ -75,7 +75,7 @@ class Textarea_ft extends EE_Fieldtype
 
 				$("li.html-upload").addClass("m-link").attr({
 					rel: "modal-file",
-					href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true)) . '"
+					href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => false)) . '"
 				});
 
 				Grid.bind("textarea", "display", function(cell)
@@ -84,7 +84,7 @@ class Textarea_ft extends EE_Fieldtype
 
 					$("li.html-upload", cell).addClass("m-link").attr({
 						rel: "modal-file",
-						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true)) . '"
+						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => false)) . '"
 					});
 				});
 
@@ -94,7 +94,7 @@ class Textarea_ft extends EE_Fieldtype
 
 					$("li.html-upload", field).addClass("m-link").attr({
 						rel: "modal-file",
-						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true)) . '"
+						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => false)) . '"
 					});
 
 					$(".textarea-field-filepicker, li.html-upload").FilePicker({callback: EE.filePickerCallback});
