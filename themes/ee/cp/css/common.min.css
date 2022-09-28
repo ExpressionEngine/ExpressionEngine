@@ -37596,6 +37596,14 @@ body[data-theme="dark"] {
   color: var(--ee-error) !important;
 }
 
+.fields-grid-tool-edit:before {
+  content: "\f303";
+}
+
+.fields-grid-tool-overwrite:before {
+  content: "\f361";
+}
+
 .ee-wrapper-overflow.is-mobile {
   overflow-x: hidden;
 }

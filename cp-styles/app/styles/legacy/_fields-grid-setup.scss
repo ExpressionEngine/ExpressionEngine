@@ -149,3 +149,15 @@
     color: color(error) !important;
   }
 }
+
+.fields-grid-tool-edit {
+	&:before {
+		content: fa-content($fa-var-pencil-alt);
+	}
+}
+
+.fields-grid-tool-overwrite {
+	&:before {
+		content: fa-content($fa-var-arrows-retweet);
+	}
+}

@@ -233,7 +233,7 @@ class Cp
                 'bootstrap/dropdown-controller', 'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters', 'cp/jump_menu',
                 'components/no_results', 'components/loading', 'components/filters', 'components/dropdown_button',
                 'components/filterable', 'components/toggle', 'components/select_list',
-                'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown', 'cp/passwords')
+                'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown', 'cp/passwords', 'cp/portage')
         );
         $installed_modules = ee()->db->select('module_name,module_version')->get('modules');
 

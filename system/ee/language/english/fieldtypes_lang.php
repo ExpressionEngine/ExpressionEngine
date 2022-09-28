@@ -232,6 +232,8 @@ $lang = array(
 
     'grid_duplicate_col_name' => 'Column field names must be unique.',
 
+    'grid_edit_field' => 'Edit row',
+
     'grid_expand_field' => 'expand field',
 
     'grid_field_required' => 'This field is required',
@@ -256,9 +258,13 @@ $lang = array(
 
     'grid_output_format' => 'Output formatting?',
 
+    'grid_overwright_field' => 'Overwright row',
+
     'grid_remove_field' => 'remove field',
 
     'grid_reorder_field' => 'reorder field',
+
+    'grid_skip_field' => 'Skip row',
 
     'grid_show' => 'Show',
 
