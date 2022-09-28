@@ -161,3 +161,13 @@
 		content: fa-content($fa-var-arrows-retweet);
 	}
 }
+
+.grid-item-conflict {
+	.fields-grid-tool-edit { display: none;}
+
+	&.grid-item--collapsed {
+		& > .toggle-content { display: none;}
+		.fields-grid-tool-edit { display: inline-block; }
+
+	}
+}

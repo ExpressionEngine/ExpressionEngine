@@ -37604,6 +37604,16 @@ body[data-theme="dark"] {
   content: "\f361";
 }
 
+.grid-item-conflict .fields-grid-tool-edit {
+  display: none;
+}
+.grid-item-conflict.grid-item--collapsed > .toggle-content {
+  display: none;
+}
+.grid-item-conflict.grid-item--collapsed .fields-grid-tool-edit {
+  display: inline-block;
+}
+
 .ee-wrapper-overflow.is-mobile {
   overflow-x: hidden;
 }
