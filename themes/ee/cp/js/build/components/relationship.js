@@ -65,6 +65,27 @@ function (_React$Component) {
       modal.trigger('modal:close');
     });
 
+    _defineProperty(_assertThisInitialized(_this), "entryWasEdited", function (result, modal) {
+      var selected = _this.state.selected;
+
+      if (_this.props.multi) {
+        $.each(selected, function (i, el) {
+          if (el.value == result.item.value) {
+            el.label = result.item.label;
+          }
+        });
+      } else {
+        selected = [result.item];
+      }
+
+      _this.setState({
+        selected: selected,
+        items: [].concat(_toConsumableArray(_this.state.items), [result.item])
+      });
+
+      modal.trigger('modal:close');
+    });
+
     _defineProperty(_assertThisInitialized(_this), "channelFilterChange", function (newValue) {
       _this.setState({
         channelFilter: newValue
@@ -258,10 +279,7 @@ function (_React$Component) {
         })),
         full: true,
         iframe: true,
-        dataType: 'json',
-        success: function success() {
-          location.reload();
-        },
+        success: this.entryWasEdited,
         load: function load(modal) {}
       });
     }

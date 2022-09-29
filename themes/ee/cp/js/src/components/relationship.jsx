@@ -114,9 +114,7 @@ class Relationship extends React.Component {
             url: EE.relationship.publishEditUrl.replace('###', id + '&' + $.param({ entry_ids: [id] })),
             full: true,
             iframe: true,
-            success: function() {
-                location.reload()
-            },
+            success: this.entryWasEdited,
             load: function (modal) {}
         })
     }
@@ -180,6 +178,24 @@ class Relationship extends React.Component {
             selected = [result.item]
         }
 
+        this.setState({ selected: selected, items: [...this.state.items, result.item] })
+
+        modal.trigger('modal:close')
+    }
+
+    // Event when a entry was edited by the channel modal
+    entryWasEdited = (result, modal) => {
+        let selected = this.state.selected
+
+        if (this.props.multi) {
+            $.each(selected, function(i, el){
+               if (el.value == result.item.value) {
+                el.label = result.item.label
+               }
+            })
+        } else {
+            selected = [result.item]
+        }
         this.setState({ selected: selected, items: [...this.state.items, result.item] })
 
         modal.trigger('modal:close')
