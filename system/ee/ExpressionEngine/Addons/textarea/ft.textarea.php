@@ -75,7 +75,7 @@ class Textarea_ft extends EE_Fieldtype
 
 				$("li.html-upload").addClass("m-link").attr({
 					rel: "modal-file",
-					href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => false)) . '"
+					href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true)) . '"
 				});
 
 				Grid.bind("textarea", "display", function(cell)
@@ -84,7 +84,7 @@ class Textarea_ft extends EE_Fieldtype
 
 					$("li.html-upload", cell).addClass("m-link").attr({
 						rel: "modal-file",
-						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => false)) . '"
+						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true)) . '"
 					});
 				});
 
@@ -94,7 +94,7 @@ class Textarea_ft extends EE_Fieldtype
 
 					$("li.html-upload", field).addClass("m-link").attr({
 						rel: "modal-file",
-						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => false)) . '"
+						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true)) . '"
 					});
 
 					$(".textarea-field-filepicker, li.html-upload").FilePicker({callback: EE.filePickerCallback});
@@ -167,9 +167,20 @@ class Textarea_ft extends EE_Fieldtype
                 $fp->inject(ee()->view);
                 $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('field_upload_locations' => 'all', 'hasUpload' => true));
 
+                ee()->load->library('file_field');
+                ee()->lang->loadfile('fieldtypes');
+                ee()->file_field->loadDragAndDropAssets();
+
                 ee()->cp->add_js_script(array(
-                    'file' => array('fields/textarea/textarea'),
-                    'plugin' => array('ee_txtarea')
+                    'file' => array(
+                        'fields/textarea/textarea',
+                        'fields/file/file_field_drag_and_drop',
+                        'fields/file/concurrency_queue',
+                        'fields/file/file_upload_progress_table',
+                        'fields/file/drag_and_drop_upload',
+                        'fields/grid/file_grid'
+                    ),
+                    'plugin' => array('ee_txtarea'),
                 ));
             }
 
