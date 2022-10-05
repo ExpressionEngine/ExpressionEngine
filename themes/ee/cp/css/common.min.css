@@ -16832,6 +16832,9 @@ ul.field-nested ul li ul::before {
 .field-nested li {
   padding: 0;
 }
+.field-nested li .checkbox-label__text-editable {
+  display: block;
+}
 .field-nested li .checkbox-label__text-editable:before {
   position: absolute;
   display: block;

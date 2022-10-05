@@ -362,6 +362,7 @@ ul.field-nested ul {
 
 
 	.checkbox-label__text-editable {
+		display: block;
 		&:before {
 			position: absolute;
 		  display: block;
