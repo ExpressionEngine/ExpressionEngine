@@ -5417,7 +5417,6 @@ $R.add('class', 'toolbar.dropdown', {
         var position = 'absolute';
         var topOffset = 2;
 
-
         if (isFixed) {
             //pos.top = (isTarget) ? this.$btn.offset().top : this.$btn.position().top;
             //position = 'fixed';
@@ -12650,6 +12649,8 @@ $R.add('class', 'toolbar.fixed', {
         var $container = this.container.getElement();
         var $toolbar = this.toolbar.getElement();
         var $wrapper = this.toolbar.getWrapper();
+        var $tabBar = $('.tab-bar');
+        var $tabBarHeight = 0;
 
         if (this.editor.isSourceMode())
         {
@@ -12722,9 +12723,13 @@ $R.add('class', 'toolbar.fixed', {
             }
             else
             {
+                if ($tabBar.length && !this.detector.isMobile()) {
+                   $tabBarHeight = $tabBar.outerHeight();
+                }
+
                 $toolbar.css({
                     position: position,
-                    top: (top + this.opts.toolbarFixedTopOffset) + 'px',
+                    top: (top + this.opts.toolbarFixedTopOffset + $tabBarHeight) + 'px',
                     width: $container.width() + 'px'
                 });
             }
