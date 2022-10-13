@@ -1,5 +1,11 @@
 <?php
 
+namespace ExpressionEngine\Addons\Structure\Libraries;
+
+use DOMElement;
+use DOMDocument;
+use Structure;
+
 /**
  * Library File for Structure Nav by Rob Sanchez
  *
