@@ -454,10 +454,10 @@ class Portage extends Utilities
                     if ($rule->getName() == 'validateUnique' || ($rule->getName() == 'callback' && is_array($callback = $rule->getCallback()) && $callback[1] == 'validateUnique')) {
                         $sections[$uuid]['duplicate'] = true;
                         // grab the conflicting model UUID
-                        
-                        $conflictingModel = ee('Model')->get($model_name)->filter($field, $model->$field)->first();
+                        $conflictingModel = ee('Model')->get($model_name)->fields($uuidField)->filter($field, $model->$field)->first();
+                        $sections[$uuid]['duplicates'] = $conflictingModel->getId();
                     } else {
-                        $sections[$uuid]['duplicate'] = false;
+                        $sections[$uuid]['duplicates'] = false;
                     }
                 }
             }
@@ -473,7 +473,7 @@ class Portage extends Utilities
                             'baseKey' => $section['baseKey'],
                             'name' => $section['title'],
                             'fields' => $section['fields'],
-                            'duplicate' => $section['duplicate'],
+                            'duplicates' => $section['duplicates'],
                             'errors' => $section['modelErrors']
                         ])
                     ]

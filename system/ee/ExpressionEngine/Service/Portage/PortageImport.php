@@ -324,7 +324,14 @@ class PortageImport
                 }
 
                 $uuidField = $portableModels[$model]['uuidField'];
-                $modelInstance = ee('Model')->get($model)->filter($uuidField, $uuid)->first();
+                // grab the matching model, or the model we need to overwrite
+                if (isset($this->aliases[$model]) && isset($this->aliases[$model][$uuid]) && $this->aliases[$model][$uuid]['portage__action'] == 'overwrite' && isset($this->aliases[$model][$uuid]['portage__duplicates']) && !empty($this->aliases[$model][$uuid]['portage__duplicates'])) {
+                    $modelInstance = ee('Model')->get($model, (int) $this->aliases[$model][$uuid]['portage__duplicates'])->first();
+                    //overwrite UUID
+                    $modelInstance->setRawProperty('uuid', $uuid);
+                } else {
+                    $modelInstance = ee('Model')->get($model)->filter($uuidField, $uuid)->first();
+                }
                 //if the model exists, and is same, we just skip
                 if (!is_null($modelInstance)) {
                     $currentState = $reverseExport->getDataFromModelRecord($model, $modelInstance);
@@ -360,9 +367,10 @@ class PortageImport
                 }
 
                 // set overrides posted in the form
+                
                 if (isset($this->aliases[$model]) && isset($this->aliases[$model][$uuid])) {
                     foreach ($this->aliases[$model][$uuid] as $field => $value) {
-                        if ($field != 'portage__action') {
+                        if (strpos($field, 'portage__') !== 0) {
                             $modelInstance->$field = $value;
                         }
                     }
