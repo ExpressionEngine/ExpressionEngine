@@ -394,7 +394,7 @@ class Portage extends Utilities
             $modelErrors = new \ExpressionEngine\Service\Validation\Result();
             foreach ($errors as $error) {
 
-                list($model, $field, $rule) = $error;
+                list($model, $field, $rules) = $error;
                 $section = $model->getName();
 
                 $model_name = $model->getName();
@@ -446,8 +446,14 @@ class Portage extends Utilities
                 );
                 unset($hidden[$key]);
 
-                foreach ($rule as $r) {
-                    $sections[$uuid]['modelErrors']->addFailed($model_name . '[' . $uuid . '][' . $field . ']', $r);
+                foreach ($rules as $rule) {
+                    $sections[$uuid]['modelErrors']->addFailed($model_name . '[' . $uuid . '][' . $field . ']', $rule);
+                    dd($rule);
+                    if (stripos($rule->getName(), 'unique') !== false || ($rule->getName() == 'callback' && stripos($rule->callback[1], 'unique') !== false)) {
+                        $sections[$uuid]['duplicate'] = true;
+                    } else {
+                        $sections[$uuid]['duplicate'] = false;
+                    }
                 }
             }
         }
@@ -462,6 +468,7 @@ class Portage extends Utilities
                             'baseKey' => $section['baseKey'],
                             'name' => $section['title'],
                             'fields' => $section['fields'],
+                            'duplicate' => $section['duplicate'],
                             'errors' => $section['modelErrors']
                         ])
                     ]
@@ -472,6 +479,11 @@ class Portage extends Utilities
         if (! empty($hidden)) {
             $vars['form_hidden'] = $hidden;
         }
+
+        ee()->javascript->set_global(array(
+            'lang.portage_will_overwrite' => lang('portage_will_overwrite'),
+            'lang.portage_will_skip' => lang('portage_will_skip')
+        ));
 
         $path = ee('Encrypt')->encode($portage->getPath(), ee()->config->item('session_crypt_key'));
 

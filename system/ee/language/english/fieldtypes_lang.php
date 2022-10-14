@@ -258,8 +258,6 @@ $lang = array(
 
     'grid_output_format' => 'Output formatting?',
 
-    'grid_overwright_field' => 'Overwright row',
-
     'grid_remove_field' => 'remove field',
 
     'grid_reorder_field' => 'reorder field',

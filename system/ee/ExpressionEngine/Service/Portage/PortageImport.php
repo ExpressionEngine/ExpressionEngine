@@ -318,6 +318,11 @@ class PortageImport
                 return false;
             }
             foreach ($json as $uuid => $modelPortage) {
+                //should we skip as told by user?
+                if (isset($this->aliases[$model]) && isset($this->aliases[$model][$uuid]) && $this->aliases[$model][$uuid]['portage__action'] == 'skip') {
+                    continue;
+                }
+
                 $uuidField = $portableModels[$model]['uuidField'];
                 $modelInstance = ee('Model')->get($model)->filter($uuidField, $uuid)->first();
                 //if the model exists, and is same, we just skip
@@ -357,7 +362,9 @@ class PortageImport
                 // set overrides posted in the form
                 if (isset($this->aliases[$model]) && isset($this->aliases[$model][$uuid])) {
                     foreach ($this->aliases[$model][$uuid] as $field => $value) {
-                        $modelInstance->$field = $value;
+                        if ($field != 'portage__action') {
+                            $modelInstance->$field = $value;
+                        }
                     }
                 }
 

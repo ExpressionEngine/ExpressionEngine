@@ -696,6 +696,16 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'portage_duplicates_error_desc' => 'This Portage uses names that already exist on your site. Please rename the following items.',
 
+    'portage_overwrite_field' => 'Overwrite',
+
+    'portage_edit_field' => 'Modify',
+
+    'portage_skip_field' => 'Skip',
+
+    'portage_will_overwrite' => 'Existing data will be overwritten with portage data',
+
+    'portage_will_skip' => 'Portage will not be imported, existing data will be kept',
+
 
 );
 

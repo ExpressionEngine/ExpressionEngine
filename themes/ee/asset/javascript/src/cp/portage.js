@@ -19,7 +19,7 @@ $(document).ready(function() {
         parent.find('> input[type=hidden]').val('overwrite');
         parent.addClass('grid-item--collapsed');
         parent.find('.toggle-content input[type=text]').prop('disabled', true);
-        alert.find('.alert__title').text('The existing data will be overwritten.');
+        alert.find('.alert__title').text(EE.lang.portage_will_overwrite);
         alert.css('display', 'flex');
     })
 
@@ -31,7 +31,7 @@ $(document).ready(function() {
         parent.addClass('grid-item--collapsed');
         parent.find('.toggle-content input[type=text]').prop('disabled', true);
         parent.css('opacity', '50%');
-        alert.find('.alert__title').text('Data will be deleted from portage ');
+        alert.find('.alert__title').text(EE.lang.portage_will_overwrite);
         alert.css('display', 'flex');
     })
 
