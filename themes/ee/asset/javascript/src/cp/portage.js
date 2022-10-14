@@ -16,7 +16,9 @@ $(document).ready(function() {
         e.preventDefault();
         var parent = $(this).parents('.grid-item-conflict');
         var alert = parent.next();
-        parent.find('> input[type=hidden]').val('overwrite');
+        $(this).addClass('active');
+        parent.find('.js-grid-tool-remove').removeClass('active');
+        parent.find('input[name$="[portage__action]"]').val('overwrite');
         parent.addClass('grid-item--collapsed');
         parent.find('.toggle-content input[type=text]').prop('disabled', true);
         alert.find('.alert__title').text(EE.lang.portage_will_overwrite);
@@ -27,11 +29,12 @@ $(document).ready(function() {
         e.preventDefault();
         var parent = $(this).parents('.grid-item-conflict');
         var alert = parent.next();
-        parent.find('> input[type=hidden]').val('skip');
+        $(this).addClass('active');
+        parent.find('.js-grid-tool-overwrite').removeClass('active');
+        parent.find('input[name$="[portage__action]"]').val('skip');
         parent.addClass('grid-item--collapsed');
         parent.find('.toggle-content input[type=text]').prop('disabled', true);
-        parent.css('opacity', '50%');
-        alert.find('.alert__title').text(EE.lang.portage_will_overwrite);
+        alert.find('.alert__title').text(EE.lang.portage_will_skip);
         alert.css('display', 'flex');
     })
 
@@ -39,7 +42,9 @@ $(document).ready(function() {
         e.preventDefault();
         var parent = $(this).parents('.grid-item-conflict');
         var alert = parent.next();
-        parent.find('> input[type=hidden]').val('');
+        parent.find('.js-grid-tool-remove').removeClass('active');
+        parent.find('.js-grid-tool-overwrite').removeClass('active');
+        parent.find('input[name$="[portage__action]"]').val('');
         parent.removeClass('grid-item--collapsed');
         parent.css('opacity', '100%');
         parent.find('.toggle-content input[type=text]').prop('disabled', false);

@@ -37613,6 +37613,10 @@ body[data-theme="dark"] {
 .grid-item-conflict.grid-item--collapsed .fields-grid-tool-edit {
   display: inline-block;
 }
+.grid-item-conflict.grid-item--collapsed .fields-grid-tools a.active {
+  pointer-events: none;
+  opacity: 0.5;
+}
 
 .ee-wrapper-overflow.is-mobile {
   overflow-x: hidden;

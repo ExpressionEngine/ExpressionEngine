@@ -167,7 +167,14 @@
 
 	&.grid-item--collapsed {
 		& > .toggle-content { display: none;}
+
 		.fields-grid-tool-edit { display: inline-block; }
 
+		.fields-grid-tools {
+			a.active {
+				pointer-events: none;
+				opacity: 0.5;
+			}
+		}
 	}
 }

@@ -19,7 +19,4 @@
     <div class="alert__content">
         <p class="alert__title"></p>
     </div>
-    <a href="" class="alert__close">
-        <i class="fal fa-times alert__close-icon"></i>
-    </a>
 </div>
