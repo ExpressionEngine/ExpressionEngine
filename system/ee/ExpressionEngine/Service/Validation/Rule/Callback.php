@@ -42,6 +42,11 @@ class Callback extends ValidationRule
     {
         return $this->last_error;
     }
+
+    public function getCallback()
+    {
+        return $this->callback;
+    }
 }
 
 // EOF

@@ -447,10 +447,15 @@ class Portage extends Utilities
                 unset($hidden[$key]);
 
                 foreach ($rules as $rule) {
+                    // add the error to display
                     $sections[$uuid]['modelErrors']->addFailed($model_name . '[' . $uuid . '][' . $field . ']', $rule);
-                    dd($rule);
-                    if (stripos($rule->getName(), 'unique') !== false || ($rule->getName() == 'callback' && stripos($rule->callback[1], 'unique') !== false)) {
+                    // check if this is duplicate error
+                    $uuidField = method_exists($model, 'getColumnPrefix') ? $model->getColumnPrefix() . 'uuid' : 'uuid';
+                    if ($rule->getName() == 'validateUnique' || ($rule->getName() == 'callback' && is_array($callback = $rule->getCallback()) && $callback[1] == 'validateUnique')) {
                         $sections[$uuid]['duplicate'] = true;
+                        // grab the conflicting model UUID
+                        
+                        $conflictingModel = ee('Model')->get($model_name)->filter($field, $model->$field)->first();
                     } else {
                         $sections[$uuid]['duplicate'] = false;
                     }
