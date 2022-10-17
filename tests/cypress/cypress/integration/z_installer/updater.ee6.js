@@ -94,55 +94,53 @@ context('Updater', () => {
     })
   })
 
-  it('turns system off if system was off before updating', () => {
-      cy.task('installer:revert_config').then(() => {
-          cy.task('installer:replace_config', {
-              file: 'support/config/config-5.3.0.php', options: {
-                  database: {
-                      hostname: Cypress.env("DB_HOST"),
-                      database: Cypress.env("DB_DATABASE"),
-                      username: Cypress.env("DB_USER"),
-                      password: Cypress.env("DB_PASSWORD")
-                  },
-                  app_version: '5.3.0',
-                  is_system_on: 'n',
-              }
-          }).then(() => {
-              cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
-                  test_cli_update()
-                  cy.task('installer:disable')
-                  cy.eeConfig({ item: 'is_system_on' }).then((config) => {
-                      expect(config.trim()).to.be.equal('n')
-                  })
-              })
-          })
-      })
-  })
+it('turns system off if system was off before updating', () => {
+    cy.task('installer:revert_config').then(() => {
+        cy.task('installer:replace_config', {
+            file: 'support/config/config-5.3.0.php', options: {
+                database: {
+                    hostname: Cypress.env("DB_HOST"),
+                    database: Cypress.env("DB_DATABASE"),
+                    username: Cypress.env("DB_USER"),
+                    password: Cypress.env("DB_PASSWORD")
+                },
+                app_version: '5.3.0',
+                is_system_on: 'n',
+            }
+        }).then(() => {
+            cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
+                test_cli_update()
+                cy.eeConfig({ item: 'is_system_on' }).then((config) => {
+                    expect(config.trim()).to.be.equal('n')
+                })
+            })
+        })
+    })
+})
 
-  it('turns system on if system was on before updating', () => {
-      cy.task('installer:revert_config').then(() => {
-          cy.task('installer:replace_config', {
-              file: 'support/config/config-5.3.0.php', options: {
-                  database: {
-                      hostname: Cypress.env("DB_HOST"),
-                      database: Cypress.env("DB_DATABASE"),
-                      username: Cypress.env("DB_USER"),
-                      password: Cypress.env("DB_PASSWORD")
-                  },
-                  app_version: '5.3.0',
-                  is_system_on: 'y',
-              }
-          }).then(() => {
-              cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
-                  test_cli_update()
-                  cy.task('installer:disable')
-                  cy.eeConfig({ item: 'is_system_on' }).then((config) => {
-                      expect(config.trim()).to.be.equal('y')
-                  })
-              })
-          })
-      })
-  })
+    it('turns system on if system was on before updating', () => {
+        cy.task('installer:revert_config').then(() => {
+            cy.task('installer:replace_config', {
+                file: 'support/config/config-5.3.0.php', options: {
+                    database: {
+                        hostname: Cypress.env("DB_HOST"),
+                        database: Cypress.env("DB_DATABASE"),
+                        username: Cypress.env("DB_USER"),
+                        password: Cypress.env("DB_PASSWORD")
+                    },
+                    app_version: '5.3.0',
+                    is_system_on: 'y',
+                }
+            }).then(() => {
+                cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
+                    test_cli_update()
+                    cy.eeConfig({ item: 'is_system_on' }).then((config) => {
+                        expect(config.trim()).to.be.equal('y')
+                    })
+                })
+            })
+        })
+    })
 
   context('when updating from 2.x to 6.x', () => {
     beforeEach(function(){
@@ -220,7 +218,34 @@ context('Updater', () => {
       })
     })
 
-    it('has all required modules installed after the update', () => {
+    it.only('has all required modules installed after the update', () => {
+      test_update()
+      test_templates()
+
+      let installed_modules = []
+      cy.task('db:query', 'SELECT module_name FROM exp_modules').then((result) => {
+        result[0].forEach(function(row){
+          installed_modules.push(row.module_name.toLowerCase());
+        });
+
+        expect(installed_modules).to.include('consent')
+        expect(installed_modules).to.include('channel')
+        expect(installed_modules).to.include('comment')
+        expect(installed_modules).to.include('member')
+        expect(installed_modules).to.include('stats')
+        expect(installed_modules).to.include('rte')
+        expect(installed_modules).to.include('file')
+        expect(installed_modules).to.include('filepicker')
+        expect(installed_modules).to.include('search')
+        expect(installed_modules).to.include('pro')
+      })
+
+      cy.task('db:query', 'SELECT * FROM exp_dashboard_widgets').then((result) => {
+        expect(result[0].length).to.be.gt(1)
+      })
+    })
+
+    it('has all required modules installed after CLI update', () => {
       test_cli_update()
       test_templates()
 
@@ -230,6 +255,7 @@ context('Updater', () => {
           installed_modules.push(row.module_name.toLowerCase());
         });
 
+        expect(installed_modules).to.include('consent')
         expect(installed_modules).to.include('channel')
         expect(installed_modules).to.include('comment')
         expect(installed_modules).to.include('member')
@@ -238,6 +264,11 @@ context('Updater', () => {
         expect(installed_modules).to.include('file')
         expect(installed_modules).to.include('filepicker')
         expect(installed_modules).to.include('search')
+        expect(installed_modules).to.include('pro')
+      })
+
+      cy.task('db:query', 'SELECT * FROM exp_dashboard_widgets').then((result) => {
+        expect(result[0].length).to.be.gt(1)
       })
     })
   })
@@ -353,6 +384,8 @@ context('Updater', () => {
       cy.task('filesystem:delete', mailing_list_zip).then(() => {
         cy.exec('php ../../system/ee/eecli.php update -v -y --skip-cleanup')
       })
+
+      test_version()
   }
 
   function test_update(mailinglist = false, expect_login = false) {
