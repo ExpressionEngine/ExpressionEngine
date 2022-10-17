@@ -279,6 +279,7 @@ function (_React$Component) {
         })),
         full: true,
         iframe: true,
+        dataType: 'json',
         success: this.entryWasEdited,
         load: function load(modal) {}
       });

@@ -114,6 +114,7 @@ class Relationship extends React.Component {
             url: EE.relationship.publishEditUrl.replace('###', id + '&' + $.param({ entry_ids: [id] })),
             full: true,
             iframe: true,
+            dataType: 'json',
             success: this.entryWasEdited,
             load: function (modal) {}
         })
