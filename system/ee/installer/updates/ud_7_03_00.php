@@ -131,6 +131,7 @@ class Updater
             'Status' => 'statuses',
             'FieldCondition' => 'field_conditions',
             'FieldConditionSet' => 'field_condition_sets',
+            'GridColumn' => 'grid_columns',
             'UploadDestination' => 'upload_prefs',
             'FileDimension' => 'file_dimensions',
             'Watermark' => 'file_watermarks',

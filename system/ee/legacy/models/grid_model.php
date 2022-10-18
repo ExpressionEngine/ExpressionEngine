@@ -78,6 +78,11 @@ class Grid_model extends CI_Model
             ),
             'col_settings' => array(
                 'type' => 'text'
+            ),
+            'uuid' => array(
+                'type' => 'varchar',
+                'constraint' => 36,
+                'default' => null
             )
         );
 

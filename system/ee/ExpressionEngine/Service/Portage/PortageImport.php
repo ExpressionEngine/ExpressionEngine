@@ -13,6 +13,8 @@ namespace ExpressionEngine\Service\Portage;
 use Closure;
 use ExpressionEngine\Library\Data\Collection;
 use ExpressionEngine\Service\Portage\PortageExport;
+use ExpressionEngine\Model\Channel\ChannelField;
+use ExpressionEngine\Addons\Grid\Model\GridColumn;
 
 /**
  * Portage Service: Portage
@@ -160,6 +162,8 @@ class PortageImport
      */
     public function save()
     {
+        ee()->legacy_api->instantiate('channel_fields');
+
         // save everything - some relationships might still be missing
         foreach ($this->elements as $uuid => $modelInstance)
         {
@@ -179,7 +183,7 @@ class PortageImport
         foreach ($this->elements as $uuid => $modelInstance)
         {
             $uuidField = method_exists($modelInstance, 'getColumnPrefix') ? $modelInstance->getColumnPrefix() . 'uuid' : 'uuid';
-            if (isset($this->associations[$uuid])) {
+            if (isset($this->associations[$uuid]) || $modelInstance instanceof ChannelField) {
                 foreach ($this->associations[$uuid] as $relationship => $relatioshipData) {
                     // only if there are some data and the related models are included in portage
                     if (! empty($relatioshipData) && ! empty($relatioshipData['related']) && in_array($relatioshipData['model'], $this->components)) {
@@ -188,21 +192,54 @@ class PortageImport
                             if (isset($this->elements[$relatedUuids])) {
                                 $modelInstance->{$relationship} = $this->elements[$relatedUuids];
                             } else {
-                                $modelInstance->{$relationship} = ee('Model')->get($relatioshipData->model)->filter($uuidField, $relatedUuids)->first();
+                                $modelInstance->{$relationship} = ee('Model')->get($relatioshipData['model'])->filter($uuidField, $relatedUuids)->first();
                             }
                         } else {
                             $related = [];
                             foreach ($relatedUuids as $relatedUuid) {
                                 if (! isset($this->elements[$relatedUuid])) {
-                                    $related = ee('Model')->get($relatioshipData->model)->filter($uuidField, 'IN', $relatedUuids)->all();
+                                    $related = ee('Model')->get($relatioshipData['model'])->filter($uuidField, 'IN', $relatedUuids)->all();
                                     break;
                                 }
                                 $related[] = $this->elements[$relatedUuid];
                             }
-                            $modelInstance->{$relationship} = is_array($related) ? new Collection($related) : $related;
+                            $modelInstance->{$relationship} = $related; //is_array($related) ? new Collection($related) : $related;
                         }
                     }
                 }
+                // if this is fieldtype, convert UUIDs back to IDs
+                if ($modelInstance instanceof ChannelField || $modelInstance instanceof GridColumn) {
+                    $typeProperty = $modelInstance instanceof GridColumn ? 'col_type' : 'field_type';
+                    $settingsProperty = $modelInstance instanceof GridColumn ? 'col_settings' : 'field_settings';
+                    $ftClassName = ee()->api_channel_fields->include_handler($modelInstance->$typeProperty);
+                    $reflection = new \ReflectionClass($ftClassName);
+                    $instance = $reflection->newInstanceWithoutConstructor();
+                    if (isset($instance->relationship_field_settings)) {
+                        $ftSettings = $modelInstance->$settingsProperty;
+                        foreach ($instance->relationship_field_settings as $setting => $settingModel) {
+                            // force including these models into portage
+                            if (is_array($ftSettings[$setting])) {
+                                $relatedIds = [];
+                                foreach ($ftSettings[$setting] as $relatedUuid) {
+                                    if (substr_count($relatedUuid, '-') == 4) { //looks like UUID
+                                        $relatedSettingModelRecord = ee('Model')->get($settingModel)->filter('uuid', $relatedUuid)->first();
+                                        if (!is_null($relatedSettingModelRecord)) {
+                                            $relatedIds[] = $relatedSettingModelRecord->getId();
+                                        }
+                                    }
+                                }
+                                $ftSettings[$setting] = $relatedIds;
+                            } else if (substr_count($ftSettings[$setting], '-') == 4) {//looks like UUID
+                                $relatedSettingModelRecord = ee('Model')->get($settingModel)->filter('uuid', $ftSettings[$setting])->first();
+                                if (!is_null($relatedSettingModelRecord)) {
+                                    $ftSettings[$setting] = $relatedSettingModelRecord->getId();
+                                }
+                            }
+                        }
+                        $modelInstance->$settingsProperty = $ftSettings;
+                    }
+                }
+                // save with all relationships
                 $modelInstance->save();
             }
         }
@@ -254,6 +291,8 @@ class PortageImport
         if ($base === false) {
             return false;
         }
+
+        ee()->legacy_api->instantiate('channel_fields');
 
         //might be worth to allow skipping version checks for EE and addons?
 
@@ -328,7 +367,7 @@ class PortageImport
                 if (isset($this->aliases[$model]) && isset($this->aliases[$model][$uuid]) && $this->aliases[$model][$uuid]['portage__action'] == 'overwrite' && isset($this->aliases[$model][$uuid]['portage__duplicates']) && !empty($this->aliases[$model][$uuid]['portage__duplicates'])) {
                     $modelInstance = ee('Model')->get($model, (int) $this->aliases[$model][$uuid]['portage__duplicates'])->first();
                     //overwrite UUID
-                    $modelInstance->setRawProperty('uuid', $uuid);
+                    $modelInstance->setRawProperty($uuidField, $uuid);
                 } else {
                     $modelInstance = ee('Model')->get($model)->filter($uuidField, $uuid)->first();
                 }
@@ -485,82 +524,4 @@ class PortageImport
     }
 
 
-    /**
-     * Helper function for relationship imports. We need to associate the correct
-     * channel id to our relationship field. Since those don't exist until after
-     * saving has begun, we'll capture this class and grab the data we want directly
-     * from it.
-     *
-     * @param ChannelFieldModel $field Field instance
-     * @param Array $field_data The field data that will be set() on the field
-     * @return array Modified $field_data
-     */
-    private function importRelationshipField($field, $field_data)
-    {
-        $defaults['channels'] = array();
-        $defaults['authors'] = array();
-        $defaults['categories'] = array();
-        $defaults['statuses'] = array();
-        $defaults['limit'] = 100;
-
-        $defaults['expired'] = 'n';
-        $defaults['future'] = 'n';
-        $defaults['allow_multiple'] = 'n';
-
-        $defaults['order_field'] = 'title';
-        $defaults['order_dir'] = 'asc';
-
-        $field_data = array_merge($defaults, $field_data);
-
-        // rewrite any that might be wonky after that rather heavy conversion
-        $field_data['expired'] = (int) ($field_data['expired'] === 'y');
-        $field_data['future'] = (int) ($field_data['future'] === 'y');
-        $field_data['allow_multiple'] = (int) ($field_data['allow_multiple'] === 'y');
-
-        if (isset($field_data['channels'])) {
-            $that = $this;
-
-            $fn = function () use ($field, $field_data, $that) {
-                $settings = $field_data;
-
-                $channel_ids = $that->getIdsForChannels($settings['channels']);
-                $settings['channels'] = $channel_ids;
-
-                $field->set($settings);
-            };
-
-            $field->on('beforeInsert', $fn);
-        }
-
-        return $field_data;
-    }
-
-    /**
-     * Helper function for fluid field imports. We need to associate the correct field
-     * ids to our fluid field field. Since those don't exist until after saving has begun,
-     * we'll just capture the identifying names in a closure and query for 'em.
-     *
-     * @param ChannelFieldModel $field Field instance
-     * @param Array $field_data The field data that will be set() on the field
-     * @return void
-     */
-    private function importFluidFieldField($field, $field_data)
-    {
-        $fn = function () use ($field, $field_data) {
-            $settings = $field_data;
-
-            if ($field_data['field_channel_fields']) {
-                $settings['field_channel_fields'] = ee('Model')->get('ChannelField')
-                    ->fields('field_id')
-                    ->filter('field_name', 'IN', $field_data['field_channel_fields'])
-                    ->all()
-                    ->pluck('field_id');
-            }
-
-            $field->set($settings);
-            $field->save();
-        };
-
-        $this->post_save_queue[] = $fn;
-    }
 }

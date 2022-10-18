@@ -19,6 +19,10 @@ class Fluid_field_ft extends EE_Fieldtype
 
     public $complex_data_structure = true;
 
+    public $relationship_field_settings = [
+        "field_channel_fields" => "ee:ChannelField"
+    ];
+
     public $size = 'large';
 
     private $errors;

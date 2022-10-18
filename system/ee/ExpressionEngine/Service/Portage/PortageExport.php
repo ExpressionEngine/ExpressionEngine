@@ -31,13 +31,6 @@ class PortageExport
     private $modelKeyFields = [];
     private $portableModels;
 
-    private $channels = array();
-    private $fields = array();
-    private $field_groups = array();
-    private $statuses = array();
-    private $category_groups = array();
-    private $upload_destinations = array();
-
     public function __construct()
     {
         if (! defined('JSON_PRETTY_PRINT')) {
@@ -131,6 +124,10 @@ class PortageExport
             }, ARRAY_FILTER_USE_KEY);
         }
 
+        foreach ($this->portableModels as $modelName => $modelData) {
+            $this->ensureUuidForModels($modelName, $modelData['uuidField']);
+        }
+
         // write the individual model files
         foreach ($this->portableModels as $modelName => $modelData) {
             if (empty($elements) || in_array($modelName, $elements)) {
@@ -152,6 +149,28 @@ class PortageExport
     }
 
     /**
+     * Making sure all records have UUID
+     *
+     * @param string $model
+     * @return void
+     */
+    private function ensureUuidForModels($model, $uuidField)
+    {
+        $modelRecords = ee('Model')->get($model)->filter($uuidField, 'IS', null)->all();
+        if (count($modelRecords)) {
+            foreach ($modelRecords as $modelRecord) {
+                $uuid = $modelRecord->$uuidField;
+                // make sure UUIDs are set
+                if (is_null($uuid)) {
+                    $uuid = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
+                    $modelRecord->setRawProperty($uuidField, $uuid);
+                    $modelRecord->save();
+                }
+            }
+        }
+    }
+
+    /**
      * Write Portage JSON file for specific model
      *
      * @param [type] $model
@@ -160,6 +179,10 @@ class PortageExport
      */
     private function writeJsonForModel($model, $filter = [], $uuidField = 'uuid')
     {
+        if (in_array($model, ['ee:ChannelField', 'grid:GridColumn'])) {
+            ee()->legacy_api->instantiate('channel_fields');
+        }
+
         $modelRecords = ee('Model')->get($model);
         if (!empty($filter)) {
             foreach ($filter as $property => $value) {
@@ -177,12 +200,6 @@ class PortageExport
             $file = str_replace(':', '_', $model) . '.json';
             foreach ($modelRecords as $modelRecord) {
                 $uuid = $modelRecord->$uuidField;
-                // make sure UUIDs are set
-                if (is_null($uuid)) {
-                    $uuid = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4));
-                    $modelRecord->setRawProperty($uuidField, $uuid);
-                    $modelRecord = $modelRecord->save();
-                }
                 // build the data
                 $json->$uuid = $this->getDataFromModelRecord($model, $modelRecord);
             }
@@ -236,34 +253,77 @@ class PortageExport
             if (! in_array($property, $this->modelKeyFields[$model])) {
                 // set the regular model fields
                 $record->{$property} = $modelRecord->getRawProperty($property);
+                // force some fields
+                if ($property == 'legacy_field_data') {
+                    $record->{$property} = 'n';
+                }
             } else {
                 // set the relationships to 0, if not empty
                 // actual relationships will be set later
                 $record->{$property} = is_null($modelRecord->$property) ? null : 0;
             }
         }
+
+        // remap field settings to use UUID for relationships
+        if (in_array($model, ['ee:ChannelField', 'grid:GridColumn'])) {
+            $typeProperty = $model == 'grid:GridColumn' ? 'col_type' : 'field_type';
+            $settingsProperty = $model == 'grid:GridColumn' ? 'col_settings' : 'field_settings';
+            $ftClassName = ee()->api_channel_fields->include_handler($modelRecord->$typeProperty);
+            $reflection = new \ReflectionClass($ftClassName);
+            $instance = $reflection->newInstanceWithoutConstructor();
+            if (isset($instance->relationship_field_settings)) {
+                // update each relationship settings to use UUID
+                foreach ($instance->relationship_field_settings as $setting => $settingModel) {
+                    // force including these models into portage
+                    if (is_array($record->$settingsProperty[$setting])) {
+                        $relatedUuids = [];
+                        foreach ($record->$settingsProperty[$setting] as $relatedId) {
+                            if (is_numeric($relatedId)) {
+                                $relatedSettingModelRecord = ee('Model')->get($settingModel, (int) $relatedId)->first();
+                                if (!is_null($relatedSettingModelRecord)) {
+                                    $relatedUuidField = method_exists($relatedSettingModelRecord, 'getColumnPrefix') ? $relatedSettingModelRecord->getColumnPrefix() . 'uuid' : 'uuid';
+                                    $relatedUuids[] = $relatedSettingModelRecord->$relatedUuidField;
+                                }
+                            }
+                        }
+                        $record->$settingsProperty[$setting] = $relatedUuids;
+                    } else if (is_numeric($record->$settingsProperty[$setting])) {
+                        $relatedSettingModelRecord = ee('Model')->get($settingModel, (int) $record->$settingsProperty[$setting])->first();
+                        if (!is_null($relatedSettingModelRecord)) {
+                            $relatedUuidField = method_exists($relatedSettingModelRecord, 'getColumnPrefix') ? $relatedSettingModelRecord->getColumnPrefix() . 'uuid' : 'uuid';
+                            $record->$settingsProperty[$setting] = $relatedSettingModelRecord->$relatedUuidField;
+                        }
+                    }
+                }
+            }
+        }
+
         // set the relationships
         $record->associationsByUuid = new \StdClass();
         if (!empty($this->modelAssociations[$model]['toOne'])) {
             foreach ($this->modelAssociations[$model]['toOne'] as $property) {
-                if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property}) && $modelRecord->{$property}->hasNativeProperty($uuidField)) {
-                    $relatedModelName = $modelRecord->{$property}->getName();
-                    //if the relationship is not included in portage, set the field to null
-                    if (! array_key_exists($relatedModelName, $this->portableModels)) {
-                        $modelRecord->{$property} = null;
-                        continue;
+                if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property})) {
+                    $relatedUuidField = method_exists($modelRecord->{$property}, 'getColumnPrefix') ? $modelRecord->{$property}->getColumnPrefix() . 'uuid' : 'uuid';
+                    if ($modelRecord->{$property}->hasNativeProperty($relatedUuidField)) {
+                        $relatedModelName = $modelRecord->{$property}->getName();
+                        //if the relationship is not included in portage, set the field to null
+                        if (! array_key_exists($relatedModelName, $this->portableModels)) {
+                            $modelRecord->{$property} = null;
+                            continue;
+                        }
+                        $record->associationsByUuid->{$property} = new \StdClass();
+                        $record->associationsByUuid->{$property}->model = $relatedModelName;
+                        $record->associationsByUuid->{$property}->related = $modelRecord->{$property}->{$uuidField};
                     }
-                    $record->associationsByUuid->{$property} = new \StdClass();
-                    $record->associationsByUuid->{$property}->model = $relatedModelName;
-                    $record->associationsByUuid->{$property}->related = $modelRecord->{$property}->{$uuidField};
                 }
             }
         }
         if (!empty($this->modelAssociations[$model]['toMany'])) {
             foreach ($this->modelAssociations[$model]['toMany'] as $property) {
-                if ($modelRecord->hasAssociation($property) && isset($modelRecord->{$property}) && count($modelRecord->{$property})) {
+                if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property}) && count($modelRecord->{$property})) {
                     $firstRecord = $modelRecord->{$property}->first();
-                    if ($firstRecord->hasNativeProperty($uuidField)) {
+                    $relatedUuidField = method_exists($firstRecord, 'getColumnPrefix') ? $firstRecord->getColumnPrefix() . 'uuid' : 'uuid';
+                    if ($firstRecord->hasNativeProperty($relatedUuidField)) {
                         $relatedModelName = $firstRecord->getName();
                         //if the relationship is not included in portage, set the field to null
                         if (! array_key_exists($relatedModelName, $this->portableModels)) {
@@ -309,284 +369,4 @@ class PortageExport
         return $location;
     }
 
-
-
-    /**
-     * Export a field
-     *
-     * @param Model $field Field to export
-     * @param String $group Group name
-     * @return void
-     */
-    private function exportField($field, $type = 'custom')
-    {
-        // already in process
-        if (isset($this->fields[$field->getId()])) {
-            return;
-        }
-
-        $this->fields[$field->getId()] = true;
-
-        $file = '/' . $type . '_fields/' . $field->field_name . '.' . $field->field_type . '.json';
-
-        $result = new StdClass();
-
-        $result->label = $field->field_label;
-        $result->order = $field->field_order;
-
-        if ($field->hasProperty('field_instructions')) {
-            $result->instructions = $field->field_instructions;
-        }
-
-        if ($field->field_required) {
-            $result->required = 'y';
-        }
-
-        if ($field->hasProperty('field_search') && $field->field_search) {
-            $result->search = 'y';
-        }
-
-        if ($field->hasProperty('field_is_hidden') && $field->field_is_hidden) {
-            $result->is_hidden = 'y';
-        }
-
-        if (! $field->field_show_fmt) {
-            $result->show_fmt = 'n';
-        }
-
-        if ($field->hasProperty('field_fmt') && $field->field_fmt != 'xhtml') {
-            $result->fmt = $field->field_fmt;
-        }
-
-        if ($field->hasProperty('field_content_type') && $field->field_content_type != 'any') {
-            $result->content_type = $field->field_content_type;
-        }
-
-        if ($field->field_list_items) {
-            $result->list_items = explode("\n", trim($field->field_list_items));
-        }
-
-        if ($field->hasProperty('field_pre_populate')) {
-            if ($field->field_pre_populate) {
-                $result->pre_populate = 'y';
-                $result->pre_channel_id = $field->field_pre_channel_id;
-                $result->pre_field_id = $field->field_pre_field_id;
-            } elseif (isset($field->field_settings) &&
-                isset($field->field_settings['value_label_pairs']) &&
-                ! empty($field->field_settings['value_label_pairs'])) {
-                $result->pre_populate = 'v';
-            }
-        }
-
-        if ($field->field_maxl && $field->field_maxl != 256) {
-            $result->maxl = $field->field_maxl;
-        }
-
-        if ($field->field_text_direction && $field->field_text_direction != 'ltr') {
-            $result->text_direction = $field->field_text_direction;
-        }
-
-        // fieldtype specific stuff
-        // start by defining any that exist- then overwrite special cases
-        if (isset($field->field_settings)) {
-            $result->settings = $field->field_settings;
-        }
-
-        if ($field->field_type == 'file') {
-            $result->settings = $this->exportFileFieldSettings($field);
-        } elseif ($field->field_type == 'grid' || $field->field_type == 'file_grid') {
-            $result->columns = $this->exportGridFieldColumns($field);
-        } elseif ($field->field_type == 'relationship') {
-            $result->settings = $this->exportRelationshipField($field);
-        } elseif (in_array($field->field_type, array('textarea', 'rte'))) {
-            $result->ta_rows = $field->field_ta_rows;
-        } elseif ($field->field_type == 'fluid_field') {
-            $result->settings = $this->exportFluidFieldField($field);
-        }
-
-        $field_json = json_encode($result, JSON_PRETTY_PRINT);
-
-        $this->zip->addFromString($file, $field_json);
-    }
-
-    /**
-     * Export an upload destination
-     *
-     * @param Integer $id Id of the destination (comes from the file field settings)
-     * @return String Upload destination name
-     */
-    private function exportUploadDestination($id)
-    {
-        $dir = ee('Model')->get('UploadDestination', $id)->with('FileDimensions')->all()->first();
-
-        $result = new StdClass();
-        foreach ($dir->getFields() as $property)
-        {
-            $result->{$property} = $dir->{$property};
-        }
-        $result->name = $dir->name;
-
-        $this->upload_destinations[$dir->name] = $result;
-
-        return $result->name;
-    }
-
-
-    /**
-     * Do some extra work for grid field exports
-     *
-     * @param Model $grid Channel field
-     * @return [StdClass]() Array of grid columns
-     */
-    private function exportGridFieldColumns($grid)
-    {
-        ee()->load->model('grid_model');
-
-        $columns = ee()->grid_model->get_columns_for_field($grid->getId(), $grid->getContentType());
-
-        $result = array();
-
-        foreach ($columns as $column) {
-            if ($column['col_type'] == 'relationship') {
-                // @TODO Actually export these things in a non-complicated manner
-                $column['col_settings']['categories'] = array();
-                $column['col_settings']['authors'] = array();
-                $column['col_settings']['statuses'] = array();
-
-                if (isset($column['col_settings']['channels'])) {
-                    $this->exportRelatedChannels($column['col_settings']['channels']);
-                    foreach ($column['col_settings']['channels'] as &$id) {
-                        $channel = $this->channels[$id];
-                        $id = $channel->channel_title;
-                    }
-                }
-            } elseif ($column['col_type'] == 'file') {
-                if ($column['col_settings']['allowed_directories'] != 'all') {
-                    $this->exportUploadDestination($column['col_settings']['allowed_directories']);
-                }
-            }
-
-            $col = new StdClass();
-
-            unset(
-                $column['col_id'],
-                $column['col_order'],
-                $column['field_id'],
-                $column['content_type']
-            );
-
-            if ($column['col_width'] == 0) {
-                unset($column['col_width']);
-            }
-
-            foreach ($column as $key => $value) {
-                $simple_key = preg_replace('/^col_/', '', $key);
-                $col->$simple_key = $value;
-            }
-
-            $result[] = $col;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Do some extra work for relationship field exports
-     *
-     * @param Model $field Channel field
-     * @return StdClass Relationship settings description
-     */
-    private function exportRelationshipField($field)
-    {
-        $settings = $field->field_settings;
-
-        $result = new StdClass();
-
-        if ($settings['expired']) {
-            $result->expired = 'y';
-        }
-
-        if ($settings['future']) {
-            $result->future = 'y';
-        }
-
-        $result->allow_multiple = ($settings['allow_multiple']) ? 'y' : 'n';
-
-        if ($settings['limit'] != 100) {
-            $result->limit = $settings['limit'];
-        }
-
-        if ($settings['order_field'] != 'title') {
-            $result->order_field = $settings['order_field'];
-        }
-
-        if ($settings['order_dir'] != 'asc') {
-            $result->order_dir = $settings['order_dir'];
-        }
-
-        if (isset($settings['channels'])) {
-            $this->exportRelatedChannels($settings['channels']);
-
-            $result->channels = array();
-
-            foreach ($settings['channels'] as $id) {
-                $channel = $this->channels[$id];
-                $result->channels[] = $channel->channel_title;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Loops through an array of channels (by id) and exports any that have not
-     * already been exported
-     *
-     * @param Array $channels an array of channel ids
-     * @return void
-     */
-    private function exportRelatedChannels($channels)
-    {
-        $load_channels = array();
-
-        foreach ($channels as $id) {
-            if (! isset($this->channels[$id])) {
-                $load_channels[] = $id;
-            }
-        }
-
-        if (! empty($load_channels)) {
-            $channels = ee('Model')->get('Channel', $load_channels)->all();
-
-            foreach ($channels as $channel) {
-                $this->exportChannel($channel);
-            }
-        }
-    }
-
-    /**
-     * Does some extra work for fluid field field exports
-     *
-     * @param Model $field Channel field
-     * @return StdClass Fluid Field settings description
-     */
-    private function exportFluidFieldField($field)
-    {
-        $settings = $field->field_settings;
-
-        $result = new StdClass();
-        $result->field_channel_fields = array();
-
-        foreach ($settings['field_channel_fields'] as $field_id) {
-            $field = ee('Model')->get('ChannelField', $field_id)->first();
-
-            // In case there is no field.
-            if ($field) {
-                $result->field_channel_fields[] = $field->field_name;
-                $this->exportField($field);
-            }
-        }
-
-        return $result;
-    }
 }

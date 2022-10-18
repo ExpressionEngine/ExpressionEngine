@@ -24,6 +24,12 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
     public $has_array_data = false;
 
+    public $relationship_field_settings = [
+        "channels" => "ee:Channel",
+        "categories" => "ee:Category",
+        "statuses" => "ee:Status"
+    ];
+
     private $_table = 'relationships';
 
     private $errors;

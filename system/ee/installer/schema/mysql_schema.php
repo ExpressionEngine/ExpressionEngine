@@ -1425,8 +1425,10 @@ class EE_Schema
 			`col_search` char(1) DEFAULT NULL,
 			`col_width` int(3) unsigned DEFAULT NULL,
 			`col_settings` text,
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY (`col_id`),
-			KEY `field_id` (`field_id`)
+			KEY `field_id` (`field_id`),
+			UNIQUE `uuid` (`uuid`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_fluid_field_data` (

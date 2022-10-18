@@ -28,6 +28,10 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
 
     public $defaultEvaluationRule = 'isNotEmpty';
 
+    public $relationship_field_settings = [
+        "allowed_directories" => "ee:UploadDestination"
+    ];
+
     public $_dirs = array();
 
     /**
