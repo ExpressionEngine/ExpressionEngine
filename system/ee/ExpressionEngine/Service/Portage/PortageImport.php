@@ -38,7 +38,7 @@ class PortageImport
      *
      * @var array
      */
-    private $elements = array();
+    public $elements = array();
 
     /**
      * Associations by UUID
@@ -63,11 +63,6 @@ class PortageImport
      * @var ImportResult containing the result of the import
      */
     private $result;
-
-    /**
-     * @var Array A queue of closures to call after all the saving
-     */
-    private $post_save_queue = array();
 
     /**
      * @var Array of things that would create duplicates and need to be renamed
@@ -135,7 +130,7 @@ class PortageImport
      */
     public function cleanUpSourceFiles()
     {
-        //ee('Filesystem')->delete($this->getPath());
+        ee('Filesystem')->delete($this->getPath());
     }
 
     /**
@@ -167,6 +162,16 @@ class PortageImport
         // save everything - some relationships might still be missing
         foreach ($this->elements as $uuid => $modelInstance)
         {
+            // -------------------------------------------
+            // 'portage_import_before_save' hook.
+            //  - Modify the model before saving
+            //
+            if (ee()->extensions->active_hook('portage_import_before_save') === true) {
+                $modelInstance = ee()->extensions->call('portage_import_before_save', $this, $uuid, $modelInstance);
+            }
+            //
+            // -------------------------------------------
+
             // save the model, for the first time
             $modelInstance->save();
             // now that we have model ID, update other models that might be referencing this one
@@ -177,7 +182,6 @@ class PortageImport
                     }
                 }
             }
-            
         }
         // now, set the relationships
         foreach ($this->elements as $uuid => $modelInstance)
@@ -239,35 +243,66 @@ class PortageImport
                         $modelInstance->$settingsProperty = $ftSettings;
                     }
                 }
+
+                // -------------------------------------------
+                // 'portage_import_before_relationships_save' hook.
+                //  - Modify the model before second round of saving (with relationships)
+                //
+                if (ee()->extensions->active_hook('portage_import_before_relationships_save') === true) {
+                    $modelInstance = ee()->extensions->call('portage_import_before_relationships_save', $this, $uuid, $modelInstance);
+                }
+                //
+                // -------------------------------------------
+
                 // save with all relationships
                 $modelInstance->save();
+
+                // Grids have an extra model/table that needs to be saved
+                if ($modelInstance instanceof ChannelField && in_array($modelInstance->field_type, ['grid', 'file_grid'])) {
+                    ee()->load->library('api');
+                    ee()->legacy_api->instantiate('channel_fields');
+                    ee()->load->model('grid_model');
+                    ee()->grid_model->create_field($modelInstance->getId(), 'channel');
+                    $columns = ee('Model')->get('grid:GridColumn')->filter('field_id', $modelInstance->getId())->all();
+                    foreach ($columns as $column)
+                    {
+                        //ee()->grid_model->save_col_settings($column->toArray(), $column->getId(), 'channel');
+                        $column = $column->toArray();
+                        ee()->api_channel_fields->setup_handler($column['col_type']);
+                        ee()->api_channel_fields->set_datatype(
+                            $column['col_id'],
+                            $column['col_settings'],
+                            array(),
+                            true,
+                            false,
+                            array(
+                                'id_field' => 'col_id',
+                                'type_field' => 'col_type',
+                                'col_settings_method' => 'grid_settings_modify_column',
+                                'col_prefix' => 'col',
+                                'fields_table' => 'grid_columns',
+                                'data_table' => 'channel_grid_field_' . $modelInstance->getId(),
+                            )
+                        );
+                    }
+                }
+
+                // -------------------------------------------
+                // 'portage_import_after_relationships_save' hook.
+                //  - Do extra stuff after model import is complete
+                //
+                if (ee()->extensions->active_hook('portage_import_after_relationships_save') === true) {
+                    ee()->extensions->call('portage_import_after_relationships_save', $this, $uuid, $modelInstance);
+                }
+                //
+                // -------------------------------------------
+
             }
         }
 
-        // recount stats after saving, if stats are enabled
-
-        // and clear caches
-
-        foreach ($this->post_save_queue as $fn) {
-            if ($fn instanceof Closure) {
-                $fn();
-            }
-        }
-    }
-
-    /**
-     * Get array of IDs for newly-inserted items
-     *
-     * @param string $element_type Element type to grab IDs for
-     * @return array Array of database IDs for given element type
-     */
-    public function getIdsForElementType($element_type)
-    {
-        if (empty($this->insert_ids[$element_type])) {
-            return [];
-        }
-
-        return $this->insert_ids[$element_type];
+        // clear caches
+        ee()->functions->clear_caching('all');
+        ee('CP/JumpMenu')->clearAllCaches();
     }
 
     /**
@@ -487,41 +522,5 @@ class PortageImport
 
         return $json;
     }
-
-
-    /**
-     * Helper function for grid import. We modify POST in a hook to make sure
-     * we get the right data for each field even though we're going to save
-     * several of them at once.
-     *
-     * @param ChannelFieldModel $field Field instance
-     * @param Array $columns The columns defined in the field.type file
-     * @return void
-     */
-    private function importGrid($field, $columns)
-    {
-        $that = $this;
-        $fn = function () use ($columns, $that) {
-            unset($_POST['grid']);
-
-            // grid[cols][new_0][col_label]
-            foreach ($columns as $i => $column) {
-                if ($column['type'] == 'relationship') {
-                    if (isset($column['settings']['channels'])) {
-                        $channel_ids = $that->getIdsForChannels($column['settings']['channels']);
-                        $column['settings']['channels'] = $channel_ids;
-                    }
-                }
-
-                foreach ($column as $col_label => $col_value) {
-                    $_POST['grid']['cols']["new_{$i}"]['col_' . $col_label] = $col_value;
-                }
-            }
-        };
-
-        $field->on('beforeValidate', $fn);
-        $field->on('beforeInsert', $fn);
-    }
-
 
 }

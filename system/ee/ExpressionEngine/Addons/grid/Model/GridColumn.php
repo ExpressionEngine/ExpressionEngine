@@ -35,7 +35,8 @@ class GridColumn extends Model
             'to_key' => 'field_id',
             'weak' => true,
             'inverse' => array(
-                'name' => 'GridColumn',
+                'name' => 'GridColumns',
+                'model' => 'grid:GridColumn',
                 'type' => 'hasMany',
                 'from_key' => 'field_id',
                 'to_key' => 'field_id',

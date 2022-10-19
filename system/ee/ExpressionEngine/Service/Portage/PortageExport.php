@@ -338,6 +338,16 @@ class PortageExport
             }
         }
 
+        // -------------------------------------------
+        // 'portage_export_after_model_export' hook.
+        //  - Modify the record for JSON
+        //
+        if (ee()->extensions->active_hook('portage_export_after_model_export') === true) {
+            $record = ee()->extensions->call('portage_export_after_model_export', $record, $model, $modelRecord);
+        }
+        //
+        // -------------------------------------------
+
         return $record;
     }
 

@@ -302,21 +302,6 @@ class Portage extends Utilities
             $portage->save();
             $portage->cleanUpSourceFiles();
 
-            ee()->session->set_flashdata(
-                'imported_channels',
-                $portage->getIdsForElementType('channels')
-            );
-
-            ee()->session->set_flashdata(
-                'imported_category_groups',
-                $portage->getIdsForElementType('category_groups')
-            );
-
-            ee()->session->set_flashdata(
-                'imported_field_groups',
-                $portage->getIdsForElementType('field_groups')
-            );
-
             $alert = ee('CP/Alert')->makeInline('shared-form')
                 ->asSuccess()
                 ->withTitle(lang('portage_imported'))
@@ -451,11 +436,18 @@ class Portage extends Utilities
                     $sections[$uuid]['modelErrors']->addFailed($model_name . '[' . $uuid . '][' . $field . ']', $rule);
                     // check if this is duplicate error
                     $uuidField = method_exists($model, 'getColumnPrefix') ? $model->getColumnPrefix() . 'uuid' : 'uuid';
+                    $sections[$uuid]['forbid_overwrite'] = false;
                     if ($rule->getName() == 'validateUnique' || ($rule->getName() == 'callback' && is_array($callback = $rule->getCallback()) && $callback[1] == 'validateUnique')) {
                         $sections[$uuid]['duplicate'] = true;
                         // grab the conflicting model UUID
                         $conflictingModel = ee('Model')->get($model_name)->fields($uuidField)->filter($field, $model->$field)->first();
                         $sections[$uuid]['duplicates'] = $conflictingModel->getId();
+                        // if there is duplicate confict, we also need to check whether UUID not already exists
+                        // if it does, overwriting duplicate should not be allowed
+                        $sameUuidModel = ee('Model')->get($model_name)->fields($uuidField)->filter($uuidField, $uuid)->first();
+                        if (!is_null($sameUuidModel) && $conflictingModel->getId() != $sameUuidModel->getId()) {
+                            $sections[$uuid]['forbid_overwrite'] = true;
+                        }
                     } else {
                         $sections[$uuid]['duplicates'] = false;
                     }
@@ -474,6 +466,7 @@ class Portage extends Utilities
                             'name' => $section['title'],
                             'fields' => $section['fields'],
                             'duplicates' => $section['duplicates'],
+                            'forbid_overwrite' => $section['forbid_overwrite'],
                             'errors' => $section['modelErrors']
                         ])
                     ]

@@ -20,7 +20,7 @@ return [
         ]
     ],
     'models' => [
-        'GridColumn' => 'Model\GridColumn',
+        'GridColumn' => 'Model\GridColumn'
     ],
     'models.dependencies' => [
         'GridColumn' => [
