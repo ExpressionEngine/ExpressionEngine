@@ -803,6 +803,16 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 				</div>
 			</fieldset>
 
+			<fieldset class="fieldset-required">
+				<div class="field-instruct ">
+					<label>Readonly Input</label>
+					<!-- <em>No spaces. Underscores and dashes are allowed.</em> -->
+				</div>
+				<div class="field-control">
+					<input type="text" name="template_name" value="index" readonly="readonly">
+				</div>
+			</fieldset>
+
 			<fieldset>
 				<div class="field-instruct">
 					<label>Type</label>
