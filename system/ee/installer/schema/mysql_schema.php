@@ -1085,6 +1085,7 @@ class EE_Schema
 			file_properties varchar(120) NULL DEFAULT NULL,
 			file_pre_format varchar(120) NULL DEFAULT NULL,
 			file_post_format varchar(120) NULL DEFAULT NULL,
+			cat_group varchar(255) NULL DEFAULT NULL,
 			batch_location varchar(255) NULL DEFAULT NULL,
 			module_id int(4) NOT NULL DEFAULT 0,
 			`uuid` VARCHAR(36) NULL DEFAULT NULL,
