@@ -407,7 +407,7 @@ function (_React$Component) {
           "class": "list-item__content-right"
         }, React.createElement("div", {
           className: "button-group"
-        }, React.createElement("button", {
+        }, _this5.props.can_add_items && React.createElement("button", {
           type: "button",
           title: EE.relationship.lang.edit,
           className: "button button--small button--default",
