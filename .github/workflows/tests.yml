@@ -190,17 +190,17 @@ jobs:
             #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 4 ${{ matrix.containers }})"
             #   id: specs
 
-            - name: Install Chrome Canary
+            - name: Install Chrome Beta
               uses: browser-actions/setup-chrome@latest
               with:
-                chrome-version: canary
+                chrome-version: beta
 
             - name: Run Cypress Tests
               if: matrix.php != '5.6'
               uses: cypress-io/github-action@v2
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
-                browser: chrome:canary
+                browser: chrome:beta
                 headless: true
                 working-directory: tests/cypress
                 config-file: cypress.json
@@ -216,7 +216,7 @@ jobs:
               if: matrix.php == '5.6'
               uses: cypress-io/github-action@v2
               with:
-                browser: chrome:canary
+                browser: chrome:beta
                 headless: true
                 working-directory: tests/cypress
                 config-file: cypress.without-pro.json

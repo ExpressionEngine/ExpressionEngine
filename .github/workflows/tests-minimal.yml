@@ -191,16 +191,16 @@ jobs:
               env:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
-            - name: Install Chrome Canary
+            - name: Install Chrome Beta
               uses: browser-actions/setup-chrome@latest
               with:
-                chrome-version: canary
+                chrome-version: beta
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v2
               if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
               with:
-                browser: chrome:canary
+                browser: chrome:beta
                 headless: true
                 working-directory: tests/cypress
                 config-file: cypress.json
