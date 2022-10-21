@@ -26,18 +26,31 @@ class Relationship extends React.Component {
     }
 
     static renderFields(context) {
-        $('div[data-relationship-react]', context).each(function () {
+        $('div[data-relationship-react]:not(.react-deferred-loading)', context).each(function () {
             let props = JSON.parse(window.atob($(this).data('relationshipReact')))
             props.name = $(this).data('inputValue')
 
             ReactDOM.render(React.createElement(Relationship, props, null), this)
-        })
-	}
+        });
 
-	componentDidMount() {
+        $('.react-deferred-loading--relationship', context).each(function () {
+            var $wrapper = $(this);
+            var $button = $wrapper.find('.js-dropdown-toggle');
+
+            $button.on('click', function () {
+                $('div[data-relationship-react]', $wrapper).each(function () {
+                    var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+                    props.name = $(this).data('inputValue');
+                    ReactDOM.render(React.createElement(Relationship, props, null), this);
+                });
+            });
+        });
+    }
+
+    componentDidMount() {
         this.bindSortable()
         EE.cp.formValidation.bindInputs(ReactDOM.findDOMNode(this).parentNode);
-	}
+    }
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.selected !== prevState.selected) {
@@ -328,7 +341,7 @@ class Relationship extends React.Component {
                                         <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={EE.relationship.lang.search} />
                                     </div>
                                 </div>
-                                {props.channels.length > 1 && 
+                                {props.channels.length > 1 &&
                                 <div className="filter-bar__item">
                                     <DropDownButton
                                         keepSelectedState={true}
