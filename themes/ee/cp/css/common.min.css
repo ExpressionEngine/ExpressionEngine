@@ -18954,6 +18954,9 @@ body[data-theme=dark] .select-popup {
   padding: 15px 20px;
 }
 
+.layout-item-wrapper {
+  min-height: 20px;
+}
 .layout-item-wrapper .layout-item {
   margin-bottom: 10px;
 }
@@ -23528,6 +23531,16 @@ body[data-theme="dark"] {
     height: 0;
     visibility: hidden;
   }
+}
+.tab-wrap .js-layout-item {
+  margin-bottom: 10px;
+}
+.tab-wrap .custom-drag-placeholder .none {
+  background-color: var(--ee-bg-0);
+  border: 1px dashed var(--ee-border-dark);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
 .tab-wrap:after {
   clear: both;
