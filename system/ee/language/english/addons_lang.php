@@ -52,6 +52,8 @@ $lang = array(
 
     'confirm_uninstall_desc' => 'You are attempting to uninstall the following items, please confirm this action.',
 
+    'fieldtype_is_in_use' => 'This fieldtype is being used in following fields:',
+
     /* Filters */
     'addons_installed' => 'Add-Ons Installed',
 
