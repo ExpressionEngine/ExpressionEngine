@@ -5,7 +5,12 @@
     <?php if (!isset($pro_class)) : ?>
     <div class="panel-heading panel-heading__publish">
         <div class="title-bar title-bar--large">
-            <h3 class="title-bar__title"><?=$head['title']?></h3>
+            <h3 class="title-bar__title">
+                <?=$head['title']?>
+                <?php if (isset($version)) {
+                    $this->embed('ee:publish/partials/revision_badge', $version);
+                } ?>
+            </h3>
         </div>
     </div>
     <?php endif; ?>
