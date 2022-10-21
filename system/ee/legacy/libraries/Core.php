@@ -253,6 +253,43 @@ class EE_Core
     }
 
     /**
+     * Set Core Cache
+     *
+     * This method is a setter for the $cache class variable.
+     * Note, this is not persistent across requests
+     *
+     * @param 	string 	Super Class/Unique Identifier
+     * @param 	string 	Key for cached item
+     * @param 	mixed 	item to put in the cache
+     * @return 	object
+     */
+    public function set_cache($class, $key, $val)
+    {
+        if (! isset($this->cache[$class])) {
+            $this->cache[$class] = array();
+        }
+
+        $this->cache[$class][$key] = $val;
+
+        return $this;
+    }
+
+    /**
+     * Get Core Cache
+     *
+     * This method extracts a value from the session cache.
+     *
+     * @param 	string 	Super Class/Unique Identifier
+     * @param 	string 	Key to extract from the cache.
+     * @param 	mixed 	Default value to return if key doesn't exist
+     * @return 	mixed
+     */
+    public function cache($class, $key, $default = false)
+    {
+        return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
+    }
+
+    /**
      * Initialize EE
      *
      * Called from EE_Controller to run EE's front end.
