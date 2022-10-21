@@ -195,7 +195,7 @@ jobs:
               uses: cypress-io/github-action@v2
               if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
               with:
-                browser: chrome:beta
+                browser: chrome:canary
                 headless: true
                 working-directory: tests/cypress
                 config-file: cypress.json
