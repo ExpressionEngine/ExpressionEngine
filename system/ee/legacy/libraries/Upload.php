@@ -72,7 +72,8 @@ class EE_Upload
             'php5',
             'php7',
             'phps',
-            'phtml'
+            'phtml',
+            'phar'
         );
     }
 
