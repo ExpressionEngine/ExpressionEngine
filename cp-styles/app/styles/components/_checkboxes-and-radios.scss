@@ -162,9 +162,10 @@ $radio-size: 15px;
 	margin-bottom: 0;
 	position: relative;
   font-weight: normal;
+  pointer-events: none;
 
 	.checkbox-label__text {
-		display: block;
+		display: inline-block;
 		position: relative;
 		padding: $label-padding - 4px;
 		padding-left: $checkbox-size + 10px;
@@ -174,6 +175,7 @@ $radio-size: 15px;
 		transition: background 100ms ease;
 		color: color(text-primary);
 		border-radius: 5px;
+		pointer-events: auto;
 
 		&:hover {
 			// background: color(bg-10);
@@ -185,6 +187,7 @@ $radio-size: 15px;
 		position: absolute;
 		top: $label-padding;
 		left: 0px;
+		pointer-events: auto;
 
     &.checkbox--large {
       z-index: 1;
@@ -359,6 +362,7 @@ ul.field-nested ul {
 
 
 	.checkbox-label__text-editable {
+		display: block;
 		&:before {
 			position: absolute;
 		  display: block;
