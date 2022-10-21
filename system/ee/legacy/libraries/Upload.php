@@ -615,8 +615,7 @@ class EE_Upload
             return true;
         }
 
-        if (function_exists('getimagesize')) {
-            $D = @getimagesize($this->file_temp);
+        if (function_exists('getimagesize') && $D = @getimagesize($this->file_temp)) {
             $this->image_width = $D['0'];
             $this->image_height = $D['1'];
 

@@ -74,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20220906');
-        define('APP_VER', '7.1.4');
+        define('APP_BUILD', '20221021');
+        define('APP_VER', '7.2.0');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -238,6 +238,9 @@ class EE_Core
         define('PATH_THEMES_GLOBAL_ASSET', PATH_THEMES . 'asset/');
         define('URL_THEMES_GLOBAL_ASSET', URL_THEMES . 'asset/');
         define('PATH_CP_THEME', PATH_THEMES . 'cp/');
+
+        define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/');
+        define('PATH_JAVASCRIPT_BUILD', PATH_THEMES . 'cp/js/build/');
 
         define('PATH_PRO_THEMES', PATH_THEMES . 'pro/');
         define('URL_PRO_THEMES', URL_THEMES . 'pro/');

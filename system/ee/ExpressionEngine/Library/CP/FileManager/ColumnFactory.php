@@ -26,6 +26,7 @@ class ColumnFactory extends EntryManager\ColumnFactory
         'credit' => Columns\Credit::class,
         'location' => Columns\Location::class,
         'categories' => Columns\Categories::class,
+        'upload_directory' => Columns\UploadDirectory::class,
         'upload_date' => Columns\UploadDate::class,
         'uploaded_by_member_id' => Columns\UploadAuthor::class,
         'modified_date' => Columns\ModifiedDate::class,

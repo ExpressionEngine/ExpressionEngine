@@ -646,7 +646,10 @@ class Channel
                 // We're goign to repeat the search on each site
                 // so store the terms in a temp.  FIXME Necessary?
                 $terms = $search_terms;
-                if (! isset($this->cfields[$site_id][$field_name])) {
+                if (in_array($field_name, ['title', 'url_title'])) {
+                    $table = 't';
+                    $search_column_name = $table . '.' . $field_name;
+                } else if (! isset($this->cfields[$site_id][$field_name])) {
                     continue;
                 }
 
@@ -656,13 +659,14 @@ class Channel
                     $fields_sql .= ' OR ';
                 }
 
-                $field_id = $this->cfields[$site_id][$field_name];
-
-                $table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
-
-                $search_column_name = $table . '.field_id_' . $this->cfields[$site_id][$field_name];
+                if (!isset($search_column_name)) {
+                    $field_id = $this->cfields[$site_id][$field_name];
+                    $table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
+                    $search_column_name = $table . '.field_id_' . $this->cfields[$site_id][$field_name];
+                }
 
                 $fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
+                unset($search_column_name);
             } // foreach($sites as $site_id)
             if (! empty($fields_sql)) {
                 $sql .= ' AND (' . $fields_sql . ')';
@@ -1192,7 +1196,7 @@ class Channel
         /**------*/
 
         if ($channel = ee()->TMPL->fetch_param('channel')) {
-            $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true)->getDictionary('channel_name', 'channel_id');
+            $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true)->getDictionary('channel_id', 'channel_name');
             if (strpos($channel, '|') !== false) {
                 $options = preg_split('/\|/', $channel, -1, PREG_SPLIT_NO_EMPTY);
                 $options = array_map('trim', $options);
@@ -1201,9 +1205,9 @@ class Channel
             }
             $channel_ids = array();
             foreach ($options as $option) {
-                foreach ($channels as $channel_name => $channel_id) {
+                foreach ($channels as $channel_id => $channel_name) {
                     if (strtolower($option) == strtolower($channel_name)) {
-                        $channel_ids[] = $channels[$channel_name];
+                        $channel_ids[] = $channel_id;
                     }
                 }
             }

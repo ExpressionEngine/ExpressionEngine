@@ -159,6 +159,16 @@ EE.cp.form_group_toggle = function(element) {
 	// Show the selected fields and sections
 	toggle(value, config[value]);
 
+	window.document.dispatchEvent(
+		new CustomEvent('formFields:toggle', {
+			detail: {
+				group: config[value],
+				state: value,
+				for: $(element).parent().data('toggle-for')
+			} 
+		})
+	);
+
 	// The reset the form .last values
 	var form = $(element).closest('form');
 }
