@@ -27,10 +27,6 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
-                //6.x
-                'addLegacyFieldsConfig',
-                'addExtensionsEnabledKey',
-                //7.x
                 'prepMajorUpgrade',
                 'addFileDataTable',
                 'addFileManagerViewsTable',
@@ -50,41 +46,6 @@ class Updater
         }
 
         return true;
-    }
-
-    private function addLegacyFieldsConfig()
-    {
-        if (ee()->config->item('legacy_member_data') === false) {
-            $legacyFieldExists = ee()->db->where('m_legacy_field_data', 'y')->from('member_fields')->count_all_results();
-            ee('Model')->make('Config', [
-                'site_id' => 0,
-                'key' => 'legacy_member_data',
-                'value' => $legacyFieldExists > 0 ? 'y' : 'n'
-            ])->save();
-        }
-
-        if (ee()->config->item('legacy_channel_data') === false) {
-            $legacyFieldExists = ee()->db->where('legacy_field_data', 'y')->from('channel_fields')->count_all_results();
-            ee('Model')->make('Config', [
-                'site_id' => 0,
-                'key' => 'legacy_channel_data',
-                'value' => $legacyFieldExists > 0 ? 'y' : 'n'
-            ])->save();
-        }
-
-        if (ee()->config->item('legacy_category_field_data') === false) {
-            $legacyFieldExists = ee()->db->where('legacy_field_data', 'y')->from('category_fields')->count_all_results();
-            ee('Model')->make('Config', [
-                'site_id' => 0,
-                'key' => 'legacy_category_field_data',
-                'value' => $legacyFieldExists > 0 ? 'y' : 'n'
-            ])->save();
-        }
-    }
-
-    private function addExtensionsEnabledKey()
-    {
-        ee()->smartforge->add_key('extensions', 'enabled');
     }
 
     private function prepMajorUpgrade()
