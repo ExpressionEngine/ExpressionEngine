@@ -44,7 +44,8 @@ class Javascript_loader
             'file' => PATH_JAVASCRIPT,
             'package' => PATH_THIRD,
             'fp_module' => PATH_ADDONS,
-            'pro_file' => PATH_PRO_THEMES . 'js/'
+            'pro_file' => PATH_PRO_THEMES . 'js/',
+            'template' => ''
         );
 
         $mock_name = '';
@@ -52,6 +53,22 @@ class Javascript_loader
         foreach ($types as $type => $path) {
             $mock_name .= ee()->input->get_post($type);
             $files = explode(',', ee()->input->get_post($type));
+
+            if ($type == 'template') {
+                if (!isset(ee()->TMPL)) {
+                    ee()->load->library('template', null, 'JS_TMPL');
+                }
+                foreach ($files as $templateId) {
+                    $templateModel = ee('Model')->get('Template', $templateId)->with('TemplateGroup')->filter('template_type', 'js')->first(true);
+                    if (! empty($templateModel)) {
+                        ee()->JS_TMPL->fetch_and_parse($templateModel->TemplateGroup->group_name, $templateModel->template_name, false, $templateModel->site_id);
+                        if (! empty(ee()->JS_TMPL->final_template)) {
+                            $contents .= ee()->JS_TMPL->parse_globals(ee()->JS_TMPL->final_template);
+                        }
+                    }
+                }
+                continue;
+            }
 
             foreach ($files as $file) {
                 if ($type == 'package' or $type == 'fp_module') {
