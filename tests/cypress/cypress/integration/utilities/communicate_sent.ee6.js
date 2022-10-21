@@ -2,7 +2,7 @@ import CommunicateSent from '../../elements/pages/utilities/CommunicateSent';
 const page = new CommunicateSent
 const { _, $ } = Cypress
 
-context.skip('Communicate Sent', () => {
+context('Communicate Sent', () => {
 
 	before(function(){
 		cy.task('db:seed')

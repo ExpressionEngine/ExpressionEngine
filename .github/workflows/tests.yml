@@ -195,7 +195,7 @@ jobs:
               uses: cypress-io/github-action@v2
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
-                browser: chrome
+                browser: chrome:beta
                 headless: true
                 working-directory: tests/cypress
                 config-file: cypress.json
@@ -211,7 +211,7 @@ jobs:
               if: matrix.php == '5.6'
               uses: cypress-io/github-action@v2
               with:
-                browser: chrome
+                browser: chrome:beta
                 headless: true
                 working-directory: tests/cypress
                 config-file: cypress.without-pro.json
