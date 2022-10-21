@@ -153,6 +153,10 @@ class File_model extends CI_Model
     {
         $successful = true;
 
+        if (empty($data['title']) && isset($data['orig_name']) && !empty($data['orig_name'])) {
+            $data['title'] = $data['orig_name'];
+        }
+
         // Define valid array keys as keys to use in array_intersect_key
         $valid_keys = array(
             'file_id' => '',

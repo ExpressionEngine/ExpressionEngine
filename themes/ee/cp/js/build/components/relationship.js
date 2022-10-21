@@ -437,7 +437,8 @@ function (_React$Component) {
         }
       }, "New Entry"), props.channels.length > 1 && React.createElement("div", null, React.createElement("button", {
         type: "button",
-        className: "js-dropdown-toggle button button--primary button--small"
+        className: "js-dropdown-toggle button button--primary button--small",
+        "data-dropdown-pos": "bottom-end"
       }, "New Entry ", React.createElement("i", {
         "class": "fas fa-caret-down icon-right"
       })), React.createElement("div", {
@@ -473,10 +474,21 @@ function (_React$Component) {
   }], [{
     key: "renderFields",
     value: function renderFields(context) {
-      $('div[data-relationship-react]', context).each(function () {
+      $('div[data-relationship-react]:not(.react-deferred-loading)', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('relationshipReact')));
         props.name = $(this).data('inputValue');
         ReactDOM.render(React.createElement(Relationship, props, null), this);
+      });
+      $('.react-deferred-loading--relationship', context).each(function () {
+        var $wrapper = $(this);
+        var $button = $wrapper.find('.js-dropdown-toggle');
+        $button.on('click', function () {
+          $('div[data-relationship-react]', $wrapper).each(function () {
+            var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+            props.name = $(this).data('inputValue');
+            ReactDOM.render(React.createElement(Relationship, props, null), this);
+          });
+        });
       });
     }
   }]);
