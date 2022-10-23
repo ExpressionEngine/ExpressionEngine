@@ -513,7 +513,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
         // Remove reference to keywords and collections from orderby param
         // --------------------------------------
 
-        $orderby = $this->params->get('orderby');
+        $orderby = (string) $this->params->get('orderby');
 
         if (preg_match('/^(pro_search_(score|collection))/i', $orderby, $match)) {
             $this->params->set('orderby', preg_replace("/^{$match[1]}\|?/", '', $orderby));
