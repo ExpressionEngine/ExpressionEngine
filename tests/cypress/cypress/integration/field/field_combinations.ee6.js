@@ -662,6 +662,7 @@ context('Create combinations of field', () => {
 			//------------------------------------
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Range Slider').click()
+			cy.get('[data-input-value=field_type] .js-dropdown-toggle').should('exist')
 			cy.get('[data-input-value=field_type] .select__button').click()
 			page.get('Type_Options').contains('Value Slider').click()
 			cy.get('[name=field_min_value]:visible').invoke('val').should('eq', '10');
@@ -671,7 +672,7 @@ context('Create combinations of field', () => {
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 	
 			cy.visit('admin.php?/cp/publish/edit')
-			cy.get('div.checkbox-label__text').contains('AA Test Entry').eq(0).click()
+			cy.get('div').contains('AA Test Entry').eq(0).click()
 			cy.get('.range-slider').eq(1).find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
 			cy.get('.range-slider').eq(1).find('input[type=range]').eq(1).should('not.exist')
 	

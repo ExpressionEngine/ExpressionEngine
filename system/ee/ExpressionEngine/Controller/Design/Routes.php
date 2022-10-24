@@ -90,6 +90,8 @@ class Routes extends AbstractDesignController
         $vars = array(
             'table' => $grid->viewData($this->base_url),
             'form_url' => ee('CP/URL')->make('design/routes/update'),
+            'save_btn_text' => sprintf(lang('btn_save'), lang('template_routes')),
+            'save_btn_text_working' => 'btn_saving',
             'cp_page_title' => lang('template_manager'),
             'cp_heading' => lang('template_routes_header'),
             'cp_sub_heading' => lang('template_routes_header_desc')
