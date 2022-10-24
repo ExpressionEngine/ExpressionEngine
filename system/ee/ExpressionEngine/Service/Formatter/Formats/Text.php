@@ -48,7 +48,7 @@ class Text extends Formatter
             return $this;
         }
 
-        $chars = preg_split('//u', $this->content, null, PREG_SPLIT_NO_EMPTY);
+        $chars = preg_split('//u', $this->content, 0, PREG_SPLIT_NO_EMPTY);
 
         $this->content = '';
         foreach ($chars as $index => $char) {

@@ -593,7 +593,7 @@ class Template extends AbstractDesignController
                 ->withTitle(lang('update_template_error'))
                 ->addToBody(lang('update_template_error_desc'))
                 ->now();
-        } else {
+        } else if (ee('Request')->post('allowed_roles') !== null) {
             $access = ee()->input->post('allowed_roles') ?: array();
 
             $roles = ee('Model')->get('Role', $access)

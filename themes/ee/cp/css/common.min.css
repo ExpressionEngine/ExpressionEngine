@@ -8999,6 +8999,17 @@ input[type=url]:disabled {
   background-image: -o-linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
   background-image: linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
 }
+textarea:read-only,
+input[type=text]:read-only,
+input[type=email]:read-only,
+input[type=number]:read-only,
+input[type=password]:read-only,
+input[type=url]:read-only {
+  background-size: 20px 20px;
+  background-image: -webkit-linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
+}
 textarea::-webkit-input-placeholder,
 input[type=text]::-webkit-input-placeholder,
 input[type=email]::-webkit-input-placeholder,
@@ -13995,7 +14006,7 @@ input[type=button].btn-block {
   margin-bottom: 40px;
   padding: 20px 30px 20px 30px;
   position: relative;
-  border-radius: 5px;
+  border-radius: 6px;
   box-shadow: 0 8px 40px var(--ee-shadow-modal);
 }
 .modal .col {
@@ -16672,9 +16683,10 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   margin-bottom: 0;
   position: relative;
   font-weight: normal;
+  pointer-events: none;
 }
 .checkbox-label .checkbox-label__text {
-  display: block;
+  display: inline-block;
   position: relative;
   padding: 5px;
   padding-left: 25px;
@@ -16682,12 +16694,14 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   transition: background 100ms ease;
   color: var(--ee-text-primary);
   border-radius: 5px;
+  pointer-events: auto;
 }
 .checkbox-label input {
   z-index: 1;
   position: absolute;
   top: 9px;
   left: 0px;
+  pointer-events: auto;
 }
 .checkbox-label input.checkbox--large {
   z-index: 1;
@@ -16829,6 +16843,9 @@ ul.field-nested ul li ul::before {
 .field-nested li {
   padding: 0;
 }
+.field-nested li .checkbox-label__text-editable {
+  display: block;
+}
 .field-nested li .checkbox-label__text-editable:before {
   position: absolute;
   display: block;
@@ -16922,6 +16939,7 @@ fieldset {
   padding: 0;
   margin-bottom: 20px;
   border: 0;
+  min-width: 0;
 }
 fieldset.last {
   margin-bottom: 0;
@@ -17922,6 +17940,7 @@ fieldset .field-control #eye {
 .grid-field .table-responsive {
   box-shadow: none;
   border: 1px solid var(--ee-border);
+  overflow-x: visible;
 }
 
 .grid-field__table th {
@@ -17955,6 +17974,8 @@ fieldset .field-control #eye {
 .grid-field__table tbody td {
   vertical-align: top;
   border-right: 1px solid var(--ee-table-border);
+  min-width: 250px;
+  max-width: 600px;
 }
 @media (max-width: 767px) {
   .grid-field__table tbody td {
@@ -17967,6 +17988,7 @@ fieldset .field-control #eye {
 .grid-field__table td:last-child, .grid-field__table th:last-child {
   padding-right: 15px;
   border-right: none;
+  min-width: 80px;
 }
 .grid-field__table .file-field__dropzone {
   margin-top: 0px;
@@ -17999,6 +18021,12 @@ fieldset .field-control #eye {
 
 .grid-field__column-label {
   display: none;
+}
+.grid-field__column-label label {
+  display: block;
+  color: var(--ee-text-normal);
+  margin-bottom: 5px;
+  font-weight: 500;
 }
 
 .grid-field__column-remove {
@@ -18284,6 +18312,129 @@ fieldset .field-control #eye {
     display: none !important;
   }
 }
+.live-preview__form-content .grid-field .grid-field__table,
+.grid-field.overwidth .grid-field__table {
+  display: flex;
+}
+.live-preview__form-content .grid-field .grid-field__table thead,
+.grid-field.overwidth .grid-field__table thead {
+  display: none;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody,
+.grid-field.overwidth .grid-field__table tbody {
+  width: 100%;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-bottom: 3px solid var(--ee-table-border);
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden):last-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden):last-child {
+  border-bottom: none;
+}
+@media (max-width: 767px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden):last-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden):last-child {
+    border-bottom-width: 1px;
+  }
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--ee-table-border);
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:last-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:last-child {
+  border-bottom: none;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label) {
+  width: calc(100% - 135px);
+}
+@media (max-width: 1023px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label) {
+    width: calc(100% - 95px);
+  }
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .ee-form-error-message,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .ee-form-error-message {
+  margin-left: auto;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-label,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-label {
+  display: block;
+  color: var(--ee-text-secondary);
+  font-weight: 500;
+  white-space: normal;
+  border-right: 1px solid var(--ee-table-border);
+  margin-right: 15px;
+  flex: 0 0 120px;
+}
+@media (max-width: 1023px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-label,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-label {
+    flex: 0 0 80px;
+  }
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .pagination__link, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .no-results a, .no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a,
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .field-no-results a,
+.field-no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select-popup, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools select, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select__button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .markItUpHeader ul a, .markItUpHeader ul .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .filter-bar__button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .license-status-badge,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .button,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .pagination__link,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .no-results a,
+.no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .field-no-results a,
+.field-no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select-popup,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools select,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select__button,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .markItUpHeader ul a,
+.markItUpHeader ul .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .filter-bar__button,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .license-status-badge {
+  margin-bottom: 0;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .pagination__link:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .no-results a:first-child, .no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child,
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .field-no-results a:first-child,
+.field-no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select-popup:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools select:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select__button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .markItUpHeader ul a:first-child, .markItUpHeader ul .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .filter-bar__button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .license-status-badge:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .button:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .pagination__link:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .no-results a:first-child,
+.no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .field-no-results a:first-child,
+.field-no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select-popup:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools select:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select__button:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .markItUpHeader ul a:first-child,
+.markItUpHeader ul .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .filter-bar__button:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .license-status-badge:first-child {
+  margin-right: 10px;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr.no-results,
+.grid-field.overwidth .grid-field__table tbody tr.no-results {
+  border-bottom: none;
+  padding: 0;
+}
+
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td {
+  flex-wrap: nowrap;
+}
+
 .select {
   position: static;
   width: 100%;
@@ -18948,6 +19099,9 @@ body[data-theme=dark] .select-popup {
   padding: 15px 20px;
 }
 
+.layout-item-wrapper {
+  min-height: 20px;
+}
 .layout-item-wrapper .layout-item {
   margin-bottom: 10px;
 }
@@ -19046,6 +19200,8 @@ body[data-theme=dark] .select-popup {
   align-items: center;
   padding: 20px 30px 20px 30px;
   background-color: var(--ee-bg-0);
+  border-bottom: 1px solid var(--ee-border);
+  border-radius: 6px 6px 0 0;
 }
 
 .dialog__header--centered {
@@ -19093,6 +19249,8 @@ body[data-theme=dark] .select-popup {
 .dialog__actions {
   padding: 20px 30px 20px 30px;
   background-color: var(--ee-bg-0);
+  border-top: 1px solid var(--ee-border);
+  border-radius: 0 0 6px 6px;
 }
 .dialog__actions .button + .button, .dialog__actions .pagination__link + .button, .dialog__actions .button + .pagination__link, .dialog__actions .pagination__link + .pagination__link, .dialog__actions .no-results a + .button, .dialog__actions .no-results a + .pagination__link, .no-results .dialog__actions a + .button, .no-results .dialog__actions a + .pagination__link,
 .dialog__actions .field-no-results a + .button,
@@ -20270,7 +20428,8 @@ a.ck.ck-button.ck-on {
   margin-bottom: 10px;
   background-color: var(--ee-bg-blank);
   border: 1px solid var(--ee-fluid-item-border);
-  position: relative;
+  position: static;
+  width: 100%;
 }
 .fluid__item .fluid__item-fieldset {
   padding: 10px 15px 5px 15px;
@@ -20805,6 +20964,7 @@ table .field-no-results {
 
   .live-preview__form, .live-preview__preview {
     flex-basis: 50%;
+    width: 50%;
     max-height: 50vh;
   }
 
@@ -23518,6 +23678,16 @@ body[data-theme="dark"] {
     height: 0;
     visibility: hidden;
   }
+}
+.tab-wrap .js-layout-item {
+  margin-bottom: 10px;
+}
+.tab-wrap .custom-drag-placeholder .none {
+  background-color: var(--ee-bg-0);
+  border: 1px dashed var(--ee-border-dark);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
 .tab-wrap:after {
   clear: both;

@@ -781,6 +781,8 @@ $lang = array(
 
     'version_preview' => 'Revision Number %s',
 
+    'version_no' => 'Revision #%d',
+
     'versioning_enabled' => 'Enable entry revisions?',
 
     'versioning_enabled_desc' => 'When enabled, you can store up to %d revisions of this entry.',
@@ -794,6 +796,10 @@ $lang = array(
     'view_filtered' => 'Return to Filtered Entries',
 
     'view_wider' => 'View Wider',
+
+    'viewing_revision' => 'You Are Viewing a Revision',
+
+    'viewing_revision_desc' => 'Any changes saved will overwrite the newest version of this entry',
 
     'warning' => 'Warning',
 

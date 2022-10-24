@@ -23,6 +23,8 @@ class Multi_select_ft extends OptionFieldtype
 
     public $has_array_data = true;
 
+    public $entry_manager_compatible = true;
+
     /**
      * A list of operators that this fieldtype supports
      *
@@ -248,6 +250,11 @@ class Multi_select_ft extends OptionFieldtype
     public function update($version)
     {
         return true;
+    }
+
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return $this->replace_tag($data);
     }
 }
 
