@@ -395,11 +395,11 @@ class Pro_variables_upd
         );
 
         // Update all variable types to pro types
-        $vars = ee()->pro_variables_variable_model->get_all();
-        foreach ($vars as $var) {
+        $vars = ee('db')->select('variable_id, variable_type')->from('pro_variables')->get();
+        foreach ($vars->result_array() as $var) {
             if (!is_null($var['variable_type'])) {
                 $var['variable_type'] = str_replace('low_', 'pro_', $var['variable_type']);
-                ee()->pro_variables_variable_model->update($var['variable_id'], ['variable_type' => $var['variable_type']]);
+                ee('db')->where('variable_id', $var['variable_id'])->update('pro_variables', ['variable_type' => $var['variable_type']]);
             }
 
             // If we have a grid, migrate the table
