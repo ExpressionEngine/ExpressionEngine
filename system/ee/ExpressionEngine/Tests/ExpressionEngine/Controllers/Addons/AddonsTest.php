@@ -32,6 +32,6 @@ class AddonsTest extends TestCase
 
         sort($controller_methods);
 
-        $this->assertEquals(array('index', 'install', 'manual', 'remove', 'settings', 'update'), $controller_methods);
+        $this->assertEquals(array('confirm', 'index', 'install', 'manual', 'remove', 'settings', 'update'), $controller_methods);
     }
 }

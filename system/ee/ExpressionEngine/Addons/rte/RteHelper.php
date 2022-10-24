@@ -229,54 +229,32 @@ class RteHelper
 
         if ($pages === false) {
             $pages = [];
-            $break = false;
-            /**
-             * `rte_autocomplete_pages` extension hook
-             * allows addons to modify (narrow down) the list of pages that can be inserted
-             * Expects array of following structure:
-             * $pages[] = (object) [
-             *          'id' => '@unique-identifier',
-             *          'text' => 'main displayed text (e.g. entry title)',
-             *          'extra' => 'extra info displayed (e.g. channel name)',
-             *          'href' => 'link to the page',
-             *          'entry_id' => entry ID,
-             *          'uri' => page URI
-             *      ];
-             */
-            /*if (ee()->extensions->active_hook('rte_autocomplete_pages') === true) {
-                $pages = ee()->extensions->call('rte_autocomplete_pages', $pages, $search, $site_id);
-                if (ee()->extensions->end_script === true) {
-                    $break = true;
-                }
-            }*/
 
-            if (!$break) {
-                $site = ee('Model')->get('Site', $site_id)->first();
-                $site_pages = $site->site_pages;
-                if (isset($site_pages[$site_id]['uris'])) {
-                    $entry_ids = array_keys($site_pages[$site_id]['uris']);
-                    $channels = ee('Model')->get('Channel')
-                        ->fields('channel_id', 'channel_title')
-                        ->all()
-                        ->getDictionary('channel_id', 'channel_title');
-                    $entries = ee('Model')->get('ChannelEntry', $entry_ids)
-                        ->fields('entry_id', 'title', 'url_title', 'channel_id');
-                    if (!empty($search)) {
-                        $entries->filter('title', 'LIKE', '%' . $search . '%');
-                    }
-                    $titles = $entries->all()->getDictionary('entry_id', 'title');
-                    $channel_ids = $entries->all()->getDictionary('entry_id', 'channel_id');
-                    foreach ($site_pages[$site_id]['uris'] as $entry_id => $uri) {
-                        if (isset($titles[$entry_id])) {
-                            $pages[] = (object) [
-                                'id' => '@' . $entry_id,
-                                'text' => $titles[$entry_id],
-                                'extra' => $channels[$channel_ids[$entry_id]],
-                                'href' => '{page_' . $entry_id . '}',
-                                'entry_id' => $entry_id,
-                                'uri' => $uri
-                            ];
-                        }
+            $site = ee('Model')->get('Site', $site_id)->first();
+            $site_pages = $site->site_pages;
+            if (isset($site_pages[$site_id]['uris'])) {
+                $entry_ids = array_keys($site_pages[$site_id]['uris']);
+                $channels = ee('Model')->get('Channel')
+                    ->fields('channel_id', 'channel_title')
+                    ->all()
+                    ->getDictionary('channel_id', 'channel_title');
+                $entries = ee('Model')->get('ChannelEntry', $entry_ids)
+                    ->fields('entry_id', 'title', 'url_title', 'channel_id');
+                if (!empty($search)) {
+                    $entries->filter('title', 'LIKE', '%' . $search . '%');
+                }
+                $titles = $entries->all()->getDictionary('entry_id', 'title');
+                $channel_ids = $entries->all()->getDictionary('entry_id', 'channel_id');
+                foreach ($site_pages[$site_id]['uris'] as $entry_id => $uri) {
+                    if (isset($titles[$entry_id])) {
+                        $pages[] = (object) [
+                            'id' => '@' . $entry_id,
+                            'text' => $titles[$entry_id],
+                            'extra' => $channels[$channel_ids[$entry_id]],
+                            'href' => '{page_' . $entry_id . '}',
+                            'entry_id' => $entry_id,
+                            'uri' => $uri
+                        ];
                     }
                 }
             }

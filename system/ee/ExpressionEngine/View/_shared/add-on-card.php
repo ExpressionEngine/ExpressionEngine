@@ -42,7 +42,7 @@
 		<?php endif; ?>
 
 		<?php if (ee('Permission')->hasAll('can_admin_addons') && $addon['installed']) : ?>
-			<a class="dropdown__link dropdown__link--danger m-link" href="" rel="modal-confirm-remove" data-action-url="<?= $addon['remove_url'] ?>" data-confirm="<?= $addon['name'] ?>"><?= lang('uninstall') ?></a>
+			<a class="dropdown__link dropdown__link--danger m-link" href="" rel="modal-confirm-remove" data-action-url="<?= $addon['remove_url'] ?>" data-confirm="<?= $addon['name'] ?>" data-confirm-ajax="<?= $addon['confirm_url'] ?>"><?= lang('uninstall') ?></a>
 		<?php endif; ?>
 	</div>
 

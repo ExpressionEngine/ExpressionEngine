@@ -21,6 +21,7 @@ class Rte_mcp
     public function __construct()
     {
         $this->base_url = ee('CP/URL')->make('addons/settings/rte');
+        ee()->lang->load('admin_content');
     }
 
     /**
@@ -235,7 +236,21 @@ class Rte_mcp
 
             $config->toolset_name = $configName;
             $config->toolset_type = $toolsetType;
-            $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
+            $jsonError = false;
+            if ($settings['rte_advanced_config'] == 'y' && !empty($settings['rte_config_json'])) {
+                //override with JSON
+                $json = json_decode($settings['rte_config_json']);
+                if (empty($json)) {
+                    $jsonError = true;
+                    $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
+                } elseif ($toolsetType == 'redactor') {
+                    $settings['toolbar'] = (array) $json;
+                } else {
+                    $settings = array_merge($settings, (array) $json);
+                }
+            } else {
+                $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
+            }
             if ($toolsetType == 'redactor') {
                 if (!isset($settings['toolbar']['buttons'])) {
                     $settings['toolbar']['buttons'] = [];
@@ -250,7 +265,7 @@ class Rte_mcp
 
             $validate = $config->validate();
 
-            if ($validate->isValid()) {
+            if (!$jsonError && $validate->isValid()) {
                 $config->save();
 
                 ee('CP/Alert')->makeInline('shared-form')
@@ -265,8 +280,7 @@ class Rte_mcp
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
                     ->withTitle(lang('toolset_error'))
-                    ->addToBody(lang('toolset_error_desc'))
-                    //->addToBody($validate->getAllErrors())
+                    ->addToBody($jsonError ? lang('toolset_json_error_desc') : lang('toolset_error_desc'))
                     ->now();
             }
         }
@@ -336,6 +350,14 @@ class Rte_mcp
         $toolbarInputHtml['ckeditor'] = ee('rte:CkeditorService')->toolbarInputHtml($config);
         $toolbarInputHtml['redactor'] = ee('rte:RedactorService')->toolbarInputHtml($config);
 
+        if (isset($config->settings['rte_advanced_config']) && !empty($config->settings['rte_advanced_config']) && $config->settings['rte_advanced_config'] == 'y') {
+            $rte_config_json = $config->settings['rte_config_json'];
+        } elseif ($config->toolset_type == 'redactor') {
+            $rte_config_json = json_encode($config->settings['toolbar'], JSON_PRETTY_PRINT);
+        } else {
+            $rte_config_json = json_encode(ee('rte:CkeditorService')->buildToolbarConfig($config->settings), JSON_PRETTY_PRINT);
+        }
+
         $sections = array(
             'rte_basic_settings' => array(
                 array(
@@ -382,6 +404,19 @@ class Rte_mcp
                     )
                 ),
                 array(
+                    'title' => 'field_text_direction',
+                    'fields' => array(
+                        'settings[field_text_direction]' => array(
+                            'type' => 'radio',
+                            'choices' => array(
+                                'ltr' => lang('field_text_direction_ltr'),
+                                'rtl' => lang('field_text_direction_rtl')
+                            ),
+                            'value' => isset($config->settings['field_text_direction']) ? $config->settings['field_text_direction'] : 'ltr'
+                        )
+                    )
+                ),
+                array(
                     'title' => lang('rte_toolbar'),
                     'group' => 'ckeditor_toolbar',
                     'wide' => true,
@@ -411,6 +446,20 @@ class Rte_mcp
                         'settings[redactor_toolbar]' => array(
                             'type' => 'html',
                             'content' => ee('rte:RedactorService')->pluginsInputHtml($config)
+                        )
+                    )
+                ),
+                array(
+                    'title' => lang('custom_stylesheet'),
+                    'desc' => lang('custom_stylesheet_desc'),
+                    'fields' => array(
+                        'settings[css_template]' => array(
+                            'type' => 'dropdown',
+                            'choices' => $this->getTemplates('css'),
+                            'value' => isset($config->settings['css_template']) && !empty($config->settings['css_template']) ? (int) $config->settings['css_template'] : '',
+                            'no_results' => [
+                                'text' => sprintf(lang('no_found'), lang('templates'))
+                            ]
                         )
                     )
                 ),
@@ -449,6 +498,53 @@ class Rte_mcp
                         )
                     )
                 ),
+                array(
+                    'title' => 'rte_advanced_config',
+                    'desc' => 'rte_advanced_config_desc',
+                    'fields' => array(
+                        'settings[rte_advanced_config]' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'rte_advanced_config',
+                            ),
+                            'value' => isset($config->settings['rte_advanced_config']) && !empty($config->settings['rte_advanced_config']) ? $config->settings['rte_advanced_config'] : 'n',
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'rte_config_json',
+                    'desc' => 'rte_config_json_desc',
+                    'group' => 'rte_advanced_config',
+                    'fields' => array(
+                        'rte_advanced_config_warning' => array(
+                            'type' => 'html',
+                            'content' => ee('CP/Alert')->makeInline('rte_advanced_config_warning')
+                                ->asImportant()
+                                ->addToBody(lang('rte_advanced_config_warning'))
+                                ->cannotClose()
+                                ->render()
+                        ),
+                        'settings[rte_config_json]' => array(
+                            'type' => 'textarea',
+                            'value' => $rte_config_json
+                        )
+                    )
+                ),
+                array(
+                    'title' => lang('custom_javascript'),
+                    'desc' => lang('custom_javascript_rte_desc'),
+                    'group' => 'rte_advanced_config',
+                    'fields' => array(
+                        'settings[js_template]' => array(
+                            'type' => 'dropdown',
+                            'choices' => $this->getTemplates('js'),
+                            'value' => isset($config->settings['js_template']) && !empty($config->settings['js_template']) ? (int) $config->settings['js_template'] : '',
+                            'no_results' => [
+                                'text' => sprintf(lang('no_found'), lang('templates'))
+                            ]
+                        )
+                    )
+                ),
             ),
         );
 
@@ -457,7 +553,54 @@ class Rte_mcp
         $variables['cp_page_title'] = $headingTitle;
 
         $variables['save_btn_text'] = lang('save');
-        $variables['save_btn_text_working'] = lang('saving');
+        $variables['save_btn_text_working'] = lang('btn_saving');
+
+        ee()->cp->add_js_script([
+            'plugin' => 'ee_codemirror',
+            'ui' => 'resizable',
+            'file' => array(
+                'vendor/codemirror/codemirror',
+                'vendor/codemirror/closebrackets',
+                'vendor/codemirror/comment',
+                'vendor/codemirror/lint',
+                'vendor/codemirror/active-line',
+                'vendor/codemirror/overlay',
+                'vendor/codemirror/xml',
+                'vendor/codemirror/css',
+                'vendor/codemirror/javascript',
+                'vendor/codemirror/htmlmixed',
+                'ee-codemirror-mode',
+                'vendor/codemirror/dialog',
+                'vendor/codemirror/searchcursor',
+                'vendor/codemirror/search',
+            )
+        ]);
+        ee()->javascript->set_global(
+            'editor.height',
+            ee()->config->item('codemirror_height') !== false ? ee()->config->item('codemirror_height') : 200
+        );
+        if (isset($config->settings['rte_advanced_config']) && $config->settings['rte_advanced_config'] == 'y') {
+            //json editor is visible, initialize immediately
+            ee()->javascript->output("
+                $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+                $('fieldset[data-group=ckeditor_toolbar]').hide();
+                $('fieldset[data-group=redactor_toolbar]').hide();
+            ");
+        }
+
+        ee()->javascript->output("
+            window.document.addEventListener('formFields:toggle', (event) => {
+                if (event.detail.for == 'settings[rte_advanced_config]') {
+                    if (event.detail.state == 'y') {
+                        $('fieldset[data-group=ckeditor_toolbar]').hide();
+                        $('fieldset[data-group=redactor_toolbar]').hide();
+                    } else {
+                        $('fieldset[data-group=' + $('select[name=toolset_type]').children('option:selected').val() + '_toolbar]').show();
+                    }
+                    $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+                }
+            });
+        ");
 
         return [
             'body' => ee('View')->make('ee:_shared/form')->render($variables),
@@ -493,5 +636,34 @@ class Rte_mcp
         }
 
         ee()->functions->redirect($this->base_url);
+    }
+
+    /**
+     * Gets a list of the templates for the current site that do not already
+     * have a route, grouped by their template group name:
+     *   array(
+     *     'news' => array(
+     *       1 => 'index',
+     *       3 => 'about',
+     *     )
+     *   )
+     *
+     * @return array An associative array of templates
+     */
+    private function getTemplates($type = 'css')
+    {
+        $templates = ee('Model')->get('Template')
+            ->with('TemplateGroup')
+            ->order('TemplateGroup.group_name')
+            ->filter('template_type', $type)
+            ->order('template_name')
+            ->all();
+
+        $results = [''];
+        foreach ($templates as $template) {
+            $results[$template->getId()] = $template->getPath();
+        }
+
+        return $results;
     }
 }

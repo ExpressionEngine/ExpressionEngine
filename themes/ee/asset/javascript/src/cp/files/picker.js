@@ -238,6 +238,10 @@
 					options.selected = $(this).data('selected');
 				}
 
+				if (options.input_value.prop("selectionStart")) {
+					localStorage.setItem('caretPosition', options.input_value.prop("selectionStart"));
+				}
+
 				bind_modal(options.url, options);
 			});
 		});

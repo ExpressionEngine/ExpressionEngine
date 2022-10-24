@@ -76,7 +76,8 @@ class EE_Upload
             'php5',
             'php7',
             'phps',
-            'phtml'
+            'phtml',
+            'phar'
         );
     }
 
@@ -348,7 +349,7 @@ class EE_Upload
         if ($this->upload_destination) {
             $stream = fopen($this->file_temp, 'r+');
             $result = $this->upload_destination->getFilesystem()->writeStream($this->upload_path . $this->file_name, $stream);
-        } else if (! @copy($this->file_temp, $this->upload_path . $this->file_name)) {
+        } elseif (! @copy($this->file_temp, $this->upload_path . $this->file_name)) {
             if (! @move_uploaded_file($this->file_temp, $this->upload_path . $this->file_name)) {
                 $this->set_error('upload_destination_error');
 
@@ -919,7 +920,7 @@ class EE_Upload
 
         $fs = (!empty($this->upload_destination)) ? $this->upload_destination->getFilesystem() : ee('Filesystem');
 
-        if($fs->isLocal()) {
+        if ($fs->isLocal()) {
             if ($this->upload_path == '') {
                 $this->set_error('upload_no_filepath');
 

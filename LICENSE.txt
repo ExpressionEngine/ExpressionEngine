@@ -303,6 +303,9 @@ The following subcomponents are licensed under the MIT License:
     Symfony Polyfill / Ctype
         Copyright (c) 2018-2019 Fabien Potencier
 
+    PHP CSS Parser
+        Copyright (c) 2011 Raphael Schweikert, https://www.sabberworm.com/
+
 
     The Selection and Range components use code heavily inspired by:
 
@@ -553,4 +556,3 @@ For the ExpressionEngine Pro:
         32174
 
     Nothing in these Terms or otherwise limits Packet Tide’s right to object to subpoenas, claims, or other demands.
-

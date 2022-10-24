@@ -488,6 +488,20 @@ $lang = array(
 
     'versioning' => 'Versioning Preferences',
 
+    /* field channels */
+
+    'field_channels' => 'Channels',
+
+    'field_channels_desc' => 'This field is assigned to following channels',
+
+    'assigned' => 'Assigned',
+
+    'via' => 'via',
+
+    'directly' => 'directly',
+
+    'fluid_field' => 'Fluid Field',
+
     /* Generic Phrases */
     'delete' => 'Delete',
 
@@ -704,6 +718,8 @@ $lang = array(
     'multi_list_items' => 'Multi Select Options',
 
     'new_field_group' => 'New Field Group',
+
+    'ungrouped' => 'Ungrouped',
 
     'no_field_group_message' => 'There are currently no channel fields',
 
