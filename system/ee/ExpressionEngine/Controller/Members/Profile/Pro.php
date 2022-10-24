@@ -24,7 +24,7 @@ class Pro extends Settings
     {
         parent::__construct();
 
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense()) {
+        if (!ee('pro:Access')->hasRequiredLicense()) {
             show_error(lang('unauthorized_access'), 403);
         }
     }

@@ -34,9 +34,10 @@ class Consent
      */
     public function cookies()
     {
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee('pro:Access')->hasRequiredLicense()) {
             return ee('pro:Cookie')->cookiesTag();
         }
+
         return ee()->TMPL->no_results();
     }
 
@@ -285,7 +286,7 @@ class Consent
     /**
      * Get Variables for Requests
      *
-     * 	Abstracted for re-use and to standardize user_created= filtering
+     *  Abstracted for re-use and to standardize user_created= filtering
      *
      * @param  array $requests Consent data from ee('Consent')->getConsentDataFor()
      * @return array Variables for parsing

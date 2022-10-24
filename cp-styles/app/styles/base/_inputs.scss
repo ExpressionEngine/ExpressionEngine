@@ -48,15 +48,22 @@ input[type='url'] {
   -webkit-appearance: none;
   border: 1px solid color(input-border);
   border-radius: $border-radius-base;
+  @include shadow-input;
 
     &:focus {
 		border-color: color(input-focus-border);
-		//box-shadow: color(input-focus-shadow);
+    @include focus-outline;
 	}
 
 	&:disabled {
 		cursor: not-allowed;
 		opacity: 0.6;
+		background-size: 20px 20px;
+
+		@include gradient-striped(color(input-disabled-bg));
+	}
+
+	&:read-only {
 		background-size: 20px 20px;
 
 		@include gradient-striped(color(input-disabled-bg));

@@ -28,8 +28,12 @@ class Filepicker_rtefb extends AbstractRteFilebrowser
                 'cp/files/picker'
             ),
         ));
+        $fpUrl = ee('CP/FilePicker')->make($uploadDir)->getUrl();
+        $fpUrl->addQueryStringVariables(array(
+            'hasUpload' => true,
+        ));
         ee()->javascript->set_global([
-            'Rte.fpUrl' => ee('CP/FilePicker')->make($uploadDir)->getUrl()->compile(),
+            'Rte.fpUrl' => $fpUrl->compile(),
         ]);
         ee()->javascript->output("window.Rte_browseImages = function(sourceElement, params) {
             Rte.loadEEFileBrowser(sourceElement, params, '" . $uploadDir . "', 'image');

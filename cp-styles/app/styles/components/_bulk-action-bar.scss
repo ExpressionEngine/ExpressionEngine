@@ -1,9 +1,8 @@
 
 .bulk-action-bar {
-	display: inline-block;
 	margin-bottom: 0;
-	// margin-top: $s-s;
 	padding: 20px 0px 20px 25px;
+  border-top: 1px solid color(border);
 
 	// background: color(bg-10);
 	// border-radius: $corners-big;
@@ -25,7 +24,13 @@
 // Adjust padding when displayed within panel body
 .panel-body {
 	.bulk-action-bar, .tbl-bulk-act {
-		padding-left: 0px;
+		padding-left: 0;
+    padding-right: 0;
 		padding-bottom: 0px;
+    border-top: none;
 	}
+
+  .pagination + .bulk-action-bar {
+    padding-top: 0;
+  }
 }

@@ -4,8 +4,6 @@ $lang = array(
 
     'add_file' => 'Add File',
 
-    'directory' => 'Directory:',
-
     'directory_no_access' => 'You do not have access to the directory specified for this field',
 
     'file_undo_remove' => 'Undo Remove',
@@ -28,6 +26,8 @@ $lang = array(
     'any_status' => 'Any status',
 
     'relate_entry' => 'Relate Entry',
+
+    'relate_entry_deferred' => 'Edit Relationships',
 
     'rel_ft_allow_multi' => 'Allow multiple relationships?',
 
@@ -80,6 +80,10 @@ $lang = array(
     'rel_ft_display_entry_id' => 'Display Entry IDs?',
 
     'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
+
+    'rel_ft_deferred' => 'Defer field initialization?',
+
+    'rel_ft_deferred_desc' => 'When enabled, this field won’t initialize until the Edit Relationships button is clicked on. This can result in faster control panel page load times.',
 
     'rel_ft_max' => 'Maximum number of related entries',
 
@@ -151,7 +155,7 @@ $lang = array(
 
     'file_dnd_choose_file_directory' => 'Choose a File Directory',
 
-    'file_dnd_upload_to' => 'Upload To',
+    'file_dnd_upload_to' => 'Upload to',
 
     'file_dnd_choose_directory_before_uploading' => 'You must choose a directory to upload files',
 
@@ -185,12 +189,18 @@ $lang = array(
 
     'file_dnd_upload_new' => 'Upload New',
 
+    'file_dnd_create_directory' => 'Create New Directory',
+
     /* Grid */
     'grid_add_field' => 'add new field',
 
     'grid_add_some_data' => 'You have not added any rows of data yet. <a href="#" class="grid_link_add">Add some data?</a>',
 
     'grid_allow_reorder' => 'Allow reordering of rows?',
+
+    'grid_vertical_layout' => 'Always use a vertical grid layout?',
+
+    'grid_vertical_layout_desc' => 'The fields within the grid will be stacked vertically on the publish form.',
 
     'grid_chars_allowed' => 'Characters allowed.',
 

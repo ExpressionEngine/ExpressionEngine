@@ -218,7 +218,7 @@ context('URL and Path Settings', () => {
     //page.submit()
     cy.get('button').contains('Save Settings').first().click()
 
-    page.get('wrap').contains('Preferences updated')
+    page.get('wrap').contains('Preferences Updated')
     page.get('site_index').invoke('val').then((val) => { expect(val).to.be.equal('hello.php')})
 
     // Since this is in config.php, reset the value

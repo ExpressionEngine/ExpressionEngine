@@ -27,7 +27,7 @@
 									<?php endforeach; ?>
 
 									<?php if ($item->hasAddLink()) : ?>
-									<a class="dropdown__link" class="nav-add" href="<?= $item->addlink->url ?>"><i class="fas fa-plus"></i><?= lang($item->addlink->title) ?></a>
+									<a class="dropdown__link" class="nav-add" href="<?= $item->addlink->url ?>"><i class="fal fa-plus"></i><?= lang($item->addlink->title) ?></a>
 									<?php endif; ?>
 									</div>
 								</div>

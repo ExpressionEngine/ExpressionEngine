@@ -1,0 +1,11 @@
+{layout="cypress/layout"}
+<p>Testing Relationships</p>
+{exp:channel:entries dynamic="no" entry_id="11" limit="1"}
+<div id="with-tag">
+
+{parents field="rel_item"}
+    {parents:title}
+{/parents}
+
+</div>
+{/exp:channel:entries}

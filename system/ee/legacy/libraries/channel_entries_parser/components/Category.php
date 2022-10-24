@@ -207,11 +207,8 @@ class EE_Channel_category_parser implements EE_Channel_parser_component
                     $cats = substr($cats, 0, - $catval[1]['backspace']);
                 }
 
-                // Check to see if we need to parse {filedir_n}
-                if (strpos($cats, '{filedir_') !== false) {
-                    ee()->load->library('file_field');
-                    $cats = ee()->file_field->parse_string($cats);
-                }
+                ee()->load->library('file_field');
+                $cats = ee()->file_field->parse_string($cats);
 
                 $tagdata = str_replace($catval[2], $cats, $tagdata);
             }

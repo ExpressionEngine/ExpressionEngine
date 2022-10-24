@@ -1,4 +1,4 @@
-<?php $page_title = 'Files'; $page_toolbar = '<a class="button button--action"><i class="fas fa-cloud-upload-alt icon-left"></i> Upload</a>'; include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
+<?php $page_title = 'Files'; $page_toolbar = '<a class="button button--action"><i class="fal fa-cloud-upload-alt icon-left"></i> Upload</a>'; include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 
 <!-- <div class="dropdown">
 	<div class="dropdown__search">
@@ -11,19 +11,19 @@
 	<div class="secondary-sidebar">
 		<nav class="sidebar">
 			<h2 class="sidebar__section-title">Upload Directories</h2>
-			<a href="" class="sidebar__link active"><i class="fas fa-folder"></i> Article Images</a>
-			<a href="" class="sidebar__link"><i class="fas fa-folder"></i> Photography</a>
-			<a href="" class="sidebar__link"><i class="fas fa-folder"></i> Team Photos</a>
+			<a href="" class="sidebar__link active"><i class="fal fa-folder"></i> Article Images</a>
+			<a href="" class="sidebar__link"><i class="fal fa-folder"></i> Photography</a>
+			<a href="" class="sidebar__link"><i class="fal fa-folder"></i> Team Photos</a>
 
 			<div class="sidebar__section-divider"></div>
-			<a href="" class="sidebar__link"><i class="fas fa-tint"></i> Watermarks</a>
+			<a href="" class="sidebar__link"><i class="fal fa-tint"></i> Watermarks</a>
 		</nav>
 
 	</div>
 
 	<div class="container">
 
-		<!-- <i class="fas fa-chevron-left"></i>  -->
+		<!-- <i class="fal fa-chevron-left"></i>  -->
 
 		<div class="title-bar">
 			<h2 class="title-bar__title">Files in <b>Article Images</b></h2>
@@ -37,7 +37,7 @@
 			<div class="filter-bar__item ">
 			<div class="">
 				<a class="filter-bar__button" href="admin.php?/cp/files&amp;viewtype=table&amp;perpage=25" title="View as List">
-							<i class="fas fa-fw fa-list"></i>
+							<i class="fal fa-fw fa-list"></i>
 					</a>
 				</div>
 		</div>
@@ -112,7 +112,7 @@
 			<!-- <div class="file-card file-card--missing">
 				<div class="file-card__preview">
 					<div class="file-card__preview-icon">
-						<i class="fas fa-lg fa-exclamation-triangle"></i>
+						<i class="fal fa-lg fa-exclamation-triangle"></i>
 						<div class="file-card__preview-icon-text">File Not Found</div>
 					</div>
 				</div>
@@ -157,7 +157,7 @@
 			<div class="file-card">
 				<div class="file-card__preview">
 					<div class="file-card__preview-icon">
-						<i class="fas fa-file-archive fa-3x"></i>
+						<i class="fal fa-file-archive fa-3x"></i>
 					</div>
 				</div>
 				<div class="file-card__info">

@@ -200,6 +200,7 @@ class Watermarks extends AbstractFilesController
         }
 
         ee()->load->library('filemanager');
+        ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
         $vars['sections'] = array(
             array(
@@ -329,6 +330,7 @@ class Watermarks extends AbstractFilesController
                         'fields' => array(
                             'wm_font_color' => array(
                                 'type' => 'text',
+                                'attrs' => 'class="color-picker"',
                                 'value' => $watermark->wm_font_color ?: 'FFFF00'
                             )
                         )
@@ -339,12 +341,16 @@ class Watermarks extends AbstractFilesController
                         'fields' => array(
                             'wm_use_drop_shadow' => array(
                                 'type' => 'yes_no',
+                                'group_toggle' => array(
+                                    'y' => 'watermark_text_dropshadow',
+                                ),
                                 'value' => ! is_null($watermark->wm_use_drop_shadow) ? $watermark->wm_use_drop_shadow : 'y'
                             )
                         )
                     ),
                     array(
                         'title' => 'watermark_text_dropshadow_distance',
+                        'group' => 'watermark_text_dropshadow',
                         'fields' => array(
                             'wm_shadow_distance' => array(
                                 'type' => 'text',
@@ -354,9 +360,11 @@ class Watermarks extends AbstractFilesController
                     ),
                     array(
                         'title' => 'watermark_text_dropshadow_color',
+                        'group' => 'watermark_text_dropshadow',
                         'fields' => array(
                             'wm_shadow_color' => array(
                                 'type' => 'text',
+                                'attrs' => 'class="color-picker"',
                                 'value' => $watermark->wm_shadow_color ?: '999999'
                             )
                         )

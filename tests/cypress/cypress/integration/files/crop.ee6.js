@@ -25,9 +25,12 @@ context('File Manager / Crop File', () => {
         cy.auth();
         cy.contains('Files').click()
         cy.get('.sidebar__link').contains('About').click()
-        cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:first-child em').invoke('text').as('file_name')
+        cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4)').invoke('text').as('file_name')
         //cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4) ul.toolbar li.crop').click()
-        cy.get('a[title="Crop"]').first().click({force: true})
+        // cy.get('a[title="Crop"]').first().click({force: true})
+        cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) .toolbar-wrap .js-dropdown-toggle').click()
+        cy.get('a[title="Edit"]').filter(':visible').first().click()
+        page.get('crop_tab').click()
         // page = CropFile.new
         // @return = FileManager.new
         // @file_name = page.load
@@ -39,7 +42,8 @@ context('File Manager / Crop File', () => {
         //page.get('breadcrumb').contains('File ManagerEdit "' + file_name + '"Crop, Rotate & Resize "' + file_name + '"')
         cy.get('@file_name').then((filename) => {
             //page.get('heading').contains('Crop, Rotate & Resize "' + filename + '"')
-            page.get('heading').contains('Crop, Rotate & Resize')
+            page.get('heading').contains(filename.replace('File Name', ''))
+            page.get('crop_tab').should('have.class', 'active')
         })
 
         page.get('crop_tab').should('exist')
@@ -73,7 +77,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Crop File")
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
@@ -88,7 +92,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Crop File")
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
@@ -103,7 +107,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Crop File")
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
@@ -118,7 +122,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Crop File")
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
@@ -133,7 +137,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Crop File")
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
@@ -148,7 +152,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Crop File")
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
@@ -163,7 +167,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Crop File")
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
@@ -178,7 +182,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Crop File")
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
@@ -193,7 +197,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Crop File")
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
@@ -208,7 +212,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Crop File")
         page.get('alert').contains("We were unable to crop the file, please review and fix errors below.")
     })
@@ -222,13 +226,13 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('success')
-        cy.get('.fieldset-invalid').should('not.exist')
+        // cy.get('.fieldset-invalid').should('not.exist')
         page.get('alert').contains("File Crop Success")
     })
 
     it('can display the rotate form', function() {
         page.get('rotate_tab').click()
-        cy.get('div.tab.t-1.tab-open').should('exist')
+        cy.get('div.tab.t-rotate.tab-open').should('exist')
     })
 
     /*it('requires a rotation option when rotating', function() {
@@ -238,7 +242,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Rotate File")
         page.get('alert').contains("We were unable to rotate the file, please review and fix errors below.")
     })**/
@@ -250,7 +254,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('success')
-        cy.get('.fieldset-invalid').should('not.exist')
+        // cy.get('.fieldset-invalid').should('not.exist')
         page.get('alert').contains("File Rotate Success")
     })
 
@@ -261,7 +265,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('success')
-        cy.get('.fieldset-invalid').should('not.exist')
+        // cy.get('.fieldset-invalid').should('not.exist')
         page.get('alert').contains("File Rotate Success")
     })
 
@@ -272,7 +276,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('success')
-        cy.get('.fieldset-invalid').should('not.exist')
+        // cy.get('.fieldset-invalid').should('not.exist')
         page.get('alert').contains("File Rotate Success")
     })
 
@@ -283,13 +287,13 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('success')
-        cy.get('.fieldset-invalid').should('not.exist')
+        // cy.get('.fieldset-invalid').should('not.exist')
         page.get('alert').contains("File Rotate Success")
     })
 
     it('can display the resize form', function() {
         page.get('resize_tab').click()
-        cy.get('div.tab.t-2.tab-open').should('exist')
+        cy.get('div.tab.t-resize.tab-open').should('exist')
     })
 
     it('width is optional when resizing', function() {
@@ -300,7 +304,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('success')
-        cy.get('.fieldset-invalid').should('not.exist')
+        // cy.get('.fieldset-invalid').should('not.exist')
         page.get('alert').contains("File Resize Success")
     })
 
@@ -312,7 +316,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('success')
-        cy.get('.fieldset-invalid').should('not.exist')
+        // cy.get('.fieldset-invalid').should('not.exist')
         page.get('alert').contains("File Resize Success")
     })
 
@@ -324,7 +328,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Resize File")
         page.get('alert').contains("We were unable to resize the file, please review and fix errors below.")
     })
@@ -337,7 +341,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('error')
-        cy.get('.fieldset-invalid').should('exist')
+        // cy.get('.fieldset-invalid').should('exist')
         page.get('alert').contains("Cannot Resize File")
         page.get('alert').contains("We were unable to resize the file, please review and fix errors below.")
     })
@@ -350,7 +354,7 @@ context('File Manager / Crop File', () => {
         cy.hasNoErrors()
 
         page.hasAlert('success')
-        cy.get('.fieldset-invalid').should('not.exist')
+        // cy.get('.fieldset-invalid').should('not.exist')
         page.get('alert').contains("File Resize Success")
     })
 

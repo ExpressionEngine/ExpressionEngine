@@ -15,7 +15,7 @@ namespace ExpressionEngine\Service\Model;
  */
 class Gateway
 {
-    protected $_field_list_cache;
+    protected static $_field_list_cache;
     protected $_values = array();
 
     /**
@@ -31,8 +31,8 @@ class Gateway
      */
     public function getFieldList($cached = true)
     {
-        if (isset($this->_field_list_cache)) {
-            return $this->_field_list_cache;
+        if (isset(static::$_field_list_cache[get_class($this)])) {
+            return static::$_field_list_cache[get_class($this)];
         }
 
         $vars = get_object_vars($this);
@@ -44,7 +44,11 @@ class Gateway
             }
         }
 
-        return $this->_field_list_cache = $fields;
+        if (!is_array(static::$_field_list_cache)) {
+            static::$_field_list_cache = [];
+        }
+
+        return static::$_field_list_cache[get_class($this)] = $fields;
     }
 
     /**

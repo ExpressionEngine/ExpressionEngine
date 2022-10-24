@@ -23,8 +23,12 @@
 			}
 
 			// Assign the value {filedir_#}filename.ext
-			input.val('{filedir_' + data.upload_location_id + '}' + data.file_name)
-				.trigger('change')
+			if (EE.fileManagerCompatibilityMode) {
+				input.val('{filedir_' + data.upload_location_id + '}' + data.file_name)
+			} else {
+				input.val('{file:' + data.file_id + ':url}')
+			}
+			input.trigger('change')
 				.trigger('hasFile', data);
 
 			figure.toggleClass('no-img', ! data.isImage);
@@ -34,6 +38,11 @@
 			if (data.isImage) {
 				// Set the thumbnail
 				references.input_img.attr('src', data.thumb_path);
+				if (figure.find('i').length) {
+					figure.find('i').remove();
+				}
+			} else {
+				references.input_img.after('<i class="fas fa-file fa-3x"></i>');
 			}
 
 			// Fill in formatted caption

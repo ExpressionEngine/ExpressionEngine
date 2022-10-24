@@ -7,21 +7,23 @@ class UploadEdit extends FileManagerSection {
 
       this.elements({
         'name': 'input[type!=hidden][name=name]',
-        'url': 'input[type!=hidden][name=url]',
-        'server_path': 'input[type!=hidden][name=server_path]',
-        'allowed_types': 'input[type!=hidden][name=allowed_types]',
+        'url': 'input[type!=hidden][name="_for_adapter[local][url]"]',
+        'adapter': 'div[data-input-value=adapter]',
+        'server_path': 'input[type!=hidden][name="_for_adapter[local][server_path]"]',
+        'allowed_types': 'div[data-input-value="allowed_types"]',
         'max_size': 'input[type!=hidden][name=max_size]',
         'max_width': 'input[type!=hidden][name=max_width]',
         'max_height': 'input[type!=hidden][name=max_height]',
         'image_manipulations': '#image_manipulations',
         'grid_rows': '#image_manipulations tr:visible',
         'upload_member_groups': 'input[type!=hidden][name="upload_roles[]"]',
-        'cat_group': 'input[type!=hidden][name="cat_group[]"]'
+        'cat_group': 'input[type!=hidden][name="cat_group[]"]',
+        'toggle_subfolder_support': '#fieldset-allow_subfolders .toggle-btn',
       })
     }
     load() {
       cy.contains('Files').click()
-      cy.get('div.sidebar h2:nth-child(1)').contains('New').click()
+      cy.get('div.sidebar h2').contains('New').click()
     }
 
     load_edit_for_dir(number) {

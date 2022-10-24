@@ -168,7 +168,7 @@ td {
 	i {
 		color: color(text-tertiary);
 
-		&.fas {
+		&.fas, &.fal {
 			color: inherit;
 		}
 	}
@@ -193,7 +193,7 @@ tr {
 				&:first-child{
 					&:before{
 						@extend %fa-icon;
-						@extend .fas;
+						@extend .fal;
 
 						color: color(warning);
 						content: fa-content($fa-var-ban);
@@ -280,7 +280,7 @@ tr {
 
 	&::after {
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 
 		// content: fa-content($fa-var-chevron-down);
 

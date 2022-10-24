@@ -38,9 +38,9 @@
                     } else if (file.file_id) {
                         const file_url = EE.Rte.filedirUrls[file.upload_location_id] + file.file_name;
                         if (!file.isImage && !file.isSVG) {
-                            that.app.api('module.link.insert', {text: file_url, url: file_url});
+                            that.app.api('module.link.insert', {text: file.path, url: file.path});
                         } else {
-                            that.app.api('module.image.insert', file_url);
+                            that.app.api('module.image.insert', file.path);
                         }
                     }
                 }

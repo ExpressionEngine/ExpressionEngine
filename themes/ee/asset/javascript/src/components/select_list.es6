@@ -54,7 +54,9 @@ class SelectList extends React.Component {
           parent: parent ? parent : null,
           component: items[key].component != undefined ? items[key].component : null,
           sectionLabel: currentSection,
-          entry_id: items[key].entry_id ? items[key].entry_id : ''
+          entry_id: items[key].entry_id ? items[key].entry_id : '',
+          upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
+          path: items[key].path ? items[key].path : '',
         }
 
         if (items[key].children) {
@@ -125,7 +127,7 @@ class SelectList extends React.Component {
               id: node.dataset.id
             }
             let children = $(node).find('> ul > [data-id]')
-            if (children.size()) {
+            if (children.length) {
               item['children'] = getNestedItems(children.toArray())
             }
             serialized.push(item)
@@ -512,10 +514,10 @@ class SelectItem extends React.Component {
         )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
         {props.editable && (
-          <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fas fa-pencil-alt"></i></a>
+          <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fal fa-pencil-alt"></i></a>
         )}
         {props.removable && (
-            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-fw fa-trash-alt"></i></a>
+            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><i class="fal fa-fw fa-trash-alt"></i></a>
         )}
         </div>
         </div>
@@ -552,9 +554,9 @@ class SelectedItem extends React.Component {
 
     return (
       <div className="lots-of-checkboxes__selection">
-        <i className="fas fa-check-circle"></i> {label}
+        <i className="fal fa-check-circle"></i> {label}
           {props.selectionRemovable &&
-            <a className="button button--default float-right" href="" onClick={props.clearSelection}><i class="fas fa-trash-alt"></i></a>
+            <a className="button button--default float-right" href="" onClick={props.clearSelection}><i class="fal fa-trash-alt"></i></a>
           }
       </div>
     )

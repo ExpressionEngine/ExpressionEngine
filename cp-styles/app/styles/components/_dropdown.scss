@@ -33,6 +33,16 @@
 .dropdown__scroll {
 	max-height: 260px;
 	overflow-y: auto;
+
+	ul {
+		margin-top: 0;
+		list-style-type: none;
+
+		a {
+			padding: 5px 15px;
+			min-height: 30px;
+		}
+	}
 }
 
 .dropdown__scroll--small {
@@ -50,11 +60,19 @@
   display: flex;
 	height: auto;
 	line-height: inherit;
-	padding: 7px 20px;
+	padding: 7px 15px;
 	// font-size: 0.92em;
 	color: color(text-primary);
-	width: 100%;
+	// width: 100%;
+  margin-left: 7px;
+  margin-right: 7px;
+  margin-bottom: 2px;
+  border-radius: $border-radius-base;
 	align-items: center;
+
+	&.with-divider {
+		border-top: 1px solid var(--ee-border);
+	}
 
 	a {
 		color: color(text-primary);
@@ -79,7 +97,7 @@
 	}
 
 	@include focus-visible {
-		@include focus-outline-inset;
+		//@include focus-outline-inset;
 	}
 }
 
@@ -88,7 +106,7 @@
 
 	&::before {
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 		@extend .fa-fw;
 
 		margin-right: 5px;
@@ -154,6 +172,11 @@
 	align-items: center;
 	// font-size: 0.92em;
 	color: color(text-primary);
+  margin-left: 7px;
+  margin-right: 7px;
+  margin-bottom: 2px;
+  border-radius: $border-radius-base;
+
 
 	&:hover {
 		// background: color(bg-10);
@@ -179,7 +202,7 @@
 		flex: 1 1;
 		display: block;
 		height: 100%;
-		padding: $s-xs $s-m;
+		padding: 5px 15px;
 		line-height: $line-height-small;
 		color: color(text-primary);
 
@@ -187,7 +210,7 @@
 			color: color(text-primary);
 		}
 
-		.fas {
+		.fas, .fal {
 			// Make sure icons line up next to each other
 			@extend .fa-fw;
 
@@ -206,7 +229,7 @@
 	// font-size: 0.8em !important;
 	// height: 18px;
 	// line-height: 18px;
-	margin-right: 15px;
+	margin-right: 5px;
 
 	i {
 		// color: #fff !important;

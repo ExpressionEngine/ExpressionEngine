@@ -364,7 +364,8 @@ abstract class OptionFieldtype extends EE_Fieldtype
         }
 
         $validator = ee('Validation')->make(array(
-            'value_label_pairs' => 'validateValueLabelPairs'
+            'value_label_pairs' => 'validateValueLabelPairs',
+            'field_pre_field_id' => 'validatePopulateFromOtherField'
         ));
 
         $validator->defineRule('validateValueLabelPairs', function ($key, $pairs) {
@@ -379,6 +380,16 @@ abstract class OptionFieldtype extends EE_Fieldtype
                     }
 
                     $values[] = $row['value'];
+                }
+            }
+
+            return true;
+        });
+
+        $validator->defineRule('validatePopulateFromOtherField', function ($key, $value) {
+            if (ee('Request')->post('field_pre_populate') == 'y') {
+                if (empty($value)) {
+                    return 'field_populate_missing';
                 }
             }
 

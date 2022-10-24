@@ -26,8 +26,11 @@ context('Upload Sync', () => {
     cy.auth();
     // Create a new upload directory for testing
     new_upload.load()
+    new_upload.get('url').should('not.be.visible')
+    cy.get('[data-input-value=adapter] .select__button').click()
+    cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
     new_upload.get('name').type('Dir')
-    new_upload.get('url').clear().type('http://ee/')
+    new_upload.get('url').clear().type('{base_url}tests/cypress/' + upload_path, {parseSpecialCharSequences: false})
     cy.task('filesystem:path', upload_path).then((text) => {
       new_upload.get('server_path').clear().type(text)
     })
@@ -79,7 +82,7 @@ context('Upload Sync', () => {
 
   it('should sync the directory', () => {
 
-    page.get('wrap').contains(images_count.toString() + ' image files')
+    page.get('wrap').contains(images_count.toString() + ' files and folders')
 
     cy.hasNoErrors()
 
@@ -95,15 +98,6 @@ context('Upload Sync', () => {
 
 
     cy.wait(10000)
-    //cy.visit(dir_link)
-    // Make sure progress bar progressed in the proper increments
-
-    // This was a nice idea, but it's too intermittent, the AJAX is
-    // sometimes too fast for RSpec. Uncomment if you want to test locally.
-    //progress_bar_values = page.log_progress_bar_moves
-    //progress_bar_values.should('eq', page.progress_bar_moves_for_file_count($images_count)
-
-
 
     page.get('alert').should('exist')
 
@@ -133,9 +127,6 @@ context('Upload Sync', () => {
       })
     })
 
-
-    page.get('alert').contains('Upload directory synchronized')
-
   })
 
   it('should not sync non-images if directory does not allow it', () => {
@@ -143,7 +134,7 @@ context('Upload Sync', () => {
     cy.task('filesystem:copy', { from: non_images_path+'*', to: upload_path })
 
     // Page should still only report the number of images and sync successfully
-    page.get('wrap').contains(images_count.toString() + ' image files')
+    page.get('wrap').contains(images_count.toString() + ' files and folders')
 
     page.get('sync_button').click()
     cy.wait(10000)
@@ -159,7 +150,7 @@ context('Upload Sync', () => {
     let file_count = images_count + non_images_count
 
     new_upload.load_edit_for_dir(2)
-    new_upload.get('allowed_types').check('all')
+    new_upload.get('allowed_types').find('[value="--"]').check()
     new_upload.submit()
     new_upload.get('wrap').contains('Upload directory saved')
     cy.hasNoErrors()
@@ -186,7 +177,7 @@ context('Upload Sync', () => {
           let file_count = images_count + bad_files_count;
 
           new_upload.load_edit_for_dir(2)
-          new_upload.get('allowed_types').check('all')
+          new_upload.get('allowed_types').find('[type="checkbox"][value="--"]').check()
           new_upload.submit()
           new_upload.get('wrap').contains('Upload directory saved')
           cy.hasNoErrors()

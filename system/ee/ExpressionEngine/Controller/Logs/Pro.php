@@ -23,10 +23,6 @@ class Pro extends Logs
     public function __construct()
     {
         parent::__construct();
-
-        if (!IS_PRO) {
-            show_error(lang('unauthorized_access'), 403);
-        }
     }
 
     public function __call($name, $arguments)

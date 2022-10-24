@@ -45,9 +45,9 @@
   <label for="">Input with Icons</label>
 </div>
   <div class="field-control with-icon-start with-icon-end">
-    <i class="fas fa-search fa-fw icon-start"></i>
+    <i class="fal fa-search fa-fw icon-start"></i>
     <input type="text" placeholder="Search...">
-    <i class="fas fa-arrow-right fa-fw icon-end"></i>
+    <i class="fal fa-arrow-right fa-fw icon-end"></i>
   </div>
 </fieldset>
 
@@ -426,8 +426,8 @@ Use the modifier class `select--open`.
             </div>
         </div>
         <div class="fluid__item-tools">
-            <a href="" class="fluid__item-tool"><i class="fas fa-fw fa-cog"></i></a>
-            <a href="" class="fluid__item-tool"><i class="fas fa-fw fa-plus"></i></a>
+            <a href="" class="fluid__item-tool"><i class="fal fa-fw fa-cog"></i></a>
+            <a href="" class="fluid__item-tool"><i class="fal fa-fw fa-plus"></i></a>
         </div>
     </div>
     <div class="fluid__item">
@@ -443,7 +443,7 @@ Use the modifier class `select--open`.
         </div>
         </div>
         <div class="fluid__item-tools">
-            <a href="" class="fluid__item-tool"><i class="fas fa-fw fa-trash-alt"></i></a>
+            <a href="" class="fluid__item-tool"><i class="fal fa-fw fa-trash-alt"></i></a>
         </div>
     </div>
     <div class="fluid__item fluid__item--collapsed">
@@ -459,7 +459,7 @@ Use the modifier class `select--open`.
         </div>
         </div>
         <div class="fluid__item-tools">
-            <a href="" class="fluid__item-tool"><i class="fas fa-fw fa-angle-double-down"></i></a>
+            <a href="" class="fluid__item-tool"><i class="fal fa-fw fa-angle-double-down"></i></a>
         </div>
     </div>
 

@@ -25,7 +25,7 @@ $lang = array(
 
     'settings' => 'Settings',
 
-    'hit_tracking' => 'Hit Tracking',
+    'tracking' => 'Tracking',
 
     'html_buttons' => 'HTML Buttons',
 
@@ -320,6 +320,10 @@ $lang = array(
 
     'enable_sql_caching_desc' => 'When enabled, the speed of dynamic channel pages will be improved. Do <b>not</b> use if you need the "future entries" or "expiring entries" features.',
 
+    'file_manager_compatibility_mode' => 'Run File Manager in Compatibility Mode?',
+
+    'file_manager_compatibility_mode_desc' => 'Compatibility Mode stores files using the file format from ExpressionEngine versions previous to version 6. Compatibility Mode disables many newer File Manager features and prevents issues with add-ons that are not ExpressionEngine 7+ compatible.',
+
     'gd' => 'GD',
 
     'gd2' => 'GD 2',
@@ -392,7 +396,7 @@ $lang = array(
 
     'template_manager' => 'Template Manager',
 
-    /* Hit Tracking */
+    /* Tracking */
     'dynamic_tracking_disabling' => 'Suspend threshold?',
 
     'dynamic_tracking_disabling_desc' => 'All tracking will be suspended when the number of online visitors exceeds this number.</em> <em>Online user tracking must be enabled to use this feature. <a href="%s" ref="external">Learn more</a>',
@@ -408,6 +412,10 @@ $lang = array(
     'enable_online_user_tracking' => 'Enable online user tracking?',
 
     'enable_online_user_tracking_desc' => 'When enabled, ExpressionEngine will track logged in users.',
+
+    'enable_tracking_cookie' => 'Enable tracker cookie?',
+
+    'enable_tracking_cookie_desc' => 'When enabled, ExpressionEngine will set <code>exp_tracker</code> cookie on each page visit, allowing navigation through browsing history. Disabling it might influence redirect behavior of some forms on front-end.',
 
     'log_referrers' => 'Enable referrer tracking?',
 
@@ -711,6 +719,8 @@ $lang = array(
     'cp_session_type' => '<abbr title="Control Panel">CP</abbr> session type',
 
     'cs_session' => 'Cookies and session ID',
+
+    'no_cookies_registered' => 'No cookies registered',
 
     'deny_duplicate_data' => 'Deny duplicate data?',
 

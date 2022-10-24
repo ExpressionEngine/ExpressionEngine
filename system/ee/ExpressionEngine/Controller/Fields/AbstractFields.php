@@ -18,7 +18,9 @@ use CP_Controller;
 abstract class AbstractFields extends CP_Controller
 {
     protected $validationResult;
-    
+
+    protected $hasUngroupedFields;
+
     /**
      * Constructor
      */
@@ -68,9 +70,9 @@ abstract class AbstractFields extends CP_Controller
 
         $sidebar = ee('CP/Sidebar')->makeNew();
 
-        $all_fields = $sidebar->addItem(lang('all_fields'), ee('CP/URL')->make('fields'));
+        $all_fields = $sidebar->addItem(lang('all_fields'), ee('CP/URL')->make('fields'))->withIcon('pen-field');
 
-        if ($active) {
+        if (!is_null($active)) {
             $all_fields->isInactive();
         }
 
@@ -92,6 +94,22 @@ abstract class AbstractFields extends CP_Controller
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->order('group_name')
             ->all();
+
+        // if there are fields that are not in any group, show a separate link
+        $ungroupedQuery = ee('db')->query('SELECT COUNT(exp_channel_fields.field_id) AS missing FROM exp_channel_fields WHERE NOT EXISTS (SELECT field_id FROM exp_channel_field_groups_fields WHERE exp_channel_fields.field_id=exp_channel_field_groups_fields.field_id)');
+        if ($ungroupedQuery->row('missing') > 0) {
+            $this->hasUngroupedFields = true;
+            $item = $list->addItem(
+                lang('ungrouped'),
+                ee('CP/URL')->make('fields', ['group_id' => 0])
+            );
+            if ((string) ee('Request')->get('group_id') === '0') {
+                $item->isActive();
+            } else {
+                $item->isInactive();
+            }
+        }
+
 
         foreach ($field_groups as $group) {
             $group_name = ee('Format')->make('Text', $group->group_name)->convertToEntities();
@@ -125,6 +143,7 @@ abstract class AbstractFields extends CP_Controller
         }
 
         ee()->view->left_nav = $sidebar->render();
+        ee()->view->left_nav_collapsed = $sidebar->collapsedState;
     }
 
     protected function prepareFieldConditions()

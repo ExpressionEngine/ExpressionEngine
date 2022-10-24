@@ -159,7 +159,10 @@ class File_model extends CI_Model
             'site_id' => '',
             'title' => '',
             'upload_location_id' => '',
+            'directory_id' => '',
+            'model_type' => '',
             'mime_type' => '',
+            'file_type' => '',
             'file_name' => '',
             'file_size' => '',
             'description' => '',
@@ -460,7 +463,6 @@ class File_model extends CI_Model
         ee()->load->helper('file');
         ee()->load->helper('text');
         ee()->load->helper('directory');
-        ee()->load->library('mime_type');
 
         if (count($directories) == 0) {
             return $files;
@@ -499,7 +501,7 @@ class File_model extends CI_Model
 
                     $file['encrypted_path'] = rawurlencode(ee('Encrypt')->encode($file['relative_path'] . $file['name'], ee()->config->item('session_crypt_key')));
 
-                    $file['mime'] = ee()->mime_type->ofFile($file['relative_path'] . $file['name']);
+                    $file['mime'] = ee('MimeType')->ofFile($file['relative_path'] . $file['name']);
 
                     if ($get_dimensions) {
                         if (function_exists('getimagesize')) {

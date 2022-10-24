@@ -56,6 +56,7 @@ Cypress.Commands.add("login", (user) => {
 
 Cypress.Commands.add("logout", () => {
     cy.visit('admin.php?/cp/members/profile/settings')
+    cy.dismissLicenseAlert()
     cy.get('.main-nav__account-icon > img').click()
     cy.get('[href="admin.php?/cp/login/logout"]').click()
 })
@@ -73,6 +74,7 @@ Cypress.Commands.add("addMembers", (group, count, password = 'password') => {
     let i = 1;
     for(i ; i <= count; i++){
         cy.visit('/admin.php?/cp/members/create') //goes to member creation url
+        cy.dismissLicenseAlert()
 
         let email = group;
         email += i.toString();
@@ -98,6 +100,7 @@ Cypress.Commands.add("addMembers", (group, count, password = 'password') => {
 Cypress.Commands.add("addRole", (role) => {
     cy.auth();
     cy.visit('admin.php?/cp/members/roles')
+    cy.dismissLicenseAlert()
     cy.get('a').contains('New Role').click()
     cy.get('input[name="name"]').clear().type(role)
     cy.get('.form-btns-top .saving-options').click()
@@ -157,6 +160,14 @@ Cypress.Commands.add("hasNoErrors", () => {
     cy.contains('Error Caught').should('not.exist')
 })
 
+Cypress.Commands.add("dismissLicenseAlert", () => {
+    cy.get('body').then(($body) => {
+        if ($body.find('.app-notice-pro-license-error .app-notice__dismiss').length) {
+            cy.get('.app-notice-pro-license-error .app-notice__dismiss').trigger('click');
+        }
+    })
+})
+
 Cypress.Commands.add("dragTo", { prevSubject: true }, (subject, target) => {
     cy.wrap(subject).trigger("mousedown", { which: 1 })
 
@@ -213,6 +224,10 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
         return;
     }
 
+    if (value === '') {
+        value = 'EMPTY';
+    }
+
     let command = [
         `cd support/fixtures && php config.php ${item}`,
         (value) ? ` ${value}` : '',
@@ -220,6 +235,7 @@ Cypress.Commands.add("eeConfig", ({ item, value, site_id }) => {
     ].join('');
 
     //cy.exec('ddev exec --dir /var/www/html/tests/cypress "' + command + '"').then((harvest) => {
+    console.log(command)
     cy.exec(command).then((harvest) => {
         return harvest.stdout;
     })

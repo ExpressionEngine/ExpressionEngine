@@ -50,12 +50,14 @@ class DefaultChannelLayout extends DefaultLayout
                 array(
                     'field' => 'title',
                     'visible' => true,
-                    'collapsed' => false
+                    'collapsed' => false,
+                    'width' => 100
                 ),
                 array(
                     'field' => 'url_title',
                     'visible' => true,
-                    'collapsed' => false
+                    'collapsed' => false,
+                    'width' => 100
                 )
             )
         );
@@ -68,12 +70,14 @@ class DefaultChannelLayout extends DefaultLayout
             array(
                 'field' => 'entry_date',
                 'visible' => true,
-                'collapsed' => false
+                'collapsed' => false,
+                'width' => 100
             ),
             array(
                 'field' => 'expiration_date',
                 'visible' => true,
-                'collapsed' => false
+                'collapsed' => false,
+                'width' => 100
             )
         );
 
@@ -81,7 +85,8 @@ class DefaultChannelLayout extends DefaultLayout
             $date_fields[] = array(
                 'field' => 'comment_expiration_date',
                 'visible' => true,
-                'collapsed' => false
+                'collapsed' => false,
+                'width' => 100
             );
         }
 
@@ -89,7 +94,7 @@ class DefaultChannelLayout extends DefaultLayout
             'id' => 'date',
             'name' => 'date',
             'visible' => true,
-            'fields' => $date_fields
+            'fields' => $date_fields,
         );
 
         // Category Tab --------------------------------------------------------
@@ -103,7 +108,8 @@ class DefaultChannelLayout extends DefaultLayout
             $category_group_fields[] = array(
                 'field' => 'categories[cat_group_id_' . $cat_group->getId() . ']',
                 'visible' => true,
-                'collapsed' => false
+                'collapsed' => false,
+                'width' => 100
             );
         }
 
@@ -120,17 +126,20 @@ class DefaultChannelLayout extends DefaultLayout
             array(
                 'field' => 'channel_id',
                 'visible' => true,
-                'collapsed' => false
+                'collapsed' => false,
+                'width' => 100
             ),
             array(
                 'field' => 'status',
                 'visible' => true,
-                'collapsed' => false
+                'collapsed' => false,
+                'width' => 100
             ),
             array(
                 'field' => 'author_id',
                 'visible' => true,
-                'collapsed' => false
+                'collapsed' => false,
+                'width' => 100
             )
         );
 
@@ -138,7 +147,8 @@ class DefaultChannelLayout extends DefaultLayout
             $option_fields[] = array(
                 'field' => 'sticky',
                 'visible' => true,
-                'collapsed' => false
+                'collapsed' => false,
+                'width' => 100
             );
         }
 
@@ -146,7 +156,8 @@ class DefaultChannelLayout extends DefaultLayout
             $option_fields[] = array(
                 'field' => 'allow_comments',
                 'visible' => true,
-                'collapsed' => false
+                'collapsed' => false,
+                'width' => 100
             );
         }
 
@@ -179,7 +190,8 @@ class DefaultChannelLayout extends DefaultLayout
                     $tab['fields'][] = array(
                         'field' => $field['field_id'],
                         'visible' => true,
-                        'collapsed' => false
+                        'collapsed' => false,
+                        'width' => 100
                     );
                 }
 
@@ -196,12 +208,14 @@ class DefaultChannelLayout extends DefaultLayout
                     array(
                         'field' => 'versioning_enabled',
                         'visible' => true,
-                        'collapsed' => false
+                        'collapsed' => false,
+                        'width' => 100
                     ),
                     array(
                         'field' => 'revisions',
                         'visible' => true,
-                        'collapsed' => false
+                        'collapsed' => false,
+                        'width' => 100
                     )
                 )
             );

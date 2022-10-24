@@ -43,6 +43,9 @@ class Logging extends Settings
         $base_url = ee('CP/URL')->make('settings/logging');
 
         if (! empty($_POST)) {
+            if (is_array($_POST['anonymize_consent_logs'])) {
+                $_POST['anonymize_consent_logs'] = implode('|', $_POST['anonymize_consent_logs']);
+            }
             if ($this->saveSettings($vars['sections'])) {
                 ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), true);
             } else {

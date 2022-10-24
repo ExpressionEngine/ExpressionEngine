@@ -24,7 +24,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 				<h2 class="add-on-card__title">Structure <span class="add-on-card__title-version">2.0.0</span></h2>
 				<p class="add-on-card__desc">Create pages, generate navigation, manage content through a simple interface and build robust sites faster than ever.</p>
 			</div>
-			<span class="add-on-card__cog"><i class="fas fa-cog"></i></span>
+			<span class="add-on-card__cog"><i class="fal fa-cog"></i></span>
 	</div>
 	<div class="add-on-card">
 			<div class="add-on-card__icon">
@@ -36,7 +36,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 				<h2 class="add-on-card__title">Super Restricted Entries <span class="add-on-card__title-version">2.0.0</span></h2>
 				<p class="add-on-card__desc">Super restricted entries is created to allow admin to restrict members or</p>
 			</div>
-			<span class="add-on-card__cog"><i class="fas fa-cog"></i></span>
+			<span class="add-on-card__cog"><i class="fal fa-cog"></i></span>
 	</div>
 	<div class="add-on-card add-on-card--selected">
 			<div class="add-on-card__icon">
@@ -48,7 +48,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 				<h2 class="add-on-card__title">Rocket <span class="add-on-card__title-version">2.0.0</span></h2>
 				<p class="add-on-card__desc">Dramatically improve the loading speed of your pages, and reduce</p>
 			</div>
-			<span class="add-on-card__cog"><i class="fas fa-cog"></i></span>
+			<span class="add-on-card__cog"><i class="fal fa-cog"></i></span>
 	</div>
 </div>
 

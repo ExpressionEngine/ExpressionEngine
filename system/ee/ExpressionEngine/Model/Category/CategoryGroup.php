@@ -76,7 +76,7 @@ class CategoryGroup extends StructureModel
         if ($name == 'Channel' || $name == 'Channels') {
             return ee('Model')->get('Channel')
                 ->filter('site_id', ee()->config->item('site_id'))
-                ->all()
+                ->all(true)
                 ->filter(function ($channel) {
                     return in_array($this->getId(), explode('|', (string) $channel->cat_group));
                 });

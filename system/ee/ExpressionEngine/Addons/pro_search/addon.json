@@ -1,0 +1,14 @@
+{
+    "name": "Pro Search",
+    "shortname": "pro_search",
+    "version": "8.0.0",
+    "description": "Powerful site search and Find &amp; Replace utility",
+    "trial": true,
+    "namespace": "Pro\\Search",
+    "require": {
+        "php": ">=7.2.*",
+        "expressionengine/core": ">=7"
+    },
+    "resources": {
+    }
+}

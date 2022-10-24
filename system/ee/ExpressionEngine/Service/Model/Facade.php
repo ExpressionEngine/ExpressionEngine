@@ -27,6 +27,8 @@ class Facade
     protected $datastore;
     protected $validation;
 
+    protected $_typed_models = ['File', 'Directory'];
+
     /**
      * @param $datastore ExpressionEngine\Service\Model\DataStore
      */
@@ -55,6 +57,10 @@ class Facade
             } else {
                 $builder->filter($shortname, $default_ids);
             }
+        }
+
+        if (in_array($name, $this->_typed_models)) {
+            $builder->filter('model_type', $name);
         }
 
         $builder->setFacade($this);

@@ -575,7 +575,7 @@ html {
 }
 
 body {
-    font-family: Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Oxygen,Cantarell,sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
     height: 100%;
     font-size: 1rem;
     line-height: 1.6;
@@ -716,7 +716,7 @@ html {
 }
 
 body {
-    font-family: Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Oxygen,Cantarell,sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
     height: 100%;
     font-size: 1rem;
     line-height: 1.6;
@@ -911,7 +911,7 @@ if (! function_exists('post_install_message_template')) {
 
   		<div class="alert alert--attention">
             <div class="alert__icon">
-              <i class="fas fa-info-circle fa-fw"></i>
+              <i class="fal fa-info-circle fa-fw"></i>
             </div>
             <div class="alert__content">
     			<p>If you are site owner, please login into your Control Panel and create your first template.</p>
@@ -919,7 +919,7 @@ if (! function_exists('post_install_message_template')) {
   		</div>
   		<div class="alert alert--attention">
             <div class="alert__icon">
-              <i class="fas fa-info-circle fa-fw"></i>
+              <i class="fal fa-info-circle fa-fw"></i>
             </div>
             <div class="alert__content">
     			<p>If this is your first time using ExpressionEngine CMS, make sure to <a href="https://docs.expressionengine.com/latest/getting-started/the-big-picture.html">check out the documentation</a> to get started.</p>
@@ -934,7 +934,7 @@ if (! function_exists('post_install_message_template')) {
 			</div>
 			<section class="bar">
 				<p style="float: left;"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
-				<p style="float: right;">&copy;2021 <a href="https://packettide.com/" rel="external">Packet Tide</a>, LLC</p>
+				<p style="float: right;">&copy;2022 <a href="https://packettide.com/" rel="external">Packet Tide</a>, LLC</p>
 			</section>
 		</section>
 
@@ -970,7 +970,7 @@ if (! function_exists('mfa_message_template')) {
             --ee-link-hover: #171feb;
             --ee-bg-blank: #fff;
             --ee-code-border: #dfe0ef;
-        
+
             --ee-input-color: #0d0d19;
             --ee-input-bg: #fff;
             --ee-input-placeholder: #adaec5;
@@ -981,7 +981,7 @@ if (! function_exists('mfa_message_template')) {
             --ee-button-primary-color: #fff;
             --ee-button-primary-bg: #5D63F1;
             --ee-button-primary-border: #5D63F1;
-        
+
             --ee-bg-0: #f7f7fb;
             --ee-border: #dfe0ef;
             --ee-error: #FA5252;
@@ -992,20 +992,20 @@ if (! function_exists('mfa_message_template')) {
 
         @font-face{font-family:Roboto;font-style:normal;font-weight:400;src:url({url_themes}webfonts/roboto-v20-latin-regular.eot);src:local("Roboto"),local("Roboto-Regular"),url({url_themes}webfonts/roboto-v20-latin-regular.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-regular.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-regular.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-regular.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-regular.svg#Roboto) format("svg")}@font-face{font-family:Roboto;font-style:italic;font-weight:400;src:url({url_themes}webfonts/roboto-v20-latin-italic.eot);src:local("Roboto Italic"),local("Roboto-Italic"),url({url_themes}webfonts/roboto-v20-latin-italic.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-italic.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-italic.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-italic.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-italic.svg#Roboto) format("svg")}@font-face{font-family:Roboto;font-style:normal;font-weight:500;src:url({url_themes}webfonts/roboto-v20-latin-500.eot);src:local("Roboto Medium"),local("Roboto-Medium"),url({url_themes}webfonts/roboto-v20-latin-500.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-500.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-500.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-500.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-500.svg#Roboto) format("svg")}@font-face{font-family:Roboto;font-style:italic;font-weight:500;src:url({url_themes}webfonts/roboto-v20-latin-500italic.eot);src:local("Roboto Medium Italic"),local("Roboto-MediumItalic"),url({url_themes}webfonts/roboto-v20-latin-500italic.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-500italic.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-500italic.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-500italic.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-500italic.svg#Roboto) format("svg")}@font-face{font-family:Roboto;font-style:normal;font-weight:700;src:url({url_themes}webfonts/roboto-v20-latin-700.eot);src:local("Roboto Bold"),local("Roboto-Bold"),url({url_themes}webfonts/roboto-v20-latin-700.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-700.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-700.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-700.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-700.svg#Roboto) format("svg")}@font-face{font-family:Roboto;font-style:italic;font-weight:700;src:url({url_themes}webfonts/roboto-v20-latin-700italic.eot);src:local("Roboto Bold Italic"),local("Roboto-BoldItalic"),url({url_themes}webfonts/roboto-v20-latin-700italic.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/roboto-v20-latin-700italic.woff2) format("woff2"),url({url_themes}webfonts/roboto-v20-latin-700italic.woff) format("woff"),url({url_themes}webfonts/roboto-v20-latin-700italic.ttf) format("truetype"),url({url_themes}webfonts/roboto-v20-latin-700italic.svg#Roboto) format("svg")}
         @font-face{font-family:'Font Awesome 5 Free';font-style:normal;font-weight:900;font-display:auto;src:url({url_themes}webfonts/fa-solid-900.eot);src:url({url_themes}webfonts/fa-solid-900.eot?#iefix) format("embedded-opentype"),url({url_themes}webfonts/fa-solid-900.woff2) format("woff2"),url({url_themes}webfonts/fa-solid-900.woff) format("woff"),url({url_themes}webfonts/fa-solid-900.ttf) format("truetype"),url({url_themes}webfonts/fa-solid-900.svg#fontawesome) format("svg")}
-        
+
         *, :after, :before {
             box-sizing: inherit;
         }
-        
+
         html {
             box-sizing: border-box;
             font-size: 15px;
             height: 100%;
             line-height: 1.15;
         }
-        
+
         body {
-            font-family: Roboto,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Oxygen,Cantarell,sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
             height: 100%;
             font-size: 1rem;
             line-height: 1.6;
@@ -1014,7 +1014,7 @@ if (! function_exists('mfa_message_template')) {
             -webkit-font-smoothing: antialiased;
             margin: 0;
         }
-        
+
         .panel {
             margin-bottom: 20px;
             background-color: var(--ee-panel-bg);
@@ -1035,7 +1035,7 @@ if (! function_exists('mfa_message_template')) {
             border-radius: 0;
             display: flex;
         }
-        
+
         .redirect-inner {
           background-color: var(--ee-panel-bg);
           border: 1px solid var(--ee-panel-border);
@@ -1048,21 +1048,21 @@ if (! function_exists('mfa_message_template')) {
         .redirect-inner .qr-code-wrap {
             text-align: center;
         }
-        
+
         .panel-heading {
             padding: 20px 25px;
             position: relative;
         }
-        
+
         .panel-body {
             padding: 20px 25px;
         }
-        
+
         .panel-body:after, .panel-body:before {
             content: " ";
             display: table;
         }
-        
+
         .redirect p {
             margin-bottom: 20px;
         }
@@ -1086,7 +1086,7 @@ if (! function_exists('mfa_message_template')) {
             font-size: .96em;
             white-space: normal;
         }
-        
+
         a {
             color: var(--ee-link);
             text-decoration: none;
@@ -1094,51 +1094,51 @@ if (! function_exists('mfa_message_template')) {
             -moz-transition: color .15s ease-in-out;
             -o-transition: color .15s ease-in-out;
         }
-        
+
         a:hover {
             color: var(--ee-link-hover);
         }
-        
+
         h3 {
             font-size: 1.35em;
             font-weight: 500;
         }
-        
+
         ol, ul {
             padding-left: 0;
         }
-        
+
         ol li, ul li {
             list-style-position: inside;
         }
-        
+
         .panel-footer {
             padding: 20px 25px;
             position: relative;
         }
-        
+
         fieldset {
             margin: 0;
             padding: 0;
             margin-bottom: 20px;
             border: 0;
         }
-        
+
         fieldset.last {
             margin-bottom: 0;
         }
-        
+
         .field-instruct {
             margin-bottom: 5px;
         }
-        
+
         .field-instruct label {
             display: block;
             color: var(--ee-text-normal);
             margin-bottom: 5px;
             font-weight: 500;
         }
-        
+
         .field-instruct :last-child {
             margin-bottom: 0;
         }
@@ -1154,14 +1154,14 @@ if (! function_exists('mfa_message_template')) {
         .field-instruct label+em {
             margin-top: -5px;
         }
-        
+
         button, input, optgroup, select, textarea {
             font-family: inherit;
             font-size: 100%;
             line-height: 1.15;
             margin: 0;
         }
-        
+
         input[type=text], input[type=password] {
             display: block;
             width: 100%;
@@ -1176,15 +1176,15 @@ if (! function_exists('mfa_message_template')) {
             border: 1px solid var(--ee-input-border);
             border-radius: 5px;
         }
-        
+
         input[type=text]:focus, input[type=password]:focus {
             border-color: var(--ee-input-focus-border);
         }
-        
+
         input:focus {
             outline: 0;
         }
-        
+
         .button {
             -webkit-appearance: none;
             display: inline-block;
@@ -1208,31 +1208,31 @@ if (! function_exists('mfa_message_template')) {
             line-height: 1.6;
             border-radius: 5px;
         }
-        
+
         .button--wide {
             display: block;
             width: 100%;
         }
-        
+
         .button--large {
             padding: 10px 25px!important;
             font-size: 1.2rem;
             line-height: 1.7;
             border-radius: 6px;
         }
-        
+
         .button--primary {
             color: var(--ee-button-primary-color);
             background-color: var(--ee-button-primary-bg);
             border-color: var(--ee-button-primary-border);
         }
-        
+
         .button.disabled {
             cursor: not-allowed;
             opacity: .55;
             box-shadow: none;
         }
-        
+
         .app-notice {
             border: 1px solid var(--ee-border);
             overflow: hidden;
@@ -1241,12 +1241,12 @@ if (! function_exists('mfa_message_template')) {
             display: flex;
             margin-bottom: 20px;
         }
-        
+
         .app-notice---error {
             border-color: var(--ee-error);
             background-color: var(--ee-error-light);
         }
-        
+
         .app-notice---error .app-notice__tag {
             color: var(--ee-error);
         }
@@ -1259,7 +1259,7 @@ if (! function_exists('mfa_message_template')) {
         .app-notice---important .app-notice__tag {
             color: var(--ee-warning);
         }
-        
+
         .app-notice__tag {
             padding: 15px 20px;
             display: flex;
@@ -1267,7 +1267,7 @@ if (! function_exists('mfa_message_template')) {
             justify-content: center;
             font-size: 16px;
         }
-        
+
         .app-notice__icon {
             position: relative;
         }
@@ -1279,15 +1279,15 @@ if (! function_exists('mfa_message_template')) {
             position: relative;
             z-index: 2;
         }
-        
+
         .app-notice---error .app-notice__icon::after {
             background: var(--ee-error-light);
         }
-        
+
         .app-notice__tag+.app-notice__content {
             padding-left: 0;
         }
-        
+
         .app-notice__content {
             flex: 1 1;
             padding: 15px 20px;
@@ -1298,7 +1298,7 @@ if (! function_exists('mfa_message_template')) {
             color: var(--ee-text-primary);
             opacity: .6;
         }
-        
+
                 </style>
             </head>
             <body>

@@ -33,8 +33,15 @@
   }
 }
 
-.file-preview-modal__preview, .file-preview-modal__form {
-	flex: 0 0 50%;
+.file-preview-modal__preview {
+	flex: 0 0 40%;
+	padding: $sq-inset-m;
+	max-width: 500px;
+
+}
+
+.file-preview-modal__form {
+	flex: 0 1 100%;
 	padding: $sq-inset-m;
 }
 
@@ -47,11 +54,6 @@
 		color: color(text-secondary);
 	}
 }
-
-.file-preview-modal__form {
-  padding-top: 65px;
-}
-
 
 .file-preview-modal__preview-file {
 	overflow: hidden;
@@ -80,4 +82,37 @@
 	color: color(text-secondary);
 	margin-top: $s-s;
 	font-size: 0.9em;
+}
+
+// Override padding for File Manager > Edit File
+.file-edit-view {
+  .file-preview-modal {
+    padding: 0 !important;
+  }
+
+  .file-preview-modal__preview {
+    border-right: 1px solid color(border);
+    margin-right: -1px;
+    background-color: color(bg-0);
+    padding: 25px 30px 25px 30px;
+    border-radius: 0 0 0 $border-radius-large;
+
+    @include m-tablet-down {
+      max-width: 100%;
+      width: 100%;
+      border-top: 1px solid var(--ee-border);
+      margin-right: 0;
+      border-right: none;
+      border-radius: 0 0 $border-radius-large $border-radius-large;
+    }
+  }
+
+  .file-preview-modal__form {
+    padding: 25px 30px 20px 25px;
+    border-left: 1px solid color(border);
+
+    @include m-tablet-down {
+      border-left: none;
+    }
+  }
 }

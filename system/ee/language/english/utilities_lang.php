@@ -18,6 +18,8 @@ $lang = array(
 
     'cp_translations' => 'CP Translations',
 
+    'sync_conditional_fields' => 'Sync Conditional Fields',
+
     'data_operations' => 'Data Operations',
 
     'manage_extensions' => 'Manage Extensions',
@@ -131,6 +133,31 @@ $lang = array(
     'translate_error_desc' => 'We were unable to save the translation, please review and fix errors below.',
 
     'translations_saved' => 'Translations Saved',
+
+    /* Sync conditional fields */
+    'no_channels_available' => 'No channels available.',
+
+    'sync_required' => 'Sync Required',
+
+    'sync_channel_entries' => 'Sync channel entries',
+
+    'field_conditions_sync_success' => 'Conditional Field Logic Updated',
+
+    'field_conditions_sync_success_desc' => 'All related channel entries have been updated to use the most recent conditional logic.',
+
+    'field_conditions_sync_existing_entries' => 'Existing entries',
+
+    'field_conditions_sync_desc' => 'Syncing <b>%d</b> entries from channnels: %s',
+
+    'field_conditions_syncing_conditional_logic' => 'Syncing Conditional Logic',
+
+    'field_conditions_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'field_conditions_sync_in_progress_message' => 'Do not navigate away from this screen while syncing is in progress.',
+
+    'btn_sync_conditional_logic' => 'Sync Conditional Logic',
+
+    'btn_sync_conditional_logic_working' => 'Syncing conditional logic...',
 
     /* PHP Info */
     'php_info_title' => '<abbr title="Preprocessor Hypertext Processor">PHP</abbr> %s Info',
@@ -470,6 +497,36 @@ $lang = array(
     'total_records' => 'Total Records',
 
     'uptime' => 'Uptime',
+
+    /* File Usage */
+
+    'update_file_usage' => 'Update File Usage',
+
+    'update_file_usage_explained_desc' => 'Run this utility to convert all files stored in the database from sites previous to ExpressionEngine 7 to the new ExpressionEngine 7 file format. This must be completed before newer File Manager features may be used. <a href="%s">Read more on Compatiblity Mode in the docs</a> <br /><br />
+
+    It is recommended that you make sure all installed add-ons are compatible with ExpressionEngine 7 and newer, and that you have made a <a href="%s">backup of your database</a> first.<br /><br />
+    
+    After the update operation is completed, visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode for File Manager.<br /><br />',
+
+    'update_file_usage_desc' => 'Will update content in %d database tables',
+
+    'update_file_usage_started' => 'Started updating file usage',
+
+    'update_file_usage_completed' => 'File usage update complete. %s database tables were affected.',
+
+    'update_file_usage_success' => 'File Usage Updated',
+
+    'update_file_usage_success_desc' => 'The file data has been converted to the new format',
+
+    'update_file_usage_fail' => 'Unable to update file usage',
+
+    'file_manager_compatibility_mode_warning' => 'File Manager is set to Compatibility Mode',
+
+    'file_manager_compatibility_mode_warning_desc' => 'ExpressionEngine 7.0 changes the way data is stored for files. These changes can cause issues with third-party add-ons that are incompatible the new File Manager.<br /><br />
+
+    To prevent unexpected issues, we have disabled some features by setting File Manager to run in Compatibility Mode. <a href="%s">Read more on Compatiblity Mode in the docs</a><br /><br />
+
+Once you are ready to experience the new File Manager features, please run the <a href="%s">Update File Usage</a> Utility and then visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode.',
 
     /* Search Reindex */
 

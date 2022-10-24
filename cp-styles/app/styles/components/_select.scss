@@ -12,7 +12,9 @@
 
 	.select__button-label::after {
 		content: fa-content($fa-var-angle-up);
-    top: 1px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
 		// transform: scaleY(-1);
 	}
 
@@ -72,16 +74,17 @@
 
 	&::after {
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 
 		content: fa-content($fa-var-angle-down);
 
 		position: absolute;
 		// height: 16px;
-		top: 2px;
-		bottom: 0;
 		margin: auto 0;
 		right: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
 
 		transition: transform 100ms ease;
 		// color: color(text-secondary);
@@ -151,7 +154,7 @@
 		// color: color(text-primary);
 	}
 
-	.fas {
+	.fas, .fal {
 		color: color(text-secondary);
 	}
 

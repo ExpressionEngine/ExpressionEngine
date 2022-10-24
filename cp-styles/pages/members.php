@@ -10,9 +10,9 @@
 			<a href="" class="sidebar__link">Pending Activation</a>
 
 			<div class="sidebar__section-title">Member Settings</div>
-			<a href="" class="sidebar__link"><i class="fas fa-ban fa-fw"></i> Banned Settings</a>
-			<a href="" class="sidebar__link"><i class="fas fa-user-tag fa-fw"></i> Roles</a>
-			<a href="" class="sidebar__link"><i class="fas fa-bars fa-fw"></i> Fields</a>
+			<a href="" class="sidebar__link"><i class="fal fa-ban fa-fw"></i> Banned Settings</a>
+			<a href="" class="sidebar__link"><i class="fal fa-user-tag fa-fw"></i> Roles</a>
+			<a href="" class="sidebar__link"><i class="fal fa-bars fa-fw"></i> Fields</a>
 		</nav>
 	</div>
 

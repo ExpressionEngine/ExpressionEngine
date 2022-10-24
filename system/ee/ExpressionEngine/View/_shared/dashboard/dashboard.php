@@ -162,7 +162,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 		<div class="list-item list-item--action">
 			<a href="<?=ee('CP/URL')->make('addons/settings/spam')?>" class="list-item__content">
 				<b><?=$number_of_new_spam?></b> <?=lang('new_spam') ?> <?=lang('since_last_login')?>
-				<i class="fas fa-chevron-right float-right" style="margin-top: 2px;"></i>
+				<i class="fal fa-chevron-right float-right" style="margin-top: 2px;"></i>
 			</a>
 		</div>
 		<?php else: ?>

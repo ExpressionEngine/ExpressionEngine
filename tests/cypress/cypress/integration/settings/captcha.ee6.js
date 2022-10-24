@@ -131,7 +131,7 @@ context('CAPTCHA Settings', () => {
     //page.submit()
     cy.get('button').contains('Save Settings').first().click()
 
-    page.get('wrap').contains('Preferences updated')
+    page.get('wrap').contains('Preferences Updated')
     page.get('require_captcha').invoke('val').then((val) => {
       expect(val).not.to.be.equal(require_captcha)
     })

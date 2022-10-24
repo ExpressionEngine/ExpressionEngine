@@ -41,14 +41,23 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(FileField).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_this), "setFile", function (response) {
-      var fileField = _this.getFieldContainer();
+    _defineProperty(_assertThisInitialized(_this), "setFile", function (response, mainDropzone) {
+      var fileField = _this.getFieldContainer(mainDropzone);
 
-      EE.FileField.pickerCallback(response, {
-        input_value: fileField.find('input.js-file-input'),
-        input_img: fileField.find('img.js-file-image'),
-        modal: $('.modal-file')
-      });
+      if (fileField.find('div[data-file-field-react]').length) {
+        EE.FileField.pickerCallback(response, {
+          input_value: fileField.find('input.js-file-input'),
+          input_img: fileField.find('img.js-file-image'),
+          modal: $('.modal-file')
+        });
+      }
+
+      if (fileField.find('textarea.has-format-options').length) {
+        EE.filePickerCallback(response, {
+          input_value: mainDropzone,
+          modal: $('.modal-file')
+        });
+      }
 
       _this.setState({
         file: response
@@ -78,13 +87,23 @@ function (_React$Component) {
     }
   }, {
     key: "getFieldContainer",
-    value: function getFieldContainer() {
-      // If in a grid, return that
-      if ($(this.props.thisField).closest('.grid-file-upload').length) {
-        return $(this.props.thisField).closest('.grid-file-upload');
+    value: function getFieldContainer(mainDropzone) {
+      var thisField = $(this.props.thisField);
+
+      if (mainDropzone !== undefined) {
+        thisField = mainDropzone.parents('div[data-file-field-react]');
+
+        if (!thisField.length) {
+          thisField = mainDropzone;
+        }
+      } // If in a grid, return that
+
+
+      if (thisField.closest('.grid-file-upload').length) {
+        return thisField.closest('.grid-file-upload');
       }
 
-      var fluidContainer = $(this.props.thisField).closest('.fluid__item-field'); // Is this file field inside of a fluid field? 
+      var fluidContainer = thisField.closest('.fluid__item-field'); // Is this file field inside of a fluid field? 
       // If it is, we need to get the fluid item container, 
       // not the container that holds the entire fluid field
 
@@ -92,7 +111,7 @@ function (_React$Component) {
         return fluidContainer;
       }
 
-      return $(this.props.thisField).closest('.grid-file-upload, .field-control');
+      return thisField.closest('.grid-file-upload, .field-control');
     }
   }, {
     key: "render",
@@ -104,7 +123,7 @@ function (_React$Component) {
       return React.createElement(DragAndDropUpload, _extends({}, this.props, {
         onFileUploadSuccess: this.setFile,
         marginTop: false,
-        multiFile: false
+        multiFile: true
       }));
     }
   }], [{
@@ -113,7 +132,9 @@ function (_React$Component) {
       $('div[data-file-field-react]', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('fileFieldReact')));
         props.thisField = $(this);
+        var files_field = props.thisField.data('input-value');
         ReactDOM.render(React.createElement(FileField, props, null), this);
+        new MutableSelectField(files_field, EE.fileManager.fileDirectory);
       });
     }
   }]);

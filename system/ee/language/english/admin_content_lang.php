@@ -236,24 +236,6 @@ $lang = array(
 
     'enable_versioning' => 'Enable Entry Versioning',
 
-    'field_conditions_sync_success' => 'Conditional Field Logic Updated',
-
-    'field_conditions_sync_success_desc' => 'All related channel entries have been updated to use the most recent conditional logic.',
-
-    'field_conditions_sync_existing_entries' => 'Existing entries',
-
-    'field_conditions_sync_desc' => '<b>%d</b> entries',
-
-    'field_conditions_syncing_conditional_logic' => 'Syncing Conditional Logic',
-
-    'field_conditions_sync_conditional_logic' => 'Sync Conditional Logic',
-
-    'field_conditions_sync_in_progress_message' => 'Do not navigate away from this screen while syncing is in progress.',
-
-    'btn_sync_conditional_logic' => 'Sync Conditional Logic',
-
-    'btn_sync_conditional_logic_working' => 'Syncing conditional logic...',
-
     'field' => 'Field',
 
     'fields_assign_to_group' => 'Assign one or more fields to this group.',
@@ -279,6 +261,8 @@ $lang = array(
     'field_populate_from_channel' => 'Populate from another channel field',
 
     'field_populate_manually' => 'Populate manually',
+
+    'field_populate_missing' => 'You must select a field to populate from',
 
     'field_tools' => 'Field tools',
 
@@ -504,6 +488,20 @@ $lang = array(
 
     'versioning' => 'Versioning Preferences',
 
+    /* field channels */
+
+    'field_channels' => 'Channels',
+
+    'field_channels_desc' => 'This field is assigned to following channels',
+
+    'assigned' => 'Assigned',
+
+    'via' => 'via',
+
+    'directly' => 'directly',
+
+    'fluid_field' => 'Fluid Field',
+
     /* Generic Phrases */
     'delete' => 'Delete',
 
@@ -720,6 +718,8 @@ $lang = array(
     'multi_list_items' => 'Multi Select Options',
 
     'new_field_group' => 'New Field Group',
+
+    'ungrouped' => 'Ungrouped',
 
     'no_field_group_message' => 'There are currently no channel fields',
 

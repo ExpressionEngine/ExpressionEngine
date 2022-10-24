@@ -283,6 +283,16 @@ class Publish extends AbstractPublishController
             ->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
             ->first();
 
+        if (empty($channel_layout)) {
+            $channel_layout = ee('Model')->get('ChannelLayout')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('channel_id', $entry->channel_id)
+                ->with('PrimaryRoles')
+                ->filter('PrimaryRoles.role_id', 'IN', ee()->session->getMember()->getAllRoles()->pluck('role_id'))
+                ->all()
+                ->first();
+        }
+
         $vars['layout'] = $entry->getDisplay($channel_layout);
 
         $result = $this->validateEntry($entry, $vars['layout']);
@@ -310,7 +320,11 @@ class Publish extends AbstractPublishController
                 'ee_fileuploader',
             ),
             'ui' => ['draggable'],
-            'file' => array('cp/publish/publish', 'cp/channel/category_edit')
+            'file' => array(
+                'cp/publish/publish', 
+                'cp/publish/entry-list',
+                'cp/channel/category_edit',
+            )
         ));
 
         ee()->view->cp_breadcrumbs = array(

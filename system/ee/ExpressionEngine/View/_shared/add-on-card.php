@@ -28,7 +28,7 @@
 
 
 	<?php if (empty($show_updates)) : ?>
-	<a class="add-on-card__cog js-dropdown-toggle"><i class="fas fa-cog"></i></a>
+	<a class="add-on-card__cog js-dropdown-toggle"><i class="fal fa-cog"></i></a>
 	<?php endif; ?>
 
 	<div class="dropdown">
@@ -42,7 +42,7 @@
 		<?php endif; ?>
 
 		<?php if (ee('Permission')->hasAll('can_admin_addons') && $addon['installed']) : ?>
-			<a class="dropdown__link dropdown__link--danger m-link" href="" rel="modal-confirm-remove" data-action-url="<?= $addon['remove_url'] ?>" data-confirm="<?= $addon['name'] ?>"><?= lang('uninstall') ?></a>
+			<a class="dropdown__link dropdown__link--danger m-link" href="" rel="modal-confirm-remove" data-action-url="<?= $addon['remove_url'] ?>" data-confirm="<?= $addon['name'] ?>" data-confirm-ajax="<?= $addon['confirm_url'] ?>"><?= lang('uninstall') ?></a>
 		<?php endif; ?>
 	</div>
 

@@ -17,8 +17,8 @@ class FileManagerSection extends ControlPanel {
 			'upload_new_file_filter_menu_items': '.main-nav__toolbar .dropdown a',
 
 			// Sidebar elements
-			'upload_directories_header': 'div.sidebar h2:first-child',
-			'new_directory_button': 'div.sidebar h2:first-child .button--xsmall',
+			'upload_directories_header': 'div.sidebar h2.sidebar__section-title',
+			'new_directory_button': 'div.sidebar h2.sidebar__section-title .button--xsmall',
 			'watermarks_header': 'div.sidebar .sidebar__link:contains("Watermarks")',
 			'new_watermark_button': 'fieldset.right a.button.action',
 			'folder_list': 'div.sidebar div.scroll-wrap .folder-list div',

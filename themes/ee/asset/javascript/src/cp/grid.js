@@ -261,6 +261,14 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			this.root.toggleClass('hidden', rowCount == 0)
 		}
 
+		if ($(this.rowContainer).parents('.fluid__item-field').length) {
+			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth()
+		} else {
+			var gridFieldWidth = $(this.rowContainer).width();
+		}
+
+		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
+
 		if(rowCount == 0) {
 			var showAddButton = setInterval(function (){
 				if ( !that.find('.field-no-results').hasClass('hidden') ) {
@@ -268,6 +276,10 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 					clearInterval(showAddButton);
 				}
 			}, 50);
+
+			if (parentFieldControlWidth >= gridFieldWidth) {
+				$(this.rowContainer).parents('.grid-field').removeClass('overwidth');
+			}
 		}
 	},
 
@@ -351,6 +363,17 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Bind the new row's inputs to AJAX form validation
 		if (EE.cp && EE.cp.formValidation !== undefined) {
 			EE.cp.formValidation.bindInputs(el);
+		}
+
+		if ($(this.rowContainer).parents('.fluid__item-field').length) {
+			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth()
+		} else {
+			var gridFieldWidth = $(this.rowContainer).width();
+		}
+		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width()
+
+		if (parentFieldControlWidth < gridFieldWidth) {
+			$(this.rowContainer).parents('.grid-field').addClass('overwidth');
 		}
 
 		return el;
@@ -816,6 +839,7 @@ Grid.Settings.prototype = {
 
 			// Find the container holding the settings form, replace its contents
 			customSettingsContainer.html(settings);
+			SelectField.renderFields();
 
 			// Fire displaySettings event
 			that._fireEvent('displaySettings', settings);
@@ -957,6 +981,65 @@ $(document).ready(function () {
 	FluidField.on('grid', 'add', function(el) {
   		EE.grid($('div', el));
 	});
+
+	// Toggle grid item
+	$('body').on('click', '.grid-field .js-toggle-grid-item', function() {
+		$(this).parents('tr').toggleClass('grid__item--collapsed');
+
+		return false;
+	});
+
+	// Hide all grid items
+	$('body').on('click', '.grid-field .js-hide-all-grid-field-items', function() {
+		$(this).parents('tbody').find('tr:not(.hidden)').addClass('grid__item--collapsed');
+
+		// Hide the dropdown menu
+		$('.js-dropdown-toggle.dropdown-open').trigger('click');
+
+		return false;
+	});
+
+	// Show all grid items
+	$('body').on('click', '.grid-field .js-show-all-grid-field-items', function() {
+		$(this).parents('tbody').find('tr:not(.hidden)').removeClass('grid__item--collapsed');
+
+		// Hide the dropdown menu
+		$('.js-dropdown-toggle.dropdown-open').trigger('click');
+
+		return false;
+	});
+
+});
+function checkGrigWidth() {
+	var gridTables = $('.grid-field');
+
+	gridTables.each(function(el) {
+
+		if ( $(this).parents('.hidden').length ) return;
+
+		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
+			var tableInnerWidth = $(this).find('.grid-field__table').parents('.fluid__item-field').innerWidth()
+		} else {
+			var tableInnerWidth = $(this).find('.grid-field__table').width();
+		}
+
+		var containerWidth = $(this).parents('.field-control').width();
+
+		if (containerWidth < tableInnerWidth) {
+			$(this).addClass('overwidth');
+		}
+
+		if (containerWidth >= tableInnerWidth && $(window).width() > 1440) {
+			$(this).removeClass('overwidth');
+		}
+	});
+}
+$(window).on('load', function() {
+	checkGrigWidth();
+});
+
+$(window).on('resize', function() {
+	checkGrigWidth();
 });
 
 })(jQuery);

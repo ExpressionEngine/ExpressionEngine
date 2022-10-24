@@ -4,10 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
-      - 6.x
-  push:
-    branches:
-      - feature/6.x/preparing-to-release
+      - '*.x'
 
 jobs:
   build:
@@ -19,15 +16,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
 
-      - name: Checkout Pro
-        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          repository: EllisLab/ExpressionEngine-Pro
-          token: ${{ secrets.ORG_ACCESS_TOKEN }}
-          path: __pro
+            php-version: '7.4'
+            extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+            coverage: none
+            ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
       - name: Setup node
         uses: actions/setup-node@v2
@@ -58,9 +54,8 @@ jobs:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
-          PRO_REPO_PATH: ${{ github.workspace }}/__pro
         run: |
-          gulp app --local --nogit --head --skip-lint --jira-collector --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+          gulp app --local --nogit --head --skip-lint --jira-collector --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v2
@@ -106,7 +101,7 @@ jobs:
           fromTag: ${{ steps.prev_release_tag.outputs.tag }}
           configuration: build-tools/changelog.config.json
 
-      - uses: ncipollo/release-action@v1
+      - uses: ncipollo/release-action@v1.10.0
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} DP ${{ env.dp_ver }}
@@ -148,8 +143,8 @@ jobs:
 
             - name: Download EE 6
               run: |
-                  wget -q https://github.com/ExpressionEngine/ExpressionEngine/releases/download/6.1.5/ExpressionEngine6.1.5.zip
-                  unzip -q ExpressionEngine6.1.5.zip
+                  wget -q https://github.com/ExpressionEngine/ExpressionEngine/releases/download/7.0.0/ExpressionEngine7.0.0.zip
+                  unzip -q ExpressionEngine7.0.0.zip
                   mv ./__repo/tests ./
                   mv ./__repo/build-tools ./
                   sudo apt-get install -yq rpl
@@ -172,8 +167,8 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-                rpl -v '${{ needs.build.outputs.version }}' '6.1.5' system/user/config/config.php
-                rpl -v '${{ needs.build.outputs.version }}' '6.1.5' build-tools/build.json
+                rpl -v '${{ needs.build.outputs.version }}' '7.0.0' system/user/config/config.php
+                rpl -v '${{ needs.build.outputs.version }}' '7.0.0' build-tools/build.json
 
             - name: Remove installer
               run: |
@@ -199,7 +194,7 @@ jobs:
                 mysql -u root -proot -e 'CREATE DATABASE `ee-test`;'
                 mysql -u root -proot -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION";'
 
-            - name: Install PHP dependencies
+            - name: Install Testing PHP dependencies
               working-directory: tests/cypress
               run: composer install
 

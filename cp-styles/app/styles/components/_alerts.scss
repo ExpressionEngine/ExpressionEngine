@@ -85,6 +85,8 @@ $alert-padding-x: 20px;
 	> .app-notice__tag {
 		.app-notice__icon {
 			&::before{
+        @extend %fa-icon;
+    		@extend .fal;
 				content: fa-content($fa-var-exclamation-circle);
 			}
 		}
@@ -129,6 +131,8 @@ $alert-padding-x: 20px;
 	> .app-notice__tag {
 		.app-notice__icon {
 			&::before{
+        @extend %fa-icon;
+    		@extend .fal;
 				content: fa-content($fa-var-check-circle);
 			}
 		}
@@ -150,6 +154,8 @@ $alert-padding-x: 20px;
 		.app-notice__icon{
 			&::before{
 				color: color(text-secondary);
+        @extend %fa-icon;
+    		@extend .fal;
 				content: fa-content($fa-var-sync-alt);
 			}
 		}
@@ -172,10 +178,10 @@ $alert-padding-x: 20px;
 	position: relative;
 
 	&::before{
-		content: fa-content($fa-var-exclamation-circle);
-		@extend %fa-icon;
-		@extend .fas;
+    @extend %fa-icon;
+		@extend .fal;
 		@extend .fa-fw;
+		content: fa-content($fa-var-exclamation-circle);
 		position: relative;
 		z-index: 2;
 		// top: -1px;
@@ -210,12 +216,10 @@ $alert-padding-x: 20px;
 
 	p {
 		margin: 0;
-    color: color(text-primary);
-    opacity: 0.6;
+    color: color(text-tertiary);
 
     &.alert__title {
       color: color(text-primary);
-      opacity: 1.0;
     }
 	}
 
@@ -265,7 +269,7 @@ $alert-padding-x: 20px;
 .app-notice__dismiss {
 	&::before{
 		@extend %fa-icon;
-		@extend .fas;
+		@extend .fal;
 		// color: color(text-tertiary);
 		content: fa-content($fa-var-times);
 	}

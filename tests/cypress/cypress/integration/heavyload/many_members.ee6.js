@@ -28,6 +28,7 @@ context('Operate the site with many members', () => {
       cy.get('button:contains("Website Access")').click()
       cy.get('[type=checkbox][name=include_in_authorlist]').check()
       cy.get('body').type('{ctrl}', {release: false}).type('s')
+      cy.get('[type=checkbox][name=include_in_authorlist]').should('be.checked')
   
       cy.visit('admin.php?/cp/channels/edit/1')
       cy.get('button:contains("Settings")').click()
@@ -82,7 +83,7 @@ context('Operate the site with many members', () => {
 
         cy.visit('admin.php?/cp/utilities/communicate');
         page.hasAlert('important')
-        page.get('alert').contains("The mumber of members for each role might be inaccurate")
+        page.get('alert').contains("The number of members for each role might be inaccurate")
         cy.hasNoErrors()
         cy.logCPPerformance()
 
@@ -97,7 +98,7 @@ context('Operate the site with many members', () => {
         cy.hasNoErrors()
         cy.get('.panel-body .list-item__content:contains("Members")').find('.faded').contains('50002')
         page.hasAlert('important')
-        page.get('alert').contains("The mumber of members for each role might be inaccurate")
+        page.get('alert').contains("The number of members for each role might be inaccurate")
       })
     })
 
@@ -105,11 +106,13 @@ context('Operate the site with many members', () => {
       cy.eeConfig({item: 'ignore_member_stats', value: 'n'}).then(() => {
 
         cy.visit('admin.php?/cp/utilities/communicate');
+        cy.dismissLicenseAlert()
         cy.screenshot({capture: 'fullPage'});
         cy.get('.app-notice:visible').its('length').should('eq', 1)
         cy.hasNoErrors()
 
         cy.visit('admin.php?/cp/members/roles')
+        cy.dismissLicenseAlert()
         page.get('alert').should('not.exist')
         cy.hasNoErrors()
         cy.logCPPerformance()
@@ -117,6 +120,7 @@ context('Operate the site with many members', () => {
         cy.eeConfig({item: 'ignore_member_stats', value: 'y'}).then(() => {
 
           cy.visit('admin.php?/cp/utilities/communicate');
+          cy.dismissLicenseAlert()
           cy.get('.app-notice:visible').its('length').should('eq', 2)
           cy.hasNoErrors()
 

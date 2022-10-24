@@ -162,9 +162,3 @@ function add_members(group, count){
     member.get('save_and_new_button').click()
   }
 }
-
-function logout(){
-  cy.visit('admin.php?/cp/members/profile/settings')
-  cy.get('.main-nav__account-icon > img').click()
-  cy.get('[href="admin.php?/cp/login/logout"]').click()
-}

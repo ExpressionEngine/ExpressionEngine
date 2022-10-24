@@ -77,6 +77,7 @@ class Comment extends Variables
             return $this->variables;
         }
 
+        ee()->load->library('typography');
         ee()->typography->initialize([
             'parse_images' => false,
             'allow_headings' => false,

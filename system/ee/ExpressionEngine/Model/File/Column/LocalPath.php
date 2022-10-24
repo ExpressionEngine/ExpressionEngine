@@ -49,7 +49,6 @@ class LocalPath extends SerializedType
         if (is_dir($path)) {
             $files = array();
             $directory = ee('Model')->get('UploadDestination')->fields('id')->filter('server_path', $this->path)->first();
-            $mime = new \ExpressionEngine\Library\Mime\MimeType();
             $exclude = array('index.html');
 
             if ($dh = opendir($path)) {
@@ -61,7 +60,7 @@ class LocalPath extends SerializedType
                             'title' => $file,
                             'file_name' => $file,
                             'file_size' => filesize($path),
-                            'mime_type' => $mime->ofFile($path),
+                            'mime_type' => ee('MimeType')->ofFile($path),
                             'upload_location_id' => $directory->id
                         );
 

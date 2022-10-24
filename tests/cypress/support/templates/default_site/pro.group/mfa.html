@@ -1,0 +1,11 @@
+{layout="cypress/layout"}
+{if logged_in}
+  <p>{logged_in_username}</p>
+{/if}
+{exp:member:mfa_links}
+{if mfa_enabled}
+  <a href="{disable_mfa_link}" id="disable_mfa_link">Disable MFA</a>
+{if:else}
+  <a href="{enable_mfa_link}" id="enable_mfa_link">Enable MFA</a>
+{/if}
+{/exp:member:mfa_links}

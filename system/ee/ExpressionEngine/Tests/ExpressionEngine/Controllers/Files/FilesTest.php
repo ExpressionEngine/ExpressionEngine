@@ -32,6 +32,16 @@ class FilesTest extends TestCase
 
         sort($controller_methods);
 
-        $this->assertEquals(array('directory', 'export', 'finishupload', 'index', 'rmdir', 'upload'), $controller_methods);
+        $this->assertEquals([
+            'confirm',
+            'createsubdirectory',
+            'directory',
+            'export',
+            'finishupload',
+            'getuploadlocationsanddirectoriesdropdownchoices',
+            'index',
+            'rmdir',
+            'upload',
+        ], $controller_methods);
     }
 }

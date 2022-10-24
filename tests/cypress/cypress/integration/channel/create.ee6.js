@@ -13,7 +13,9 @@ context('Channel Create/Edit', () => {
 
     beforeEach(function() {
         cy.authVisit(page.url);
+        cy.dismissLicenseAlert()
         cy.get('a').contains('New Channel').first().click()
+        cy.dismissLicenseAlert()
     })
 
 
@@ -25,18 +27,21 @@ context('Channel Create/Edit', () => {
         //page.submit()
         page.get('save_button').first().click()
 
+        cy.dismissLicenseAlert()
         cy.hasNoErrors()
         //page.hasErrors()
         cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
 
 
         cy.contains('Cannot Create Channel')
+        cy.dismissLicenseAlert()
         page.hasError(page.get('channel_title'), page.messages.validation.required)
         page.hasError(page.get('channel_name'), page.messages.validation.required)
 
         // AJAX validation
         // Required name
         cy.reload()
+        cy.dismissLicenseAlert()
         page.get('channel_title').clear().blur()
         page.hasError(page.get('channel_title'), page.messages.validation.required)
         //page.hasErrors()

@@ -58,7 +58,6 @@ tests/rspec/fixtures/vendor/
 system/ee/ExpressionEngine/Tests/vendor/*
 system/ee/installer/updater/ExpressionEngine/Tests/vendor/*
 
-tests/cypress/cypress/integration/pro
 tests/cypress/support/sql/seed.sql
 tests/cypress/vendor/
 tests/cypress/vendor/*
@@ -110,8 +109,6 @@ system/ee/installer_*
 
 system/ee/installer/updater/ExpressionEngine/Updater/Boot/boot.common.php
 system/ee/installer/updater/ExpressionEngine/Updater/Core/Autoloader.php
-system/ee/installer/updater/ExpressionEngine/Updater/Library/Filesystem/Filesystem.php
-system/ee/installer/updater/ExpressionEngine/Updater/Library/Filesystem/FilesystemException.php
 system/ee/installer/updater/ExpressionEngine/Updater/Protocol/Config/Config.php
 system/ee/installer/updater/ExpressionEngine/Updater/Service/Config/ConfigWithDefaults.php
 system/ee/installer/updater/ExpressionEngine/Updater/Service/Config/Directory.php
@@ -121,9 +118,9 @@ system/ee/installer/updater/ExpressionEngine/Updater/Service/Logger/File.php
 system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/Logger.php
 system/ee/installer/updater/ExpressionEngine/Updater/Service/Updater/Verifier.php
 
-# Pro files
-system/ee/ExpressionEngine/Addons/pro
-themes/ee/pro
-
 #
 *.code-workspace
+/.ddev
+/vendor/
+system/ee/vendor-build/
+/vendor-bin/*/vendor

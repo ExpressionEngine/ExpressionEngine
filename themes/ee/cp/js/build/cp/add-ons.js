@@ -16,11 +16,27 @@ $(document).ready(function () {
   });
   $('.add-on-card .dropdown__link.m-link').on('click', function (e) {
     var modalIs = '.' + $(this).attr('rel');
+    var ajax_url = $(this).data('confirm-ajax');
+    $(modalIs + " .ajax").html('');
+
+    if (typeof ajax_url != 'undefined') {
+      $.post(ajax_url, $(modalIs + " form").serialize(), function (data) {
+        $(modalIs + " .ajax").html(data);
+        Dropdown.renderFields();
+      });
+    }
+
     $(modalIs + " .checklist").html(''); // Reset it
 
     $(modalIs + " .checklist").append('<li>' + $(this).data('confirm') + '</li>');
     $(modalIs + " form").attr('action', $(this).data('action-url')); // Reset it
 
     e.preventDefault();
+  });
+  $('.modal-confirm-remove form').on('submit', function (e) {
+    if ($(this).find('.ajax').length && $(this).find('button').hasClass('off')) {
+      $(this).find('.ajax .fieldset-invalid').show();
+      e.preventDefault();
+    }
   });
 });

@@ -198,7 +198,7 @@ context('Channel Layouts: Create/Edit', () => {
     })
 
     it('cannot hide a tab with a required field', function() {
-        page.get('hide_date_tab').trigger('click', { force: true })
+        page.get('hide_date_tab').trigger('click')
         page.hasAlert()
         page.get('alert').contains('Cannot Hide Tab')
     })

@@ -23,7 +23,7 @@
 	li{
 		&:before{
 			@extend %fa-icon;
-			@extend .fas;
+			@extend .fal;
 
 			content: fa-content($fa-var-check);
 			margin-right: $s-xs;

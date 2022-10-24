@@ -21,7 +21,7 @@
 
 			<div class="list-item">
 				<div class="list-item__content">
-					<a href="" class="m-link float-right button button--default button--small" rel="modal-confirm-<?=$log->id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"><span class="hidden"><?=lang('delete')?></span></i></a>
+					<a href="" class="m-link float-right button button--default button--small" rel="modal-confirm-<?=$log->id?>" title="<?=lang('delete')?>"><i class="fal fa-trash-alt"><span class="hidden"><?=lang('delete')?></span></i></a>
 					<div style="margin-bottom: 20px;">
 						<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->search_date)?>,
 						<b><?=lang('site')?>:</b> <?=$log->getSite()->site_label?><br>

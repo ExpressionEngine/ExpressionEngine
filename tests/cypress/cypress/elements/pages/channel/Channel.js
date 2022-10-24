@@ -91,6 +91,7 @@ class Channel extends ControlPanel {
     load_edit_for_channel(number) {
         cy.visit(this.url)
         cy.get('ul.list-group li:nth-child(' + number + ') a.list-item__content').first().click()
+        cy.dismissLicenseAlert()
     }
 
     hasLocalErrors() {

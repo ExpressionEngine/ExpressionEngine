@@ -20,7 +20,7 @@
 <div class="cp-wrap">
     <div class="sidebar">
         <div class="sidebar__items">
-            <a href=""><i class="fas fa-tachometer-alt"></i>
+            <a href=""><i class="fal fa-tachometer-alt"></i>
                 Dashboard
             </a>
             <!-- <a href="" class="selected"><div class="icon"><svg class="feather"><use xlink:href="../app/assets/images/feather-sprite.svg#file"/></svg></div> Entries</a>

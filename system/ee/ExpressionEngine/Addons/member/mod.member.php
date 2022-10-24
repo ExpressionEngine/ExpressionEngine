@@ -539,7 +539,7 @@ class Member
             'disable_mfa_link' => '',
         ];
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense() && (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y')) {
+        if (ee('pro:Access')->hasRequiredLicense() && (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y')) {
             $return = ee()->TMPL->fetch_param('return', ee()->uri->uri_string);
             if (ee()->session->userdata('mfa_enabled') == true) {
                 $data['disable_mfa_link'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Pro', 'disableMfa') . AMP . 'RET=' . $return;
@@ -1353,6 +1353,7 @@ class Member
         if ($result['success'] !== true || $result['score'] < ee()->config->item('recaptcha_score_threshhold')) {
             $string = "failed";
         }
+
         return ee()->output->send_ajax_response(['success' => $result['success'], 'code' => $string]);
     }
 
@@ -2756,18 +2757,19 @@ class Member
         if (!empty(ee()->TMPL->fetch_param('fields'))) {
             $url .= '&fields=' . ee()->TMPL->fetch_param('fields');
         }
+
         return $url;
     }
 
     /**
      * Parse a custom member field
      *
-     * @param	int		$field_id	Member field ID
-     * @param	array	$field		Tag information as parsed by ee('Variables/Parser')->parseVariableProperties()
-     * @param	mixed	$data		Data for this field
-     * @param	string	$tagdata	Tagdata to perform the replacement in
-     * @param	string	$member_id	ID for the member this data is associated
-     * @return	string	String with variable parsed
+     * @param   int     $field_id   Member field ID
+     * @param   array   $field      Tag information as parsed by ee('Variables/Parser')->parseVariableProperties()
+     * @param   mixed   $data       Data for this field
+     * @param   string  $tagdata    Tagdata to perform the replacement in
+     * @param   string  $member_id  ID for the member this data is associated
+     * @return  string  String with variable parsed
      */
     protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array(), $tag = false)
     {

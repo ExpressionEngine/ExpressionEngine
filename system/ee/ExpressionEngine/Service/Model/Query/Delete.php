@@ -31,6 +31,9 @@ class Delete extends Query
             return;
         }
 
+        $mainClass = $this->store->getMetaDataReader($from)->getClass();
+        $mainClass::emitStatic('beforeAssociationsBulkDelete', $parent_ids);
+
         $from_alias = 'CurrentlyDeleting';
 
         $delete_list = $this->getDeleteList($from, $from_alias);
@@ -90,6 +93,7 @@ class Delete extends Query
                 $delete_ids = $this->deleteCollection($delete_models, $to_meta);
             } while (count($delete_ids) == $batch_size);
         }
+        $mainClass::emitStatic('afterAssociationsBulkDelete', $parent_ids);
     }
 
     /**
@@ -338,11 +342,7 @@ class Delete extends Query
         $withs = $this->nest($withs);
 
         return function ($query) use ($relation, $withs) {
-            if (($relation->getSourceModel() == 'Role' || $relation->getSourceModel() == 'ee:Role') &&
-                ($relation->getTargetModel() == 'Member' || $relation->getTargetModel() == 'ee:Member')) {
-                return array();
-            }
-
+            // When delting data with a pivot table on/to Role, don’t just blindly delete everything.
             if (($relation->getTargetModel() == 'Role' || $relation->getTargetModel() == 'ee:Role') &&
                 ($relation->getPivot() != array())) {
                 return array();

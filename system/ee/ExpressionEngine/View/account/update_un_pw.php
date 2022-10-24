@@ -5,7 +5,7 @@
 </div>
 
 <div class="login__content reset-password">
-<h1 class="login__title"><?=lang('new_requirements')?> <i class="fas fa-redo-alt"></i></h1>
+<h1 class="login__title"><?=lang('new_requirements')?> <i class="fal fa-redo-alt"></i></h1>
 	<?=ee('CP/Alert')->getAllInlines()?>
 
 	<?=form_open(ee('CP/URL')->make('login/update_un_pw'), array(), $hidden)?>

@@ -190,7 +190,8 @@ class Layouts extends AbstractChannelsController
                 $field_layout[0]['fields'][] = array(
                     'field' => $entry->getCustomFieldPrefix() . $custom_field->field_id,
                     'visible' => true,
-                    'collapsed' => false
+                    'collapsed' => false,
+                    'width' => 100
                 );
             }
 

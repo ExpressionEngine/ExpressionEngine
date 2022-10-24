@@ -70,6 +70,10 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
 
         $field = ee('Variables/Parser')->parseVariableProperties($tag, $prefix);
 
+        if ($field['invalid_modifier']) {
+            return $tagdata;
+        }
+
         if (isset($cfields[$field['field_name']])) {
             $entry = '';
             $field_id = $cfields[$field['field_name']];
@@ -122,28 +126,27 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     ee()->load->remove_package_path($_ft_path);
 
                     //frontend edit link
-                    if (IS_PRO) {
-                        if ($ft_api->field_type != 'fluid_field') {
-                            $frontedit_disabled = false;
-                            $frontEditLink = '';
-                            if (isset($obj->disable_frontedit) && $obj->disable_frontedit == true) {
+
+                    if ($ft_api->field_type != 'fluid_field') {
+                        $frontedit_disabled = false;
+                        $frontEditLink = '';
+                        if (isset($obj->disable_frontedit) && $obj->disable_frontedit == true) {
+                            $frontedit_disabled = true;
+                        } elseif (isset($field['params']['disable'])) {
+                            $disable = explode("|", $field['params']['disable']);
+                            if (in_array('frontedit', $disable)) {
                                 $frontedit_disabled = true;
-                            } elseif (isset($field['params']['disable'])) {
-                                $disable = explode("|", $field['params']['disable']);
-                                if (in_array('frontedit', $disable)) {
-                                    $frontedit_disabled = true;
-                                }
                             }
-                            if (!$frontedit_disabled) {
-                                $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($orig_data['site_id'], $orig_data['channel_id'], $orig_data['entry_id'], $field_id);
-                            }
-                            $fulltag = $tag;
-                            if ($prefix != '' && strpos($tag, $prefix) !== 0) {
-                                $fulltag = $prefix . $tag;
-                            }
-                            $tagdata = str_replace(LD . $fulltag . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tagdata);
-                            $tag = trim(str_replace(['disable="frontedit"', "disable='frontedit'"], '', $tag));
                         }
+                        if (!$frontedit_disabled) {
+                            $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($orig_data['site_id'], $orig_data['channel_id'], $orig_data['entry_id'], $field_id);
+                        }
+                        $fulltag = $tag;
+                        if ($prefix != '' && strpos($tag, $prefix) !== 0) {
+                            $fulltag = $prefix . $tag;
+                        }
+                        $tagdata = str_replace(LD . $fulltag . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tagdata);
+                        $tag = trim(str_replace(['disable="frontedit"', "disable='frontedit'"], '', $tag));
                     }
                 } else {
                     // Couldn't find a fieldtype

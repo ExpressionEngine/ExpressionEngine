@@ -283,24 +283,37 @@ class General extends Settings
                 $version_major = explode('.', APP_VER, 2)[0];
                 $update_version_major = explode('.', $version_info['version'], 2)[0];
 
+                $isVitalUpdate = $version_info['security'];
+                $isMajorUpdate = version_compare($version_major, $update_version_major, '<');
+
                 if (AJAX_REQUEST) {
                     return [
-                        'isVitalUpdate' => $version_info['security'],
-                        'isMajorUpdate' => version_compare($version_major, $update_version_major, '<'),
+                        'isVitalUpdate' => $isVitalUpdate,
+                        'isMajorUpdate' =>$isMajorUpdate,
                         'newVersionMarkup' => ee('View')->make('ee:_shared/_new_version')->render($version_info)
                     ];
                 }
 
                 $upgrade_url = ee('CP/URL', 'updater')->compile();
-                $instruct_url = ee()->cp->masked_url(DOC_URL . 'installation/update.html');
+                $instruct_url = ee()->cp->masked_url('https://docs.expressionengine.com/latest/installation/update.html');
 
-                $desc = sprintf(lang('version_update_inst'), $version_info['version'], $upgrade_url, $instruct_url);
-
-                ee('CP/Alert')->makeBanner('version-update-available')
-                    ->asWarning()
-                    ->withTitle(lang('version_update_available'))
-                    ->addToBody($desc)
-                    ->defer();
+                $banner = ee('CP/Alert')->makeBanner('version-update-available')
+                    ->asAttention()
+                    ->canClose()
+                    ->withTitle(sprintf(lang('version_update_available'), $version_info['version']));
+                if ($isMajorUpdate) {
+                    $banner->addToBody(lang('version_update_is_major') . '<br><br>');
+                } else if ($isVitalUpdate) {
+                    $banner->addToBody(lang('version_update_is_vital') . '<br><br>');
+                }
+                if ($version_major < 7) {
+                    if (ee('Model')->get('Member')->count() > 1 && (! IS_PRO || ee('Addon')->get('pro')->checkCachedLicenseResponse() !== 'valid')) {
+                        $banner->addToBody(lang('one_click_major_update_pro_license_required') . '<br><br>');
+                    }
+                    $banner->addToBody(lang('one_click_major_update_pro_license_info') . '<br><br>');
+                }
+                $banner->addToBody(sprintf(lang('version_update_inst'), $upgrade_url, $instruct_url));
+                $banner->defer();
             }
             // Running latest version already
             else {

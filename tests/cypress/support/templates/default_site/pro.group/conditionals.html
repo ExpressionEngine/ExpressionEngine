@@ -1,0 +1,36 @@
+{layout="cypress/layout"}
+{exp:channel:entries dynamic="no" entry_id="2" limit="1"}
+<div id="title">
+    {if title}<h1>{title}</h1>{/if}
+</div>
+<div id="title-2">
+    {if title!='sample'}<h1>{title}</h1>{/if}
+</div>
+<div id="title-3">
+    {if title != "sample"}<h1>{title}</h1>{/if}
+</div>
+<div id="image">
+    {if news_image:rotate}<h1>{news_image}</h1>{/if}
+</div>
+<div id="image-2">
+    {if "{news_image}{url}{/news_image}" != ""}<h1>{news_image}</h1>{/if}
+</div>
+<div id="image-3">
+    {news_image}{if "{url}" != ""}<h1>{url}</h1>{/if}{/news_image}
+</div>
+<div id="image-4">
+    {if entry_date > 0}<h1>{news_image}</h1>{/if}
+</div>
+{/exp:channel:entries}
+
+{exp:channel:entries dynamic="no" entry_id="5" limit="1"}
+<div id="grid">
+    {if file_grid:total_rows > 0}<h1>{file_grid:table}</h1>{/if}
+</div>
+<div id="grid-2">
+    {file_grid}
+    {if file_grid:toggle}<h1>{file_grid:total_rows}</h1>{/if}
+    {/file_grid}
+</div>
+
+{/exp:channel:entries}

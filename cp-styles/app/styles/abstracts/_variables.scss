@@ -53,10 +53,10 @@ $line-height-normal: 1.6;
 $line-height-small: 1.5;
 
 // Fonts
-$font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Oxygen, Cantarell, sans-serif;
+$font-family: -apple-system, BlinkMacSystemFont, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
 
 // font-family: 'Inconsolata';
-$font-family-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas, "Courier New", monospace;
+$font-family-monospace: 'SFMono-Regular', Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
 
 // Transition speed
 $t-speed: 200ms;

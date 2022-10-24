@@ -13,10 +13,10 @@ function FileUploadProgressTable(props) {
               <div key={file.name} className="list-item">
                 <div className="list-item__content-left">
                     {(file.error || file.duplicate) &&
-                    <i class="fas fa-exclamation-triangle file-field__file-icon file-field__file-icon-warning"></i>
+                    <i class="fal fa-exclamation-triangle file-field__file-icon file-field__file-icon-warning"></i>
                     }
                     { !file.error && !file.duplicate &&
-                    <i class="fas fa-file-archive file-field__file-icon"></i>
+                    <i class="fal fa-file-archive file-field__file-icon"></i>
                     }
                 </div>
                 <div className="list-item__content">
@@ -70,25 +70,29 @@ class ResolveFilenameConflict extends React.Component {
     iframe.attr('src', url)
     modal.find('div.box').html(iframe)
 
-    iframe.load(() => {
+    iframe.on('load', () => {
       let response = iframe.contents().find('body').text()
       try {
         response = JSON.parse(response)
         modal.trigger('modal:close')
         if (response.cancel) {
+          if( $('.file-upload-widget').length) {
+            $('.file-upload-widget').hide();
+          }
           return this.props.onFileUploadCancel(e, file)
         }
         return this.props.onResolveConflict(file, response)
       } catch(e) {
         var height = iframe.contents().find('body').height()
-        $('.box', modal).height(height)
-        iframe.height(height)
+        $('.box', modal).height('600px')
+        iframe.height('600px')
+        iframe.show()
       }
 
       $(iframe[0].contentWindow).on('unload', () => {
-        iframe.hide()
-        $('.box', modal).height('auto')
-        $(modal).height('auto')
+          iframe.hide()
+          $('.box', modal).height('auto')
+          $(modal).height('auto')
       })
     })
   }
@@ -96,7 +100,7 @@ class ResolveFilenameConflict extends React.Component {
   render() {
     return (
       <a href="#" className="button button--default m-link" rel="modal-file" onClick={(e) => this.resolveConflict(e, this.props.file)}>
-        <i class="fas fa-info-circle icon-left"></i>
+        <i class="fal fa-info-circle icon-left"></i>
         {EE.lang.file_dnd_resolve_conflict}
       </a>
     )

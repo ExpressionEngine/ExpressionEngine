@@ -27,7 +27,7 @@ $tool-corners: 3px;
 						&:after,
 						&:before{
 							@extend %fa-icon;
-							@extend .fas;
+							@extend .fal;
               @extend .fa-fw;
 
 							// font-family: $font-family-icon;
@@ -450,7 +450,7 @@ $tool-corners: 3px;
 
   &:before{
     @extend %fa-icon;
-    @extend .fas;
+    @extend .fal;
     @extend .fa-fw;
     position: absolute;
     top: -2px;
@@ -469,7 +469,7 @@ $tool-corners: 3px;
 
   &:after {
     @extend %fa-icon;
-    @extend .fas;
+    @extend .fal;
     @extend .fa-fw;
     position: absolute;
     top: -2px;

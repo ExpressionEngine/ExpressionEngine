@@ -31,8 +31,8 @@ class EE_Relationship_data_parser
      *
      * Utility method to retrieve an entry from our cached query data.
      *
-     * @param	int		The id of the entry to retrieve
-     * @return 	array	Row data for the requested entry.
+     * @param   int     The id of the entry to retrieve
+     * @return  array   Row data for the requested entry.
      */
     public function entry($id)
     {
@@ -44,8 +44,8 @@ class EE_Relationship_data_parser
      *
      * Utility method to retrieve a category from our cached query data.
      *
-     * @param	int		The id of the category to retrieve
-     * @return 	array	Category data for the requested category.
+     * @param   int     The id of the category to retrieve
+     * @return  array   Category data for the requested category.
      */
     public function category($id)
     {
@@ -58,12 +58,12 @@ class EE_Relationship_data_parser
      * We'll need to have already run the query earlier and have the
      * data we retrieved from it cached.
      *
-     * @param	int		The id of the entry we're working with.
-     * @param	string	The tagdata to replace relationship tags in.
-     * 						With all normal entry tags already parsed.
+     * @param   int     The id of the entry we're working with.
+     * @param   string  The tagdata to replace relationship tags in.
+     *                      With all normal entry tags already parsed.
      *
-     * @return 	string	The parsed tagdata, with all relationship tags
-     *						replaced.
+     * @return  string  The parsed tagdata, with all relationship tags
+     *                      replaced.
      */
     public function parse($entry_id, $tagdata, $channel)
     {
@@ -98,12 +98,12 @@ class EE_Relationship_data_parser
      * Parse an individual tree node. Will loop through each chunk that
      * applies to this node and call the channel entries parser on it.
      *
-     * @param	object	The node to parse
-     * @param	int		The id of the parent entry we're working with.
-     * @param	string	The tagdata to parse. We zero in on the chunks
-     *					that apply to this tag for better performance.
+     * @param   object  The node to parse
+     * @param   int     The id of the parent entry we're working with.
+     * @param   string  The tagdata to parse. We zero in on the chunks
+     *                  that apply to this tag for better performance.
      *
-     * @return 	string	The parsed tagdata.
+     * @return  string  The parsed tagdata.
      */
     public function parse_node($node, $parent_id, $tagdata)
     {
@@ -217,11 +217,11 @@ class EE_Relationship_data_parser
     /**
      * Call the channel entries parser for this node and its tagchunk.
      *
-     * @param	object	The tree node of this tag pair
-     * @param	int		The chunk of template to process.
-     * @param 	array	The data array that the channel parser expects.
+     * @param   object  The tree node of this tag pair
+     * @param   int     The chunk of template to process.
+     * @param   array   The data array that the channel parser expects.
      *
-     * @return	string	The parsed chunk
+     * @return  string  The parsed chunk
      */
     public function replace($node, $tagdata, $data)
     {
@@ -243,31 +243,30 @@ class EE_Relationship_data_parser
         );
 
         $result = $parser->parse($channel, $data, $config);
-        
+
         // frontend edit link
-        if (IS_PRO) {
-            if (!empty($node->param('disable')) && strpos($node->param('disable'), 'frontedit') !== false) {
-                $result = str_replace(LD . $node->data['field_name'] . ':frontedit' . RD, '', $result);
-            } elseif ($node->data['shortcut'] == 'frontedit') {
-                foreach ($channel->cfields as $field_site_id => $cfields) {
-                    if (!in_array($field_site_id, [0, ee()->config->item('site_id')])) {
-                        continue;
-                    }
-                    if (isset($cfields[$node->data['field_name']])) {
-                        $field_name = $node->data['field_name'];
-                        $field_id = $cfields[$field_name];
-                        $entry_id = key($node->data['entry_ids']);
-                        $entryQuery = ee('db')->select('site_id, channel_id')->from('channel_titles')->where('entry_id', $entry_id)->get();
-                        $channel_id = $entryQuery->row('channel_id');
-                        $site_id = $entryQuery->row('site_id');
-                        $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id);
-                        $result = str_replace(LD . $field_name . ':frontedit' . RD, $frontEditLink, $result);
-                        break;
-                    }
+
+        if (!empty($node->param('disable')) && strpos($node->param('disable'), 'frontedit') !== false) {
+            $result = str_replace(LD . $node->data['field_name'] . ':frontedit' . RD, '', $result);
+        } elseif ($node->data['shortcut'] == 'frontedit') {
+            foreach ($channel->cfields as $field_site_id => $cfields) {
+                if (!in_array($field_site_id, [0, ee()->config->item('site_id')])) {
+                    continue;
+                }
+                if (isset($cfields[$node->data['field_name']])) {
+                    $field_name = $node->data['field_name'];
+                    $field_id = $cfields[$field_name];
+                    $entry_id = key($node->data['entry_ids']);
+                    $entryQuery = ee('db')->select('site_id, channel_id')->from('channel_titles')->where('entry_id', $entry_id)->get();
+                    $channel_id = $entryQuery->row('channel_id');
+                    $site_id = $entryQuery->row('site_id');
+                    $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id);
+                    $result = str_replace(LD . $field_name . ':frontedit' . RD, $frontEditLink, $result);
+
+                    break;
                 }
             }
         }
-
 
         // Lastly, handle the backspace parameter
         $backspace = $node->param('backspace');
@@ -287,17 +286,17 @@ class EE_Relationship_data_parser
      * and closing tag. {node_opening} Contents. {/node_closing}  Returns
      * either the contents of the no_results block, or the whole no_results tag.
      *
-     * @param	object	$node			The tree node of this tag pair.
-     * @param	string	$node_tagdata	The tagdata of the specific node we're
-     *									examining (not the channel:entries tag,
-     *									but the child/parent/sibling tag.
-     * @param	boolean	$whole_tag	(Optional) If True, then the whole no_results
-     *								tag rather than just its contents, will be
-     * 								returned.
+     * @param   object  $node           The tree node of this tag pair.
+     * @param   string  $node_tagdata   The tagdata of the specific node we're
+     *                                  examining (not the channel:entries tag,
+     *                                  but the child/parent/sibling tag.
+     * @param   boolean $whole_tag  (Optional) If True, then the whole no_results
+     *                              tag rather than just its contents, will be
+     *                              returned.
      *
-     * @return	string	Contents of the no_results tag or an empty string. If
-     *					$whole_tag is TRUE, then whole {if no_results} {/if}
-     *					tag block will be returned.
+     * @return  string  Contents of the no_results tag or an empty string. If
+     *                  $whole_tag is TRUE, then whole {if no_results} {/if}
+     *                  tag block will be returned.
      */
     public function find_no_results($node, $node_tagdata, $whole_tag = false)
     {
@@ -328,11 +327,11 @@ class EE_Relationship_data_parser
      * Used for empty nodes so that we don't end up with unparsed tags
      * all over the place.
      *
-     * @param	object	The tree node of this tag pair
-     * @param	string	The tagdata to delete the tags from.  This the
-     * 					channel:entries tag's contents, not the node's
-     * 					contents.
-     * @return 	string	The cleaned tagdata
+     * @param   object  The tree node of this tag pair
+     * @param   string  The tagdata to delete the tags from.  This the
+     *                  channel:entries tag's contents, not the node's
+     *                  contents.
+     * @return  string  The cleaned tagdata
      */
     public function clear_node_tagdata($node, $tagdata)
     {
@@ -359,11 +358,11 @@ class EE_Relationship_data_parser
      * Removes leftover no_results tags from the node's template
      * after we've successfully parsed the node.
      *
-     * @param	object	The tree node of this tag pair
-     * @param	string	The tagdata to delete the tags from. In this
-     * 					case this is the node's contents, not the
-     * 					channel:entries tag's contents.
-     * @return 	string	The cleaned tagdata
+     * @param   object  The tree node of this tag pair
+     * @param   string  The tagdata to delete the tags from. In this
+     *                  case this is the node's contents, not the
+     *                  channel:entries tag's contents.
+     * @return  string  The cleaned tagdata
      */
     public function cleanup_no_results_tag($node, $tagdata)
     {
@@ -380,10 +379,10 @@ class EE_Relationship_data_parser
      * Process the parameters of this tag pair to figure out what data
      * we need, and in what order.
      *
-     * @param	object	The tree node of this tag pair
-     * @param	int		The relative parent id. Its children will
-     *					be considered for processing.
-     * @return 	array	The data array that the channel parser expects.
+     * @param   object  The tree node of this tag pair
+     * @param   int     The relative parent id. Its children will
+     *                  be considered for processing.
+     * @return  array   The data array that the channel parser expects.
      */
     public function process_parameters($node, $parent_id)
     {
@@ -574,16 +573,16 @@ class EE_Relationship_data_parser
      * Channel Entries Parser's Category parser.  Renames required elements and
      * leaves the rest alone.
      *
-     * @param 	array	An array of category data.  Required keys below:
-     * 		- cat_id: changed to index 0
-     * 		- parent_id: changed to index 1
-     * 		- cat_name: changed to index 2
-     * 		- cat_image: changed to index 3
-     * 		- cat_description: changed to index 4
-     * 		- group_id: changed to index 5
-     * 		- cat_url_title: changed to index 6
+     * @param   array   An array of category data.  Required keys below:
+     *      - cat_id: changed to index 0
+     *      - parent_id: changed to index 1
+     *      - cat_name: changed to index 2
+     *      - cat_image: changed to index 3
+     *      - cat_description: changed to index 4
+     *      - group_id: changed to index 5
+     *      - cat_url_title: changed to index 6
      *
-     * @return	array  The array of category data with keys renamed to match the
+     * @return  array  The array of category data with keys renamed to match the
      *                 category parser's requirements.
      */
     private function _format_cat_array($categories)
@@ -616,10 +615,10 @@ class EE_Relationship_data_parser
     /**
      * Utility method to do the row sorting in PHP.
      *
-     * @param	object	The current tree node
-     * @param 	array	The list of entry ids that we're sorting.
+     * @param   object  The current tree node
+     * @param   array   The list of entry ids that we're sorting.
      *
-     * @return	string	The sorted entry id list
+     * @return  string  The sorted entry id list
      */
     public function _apply_sort($node, $entry_ids)
     {

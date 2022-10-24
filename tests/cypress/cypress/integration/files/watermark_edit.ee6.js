@@ -47,21 +47,22 @@ context('Watermark Create/Edit', () => {
 //should_have_form_errors(page)
 
     // Numbers
-    page.get('wm_padding').clear().type('sdfsd')
+    page.get('wm_padding').clear().type('sdfsh')
     page.get('wm_padding').blur()
-    page.hasErrorsCount(3)
     page.hasError(page.get('wm_padding'), page.messages.validation.natural_number)
+    page.hasErrorsCount(3)
     page.hasErrors()
 //should_have_form_errors(page)
 
-    page.get('wm_font_size').clear().type('sdfsd')
+    page.get('wm_font_size').clear().type('sdfst')
     page.get('wm_font_size').blur()
     page.hasErrorsCount(4)
     page.hasError(page.get('wm_font_size'), page.messages.validation.natural_number_not_zero)
     page.hasErrors()
 //should_have_form_errors(page)
 
-    page.get('wm_shadow_distance').clear().type('sdfsd')
+    page.get('wm_use_drop_shadow').click()
+    page.get('wm_shadow_distance').clear().type('sdfse')
     page.get('wm_shadow_distance').blur()
     page.hasErrorsCount(5)
     page.hasError(page.get('wm_shadow_distance'), page.messages.validation.integer_error)
@@ -69,19 +70,15 @@ context('Watermark Create/Edit', () => {
 //should_have_form_errors(page)
 
     // Hex colors
-    page.get('wm_shadow_color').clear().type('sdfsd')
+    page.get('wm_shadow_color').clear().type('sdfsd1')
     page.get('wm_shadow_color').blur()
-    page.hasErrorsCount(6)
-    page.hasError(page.get('wm_shadow_color'), page.messages.validation.hex_color)
-    page.hasErrors()
-//should_have_form_errors(page)
+    cy.wait(2000)
+    page.get('wm_shadow_color').invoke('val').then((val) => { expect(val).to.be.equal('') })
 
-    page.get('wm_font_color').clear().type('sdfsd')
+    page.get('wm_font_color').clear().type('sdfsd2')
     page.get('wm_font_color').blur()
-    page.hasErrorsCount(7)
-    page.hasError(page.get('wm_font_color'), page.messages.validation.hex_color)
-    page.hasErrors()
-//should_have_form_errors(page)
+    cy.wait(2000)
+    page.get('wm_font_color').invoke('val').then((val) => { expect(val).to.be.equal('') })
 
     page.get('wm_type').check('image')
 
@@ -91,14 +88,16 @@ context('Watermark Create/Edit', () => {
     page.get('wm_y_transp').should('be.visible')
     page.hasErrorsCount(2)
 
-    page.get('wm_image_path').clear().type('sdfsd')
+    page.get('wm_image_path').clear().type('sdfsd3')
     page.get('wm_image_path').blur()
-    page.hasErrorsCount(3)
+    cy.wait(2000)
+    cy.screenshot({capture: 'fullPage'});
     page.hasError(page.get('wm_image_path'), page.messages.validation.invalid_path)
+    page.hasErrorsCount(3)
     page.hasErrors()
 //should_have_form_errors(page)
 
-    page.get('wm_opacity').clear().type('sdfsd')
+    page.get('wm_opacity').clear().type('sdfsd4')
     page.get('wm_opacity').blur()
     page.hasErrorsCount(4)
     page.hasError(page.get('wm_opacity'), page.messages.validation.natural_number)
@@ -119,10 +118,10 @@ context('Watermark Create/Edit', () => {
     page.get('wm_use_font').click()
     page.get('wm_text').clear().type('Test text')
     page.get('wm_font_size').clear().type('18')
-    page.get('wm_font_color').clear().type('ccc')
+    page.get('wm_font_color').clear().type('ccc').blur()
     page.get('wm_use_drop_shadow').click()
     page.get('wm_shadow_distance').clear().type('50')
-    page.get('wm_shadow_color').clear().type('000')
+    page.get('wm_shadow_color').clear().type('000').blur()
     page.submit()
 
     page.get('alert_success').should('be.visible')
@@ -143,10 +142,10 @@ context('Watermark Create/Edit', () => {
     page.get('wm_text').invoke('val').then((val) => { expect(val).to.be.equal('Test text') })
     page.get('wm_font').filter('[value=texb.ttf]').should('be.checked')
     page.get('wm_font_size').invoke('val').then((val) => { expect(val).to.be.equal('18') })
-    page.get('wm_font_color').invoke('val').then((val) => { expect(val).to.be.equal('ccc') })
+    page.get('wm_font_color').invoke('val').then((val) => { expect(val).to.be.equal('#CCCCCC') })
     page.get('wm_use_drop_shadow').should('have.class', "on")
     page.get('wm_shadow_distance').invoke('val').then((val) => { expect(val).to.be.equal('50') })
-    page.get('wm_shadow_color').invoke('val').then((val) => { expect(val).to.be.equal('000') })
+    page.get('wm_shadow_color').invoke('val').then((val) => { expect(val).to.be.equal('#000000') })
   })
 
   it('should save and load an image watermark', () => {

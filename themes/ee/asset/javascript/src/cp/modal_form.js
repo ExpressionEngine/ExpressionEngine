@@ -72,6 +72,13 @@ EE.cp.ModalForm = {
 				that._bindForm(options)
 				options.load(that.modalContentsContainer)
 			})
+
+			var timer = setInterval(function() {
+				if ($('.app-modal .grid-field').length) {
+					new Grid.Publish($('.app-modal .grid-field'))
+					clearInterval(timer);
+				}
+			},50);
 		}
 	},
 
@@ -164,12 +171,27 @@ EE.cp.ModalForm = {
 
 		var that = this
 		$(iframe).contents().find('body').on('click', '.js-modal-close', function(e) {
-			that.modal.trigger('modal:close')
+			if (sessionStorage.getItem("preventNavigateAway") == 'true') {
+				isNavigatingAway = confirm(EE.lang.confirm_exit);
+				if (isNavigatingAway) {
+					that.modal.trigger('modal:close')
+				}
+			} else {
+				that.modal.trigger('modal:close')
+			}
 			e.preventDefault();
 		})
 		$(iframe).contents().find('body').on('keydown', function(e) {
 			if (e.keyCode === 27) {
-				that.modal.trigger('modal:close')
+				if (sessionStorage.getItem("preventNavigateAway") == 'true') {
+					isNavigatingAway = confirm(EE.lang.confirm_exit);
+					if (isNavigatingAway) {
+						that.modal.trigger('modal:close')
+					}
+				} else {
+					that.modal.trigger('modal:close')
+				}
+				e.preventDefault();
 			}
 		});
 	}

@@ -273,7 +273,7 @@ $lang = array(
 
     'roles_remove_problem' => 'There was a problem deleting roles.',
 
-    'roles_counter_warning' => 'The mumber of members for each role might be inaccurate because of <code>ignore_member_stats</code> configuration override being set to <code>y</code>. Plese use Statistics Utility to recount.',
+    'roles_counter_warning' => 'The number of members for each role might be inaccurate because of <code>ignore_member_stats</code> configuration override being set to <code>y</code>. Please use Statistics Utility to recount.',
 
     'member_has_cp_access' => 'Can access the control panel',
 
@@ -452,7 +452,7 @@ $lang = array(
 
     'ip_address_banning' => 'IP Addresses',
 
-    'ip_banning_instructions' => '<b>Place each IP address on a separate line</b> <br>You may use * as a wild-card e.g. 123.345.*',
+    'ip_banning_instructions' => '<b>Place each IP address on a separate line</b> <br>You may also use partial IP addresses*',
 
     'restrict_to_viewing' => 'Allow access in view only mode',
 
@@ -510,6 +510,10 @@ $lang = array(
     'can_access_cp' => 'Access control panel',
 
     'can_access_cp_desc' => 'When enabled, users assigned to this group may access the control panel.',
+
+    'can_access_dock' => 'Access Front-End Content Management Tools',
+
+    'can_access_dock_desc' => 'When enabled, users assigned to this group may access Front-End Content Management Tools.',
 
     'can_access_data' => 'Data Operations',
 
@@ -659,7 +663,7 @@ $lang = array(
 
     'create_group_based_on_old' => 'Create a new group based on an existing one',
 
-    'custom_uri' => 'Custom URI &mdash; <i>e.g. members/groups</i>',
+    'custom_uri' => 'Custom URI &mdash; <i>e.g. members/roles</i>',
 
     'default_cp_homepage' => 'Default <abbr title="Control Panel">CP</abbr> homepage',
 

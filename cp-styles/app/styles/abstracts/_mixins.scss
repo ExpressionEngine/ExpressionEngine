@@ -177,6 +177,18 @@ $desktop-width: 1024px;
 	box-shadow: 0 1px 4px 0 color(shadow-dropdown);
 }
 
+@mixin shadow-panel() {
+	box-shadow: 0 1px 3px 0 color(shadow-panel) , 0 1px 2px -1px color(shadow-panel);
+}
+
+@mixin shadow-input() {
+	box-shadow: 0 1px 2px 0 color(shadow-input);
+}
+
+@mixin shadow-button() {
+	box-shadow: 0 1px 2px 0 color(shadow-button);
+}
+
 @mixin gradient-striped($color: rgba(255, 255, 255, .25), $angle: 45deg) {
 	background-image: -webkit-linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent);
 	background-image: -o-linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent);
@@ -204,7 +216,12 @@ $desktop-width: 1024px;
 
 @mixin focus-outline {
 	outline: none;
-	// box-shadow: 0 0 0 2px color(bg-5), 0 0 0 4px color(keyboard-focus);
+	box-shadow: 0 0 0 2px color(accent-medium);
+}
+
+@mixin focus-outline-validation {
+	outline: none;
+	box-shadow: 0 0 0 2px color(error-light);
 }
 
 @mixin focus-outline-inset {

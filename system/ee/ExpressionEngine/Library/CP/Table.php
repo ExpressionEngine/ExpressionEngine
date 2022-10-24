@@ -22,6 +22,7 @@ class Table
     const COL_ID = 5;
     const COL_SMALL = 6;
     const COL_INFO = 7;
+    const COL_THUMB = 8;
 
     public $config = array();
     protected $columns = array();
@@ -35,6 +36,7 @@ class Table
      *
      * 'sort_col' - Name of the column currently sorting
      * 'sort_dir' - Direction of the sort, 'asc' or 'desc'
+     * 'force_sort_col' - forces the sort column to be used, even if it's not present in columns list
      * 'search' - Search text to search table with
      * 'wrap' - Whether or not to wrap the table in a div that allows overflow scrolling
      * 'autosort' - Handle sorting automatically, this expects the entire dataset to be
@@ -64,6 +66,7 @@ class Table
             'wrap' => true,
             'sort_col' => null,
             'sort_col_qs_var' => 'sort_col',
+            'force_sort_col' => false,
             'sort_dir' => 'asc',
             'sort_dir_qs_var' => 'sort_dir',
             'limit' => 25,
@@ -83,7 +86,7 @@ class Table
             'class' => '',
             'attrs' => array(),
             'no_results' => array(
-                'text' => 'no_rows_returned',
+                'text' => lang('no_rows_returned'),
                 'action_text' => '',
                 'action_link' => ''
             )
@@ -686,9 +689,17 @@ class Table
             return $column['label'];
         }, $this->columns);
 
-        if ((empty($this->config['sort_col']) && count($this->columns) > 0) or
-            ! in_array($this->config['sort_col'], $search)) {
-            return isset($this->columns[0]) ? $this->columns[0]['label'] : null;
+        if (! $this->config['force_sort_col'] && 
+            ((empty($this->config['sort_col']) && count($this->columns) > 0) or
+            ! in_array($this->config['sort_col'], $search))
+        ) {
+            //grab the first column that can be used for sorting
+            foreach ($this->columns as $column) {
+                if ($column['sort'] === true) {
+                    return $column['label'];
+                }
+            }
+            return null;
         }
 
         return $this->config['sort_col'];
@@ -717,14 +728,24 @@ class Table
      * @param	string	$action_link	Link for action button to create a new item
      * @return  void
      */
-    public function setNoResultsText($text, $action_text = '', $action_link = '', $external = false)
+    public function setNoResultsText($text, $action_text = '', $action_link = '', $external = false, $html = null)
     {
         $this->config['no_results'] = array(
             'text' => $text,
             'action_text' => $action_text,
             'action_link' => $action_link,
-            'external' => $external
+            'external' => $external,
+            'html' => $html
         );
+    }
+
+    public function setNoResultsHTML($html, $class='')
+    {
+        $this->config['no_results'] = $this->setNoResultsText('');
+        $this->config['no_results']['html'] = $html;
+        if (!empty($class)) {
+            $this->config['no_results']['class'] = $class;
+        }
     }
 
     /**

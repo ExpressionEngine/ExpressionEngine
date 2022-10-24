@@ -502,6 +502,7 @@ class Template extends AbstractDesignController
         }
 
         $templates = ee('Model')->get('Template')
+            ->with('TemplateGroup')
             ->filter('site_id', ee()->config->item('site_id'))
             ->filter('template_data', 'LIKE', '%' . $search_terms . '%');
 
@@ -593,7 +594,7 @@ class Template extends AbstractDesignController
                 ->withTitle(lang('update_template_error'))
                 ->addToBody(lang('update_template_error_desc'))
                 ->now();
-        } else {
+        } else if (ee('Request')->post('allowed_roles') !== null) {
             $access = ee()->input->post('allowed_roles') ?: array();
 
             $roles = ee('Model')->get('Role', $access)
@@ -624,7 +625,7 @@ class Template extends AbstractDesignController
         if (! ee()->input->post('route')) {
             // before erasing the route,
             // make sure is was not assigned after template was opened
-            if (ee()->input->post('orig_route') !== '' ) {
+            if (ee()->input->post('orig_route') !== '') {
                 $template->TemplateRoute = null;
             }
 
@@ -902,19 +903,17 @@ class Template extends AbstractDesignController
             )
         );
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
-            $sections['pro_settings'][] = array(
-                'title' => 'enable_frontedit',
-                'desc' => 'enable_frontedit_tmpl_desc',
-                'fields' => array(
-                    'enable_frontedit' => array(
-                        'type' => 'yes_no',
-                        'value' => $template->enable_frontedit
-                    )
+        ee()->lang->load('pro');
+        $sections['pro_settings'][] = array(
+            'title' => 'enable_frontedit',
+            'desc' => 'enable_frontedit_tmpl_desc',
+            'fields' => array(
+                'enable_frontedit' => array(
+                    'type' => 'yes_no',
+                    'value' => $template->enable_frontedit
                 )
-            );
-        }
+            )
+        );
 
         $html = '';
 

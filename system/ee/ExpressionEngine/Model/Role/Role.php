@@ -199,43 +199,34 @@ class Role extends Model
      */
     public function getAllMembersData($field = 'member_id')
     {
-        $query = ee('db')
-            ->select("members." . $field)
-            ->distinct()
-            ->from('members AS members')
-            ->join('members_roles', 'members_roles.member_id=members.member_id', 'left')
-            ->join('members_role_groups', 'members_role_groups.member_id=members.member_id', 'left')
-            ->where('members.role_id', $this->getId())
-            ->or_where('members_roles.role_id', $this->getId());
-        foreach ($this->RoleGroups as $role_group) {
-            $query->or_where('members_role_groups.group_id', $role_group->getId());
+        $cache_key = "Roles/{$this->getId()}/AllMembersData/{$field}";
+        $data = $this->getFromCache($cache_key);
+
+        if ($data === false) {
+            $query = ee('db')
+                ->select("members." . $field)
+                ->distinct()
+                ->from('members AS members')
+                ->join('members_roles', 'members_roles.member_id=members.member_id', 'left')
+                ->join('members_role_groups', 'members_role_groups.member_id=members.member_id', 'left')
+                ->where('members.role_id', $this->getId())
+                ->or_where('members_roles.role_id', $this->getId());
+            foreach ($this->RoleGroups as $role_group) {
+                $query->or_where('members_role_groups.group_id', $role_group->getId());
+            }
+
+            $result = $query->get();
+            $data = [];
+            if ($result->num_rows() > 0) {
+                $data = $result->result_array();
+                array_walk($data, function (&$row, $key, $field) {
+                    $row = $row[$field];
+                }, $field);
+            }
+            $this->saveToCache($cache_key, $data);
         }
 
-        $result = $query->get();
-        $data = [];
-        if ($result->num_rows() > 0) {
-            $data = $result->result_array();
-            array_walk($data, function (&$row, $key, $field) {
-                $row = $row[$field];
-            }, $field);
-        }
         return $data;
-    }
-
-    protected function saveToCache($key, $data)
-    {
-        if (isset(ee()->session)) {
-            ee()->session->set_cache(__CLASS__, $key, $data);
-        }
-    }
-
-    protected function getFromCache($key)
-    {
-        if (isset(ee()->session)) {
-            return ee()->session->cache(__CLASS__, $key, false);
-        }
-
-        return false;
     }
 
     /**

@@ -4,14 +4,14 @@
 @import 'abstracts/_space';
 @import "abstracts/_variables";
 @import 'abstracts/_theme';
-@import 'themes/_theme-light-default';
+@import 'themes/_theme-light-snow';
+@import 'themes/_theme-light-slate';
 @import 'themes/_theme-dark-default';
 @import 'abstracts/_theme-helpers';
 @import 'abstracts/_mixins';
-@import 'fonts/_roboto.scss';
 
-@import 'vendor/fontawesome/scss/_fontawesome';
-@import 'vendor/fontawesome/scss/_solid';
+@import 'vendor/fontawesome/scss/fontawesome';
+@import 'vendor/fontawesome/scss/light';
 
 // TODO: These styles overwrite sites that are also using highlight js.
 @import 'vendor/_hljs-theme';

@@ -37,9 +37,9 @@ function FileUploadProgressTable(props) {
     }, React.createElement("div", {
       className: "list-item__content-left"
     }, (file.error || file.duplicate) && React.createElement("i", {
-      "class": "fas fa-exclamation-triangle file-field__file-icon file-field__file-icon-warning"
+      "class": "fal fa-exclamation-triangle file-field__file-icon file-field__file-icon-warning"
     }), !file.error && !file.duplicate && React.createElement("i", {
-      "class": "fas fa-file-archive file-field__file-icon"
+      "class": "fal fa-file-archive file-field__file-icon"
     })), React.createElement("div", {
       className: "list-item__content"
     }, React.createElement("div", null, file.name, " ", !file.error && !file.duplicate && React.createElement("span", {
@@ -109,7 +109,7 @@ function (_React$Component) {
       var url = EE.dragAndDrop.resolveConflictEndpoint + '&' + $.param(params);
       iframe.attr('src', url);
       modal.find('div.box').html(iframe);
-      iframe.load(function () {
+      iframe.on('load', function () {
         var response = iframe.contents().find('body').text();
 
         try {
@@ -117,14 +117,19 @@ function (_React$Component) {
           modal.trigger('modal:close');
 
           if (response.cancel) {
+            if ($('.file-upload-widget').length) {
+              $('.file-upload-widget').hide();
+            }
+
             return _this.props.onFileUploadCancel(e, file);
           }
 
           return _this.props.onResolveConflict(file, response);
         } catch (e) {
           var height = iframe.contents().find('body').height();
-          $('.box', modal).height(height);
-          iframe.height(height);
+          $('.box', modal).height('600px');
+          iframe.height('600px');
+          iframe.show();
         }
 
         $(iframe[0].contentWindow).on('unload', function () {
@@ -151,7 +156,7 @@ function (_React$Component) {
           return _this2.resolveConflict(e, _this2.props.file);
         }
       }, React.createElement("i", {
-        "class": "fas fa-info-circle icon-left"
+        "class": "fal fa-info-circle icon-left"
       }), EE.lang.file_dnd_resolve_conflict);
     }
   }]);

@@ -100,10 +100,6 @@ $lang = array(
 
     'create_entry_with_channel_name' => 'New Entry: %s',
 
-    'custom_date' => 'custom date',
-
-    'custom_limit' => 'custom limit',
-
     'edit_channel_entries' => 'Edit Channel Entries',
 
     'edit_comment_error' => 'Cannot Edit Comment',
@@ -151,6 +147,8 @@ $lang = array(
     'expiration_date' => 'Expiration date',
 
     'expiration_date_desc' => 'Date this entry should expire.',
+
+    'edit_date' => 'Last edit date',
 
     'filter_autosaves' => 'filter auto saves',
 
@@ -392,8 +390,6 @@ $lang = array(
     'file_exists' => 'A file already exists with this name',
 
     'file_exists_warning' => 'File Exists Warning',
-
-    'file_manager' => 'File Manager',
 
     'file_saved' => 'File Saved',
 
@@ -781,6 +777,8 @@ $lang = array(
 
     'version_preview' => 'Revision Number %s',
 
+    'version_no' => 'Revision #%d',
+
     'versioning_enabled' => 'Enable entry revisions?',
 
     'versioning_enabled_desc' => 'When enabled, you can store up to %d revisions of this entry.',
@@ -794,6 +792,10 @@ $lang = array(
     'view_filtered' => 'Return to Filtered Entries',
 
     'view_wider' => 'View Wider',
+
+    'viewing_revision' => 'You Are Viewing a Revision',
+
+    'viewing_revision_desc' => 'Any changes saved will overwrite the newest version of this entry',
 
     'warning' => 'Warning',
 

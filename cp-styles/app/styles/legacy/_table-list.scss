@@ -162,7 +162,7 @@
 
 				&:before{
 					@extend %fa-icon;
-					@extend .fas;
+					@extend .fal;
 
 					content: fa-content($fa-var-bars);
 					font-size: 12px;

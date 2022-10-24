@@ -16,7 +16,7 @@
     bottom: 0;
     width: 35px;
 
-    i, fas {
+    i, .fas, .fal {
       margin: 0;
       margin-left: 11px;
       position: absolute;
@@ -29,6 +29,10 @@
 
   .note-fieldtype__content {
     font-size: 90%;
+
+    em {
+      display: inline;
+    }
   }
 
   h1, h2, h3 {

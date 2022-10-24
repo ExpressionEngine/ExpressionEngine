@@ -2,7 +2,7 @@
 	<div class="file_set <?=$set_class?>">
 
 		<p class="filename">
-			<img src="<?=$thumb?>" alt="<?=$alt?>"/>
+			<?=$thumb?>
 			<br />
 			<?=$filename?>
 			<?=$remove_file_link?>

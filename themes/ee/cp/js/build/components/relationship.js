@@ -65,6 +65,27 @@ function (_React$Component) {
       modal.trigger('modal:close');
     });
 
+    _defineProperty(_assertThisInitialized(_this), "entryWasEdited", function (result, modal) {
+      var selected = _this.state.selected;
+
+      if (_this.props.multi) {
+        $.each(selected, function (i, el) {
+          if (el.value == result.item.value) {
+            el.label = result.item.label;
+          }
+        });
+      } else {
+        selected = [result.item];
+      }
+
+      _this.setState({
+        selected: selected,
+        items: [].concat(_toConsumableArray(_this.state.items), [result.item])
+      });
+
+      modal.trigger('modal:close');
+    });
+
     _defineProperty(_assertThisInitialized(_this), "channelFilterChange", function (newValue) {
       _this.setState({
         channelFilter: newValue
@@ -134,7 +155,7 @@ function (_React$Component) {
 
       $(_this.listGroup).sortable({
         axis: 'y',
-        containment: 'parent',
+        // containment: 'parent',
         handle: '.list-item__handle',
         items: '.list-item',
         sort: function sort(event, ui) {
@@ -247,6 +268,21 @@ function (_React$Component) {
           EE.cp.ModalForm.setTitle(title);
         }
       });
+    } // Opens a modal to edit an entry
+
+  }, {
+    key: "openPublishEditForm",
+    value: function openPublishEditForm(id) {
+      EE.cp.ModalForm.openForm({
+        url: EE.relationship.publishEditUrl.replace('###', id + '&' + $.param({
+          entry_ids: [id]
+        })),
+        full: true,
+        iframe: true,
+        dataType: 'json',
+        success: this.entryWasEdited,
+        load: function load(modal) {}
+      });
     }
   }, {
     key: "filterItems",
@@ -358,7 +394,7 @@ function (_React$Component) {
         }, _this5.state.selected.length > 1 && React.createElement("div", {
           "class": "list-item__handle"
         }, React.createElement("i", {
-          "class": "fas fa-bars"
+          "class": "fal fa-bars"
         })), React.createElement("div", {
           className: "list-item__content"
         }, React.createElement("div", {
@@ -371,7 +407,16 @@ function (_React$Component) {
           "class": "list-item__content-right"
         }, React.createElement("div", {
           className: "button-group"
-        }, React.createElement("button", {
+        }, _this5.props.can_add_items && React.createElement("button", {
+          type: "button",
+          title: EE.relationship.lang.edit,
+          className: "button button--small button--default",
+          onClick: function onClick() {
+            return _this5.openPublishEditForm(item.value);
+          }
+        }, React.createElement("i", {
+          "class": "fal fa-pencil-alt"
+        })), React.createElement("button", {
           type: "button",
           title: EE.relationship.lang.remove,
           onClick: function onClick() {
@@ -379,7 +424,7 @@ function (_React$Component) {
           },
           className: "button button--small button--default"
         }, React.createElement("i", {
-          "class": "fas fa-fw fa-trash-alt"
+          "class": "fal fa-fw fa-trash-alt"
         })))));
       })), this.state.selected.length == 0 && React.createElement("input", {
         type: "hidden",
@@ -399,7 +444,7 @@ function (_React$Component) {
         type: "button",
         className: "js-dropdown-toggle button button--default"
       }, React.createElement("i", {
-        "class": "fas fa-plus icon-left"
+        "class": "fal fa-plus icon-left"
       }), " ", props.button_label ? props.button_label : EE.relationship.lang.relateEntry), React.createElement("div", {
         className: "dropdown js-dropdown-auto-focus-input"
       }, React.createElement("div", {
@@ -437,9 +482,10 @@ function (_React$Component) {
         }
       }, "New Entry"), props.channels.length > 1 && React.createElement("div", null, React.createElement("button", {
         type: "button",
-        className: "js-dropdown-toggle button button--primary button--small"
+        className: "js-dropdown-toggle button button--primary button--small",
+        "data-dropdown-pos": "bottom-end"
       }, "New Entry ", React.createElement("i", {
-        "class": "fas fa-caret-down icon-right"
+        "class": "fal fa-chevron-down icon-right"
       })), React.createElement("div", {
         className: "dropdown"
       }, props.channels.map(function (channel) {
@@ -473,10 +519,21 @@ function (_React$Component) {
   }], [{
     key: "renderFields",
     value: function renderFields(context) {
-      $('div[data-relationship-react]', context).each(function () {
+      $('div[data-relationship-react]:not(.react-deferred-loading)', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('relationshipReact')));
         props.name = $(this).data('inputValue');
         ReactDOM.render(React.createElement(Relationship, props, null), this);
+      });
+      $('.react-deferred-loading--relationship', context).each(function () {
+        var $wrapper = $(this);
+        var $button = $wrapper.find('.js-dropdown-toggle');
+        $button.on('click', function () {
+          $('div[data-relationship-react]', $wrapper).each(function () {
+            var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+            props.name = $(this).data('inputValue');
+            ReactDOM.render(React.createElement(Relationship, props, null), this);
+          });
+        });
       });
     }
   }]);

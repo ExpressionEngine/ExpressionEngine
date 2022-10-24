@@ -19,6 +19,7 @@ class FieldDisplay
     protected $collapsed = false;
     protected $visible = true;
     protected $conditional = false;
+    protected $width = 100;
 
     public function __construct($field)
     {
@@ -110,6 +111,18 @@ class FieldDisplay
     public function publishLayoutCollapseIsHidden()
     {
         return (bool) $this->getSetting('field_hide_publish_layout_collapse');
+    }
+
+    public function setWidth($field_width)
+    {
+        $this->width = $field_width;
+
+        return $this;
+    }
+
+    public function getWidth()
+    {
+        return (float) $this->width;
     }
 
     public function hide()

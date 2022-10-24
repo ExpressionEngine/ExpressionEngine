@@ -186,7 +186,7 @@ class EE_Image_lib
             $this->dest_image = $this->source_image;
             $this->dest_folder = $this->source_folder;
         } else {
-            if (strpos($this->new_image, DIRECTORY_SEPARATOR) === false) {
+            if (strpos($this->new_image, DIRECTORY_SEPARATOR) === false && strpos($this->new_image, '/') === false) {
                 $this->dest_folder = $this->source_folder;
                 $this->dest_image = $this->new_image;
             } else {
@@ -196,8 +196,14 @@ class EE_Image_lib
                     $full_dest_path = $this->new_image;
                 }
 
+                // Are we writing to a temp file
+                if (stripos($full_dest_path, '/tmp') === 0
+                    || stripos($full_dest_path, str_replace(DIRECTORY_SEPARATOR, '/', sys_get_temp_dir())) !== false
+                ) {
+                    $this->dest_folder = dirname($full_dest_path) . '/';
+                    $this->dest_image = basename($full_dest_path);
                 // Is there a file name?
-                if (! preg_match("#\.(jpg|jpeg|gif|png|webp)$#i", $full_dest_path)) {
+                } else if (! preg_match("#\.(jpg|jpeg|gif|png|webp)$#i", $full_dest_path)) {
                     $filenameInPathPosition = strrpos($full_dest_path, $this->source_image);
                     if ($filenameInPathPosition == (strlen($full_dest_path) - strlen($this->source_image))) {
                         $this->dest_folder = substr($full_dest_path, 0, $filenameInPathPosition);

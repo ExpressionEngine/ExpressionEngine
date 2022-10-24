@@ -1,4 +1,4 @@
-<div class="app-notice app-notice--<?=$alert->type?> app-notice---<?=$alert->severity?>">
+<div class="app-notice app-notice-<?=$alert->name?> app-notice--<?=$alert->type?> app-notice---<?=$alert->severity?>">
 	<div class="app-notice__tag">
 		<span class="app-notice__icon"></span>
 	</div>

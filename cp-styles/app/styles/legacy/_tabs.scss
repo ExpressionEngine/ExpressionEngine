@@ -84,7 +84,7 @@
 
 							&:before{
 								@extend %fa-icon;
-								@extend .fas;
+								@extend .fal;
 
 								font-size: 11px;
 								position: absolute;
@@ -134,6 +134,17 @@
 
 						@include clear-float;
 				};
+		}
+
+		.js-layout-item { margin-bottom: 10px; }
+		.custom-drag-placeholder {
+			.none {
+				background-color: color(bg-0);
+				border: 1px dashed color(border-dark);
+				padding: 10px;
+				border-radius: $border-radius-base;
+				margin-bottom: 10px;
+			}
 		}
 
 		@include clear-float;

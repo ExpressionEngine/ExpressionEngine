@@ -16,7 +16,7 @@ Table of Contents:
 One of the best and easiest ways to give back to the ExpressionEngine community is by answering questions and helping fellow users. Pay it forward and help new users get up to speed, or help other experts with challenging problems. Here's where you can find each other:
 
 - the [Forums](https://expressionengine.com/forums)
-- the official [Slack](https://expressionengine.com/community#slack)
+- the official [Slack](https://expressionengine.com/blog/join-us-in-slack)
 - over at [StackExchange](https://expressionengine.stackexchange.com)
 - on Twitter using the **#eecms** hashtag
 - start or join a [local Meetup](https://www.meetup.com/topics/expressionengine/)!

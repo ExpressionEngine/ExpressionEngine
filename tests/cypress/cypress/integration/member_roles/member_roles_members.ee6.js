@@ -59,6 +59,7 @@ context('Test Member roles Members ', () => {
 		})
 
 	   cy.visit('admin.php?/cp/members')
+	   cy.dismissLicenseAlert()
 	   cy.get('a').contains('New Member').click()
 	   cy.get('button').contains('Roles').click()
 	   cy.get('fieldset[id="fieldset-role_id"]').filter(':visible').contains('Super Admin').should('not.exist')
@@ -73,6 +74,7 @@ context('Test Member roles Members ', () => {
 		})
 
 	   cy.visit('admin.php?/cp/members')
+	   cy.dismissLicenseAlert()
 	   cy.get('a').contains('New Member').click()
 	   cy.get('button').contains('Roles').click()
 	   cy.get('div').filter(':visible').contains('Super Admin').should('not.exist')
@@ -122,6 +124,7 @@ context('Test Member roles Members ', () => {
 		})
 
 	   cy.visit('admin.php?/cp/members/roles')
+	   cy.dismissLicenseAlert()
 	   cy.get('a').contains('New Role').should('exist')
 	   cy.get('.ctrl-all').click()
 	   cy.get('select').should('exist')
@@ -193,10 +196,3 @@ function add_members(group, count){
     member.get('save_and_new_button').click()
   }
 }
-
-function logout(){
-  cy.visit('admin.php?/cp/members/profile/settings')
-  cy.get('.main-nav__account-icon > img').click()
-  cy.get('[href="admin.php?/cp/login/logout"]').click()
-}
-

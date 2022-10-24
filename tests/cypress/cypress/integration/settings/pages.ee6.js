@@ -54,7 +54,7 @@ context('Pages Settings', () => {
     cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
-    page.get('wrap').contains('Preferences updated')
+    page.get('wrap').contains('Preferences Updated')
     page.get('homepage_display').filter('[value=nested]').should('be.checked')
     page.get('default_channel').filter('[value=1]').should('be.checked')
     page.get('channel_default_template').eq(0).invoke('val').then((val) => { expect(val).to.be.equal('2') })

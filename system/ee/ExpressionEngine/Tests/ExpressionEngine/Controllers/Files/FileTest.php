@@ -32,6 +32,6 @@ class FileTest extends TestCase
 
         sort($controller_methods);
 
-        $this->assertEquals(array('crop', 'download', 'view'), $controller_methods);
+        $this->assertEquals(['download', 'getuploadlocationsanddirectoriesdropdownchoices', 'view'], $controller_methods);
     }
 }

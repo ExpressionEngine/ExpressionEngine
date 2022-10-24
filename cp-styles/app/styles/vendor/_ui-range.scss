@@ -5,14 +5,14 @@
   --value-active-color: var(--ee-button-primary-color);
   --value-background: var(--ee-slider-value-bg);
   --value-background-hover: var(--primary-color);
-  --value-font: 500 14px/2 Roboto;
+  --value-font: 500 14px/2 $font-family;
 
   --fill-color: var(--primary-color);
   --progress-background: var(--ee-input-toggle-bg);
   --progress-radius: 20px;
   --track-height: calc(var(--thumb-size) / 3);
 
-  --min-max-font: 12px Roboto;
+  --min-max-font: 12px $font-family;
   --min-max-opacity: .5;
   --min-max-x-offset: 10%; // 50% to center
 

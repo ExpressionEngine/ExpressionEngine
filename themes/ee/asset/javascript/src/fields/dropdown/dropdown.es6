@@ -15,8 +15,17 @@ class Dropdown extends React.Component {
   constructor (props) {
     super(props)
 
+    window.selectedEl;
+    var selected;
+
+    // use different function for file manager part and other site pages
+    if(props.fileManager) {
+      selected = this.checkChildDirectory(this.props.initialItems, props.selected);
+    } else {
+      selected = this.getItemForSelectedValue(props.selected)
+    }
     this.state = {
-      selected: this.getItemForSelectedValue(props.selected),
+      selected: selected,
       open: false
     }
   }
@@ -30,6 +39,10 @@ class Dropdown extends React.Component {
       // value to be set other than the one in the initial config
       if ($(this).data('initialValue')) {
         props.selected = $(this).data('initialValue')
+      } 
+
+      if (window.selectedFolder) {
+        props.selected = window.selectedFolder;
       }
 
       ReactDOM.render(React.createElement(FilterableDropdown, props, null), this)
@@ -86,13 +99,49 @@ class Dropdown extends React.Component {
     })
   }
 
+  checkChildDirectory = (items, value) => {
+    items.map(item => {
+      if (item.value == value) {
+        return window.selectedEl = item;
+      } else if(item.value != value && (Array.isArray(item.children) && item.children.length)) {
+        this.checkChildDirectory(item.children, value);
+      }
+    })
+
+    return window.selectedEl;
+  }
+
   handleSearch(searchTerm) {
     this.props.filterChange('search', searchTerm)
   }
 
+  selectRecursion = (items) => {
+    return (
+      <React.Fragment>
+      {items.map(item => (
+        <div className="select__dropdown-item-parent">
+          <DropdownItem key={item.value ? item.value : item.section}
+            item={item}
+            selected={this.state.selected && item.value == this.state.selected.value}
+            onClick={(e) => this.selectionChanged(item)}
+            name ={this.props.name} />
+          {item.children && item.children.length ? this.selectRecursion(item.children) : null}
+        </div>
+      ))}
+      </React.Fragment>
+    )
+  }
+
   render () {
     const tooMany = this.props.items.length > this.props.tooMany && ! this.state.loading
-    const selected = this.state.selected
+    let selected;
+
+    if (window.selectedFolder) {
+       selected = this.checkChildDirectory(this.props.initialItems, window.selectedFolder);
+       this.state.selected = selected;
+    } else {
+      selected = this.state.selected;
+    }
 
     return (
       <div className={"select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
@@ -137,13 +186,8 @@ class Dropdown extends React.Component {
             {this.state.loading &&
               <Loading text={EE.lang.loading} />
             }
-            {this.props.items.map((item) =>
-              <DropdownItem key={item.value ? item.value : item.section}
-                item={item}
-                selected={this.state.selected && item.value == this.state.selected.value}
-                onClick={(e) => this.selectionChanged(item)}
-                name ={this.props.name} />
-            )}
+
+            {this.selectRecursion(this.props.items)}
           </div>
         </div>
       </div>
@@ -161,7 +205,6 @@ function DropdownItem (props) {
       </div>
     )
   }
-
   return (
     <div onClick={props.onClick} className={'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')} tabIndex="0">
       <span dangerouslySetInnerHTML={{__html: item.label}}></span>{item.instructions && <i>{item.instructions}</i>}

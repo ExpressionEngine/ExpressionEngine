@@ -125,7 +125,7 @@ context('Debugging & Output Settings', () => {
     //page.submit()AJ
     cy.get('button').contains('Save Settings').first().click()
 
-    page.get('wrap').contains('Preferences updated')
+    page.get('wrap').contains('Preferences Updated')
     page.get('debug').filter('[value=0]').should('be.checked')
     page.get('show_profiler').invoke('val').then((val) => {
       expect(val).not.to.be.equal(show_profiler)

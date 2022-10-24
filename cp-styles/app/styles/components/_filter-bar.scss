@@ -25,7 +25,7 @@
 		text-align: center;
 		font-size: 10px;
 		line-height: 16px;
-		font-family: 'Font Awesome 5 Free';
+		font-family: 'Font Awesome 6 Pro';
 		font-style: normal;
 		font-weight: 900;
 		border-radius: $border-radius-full;
@@ -36,6 +36,13 @@
 		cursor: pointer;
     padding-left: 1px;
 		}
+
+    i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
 	}
 }
 
@@ -110,7 +117,7 @@
 	// border-radius: $corners-big;
 	// color: color(text-secondary);
 	// border: 1px solid color(border);
-	// text-transform: capitalize;
+	text-transform: capitalize;
 	text-align: left;
 
 	&:hover {
@@ -226,7 +233,9 @@
 .filter-search-bar {
   background-color: color(bg-0);
   border-bottom: 1px solid color(border);
+  border-top: 1px solid color(border);
   padding: 10px 25px;
+  margin-top: -1px;
 
   .filter-search-bar__filter-row {
     display: flex;
@@ -254,7 +263,7 @@
 					text-align: center;
 					font-size: 10px;
 					line-height: 16px;
-					font-family: 'Font Awesome 5 Free';
+					font-family: 'Font Awesome 6 Pro';
 					font-style: normal;
 					font-weight: 900;
 					border-radius: $border-radius-full;

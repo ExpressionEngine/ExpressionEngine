@@ -257,6 +257,7 @@ class Access extends Profile
             ],
             'control_panel' => [
                 'can_access_cp',
+                'can_access_dock',
                 'can_access_footer_report_bug',
                 'can_access_footer_new_ticket',
                 'can_access_footer_user_guide',
@@ -415,6 +416,7 @@ class Access extends Profile
             'can_edit_all_comments',
             'can_delete_all_comments',
             'can_access_cp',
+            'can_access_dock',
             'can_admin_channels',
             'can_create_members',
             'can_edit_members',

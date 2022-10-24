@@ -163,15 +163,17 @@ class Validator
         }
 
         foreach ($this->rules as $key => $rules) {
-            $value = null;
+            $originalValue = null;
 
             if (array_key_exists($key, $values)) {
-                $value = $values[$key];
+                $originalValue = $values[$key];
             }
 
             $rules = $this->setupRules($rules);
 
             foreach ($rules as $rule) {
+                $value = $originalValue;
+
                 if ($partial && $rule instanceof Rule\Required && $value === null) {
                     continue;
                 }

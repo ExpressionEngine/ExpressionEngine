@@ -38,6 +38,9 @@ if (empty($argv))
 }
 
 $value = array_shift($argv);
+if ($value == 'EMPTY') {
+	$value = '';
+}
 
 ee()->config->update_site_prefs(array($item => $value), $site_id);
 ee()->config->site_prefs('', $site_id);

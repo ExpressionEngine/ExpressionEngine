@@ -375,16 +375,16 @@ class Provider extends InjectionBindingDecorator
                 if (!isset($providerCookieSettings[$cookie_name])) {
                     $cookieSettings = ee('Model')->make('CookieSetting', $cookieParams);
                     switch ($cookieParams['cookie_provider']) {
+                        // first-party add-ons
                         case 'pro':
-                            ee()->lang->load('pro', ee()->lang->getIdiom(), false, true, PATH_ADDONS . 'pro/', false);
-                            break;
                         case 'comment':
-                        case 'forum':
                             ee()->lang->load($cookieParams['cookie_provider']);
                             break;
+                        // core EE
                         case 'ee':
                             ee()->lang->load('core');
                             break;
+                        // third-party add-ons
                         default:
                             ee()->lang->loadfile($cookieParams['cookie_provider'], $cookieParams['cookie_provider'], false);
                             break;
@@ -410,6 +410,23 @@ class Provider extends InjectionBindingDecorator
                 }
             }
         }
+    }
+
+    /**
+     * Registers filesystem adapters
+     *
+     * @return void
+     */
+    public function registerFilesystemAdapters()
+    {
+        $filesystem_adapters = $this->get('filesystem_adapters', array());
+        if (!empty($filesystem_adapters)) {
+            ee()->lang->loadfile($this->getPrefix());
+            foreach ($filesystem_adapters as $adapter) {
+                ee('Filesystem/Adapter')->registerAdapter($adapter);
+            }
+        }
+        unset($filesystem_adapters);
     }
 
     /**

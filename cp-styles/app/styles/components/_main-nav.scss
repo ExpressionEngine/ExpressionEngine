@@ -218,8 +218,8 @@
 	// }
 
 	// [data-theme="dark"] &:hover {
-	// 	background: map-get($light-theme, bg-0) !important;
-	// 	color: map-get($light-theme, text-primary) !important;
+	// 	background: map-get($snow-theme, bg-0) !important;
+	// 	color: map-get($snow-theme, text-primary) !important;
 	// }
 }
 
@@ -264,7 +264,7 @@
 		opacity: 0;
 
 		[data-theme="light"] & {
-			background: map-get($light-theme, bg-0) !important;
+			background: map-get($snow-theme, bg-0) !important;
 		}
 
 		[data-theme="dark"] & {

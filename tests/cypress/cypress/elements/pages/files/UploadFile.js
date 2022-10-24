@@ -1,5 +1,5 @@
 import FileManagerSection from '../_sections/FileManagerSection'
-
+const { $ } = Cypress
 class UploadFile extends FileManagerSection {
   constructor() {
       super()
@@ -10,7 +10,7 @@ class UploadFile extends FileManagerSection {
         'heading': 'div.form-standard form .form-btns h3',
 
         // Edit form
-        'file_input': '.ee-main__content div.form-standard form input[type!=hidden][name="file"]',
+        'file_input': 'div[data-input-value="files_field"]',
         'title_input': '.ee-main__content div.form-standard form input[type!=hidden][name="title"]',
         'description_input': '.ee-main__content div.form-standard form textarea[name="description"]',
         'credit_input': '.ee-main__content div.form-standard form input[type!=hidden][name="credit"]',
@@ -21,8 +21,18 @@ class UploadFile extends FileManagerSection {
     }
     load() {
       cy.visit('admin.php?/cp/files')
-      cy.get('.button--primary').contains('Upload').click()
-      cy.get('.dropdown--open .dropdown__link').contains('Main Upload Directory').click()
+      cy.get('.sidebar').contains('Main Upload Directory').click()
     }
+
+    dragAndDropUpload(file) {
+        cy.get('.file-upload-widget').then(function(widget) {
+            $(widget).removeClass('hidden')
+        })
+        cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+        cy.intercept('/admin.php?/cp/files/directory/*').as('table')
+        this.get('file_input').find('.file-field__dropzone').attachFile(file, { subjectType: 'drag-n-drop' })
+        cy.wait('@upload')
+    }
+
 }
 export default UploadFile;

@@ -1,0 +1,11 @@
+{layout="cypress/layout"}
+{exp:channel:entries dynamic="no" entry_id="1" limit="1"}
+<h1>{title}</h1>
+{if frontedit} 
+<span class="frontedit-conditional-in">frontedit</span>
+{/if}
+{/exp:channel:entries}
+
+{if frontedit} 
+<span class="frontedit-conditional-out">frontedit</span>
+{/if}

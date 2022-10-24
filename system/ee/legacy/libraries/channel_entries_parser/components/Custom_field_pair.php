@@ -16,8 +16,8 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
     /**
      * Check if custom fields are enabled.
      *
-     * @param array		A list of "disabled" features
-     * @return Boolean	Is disabled?
+     * @param array     A list of "disabled" features
+     * @return Boolean  Is disabled?
      */
     public function disabled(array $disabled, EE_Channel_preparser $pre)
     {
@@ -30,9 +30,9 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
      *
      * The returned chunks will be passed to replace() as a third parameter.
      *
-     * @param String	The tagdata to be parsed
-     * @param Object	The preparser object.
-     * @return Array	The found custom field pair chunks
+     * @param String    The tagdata to be parsed
+     * @param Object    The preparser object.
+     * @return Array    The found custom field pair chunks
      */
     public function pre_process($tagdata, EE_Channel_preparser $pre)
     {
@@ -65,11 +65,11 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
     /**
      * Replace all of the custom channel pair fields.
      *
-     * @param String	The tagdata to be parsed
-     * @param Object	The channel parser object
-     * @param Mixed		The results from the preparse method
+     * @param String    The tagdata to be parsed
+     * @param Object    The channel parser object
+     * @param Mixed     The results from the preparse method
      *
-     * @return String	The processed tagdata
+     * @return String   The processed tagdata
      */
     public function replace($tagdata, EE_Channel_data_parser $obj, $pfield_chunks)
     {
@@ -149,6 +149,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                     //if the field is conditionally hidden, do not parse
                     if (isset($obj->channel()->hidden_fields[$data['entry_id']]) && in_array($field_id, $obj->channel()->hidden_fields[$data['entry_id']])) {
                         $tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
+
                         continue;
                     }
                     // Set up parse function name based on whether or not
@@ -159,10 +160,10 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                     // 'custom_field_modify_parameter' hook.
                     // - Allow developers to modify the parameters array
                     //
-                    // 	There are 3 ways to use this hook:
-                    // 	 	1) Add to the existing Active Record call, e.g. ee()->db->where('foo', 'bar');
-                    // 	 	2) Call ee()->db->_reset_select(); to terminate this AR call and start a new one
-                    // 	 	3) Call ee()->db->_reset_select(); and modify the currently compiled SQL string
+                    //  There are 3 ways to use this hook:
+                    //      1) Add to the existing Active Record call, e.g. ee()->db->where('foo', 'bar');
+                    //      2) Call ee()->db->_reset_select(); to terminate this AR call and start a new one
+                    //      3) Call ee()->db->_reset_select(); and modify the currently compiled SQL string
                     //
                     //   All 3 require a returned query result array.
                     //
@@ -193,34 +194,31 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                     }
 
                     //frontend edit link
-                    if (IS_PRO) {
-                        $frontedit_disabled = false;
-                        $frontedit_disabled_with_param = false;
-                        $frontEditLink = '';
-                        if (isset($ft->disable_frontedit) && $ft->disable_frontedit == true) {
+                    $frontedit_disabled = false;
+                    $frontedit_disabled_with_param = false;
+                    $frontEditLink = '';
+                    if (isset($ft->disable_frontedit) && $ft->disable_frontedit == true) {
+                        $frontedit_disabled = true;
+                    } elseif (isset($params['disable'])) {
+                        $disable = explode("|", $params['disable']);
+                        if (in_array('frontedit', $disable)) {
                             $frontedit_disabled = true;
-                        } elseif (isset($params['disable'])) {
-                            $disable = explode("|", $params['disable']);
-                            if (in_array('frontedit', $disable)) {
-                                $frontedit_disabled = true;
-                                $frontedit_disabled_with_param = true;
-                            }
+                            $frontedit_disabled_with_param = true;
                         }
-                        if (!$frontedit_disabled) {
-                            $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
-                        }
-                        $tpl_chunk = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tpl_chunk);
                     }
+                    if (!$frontedit_disabled) {
+                        $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
+                    }
+                    $tpl_chunk = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tpl_chunk);
 
                     $tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
 
                     // additional round of replacements if edit link is outside of chunk
-                    if (IS_PRO) {
-                        if ($frontedit_disabled && $frontedit_disabled_with_param) {
-                            $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
-                        }
-                        $tagdata = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tagdata);
+
+                    if ($frontedit_disabled && $frontedit_disabled_with_param) {
+                        $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
                     }
+                    $tagdata = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tagdata);
                 }
 
                 ee()->load->remove_package_path($_ft_path);

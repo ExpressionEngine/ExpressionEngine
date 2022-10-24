@@ -103,6 +103,9 @@ class Javascript extends CI_Controller
 
         if ($package && $loadfile) {
             $file = PATH_THIRD . $package . '/javascript/' . $loadfile . '.js';
+            if (! file_exists($file)) {
+                $file = PATH_ADDONS . $package . '/javascript/' . $loadfile . '.js';
+            }
         } elseif ($loadfile == '') {
             if (($plugin = $this->input->get_post('plugin')) !== false) {
                 $plugin = ee()->security->sanitize_filename($plugin);

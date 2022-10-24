@@ -361,7 +361,7 @@ class Member_images extends Member
         $height = $vals['1'];
 
         // Update DB
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $member = ee()->session->getMember();
         $member->set(
             array(
                 'avatar_filename' => $avatar,

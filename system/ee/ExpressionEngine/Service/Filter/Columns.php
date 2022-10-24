@@ -12,6 +12,7 @@ namespace ExpressionEngine\Service\Filter;
 
 use ExpressionEngine\Library\CP\URL;
 use ExpressionEngine\Service\View\ViewFactory;
+use ExpressionEngine\Model\Content\StructureModel;
 
 /**
  * Columns Filter
@@ -21,16 +22,12 @@ class Columns extends Filter
     public $view_id = null;
     public $channel_id = null;
 
-    public function __construct(array $columns = array(), $channel = null, $view_id = null)
+    public function __construct(array $columns = array(), StructureModel $channel = null, $view_id = null)
     {
         $this->name = 'columns';
         $this->label = lang('columns_filter');
         $this->options = $columns;
         $this->view_id = $view_id;
-
-        if (! empty($channel)) {
-            $this->channel_id = $channel->channel_id;
-        }
 
         $this->default_value = ['entry_id', 'title', 'entry_date', 'author', 'status', 'comments'];
     }
@@ -47,10 +44,7 @@ class Columns extends Filter
 
         $channel_id = !empty(ee()->input->post('filter_by_channel')) ? (int) ee()->input->post('filter_by_channel') : (int) ee()->input->get('filter_by_channel');
 
-        $query = ee('Model')->get('EntryManagerView')
-            ->filter('member_id', ee()->session->userdata('member_id'))
-            ->filter('channel_id', $channel_id);
-        $view = $query->first();
+        $view = ee()->session->getMember()->EntryManagerViews->filter('channel_id', $channel_id)->first();
 
         if (!empty($view)) {
             $value = $view->getColumns();
@@ -82,7 +76,7 @@ class Columns extends Filter
         }
         $options = array_merge($options, $this->options);
         $filter = array(
-            'label' => '<i class=\'fas fa-columns\'></i>',
+            'label' => '<i class=\'fal fa-columns\'></i>',
             'value' => '',
             'available_columns' => $options,
             'selected_columns' => $selected

@@ -1,11 +1,3 @@
-<style type="text/css">
-/* Hack for capybara-webkit, leave in place for now */
-.fields-grid-tools a {
-	display: inline-block;
-	min-width: 1px;
-}
-</style>
-
 <div class="fields-grid-setup" data-group="<?=$group?>">
 	<?=$this->embed('ee:_shared/form/no_results', [
 	    'text' => sprintf(lang('no_found'), lang('columns')),

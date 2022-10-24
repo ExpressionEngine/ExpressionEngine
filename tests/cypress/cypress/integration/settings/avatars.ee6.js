@@ -170,7 +170,7 @@ context('Avatar Settings', () => {
     cy.get('[value="Save Settings"]').first().click()
     //page.submit()
 
-    page.get('wrap').contains('Preferences updated')
+    page.get('wrap').contains('Preferences Updated')
     page.get('avatar_url').invoke('val').then((val) => { expect(val).to.be.equal('http://hello') })
     page.get('avatar_path').invoke('val').then((val) => { expect(val).to.be.equal(upload_path.replace(/\\/g, '/')) })
     page.get('avatar_max_width').invoke('val').then((val) => { expect(val).to.be.equal('100') })

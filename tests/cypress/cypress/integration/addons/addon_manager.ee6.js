@@ -32,12 +32,12 @@ context('Add-On Manager', () => {
             const addon_name = el.find('.add-on-card__title').contents().filter(function(){ return this.nodeType == 3; }).text().trim();
             cy.log(addon_name);
 
-            el.find('.add-on-card__button a').first().click();
+            cy.get(el).find('.add-on-card__button a').trigger('click')
             cy.hasNoErrors()
 
             page.hasAlert()
-            page.get('alert').first().invoke('text').should('include', 'Add-Ons Installed')
-            page.get('alert').first().invoke('text').should('include', addon_name)
+            cy.get('div.app-notice.app-notice--inline').first().invoke('text').should('include', 'Add-Ons Installed')
+            cy.get('div.app-notice.app-notice--inline').first().invoke('text').should('include', addon_name)
 
             page.get('uninstalled_addons').find('.add-on-card__title').should('not.contain', addon_name)
         })
@@ -72,8 +72,8 @@ context('Add-On Manager', () => {
             const addon_name = addon_card.find('.add-on-card__title').contents().filter(function(){ return this.nodeType == 3; }).text().trim();
             cy.log(addon_name);
             let btn = addon_card.find('.js-dropdown-toggle')
-            btn.click()
-            btn.next('.dropdown').find('a:contains("Uninstall")').click()
+            cy.get(btn).trigger('click')
+            cy.get(btn).next('.dropdown').find('a:contains("Uninstall")').trigger('click')
 
             page.get('modal_submit_button').contains('Confirm, and Uninstall').click() // Submits a form
             cy.hasNoErrors();

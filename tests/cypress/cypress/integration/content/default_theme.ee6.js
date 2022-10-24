@@ -8,6 +8,7 @@ const page = new Installer
 const install_form = new Form
 
 context('Install with default theme', () => {
+
   before(function() {
     cy.task('installer:enable').then(() => {
       let installer_folder = '../../system/ee/installer';
@@ -94,6 +95,21 @@ context('Install with default theme', () => {
       cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
       cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}')
       cy.get('body').type('{ctrl}', {release: false}).type('s')
+    })
+
+    it('file manager is not in compatibility mode', () => {
+      cy.eeConfig({ item: 'file_manager_compatibility_mode' }).then((config) => {
+        expect(config).not.eq('y')
+      })
+    })
+
+    it('there are no missing files in filemanager', () => {
+      cy.visit('admin.php?/cp/files')
+      cy.wait(2000)
+      cy.login({ email: 'admin', password: '1Password' });
+      cy.get('.ee-wrapper').should('exist')
+      cy.get('.app-notice-missing-files').should('not.exist')
+      cy.hasNoErrors()
     })
 
     it('homepage', () => {
@@ -199,6 +215,177 @@ context('Install with default theme', () => {
       cy.hasNoErrors()
       cy.logFrontendPerformance()
 
+    })
+
+  })
+
+  context('adding the files to entries', () => {
+    before(() => {
+      cy.visit('admin.php?/cp/fields')
+      cy.wait(2000)
+      cy.login({ email: 'admin', password: '1Password' });
+      cy.get('.ee-wrapper').should('exist')
+      cy.get('.list-item__content').contains('Page Content').click()
+      cy.get('input[type=checkbox][name=field_show_formatting_btns]:visible').check()
+      cy.get('input[type=checkbox][name=field_show_file_selector]:visible').check()
+      cy.get('body').type('{ctrl}', {release: false}).type('s')
+    })
+
+    it('add files and display them on frontend', () => {
+      cy.intercept("**/filepicker/**").as('ajax')
+      cy.login({ email: 'admin', password: '1Password' });
+      cy.visit('/admin.php?/cp/publish/edit')
+      cy.get('a').contains('About Default Theme').click()
+      cy.wait(2000) //wait for picker on textarea to initiliaze
+      cy.get('.textarea-field-filepicker').click()
+      cy.wait('@ajax')
+      cy.get('.modal-file').should('be.visible')
+      let lake_id = null;
+      cy.get('.modal-file .app-listing__row a').contains('lake.jpg').parents('tr').invoke('attr', 'data-id').then((id) => {
+        lake_id = id;
+      })
+      cy.get('.modal-file .app-listing__row a').contains('lake.jpg').click()
+      cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
+      cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
+      })
+
+      cy.get('.grid-field__table tr').should('be.visible')
+      cy.screenshot({capture: 'fullPage'});
+      cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
+      cy.wait('@ajax')
+      cy.get('.modal-file').should('be.visible')
+      cy.wait(1000)//give JS some extra time
+      let ocean_id = null
+      cy.get('.modal-file .app-listing__row a').contains('ocean.jpg').parents('tr').invoke('attr', 'data-id').then((id) => {
+        ocean_id = id;
+      })
+      cy.get('.modal-file .app-listing__row a').contains('ocean.jpg').click()
+      cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
+      cy.get('.grid-field__table tr:visible .js-file-input').invoke('val').then((val) => {
+        expect(val).to.eq('{file:' + ocean_id + ':url}')
+      })
+      cy.get('.grid-field__table tr:visible .fields-upload-chosen-name').should('contain', 'ocean.jpg')
+
+      cy.get('body').type('{ctrl}', {release: false}).type('s')
+      cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
+      })
+      cy.get('.grid-field__table tr:visible .fields-upload-chosen-name').should('contain', 'ocean.jpg')
+
+      cy.on('uncaught:exception', (err, runnable) => {
+        // return false to prevent the error from
+        // failing this test
+        return false
+      })
+
+      cy.visit('/index.php/about')
+      cy.hasNoErrors()
+      cy.get('figure.right img').should('be.visible').and(($img) => {
+            // "naturalWidth" and "naturalHeight" are set when the image loads
+            expect($img[0].naturalWidth).to.be.greaterThan(0)
+      })
+      cy.get('figure.right img').invoke('attr', 'src').then((src) => {
+        expect(src).to.contain('ocean.jpg')
+      })
+      cy.get('section.w-12 p img').should('be.visible').and(($img) => {
+        // "naturalWidth" and "naturalHeight" are set when the image loads
+        expect($img[0].naturalWidth).to.be.greaterThan(0)
+      })
+      cy.get('section.w-12 p img').invoke('attr', 'src').then((src) => {
+        expect(src).to.contain('lake.jpg')
+      })
+
+      //turn on compatibility mode and make sure everything still works
+      cy.log('turn on compatibility mode and make sure everything still works')
+      cy.eeConfig({ item: 'file_manager_compatibility_mode', value: 'y' })
+      cy.wait(1000)
+      
+      cy.visit('/index.php/about')
+      cy.hasNoErrors()
+      cy.get('figure.right img').should('be.visible').and(($img) => {
+            // "naturalWidth" and "naturalHeight" are set when the image loads
+            expect($img[0].naturalWidth).to.be.greaterThan(0)
+      })
+      cy.get('figure.right img').invoke('attr', 'src').then((src) => {
+        expect(src).to.contain('ocean.jpg')
+      })
+      cy.get('section.w-12 p img').should('be.visible').and(($img) => {
+        // "naturalWidth" and "naturalHeight" are set when the image loads
+        expect($img[0].naturalWidth).to.be.greaterThan(0)
+      })
+      cy.get('section.w-12 p img').invoke('attr', 'src').then((src) => {
+        expect(src).to.contain('lake.jpg')
+      })
+
+      //add / replace images in compatibility mode
+      cy.log('add / replace images in compatibility mode')
+      cy.authVisit('/admin.php?/cp/publish/edit')
+      cy.get('a').contains('About Default Theme').click()
+      cy.wait(2000) //wait for picker on textarea to initiliaze
+      cy.get('.textarea-field-filepicker').click()
+      cy.wait('@ajax')
+      cy.get('.modal-file').should('be.visible')
+      cy.wait(1000)//give JS some extra time
+      cy.get('.modal-file .app-listing__row a').contains('path.jpg').click()
+      cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
+      cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')//still there
+      })
+      cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
+        expect(val).to.contain('<img src="{filedir_6}path.jpg"')
+      })
+
+      cy.get('.grid-field__table tr').should('be.visible')
+      cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
+      cy.wait('@ajax')
+      cy.get('.modal-file').should('be.visible')
+      cy.wait(1000)//give JS some extra time
+      cy.get('.modal-file .app-listing__row a').contains('sky.jpg').click()
+      cy.get('.modal-file').should('not.be.visible')
+      cy.wait(1000)//give JS some extra time
+      cy.get('.grid-field__table tr:visible .js-file-input').invoke('val').then((val) => {
+        expect(val).to.eq('{filedir_6}sky.jpg')
+      })
+      cy.get('.grid-field__table tr:visible .fields-upload-chosen-name').should('contain', 'sky.jpg')
+
+      cy.get('body').type('{ctrl}', {release: false}).type('s')
+      cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
+        expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
+      })
+      cy.get('textarea.markItUpEditor').invoke('val').then((val) => {
+        expect(val).to.contain('<img src="{filedir_6}path.jpg"')
+      })
+      cy.get('.grid-field__table tr:visible .fields-upload-chosen-name').should('contain', 'sky.jpg')
+
+      cy.visit('/index.php/about')
+      cy.hasNoErrors()
+      cy.get('figure.right img').should('be.visible').and(($img) => {
+            // "naturalWidth" and "naturalHeight" are set when the image loads
+            expect($img[0].naturalWidth).to.be.greaterThan(0)
+      })
+      cy.get('figure.right img').invoke('attr', 'src').then((src) => {
+        expect(src).to.contain('sky.jpg')
+      })
+      cy.get('section.w-12 p img').eq(0).should('be.visible').and(($img) => {
+        // "naturalWidth" and "naturalHeight" are set when the image loads
+        expect($img[0].naturalWidth).to.be.greaterThan(0)
+      })
+      cy.get('section.w-12 p img').eq(0).invoke('attr', 'src').then((src) => {
+        expect(src).to.contain('lake.jpg')
+      })
+      cy.get('section.w-12 p img').eq(1).should('be.visible').and(($img) => {
+        // "naturalWidth" and "naturalHeight" are set when the image loads
+        expect($img[0].naturalWidth).to.be.greaterThan(0)
+      })
+      cy.get('section.w-12 p img').eq(1).invoke('attr', 'src').then((src) => {
+        expect(src).to.contain('path.jpg')
+      })
+
+      cy.eeConfig({ item: 'file_manager_compatibility_mode', value: 'n' })
     })
 
   })

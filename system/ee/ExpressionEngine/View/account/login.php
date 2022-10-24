@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/login'); ?>
 
 	<div class="login__logo">
-		<?php if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee()->config->item('login_logo')) : ?>
+		<?php if (ee('pro:Access')->hasRequiredLicense() && ee()->config->item('login_logo')) : ?>
 		<img src="<?=ee()->config->item('login_logo')?>" alt="Powered by ExpressionEngine&reg;">
 		<?php else: ?>
 		<?php $this->embed('ee:_shared/ee-logo')?>

@@ -241,10 +241,11 @@ class Settings extends Profile
         $name = 'avatar_' . $this->member->member_id . '.' . $suffix;
 
         $file_path = ee()->filemanager->clean_filename(
-            basename($name),
+            $upload_response['upload_directory_prefs']['server_path'] . basename($name),
             $directory->id,
             array('ignore_dupes' => false)
         );
+    
         $filename = basename($file_path);
 
         $original = $upload_response['upload_directory_prefs']['server_path'] . $upload_response['file_name'];

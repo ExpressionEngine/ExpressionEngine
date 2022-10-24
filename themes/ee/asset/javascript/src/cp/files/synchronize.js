@@ -34,7 +34,10 @@ EE.file_manager.sync_listen = function() {
 		EE.file_manager.update_progress(0);
 
 		// Disable sync button
-		$('.button', this).prop('disabled', true);
+		$(this).parents('form').find('.button').prop('disabled', true);
+		$(this).parents('form').find('.button').each(function() {
+			$(this).text($(this).data('work-text'));
+		});
 
 		// Remove any existing alerts
 		$('.app-notice--inline').remove();

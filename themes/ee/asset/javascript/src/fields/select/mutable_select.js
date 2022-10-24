@@ -41,7 +41,7 @@ function () {
     value: function toggleAddButton() {
       var addButtons = this.field.parent().find(this.addButton);
 
-      if (this.field.find('.field-no-results').size()) {
+      if (this.field.find('.field-no-results').length) {
         addButtons.filter(function (i, el) {
           return $(el).hasClass('btn');
         }).hide();

@@ -52,6 +52,8 @@ $lang = array(
 
     'confirm_uninstall_desc' => 'You are attempting to uninstall the following items, please confirm this action.',
 
+    'fieldtype_is_in_use' => 'This fieldtype is being used in following fields:',
+
     /* Filters */
     'addons_installed' => 'Add-Ons Installed',
 
@@ -187,10 +189,6 @@ $lang = array(
     'version_required' => '%s version %s or higher is required.',
 
     /* License */
-
-    'license_error' => 'License error',
-    'license_error_file_not_writable' => 'The cache folder needs to be writable in order for ExpressionEngine Pro to work',
-    'license_error_file_broken' => 'There has been an error validating ExpressionEngine Pro license status',
 
     'license_license_expired' => 'License Expired',
     'license_invalid_domain' => 'Invalid Site Domain',

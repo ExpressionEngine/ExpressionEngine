@@ -283,9 +283,10 @@ class CI_DB_active_record extends CI_DB_driver
      * @param	string $table The table to join
      * @param	string $cond The condition to join on
      * @param	string $type the type of join (left, right, outer, inner, left outer, right outer)
+     * @param	string $alias give the join an alias
      * @return	CI_DB_active_record The active record object
      */
-    public function join($table, $cond, $type = '')
+    public function join($table, $cond, $type = '', $alias = '')
     {
         if ($type != '') {
             $type = strtoupper(trim($type));
@@ -302,15 +303,21 @@ class CI_DB_active_record extends CI_DB_driver
         $this->_track_aliases($table);
 
         // Strip apart the condition and protect the identifiers
-        if (preg_match('/([\w\.]+)([\W\s]+)(.+)/', $cond, $match)) {
+        if (empty($alias) && preg_match('/([\w\.]+)([\W\s]+)(.+)/', $cond, $match)) {
             $match[1] = $this->_protect_identifiers($match[1]);
             $match[3] = $this->_protect_identifiers($match[3]);
 
             $cond = $match[1] . $match[2] . $match[3];
         }
 
+        // If a join alias specified, extract it now
+        $join_alias = '';
+        if (! empty($alias)) {
+            $join_alias = ' ' . $alias . ' ';
+        }
+
         // Assemble the JOIN statement
-        $join = $type . 'JOIN ' . $this->_protect_identifiers($table, true, null, false) . ' ON ' . $cond;
+        $join = $type . 'JOIN ' . $this->_protect_identifiers($table, true, null, false) . $join_alias . ' ON ' . $cond;
 
         $this->ar_join[] = $join;
         if ($this->ar_caching === true) {
@@ -1690,7 +1697,7 @@ class CI_DB_active_record extends CI_DB_driver
                     && strpos($trace['class'], 'CI_DB_') === false) {
                     $addon_name = explode(DIRECTORY_SEPARATOR, substr($trace['file'], strpos($trace['file'], $marker) + strlen($marker)));
                     $addon = ee('Addon')->get($addon_name[0]);
-                    $message = $addon->getName() . ' is making a call to `exp_' . $table . '` database table, which is non-existent in ExpressionEngine 6. If you are site owner, try upgrading ' . $addon->getName() . ' to latest available version. If you are the add-on developer, update your ' . $trace['class'] . ' class to use <a href="https://docs.expressionengine.com/v6/development/v6-add-on-migration.html#required-changes">Role model</a>.';
+                    $message = $addon->getName() . ' is making a call to `exp_' . $table . '` database table, which is non-existent in ExpressionEngine 6. If you are site owner, try upgrading ' . $addon->getName() . ' to latest available version. If you are the add-on developer, update your ' . $trace['class'] . ' class to use <a href="https://docs.expressionengine.com/latest/development/v6-add-on-migration.html#required-changes">Role model</a>.';
 
                     ee()->load->library('logger');
                     ee()->logger->developer($message, true);

@@ -25,7 +25,7 @@
 		<div class="js-list-group-wrap">
 			<?php if (count($categories->children()) != 0 && $can_delete_categories): ?>
 				<div class="list-group-controls">
-					<label class="ctrl-all"><span><?=lang('select_all')?></span> <input type="checkbox" class="checkbox--small"></label>
+					<label class="ctrl-all"><span><?=lang('select_all')?></span> <input type="checkbox"></label>
 				</div>
 			<?php endif ?>
 			<div class="js-nestable-categories">

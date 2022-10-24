@@ -46,13 +46,14 @@ context('Profile - Personal Settings', () => {
   })
 
   it('can upload avatar', () => {
-    const fileName = 'pictureUpload.png'
+    //in EE7 avatars are auto-resized, so this test is not needed
+    /*const fileName = 'pictureUpload.png'
     cy.get('input[name="upload_avatar"]').attachFile(fileName)
     cy.get('body').type('{ctrl}', {release: false}).type('s')
     page.hasAlert('error')
     page.get('alert').contains("Cannot Upload File")
     page.get('alert').contains("The file you are attempting to upload is larger than the permitted size")
-    cy.get('#avatar').should('not.be.visible')
+    cy.get('#avatar').should('not.be.visible')*/
 
     cy.get('input[name="upload_avatar"]').attachFile('../../support/file-sync/bad/script.sh')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
@@ -61,7 +62,7 @@ context('Profile - Personal Settings', () => {
     page.get('alert').contains("File not allowed.")
     cy.get('#avatar').should('not.be.visible')
 
-    cy.get('input[name="upload_avatar"]').attachFile('../../support/file-sync/images/carlshead2.jpeg')
+    cy.get('input[name="upload_avatar"]').attachFile('pictureUpload.png')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
     page.hasAlert('success')
     page.get('alert').contains("Member Profile Saved")

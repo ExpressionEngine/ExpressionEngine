@@ -562,7 +562,7 @@ class EE_Typography
      */
     public function parse_file_paths($str)
     {
-        if ($this->parse_images == false or strpos($str, 'filedir_') === false) {
+        if ($this->parse_images == false or (strpos($str, '{filedir_') === false && strpos($str, '{file:') === false)) {
             return $str;
         }
 
@@ -1373,6 +1373,12 @@ class EE_Typography
         // Preserve old HTML format, because yay singletons
         $existing_format = $this->html_format;
         $this->html_format = 'safe';
+        if (stristr($title, '<br') !== false) {
+            $title = preg_replace("#<br>|<br />#i", "[br]", $title);
+        }
+        if (stristr($title, '<wbr') !== false) {
+            $title = preg_replace("#<wbr>|<wbr />#i", "[wbr]", $title);
+        }
         $title = $this->format_html($title);
 
         // format_html() turns safe HTML into BBCode
@@ -1382,7 +1388,9 @@ class EE_Typography
         $this->html_format = $existing_format;
 
         // hit emoji shortands
-        $title = ee('Format')->make('Text', $title)->emojiShorthand();
+        if (bool_config_item('disable_emoji_shorthand') === false) {
+            $title = ee('Format')->make('Text', $title)->emojiShorthand();
+        }
 
         // and finally some basic curly quotes, em dashes, etc.
         $title = $this->format_characters($title);
@@ -1601,6 +1609,13 @@ class EE_Typography
                 );
             }
         }
+
+        // replace linebreaks
+        $str = str_ireplace(
+            array('[br][/br]', '[br]', '[wbr]'),
+            array('<br />', '<br />', '<wbr />'),
+            $str
+        );
 
         /** -------------------------------------
         /**  Decode codeblock division for code tag

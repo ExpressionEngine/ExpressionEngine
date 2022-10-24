@@ -1,0 +1,16 @@
+{
+    "require": {
+        "bacon/bacon-qr-code": "^2.0",
+        "spomky-labs/otphp": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ExpressionEngine\\Addons\\Pro\\": "./"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "ExpressionEngine\\Addons\\Pro\\Composer::postAutoloadDump"
+        ]
+    }
+}

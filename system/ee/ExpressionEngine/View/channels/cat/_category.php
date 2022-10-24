@@ -1,7 +1,7 @@
 <li class="js-nested-item" data-id="<?=$category->data->cat_id?>">
 	<div class="list-item list-item--action <?php if (ee()->session->flashdata('highlight_id') == $category->data->cat_id): ?> list-item--selected<?php endif ?>" style="position: relative;">
 		<?php if ($can_edit_categories): ?>
-		<div class="list-item__handle"><i class="fas fa-bars"></i></div>
+		<div class="list-item__handle"><i class="fal fa-bars"></i></div>
 		<?php endif; ?>
     <div class="list-item__secondary" style="left: 51px;">
       #<?=$category->data->cat_id?> <span class="faded">/</span> <span class="click-select-text"><?=$category->data->cat_url_title?></span>

@@ -88,7 +88,7 @@ function toggleFields(fields, show, key) {
 		var fieldset = $(field).closest('fieldset');
 
 		if (fieldset.hasClass('fieldset-invalid')) {
-			if (fieldset.find('input:visible').not('.button').size() == 0) {
+			if (fieldset.find('input:visible').not('.button').length == 0) {
 				fieldset.removeClass('fieldset-invalid');
 				fieldset.find('em.ee-form-error-message').remove();
 			}
@@ -121,7 +121,7 @@ function toggleSections(sections, show, key) {
 
 EE.cp.form_group_toggle = function(element) {
 
-	if ( ! $(element).size()) {
+	if ( ! $(element).length) {
 		return;
 	}
 
@@ -158,6 +158,16 @@ EE.cp.form_group_toggle = function(element) {
 
 	// Show the selected fields and sections
 	toggle(value, config[value]);
+
+	window.document.dispatchEvent(
+		new CustomEvent('formFields:toggle', {
+			detail: {
+				group: config[value],
+				state: value,
+				for: $(element).parent().data('toggle-for')
+			} 
+		})
+	);
 
 	// The reset the form .last values
 	var form = $(element).closest('form');

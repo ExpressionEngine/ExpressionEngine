@@ -270,14 +270,12 @@ class Updater
 
     private function installConsentModule()
     {
-        if (REQ == 'CLI') {
-            return;
-        }
-
         $addon = ee('Addon')->get('consent');
 
         if (! $addon or ! $addon->isInstalled()) {
-            ee()->load->library('addons');
+            if (!isset(ee()->addons)) {
+                ee()->load->library('addons');
+            }
             ee()->addons->install_modules(['consent']);
 
             try {

@@ -27,7 +27,7 @@ class ChannelManager extends ControlPanel {
     }
 
     load_edit_for_status(number) {
-        cy.get('[data-input-value="statuses"] .checkbox-label:nth-child(' + number + ') .flyout-edit').first().click()
+        cy.get('[data-input-value="statuses"] .checkbox-label:nth-child(' + number + ') .flyout-edit').first().click({force: true})
     }
 
 }

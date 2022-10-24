@@ -14,7 +14,6 @@ function preventNavigateAway(e) {
 	}
 }
 $(document).ready(function () {
-
 	if(typeof isNavigatingAway === 'undefined') {
 		var isNavigatingAway
 	}
@@ -63,8 +62,19 @@ $(document).ready(function () {
 		});
 	}
 
+	// check if command is clicked
+	var cmdPressed = false;
+	$(window).on('keydown', function(evt) {
+		if (evt.which == 91 || evt.which == 17 || evt.which == 16) { // command/ctrl/shift
+			cmdPressed = true;
+		}
+	}).on('keyup', function(evt) {
+		if (evt.which == 91 || evt.which == 17 || evt.which == 16) { // command/ctrl/shift
+			cmdPressed = false;
+		}
+	});
 	//prevent navigating away
-	$('body').on('click', 'a', function(e) {
+	$('body .ee-wrapper').on('click', 'a', function(e) {
 		if (
 			sessionStorage.getItem("preventNavigateAway") == 'true' &&
 			$(this).attr('href') != null && 
@@ -72,7 +82,8 @@ $(document).ready(function () {
 			$(this).attr('href').indexOf('#') != 0  && 
 			$(this).attr('href').indexOf('javascript:') != 0 &&
 			$(this).attr('target') != '_blank' && 
-			(!e.target.closest('[data-publish]') || (typeof(e.target.closest('[data-publish]').length)!=='undefined' && !e.target.closest('[data-publish]').length))
+			(!e.target.closest('[data-publish]') || (typeof(e.target.closest('[data-publish]').length)!=='undefined' && !e.target.closest('[data-publish]').length)) && 
+			!cmdPressed
 		) {
 			isNavigatingAway = confirm(EE.lang.confirm_exit);
 			return isNavigatingAway;
@@ -109,7 +120,7 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						var publishHeading = $('.panel-heading .title-bar h3');
+						var publishHeading = $('.ee-wrapper .panel-heading .title-bar h3');
 						publishHeading.find('.app-badge').remove();
 
 						if (result.error) {

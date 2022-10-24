@@ -3,7 +3,7 @@
 [class^='icon--'],
 [class*=' icon--'] {
 	@extend %fa-icon;
-	@extend .fas;
+	@extend .fal;
 }
 
 
@@ -301,7 +301,7 @@
 .icon-settings,
 .icon--settings {
 	@extend %fa-icon;
-	@extend .fas;
+	@extend .fal;
 	&:before {
 		content: fa-content($fa-var-cog);
 	}
