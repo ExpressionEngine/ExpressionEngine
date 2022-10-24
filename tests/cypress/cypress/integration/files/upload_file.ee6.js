@@ -24,14 +24,14 @@ context('File Manager / Upload File', () => {
   })
 
   beforeEach(function() {
-    cy.authVisit('admin.php?/cp/files');
+    cy.authVisit('admin.php?/cp/files/upload/1');
 
     cy.hasNoErrors()
 
     //page.displayed?
 
     // Check that the heder data is intact
-    page.get('manager_title').invoke('text').then((text) => { expect(text.trim()).to.be.equal('Files') })
+    page.get('manager_title').invoke('text').then((text) => { expect(text.trim()).to.be.equal('File Manager') })
     page.get('download_all').should('exist')
 
     // Check that we have a sidebar
