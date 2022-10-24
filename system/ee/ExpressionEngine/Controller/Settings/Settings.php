@@ -85,7 +85,7 @@ class Settings extends CP_Controller
             $list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
         }
 
-        $list->addItem(lang('hit_tracking'), ee('CP/URL')->make('settings/hit-tracking'));
+        $list->addItem(lang('tracking'), ee('CP/URL')->make('settings/tracking'));
 
         $list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
 

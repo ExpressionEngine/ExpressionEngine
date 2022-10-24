@@ -1149,7 +1149,8 @@ class EE_Schema
 			`priority` int(2) NOT NULL default '10',
 			`version` varchar(10) NOT NULL default '',
 			`enabled` char(1) NOT NULL default 'y',
-			PRIMARY KEY `extension_id` (`extension_id`)
+			PRIMARY KEY `extension_id` (`extension_id`),
+			KEY `enabled` (`enabled`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_member_search`(

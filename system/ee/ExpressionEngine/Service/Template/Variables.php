@@ -33,9 +33,6 @@ abstract class Variables
      */
     public function __construct()
     {
-        // Load the typography class
-        ee()->load->library('typography');
-        ee()->typography->initialize();
     }
 
     /**
@@ -162,6 +159,8 @@ abstract class Variables
      */
     protected function typography($str, $typography_prefs)
     {
+        ee()->load->library('typography');
+        ee()->typography->initialize();
         $str = ee()->typography->parse_type($str, $typography_prefs);
 
         if (bool_config_item('enable_censoring')) {

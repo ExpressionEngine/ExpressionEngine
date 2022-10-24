@@ -1,0 +1,109 @@
+<html>
+<body>
+{exp:channel:entries limit="100" dynamic="no"}
+<div id="{url_title}">
+    <h3>#{entry_id} - {title}</h3>
+    {if about_body}{about_body}{/if}
+    {if news_body}{news_body}{/if}
+    <p>{entry_date format="%d-%m-%Y"} ({entry_date:relative})</p>
+    {if related_news}
+        {related_news}
+        <p><b>{related_news:title}</b></p>
+        {if related_news:news_body}{related_news:news_body}{/if}
+        {/related_news}
+    {/if}
+    {if news_image}{news_image}{/if}
+    {if about_image}{about_image}{/if}
+    {if image}{image}{/if}
+    <div class="fluid">
+    {corpse}
+        <div class="fluid-a_date">
+        {corpse:a_date}
+            {content format="%F %d %Y"}
+        {/corpse:a_date}
+        </div>
+        <div class="fluid-checkboxes">
+        {corpse:checkboxes}
+            {content}
+            Value: {item}<br>
+            Value: {item:value}<br>
+            Label: {item:label}<br>
+            {/content}
+        {/corpse:checkboxes}
+        </div>
+        <div class="fluid-electronic_mail_address">
+        {corpse:electronic_mail_address}
+            {content:mailto title="Email about their dog" subject="Question about your dog" encode="no"}
+        {/corpse:electronic_mail_address}
+        </div>
+        <div class="fluid-home_page">
+        {corpse:home_page}
+            {content}
+        {/corpse:home_page}
+        </div>
+        <div class="fluid-image">
+        {corpse:image}
+            {content}
+            Extension: {extension}
+            Upload date: {upload_date format="%Y %m %d"}
+            URL: {url}
+            Custom med thumbnail url: {url:med}
+            {/content}
+        {/corpse:image}
+        </div>
+        <div class="fluid-middle_class_text">
+
+        {corpse:middle_class_text}
+            {content}
+        {/corpse:middle_class_text}
+        </div>
+        <div class="fluid-multi_select">
+        {corpse:multi_select}
+            {content}
+        {/corpse:multi_select}
+        </div>
+        <div class="fluid-radio">
+        {corpse:radio}
+            {content}
+        {/corpse:radio}
+        </div>
+        <div class="fluid-selectable_buttons">
+        {corpse:selectable_buttons}
+            {content}
+        {/corpse:selectable_buttons}
+        </div>
+        <div class="fluid-selection">
+        {corpse:selection}
+            {content}
+        {/corpse:selection}
+        </div>
+        <div class="fluid-stupid_grid">
+        {corpse:stupid_grid}
+            {content}
+                {if content:count == 1}Grid total rows: {content:total_rows}{/if}
+                {content:text_one}
+                {content:text_two}
+            {/content}
+        {/corpse:stupid_grid}
+        </div>
+        <div class="fluid-text">
+        {corpse:text}
+            {content}
+        {/corpse:text}
+        </div>
+        <div class="fluid-truth_or_dare">
+        {corpse:truth_or_dare}
+            {if content}YES there is a toggle value!{/if}
+        {/corpse:truth_or_dare}
+        </div>
+        <div class="fluid-youtube_url">
+        {corpse:youtube_url}
+            {content:url}
+        {/corpse:youtube_url}
+        </div>
+    {/corpse}
+    </div>
+</div>
+{/exp:channel:entries}
+</body>
+</html>
