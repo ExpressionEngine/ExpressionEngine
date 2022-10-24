@@ -28,6 +28,8 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'modifyCpHomepageChannelColumnOnMembers',
+                'addLegacyFieldsConfig',
+                'addExtensionsEnabledKey',
             ]
         );
 
@@ -51,6 +53,35 @@ class Updater
             ]
         );
     }
+    private function addLegacyFieldsConfig()
+    {
+        $legacyFieldExists = ee()->db->where('m_legacy_field_data', 'y')->from('member_fields')->count_all_results();
+        ee('Model')->make('Config', [
+            'site_id' => 0,
+            'key' => 'legacy_member_data',
+            'value' => $legacyFieldExists > 0 ? 'y' : 'n'
+        ])->save();
+
+        $legacyFieldExists = ee()->db->where('legacy_field_data', 'y')->from('channel_fields')->count_all_results();
+        ee('Model')->make('Config', [
+            'site_id' => 0,
+            'key' => 'legacy_channel_data',
+            'value' => $legacyFieldExists > 0 ? 'y' : 'n'
+        ])->save();
+
+        $legacyFieldExists = ee()->db->where('legacy_field_data', 'y')->from('category_fields')->count_all_results();
+        ee('Model')->make('Config', [
+            'site_id' => 0,
+            'key' => 'legacy_category_field_data',
+            'value' => $legacyFieldExists > 0 ? 'y' : 'n'
+        ])->save();
+    }
+
+    private function addExtensionsEnabledKey()
+    {
+        ee()->smartforge->add_key('extensions', 'enabled');
+    }
+
 }
 
 // EOF

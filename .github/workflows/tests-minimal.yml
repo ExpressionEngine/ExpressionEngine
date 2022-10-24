@@ -213,6 +213,11 @@ jobs:
                 echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
               id: specs
 
+            - name: Install Chrome Beta
+              uses: browser-actions/setup-chrome@latest
+              with:
+                chrome-version: beta
+
             - name: Run Cypress Tests (without dashboard)
               uses: cypress-io/github-action@v2
               if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
