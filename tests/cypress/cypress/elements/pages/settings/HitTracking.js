@@ -18,7 +18,7 @@ class HitTracking extends ControlPanel {
 
   load() {
     this.get('settings_btn').click()
-    this.get('wrap').find('div.sidebar a:contains("Hit Tracking")').click()
+    this.get('wrap').find('div.sidebar a:contains("Tracking")').click()
   }
 }
 export default HitTracking;

@@ -69,9 +69,7 @@ class Homepage extends CP_Controller
     private function redirectIfNoSegments()
     {
         if (empty(ee()->uri->segments)) {
-            $member_home_url = ee('Model')->get('Member', ee()->session->userdata('member_id'))
-                ->first()
-                ->getCPHomepageURL();
+            $member_home_url = ee()->session->getMember()->getCPHomepageURL();
 
             if ($member_home_url->path != 'homepage') {
                 // Preserve updater result status messages

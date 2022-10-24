@@ -344,7 +344,7 @@ class EE_Schema
 			show_sidebar char(1) NOT NULL default 'n',
 			pmember_id int(10) NOT NULL default '0',
 			cp_homepage varchar(20) NULL DEFAULT NULL,
-			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
+			cp_homepage_channel text NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
 			dismissed_banner char(1) NOT NULL DEFAULT 'n',
 			enable_mfa char(1) NOT NULL default 'n',
@@ -1149,7 +1149,8 @@ class EE_Schema
 			`priority` int(2) NOT NULL default '10',
 			`version` varchar(10) NOT NULL default '',
 			`enabled` char(1) NOT NULL default 'y',
-			PRIMARY KEY `extension_id` (`extension_id`)
+			PRIMARY KEY `extension_id` (`extension_id`),
+			KEY `enabled` (`enabled`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_member_search`(

@@ -24,7 +24,7 @@ context('File Manager / Upload File', () => {
   })
 
   beforeEach(function() {
-    cy.authVisit('admin.php?/cp/files');
+    cy.authVisit('admin.php?/cp/files/upload/1');
 
     cy.hasNoErrors()
 
