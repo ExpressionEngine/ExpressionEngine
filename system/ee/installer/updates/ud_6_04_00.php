@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
+                'modifyCpHomepageChannelColumnOnMembers',
                 'addLegacyFieldsConfig',
                 'addExtensionsEnabledKey',
             ]
@@ -39,6 +40,19 @@ class Updater
         return true;
     }
 
+    private function modifyCpHomepageChannelColumnOnMembers()
+    {
+        ee()->smartforge->modify_column(
+            'members',
+            [
+                'cp_homepage_channel' => [
+                    'name' => 'cp_homepage_channel',
+                    'type' => 'text',
+                    'null' => true
+                ]
+            ]
+        );
+    }
     private function addLegacyFieldsConfig()
     {
         $legacyFieldExists = ee()->db->where('m_legacy_field_data', 'y')->from('member_fields')->count_all_results();
