@@ -380,6 +380,8 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
             }
         }
 
+        $this->emit('afterAssociationsSave');
+
         return $this;
     }
 
