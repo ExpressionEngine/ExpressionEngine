@@ -29,6 +29,8 @@ context('Request', () => {
     cy.get('#get_post span').invoke('text').should('contain', "'hello'")
     cy.get('#get_post span').invoke('text').should('not.contain', "(")
     cy.get('#get_post span').invoke('text').should('not.contain', "script")
+
+    cy.logFrontendPerformance()
   })
 
   context('check all tags', function(){
@@ -53,6 +55,8 @@ context('Request', () => {
     })
     it('request_header', function(){
       cy.get('#request_header span').invoke('text').should('contain', "text/html")
+
+      cy.logFrontendPerformance()
     })
   })
 

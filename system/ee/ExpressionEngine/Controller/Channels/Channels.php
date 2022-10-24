@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -675,24 +675,35 @@ class Channels extends AbstractChannelsController
      */
     public function renderFieldsField($channel = null)
     {
+        $selected = ee('Request')->post('custom_fields') ?: [];
+        if ($channel) {
+            $selected = $channel->CustomFields->pluck('field_id');
+        }
+
         $fields = ee('Model')->get('ChannelField')
-            ->fields('field_label', 'field_name')
+            ->fields('field_id', 'field_label', 'field_name')
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->order('field_label')
             ->all();
 
-        $custom_field_options = $fields->map(function ($field) {
-            return [
-                'label' => $field->field_label,
-                'value' => $field->getId(),
-                'instructions' => LD . $field->field_name . RD
-            ];
-        });
-
-        $selected = ee('Request')->post('custom_fields') ?: [];
-
-        if ($channel) {
-            $selected = $channel->CustomFields->pluck('field_id');
+        $custom_field_options = [];
+        foreach ($fields as $field) {
+            if (in_array($field->getId(), $selected)) {
+                $custom_field_options[] = [
+                    'label' => $field->field_label,
+                    'value' => $field->getId(),
+                    'instructions' => LD . $field->field_name . RD
+                ];
+            }
+        }
+        foreach ($fields as $field) {
+            if (! in_array($field->getId(), $selected)) {
+                $custom_field_options[] = [
+                    'label' => $field->field_label,
+                    'value' => $field->getId(),
+                    'instructions' => LD . $field->field_name . RD
+                ];
+            }
         }
 
         $no_results = [

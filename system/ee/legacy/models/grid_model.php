@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -514,7 +514,16 @@ class Grid_model extends CI_Model
         switch ($comparison) {
             case 'LIKE':
                 $value = trim(trim($value, '"'), '%');
-                $passes = stripos($datum, $value)!==false;
+                if (is_array($datum)) {
+                    foreach ($datum as $piece) {
+                        $passes = stripos($piece, $value)!==false;
+                        if ($passes) {
+                            break 2;
+                        }
+                    }
+                } else {
+                    $passes = stripos($datum, $value)!==false;
+                }
 
                 break;
 

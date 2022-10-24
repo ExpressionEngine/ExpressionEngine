@@ -167,6 +167,8 @@ context('Categories', () => {
 
                         check_category_one()
                         check_category_two()
+
+                        cy.logFrontendPerformance()
                     })
                 })
             }
@@ -179,6 +181,8 @@ context('Categories', () => {
 
         check_category_one()
         check_category_two()
+
+        cy.logFrontendPerformance()
     })
 
     it('check category heading on frontend', function() {
@@ -186,6 +190,7 @@ context('Categories', () => {
         cy.visit('index.php/cats/heading/category/C5')
 
         check_category_one()
+        cy.logFrontendPerformance()
 
         cy.visit('admin.php?/cp/settings/urls');
         cy.get('input[name=use_category_name][value=y]').check()
@@ -194,6 +199,7 @@ context('Categories', () => {
         cy.visit('index.php/cats/heading/category/category-one')
 
         check_category_one()
+        cy.logFrontendPerformance()
 
         cy.visit('admin.php?/cp/settings/urls');
         cy.get('input[name=use_category_name][value=y]').check()
@@ -205,6 +211,7 @@ context('Categories', () => {
         cy.visit('index.php/cats/archive')
 
         check_category_one()
+        cy.logFrontendPerformance()
 
 
         cy.get("#details-News-1 .title").invoke('text').then((text) => {
@@ -235,6 +242,7 @@ context('Categories', () => {
         cy.visit('index.php/cats/archive-nested')
 
         check_category_one()
+        cy.logFrontendPerformance()
 
 
         cy.get("#news").parent().find("#details-1 .title").invoke('text').then((text) => {
@@ -309,6 +317,7 @@ context('Categories', () => {
                 cy.task('db:query', 'UPDATE exp_channel_titles SET entry_date=1409242039 WHERE entry_id=1').then(() => {
 
                     cy.visit('index.php/cats/archive-sorted')
+                    cy.logFrontendPerformance()
                     
                     cy.get(".default-linear .category_name").eq(0).invoke('text').then((text) => {
                         expect(text).equal('News')
@@ -414,6 +423,29 @@ context('Categories', () => {
         })
     })
 
+    it('check which categories have children', function () {
+        cy.authVisit('admin.php?/cp/categories/edit/1/2');
+		cy.get('#fieldset-parent_id input[type=radio][value=1]').check();
+
+        cy.get('button[name=submit][value=save]').first().click();
+
+        cy.visit('index.php/cats/archive');
+
+        cy.get('#news .has_children').invoke('text').then((text) => {
+            expect(text).equal('This category has children')
+        });
+
+        cy.get('#bands .has_children').should('not.exist');
+
+        cy.visit('index.php/cats/archive-nested');
+
+        cy.get('#news .has_children').invoke('text').then((text) => {
+            expect(text).equal('This category has children')
+        });
+
+        cy.get('#bands .has_children').should('not.exist');
+    });
+
     describe('static usage of category heading tag', function() {
         it('category heading is correct when using category_id', function() {
 
@@ -424,6 +456,7 @@ context('Categories', () => {
             cy.log('... when using category ID in URL')
             cy.visit('index.php/cats/manual-heading-2/category/C5')
             check_category_two()
+            cy.logFrontendPerformance()
 
             cy.log('switch the setting')
             cy.visit('admin.php?/cp/settings/urls');
@@ -459,6 +492,7 @@ context('Categories', () => {
             cy.log('... when using category slug in URL')
             cy.visit('index.php/cats/manual-heading/category/category-one')
             check_category_two()
+            cy.logFrontendPerformance()
 
             cy.log('switch the setting back')
             cy.visit('admin.php?/cp/settings/urls');

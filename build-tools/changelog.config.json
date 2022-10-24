@@ -1,0 +1,23 @@
+{
+    "categories": [
+      {
+        "title": "**Enhancements** 🚀",
+        "labels": ["enhancement", "enhancement: accepted"]
+      },
+      {
+        "title": "**Bug Fixes** 💃🐛",
+        "labels": ["Bug: Accepted"]
+      },
+      {
+        "title": "**Developers** 💻",
+        "labels": ["refactoring", "development"]
+      }
+    ],
+    "ignore_labels": [
+      "ignore"
+    ],
+    "sort": "DESC",
+    "template": "${{CHANGELOG}}",
+    "pr_template": "- ${{TITLE}}\n   - PR: #${{NUMBER}}",
+    "empty_template": "- no changes"
+  }

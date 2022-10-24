@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -14,7 +14,7 @@ use ExpressionEngine\Core\Application;
 use ExpressionEngine\Core\Provider;
 
 /**
- * Addon Service Factory
+ * Add-on Service Factory
  */
 class Factory
 {
@@ -29,10 +29,10 @@ class Factory
     }
 
     /**
-     * Get the addon `$name`
+     * Get the add-on `$name`
      *
-     * @param String $name Addon short name
-     * @return Object Addon The requested addon
+     * @param String $name Add-on short name
+     * @return Object Add-on The requested addon
      */
     public function get($name)
     {
@@ -52,7 +52,7 @@ class Factory
     /**
      * Get all addons
      *
-     * @return array An array of Addon objects.
+     * @return array An array of Add-on objects.
      */
     public function all()
     {
@@ -72,7 +72,7 @@ class Factory
     /**
      * Fetch all installed addons
      *
-     * @return array An array of Addon objects.
+     * @return array An array of Add-on objects.
      */
     public function installed()
     {

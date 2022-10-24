@@ -10,9 +10,19 @@
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
     "failOnStatusCode": false,
+    "experimentalInteractiveRunEvents": true,
     "redirectionLimit": 200,
     "testFiles": "**/*.ee6.js",
     "retries": 1,
+    "viewportWidth": 1920,
+    "viewportHeight": 1080,
+    "lighthouse": {
+        "performance": 75,
+        "accessibility": 75,
+        "best-practices": 75,
+        "seo": 75,
+        "pwa": 25
+    },
     "env": {
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",

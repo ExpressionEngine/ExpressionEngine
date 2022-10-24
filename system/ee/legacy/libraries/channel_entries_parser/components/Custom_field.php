@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -16,8 +16,8 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
     /**
      * Check if custom fields are enabled.
      *
-     * @param array		A list of "disabled" features
-     * @return Boolean	Is disabled?
+     * @param array     A list of "disabled" features
+     * @return Boolean  Is disabled?
      */
     public function disabled(array $disabled, EE_Channel_preparser $pre)
     {
@@ -27,9 +27,9 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
     /**
      * @todo Find all of the tags like the custom date fields?
      *
-     * @param String	The tagdata to be parsed
-     * @param Object	The preparser object.
-     * @return Object	Channel fields api, to reduce a lookup (for now)
+     * @param String    The tagdata to be parsed
+     * @param Object    The preparser object.
+     * @return Object   Channel fields api, to reduce a lookup (for now)
      */
     public function pre_process($tagdata, EE_Channel_preparser $pre)
     {
@@ -39,11 +39,11 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
     /**
      * Replace all of the custom channel fields.
      *
-     * @param String	The tagdata to be parsed
-     * @param Object	The channel parser object
-     * @param Mixed		The results from the preparse method
+     * @param String    The tagdata to be parsed
+     * @param Object    The channel parser object
+     * @param Mixed     The results from the preparse method
      *
-     * @return String	The processed tagdata
+     * @return String   The processed tagdata
      */
     public function replace($tagdata, EE_Channel_data_parser $obj, $ft_api)
     {
@@ -77,6 +77,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
             //if the field is conditionally hidden, do not parse
             if (isset($obj->channel()->hidden_fields[$data['entry_id']]) && in_array($field_id, $obj->channel()->hidden_fields[$data['entry_id']])) {
                 $tagdata = str_replace(LD . $tag . RD, '', $tagdata);
+
                 return $tagdata;
             }
 
@@ -94,8 +95,8 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     ee()->load->add_package_path($_ft_path, false);
 
                     $obj->_init(array(
-                        'row' => $data,
-                        'content_id' => $data['entry_id'],
+                        'row'          => $data,
+                        'content_id'   => $data['entry_id'],
                         'content_type' => 'channel'
                     ));
 
@@ -104,13 +105,13 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     ));
 
                     if (method_exists($obj, $parse_fnc)) {
-                        $entry = $ft_api->apply($parse_fnc, array(
+                        $entry = (string) $ft_api->apply($parse_fnc, array(
                             $data,
                             $field['params'],
                             false
                         ));
                     } elseif (method_exists($obj, 'replace_tag_catchall')) {
-                        $entry = $ft_api->apply('replace_tag_catchall', array(
+                        $entry = (string) $ft_api->apply('replace_tag_catchall', array(
                             $data,
                             $field['params'],
                             false,
@@ -149,9 +150,9 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     $entry = ee()->typography->parse_type(
                         ee()->functions->encode_ee_tags($data['field_id_' . $field_id]),
                         array(
-                            'text_format' => $data['field_ft_' . $field_id],
-                            'html_format' => $data['channel_html_formatting'],
-                            'auto_links' => $data['channel_auto_link_urls'],
+                            'text_format'   => $data['field_ft_' . $field_id],
+                            'html_format'   => $data['channel_html_formatting'],
+                            'auto_links'    => $data['channel_auto_link_urls'],
                             'allow_img_url' => $data['channel_allow_img_urls']
                         )
                     );

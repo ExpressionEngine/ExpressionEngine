@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -45,7 +45,7 @@ class Updater
     }
 
     /**
-     * New "URL" Field Type in 3.2.0
+     * New "URL" fieldtype in 3.2.0
      */
     private function add_url_field()
     {
@@ -61,7 +61,7 @@ class Updater
     }
 
     /**
-     * New "Email Address" Field Type in 3.2.0
+     * New "Email Address" fieldtype in 3.2.0
      */
     private function add_email_address_field()
     {

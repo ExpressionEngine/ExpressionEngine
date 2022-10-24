@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -556,7 +556,11 @@ class Metaweblog_api
         /** ---------------------------------------
         /**  Perform Query
         /** ---------------------------------------*/
-        $query = ee('Model')->get('ChannelEntry')->filter('channel_id', $this->channel_id);
+        $query = ee('Model')->get('ChannelEntry');
+
+        if ($entry_id == '') {
+            $query->filter('channel_id', $this->channel_id);
+        }
 
         if (! ee('Permission')->can('edit_other_entries') && ! ee('Permission')->isSuperAdmin()) {
             //$sql .= "AND wt.author_id = '".$this->userdata['member_id']."' ";

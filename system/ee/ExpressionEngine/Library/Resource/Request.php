@@ -37,11 +37,17 @@ class Request
         $template_data = '';
         $edit_date = 0;
         $resource = ''; // with group, like `group/styles`
+        $group = '';
+        $name = '';
+        $site_name = '';
+        $template_version = 0;
+        $modified_since = ee('Request')->header('IF_MODIFIED_SINCE');
 
+        // requests by trigger segments, the ones without version suffixes
         if (in_array(ee()->uri->segment(1), ee()->uri->reserved) && false !== ee()->uri->segment(2)) {
             $resource = ee()->uri->segment(2) . '/' . ee()->uri->segment(3);
             $this->type = ee()->uri->segment(1);
-        } else {
+        } else { // requests query strings, the ones with version suffixes
             foreach (self::TYPES as $type) {
                 if (ee('Request')->get($type)) {
                     $resource = ee('Request')->get($type);
@@ -51,7 +57,26 @@ class Request
             }
         }
 
-        $resource = preg_replace('/\\.v\\.[0-9]{10}/', '', $resource);  // Remove version info
+        // Remove anything after the semicolon
+        if ($pos = strrpos($modified_since, ';') !== false) {
+            $modified_since = substr($modified_since, 0, $pos);
+        }
+
+        if ($modified_since = strtotime($modified_since)) {
+            $template_version = $modified_since;
+
+            $resource = preg_replace('/\\.v\\.[0-9]{10}/', '', $resource);  // Remove version info
+        } else {
+            preg_match('/\\.v\\.([0-9]{10})/', $resource, $matches);  // get version info
+
+            if (!empty($matches[0])) {
+                $resource = str_replace($matches[0], '', $resource);  // Remove version info
+            }
+
+            if (!empty($matches[1])) {
+                $template_version = (int) $matches[1];
+            }
+        }
 
         if ('' == $resource or false === strpos($resource, '/')) {
             show_404();
@@ -71,21 +96,21 @@ class Request
 
         if (false !== strpos($group, ':')) {
             // if there's a site, let's get it and redefine $group
-            list($site, $group) = array_map('trim', explode(':', $group, 2));
+            list($site_name, $group) = array_map('trim', explode(':', $group, 2));
         }
 
         $cache_path = $this->_cache_path($resource);
 
         $cached = ee()->cache->get($cache_path, $this->cache_scope);
 
-        if (!$cached) {
+        if (!$cached || !isset($cached['edit_date']) || $cached['edit_date'] < $template_version) {
             $template = ee('Model')->get('Template')
-            ->filter('template_name', $name)
-            ->filter('template_type', $this->type)
+                ->filter('template_name', $name)
+                ->filter('template_type', $this->type)
                 ->with('TemplateGroup')->filter('TemplateGroup.group_name', $group);
 
-            $template = isset($site)
-                ? $template->with('Site')->filter('Site.site_name', $site)
+            $template = !empty($site_name)
+                ? $template->with('Site')->filter('Site.site_name', $site_name)
                 : $template->filter('site_id', ee()->config->item('site_id'));
 
             $template = $template
@@ -99,48 +124,43 @@ class Request
 
             $template_data = $template->template_data;
             $edit_date = $template->edit_date;
+
+            /* -----------------------------------------
+            /**  Retrieve template file if necessary
+            /** -----------------------------------------*/
+            if (bool_config_item('save_tmpl_files')) {
+                ee()->load->helper('file');
+                $filepath = PATH_TMPL . (!empty($site_name) ? $site_name : ee()->config->item('site_short_name')) . '/';
+                $filepath .= $group . '.group' . '/' . $name . '.' . $this->type;
+                $file_edit_date = filemtime($filepath);
+
+                if ($file_edit_date > $edit_date) {
+                    $str = read_file($filepath);
+
+                    if (false !== $str) {
+                        $template_data = $str;
+                        $edit_date = $file_edit_date;
+                    }
+                }
+            }
+
+            // Replace {site_url} in template before caching
+            $template_data = str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data);
+
+            ee()->cache->save(
+                $cache_path,
+                array(
+                    'edit_date' => $edit_date,
+                    'template_data' => $template_data
+                ),
+                // No TTL, cache lives on till cleared
+                0,
+                $this->cache_scope
+            );
         } else {
             $template_data = $cached['template_data'];
             $edit_date = $cached['edit_date'];
         }
-
-        /* -----------------------------------------
-        /**  Retrieve template file if necessary
-        /** -----------------------------------------*/
-        if (bool_config_item('save_tmpl_files')) {
-            ee()->load->helper('file');
-            $filepath = PATH_TMPL . (isset($site) ? $site : ee()->config->item('site_short_name')) . '/';
-            $filepath .= $group . '.group/' . $name . '.' . $this->type;
-            $file_edit_date = filemtime($filepath);
-
-            if ($file_edit_date < $edit_date) {
-                $str = read_file($filepath);
-
-                if (false !== $str) {
-                    $template_data = $str;
-                    $edit_date = $file_edit_date;
-                }
-            }
-        }
-
-        if (ee()->config->item('cache_driver') === 'file') {
-            ee()->load->library('logger');
-            ee()->logger->developer('To fetch templates from database is usually faster than from file cache driver.');
-        }
-
-        // Replace {site_url} in template before caching
-        $template_data = str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data);
-
-        ee()->cache->save(
-            $cache_path,
-            array(
-                'edit_date' => $edit_date,
-                'template_data' => $template_data
-            ),
-            // No TTL, cache lives on till cleared
-            0,
-            $this->cache_scope
-        );
 
         $this->_send_resource($template_data, $edit_date);
     }

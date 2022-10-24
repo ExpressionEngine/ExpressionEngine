@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -161,8 +161,16 @@ class EE_Validate
         //ee()->load->library('logger');
         //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
 
+        if ($this->screen_name == '') {
+            if ($this->username == '') {
+                return $this->errors[] = ee()->lang->line('missing_username');
+            }
+
+            return $this->screen_name = $this->username;
+        }
+
         $data = [
-            'screen_name' => $str
+            'screen_name' => $this->screen_name
         ];
 
         $rules = array(
@@ -172,7 +180,7 @@ class EE_Validate
         $result = ee('Validation')->make($rules)->validate($data);
 
         if ($result->isNotValid()) {
-            foreach ($result->getAllErrors() as $key => $error) {
+            foreach ($result->getErrors('screen_name') as $key => $error) {
                 $this->errors[] = $error;
             }
             return $this->errors;
@@ -190,24 +198,25 @@ class EE_Validate
         //ee()->load->library('logger');
         //ee()->logger->deprecated('6.4', "ee('Validation')->validate()");
 
-        if (! $username_field) {
-            $username_field = 'username';
-        }
-
         $data = [
-            'username' => ee('Request')->post($username_field),
-            'password' => $str
+            'username' => $this->username,
+            'password' => $this->password,
+            'password_confirm' => $this->password_confirm
         ];
 
         $rules = array(
-            'password' => 'required|validPassword|passwordMatchesSecurityPolicy'
+            'password' => 'required|validPassword|passwordMatchesSecurityPolicy',
+            'password_confirm' => 'matches[password]'
         );
 
         $result = ee('Validation')->make($rules)->validate($data);
 
         if ($result->isNotValid()) {
-            foreach ($result->getAllErrors() as $key => $error) {
+            foreach ($result->getErrors('password') as $key => $error) {
                 $this->errors[] = $error;
+            }
+            foreach ($result->getErrors('password_confirm') as $key => $error) {
+                $this->errors[] = lang('missmatched_passwords');
             }
             return $this->errors;
         }

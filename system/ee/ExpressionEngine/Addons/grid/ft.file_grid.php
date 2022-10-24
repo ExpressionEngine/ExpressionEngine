@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
  require_once PATH_ADDONS . 'grid/ft.grid.php';
@@ -169,7 +169,7 @@ class file_grid_ft extends Grid_ft
                 'col_name' => 'file',
                 'col_instructions' => '',
                 'col_required' => 'n',
-                'col_search' => 'n',
+                'col_search' => 'y',
                 'col_width' => '',
                 'col_settings' => [
                     'field_content_type' => 'image',

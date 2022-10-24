@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -68,6 +68,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
             $file_name = str_replace($matches[0], '', $data);
 
             $file = ee('Model')->get('File')
+                ->with('UploadDestination')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('upload_location_id', $upload_location_id)
                 ->filter('file_name', $file_name)
@@ -79,7 +80,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                 // Is this an edit?
                 if ($this->content_id) {
                     // Are we validating on grid data?
-                    if (isset($this->settings['grid_row_id'])) {
+                    if (isset($this->settings['grid_row_id']) || isset($this->settings['grid_row_name'])) {
                         $fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
 
                         ee()->load->model('grid_model');
@@ -93,7 +94,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                         );
 
                         // If this filed was we need to check permissions.
-                        if ($rows[$this->content_id][$this->settings['grid_row_id']] != $data) {
+                        if (! isset($this->settings['grid_row_id']) || $rows[$this->content_id][$this->settings['grid_row_id']] != $data) {
                             $check_permissions = true;
                         }
                     } else {
@@ -716,6 +717,7 @@ JSC;
     public function replace_tag_catchall($data = [], $params = array(), $tagdata = false, $modifier = '')
     {
         // These are single variable tags only, so no need for replace_tag
+        $full_path = isset($data['url']) ? $data['url'] : '';
         if ($modifier) {
             if ($modifier == 'frontedit') {
                 return $tagdata;
@@ -725,10 +727,10 @@ JSC;
 
             if ($modifier == 'thumbs') {
                 if (isset($data['path']) && isset($data['filename']) && isset($data['extension'])) {
-                    $data = $data['path'] . '_thumbs/' . $data['filename'] . '.' . $data['extension'];
+                    $full_path = $data['path'] . '_thumbs/' . $data['filename'] . '.' . $data['extension'];
                 }
             } elseif (isset($data[$key])) {
-                $data = $data[$key];
+                $full_path = $data[$key];
             }
 
             if (empty($data)) {
@@ -736,10 +738,10 @@ JSC;
             }
 
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($data, $params['wrap'], $data);
+                return $this->_wrap_it($data, $params['wrap'], $full_path);
             }
 
-            return $data;
+            return $full_path;
         }
     }
 

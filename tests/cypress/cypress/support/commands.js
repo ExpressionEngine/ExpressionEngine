@@ -12,6 +12,7 @@
 // require('@4tw/cypress-drag-drop')
 import 'cypress-file-upload';
 import 'cypress-maildev';
+import 'cypress-audit/commands';
 
 //https://github.com/cypress-io/cypress/issues/249
 const COMMAND_DELAY = Cypress.env('COMMAND_DELAY') || 0;
@@ -107,6 +108,34 @@ Cypress.Commands.add("authVisit", (url, user) => {
     cy.auth(user);
     cy.visit(url);
 })
+
+Cypress.Commands.add("logFrontendPerformance", () => {
+    cy.get('#elapsed_time em').invoke('text').then((elapsed_time) => {
+        cy.log("Elapsed time: " + elapsed_time)
+        cy.get('#memory_usage em').invoke('text').then((memory_usage) => {
+            cy.log("Memory usage: " + memory_usage)
+            var testInfo = Cypress.currentTest.titlePath.reverse()
+            var logEntry = '"' + testInfo[1] + '","' + testInfo[0] + '","' + elapsed_time + '","' + memory_usage + '"' + "\r\n"
+            cy.writeFile('cypress/downloads/performance_fe.csv', logEntry, { flag: 'a+' })
+        })
+    })
+})
+
+Cypress.Commands.add("logCPPerformance", () => {
+    cy.get('li b:contains("Total Execution Time:")').parent().invoke('text').then((elapsed_time) => {
+        elapsed_time = elapsed_time.replace("Total Execution Time:", "").trim();
+        cy.log("Elapsed time: " + elapsed_time)
+        cy.get('li b:contains("Memory Usage:")').parent().invoke('text').then((memory_usage) => {
+            memory_usage = memory_usage.replace("Memory Usage:", "").trim();
+            memory_usage = memory_usage.substring(0, memory_usage.indexOf(' '));
+            cy.log("Memory usage: " + memory_usage)
+            var testInfo = Cypress.currentTest.titlePath.reverse()
+            var logEntry = '"' + testInfo[1] + '","' + testInfo[0] + '","' + elapsed_time + '","' + memory_usage + '"' + "\r\n"
+            cy.writeFile('cypress/downloads/performance_cp.csv', logEntry, { flag: 'a+' })
+        })
+    })
+})
+
 
 Cypress.Commands.add("hasNoErrors", () => {
     // Search for "on line" or "Line Number:" since they're in pretty much in every PHP error

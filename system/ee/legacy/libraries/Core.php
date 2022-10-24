@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -495,7 +495,7 @@ class EE_Core
             ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
         }
 
-        if (ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if ((ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') && ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
             //only allow MFA code page
             if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset', 'logout'])) && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
@@ -848,7 +848,7 @@ class EE_Core
                 )
             ) {
                 $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('site_url'));
+                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos(ee()->config->item('site_url'), $cookie_domain);
                 if ($domain_matches === false) {
                     $error = lang('cookie_domain_mismatch');
                 }

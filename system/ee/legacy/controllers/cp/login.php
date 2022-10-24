@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -73,7 +73,8 @@ class Login extends CP_Controller
             $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
             $return_path = $member->getCPHomepageURL();
         }
-        if (!IS_PRO || !ee('pro:Access')->hasValidLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
+
+        if (!IS_PRO || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
             $return_path = $return_path . (ee()->input->get_post('after') ? '&after=' . ee()->input->get_post('after') : '');
 
             // If there is a URL= parameter in the return URL folks could end up anywhere

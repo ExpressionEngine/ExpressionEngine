@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -373,19 +373,18 @@ $(document).ready(function() {
         initRules();
     }
 
-    function checkFieldType(fieldName) {
-        var fieldType;
+    function checkFieldID(fieldName) {
+        var fieldID;
 
         $.each(EE.fieldsInfo, function(i, val) {
             if (fieldName == val['field_label']) {
-                fieldType = val['field_type'];
+                fieldID = val['field_id'];
             }
         });
-        return fieldType;
+        return fieldID;
     }
 
     EE.cp.show_hide_rule_operator_field = function(element, input) {
-
         if ( ! $(element).size()) {
             return;
         }
@@ -406,7 +405,7 @@ $(document).ready(function() {
             }
         });
 
-        var fieldType = checkFieldType(fieldName);
+        var fieldID = checkFieldID(fieldName);
 
         $.each(evaluationRules, function(item, value){
             operator[item] =  value['text'];
@@ -441,7 +440,7 @@ $(document).ready(function() {
         parentRow.find('.condition-rule-operator-wrap .empty-select').hide();
         parentRow.find('.condition-rule-operator-wrap .condition-rule-operator').show();
 
-        EE.cp.show_hide_value_field(fieldType, selectedItem, parentRow);
+        EE.cp.show_hide_value_field(fieldID, selectedItem, parentRow);
     }
 
     EE.cp.check_operator_value = function(item, input) {
@@ -451,9 +450,9 @@ $(document).ready(function() {
 
         ruleLabel = ruleLabel.replace(/{.*/g, "");
 
-        var rulefieldType = checkFieldType(ruleLabel);
+        var rulefieldID = checkFieldID(ruleLabel);
 
-        EE.cp.show_hide_value_field(rulefieldType, operatorVal, parentRow);
+        EE.cp.show_hide_value_field(rulefieldID, operatorVal, parentRow);
     } 
 
     EE.cp.show_hide_value_field = function(firstSelectVal, secondSelectVal, parentRow) {
@@ -462,7 +461,7 @@ $(document).ready(function() {
         var operator = {};
 
         $.each(EE.fieldsInfo, function(i, val) {
-            if (firstSelectVal == val['field_type']) {
+            if (firstSelectVal == val['field_id']) {
                 evaluationRules = val['evaluationRules'];
                 evaluationValues = val['evaluationValues'];
             }
@@ -530,6 +529,32 @@ $(document).ready(function() {
             $(this).find('.tooltiptext').css({display: "none"});
         }
     });
+
+    // Check which field_type is selected
+    $('body').on('change', "input[name='field_type']", function() {
+        var hiddenList = $('#fieldset-field_instructions, #fieldset-field_required, #fieldset-field_search, #fieldset-field_is_hidden, #fieldset-enable_frontedit');
+
+        var textInputSelectors = 'input[type=hidden], textarea, button.toggle-btn';
+
+        if ($(this).val() == "notes") {
+            hiddenList.each(function(){
+                var el = $(this);
+                el.hide();
+                $('#fieldset-enable_frontedit').prev('h2').hide();
+            });
+        } else {
+            hiddenList.each(function(){
+                var el = $(this);
+                el.show();
+                $('#fieldset-enable_frontedit').prev('h2').show();
+                
+                $(textInputSelectors, el).prop('disabled', false);
+            });
+
+        }
+    });
+
+    $("input[name='field_type']").trigger("change");
 });
 
 })(jQuery);

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -48,7 +48,7 @@ class Text extends Formatter
             return $this;
         }
 
-        $chars = preg_split('//u', $this->content, null, PREG_SPLIT_NO_EMPTY);
+        $chars = preg_split('//u', $this->content, 0, PREG_SPLIT_NO_EMPTY);
 
         $this->content = '';
         foreach ($chars as $index => $char) {

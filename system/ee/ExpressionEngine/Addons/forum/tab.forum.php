@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -189,7 +189,7 @@ class Forum_tab
                 ->where('topic_id', (int) $value)
                 ->get('forum_topics');
 
-            ee()->lang->loadfile('forum_cp');
+            ee()->lang->loadfile('forum_cp', 'forum');
 
             if (isset($values['forum_title'], $values['forum_body'])
                 && (! empty($values['forum_title']) || ! empty($values['forum_body']))) {

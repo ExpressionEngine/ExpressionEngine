@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -471,7 +471,14 @@ class Upload
         $action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
 
         $file->set($_POST);
-        $file->title = (ee()->input->post('title')) ?: $file->file_name;
+
+        if (!empty(ee()->input->post('title'))) {
+            $file->title = ee()->input->post('title');
+        } else if (!empty($_FILES) && isset($_FILES['file']) && isset($_FILES['file']['name'])) {
+            $file->title = pathinfo($_FILES['file']['name'], PATHINFO_FILENAME);
+        } else {
+            $file->title = $file->file_name;
+        }
 
         $cats = array_key_exists('categories', $_POST) ? $_POST['categories'] : array();
         $file->setCategoriesFromPost($cats);

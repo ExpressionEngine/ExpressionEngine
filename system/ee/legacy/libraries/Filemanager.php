@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -479,7 +479,7 @@ class Filemanager
 
             // We need to reset some prefs
             if ($new_image) {
-                ee()->load->helper('number');
+                ee()->load->helper('file');
                 $f_size = get_file_info($file_path);
                 $prefs['file_height'] = $new_image['height'];
                 $prefs['file_width'] = $new_image['width'];
@@ -574,7 +574,7 @@ class Filemanager
 
         // We need to reset some prefs
         if ($new_image) {
-            ee()->load->helper('number');
+            ee()->load->helper('file');
             $f_size = get_file_info($file_path);
 
             $prefs['file_size'] = ($f_size) ? $f_size['size'] : 0;

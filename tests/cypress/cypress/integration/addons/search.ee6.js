@@ -17,9 +17,28 @@ context('Search', () => {
     cy.authVisit('index.php/search/simple_form');
     cy.get('#keywords').clear().type('ExpressionEngine')
     cy.get('.submit').first().click()
+
+    cy.get('#total-results__within-pair').should('contain', '1')
+    cy.get('#total-results__within-pair--no-results').should('not.exist')
+    cy.get('#total-results__single-var').should('contain', '1')
+    cy.get('#total-results__single-var--zero').should('not.exist')
+
     cy.get('h3:contains(Results)').should('exist')
     cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
     cy.get('body').should('not.contain', 'Welcome to the Example Site!')
+
+    cy.logFrontendPerformance()
+  })
+
+  it('search and get no results', function(){
+    cy.authVisit('index.php/search/simple_form');
+    cy.get('#two-templates-for-results [name="keywords"]').clear().type('WordPress')
+    cy.get('#two-templates-for-results').submit()
+
+    cy.get('#total-results__within-pair').should('not.exist')
+    cy.get('#total-results__within-pair--no-results').should('contain', 'None')
+    cy.get('#total-results__single-var').should('contain', '0')
+    cy.get('#total-results__single-var--zero').invoke('text').should('eq', '0')
   })
 
   it('search and get no results (on same page)', function(){
@@ -29,13 +48,15 @@ context('Search', () => {
     cy.get('h3:contains(Results)').should('not.exist')
     cy.get('body').should('not.contain', 'Getting to Know ExpressionEngine')
     cy.get('body').should('contain', 'Nothing found')
+
+    cy.logFrontendPerformance()
   })
 
   it('searches everywhere', function(){
     cy.authVisit('admin.php?/cp/design/manager/search');
     cy.get('a:contains(simple_form)').click()
     cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
-    cy.get('.CodeMirror-code').type('{home}{pageup}{{}exp:search:simple_form search_in="everywhere" result_page="search/index" no_result_page="search/simple_form"}')
+    cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}{{}exp:search:simple_form search_in="everywhere" result_page="search/index" no_result_page="search/simple_form"}')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
     cy.visit('index.php/search/simple_form');
     cy.get('#keywords').clear().type('ExpressionEngine')
@@ -44,6 +65,8 @@ context('Search', () => {
     cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
     cy.get('body').should('contain', 'Welcome to the Example Site!')
     cy.hasNoErrors()
+
+    cy.logFrontendPerformance()
   })
 
 
@@ -52,7 +75,7 @@ context('Search', () => {
         cy.authVisit('admin.php?/cp/design/manager/search');
         cy.get('a:contains(simple_form)').click()
         cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
-        cy.get('.CodeMirror-code').type('{home}{pageup}{{}exp:search:simple_form channel="news" result_page="search/index" no_result_page="search/simple_form"}')
+        cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}{{}exp:search:simple_form channel="news" result_page="search/index" no_result_page="search/simple_form"}')
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('ExpressionEngine')
@@ -60,12 +83,13 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('exist')
         cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
         cy.hasNoErrors()
+        cy.logFrontendPerformance()
     })
     it('restrict to multiple channels', function(){
         cy.authVisit('admin.php?/cp/design/manager/search');
         cy.get('a:contains(simple_form)').click()
         cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
-        cy.get('.CodeMirror-code').type('{home}{pageup}{{}exp:search:simple_form channel="news|about" result_page="search/index" no_result_page="search/simple_form"}')
+        cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}{{}exp:search:simple_form channel="news|about" result_page="search/index" no_result_page="search/simple_form"}')
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('ExpressionEngine')
@@ -73,6 +97,7 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('exist')
         cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
         cy.hasNoErrors()
+        cy.logFrontendPerformance()
 
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('Label')
@@ -80,14 +105,14 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('exist')
         cy.get('body').should('contain', 'About the Label')
         cy.hasNoErrors()
-        
+
     })
 
     it('exclude channel', function(){
         cy.authVisit('admin.php?/cp/design/manager/search');
         cy.get('a:contains(simple_form)').click()
         cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
-        cy.get('.CodeMirror-code').type('{home}{pageup}{{}exp:search:simple_form channel="not news" result_page="search/index" no_result_page="search/simple_form"}')
+        cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}{{}exp:search:simple_form channel="not news" result_page="search/index" no_result_page="search/simple_form"}')
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('ExpressionEngine')
@@ -95,13 +120,14 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('not.exist')
         cy.get('body').should('not.contain', 'Getting to Know ExpressionEngine')
         cy.hasNoErrors()
+        cy.logFrontendPerformance()
     })
 
     it('exclude multiple channels', function(){
         cy.authVisit('admin.php?/cp/design/manager/search');
         cy.get('a:contains(simple_form)').click()
         cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
-        cy.get('.CodeMirror-code').type('{home}{pageup}{{}exp:search:simple_form channel="not news|about" result_page="search/index" no_result_page="search/simple_form"}')
+        cy.get('.CodeMirror-code').type('{home}{pageup}{{}layout="cypress/layout"}{{}exp:search:simple_form channel="not news|about" result_page="search/index" no_result_page="search/simple_form"}')
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('ExpressionEngine')
@@ -109,6 +135,7 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('not.exist')
         cy.get('body').should('not.contain', 'Getting to Know ExpressionEngine')
         cy.hasNoErrors()
+        cy.logFrontendPerformance()
 
         cy.visit('index.php/search/simple_form');
         cy.get('#keywords').clear().type('Label')

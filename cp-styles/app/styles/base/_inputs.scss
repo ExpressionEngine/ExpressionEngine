@@ -62,6 +62,12 @@ input[type='url'] {
 		@include gradient-striped(color(input-disabled-bg));
 	}
 
+	&:read-only {
+		background-size: 20px 20px;
+
+		@include gradient-striped(color(input-disabled-bg));
+	}
+
 	@include placeholder {
 		opacity: 1;
 		color: color(input-placeholder);

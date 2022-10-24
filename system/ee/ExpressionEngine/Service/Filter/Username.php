@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -180,6 +180,10 @@ class Username extends Filter
                 $value;
         }
 
+        // Create a filter URL without this filter (per-filter clear).
+        $url_without_filter = clone $url;
+        $url_without_filter->removeQueryStringVariable($this->name);
+
         $filter = array(
             'label' => $this->label,
             'name' => $this->name,
@@ -189,6 +193,7 @@ class Username extends Filter
             'custom_value' => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : false,
             'placeholder' => $this->placeholder,
             'options' => $options,
+            'url_without_filter' => $url_without_filter,
         );
 
         return $view->make('_shared/filters/filter')->render($filter);

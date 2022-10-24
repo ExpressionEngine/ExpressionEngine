@@ -22,6 +22,7 @@ context('Publish Page - Create', () => {
       cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
         cy.visit('admin.php?/cp/design')
       })
+      cy.eeConfig({ item: 'show_profiler', value: 'y' })
     })
 
     beforeEach(function(){
@@ -29,9 +30,14 @@ context('Publish Page - Create', () => {
         cy.hasNoErrors()
     })
 
+    after(function(){
+      cy.eeConfig({ item: 'show_profiler', value: 'n' })
+    })
+
     it('shows a 404 if there is no channel id', () => {
         cy.visit(Cypress._.replace(page.url, '{channel_id}', ''), {failOnStatusCode: false})
         cy.contains("404")
+        cy.logCPPerformance()
     })
 
     it('shows comment fields when comments are enabled by system and channel allows comments', () => {
@@ -41,6 +47,7 @@ context('Publish Page - Create', () => {
         page.get('wrap').find('input[type!=hidden][name="comment_expiration_date"]').should('exist')
         page.get('tab_links').eq(3).click()
         page.get('wrap').find('[data-toggle-for="allow_comments"]').should('exist')
+        cy.logCPPerformance()
     })
 
     it('does not show comment fields when comments are disabled by system', () => {
@@ -147,6 +154,7 @@ context('Publish Page - Create', () => {
             expect(text.trim()).not.equal('All Files')
           })
           file_modal.get('upload_button').should('exist')// new cp brings files up in seperate spot this check is no longer valid
+          cy.logCPPerformance()
         })
 
         it('the file field retains data after being created and edited', () => {
@@ -403,6 +411,7 @@ context('Publish Page - Create', () => {
         available_fields.forEach(function(field, index) {
           fluid_field.check_content(index)
         })
+        cy.logCPPerformance()
       })
 
       it('adds repeat fields', () => {
@@ -531,27 +540,28 @@ context('Publish Page - Create', () => {
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
         cy.get('.grid-field [rel=add_row]:visible').click();
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').click()
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').click()
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').should('have.class', 'active')
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').should('have.class', 'active')
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').click()
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').click()
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
-        cy.get('.grid-field td[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('p').contains('has been updated')
-        cy.get('.grid-field tbody tr:visible td').eq(0).find('input').invoke('attr', 'value').then((val) => {
+        cy.get('.grid-field tbody tr:visible td:visible').eq(0).find('input').invoke('attr', 'value').then((val) => {
           expect(val).to.eq('row 1');
         })
-        cy.get('.grid-field tbody tr:visible td').eq(1).find('.button:contains("dos")').should('have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td').eq(1).find('.button:contains("tres")').should('have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(1).find('.button:contains("dos")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(1).find('.button:contains("tres")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.visit('index.php/entries/grid')
+        cy.logFrontendPerformance()
         cy.get('.grid_with_buttons .row-1 .col_1').invoke('text').then((text) => {
           expect(text).to.eq('row 1')
         })
@@ -561,6 +571,7 @@ context('Publish Page - Create', () => {
         cy.get('.grid_with_buttons .row-1 .buttons_single').invoke('text').then((text) => {
           expect(text).to.eq('cinco')
         })
+        cy.logCPPerformance()
       })
     })
 

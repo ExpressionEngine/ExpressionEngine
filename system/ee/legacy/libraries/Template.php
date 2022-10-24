@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1750,7 +1750,7 @@ class EE_Template
                 if ((strtolower($class_name) == strtolower($meth_name)) or ($meth_name == '__construct')) {
                     $return_data = (isset($EE->return_data)) ? $EE->return_data : '';
                 } else {
-                    $return_data = $EE->$meth_name();
+                    $return_data = (string) $EE->$meth_name();
                 }
 
                 // if it's a third party add-on or module, remove the temporarily added path for local libraries, models, etc.
@@ -1776,7 +1776,7 @@ class EE_Template
 
                 // Replace the temporary markers we added earlier with the fully parsed data
 
-                $this->template = str_replace('M' . $i . $this->marker, $return_data, $this->template);
+                $this->template = str_replace('M' . $i . $this->marker,  $return_data, $this->template);
 
                 // Initialize data in case there are susequent loops
 
@@ -1846,7 +1846,7 @@ class EE_Template
      */
     public function swap_var_single($search, $replace, $source)
     {
-        return str_replace(LD . $search . RD, $replace, $source);
+        return str_replace(LD . $search . RD, (string) $replace, $source);
     }
 
     /**
@@ -3117,20 +3117,29 @@ class EE_Template
                 if ($asset_query->num_rows() > 0) {
                     foreach ($asset_query->result_array() as $row) {
                         $version_key = $row['group_name'] . '/' . $row['template_name'];
+
                         // there's no way to know if the result follows the order on template.
                         // So, let's create TWO keys and keep the compatibility with old links,
-                        // the ones without the site short name: `/?css=default_site:site/styles`
+                        // the ones without the site short name: `/?css=group/styles`
+                        if (ee()->config->item('site_short_name') === $row['site_name']) {
+                            $asset_versions[$version_key] = $row['edit_date'];
+                        }
 
-                        $asset_versions[$version_key] =
-                            $asset_versions[$row['site_name'] . ':' . $version_key] = $row['edit_date'];
+                        // and the ones with the site short name: `/?css=default_site:group/styles`
+                        $asset_versions[$row['site_name'] . ':' . $version_key] = $row['edit_date'];
 
                         if (ee()->config->item('save_tmpl_files') == 'y') {
-                            $basepath = PATH_TMPL . ee()->config->item('site_short_name') . '/';
+                            $basepath = PATH_TMPL . $row['site_name'] . '/';
                             $basepath .= $row['group_name'] . '.group/' . $row['template_name'] . '.' . $row['template_type'];
 
                             if (is_file($basepath)) {
-                                $asset_versions[$version_key] =
+                                if (filemtime($basepath) > $row['edit_date']) {
                                     $asset_versions[$row['site_name'] . ':' . $version_key] = filemtime($basepath);
+
+                                    if (ee()->config->item('site_short_name') === $row['site_name']) {
+                                        $asset_versions[$version_key] = filemtime($basepath);
+                                    }
+                                }
                             }
                         }
                     }
@@ -3537,7 +3546,7 @@ class EE_Template
         }
 
         // Reset and Match date variables
-        $this->date_vars = false;
+        $this->date_vars = [];
         $this->_match_date_vars($tagdata);
 
         // Unfound Variables that We Need Not Parse - Reset
@@ -3930,7 +3939,7 @@ class EE_Template
             // Make sure we don't try to parse date variables again on further
             // calls to parse_variables() or parse_variables_row()
             if (empty($standard) && empty($relative)) {
-                $this->date_vars = false;
+                $this->date_vars = [];
             }
 
             // If a date has both the ":relative" modifier and "format=" it will

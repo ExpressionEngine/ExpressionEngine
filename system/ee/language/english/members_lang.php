@@ -452,7 +452,7 @@ $lang = array(
 
     'ip_address_banning' => 'IP Addresses',
 
-    'ip_banning_instructions' => '<b>Place each IP address on a separate line</b> <br>You may use * as a wild-card e.g. 123.345.*',
+    'ip_banning_instructions' => '<b>Place each IP address on a separate line</b> <br>You may also use partial IP addresses',
 
     'restrict_to_viewing' => 'Allow access in view only mode',
 
@@ -930,7 +930,7 @@ $lang = array(
 
     'm_max_length' => 'Maxlength',
 
-    'max_length_cont' => 'For text field types',
+    'max_length_cont' => 'For text fieldtypes',
 
     'member_data_will_be_deleted' => 'All member data contained in this field will be permanently deleted',
 
@@ -998,7 +998,7 @@ $lang = array(
 
     'text_area_rows' => 'Textarea Rows',
 
-    'text_area_rows_cont' => 'For textarea field types',
+    'text_area_rows_cont' => 'For textarea fieldtypes',
 
     'to' => 'To',
 

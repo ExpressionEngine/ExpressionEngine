@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -188,7 +188,7 @@ class Homepage extends CP_Controller
     public function dismissBanner()
     {
         $member = ee()->session->getMember();
-        $member->dismissed_pro_banner = 'y';
+        $member->dismissed_banner = 'y';
         $member->save();
 
         ee()->output->send_ajax_response(['success']);

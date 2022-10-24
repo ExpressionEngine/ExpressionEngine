@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -127,7 +127,7 @@ class Pages_tab
      * @param array $values An associative array of field => value
      * @return array $values modified array of values
      */
-    public function clone(ChannelEntry $entry, $values)
+    public function cloneData(ChannelEntry $entry, $values)
     {
         if ($values['pages_uri'] == '') {
             return $values;

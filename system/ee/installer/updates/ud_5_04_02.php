@@ -4,7 +4,7 @@
 * ExpressionEngine (https://expressionengine.com)
 *
 * @link      https://expressionengine.com/
-* @copyright Copyright (c) 2003-2020, Packet Tide, LLC (https://packettide.com)
+* @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://packettide.com)
 * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
 */
 
@@ -13,9 +13,9 @@ namespace ExpressionEngine\Updater\Version_5_4_2;
 /**
 * Update
 */
-class Updater {
-
-    var $version_suffix = '';
+class Updater
+{
+    public $version_suffix = '';
 
     /**
     * Do Update
@@ -24,9 +24,8 @@ class Updater {
     */
     public function do_update()
     {
-        return TRUE;
+        return true;
     }
-
 }
 
 // EOF

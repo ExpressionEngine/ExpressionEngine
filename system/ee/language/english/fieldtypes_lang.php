@@ -29,6 +29,8 @@ $lang = array(
 
     'relate_entry' => 'Relate Entry',
 
+    'relate_entry_deferred' => 'Edit Relationships',
+
     'rel_ft_allow_multi' => 'Allow multiple relationships?',
 
     'rel_ft_allow_multi_desc' => 'When enabled, authors will be allowed to create multiple relationships.',
@@ -80,6 +82,10 @@ $lang = array(
     'rel_ft_display_entry_id' => 'Display Entry IDs?',
 
     'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
+
+    'rel_ft_deferred' => 'Defer field initialization?',
+
+    'rel_ft_deferred_desc' => 'When enabled, this field won’t initialize until the Edit Relationships button is clicked on. This can result in faster control panel page load times.',
 
     'rel_ft_max' => 'Maximum number of related entries',
 
@@ -135,7 +141,7 @@ $lang = array(
 
     'file_ft_limit_desc' => 'Maximum number of files to show in the drop down.<br><i>Leave blank to show all files.</i>',
 
-    'file_ft_no_upload_directories' => 'There are currently no upload directories available. Please <a href="%s">add one or more upload directories</a> to use the File field type.',
+    'file_ft_no_upload_directories' => 'There are currently no upload directories available. Please <a href="%s">add one or more upload directories</a> to use the File fieldtype.',
 
     'file_ft_select_existing' => 'Select an existing file',
 
@@ -191,6 +197,10 @@ $lang = array(
     'grid_add_some_data' => 'You have not added any rows of data yet. <a href="#" class="grid_link_add">Add some data?</a>',
 
     'grid_allow_reorder' => 'Allow reordering of rows?',
+
+    'grid_vertical_layout' => 'Always use a vertical grid layout?',
+
+    'grid_vertical_layout_desc' => 'The fields within the grid will be stacked vertically on the publish form.',
 
     'grid_chars_allowed' => 'Characters allowed.',
 
@@ -272,6 +282,8 @@ $lang = array(
     'url_ft_invalid_url_scheme' => 'Your URL must begin with a valid scheme: %s',
 
     'url_ft_protocol_relative_url' => 'Protocol Relative URL',
+
+    'url_ft_single_slash_protocol_relative_url' => 'Root Relative URL',
 
     'url_ft_url_scheme_placeholder' => 'URL Scheme Placeholder',
 

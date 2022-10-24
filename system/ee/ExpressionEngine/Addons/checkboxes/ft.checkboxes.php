@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -38,7 +38,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
     );
 
     /**
-     * A list of operators that this field type supports
+     * A list of operators that this fieldtype supports
      *
      * @var array
      */
@@ -62,7 +62,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         $selected = decode_multi_field($data);
         $selected = empty($selected) ? array() : (array) $selected;
 
-        // in case another field type was here
+        // in case another fieldtype was here
         $field_options = $this->_get_field_options($data);
         $field_options = $this->_flatten($field_options);
 
@@ -74,7 +74,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
             $unknown = array_filter(array_diff($selected, array_keys($field_options)));
 
             if (count($unknown) > 0) {
-                return 'Invalid Selection';
+                return ee()->lang->line('invalid_selection');
             }
         }
 

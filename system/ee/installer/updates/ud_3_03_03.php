@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -66,6 +66,20 @@ class Updater
      */
     private function update_category_fields()
     {
+        if (! ee()->db->field_exists('legacy_field_data', 'category_fields')) {
+            ee()->smartforge->add_column(
+                'category_fields',
+                array(
+                    'legacy_field_data' => array(
+                        'type' => 'CHAR(1)',
+                        'null' => false,
+                        'default' => 'n'
+                    )
+                )
+            );
+            ee()->db->update('category_fields', array('legacy_field_data' => 'y'));
+        }
+        
         $category_fields = ee('Model')->get('CategoryField')
             ->all()
             ->indexBy('field_id');

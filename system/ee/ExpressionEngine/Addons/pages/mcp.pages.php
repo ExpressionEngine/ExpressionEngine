@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -139,7 +139,7 @@ class Pages_mcp
         $vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
             ->perPage($vars['table']['limit'])
             ->currentPage($vars['table']['page'])
-            ->render($base_url);
+            ->render($vars['table']['base_url']);
 
         ee()->javascript->set_global('lang.remove_confirm', lang('page') . ': <b>### ' . lang('pages') . '</b>');
         ee()->cp->add_js_script(array(

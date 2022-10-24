@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -34,7 +34,7 @@ class CommandGenerator
         $this->addon = $data['addon'];
         $this->addonPath = PATH_THIRD . $this->addon;
 
-        // Make sure the addon exists before we load the addon setup
+        // Make sure the add-on exists before we load the add-on setup
         $this->verifyAddonExists();
 
         $this->addonSetup = $this->getAddonSetup();
@@ -64,7 +64,7 @@ class CommandGenerator
     private function verifyAddonExists()
     {
         if (is_null(ee('Addon')->get($this->addon))) {
-            throw new \Exception("Addon does not exists: " . $this->addon, 1);
+            throw new \Exception("Add-on does not exists: " . $this->addon, 1);
         }
     }
 
@@ -108,12 +108,12 @@ class CommandGenerator
         $commandStub = $this->filesystem->read($this->stub('command.addon.php'));
         $commandStub = $this->write('command_data', $commandString, $commandStub);
 
-        // The addon setup has the commands array
+        // The add-on setup has the commands array
         if (array_key_exists('commands', $addonSetupArray)) {
             $pattern = "/(commands)([^=]+)(=>\s)(array\(|\[)([^\S]*)([\s])([\s\S]*)$/";
             $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$commandString$5$6$7", $addonSetupFile);
             $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
-        } else { // The addon setup does not have the commands array
+        } else { // The add-on setup does not have the commands array
 
             $pattern = '/(,)([^,]+)$/';
             $addonSetupFile = preg_replace($pattern, ",\n    $commandStub $2", $addonSetupFile);

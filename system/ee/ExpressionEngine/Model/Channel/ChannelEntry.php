@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -243,8 +243,14 @@ class ChannelEntry extends ContentModel
 
                 //let tabs do their cloning work
                 if (defined('CLONING_MODE') && CLONING_MODE === true) {
-                    if (method_exists($OBJ, 'clone') === true) {
-                        $values = $OBJ->clone($this, $values);
+                    $cloneFunction = null;
+                    if (method_exists($OBJ, 'cloneData') === true) {
+                        $cloneFunction = 'cloneData';
+                    } elseif (method_exists($OBJ, 'clone') === true) {
+                        $cloneFunction = 'clone';
+                    }
+                    if (!empty($cloneFunction)) {
+                        $values = $OBJ->$cloneFunction($this, $values);
                         foreach ($values as $field => $value) {
                             $property = $name . '__' . $field;
                             $this->$property = $value;

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1007,8 +1007,8 @@ class Search
     {
         $search_id = $this->_get_search_id();
 
-        if (! $search_id) {
-            return '';
+        if (!$search_id) {
+            return ee()->TMPL->no_results();
         }
 
         /** ----------------------------------------
@@ -1017,10 +1017,18 @@ class Search
         $query = ee()->db->query("SELECT total_results FROM exp_search WHERE search_id = '" . ee()->db->escape_str($search_id) . "'");
 
         if ($query->num_rows() == 1) {
-            return $query->row('total_results') ;
-        } else {
-            return 0;
+            if (empty(ee()->TMPL->tagdata)) {
+                return $query->row('total_results');
+            }
+
+            return $query->row('total_results') == 0
+                ? ee()->TMPL->no_results()
+                : ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $query->row_array());
         }
+
+        return empty(ee()->TMPL->tagdata)
+            ? 0
+            : ee()->TMPL->no_results();
     }
 
     /** ----------------------------------------
@@ -1110,7 +1118,7 @@ class Search
         if ($query->num_rows() == 0) {
             return ee()->output->show_user_error(
                 'general',
-                array(lang('invalid_action'))
+                array(lang('expired_search_results'))
             );
         } elseif ($query->row('total_results') == 0) {
             // this works if we use the same template for results and no results
@@ -1267,31 +1275,30 @@ class Search
         if (isset($row['field_id_' . $row['search_excerpt']]) and $row['field_id_' . $row['search_excerpt']]) {
             $format = (! isset($row['field_ft_' . $row['search_excerpt']])) ? 'xhtml' : $row['field_ft_' . $row['search_excerpt']];
 
-            $full_text = ee()->typography->parse_type(
-                // Replace block HTML tags with spaces so words don't run together in case
-                // they're saved with no spaces in between the markup
-                strip_tags(
-                    preg_replace(
-                        '/\s+/',
-                        ' ',
-                        preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_' . $row['search_excerpt']])
-                    )
-                ),
-                array(
-                    'text_format' => $format,
-                    'html_format' => 'safe',
-                    'auto_links' => 'y',
-                    'allow_img_url' => 'n'
+            // Replace block HTML tags with spaces so words don't run together in case
+            // they're saved with no spaces in between the markup
+            $full_text = strip_tags(
+                preg_replace(
+                    '/\s+/',
+                    ' ',
+                    preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_' . $row['search_excerpt']])
                 )
             );
 
-            $excerpt = trim(strip_tags($full_text));
-
+            $excerpt = trim($full_text);
             if (strpos($excerpt, "\r") !== false or strpos($excerpt, "\n") !== false) {
                 $excerpt = str_replace(array("\r\n", "\r", "\n"), " ", $excerpt);
             }
-
             $excerpt = ee()->functions->word_limiter($excerpt, 50);
+
+            $typography = array(
+                'text_format' => $format,
+                'html_format' => 'safe',
+                'auto_links' => 'y',
+                'allow_img_url' => 'n'
+            );
+            $full_text = ee()->typography->parse_type($full_text, $typography);
+            $excerpt = ee()->typography->parse_type($excerpt, $typography);
         } else {
             $excerpt = '';
             $full_text = '';

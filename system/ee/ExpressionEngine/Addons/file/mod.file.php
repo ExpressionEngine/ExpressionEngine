@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -485,8 +485,10 @@ class File
         if ($filedata['is_image'] && function_exists('getimagesize')) {
             $D = @getimagesize($file_path);
 
-            $filedata['height'] = $D['1'];
-            $filedata['width'] = $D['0'];
+            if (is_array($D)) {
+                $filedata['height'] = $D['1'];
+                $filedata['width'] = $D['0'];
+            }
         }
 
         $s = get_file_info($file_path, array('size'));

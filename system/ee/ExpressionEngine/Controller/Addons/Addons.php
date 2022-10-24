@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -729,6 +729,11 @@ class Addons extends CP_Controller
     public function settings($addon, $method = null)
     {
         $this->assertUserHasAccess($addon);
+		$info = ee('Addon')->get($addon);
+		
+		if (empty($info)) {
+            show_404();			
+		}	
 
         ee()->view->cp_page_title = lang('addon_manager');
 
@@ -741,7 +746,6 @@ class Addons extends CP_Controller
             $method = (ee()->input->get_post('method') !== false) ? ee()->input->get_post('method') : 'index';
         }
 
-        $info = ee('Addon')->get($addon);
         $licenseResponse = $info->checkCachedLicenseResponse();
         $licenseStatusBadge = '';
         switch ($licenseResponse) {
@@ -1016,6 +1020,10 @@ class Addons extends CP_Controller
             show_404();
         }
 
+		if (empty($info)) {
+            show_404();			
+		}		
+
         if (! $info->hasModule()) {
             return array();
         }
@@ -1085,6 +1093,10 @@ class Addons extends CP_Controller
         } catch (\Exception $e) {
             show_404();
         }
+		
+		if (empty($info)) {
+            show_404();			
+		}			
 
         if (! $info->hasPlugin()) {
             return array();
@@ -1136,6 +1148,10 @@ class Addons extends CP_Controller
         } catch (\Exception $e) {
             show_404();
         }
+		
+		if (empty($info)) {
+            show_404();			
+		}		
 
         if (! $info->hasFieldtype()) {
             return array();
@@ -1193,6 +1209,10 @@ class Addons extends CP_Controller
         } catch (\Exception $e) {
             show_404();
         }
+		
+		if (empty($info)) {
+            show_404();			
+		}
 
         if (! $info->hasJumpMenu()) {
             return array();
@@ -1229,6 +1249,10 @@ class Addons extends CP_Controller
         } catch (\Exception $e) {
             show_404();
         }
+		
+		if (empty($info)) {
+            show_404();			
+		}
 
         if (! $info->hasExtension()) {
             return array();
@@ -1607,7 +1631,7 @@ class Addons extends CP_Controller
 
                 case 'ms':
                 case 'c':
-                    // Multi-select & Checkboxes
+                    // Multi select & Checkboxes
                     foreach ($options[1] as $k => $v) {
                         $choices[$k] = lang($v);
                     }

@@ -1,3 +1,4 @@
+{layout="cypress/layout"}
 {exp:channel:category_archive channel="news" style="linear"}
     {categories}
         <div id="{category_url_title}">
@@ -9,6 +10,9 @@
             <div class="custom_dropdown">{custom_dropdown}</div>
             <div class="category_image"><img src="{category_image}" /></div>
             <div class="category_image_smaller"><img src="{category_image:smaller}" /></div>
+            {if has_children}
+            <div class="has_children">This category has children</div>
+            {/if}
         </div>
     {/categories}
     {entry_titles}

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -163,15 +163,17 @@ class Validator
         }
 
         foreach ($this->rules as $key => $rules) {
-            $value = null;
+            $originalValue = null;
 
             if (array_key_exists($key, $values)) {
-                $value = $values[$key];
+                $originalValue = $values[$key];
             }
 
             $rules = $this->setupRules($rules);
 
             foreach ($rules as $rule) {
+                $value = $originalValue;
+
                 if ($partial && $rule instanceof Rule\Required && $value === null) {
                     continue;
                 }
@@ -295,7 +297,7 @@ class Validator
      */
     protected function parseRuleString($string)
     {
-        if (preg_match("/(.*?)\[(.*?)\]/", $string, $match)) {
+        if (preg_match("/(.*?)\[(.*?)\]$/", $string, $match)) {
             $rule_name = $match[1];
             $parameters = $match[2];
 
