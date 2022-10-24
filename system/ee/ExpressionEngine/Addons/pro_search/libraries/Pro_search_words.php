@@ -145,8 +145,8 @@ class Pro_search_words
         // Does the class exist already?
         // --------------------------------------
 
-        if (isset($classes[$lang])) {
-            $this->stemmer = $classes[$lang] ? new $class() : false;
+        if (isset($classes[$lang]) && $classes[$lang] !== false) {
+            $this->stemmer = $classes[$lang];
 
             return;
         }
@@ -184,7 +184,7 @@ class Pro_search_words
         // Save to cache
         // --------------------------------------
 
-        $classes[$lang] = $ok;
+        $classes[$lang] = $ok ? $this->stemmer : false;
     }
 
     // --------------------------------------------------------------------
