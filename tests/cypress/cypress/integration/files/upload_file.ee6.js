@@ -31,7 +31,7 @@ context('File Manager / Upload File', () => {
     //page.displayed?
 
     // Check that the heder data is intact
-    page.get('manager_title').invoke('text').then((text) => { expect(text.trim()).to.be.equal('File Manager') })
+    page.get('manager_title').invoke('text').then((text) => { expect(text.trim()).to.be.equal('Files') })
     page.get('download_all').should('exist')
 
     // Check that we have a sidebar
