@@ -423,6 +423,29 @@ context('Categories', () => {
         })
     })
 
+    it('check which categories have children', function () {
+        cy.authVisit('admin.php?/cp/categories/edit/1/2');
+		cy.get('#fieldset-parent_id input[type=radio][value=1]').check();
+
+        cy.get('button[name=submit][value=save]').first().click();
+
+        cy.visit('index.php/cats/archive');
+
+        cy.get('#news .has_children').invoke('text').then((text) => {
+            expect(text).equal('This category has children')
+        });
+
+        cy.get('#bands .has_children').should('not.exist');
+
+        cy.visit('index.php/cats/archive-nested');
+
+        cy.get('#news .has_children').invoke('text').then((text) => {
+            expect(text).equal('This category has children')
+        });
+
+        cy.get('#bands .has_children').should('not.exist');
+    });
+
     describe('static usage of category heading tag', function() {
         it('category heading is correct when using category_id', function() {
 

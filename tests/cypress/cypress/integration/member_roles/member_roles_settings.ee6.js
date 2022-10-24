@@ -78,7 +78,7 @@ context('Test Member roles Settings ', () => {
 
 	   cy.get('.box').contains('Settings')
 	   cy.get('.box').contains('HTML Buttons')
-	   cy.get('.box').contains('Hit Tracking')
+	   cy.get('.box').contains('Tracking')
 	   cy.get('.box').contains('Word Censoring')
 	   cy.get('.box').contains('Menu Manager')
 
@@ -109,7 +109,7 @@ context('Test Member roles Settings ', () => {
 	   cy.get('.box').contains('HTML Buttons')
 	   cy.hasNoErrors()
 	   cy.get('.ee-sidebar').contains('Settings').click()
-	   cy.get('.box').contains('Hit Tracking')
+	   cy.get('.box').contains('Tracking')
 	   cy.hasNoErrors()
 	   cy.get('.ee-sidebar').contains('Settings').click()
 	   cy.get('.box').contains('Word Censoring')
@@ -165,7 +165,7 @@ context('Test Member roles Settings ', () => {
 
 	   cy.get('.box').contains('Settings')
 	   cy.get('.box').contains('HTML Buttons')
-	   cy.get('.box').contains('Hit Tracking')
+	   cy.get('.box').contains('Tracking')
 	   cy.get('.box').contains('Word Censoring')
 	   cy.get('.box').contains('Menu Manager')
 

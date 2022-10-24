@@ -349,7 +349,12 @@ $(document).ready(function () {
     })
 })
 
+var miniGridInit = function(context) {
+    $('.fields-keyvalue', context).miniGrid({grid_min_rows:0,grid_max_rows:''});
+}
+
 Grid.bind('colorpicker', 'displaySettings', (el) => {
+    miniGridInit(el[0]);
     ColorPicker.renderFields(el[0])
 })
 

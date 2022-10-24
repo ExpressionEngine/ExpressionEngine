@@ -1,0 +1,28 @@
+<html>
+    <body>
+        {exp:search:total_results}
+            <dl>
+                <dt>Total results:</dt>
+                <dd id="total-results__within-pair">{total_results}</dd>
+            </dl>
+            {if no_results}
+                <dl>
+                    <dt>Total results:</dt>
+                    <dd id="total-results__within-pair--no-results">None</dd>
+                </dl>
+            {/if}
+        {/exp:search:total_results}
+
+        <dl>
+            <dt>total_results:</dt>
+            <dd id="total-results__single-var">{exp:search:total_results}</dd>
+        </dl>
+
+        {if '{exp:search:total_results}'=='0'}
+            <dl>
+                <dt>total_results:</dt>
+                <dd id="total-results__single-var--zero">{exp:search:total_results}</dd>
+            </dl>
+        {/if}
+    </body>
+</html>

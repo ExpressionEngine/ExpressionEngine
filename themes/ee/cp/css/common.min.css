@@ -40,6 +40,7 @@ html.color-theme-in-transition *:after {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #bbbdf9;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #0d0d19;
   --ee-text-normal: #0d0d19;
   --ee-text-secondary: #8f90b0;
@@ -196,6 +197,7 @@ html.color-theme-in-transition *:after {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #5D63F1;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #05073b;
   --ee-text-primary: #dedede;
   --ee-text-normal: #dedede;
   --ee-text-secondary: #6b6b6b;
@@ -352,6 +354,7 @@ body[data-theme=dark] .inverted-theme {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #bbbdf9;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #eaebfd;
   --ee-text-primary: #0d0d19;
   --ee-text-normal: #0d0d19;
   --ee-text-secondary: #8f90b0;
@@ -508,6 +511,7 @@ body[data-theme=light] .inverted-theme {
   --ee-danger: #FA5252;
   --ee-keyboard-focus: #5D63F1;
   --ee-notification: #fa5252;
+  --ee-notification-generic: #05073b;
   --ee-text-primary: #dedede;
   --ee-text-normal: #dedede;
   --ee-text-secondary: #6b6b6b;
@@ -8999,6 +9003,17 @@ input[type=url]:disabled {
   background-image: -o-linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
   background-image: linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
 }
+textarea:read-only,
+input[type=text]:read-only,
+input[type=email]:read-only,
+input[type=number]:read-only,
+input[type=password]:read-only,
+input[type=url]:read-only {
+  background-size: 20px 20px;
+  background-image: -webkit-linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
+}
 textarea::-webkit-input-placeholder,
 input[type=text]::-webkit-input-placeholder,
 input[type=email]::-webkit-input-placeholder,
@@ -9309,7 +9324,7 @@ tr.selected {
 }
 tr.selected td {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   background: var(--ee-accent-light);
   color: var(--ee-link);
 }
@@ -13995,7 +14010,7 @@ input[type=button].btn-block {
   margin-bottom: 40px;
   padding: 20px 30px 20px 30px;
   position: relative;
-  border-radius: 5px;
+  border-radius: 6px;
   box-shadow: 0 8px 40px var(--ee-shadow-modal);
 }
 .modal .col {
@@ -15107,6 +15122,9 @@ input[type=button].btn-block {
   border-bottom: 2px solid var(--ee-accent);
   margin-bottom: -2px;
 }
+.tab-bar__tab.active .tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-accent);
+}
 .tab-bar__tab.invalid, .tab-bar__tab.invalid:hover {
   color: var(--ee-error);
   border-color: var(--ee-error);
@@ -15119,15 +15137,20 @@ input[type=button].btn-block {
 .tab-bar__tab-notification {
   position: relative;
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  min-width: 22px;
+  min-height: 22px;
   line-height: 16px;
   top: -2px;
-  border-radius: 50%;
+  border-radius: 1000px;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   color: #fff;
   background: var(--ee-notification);
+  padding: 3px 5px;
+}
+.tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-text-secondary);
+  background-color: var(--ee-notification-generic);
 }
 
 .tab {
@@ -16672,9 +16695,10 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   margin-bottom: 0;
   position: relative;
   font-weight: normal;
+  pointer-events: none;
 }
 .checkbox-label .checkbox-label__text {
-  display: block;
+  display: inline-block;
   position: relative;
   padding: 5px;
   padding-left: 25px;
@@ -16682,12 +16706,14 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   transition: background 100ms ease;
   color: var(--ee-text-primary);
   border-radius: 5px;
+  pointer-events: auto;
 }
 .checkbox-label input {
   z-index: 1;
   position: absolute;
   top: 9px;
   left: 0px;
+  pointer-events: auto;
 }
 .checkbox-label input.checkbox--large {
   z-index: 1;
@@ -16829,6 +16855,9 @@ ul.field-nested ul li ul::before {
 .field-nested li {
   padding: 0;
 }
+.field-nested li .checkbox-label__text-editable {
+  display: block;
+}
 .field-nested li .checkbox-label__text-editable:before {
   position: absolute;
   display: block;
@@ -16857,6 +16886,18 @@ ul.field-nested ul li ul::before {
 }
 .field-nested li.nestable-item > ul.field-nested .checkbox-label__text-editable:before {
   border-radius: 0;
+}
+
+div[data-input-value=category_fields] .lots-of-checkboxes__selection {
+  display: none;
+}
+div[data-input-value=category_fields] .lots-of-checkboxes .checkbox-label__text,
+div[data-input-value=category_fields] .lots-of-checkboxes__items .checkbox-label__text {
+  padding-left: 10px;
+}
+div[data-input-value=category_fields] .checkbox-label:hover .checkbox-label__text {
+  background: var(--ee-bg-0);
+  border-radius: 5px;
 }
 
 .fieldset-group {
@@ -16910,6 +16951,7 @@ fieldset {
   padding: 0;
   margin-bottom: 20px;
   border: 0;
+  min-width: 0;
 }
 fieldset.last {
   margin-bottom: 0;
@@ -17048,20 +17090,24 @@ td.invalid .c-colorpicker-input {
   padding-left: 20px;
 }
 
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .fields-select {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .fields-select,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .fields-select {
   background-color: var(--ee-bg-0);
   padding: 5px 10px;
   margin-top: 20px;
   margin-bottom: 10px;
   border-radius: 5px;
 }
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .lots-of-checkboxes__search-input {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .lots-of-checkboxes__search-input,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .lots-of-checkboxes__search-input {
   margin-right: 0;
 }
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .lots-of-checkboxes__search-input .filter-bar__item {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .lots-of-checkboxes__search-input .filter-bar__item,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .lots-of-checkboxes__search-input .filter-bar__item {
   width: 100%;
 }
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .field-inputs.lots-of-checkboxes__items {
   height: 250px;
   max-height: 1000px;
   overflow: auto;
@@ -17090,7 +17136,8 @@ td.invalid .c-colorpicker-input {
   }
   */
 }
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items .field-group-head {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items .field-group-head,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .field-inputs.lots-of-checkboxes__items .field-group-head {
   color: var(--ee-text-secondary);
   font-size: 0.85em;
   font-weight: 500;
@@ -17099,7 +17146,8 @@ td.invalid .c-colorpicker-input {
   text-transform: uppercase;
   letter-spacing: 1px;
 }
-#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items .field-group-head:first-child {
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items-field_pre_populate_y-field_pre_populate_id .field-inputs.lots-of-checkboxes__items .field-group-head:first-child,
+#fieldset-field_value_label_pairs-value_label_pairs-field_pre_populate_n-field_list_items .field-inputs.lots-of-checkboxes__items .field-group-head:first-child {
   margin-top: 0px;
 }
 
@@ -17270,6 +17318,9 @@ fieldset .field-control #eye {
 }
 .note-fieldtype .note-fieldtype__content {
   font-size: 90%;
+}
+.note-fieldtype .note-fieldtype__content em {
+  display: inline;
 }
 .note-fieldtype h1, .note-fieldtype h2, .note-fieldtype h3 {
   margin-top: 15px;
@@ -17901,6 +17952,7 @@ fieldset .field-control #eye {
 .grid-field .table-responsive {
   box-shadow: none;
   border: 1px solid var(--ee-border);
+  overflow-x: visible;
 }
 
 .grid-field__table th {
@@ -17934,6 +17986,8 @@ fieldset .field-control #eye {
 .grid-field__table tbody td {
   vertical-align: top;
   border-right: 1px solid var(--ee-table-border);
+  min-width: 250px;
+  max-width: 600px;
 }
 @media (max-width: 767px) {
   .grid-field__table tbody td {
@@ -17946,6 +18000,7 @@ fieldset .field-control #eye {
 .grid-field__table td:last-child, .grid-field__table th:last-child {
   padding-right: 15px;
   border-right: none;
+  min-width: 80px;
 }
 .grid-field__table .file-field__dropzone {
   margin-top: 0px;
@@ -17978,6 +18033,12 @@ fieldset .field-control #eye {
 
 .grid-field__column-label {
   display: none;
+}
+.grid-field__column-label label {
+  display: block;
+  color: var(--ee-text-normal);
+  margin-bottom: 5px;
+  font-weight: 500;
 }
 
 .grid-field__column-remove {
@@ -18020,6 +18081,166 @@ fieldset .field-control #eye {
   display: none;
 }
 
+.grid-field__item-fieldset {
+  display: none;
+}
+.grid-field__item-fieldset .grid-field__column-label {
+  display: block;
+}
+.grid-field__item-fieldset .grid-field__item-tools {
+  transition: opacity 100ms ease;
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+.grid-field__item-fieldset .grid-field__item-tools.has-open-dropdown {
+  z-index: 200;
+}
+.grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-block;
+  padding: 0px;
+  margin-left: 5px;
+  background: transparent;
+  border: none;
+  line-height: 1 !important;
+  cursor: pointer;
+  color: var(--ee-text-secondary);
+}
+.grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool:hover {
+  color: var(--ee-link);
+}
+.grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool .dropdown, .grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool .select__dropdown {
+  max-height: 90vh;
+  overflow-y: auto;
+  white-space: nowrap;
+}
+.grid-field__item-fieldset .field-instruct {
+  padding-right: 55px;
+  margin-bottom: 5px;
+}
+.grid-field__item-fieldset .field-instruct label {
+  margin-right: 5px;
+  color: var(--ee-text-secondary);
+  display: inline-block;
+  font-size: 1rem;
+  margin-bottom: 0 !important;
+  margin-left: -5px;
+}
+.grid-field__item-fieldset .field-instruct button {
+  border: none;
+  background: none;
+  color: inherit;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.grid-field__item-fieldset tr.grid__item--collapsed {
+  padding-bottom: 0 !important;
+}
+.grid-field__item-fieldset tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+  display: none !important;
+}
+.grid-field__item-fieldset tr.grid__item--collapsed td.grid-field__item-fieldset {
+  border-bottom: none !important;
+}
+.grid-field__item-fieldset tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  transform: rotate(180deg);
+}
+
+.grid-field.vertical-layout {
+  padding: 10px;
+  background: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  border-radius: 5px;
+}
+.grid-field.vertical-layout .table-responsive {
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  overflow: inherit;
+}
+.grid-field.vertical-layout .grid-field__table {
+  display: block;
+}
+.grid-field.vertical-layout .grid-field__table thead {
+  display: none;
+}
+.grid-field.vertical-layout .grid-field__table tbody {
+  display: block;
+  border: none;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid var(--ee-border);
+  margin-bottom: 10px;
+  padding-bottom: 15px;
+  background-color: var(--ee-bg-blank);
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td {
+  border-right: none;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  border-bottom: none;
+  padding: 10px 15px 10px 15px;
+  padding-bottom: 0;
+  font-size: 1rem;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools {
+  text-align: left;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .pagination__link, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .no-results a, .no-results .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a,
+.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .field-no-results a,
+.field-no-results .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .select-popup, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools select, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .select__button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .filter-bar__button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .license-status-badge {
+  margin-bottom: 0;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.no-results {
+  padding: 0px;
+  background-color: transparent;
+  border: none;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.no-results td {
+  padding-top: 0;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed {
+  padding-bottom: 0 !important;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+  display: none !important;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
+  border-bottom: none !important;
+}
+.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  transform: rotate(180deg);
+}
+.grid-field.vertical-layout .grid-field__item-fieldset {
+  padding: 10px 15px 5px 15px;
+  border-bottom: 1px solid var(--ee-border) !important;
+  position: relative;
+}
+.grid-field.vertical-layout .grid-field__item-fieldset .field-instruct label {
+  font-size: 1rem;
+}
+.grid-field.vertical-layout .grid-field__item-fieldset .field-instruct label button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.grid-field.vertical-layout .grid-field__column--tools {
+  display: none !important;
+}
+.grid-field.vertical-layout .grid-field__column-label {
+  display: inherit;
+}
+
 @media (max-width: 767px) {
   .grid-field__column-label {
     display: block;
@@ -18029,6 +18250,7 @@ fieldset .field-control #eye {
     box-shadow: none;
     border: none;
     border-radius: 0;
+    overflow: inherit;
   }
 
   .grid-field__table, .grid-field__table tbody, .grid-field__table th, .grid-field__table td, .grid-field__table tr {
@@ -18049,21 +18271,32 @@ fieldset .field-control #eye {
     position: relative;
     border: 1px solid var(--ee-border);
     margin-bottom: 10px;
-    border-radius: 8px;
     padding-bottom: 15px;
+    background-color: var(--ee-bg-blank);
   }
   .grid-field__table tr.no-results {
-    border: 1px solid var(--ee-border);
-    padding-bottom: 18px;
+    padding: 0px;
   }
   .grid-field__table tr.no-results td {
     padding-top: 0;
   }
   .grid-field__table td {
     display: block;
-    border-bottom: none !important;
+    border-bottom: none;
     padding: 10px 15px 10px 15px;
     padding-bottom: 0;
+  }
+  .grid-field__table tr.grid__item--collapsed {
+    padding-bottom: 0 !important;
+  }
+  .grid-field__table tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+    display: none !important;
+  }
+  .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset {
+    border-bottom: none !important;
+  }
+  .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+    transform: rotate(180deg);
   }
 
   .grid-field__column--tools {
@@ -18074,7 +18307,146 @@ fieldset .field-control #eye {
 .field-no-results .grid-field__column--tools a, .grid-field__column--tools .select-popup, .grid-field__column--tools select, .grid-field__column--tools .select__button, .grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field__column--tools a, .grid-field__column--tools .filter-bar__button, .grid-field__column--tools .license-status-badge {
     margin-bottom: 0;
   }
+
+  .entry-grid, .vertical-layout {
+    padding: 10px;
+    background: var(--ee-bg-0);
+    border: 1px solid var(--ee-border);
+    border-radius: 5px;
+  }
+  .entry-grid .grid-field__item-fieldset, .vertical-layout .grid-field__item-fieldset {
+    display: block;
+    position: relative;
+    border-bottom: 1px solid var(--ee-border) !important;
+    font-size: 1rem;
+  }
+  .entry-grid td.grid-field__column--tools, .vertical-layout td.grid-field__column--tools {
+    display: none !important;
+  }
 }
+.live-preview__form-content .grid-field .grid-field__table,
+.grid-field.overwidth .grid-field__table {
+  display: flex;
+}
+.live-preview__form-content .grid-field .grid-field__table thead,
+.grid-field.overwidth .grid-field__table thead {
+  display: none;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody,
+.grid-field.overwidth .grid-field__table tbody {
+  width: 100%;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-bottom: 3px solid var(--ee-table-border);
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden):last-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden):last-child {
+  border-bottom: none;
+}
+@media (max-width: 767px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden):last-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden):last-child {
+    border-bottom-width: 1px;
+  }
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--ee-table-border);
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:last-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:last-child {
+  border-bottom: none;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label) {
+  width: calc(100% - 135px);
+}
+@media (max-width: 1023px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td > *:not(.grid-field__column-label) {
+    width: calc(100% - 95px);
+  }
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .ee-form-error-message,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .ee-form-error-message {
+  margin-left: auto;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-label,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-label {
+  display: block;
+  color: var(--ee-text-secondary);
+  font-weight: 500;
+  white-space: normal;
+  border-right: 1px solid var(--ee-table-border);
+  margin-right: 15px;
+  flex: 0 0 120px;
+}
+@media (max-width: 1023px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-label,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-label {
+    flex: 0 0 80px;
+  }
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .pagination__link, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .no-results a, .no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a,
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .field-no-results a,
+.field-no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select-popup, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools select, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select__button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .markItUpHeader ul a, .markItUpHeader ul .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .filter-bar__button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .license-status-badge,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .button,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .pagination__link,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .no-results a,
+.no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .field-no-results a,
+.field-no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select-popup,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools select,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select__button,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .markItUpHeader ul a,
+.markItUpHeader ul .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .filter-bar__button,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .license-status-badge {
+  margin-bottom: 0;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .pagination__link:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .no-results a:first-child, .no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child,
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .field-no-results a:first-child,
+.field-no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select-popup:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools select:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select__button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .markItUpHeader ul a:first-child, .markItUpHeader ul .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .filter-bar__button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .license-status-badge:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .button:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .pagination__link:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .no-results a:first-child,
+.no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .field-no-results a:first-child,
+.field-no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select-popup:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools select:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .select__button:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .markItUpHeader ul a:first-child,
+.markItUpHeader ul .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .filter-bar__button:first-child,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td .grid-field__column-tools .license-status-badge:first-child {
+  margin-right: 10px;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr.no-results,
+.grid-field.overwidth .grid-field__table tbody tr.no-results {
+  border-bottom: none;
+  padding: 0;
+}
+
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td {
+  flex-wrap: nowrap;
+}
+
 .select {
   position: static;
   width: 100%;
@@ -18368,6 +18740,9 @@ body[data-theme=dark] .select-popup {
   border-bottom: 2px solid var(--ee-accent);
   margin-bottom: -2px;
 }
+.ee-debugger .tab-bar__tab.active .tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-accent);
+}
 .ee-debugger .tab-bar__tab.invalid, .ee-debugger .tab-bar__tab.invalid:hover {
   color: var(--ee-error);
   border-color: var(--ee-error);
@@ -18379,15 +18754,20 @@ body[data-theme=dark] .select-popup {
 .ee-debugger .tab-bar__tab-notification {
   position: relative;
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  min-width: 22px;
+  min-height: 22px;
   line-height: 16px;
   top: -2px;
-  border-radius: 50%;
+  border-radius: 1000px;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   color: #fff;
   background: var(--ee-notification);
+  padding: 3px 5px;
+}
+.ee-debugger .tab-bar__tab-notification.tab-notification-generic {
+  color: var(--ee-text-secondary);
+  background-color: var(--ee-notification-generic);
 }
 .ee-debugger .tab {
   display: none;
@@ -18739,6 +19119,9 @@ body[data-theme=dark] .select-popup {
   padding: 15px 20px;
 }
 
+.layout-item-wrapper {
+  min-height: 20px;
+}
 .layout-item-wrapper .layout-item {
   margin-bottom: 10px;
 }
@@ -18837,6 +19220,8 @@ body[data-theme=dark] .select-popup {
   align-items: center;
   padding: 20px 30px 20px 30px;
   background-color: var(--ee-bg-0);
+  border-bottom: 1px solid var(--ee-border);
+  border-radius: 6px 6px 0 0;
 }
 
 .dialog__header--centered {
@@ -18884,6 +19269,8 @@ body[data-theme=dark] .select-popup {
 .dialog__actions {
   padding: 20px 30px 20px 30px;
   background-color: var(--ee-bg-0);
+  border-top: 1px solid var(--ee-border);
+  border-radius: 0 0 6px 6px;
 }
 .dialog__actions .button + .button, .dialog__actions .pagination__link + .button, .dialog__actions .button + .pagination__link, .dialog__actions .pagination__link + .pagination__link, .dialog__actions .no-results a + .button, .dialog__actions .no-results a + .pagination__link, .no-results .dialog__actions a + .button, .no-results .dialog__actions a + .pagination__link,
 .dialog__actions .field-no-results a + .button,
@@ -19567,6 +19954,10 @@ a.ck.ck-button.ck-on {
   z-index: 2;
 }
 
+.redactor-box .redactor-toolbar.redactor-toolbar-fixed {
+  background-color: var(--ee-panel-bg);
+}
+
 .re-icon-filebrowser {
   content: url('data:image/svg+xml;utf8,<svg height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="m1 6c.51283584 0 .93550716.38604019.99327227.88337887l.00672773.11662113v6c0 .4964612.44481521.9373059 1.049825.9938787l.13199318.0061213h5.81818182c.55228475 0 1 .4477153 1 1 0 .5128358-.38604019.9355072-.88337887.9932723l-.11662113.0067277h-5.81818182c-1.67882337 0-3.08194674-1.2331302-3.17671765-2.8277989l-.00510053-.1722011v-6c0-.55228475.44771525-1 1-1zm12.6-6c1.3254834 0 2.4 1.0745166 2.4 2.4v8.2c0 .0812991-.0040424.161654-.0119371.2408747.04537.286293-.0350323.5849432-.229131.8106316-.3901386.7980655-1.2102555 1.3484937-2.1589319 1.3484937h-8.2c-.0093721 0-.01873166-.0000537-.02807838-.0001609l-.37192162.0001604c-.26521649 0-.5195704-.1053563-.70710678-.2928927l.05843073.052268c-.4838201-.2353989-.8766931-.6286113-1.11166129-1.1126794-.19291421-.2239005-.27189946-.5180346-.2277519-.8010756-.00769603-.0805757-.01191076-.1626056-.01191076-.2456198v-8.2c0-1.3254834 1.0745166-2.4 2.4-2.4zm-1.596 8.632-.76.937.839 1.431h1.517c.0486011 0 .0951777-.0086678.1382683-.0245418zm-4.582-1.631-2.176 3.83.169.169h4.349l-.436-.744-.04995732-.0453903c-.12825052-.1334488-.2131256-.2958557-.25256531-.46760617zm6.178-5.001h-8.2c-.2209139 0-.4.1790861-.4.4v4.814l1.53963435-2.70800941c.35805102-.6301698 1.23187816-.67285287 1.65793101-.12170559l.07440231.11030062 1.89203233 3.23141438 1.0987033-1.35538405c.384092-.47423473 1.0895396-.491008 1.4981306-.06381668l.0827862.09833145 1.1563799 1.56386928v-5.569c0-.19329966-.1371128-.35457492-.319386-.39187342z"></path></svg>');
   opacity: 0.75;
@@ -20061,7 +20452,8 @@ a.ck.ck-button.ck-on {
   margin-bottom: 10px;
   background-color: var(--ee-bg-blank);
   border: 1px solid var(--ee-fluid-item-border);
-  position: relative;
+  position: static;
+  width: 100%;
 }
 .fluid__item .fluid__item-fieldset {
   padding: 10px 15px 5px 15px;
@@ -20596,6 +20988,7 @@ table .field-no-results {
 
   .live-preview__form, .live-preview__preview {
     flex-basis: 50%;
+    width: 50%;
     max-height: 50vh;
   }
 
@@ -21579,6 +21972,14 @@ ul.field-reorder-drop,
 }
 .drag-placeholder fieldset {
   margin-bottom: 10px;
+}
+
+.design-system-template-body .app-notice {
+  margin: 20px 25px;
+}
+
+.single-templates-notice-wrapper {
+  padding: 0 10px;
 }
 
 .app-about-info {
@@ -23301,6 +23702,16 @@ body[data-theme="dark"] {
     height: 0;
     visibility: hidden;
   }
+}
+.tab-wrap .js-layout-item {
+  margin-bottom: 10px;
+}
+.tab-wrap .custom-drag-placeholder .none {
+  background-color: var(--ee-bg-0);
+  border: 1px dashed var(--ee-border-dark);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
 .tab-wrap:after {
   clear: both;

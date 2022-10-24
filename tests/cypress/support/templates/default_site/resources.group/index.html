@@ -29,19 +29,46 @@ body > div {
 
 <link rel="stylesheet" href="/index.php/css/resources/trigger/" />
 
+<link rel="stylesheet" href="{stylesheet='style'}" />
+
 {/layout:set}
 
 <div id="first">
-	<p>Set by <var>default_site/resources/style.css</var></p>
+	<p>Set by <var>default_site/resources.group/style.css</var>:</p>
+	<pre>
+	<code>
+		{stylesheet='resources/style'}
+	</code>
+	</pre>
 </div>
 <div id="second">
-	<p>Set by <var>default_site/resources/script.js</var></p>
+	<p>Set by <var>default_site/resources.group/script.js</var>:</p>
+	<pre>
+	<code>
+		{script='resources/script'}
+	</code>
+	</pre>
 </div>
 <div id="third">
-	<p>Set by <var>second_site/resources/style.css</var></p>
+	<p>Set by <var>second_site/resources.group/style.css</var>:</p>
+	<pre>
+	<code>
+		{stylesheet='second_site:resources/style'}
+	</code>
+	</pre>
 </div>
 <div id="fourth">
-	<p>Set by <var>second_site/resources/script.js</var></p>
+	<p>Set by:</p>
+	<ul>
+		<li><var>second_site/resources.group/script.js</var></li>
+		<li><var>/index.php/css/resources/trigger/</var></li>
+	</ul>
+	<pre>
+	<code>
+		{script='second_site:resources/script'}
+	</code>
+	</pre>
+</div>
 </div>
 
 <script src="{script='resources/script'}"></script>

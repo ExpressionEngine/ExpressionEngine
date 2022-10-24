@@ -148,10 +148,10 @@ class GlobalVariable extends FileSyncedModel
         }
 
         if (! $site = ee()->session->cache('site/id/' . $this->site_id, 'site')) {
-            $site = $this->getModelFacade()->get('Site')
-                ->fields('site_name')
-                ->filter('site_id', $this->site_id)
-                ->first();
+            $sites = ee('Model')->get('Site')
+                ->fields('site_id', 'site_name')
+                ->all(true);
+            $site = $sites->filter('site_id', $this->site_id)->first();
 
             ee()->session->set_cache('site/id/' . $this->site_id, 'site', $site);
         }
@@ -164,11 +164,10 @@ class GlobalVariable extends FileSyncedModel
      */
     protected function ensureFolderExists()
     {
-        $fs = new Filesystem();
         $path = $this->getFolderPath();
 
-        if (isset($path) && ! $fs->isDir($path)) {
-            $fs->mkDir($path, false);
+        if (isset($path) && ! ee('Filesystem')->isDir($path)) {
+            ee('Filesystem')->mkDir($path, false);
         }
     }
 
@@ -214,7 +213,7 @@ class GlobalVariable extends FileSyncedModel
     {
         $sites = ee('Model')->get('Site')
             ->fields('site_id', 'site_name')
-            ->all();
+            ->all(true);
 
         // always include the global partials
         $paths = [0 => PATH_TMPL . '_global_variables'];
@@ -254,10 +253,9 @@ class GlobalVariable extends FileSyncedModel
             return [];
         }
         
-        $fs = new Filesystem();
         $variables = [];
 
-        if (! $fs->isDir($path)) {
+        if (! ee('Filesystem')->isDir($path)) {
             return $variables;
         }
 

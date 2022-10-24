@@ -21,6 +21,8 @@ class Addon
     protected $basepath;
     protected $shortname;
 
+    protected $_components = [];
+
     private static $installed_plugins;
     private static $installed_modules;
     private static $installed_extensions;
@@ -30,6 +32,14 @@ class Addon
     {
         $this->provider = $provider;
         $this->shortname = $provider->getPrefix();
+
+        $files = $this->getFilesMatching('*' . $this->getPrefix() . '.php');
+        $possibleComponents = ['upd', 'mcp', 'mod', 'pi', 'ext', 'rtefb', 'upgrade', 'spam', 'jump'];
+        foreach ($possibleComponents as $type) {
+            if (in_array($this->getPath() . "/{$type}." . $this->getPrefix() . '.php', $files)) {
+                $this->_components[] = $type;
+            }
+        }
     }
 
     /**
@@ -876,7 +886,7 @@ class Addon
      */
     protected function hasFile($prefix)
     {
-        return file_exists($this->getPath() . "/{$prefix}." . $this->getPrefix() . '.php');
+        return in_array($prefix, $this->_components);
     }
 
     /**

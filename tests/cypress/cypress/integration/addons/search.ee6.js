@@ -17,11 +17,28 @@ context('Search', () => {
     cy.authVisit('index.php/search/simple_form');
     cy.get('#keywords').clear().type('ExpressionEngine')
     cy.get('.submit').first().click()
+
+    cy.get('#total-results__within-pair').should('contain', '1')
+    cy.get('#total-results__within-pair--no-results').should('not.exist')
+    cy.get('#total-results__single-var').should('contain', '1')
+    cy.get('#total-results__single-var--zero').should('not.exist')
+
     cy.get('h3:contains(Results)').should('exist')
     cy.get('body').should('contain', 'Getting to Know ExpressionEngine')
     cy.get('body').should('not.contain', 'Welcome to the Example Site!')
 
     cy.logFrontendPerformance()
+  })
+
+  it('search and get no results', function(){
+    cy.authVisit('index.php/search/simple_form');
+    cy.get('#two-templates-for-results [name="keywords"]').clear().type('WordPress')
+    cy.get('#two-templates-for-results').submit()
+
+    cy.get('#total-results__within-pair').should('not.exist')
+    cy.get('#total-results__within-pair--no-results').should('contain', 'None')
+    cy.get('#total-results__single-var').should('contain', '0')
+    cy.get('#total-results__single-var--zero').invoke('text').should('eq', '0')
   })
 
   it('search and get no results (on same page)', function(){
@@ -88,7 +105,7 @@ context('Search', () => {
         cy.get('h3:contains(Results)').should('exist')
         cy.get('body').should('contain', 'About the Label')
         cy.hasNoErrors()
-        
+
     })
 
     it('exclude channel', function(){
