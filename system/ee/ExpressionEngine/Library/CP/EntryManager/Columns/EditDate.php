@@ -4,19 +4,19 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
 /**
- * Expiration Date Column
+ * Edit Date Column
  */
-class ExpirationDate extends DateColumn
+class EditDate extends DateColumn
 {
     public function getTableColumnLabel()
     {
-        return 'expiration_date';
+        return 'edit_date';
     }
 }
