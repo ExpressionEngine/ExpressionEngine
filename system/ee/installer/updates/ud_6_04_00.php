@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
+                'modifyRevisionsColumns',
                 'modifyCpHomepageChannelColumnOnMembers',
                 'addLegacyFieldsConfig',
                 'addExtensionsEnabledKey',
@@ -40,6 +41,32 @@ class Updater
         return true;
     }
 
+    private function modifyRevisionsColumns()
+    {
+        ee()->smartforge->modify_column(
+            'revision_tracker',
+            [
+                'item_table' => [
+                    'name' => 'item_table',
+                    'type' => 'varchar',
+                    'constraint' => 50,
+                    'null' => false
+                ]
+            ]
+        );
+
+        ee()->smartforge->modify_column(
+            'revision_tracker',
+            [
+                'item_field' => [
+                    'name' => 'item_field',
+                    'type' => 'varchar',
+                    'constraint' => 32,
+                    'null' => false
+                ]
+            ]
+        );
+    }
     private function modifyCpHomepageChannelColumnOnMembers()
     {
         ee()->smartforge->modify_column(
