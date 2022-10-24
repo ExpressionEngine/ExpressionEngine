@@ -88,7 +88,7 @@ class Design extends AbstractDesignController
         $base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
         $this->base_url = $base_url;
 
-        $templates = ee('Model')->get('Template')->filter('group_id', $group->group_id)->filter('site_id', ee()->config->item('site_id'));
+        $templates = ee('Model')->get('Template')->with('TemplateGroup')->filter('group_id', $group->group_id)->filter('site_id', ee()->config->item('site_id'));
 
         $vars = $this->buildTableFromTemplateQueryBuilder($templates);
 

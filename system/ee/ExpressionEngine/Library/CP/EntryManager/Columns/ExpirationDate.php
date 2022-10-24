@@ -10,27 +10,13 @@
 
 namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
-use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
-
 /**
  * Expiration Date Column
  */
-class ExpirationDate extends Column
+class ExpirationDate extends DateColumn
 {
     public function getTableColumnLabel()
     {
         return 'expiration_date';
-    }
-
-    public function getTableColumnConfig()
-    {
-        return [
-            'encode' => false
-        ];
-    }
-
-    public function renderTableCell($data, $field_id, $entry)
-    {
-        return $entry->expiration_date ? ee()->localize->human_time($entry->expiration_date) : '';
     }
 }

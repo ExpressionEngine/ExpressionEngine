@@ -272,3 +272,135 @@
     opacity: 0.6;
   }
 }
+
+// Upgrade Success banner
+.upgrade-success-banner__wrapper {
+  // Set background-image URL inline
+  background-color: color(panel-bg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin: 0 40px 30px;
+  padding: 30px;
+  position: relative;
+  display: block;
+  border-radius: 6px;
+  border: 1px solid color(panel-border);
+  overflow: hidden;
+
+  img {
+    // Set max-height inline to natural height of image
+    max-width: 100%;
+    display: block;
+    margin: auto;
+  }
+
+  .upgrade-success-banner__title {
+    font-size: 17px;
+    font-weight: 500;
+    background-color: color(accent-light);
+    padding: 6px 25px 7px;
+    margin-right: 15px;
+    display: inline-block;
+    border-radius: $border-radius-full;
+
+    strong {
+      color: color(text-normal);
+      font-weight: 500;
+    }
+  }
+
+  .upgrade-success-banner__title-link {
+    display: inline-block;
+
+    i {
+      opacity: 0.4;
+      margin-right: 3px;
+    }
+  }
+
+  .banner-dismiss {
+    color: var(--ee-text-secondary);
+    position: absolute;
+    right: 30px;
+    text-decoration: none;
+    top: 20px;
+
+    &:hover {
+      color: var(--ee-text-tertiary);
+    }
+
+    &::before {
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      content: "\f00d";
+      font-size: 24px;
+      line-height: 1;
+    }
+  }
+
+
+  .upgrade-success-banner__blurb-wrapper {
+    margin-top: 25px;
+    display: grid;
+    // Set grid-template-columns inline
+    grid-column-gap: 15px;
+    grid-row-gap: 15px;
+
+    @media screen and (max-width: 1200px) {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    @media screen and (max-width: 700px) {
+      grid-template-columns: repeat(1, 1fr) !important;
+    }
+
+    .upgrade-success-banner__blurb {
+      background-color: color(bg-blank);
+      padding: 15px 20px 20px 42px;
+      position: relative;
+      border: 1px solid color(panel-border);
+      border-radius: $border-radius-base;
+      -webkit-transition: border-color .15s ease-in-out;
+      -moz-transition: border-color .15s ease-in-out;
+      -o-transition: border-color .15s ease-in-out;
+
+      &:hover {
+        border-color: color(brand-primary);
+
+        h6,
+        .upgrade-success-banner__blurb-learn {
+          color: color(link-hover);
+        }
+      }
+
+      i {
+        position: absolute;
+        top: 19px;
+        left: 15px;
+        opacity: 0.5;
+      }
+
+      h6 {
+        font-size: 15px;
+        color: color(text-normal);
+        margin-bottom: 5px;
+      }
+
+      p {
+        font-size: 13px;
+        color: color(text-secondary);
+      }
+
+      .upgrade-success-banner__blurb-learn {
+        color: color(link);
+      }
+    }
+  }
+}
+
+// Turn off banner background image in Dark and Pink themes:
+[data-theme="dark"] .upgrade-success-banner__wrapper,
+[data-theme="pink"] .upgrade-success-banner__wrapper {
+  background-image: none !important;
+}

@@ -66,7 +66,7 @@ jobs:
           - name: Setup node
             uses: actions/setup-node@v2
             with:
-              node-version: '17'
+              node-version: '10'
 
           - name: Install build tool dependencies
             working-directory: build-tools
@@ -212,6 +212,11 @@ jobs:
               run: |
                 echo "::set-output name=SPECS::$(node tests/cypress-split.js 10 ${{ matrix.containers }})"
               id: specs
+
+            - name: Install Chrome Beta
+              uses: browser-actions/setup-chrome@latest
+              with:
+                chrome-version: beta
 
             - name: Run Cypress Tests (without dashboard)
               uses: cypress-io/github-action@v2

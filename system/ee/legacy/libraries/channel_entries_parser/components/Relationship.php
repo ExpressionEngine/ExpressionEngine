@@ -68,11 +68,19 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component
                 }
             }
 
+            $disabledFeatures = $pre->disabledFeatures();
+            if (strpos($tagdata, 'categories') === false) {
+                $disabledFeatures[] = 'relationship_categories';
+            }
+
             return ee()->relationships_parser->create(
                 $pre->channel()->rfields,
                 $pre->entry_ids(),
                 null,
-                $grid_relationships
+                $grid_relationships,
+                null,
+                null,
+                $disabledFeatures
             );
         } catch (EE_Relationship_exception $e) {
             ee()->TMPL->log_item($e->getMessage());
@@ -92,6 +100,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component
      */
     public function replace($tagdata, EE_Channel_data_parser $obj, $relationship_parser)
     {
+        ee()->TMPL->log_item('Replace all of the relationship fields');
         if (! isset($relationship_parser)) {
             return $tagdata;
         }

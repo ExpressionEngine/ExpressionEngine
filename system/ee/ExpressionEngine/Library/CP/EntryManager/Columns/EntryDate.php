@@ -10,20 +10,13 @@
 
 namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
-use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
-
 /**
  * Entry Date Column
  */
-class EntryDate extends Column
+class EntryDate extends DateColumn
 {
     public function getTableColumnLabel()
     {
         return 'column_entry_date';
-    }
-
-    public function renderTableCell($data, $field_id, $entry)
-    {
-        return ee()->localize->human_time($entry->entry_date);
     }
 }

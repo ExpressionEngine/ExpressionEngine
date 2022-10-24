@@ -94,53 +94,55 @@ context('Updater', () => {
     })
   })
 
-it('turns system off if system was off before updating', () => {
-    cy.task('installer:revert_config').then(() => {
-        cy.task('installer:replace_config', {
-            file: 'support/config/config-5.3.0.php', options: {
-                database: {
-                    hostname: Cypress.env("DB_HOST"),
-                    database: Cypress.env("DB_DATABASE"),
-                    username: Cypress.env("DB_USER"),
-                    password: Cypress.env("DB_PASSWORD")
-                },
-                app_version: '5.3.0',
-                is_system_on: 'n',
-            }
-        }).then(() => {
-            cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
-                test_cli_update()
-                cy.eeConfig({ item: 'is_system_on' }).then((config) => {
-                    expect(config.trim()).to.be.equal('n')
-                })
-            })
-        })
-    })
-})
+  it('turns system off if system was off before updating', () => {
+      cy.task('installer:revert_config').then(() => {
+          cy.task('installer:replace_config', {
+              file: 'support/config/config-5.3.0.php', options: {
+                  database: {
+                      hostname: Cypress.env("DB_HOST"),
+                      database: Cypress.env("DB_DATABASE"),
+                      username: Cypress.env("DB_USER"),
+                      password: Cypress.env("DB_PASSWORD")
+                  },
+                  app_version: '5.3.0',
+                  is_system_on: 'n',
+              }
+          }).then(() => {
+              cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
+                  test_cli_update()
+                  cy.task('installer:disable')
+                  cy.eeConfig({ item: 'is_system_on' }).then((config) => {
+                      expect(config.trim()).to.be.equal('n')
+                  })
+              })
+          })
+      })
+  })
 
-    it('turns system on if system was on before updating', () => {
-        cy.task('installer:revert_config').then(() => {
-            cy.task('installer:replace_config', {
-                file: 'support/config/config-5.3.0.php', options: {
-                    database: {
-                        hostname: Cypress.env("DB_HOST"),
-                        database: Cypress.env("DB_DATABASE"),
-                        username: Cypress.env("DB_USER"),
-                        password: Cypress.env("DB_PASSWORD")
-                    },
-                    app_version: '5.3.0',
-                    is_system_on: 'y',
-                }
-            }).then(() => {
-                cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
-                    test_cli_update()
-                    cy.eeConfig({ item: 'is_system_on' }).then((config) => {
-                        expect(config.trim()).to.be.equal('y')
-                    })
-                })
-            })
-        })
-    })
+  it('turns system on if system was on before updating', () => {
+      cy.task('installer:revert_config').then(() => {
+          cy.task('installer:replace_config', {
+              file: 'support/config/config-5.3.0.php', options: {
+                  database: {
+                      hostname: Cypress.env("DB_HOST"),
+                      database: Cypress.env("DB_DATABASE"),
+                      username: Cypress.env("DB_USER"),
+                      password: Cypress.env("DB_PASSWORD")
+                  },
+                  app_version: '5.3.0',
+                  is_system_on: 'y',
+              }
+          }).then(() => {
+              cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
+                  test_cli_update()
+                  cy.task('installer:disable')
+                  cy.eeConfig({ item: 'is_system_on' }).then((config) => {
+                      expect(config.trim()).to.be.equal('y')
+                  })
+              })
+          })
+      })
+  })
 
   context('when updating from 2.x to 6.x', () => {
     beforeEach(function(){

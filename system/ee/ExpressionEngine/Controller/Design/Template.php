@@ -502,6 +502,7 @@ class Template extends AbstractDesignController
         }
 
         $templates = ee('Model')->get('Template')
+            ->with('TemplateGroup')
             ->filter('site_id', ee()->config->item('site_id'))
             ->filter('template_data', 'LIKE', '%' . $search_terms . '%');
 
@@ -593,7 +594,7 @@ class Template extends AbstractDesignController
                 ->withTitle(lang('update_template_error'))
                 ->addToBody(lang('update_template_error_desc'))
                 ->now();
-        } else {
+        } else if (ee('Request')->post('allowed_roles') !== null) {
             $access = ee()->input->post('allowed_roles') ?: array();
 
             $roles = ee('Model')->get('Role', $access)

@@ -31,6 +31,9 @@ class Delete extends Query
             return;
         }
 
+        $mainClass = $this->store->getMetaDataReader($from)->getClass();
+        $mainClass::emitStatic('beforeAssociationsBulkDelete', $parent_ids);
+
         $from_alias = 'CurrentlyDeleting';
 
         $delete_list = $this->getDeleteList($from, $from_alias);
@@ -90,6 +93,7 @@ class Delete extends Query
                 $delete_ids = $this->deleteCollection($delete_models, $to_meta);
             } while (count($delete_ids) == $batch_size);
         }
+        $mainClass::emitStatic('afterAssociationsBulkDelete', $parent_ids);
     }
 
     /**

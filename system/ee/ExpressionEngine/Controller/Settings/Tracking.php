@@ -13,9 +13,9 @@ namespace ExpressionEngine\Controller\Settings;
 use CP_Controller;
 
 /**
- * Hit Tracking Settings Controller
+ * Tracking Settings Controller
  */
-class HitTracking extends Settings
+class Tracking extends Settings
 {
     /**
      * General Settings
@@ -24,6 +24,16 @@ class HitTracking extends Settings
     {
         $vars['sections'] = array(
             array(
+                array(
+                    'title' => 'enable_tracking_cookie',
+                    'desc' => 'enable_tracking_cookie_desc',
+                    'fields' => array(
+                        'enable_tracking_cookie' => array(
+                            'type' => 'yes_no',
+                            'value' => ee()->config->item('enable_tracking_cookie') !== 'n'
+                        ),
+                    )
+                ),
                 array(
                     'title' => 'enable_online_user_tracking',
                     'desc' => 'enable_online_user_tracking_desc',
@@ -58,7 +68,7 @@ class HitTracking extends Settings
             )
         );
 
-        $base_url = ee('CP/URL')->make('settings/hit_tracking');
+        $base_url = ee('CP/URL')->make('settings/tracking');
 
         ee()->form_validation->set_rules(array(
             array(
@@ -85,12 +95,12 @@ class HitTracking extends Settings
 
         ee()->view->base_url = $base_url;
         ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = lang('hit_tracking');
+        ee()->view->cp_page_title = lang('tracking');
         ee()->view->save_btn_text = 'btn_save_settings';
         ee()->view->save_btn_text_working = 'btn_saving';
 
         ee()->view->cp_breadcrumbs = array(
-            '' => lang('hit_tracking')
+            '' => lang('tracking')
         );
 
         ee()->cp->render('settings/form', $vars);

@@ -115,6 +115,10 @@ class Member extends ContentModel
             'model' => 'ChannelEntryAutosave',
             'to_key' => 'author_id'
         ),
+        'EntryManagerViews' => array(
+            'type' => 'hasMany',
+            'model' => 'EntryManagerView'
+        ),
         'Comments' => array(
             'type' => 'hasMany',
             'model' => 'Comment',
@@ -305,8 +309,10 @@ class Member extends ContentModel
     protected $cp_homepage;
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
-    protected $dismissed_pro_banner;
+    protected $dismissed_banner;
     protected $enable_mfa;
+
+    protected $_cpHomepageUrl;
 
     /**
      * Getter for legacy group_id property
@@ -618,6 +624,10 @@ class Member extends ContentModel
      */
     public function getCPHomepageURL($site_id = null)
     {
+        if (!empty($this->_cpHomepageUrl)) {
+            return $this->_cpHomepageUrl;
+        }
+        
         $cp_homepage = null;
         $cp_homepage_custom = 'homepage';
 
@@ -653,24 +663,24 @@ class Member extends ContentModel
 
         switch ($cp_homepage) {
             case 'entries_edit':
-                $url = ee('CP/URL', 'publish/edit');
+                $this->_cpHomepageUrl = ee('CP/URL', 'publish/edit');
 
                 break;
             case 'publish_form':
-                $url = ee('CP/URL', 'publish/create/' . $cp_homepage_channel);
+                $this->_cpHomepageUrl = ee('CP/URL', 'publish/create/' . $cp_homepage_channel);
 
                 break;
             case 'custom':
-                $url = ee('CP/URL', $cp_homepage_custom);
+                $this->_cpHomepageUrl = ee('CP/URL', $cp_homepage_custom);
 
                 break;
             default:
-                $url = ee('CP/URL', 'homepage');
+                $this->_cpHomepageUrl = ee('CP/URL', 'homepage');
 
                 break;
         }
 
-        return $url;
+        return $this->_cpHomepageUrl;
     }
 
     /**
@@ -932,22 +942,6 @@ class Member extends ContentModel
         return (bool) preg_match('/^redacted\d+$/', $this->email);
     }
 
-    protected function saveToCache($key, $data)
-    {
-        if (isset(ee()->session)) {
-            ee()->session->set_cache(__CLASS__, $key, $data);
-        }
-    }
-
-    protected function getFromCache($key)
-    {
-        if (isset(ee()->session)) {
-            return ee()->session->cache(__CLASS__, $key, false);
-        }
-
-        return false;
-    }
-
     /**
      * Get all roles assigned to member, including Primary Role, extra roles and roles assigned via Role Groups
      * @param  bool $cache Whether to cache roles during this request
@@ -989,18 +983,26 @@ class Member extends ContentModel
      */
     public function getAssignedModules()
     {
-        if ($this->isSuperAdmin()) {
-            return $this->getModelFacade()->get('Module')->all();
-        }
+        $cache_key = "Member/{$this->member_id}/Modules";
 
-        $modules = [];
-        foreach ($this->getAllRoles() as $role) {
-            foreach ($role->AssignedModules as $module) {
-                $modules[$module->getId()] = $module;
+        $modulesCollection = $this->getFromCache($cache_key);
+
+        if ($modulesCollection === false) {
+            if ($this->isSuperAdmin()) {
+                $modulesCollection = $this->getModelFacade()->get('Module')->all(true);
+            } else {
+                $modules = [];
+                foreach ($this->getAllRoles() as $role) {
+                    foreach ($role->AssignedModules as $module) {
+                        $modules[$module->getId()] = $module;
+                    }
+                }
+                $modulesCollection = new Collection($modules);
             }
+            $this->saveToCache($cache_key, $modulesCollection);
         }
 
-        return new Collection($modules);
+        return $modulesCollection;
     }
 
     /**
