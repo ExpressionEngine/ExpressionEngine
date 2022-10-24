@@ -167,9 +167,20 @@ class Textarea_ft extends EE_Fieldtype
                 $fp->inject(ee()->view);
                 $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('field_upload_locations' => 'all', 'hasUpload' => true));
 
+                ee()->load->library('file_field');
+                ee()->lang->loadfile('fieldtypes');
+                ee()->file_field->loadDragAndDropAssets();
+
                 ee()->cp->add_js_script(array(
-                    'file' => array('fields/textarea/textarea'),
-                    'plugin' => array('ee_txtarea')
+                    'file' => array(
+                        'fields/textarea/textarea',
+                        'fields/file/file_field_drag_and_drop',
+                        'fields/file/concurrency_queue',
+                        'fields/file/file_upload_progress_table',
+                        'fields/file/drag_and_drop_upload',
+                        'fields/grid/file_grid'
+                    ),
+                    'plugin' => array('ee_txtarea'),
                 ));
             }
 

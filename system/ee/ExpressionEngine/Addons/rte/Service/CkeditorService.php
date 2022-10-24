@@ -24,10 +24,19 @@ class CkeditorService extends AbstractRteService implements RteService
     protected function includeFieldResources()
     {
         if (! static::$_includedFieldResources) {
+            ee()->load->library('file_field');
+            ee()->lang->loadfile('fieldtypes');
+            ee()->file_field->loadDragAndDropAssets();
+
             //would rather prefer this in combo loader, but that's for CP only
             ee()->cp->add_js_script(['file' => [
                 'fields/rte/ckeditor/ckeditor',
-                'fields/rte/rte']
+                'fields/rte/rte',
+                'fields/file/file_field_drag_and_drop',
+                'fields/file/concurrency_queue',
+                'fields/file/file_upload_progress_table',
+                'fields/file/drag_and_drop_upload',
+                'fields/grid/file_grid']
             ]);
 
             $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
