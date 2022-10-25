@@ -560,6 +560,9 @@
 		tbody tr:not(.hidden) {
 			td {
 				flex-wrap: nowrap !important;
+				align-items: center;
+
+				div:empty { display: none;}
 			}
 		}
 	}
