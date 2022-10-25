@@ -14007,8 +14007,8 @@ input[type=button].btn-block {
 }
 .modal-wrap .m-close {
   height: 20px;
-  right: 20px;
-  top: 9px;
+  right: 15px;
+  top: 15px;
 }
 .modal-wrap .m-close:before {
   font-size: 20px;
@@ -14090,6 +14090,11 @@ input[type=button].btn-block {
 }
 .app-modal[rel=modal-bulk-edit] .meta-info .danger-link {
   cursor: pointer;
+}
+
+.modal-wrap.modal-template-settings .m-close {
+  top: 9px;
+  right: 20px;
 }
 
 .jump-menu {

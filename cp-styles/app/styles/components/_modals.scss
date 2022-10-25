@@ -55,8 +55,8 @@
 
   .m-close {
     height: 20px;
-    right: 20px;
-    top: 9px;
+    right: 15px;
+    top: 15px;
 
     &:before { font-size: 20px; }
   }
@@ -151,8 +151,6 @@
     }
   }
 
-
-
   .meta-info {
     font-size: 0.8rem;
     margin-top: 10px;
@@ -162,5 +160,12 @@
     .danger-link {
       cursor: pointer;
     }
+  }
+}
+
+.modal-wrap.modal-template-settings {
+  .m-close {
+    top: 9px;
+    right: 20px;
   }
 }
