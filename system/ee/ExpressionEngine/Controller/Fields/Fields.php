@@ -850,7 +850,7 @@ class Fields extends AbstractFieldsController
         //
         // -------------------------------------------
 
-        if (!empty($this->fieldChannels)) {
+        if (!$field->isNew() && !empty($this->fieldChannels)) {
             foreach ($this->fieldChannels as $id => $channelData) {
                 $this->fieldChannels[$id]['extra'] = lang('assigned') . ' ' . implode(', ', $channelData['via']);
             }
