@@ -17,6 +17,10 @@ $lang = array(
     'rte_config_settings' => 'Configuration Settings',
     'rte_config_name' => 'Configuration Name',
     'rte_toolbar' => 'Customize the Toolbar',
+    'custom_stylesheet' => 'Custom Stylesheet',
+    'custom_stylesheet_desc' => 'CSS template with styles to be applied to fields using this tool set. All styles will be automatically prefixed with toolset class.',
+    'custom_javascript' => 'Extra JavaScript',
+    'custom_javascript_rte_desc' => 'JS template to be included with fields using this tool set. Typically used to include extra plugins when using advanced configuration.',
     'rte_min_height' => 'Minimal height',
     'rte_min_height_desc' => 'Enter the number of pixels, or leave empty',
     'rte_max_height' => 'Maximal height',
@@ -25,6 +29,11 @@ $lang = array(
     'rte_limiter_desc' => 'Limit the number of characters a user can enter.',
     'rte_upload_dir' => 'Upload Directory',
     'rte_advanced_settings' => 'Advanced Settings',
+    'rte_advanced_config' => 'Advanced configuration',
+    'rte_advanced_config_desc' => 'Edit configuration directly in JSON format',
+    'rte_config_json' => 'Configuration JSON',
+    'rte_config_json_desc' => 'Overrides visually constructed tool set',
+    'rte_advanced_config_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be careful with using this feature and check your work.</p><p>Providing invalid configuration can make the RTE fields inaccessible.</p>',
     'rte_config_saved' => 'Configuration Saved!',
     'rte_config_saved_desc' => 'Your configuration saved successfully.',
 
@@ -148,6 +157,8 @@ $lang = array(
     'toolset_error' => 'Tool set error',
 
     'toolset_error_desc' => 'We were unable to save the tool set, please review and fix errors below.',
+
+    'toolset_json_error_desc' => 'The advanced configuration provided is not valid JSON.',
 
     'toolset_not_deleted' => 'Tool set could not be deleted.',
 

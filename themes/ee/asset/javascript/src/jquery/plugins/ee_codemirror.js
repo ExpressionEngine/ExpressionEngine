@@ -118,7 +118,7 @@ $.fn.toggleCodeMirror = function () {
 			initialized = textarea.data('codemirror.initialized'),
 			editor = textarea.data('codemirror.editor');
 
-		if (( ! initialized && ! disabled) || (initialized && disabled)) {
+		if (typeof(initialized) === 'undefined' || ( ! initialized && ! disabled) || (initialized && disabled)) {
 			editor = createCodeMirror(textarea);
 			store.removeItem('codemirror.disabled');
 			textarea.data('codemirror.editor', editor);

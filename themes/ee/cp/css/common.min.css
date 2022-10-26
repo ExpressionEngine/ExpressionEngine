@@ -22170,6 +22170,17 @@ input[type=url]:disabled {
   background-image: -o-linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
   background-image: linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
 }
+textarea:read-only,
+input[type=text]:read-only,
+input[type=email]:read-only,
+input[type=number]:read-only,
+input[type=password]:read-only,
+input[type=url]:read-only {
+  background-size: 20px 20px;
+  background-image: -webkit-linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, var(--ee-input-disabled-bg) 25%, transparent 25%, transparent 50%, var(--ee-input-disabled-bg) 50%, var(--ee-input-disabled-bg) 75%, transparent 75%, transparent);
+}
 textarea::-webkit-input-placeholder,
 input[type=text]::-webkit-input-placeholder,
 input[type=email]::-webkit-input-placeholder,
@@ -30061,9 +30072,10 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   margin-bottom: 0;
   position: relative;
   font-weight: normal;
+  pointer-events: none;
 }
 .checkbox-label .checkbox-label__text {
-  display: block;
+  display: inline-block;
   position: relative;
   padding: 5px;
   padding-left: 25px;
@@ -30071,12 +30083,14 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   transition: background 100ms ease;
   color: var(--ee-text-primary);
   border-radius: 5px;
+  pointer-events: auto;
 }
 .checkbox-label input {
   z-index: 1;
   position: absolute;
   top: 9px;
   left: 0px;
+  pointer-events: auto;
 }
 .checkbox-label input.checkbox--large {
   z-index: 1;
@@ -30223,6 +30237,9 @@ ul.field-nested ul li ul::before {
 
 .field-nested li {
   padding: 0;
+}
+.field-nested li .checkbox-label__text-editable {
+  display: block;
 }
 .field-nested li .checkbox-label__text-editable:before {
   position: absolute;
@@ -31952,6 +31969,10 @@ fieldset .field-control #eye {
 
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td {
   flex-wrap: nowrap !important;
+  align-items: center;
+}
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td div:empty {
+  display: none;
 }
 
 .select {
@@ -33512,6 +33533,10 @@ a.ck.ck-button.ck-on {
 /* Redactor stuff */
 .redactor-box .redactor-toolbar {
   z-index: 2;
+}
+
+.redactor-box .redactor-toolbar.redactor-toolbar-fixed {
+  background-color: var(--ee-panel-bg);
 }
 
 .re-icon-filebrowser {

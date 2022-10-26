@@ -1,10 +1,18 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace ExpressionEngine\Addons\Rte\Service;
 
 use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
-class RedactorService implements RteService {
+class RedactorService extends AbstractRteService implements RteService {
 
     public $class = 'rte-textarea redactor-box';
     public $handle;
@@ -13,24 +21,23 @@ class RedactorService implements RteService {
     private static $_includedFieldResources = false;
     private static $_includedConfigs;
 
-    public function init($settings, $toolset = null)
-    {
-        $this->settings = $settings;
-        $this->toolset = $toolset;
-        $this->includeFieldResources();
-        $this->insertConfigJsById();
-        return $this->handle;
-    }
-
     protected function includeFieldResources()
     {
         if (! static::$_includedFieldResources) {
+            ee()->load->library('file_field');
+            ee()->lang->loadfile('fieldtypes');
+            ee()->file_field->loadDragAndDropAssets();
 
             ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
             
             ee()->cp->add_js_script(['file' => [
                 'fields/rte/redactor/redactor.min',
-                'fields/rte/rte']
+                'fields/rte/rte',
+                'fields/file/file_field_drag_and_drop',
+                'fields/file/concurrency_queue',
+                'fields/file/file_upload_progress_table',
+                'fields/file/drag_and_drop_upload',
+                'fields/grid/file_grid']
             ]);
 
             $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
@@ -46,11 +53,6 @@ class RedactorService implements RteService {
 
             static::$_includedFieldResources = true;
         }
-    }
-
-    public function getClass()
-    {
-        return $this->class;
     }
 
     protected function insertConfigJsById()
@@ -97,6 +99,8 @@ class RedactorService implements RteService {
             $config['toolbar']['definedlinks'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
             $config['toolbar']['handle'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
         }
+
+        $config['toolbar']['stylesClass'] = 'redactor-styles rte_' . $configHandle;
 
         // -------------------------------------------
         //  File Browser Config
@@ -145,9 +149,17 @@ class RedactorService implements RteService {
         }
 
         //link
-        $config['toolbar']['linkValidation'] = false;
-        $config['toolbar']['linkTarget'] = true;
-        $config['toolbar']['linkNewTab'] = true;
+        $config['toolbar']['linkValidation'] = isset($config['toolbar']['linkValidation']) ? (bool) $config['toolbar']['linkValidation'] : false;
+        $config['toolbar']['linkTarget'] = isset($config['toolbar']['linkTarget']) ? (bool) $config['toolbar']['linkTarget'] : true;
+        $config['toolbar']['linkNewTab'] = isset($config['toolbar']['linkNewTab']) ? (bool) $config['toolbar']['linkNewTab'] : true;
+
+        if (isset($config['field_text_direction'])) {
+            $config['toolbar']['direction'] = $config['field_text_direction'];
+            unset($config['field_text_direction']);
+        }
+
+        unset($config['rte_config_json']);
+        unset($config['rte_advanced_config']);
 
         // -------------------------------------------
         //  JSONify Config and Return
@@ -157,6 +169,16 @@ class RedactorService implements RteService {
         ]);
 
         static::$_includedConfigs[] = $configHandle;
+
+        if (isset($config['css_template'])) {
+            $this->includeCustomCSS($configHandle, $config['css_template'], '.redactor-styles.rte_' . $configHandle);
+        }
+
+        if (isset($config['js_template']) && !empty($config['js_template'])) {
+            ee()->cp->add_js_script([
+                'template' => $config['js_template']
+            ]);
+        }
 
         return $configHandle;
     }
@@ -181,7 +203,12 @@ class RedactorService implements RteService {
     {
             ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
 
-            $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+            $selection = [];
+            if (is_object($config->settings['toolbar'])) {
+                $selection = (array) $config->settings['toolbar'];
+            } else {
+                $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+            }
 
             $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['buttons']);//merge to get the right order
             $fullToolset = [];
@@ -202,7 +229,12 @@ class RedactorService implements RteService {
 
     public function pluginsInputHtml($config)
     {
-            $selection = isset($config->settings['toolbar']['plugins']) ? $config->settings['toolbar']['plugins'] : $config->settings['toolbar'];
+            $selection = [];
+            if (is_object($config->settings['toolbar'])) {
+                $selection = (array) $config->settings['toolbar'];
+            } else {
+                $selection = isset($config->settings['toolbar']['plugins']) ? $config->settings['toolbar']['plugins'] : $config->settings['toolbar'];
+            }
 
             $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['plugins']);
             $fullToolset = [];

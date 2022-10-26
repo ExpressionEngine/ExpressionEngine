@@ -393,11 +393,13 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         ee()->javascript->set_global([
             'relationship.publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile(),
+            'relationship.publishEditUrl' => ee('CP/URL')->make('publish/edit/entry/###')->compile(),
             'relationship.lang.creatingNew' => lang('creating_new_in_rel'),
             'relationship.lang.relateEntry' => lang('relate_entry'),
             'relationship.lang.search' => lang('search'),
             'relationship.lang.channel' => lang('channel'),
             'relationship.lang.remove' => lang('remove'),
+            'relationship.lang.edit' => lang('edit_entry'),
         ]);
 
         ee()->cp->add_js_script([
@@ -536,7 +538,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'no_related' => ['text' => lang('no_entries_related')],
             'select_filters' => $select_filters,
             'channels' => $channel_choices,
-            'in_modal' => $this->get_setting('in_modal_context'),
+            'in_modal' => ($this->get_setting('in_modal_context') || ee('Request')->get('modal_form') == 'y'),
             'display_entry_id' => isset($this->settings['display_entry_id']) ? (bool) $this->settings['display_entry_id'] : false,
             'rel_min' =>  isset($this->settings['rel_min']) ? (int) $this->settings['rel_min'] : 0,
             'rel_max' =>  isset($this->settings['rel_max']) ? (int) $this->settings['rel_max'] : '',

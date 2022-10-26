@@ -666,6 +666,7 @@ class Channel
                 }
 
                 $fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
+                unset($search_column_name);
             } // foreach($sites as $site_id)
             if (! empty($fields_sql)) {
                 $sql .= ' AND (' . $fields_sql . ')';
@@ -1203,7 +1204,7 @@ class Channel
         /**------*/
 
         if ($channel = ee()->TMPL->fetch_param('channel')) {
-            $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true)->getDictionary('channel_name', 'channel_id');
+            $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true)->getDictionary('channel_id', 'channel_name');
             if (strpos($channel, '|') !== false) {
                 $options = preg_split('/\|/', $channel, -1, PREG_SPLIT_NO_EMPTY);
                 $options = array_map('trim', $options);
@@ -1212,9 +1213,9 @@ class Channel
             }
             $channel_ids = array();
             foreach ($options as $option) {
-                foreach ($channels as $channel_name => $channel_id) {
+                foreach ($channels as $channel_id => $channel_name) {
                     if (strtolower($option) == strtolower($channel_name)) {
-                        $channel_ids[] = $channels[$channel_name];
+                        $channel_ids[] = $channel_id;
                     }
                 }
             }

@@ -66,7 +66,6 @@ class Cp
 
         // Javascript Path Constants
         define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/jquery/');
-        define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/');
         define('JS_FOLDER', PATH_JS);
 
         ee()->load->library('javascript', array('autoload' => false));
@@ -654,7 +653,8 @@ class Cp
                 'file' => array(),
                 'package' => array(),
                 'fp_module' => array(),
-                'pro_file' => array()
+                'pro_file' => array(),
+                'template' => array()
             );
 
             $this->requests[] = $str . AMP . 'v=' . max($mtimes);
@@ -695,6 +695,10 @@ class Cp
                 break;
 
             case 'file':
+                $file = PATH_JAVASCRIPT_BUILD . $name . '.js';
+                if (file_exists($file)) {
+                    return filemtime($file);
+                }
                 $file = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/' . $name . '.js';
 
                 break;
@@ -717,6 +721,17 @@ class Cp
 
             case 'fp_module':
                 $file = PATH_ADDONS . $name . '/javascript/' . $name . '.js';
+
+                break;
+
+            case 'template':
+                // edit date from database should be sufficient;
+                // in some cases the file might have more recent edits, but skipping the check here
+                // to reduce the load
+                $templateModel = ee('Model')->get('Template', $name)->with('TemplateGroup')->filter('template_type', 'js')->first(true);
+                if (! empty($templateModel)) {
+                    return $templateModel->edit_date;
+                }
 
                 break;
 

@@ -112,7 +112,7 @@ class NavigationSidebar extends AbstractSidebar
 
         $this->addCustomSection();
 
-        if (ee('Permission')->hasAny('can_access_design', 'can_access_addons', 'can_access_utilities', 'can_access_logs', 'can_access_sys_prefs') || (ee('Permission')->has('can_admin_channels') && ee('Permission')->hasAny('can_create_channels', 'can_edit_channels', 'can_delete_channels')) || (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->has('can_admin_sites'))) {
+        if (ee('Permission')->hasAny('can_access_design', 'can_access_addons', 'can_access_utilities', 'can_access_logs', 'can_access_sys_prefs', 'can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields') || (ee('Permission')->has('can_admin_channels') && ee('Permission')->hasAny('can_create_channels', 'can_edit_channels', 'can_delete_channels')) || (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->has('can_admin_sites'))) {
             $section = $this->addSection(lang('nav_developer'), 'dev');
 
             if (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->has('can_admin_sites')) {

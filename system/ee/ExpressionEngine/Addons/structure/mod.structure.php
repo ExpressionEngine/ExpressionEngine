@@ -20,6 +20,8 @@ if (version_compare(APP_VER, '6.0.0', '>=') && defined('PATH_PRO_ADDONS') && is_
     require_once PATH_MOD . 'channel/mod.channel.php';
 }
 
+use ExpressionEngine\Addons\Structure\Libraries\Structure_core_nav_parser;
+
 class Structure extends Channel
 {
     public $nset;
@@ -1166,7 +1168,6 @@ class Structure extends Channel
 
     public function order_entries()
     {
-
         // Grab the delimiter, or default to a pipe
         $delimiter = ee()->TMPL->fetch_param('delimiter');
         $delimiter = $delimiter ? $delimiter : '|';
@@ -1246,7 +1247,6 @@ class Structure extends Channel
             $changed = $this->has_changed($node, $data);
 
             if ($changed) {
-
                 // Retrieve previous listing channel id
                 $prev_lcid_result = ee()->db->query("SELECT listing_cid FROM exp_structure WHERE entry_id = " . $entry_id);
 

@@ -48,9 +48,9 @@ function cleanRte() {
 }
 
 function buildRteRedactorCss() {
-	return src(rteRedactorFolder + 'redactor.css')
+	return src([rteRedactorFolder + 'redactor.css', rteRedactorFolder + 'plugins/**/*.css'])
 		.pipe(cleanCSS())
-		.pipe(rename('redactor.min.css'))
+		.pipe(concat('redactor.min.css'))
 		.pipe(dest(rteRedactorFolder));
 }
 
