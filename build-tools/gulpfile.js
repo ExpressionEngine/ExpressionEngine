@@ -74,6 +74,7 @@ gulp.task('app', ['_preflight'], function (cb) {
 		'build/',
 		'tests/',
 		'build-tools/',
+		'frontedit/',
 		'js-src/',
 		
 		'images/*/*',
