@@ -176,6 +176,10 @@ $radio-size: 15px;
 		&:hover {
 			// background: color(bg-10);
 		}
+
+		&.checkbox-label__text-editable {
+			display: block;
+		}
 	}
 
 	input {
