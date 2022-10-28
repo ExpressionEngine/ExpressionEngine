@@ -1350,7 +1350,7 @@ class Member
         $captcha->word = $string;
         $captcha->save();
 
-        if ($result['success'] !== true || $result['score'] < ee()->config->item('recaptcha_score_threshhold')) {
+        if ($result['success'] !== true || $result['score'] < ee()->config->item('recaptcha_score_threshold')) {
             $string = "failed";
         }
         return ee()->output->send_ajax_response(['success' => $result['success'], 'code' => $string]);
