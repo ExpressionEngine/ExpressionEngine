@@ -125,6 +125,10 @@ class Site extends Model
             'model' => 'ChannelField',
             'type' => 'hasMany'
         ),
+        'ChannelLayouts' => array(
+            'model' => 'ChannelLayout',
+            'type' => 'hasMany'
+        ),
     );
 
     protected static $_validation_rules = array(

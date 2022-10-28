@@ -230,7 +230,7 @@ class PortageExport
             if (!empty($relationships)) {
                 foreach ($relationships as $assocName => $relationship) {
                     if (! array_key_exists($assocName, $ownRelationships)) {
-                        continue;
+                        //continue;
                     }
                     if ($relationship instanceof ToOne) {
                         if (!empty($relationship->getForeignKey())) {
@@ -302,6 +302,11 @@ class PortageExport
         $record->associationsByUuid = new \StdClass();
         if (!empty($this->modelAssociations[$model]['toOne'])) {
             foreach ($this->modelAssociations[$model]['toOne'] as $property) {
+                if (strpos($property, ':') !== false) {
+                    $thirdPartyAssoc = explode(':', $property);
+                    $modelRecord->alias($property, $thirdPartyAssoc[1]);
+                    $property = $thirdPartyAssoc[1];
+                }
                 if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property})) {
                     $relatedUuidField = method_exists($modelRecord->{$property}, 'getColumnPrefix') ? $modelRecord->{$property}->getColumnPrefix() . 'uuid' : 'uuid';
                     if ($modelRecord->{$property}->hasNativeProperty($relatedUuidField)) {
@@ -320,6 +325,11 @@ class PortageExport
         }
         if (!empty($this->modelAssociations[$model]['toMany'])) {
             foreach ($this->modelAssociations[$model]['toMany'] as $property) {
+                if (strpos($property, ':') !== false) {
+                    $thirdPartyAssoc = explode(':', $property);
+                    $modelRecord->alias($property, $thirdPartyAssoc[1]);
+                    $property = $thirdPartyAssoc[1];
+                }
                 if ($modelRecord->hasAssociation($property) && !is_null($modelRecord->{$property}) && count($modelRecord->{$property})) {
                     $firstRecord = $modelRecord->{$property}->first();
                     $relatedUuidField = method_exists($firstRecord, 'getColumnPrefix') ? $firstRecord->getColumnPrefix() . 'uuid' : 'uuid';

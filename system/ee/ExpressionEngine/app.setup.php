@@ -722,6 +722,10 @@ $setup = [
 
         // ..\FileManager
         'FileManagerView' => 'Model\File\FileManagerView',
+
+        // ..\Portage
+        'PortageImport' => 'Model\Portage\PortageImport',
+        'PortageImportLog' => 'Model\Portage\PortageImportLog',
     ),
 
     'cookies.necessary' => [

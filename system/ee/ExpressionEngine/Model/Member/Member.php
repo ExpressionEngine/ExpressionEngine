@@ -209,6 +209,11 @@ class Member extends ContentModel
         'Online' => [
             'type' => 'hasMany',
             'model' => 'OnlineMember'
+        ],
+        'PortageImports' => [
+            'type' => 'hasMany',
+            'model' => 'PortageImport',
+            'weak' => true
         ]
     );
 

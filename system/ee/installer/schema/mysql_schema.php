@@ -983,8 +983,10 @@ class EE_Schema
 			`route` varchar(512) DEFAULT NULL,
 			`route_parsed` varchar(512) DEFAULT NULL,
 			`route_required` char(1) NOT NULL DEFAULT 'n',
+			`uuid` VARCHAR(36) NULL DEFAULT NULL,
 			PRIMARY KEY (`route_id`),
-			KEY `template_id` (`template_id`)
+			KEY `template_id` (`template_id`),
+			UNIQUE `uuid` (`uuid`)
 		)";
 
         $Q[] = "CREATE TABLE exp_templates_roles (

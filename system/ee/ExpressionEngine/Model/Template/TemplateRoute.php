@@ -52,6 +52,7 @@ class TemplateRoute extends Model
     protected $route;
     protected $route_parsed;
     protected $route_required;
+    protected $uuid;
 
     public static function getConfig()
     {
