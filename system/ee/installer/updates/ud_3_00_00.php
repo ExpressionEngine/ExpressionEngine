@@ -1076,8 +1076,7 @@ class Updater
         $member_directories = array();
 
         if (bool_config_item('enable_avatars')) {
-            $avatar_uploads = ee('Model')
-                ->get('UploadDestination')->filter('name', 'Avatars')->first();
+            $avatar_uploads = ee('db')->from('upload_prefs')->where('name', 'Avatars')->count_all_results();
 
             if (empty($avatar_uploads)) {
                 $member_directories['Avatars'] = array(
@@ -1092,8 +1091,7 @@ class Updater
         }
 
         if (bool_config_item('enable_photos')) {
-            $member_photo_uploads = ee('Model')
-                ->get('UploadDestination')->filter('name', 'Member Photos')->first();
+            $member_photo_uploads = ee('db')->from('upload_prefs')->where('name', 'Member Photos')->count_all_results();
 
             if (empty($member_photo_uploads)) {
                 $member_directories['Member Photos'] = array(
@@ -1108,8 +1106,7 @@ class Updater
         }
 
         if (bool_config_item('allow_signatures')) {
-            $signature_uploads = ee('Model')
-                ->get('UploadDestination')->filter('name', 'Signature Attachments')->first();
+            $signature_uploads = ee('db')->from('upload_prefs')->where('name', 'Signature Attachments')->count_all_results();
 
             if (empty($signature_uploads)) {
                 $member_directories['Signature Attachments'] = array(
@@ -1125,8 +1122,7 @@ class Updater
 
         if (bool_config_item('prv_msg_enabled')
             && bool_config_item('prv_msg_allow_attachments')) {
-            $pm_uploads = ee('Model')
-                ->get('UploadDestination')->filter('name', 'PM Attachments')->first();
+            $pm_uploads = ee('db')->from('upload_prefs')->where('name', 'PM Attachments')->count_all_results();
 
             if (empty($pm_uploads)) {
                 $member_directories['PM Attachments'] = array(
@@ -1143,17 +1139,10 @@ class Updater
         }
 
         foreach ($member_directories as $name => $dir) {
-            $directory = ee('Model')->make('UploadDestination');
-            $directory->site_id = $site_id;
-            $directory->name = $name;
-            //$dir->removeNoAccess(); //function not defined since 2.x, so not using it
-            $directory->setModule($module);
-
-            foreach ($dir as $property => $value) {
-                $directory->$property = $value;
-            }
-
-            $directory->save();
+            $dir['site_id'] = $site_id;
+            $dir['name'] = $name;
+            $data['module_id'] = $module->getId(); // this is a terribly named column - should be called `hidden`
+            ee()->db->insert('upload_prefs', $dir);
         }
 
         return true;
