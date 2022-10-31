@@ -110,7 +110,7 @@ class EE_FTP
      */
     public function _is_conn()
     {
-        if (! is_resource($this->conn_id)) {
+        if ($this->conn_id === false) {
             if ($this->debug == true) {
                 $this->_error('ftp_no_connection');
             }
