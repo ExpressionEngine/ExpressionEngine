@@ -62,6 +62,7 @@ $lang = array(
     'command_make_addon_option_consents'        => 'Consents. Multi-pass option.',
     'command_make_addon_option_cookies'         => 'Cookies to create, with a colon separating name and value (i.e. name:value). Multi-pass option.',
     'command_make_addon_option_hooks'           => 'Hooks in use. Multi-pass option.',
+    'command_make_addon_option_compatibility_mode'  => 'Generate add-on that is compatible with ExpressionEngine versions lower than 7.2.0 and lower than 6.4.0',
 
     // Lang entries for command make:command
     'command_make_command_description'          => 'Creates a new CLI command for an add-on',

@@ -41,8 +41,8 @@ class Extension extends Controller
     public function __call($method, $params)
     {
         $object = $this->buildObject($method);
-        if (class_exists($object)) {
 
+        if (class_exists($object)) {
             $controller = new $object();
             if ($controller instanceof AbstractRoute) {
                 if (method_exists($controller, 'process')) {
