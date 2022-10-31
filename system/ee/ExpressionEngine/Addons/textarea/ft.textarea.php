@@ -173,15 +173,20 @@ class Textarea_ft extends EE_Fieldtype
 
                 ee()->cp->add_js_script(array(
                     'file' => array(
-                        'fields/textarea/textarea',
+                        'fields/textarea/textarea'
+                    ),
+                    'plugin' => array('ee_txtarea'),
+                ));
+
+                if (REQ == 'CP') {
+                    ee()->cp->add_js_script(['file' => [
                         'fields/file/file_field_drag_and_drop',
                         'fields/file/concurrency_queue',
                         'fields/file/file_upload_progress_table',
                         'fields/file/drag_and_drop_upload',
-                        'fields/grid/file_grid'
-                    ),
-                    'plugin' => array('ee_txtarea'),
-                ));
+                        'fields/grid/file_grid']
+                    ]);
+                }
             }
 
             return ee('View')->make('textarea:publish')->render($vars);
