@@ -55,7 +55,7 @@ class Javascript_loader
             $files = explode(',', ee()->input->get_post($type));
 
             if ($type == 'template') {
-                if (!isset(ee()->TMPL)) {
+                if (!isset(ee()->JS_TMPL)) {
                     ee()->load->library('template', null, 'JS_TMPL');
                 }
                 foreach ($files as $templateId) {
