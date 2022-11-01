@@ -50,8 +50,8 @@ class StandardGlobals extends Variables
             'build' => APP_BUILD,
             'captcha' => $this->getCaptcha($this->legacy_tmpl_obj->template),
             'charset' => ee()->config->item('output_charset'),
-            'cp_session_id' => (ee()->session->access_cp === true) ? ee()->session->session_id() : 0,
-            'cp_url' => (ee()->session->access_cp === true) ? ee()->config->item('cp_url') : '',
+            'cp_session_id' => (isset(ee()->session) && ee()->session->access_cp === true) ? ee()->session->session_id() : 0,
+            'cp_url' => (isset(ee()->session) && ee()->session->access_cp === true) ? ee()->config->item('cp_url') : '',
             'current_path' => (ee()->uri->uri_string) ? str_replace(array('"', "'"), array('%22', '%27'), ee()->uri->uri_string) : '/',
             'current_query_string' => http_build_query($_GET), // GET has been sanitized!
             'current_url' => ee()->functions->fetch_current_uri(),
@@ -89,7 +89,7 @@ class StandardGlobals extends Variables
 
         // add member variables and their aliases
         foreach ($this->legacy_tmpl_obj->getUserVars() as $val) {
-            $replace = (isset(ee()->session->userdata[$val]) && strval(ee()->session->userdata[$val]) != '') ?
+            $replace = (isset(ee()->session) && isset(ee()->session->userdata[$val]) && strval(ee()->session->userdata[$val]) != '') ?
                 ee()->session->userdata[$val] : '';
 
             $this->variables[$val] = $replace;
@@ -108,7 +108,7 @@ class StandardGlobals extends Variables
      */
     private function getMemberProfileLink()
     {
-        if (ee()->session->userdata('member_id') != 0) {
+        if (isset(ee()->session) && ee()->session->userdata('member_id') != 0) {
             $name = (ee()->session->userdata['screen_name'] == '') ? ee()->session->userdata['username'] : ee()->session->userdata['screen_name'];
 
             $path = "<a href='" . ee()->functions->create_url(ee()->config->item('profile_trigger') . '/' . ee()->session->userdata('member_id')) . "'>" . $name . "</a>";
