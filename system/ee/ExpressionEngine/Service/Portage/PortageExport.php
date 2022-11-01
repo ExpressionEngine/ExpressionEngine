@@ -31,13 +31,14 @@ class PortageExport
     private $modelKeyFields = [];
     private $portableModels;
 
-    public function __construct()
+    public function __construct($site_id)
     {
         if (! defined('JSON_PRETTY_PRINT')) {
             define('JSON_PRETTY_PRINT', 0);
         }
-        $this->site_id = ee()->config->item('site_id');
+        $this->site_id = $site_id;
     }
+
     /**
      * list all models, and grab those that have UUID - those are portable
      * for each model, find whether it has site or module restrictions
@@ -81,7 +82,7 @@ class PortageExport
      * @param array $elements
      * @return void
      */
-    public function toDir($elements = [])
+    public function dir($elements = [])
     {
         if (! is_dir(PATH_CACHE . 'portage/')) {
             ee('Filesystem')->mkdir(PATH_CACHE . 'portage/');
@@ -370,7 +371,7 @@ class PortageExport
     public function zip($elements = [])
     {
         // export to directory
-        $this->toDir($elements);
+        $this->dir($elements);
 
 
         $this->zip = new ZipArchive();

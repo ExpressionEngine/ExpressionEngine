@@ -92,16 +92,53 @@ class PortageImport
     private $aliases = array();
 
 
-    /**
-     * @param String $path Path to the channel set
-     */
-    public function __construct($path)
+
+    public function __construct($site_id)
     {
-        $this->path = $path;
+        $this->site_id = $site_id;
         $this->result = new ImportResult();
     }
 
     /**
+     * Create a set object from the contents of an item in the $_FILES array
+     *
+     * @param Array $upload Element in the $_FILES array
+     * @return Portage Channel set object
+     */
+    public function zip(array $upload)
+    {
+        $location = $upload['tmp_name'];
+        $name = $upload['name'];
+
+        $dir = $this->extractZip($location, $name);
+        $this->setPath($dir);
+
+        return $this;
+    }
+
+    /**
+     * Create a set object from a directory
+     *
+     * @param String $dir Path to the channel set directory
+     * @return Portage Channel set object
+     */
+    public function dir($dir)
+    {
+        $this->setPath($dir);
+        return $this;
+    }
+
+    /**
+     * Set path to directory
+     *
+     * @return String Filesystem path to this set
+     */
+    public function setPath($path)
+    {
+        $this->path = $path;
+    }
+
+        /**
      * Get path to directory
      *
      * @return String Filesystem path to this set
@@ -132,6 +169,59 @@ class PortageImport
         $this->load();
 
         return $this->result;
+    }
+
+        /**
+     * Take the zip and extract it to the cache path with the given file name.
+     *
+     * @param String $file_name name to use for the extracted directory
+     * @return Portage Channel set importer instance
+     */
+    public function extractZip($location, $file_name)
+    {
+        $zip = new \ZipArchive();
+
+        if ($zip->open($location) !== true) {
+            throw new ImportException('Zip file not readable.');
+        }
+
+        $this->ensureNoPHP($zip);
+
+        // create a temporary directory for the contents in our cache folder
+        if (! is_dir(PATH_CACHE . 'portage/')) {
+            ee('Filesystem')->mkdir(PATH_CACHE . 'portage/');
+        }
+        $tmp_dir = 'portage/tmp_' . ee('Encrypt')->generateKey();
+        ee('Filesystem')->mkdir(PATH_CACHE . $tmp_dir, false);
+
+        // extract the archive
+        if ($zip->extractTo(PATH_CACHE . $tmp_dir) !== true) {
+            throw new ImportException('Could not extract zip file.');
+        }
+
+        // Check for an identically named subfolder inside the extracted archive
+        $new_path = PATH_CACHE . $tmp_dir . '/';
+
+        if (is_dir($new_path . basename($file_name, '.zip'))) {
+            $new_path .= basename($file_name, '.zip');
+        }
+
+        return $new_path;
+    }
+
+    /**
+     * Ensure there are no PHP files inside the archive before we extract them
+     * on to the server
+     *
+     * @param Resource $zip Opened ZipArchive file
+     */
+    protected function ensureNoPHP($zip)
+    {
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            if (stripos($zip->getNameIndex($i), '.php') !== false) {
+                throw new ImportException('Cannot extract archive that contains PHP files.');
+            }
+        }
     }
 
     /**
@@ -252,32 +342,7 @@ class PortageImport
                     $typeProperty = $modelInstance instanceof GridColumn ? 'col_type' : 'field_type';
                     $settingsProperty = $modelInstance instanceof GridColumn ? 'col_settings' : 'field_settings';
                     $ftClassName = ee()->api_channel_fields->include_handler($modelInstance->$typeProperty);
-                    $reflection = new \ReflectionClass($ftClassName);
-                    $instance = $reflection->newInstanceWithoutConstructor();
-                    if (isset($instance->relationship_field_settings)) {
-                        $ftSettings = $modelInstance->$settingsProperty;
-                        foreach ($instance->relationship_field_settings as $setting => $settingModel) {
-                            // force including these models into portage
-                            if (is_array($ftSettings[$setting])) {
-                                $relatedIds = [];
-                                foreach ($ftSettings[$setting] as $relatedUuid) {
-                                    if (substr_count($relatedUuid, '-') == 4) { //looks like UUID
-                                        $relatedSettingModelRecord = ee('Model')->get($settingModel)->filter('uuid', $relatedUuid)->first();
-                                        if (!is_null($relatedSettingModelRecord)) {
-                                            $relatedIds[] = $relatedSettingModelRecord->getId();
-                                        }
-                                    }
-                                }
-                                $ftSettings[$setting] = $relatedIds;
-                            } else if (substr_count($ftSettings[$setting], '-') == 4) {//looks like UUID
-                                $relatedSettingModelRecord = ee('Model')->get($settingModel)->filter('uuid', $ftSettings[$setting])->first();
-                                if (!is_null($relatedSettingModelRecord)) {
-                                    $ftSettings[$setting] = $relatedSettingModelRecord->getId();
-                                }
-                            }
-                        }
-                        $modelInstance->$settingsProperty = $ftSettings;
-                    }
+                    $modelInstance = $this->setFieldSettingsProperty($modelInstance, $typeProperty, $settingsProperty, $ftClassName);
                 }
 
                 // -------------------------------------------
@@ -343,6 +408,46 @@ class PortageImport
         // clear caches
         ee()->functions->clear_caching('all');
         ee('CP/JumpMenu')->clearAllCaches();
+    }
+
+    /**
+     * Set field / column settings property for fieldtypes
+     *
+     * @param object $modelInstance field/column model instance
+     * @param string $typeProperty field/column type
+     * @param string $settingsProperty name of settings property
+     * @param string $ftClassName class name of fieldtype
+     * @return void
+     */
+    public function setFieldSettingsProperty($modelInstance, $typeProperty, $settingsProperty, $ftClassName)
+    {
+        $reflection = new \ReflectionClass($ftClassName);
+        $instance = $reflection->newInstanceWithoutConstructor();
+        if (isset($instance->relationship_field_settings)) {
+            $ftSettings = $modelInstance->$settingsProperty;
+            foreach ($instance->relationship_field_settings as $setting => $settingModel) {
+                // force including these models into portage
+                if (is_array($ftSettings[$setting])) {
+                    $relatedIds = [];
+                    foreach ($ftSettings[$setting] as $relatedUuid) {
+                        if (substr_count($relatedUuid, '-') == 4) { //looks like UUID
+                            $relatedSettingModelRecord = ee('Model')->get($settingModel)->filter('uuid', $relatedUuid)->first();
+                            if (!is_null($relatedSettingModelRecord)) {
+                                $relatedIds[] = $relatedSettingModelRecord->getId();
+                            }
+                        }
+                    }
+                    $ftSettings[$setting] = $relatedIds;
+                } else if (substr_count($ftSettings[$setting], '-') == 4) {//looks like UUID
+                    $relatedSettingModelRecord = ee('Model')->get($settingModel)->filter('uuid', $ftSettings[$setting])->first();
+                    if (!is_null($relatedSettingModelRecord)) {
+                        $ftSettings[$setting] = $relatedSettingModelRecord->getId();
+                    }
+                }
+            }
+            $modelInstance->$settingsProperty = $ftSettings;
+        }
+        return $modelInstance;
     }
 
     /**
@@ -419,8 +524,7 @@ class PortageImport
 
         $currentSite = ee('Model')->get('Site', $this->site_id)->first();
 
-        $reverseExport = new PortageExport();
-        $portableModels = $reverseExport->getPortableModels();
+        $portableModels = ee('PortageExport')->getPortableModels();
         foreach ($this->components as $model)
         {
             if ($model == 'add-ons') {
@@ -448,7 +552,7 @@ class PortageImport
                 }
                 //if the model exists, and is same, we just skip
                 if (!is_null($modelInstance)) {
-                    $currentState = (array) $reverseExport->getDataFromModelRecord($model, $modelInstance);
+                    $currentState = (array) ee('PortageExport')->getDataFromModelRecord($model, $modelInstance);
                     $currentState['associationsByUuid'] = (array) $currentState['associationsByUuid']; // ensure it's in same array format that portage
                     if ($currentState == $modelPortage) {
                         continue;

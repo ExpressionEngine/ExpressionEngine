@@ -54,11 +54,10 @@ class Portage extends Utilities
             )
             ->now();
 
-        $portageExport = new PortageExport();
         $portageChoices = [
             'add-ons' => lang('addons')
         ];
-        $portableModels = $portageExport->getPortableModels();
+        $portableModels = ee('PortageExport')->getPortableModels();
         foreach ($portableModels as $portableModel) {
             $portageChoices[$portableModel['name']] = array_reverse(explode(':', $portableModel['name']))[0];
         }
@@ -122,7 +121,7 @@ class Portage extends Utilities
             }
 
             if (ee('Request')->post('export_zip') != 'y') {
-                ee('Portage')->exportDir($portage_elements);
+                ee('PortageExport')->dir($portage_elements);
 
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
@@ -133,7 +132,7 @@ class Portage extends Utilities
                 ee()->functions->redirect(ee('CP/URL', 'utilities/portage/export'));
             }
 
-            $file = ee('Portage')->export($portage_elements);
+            $file = ee('PortageExport')->zip($portage_elements);
 
             $data = file_get_contents($file);
 
@@ -243,7 +242,7 @@ class Portage extends Utilities
                     ->addToBody(lang('channel_set_filetype_error_desc'))
                     ->now();
             } else {
-                $portage = ee('Portage')->importUpload($portage_file);
+                $portage = ee('PortageImport')->zip($portage_file);
                 $path = ee('Encrypt')->encode(
                     $portage->getPath(),
                     ee()->config->item('session_crypt_key')
@@ -289,7 +288,7 @@ class Portage extends Utilities
         }
 
         // load up the set
-        $portage = ee('Portage')->importDir($path);
+        $portage = ee('PortageImport')->dir($path);
 
         // posted values? grab 'em
         if (isset($_POST)) {

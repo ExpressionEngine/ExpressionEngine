@@ -410,8 +410,14 @@ $setup = [
             return new Channel\ChannelEntry();
         },
 
-        'Portage' => function ($ee) {
-            return new Portage\Factory(
+        'PortageExport' => function ($ee) {
+            return new Portage\PortageExport(
+                ee()->config->item('site_id')
+            );
+        },
+
+        'PortageImport' => function ($ee) {
+            return new Portage\PortageImport(
                 ee()->config->item('site_id')
             );
         },
