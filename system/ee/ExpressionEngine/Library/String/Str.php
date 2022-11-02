@@ -38,4 +38,25 @@ class Str
             )
         );
     }
+
+    /**
+     * Converts a string formatted with spaces to a snake_case_string_instead
+     * @param string $value
+     * @return string
+     */
+    public static function snakecase($value)
+    {
+        return trim(str_replace(['-', ' ', '.'], '_', strtolower($value)));
+    }
+
+    /**
+     * Checks to see if $textToSearch contains the string $word
+     * @param string $textToSearch
+     * @param string $word
+     * @return bool
+     */
+    public static function string_contains($textToSearch, $word)
+    {
+        return (strpos($textToSearch, $word) !== false);
+    }
 }

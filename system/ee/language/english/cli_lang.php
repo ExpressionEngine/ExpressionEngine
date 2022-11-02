@@ -130,6 +130,32 @@ $lang = array(
     'command_make_prolet_option_widget_name'           => 'Name of widget',
     'command_make_prolet_option_generate_icon'         => 'Generate a default add-on icon file when creating a prolet',
 
+    // Lang entries for command make:action
+    'command_make_action_description'                  => 'Creates a new action for an add-on',
+    'command_make_action_summary'                      => 'This interactively generates an EE Action for an existing third-party addon',
+    'command_make_action_lets_build_action'            => 'Let\'s build a new action!',
+    'command_make_action_ask_action_name'              => 'What is the action name?',
+    'command_make_action_ask_addon'                    => 'What add-on is the action being added to?',
+    'command_make_action_building_action'              => 'Building Action.',
+    'command_make_action_created_successfully'         => 'Action created successfully!',
+    'command_make_action_error_addon_must_have_module' => 'To generate an action, the add-on must have a module file.',
+
+    // make:action options
+    'command_make_action_option_addon'                 => 'Folder for third-party add-on you want to add action to',
+
+    // Lang entries for command make:tag
+    'command_make_tag_description'                  => 'Creates a new tag for an add-on',
+    'command_make_tag_summary'                      => 'This interactively generates an EE Tag for an existing third-party addon',
+    'command_make_tag_lets_build_tag'               => 'Let\'s build a new tag!',
+    'command_make_tag_ask_tag_name'                 => 'What is the tag name?',
+    'command_make_tag_ask_addon'                    => 'What add-on is the tag being added to?',
+    'command_make_tag_building_tag'                 => 'Building Tag.',
+    'command_make_tag_created_successfully'         => 'Tag created successfully!',
+    'command_make_tag_error_addon_must_have_module' => 'To generate a tag, the add-on must have a module file.',
+
+    // make:tag options
+    'command_make_tag_option_addon'                 => 'Folder for third-party add-on you want to add tag to',
+
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',
     'command_make_widget_lets_build_widget'           => 'Let\'s build a widget!',

@@ -13,6 +13,7 @@ use ExpressionEngine\Library\Filesystem;
 use ExpressionEngine\Library\Curl;
 use ExpressionEngine\Library\Emoji;
 use ExpressionEngine\Library\Resource;
+use ExpressionEngine\Library\String\Str;
 use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
@@ -53,11 +54,13 @@ use ExpressionEngine\Service\Template;
 use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
+use ExpressionEngine\Service\Generator\ActionGenerator;
 use ExpressionEngine\Service\Generator\AddonGenerator;
 use ExpressionEngine\Service\Generator\CommandGenerator;
-use ExpressionEngine\Service\Generator\ProletGenerator;
-use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
+use ExpressionEngine\Service\Generator\ProletGenerator;
+use ExpressionEngine\Service\Generator\TagGenerator;
+use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Model\Channel\ChannelEntry;
 
 // TODO should put the version in here at some point ...
@@ -336,8 +339,19 @@ $setup = [
             return new LivePreview\LivePreview(ee()->session);
         },
 
+        'Str' => function ($ee) {
+            return new Str();
+        },
+
         'Variables/Parser' => function ($ee) {
             return new Template\Variables\LegacyParser();
+        },
+
+        'ActionGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new ActionGenerator($filesystem, $str, $data);
         },
 
         'AddonGenerator' => function ($ee, $data) {
@@ -352,22 +366,29 @@ $setup = [
             return new CommandGenerator($filesystem, $data);
         },
 
+        'ModelGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new ModelGenerator($filesystem, $data);
+        },
+
         'ProletGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
 
             return new ProletGenerator($filesystem, $data);
         },
 
+        'TagGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new TagGenerator($filesystem, $str, $data);
+        },
+
         'WidgetGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
 
             return new WidgetGenerator($filesystem, $data);
-        },
-
-        'ModelGenerator' => function ($ee, $data) {
-            $filesystem = $ee->make('Filesystem');
-
-            return new ModelGenerator($filesystem, $data);
         },
 
         'Consent' => function ($ee, $member_id = null) {
@@ -519,10 +540,10 @@ $setup = [
             return new Member\Member();
         },
 
-        'MimeType' => function($ee) {
+        'MimeType' => function ($ee) {
             $mimeType = new ExpressionEngine\Library\Mime\MimeType();
             $mimeType->whitelistMimesFromConfig();
-            
+
             return $mimeType;
         },
 

@@ -56,11 +56,13 @@ class Cli
         'update' => Commands\CommandUpdate::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,
         'update:run-hook' => Commands\CommandUpdateRunHook::class,
+        'make:action' => Commands\CommandMakeAction::class,
         'make:addon' => Commands\CommandMakeAddon::class,
         'make:command' => Commands\CommandMakeCommand::class,
         'make:migration' => Commands\CommandMakeMigration::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
+        'make:tag' => Commands\CommandMakeTag::class,
         'make:widget' => Commands\CommandMakeWidget::class,
         'migrate' => Commands\CommandMigrate::class,
         'migrate:all' => Commands\CommandMigrateAll::class,
@@ -438,7 +440,6 @@ class Cli
             $errors = $this->options->getErrors();
 
             foreach ($errors as $error) {
-
                 // print error messages to stderr using a Stdio object
                 $this->error($error->getMessage());
             }
