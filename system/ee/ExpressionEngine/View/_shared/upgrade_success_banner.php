@@ -16,10 +16,10 @@
 			<h6>New File Manager</h6>
 			<p>Version 7 comes with a new, robust and powerful file manager. Now allowing you to store files just about anywhere.</p>
 		</a>
-		<a href="https://expressionengine.com/blog/expressionengine-7.1" class="upgrade-success-banner__blurb" target="_blank">
+		<a href="https://expressionengine.com/blog/expressionengine-6.4-7.2" class="upgrade-success-banner__blurb" target="_blank">
 			<i class="fal fa-brain-circuit fa-fw"></i>
-			<h6>Now Including Structure</h6>
-			<p>Structure has long been considered by many to be the premier navigation manager in ExpressionEngine. In version 7.1 we’re happy to share that it’s now included in the core!</p>
+			<h6>Version 7.2</h6>
+			<p>In version 7.2 we've added new options to customize rich text editors (custom styles), added the ability to edit related entries from the relationship field, the ability to see where a field is in use, <span class="upgrade-success-banner__blurb-learn">and much more</span>.</p>
 		</a>
 	</div>
 	<a href="<?=ee('CP/URL')->make('homepage/dismiss-banner')->compile();?>" class="banner-dismiss"></a>
