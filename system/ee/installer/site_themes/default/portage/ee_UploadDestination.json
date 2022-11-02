@@ -1,0 +1,83 @@
+{
+    "e119bad6-78ca-e606-d28d-452f5e14883b": {
+        "site_id": 0,
+        "name": "Blog",
+        "adapter": "local",
+        "adapter_settings": [],
+        "server_path": "{base_path}themes\/user\/site\/default\/asset\/img\/blog\/",
+        "url": "{base_url}themes\/user\/site\/default\/asset\/img\/blog\/",
+        "allowed_types": [
+            "img"
+        ],
+        "allow_subfolders": "n",
+        "subfolders_on_top": "y",
+        "default_modal_view": "list",
+        "max_size": null,
+        "max_height": null,
+        "max_width": null,
+        "properties": null,
+        "pre_format": null,
+        "post_format": null,
+        "file_properties": null,
+        "file_pre_format": null,
+        "file_post_format": null,
+        "batch_location": null,
+        "module_id": 0,
+        "uuid": "e119bad6-78ca-e606-d28d-452f5e14883b",
+        "associationsByUuid": {}
+    },
+    "e314db24-c77a-784a-62b7-cb768809063f": {
+        "site_id": 0,
+        "name": "Common",
+        "adapter": "local",
+        "adapter_settings": [],
+        "server_path": "{base_path}themes\/user\/site\/default\/asset\/img\/common\/",
+        "url": "{base_url}themes\/user\/site\/default\/asset\/img\/common\/",
+        "allowed_types": [
+            "img"
+        ],
+        "allow_subfolders": "n",
+        "subfolders_on_top": "y",
+        "default_modal_view": "list",
+        "max_size": null,
+        "max_height": null,
+        "max_width": null,
+        "properties": null,
+        "pre_format": null,
+        "post_format": null,
+        "file_properties": null,
+        "file_pre_format": null,
+        "file_post_format": null,
+        "batch_location": null,
+        "module_id": 0,
+        "uuid": "e314db24-c77a-784a-62b7-cb768809063f",
+        "associationsByUuid": {}
+    },
+    "5ac6b2ef-8680-0a36-ee0e-52e7640c80b6": {
+        "site_id": 0,
+        "name": "Home",
+        "adapter": "local",
+        "adapter_settings": [],
+        "server_path": "{base_path}themes\/user\/site\/default\/asset\/img\/home\/",
+        "url": "{base_url}themes\/user\/site\/default\/asset\/img\/home\/",
+        "allowed_types": [
+            "img"
+        ],
+        "allow_subfolders": "n",
+        "subfolders_on_top": "y",
+        "default_modal_view": "list",
+        "max_size": null,
+        "max_height": null,
+        "max_width": null,
+        "properties": null,
+        "pre_format": null,
+        "post_format": null,
+        "file_properties": null,
+        "file_pre_format": null,
+        "file_post_format": null,
+        "batch_location": null,
+        "module_id": 0,
+        "uuid": "5ac6b2ef-8680-0a36-ee0e-52e7640c80b6",
+        "associationsByUuid": {}
+    }
+}

@@ -1,0 +1,470 @@
+{
+    "fbe0c50b-d908-d27a-3825-1eeb227629ef": {
+        "site_id": 0,
+        "field_name": "about_image",
+        "field_label": "About Image",
+        "field_instructions": "Image for the about page.",
+        "field_type": "grid",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 8,
+        "field_maxl": 0,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "n",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "xhtml",
+        "field_show_fmt": "y",
+        "field_order": 7,
+        "field_content_type": "any",
+        "field_settings": {
+            "grid_min_rows": 0,
+            "grid_max_rows": "",
+            "allow_reorder": "y",
+            "vertical_layout": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "fbe0c50b-d908-d27a-3825-1eeb227629ef",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "43dd7316-45e7-4c30-9527-7fcd5f86f962"
+                ]
+            },
+            "GridColumns": {
+                "model": "grid:GridColumn",
+                "related": [
+                    "b4078c0c-2975-2c5c-6d5a-d9a6ad83e6da",
+                    "86a90213-ac3a-47fa-aed6-9c4dea0ab956",
+                    "45773d7d-84bc-757f-d870-35f69b780e6f"
+                ]
+            }
+        }
+    },
+    "18a6255e-52d9-86d8-024e-7f54ccca045c": {
+        "site_id": 0,
+        "field_name": "blog_audio",
+        "field_label": "Audio",
+        "field_instructions": "Audio clip for this blog.",
+        "field_type": "grid",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 8,
+        "field_maxl": 0,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "n",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "xhtml",
+        "field_show_fmt": "y",
+        "field_order": 3,
+        "field_content_type": "any",
+        "field_settings": {
+            "grid_min_rows": 0,
+            "grid_max_rows": "",
+            "allow_reorder": "y",
+            "vertical_layout": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "18a6255e-52d9-86d8-024e-7f54ccca045c",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "e8a3f2d9-dc5b-4b1a-2e59-1a7776429058"
+                ]
+            },
+            "GridColumns": {
+                "model": "grid:GridColumn",
+                "related": [
+                    "b8bdd6d1-a04f-c128-4213-5e6587538504",
+                    "e95c1ef0-33c1-74be-2d46-0637d1f3032b"
+                ]
+            }
+        }
+    },
+    "d71d05dc-f569-8846-a8da-332ee06751a8": {
+        "site_id": 0,
+        "field_name": "blog_content",
+        "field_label": "Content",
+        "field_instructions": "Content for this blog entry.",
+        "field_type": "textarea",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 10,
+        "field_maxl": 0,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "y",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "xhtml",
+        "field_show_fmt": "y",
+        "field_order": 1,
+        "field_content_type": "any",
+        "field_settings": {
+            "field_show_file_selector": "n",
+            "db_column_type": "text",
+            "field_show_smileys": "n",
+            "field_show_formatting_btns": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "d71d05dc-f569-8846-a8da-332ee06751a8",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "e8a3f2d9-dc5b-4b1a-2e59-1a7776429058"
+                ]
+            }
+        }
+    },
+    "a49ffad7-4741-4a9a-0775-366fec9bbc7d": {
+        "site_id": 0,
+        "field_name": "blog_image",
+        "field_label": "Image",
+        "field_instructions": "Photograph, comic, any image you like.",
+        "field_type": "grid",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 8,
+        "field_maxl": 0,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "n",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "xhtml",
+        "field_show_fmt": "y",
+        "field_order": 4,
+        "field_content_type": "any",
+        "field_settings": {
+            "grid_min_rows": 0,
+            "grid_max_rows": "",
+            "allow_reorder": "y",
+            "vertical_layout": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "a49ffad7-4741-4a9a-0775-366fec9bbc7d",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "e8a3f2d9-dc5b-4b1a-2e59-1a7776429058"
+                ]
+            },
+            "GridColumns": {
+                "model": "grid:GridColumn",
+                "related": [
+                    "56ad133a-2558-5a78-cd5d-6aa356fa5653",
+                    "72c7b1ed-103a-80cd-86b5-54017660f7b6"
+                ]
+            }
+        }
+    },
+    "81956320-94ec-3ef5-d682-4da4f62aaccc": {
+        "site_id": 0,
+        "field_name": "blog_video",
+        "field_label": "Video",
+        "field_instructions": "Video for this blog.",
+        "field_type": "grid",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 8,
+        "field_maxl": 0,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "n",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "xhtml",
+        "field_show_fmt": "y",
+        "field_order": 2,
+        "field_content_type": "any",
+        "field_settings": {
+            "grid_min_rows": 0,
+            "grid_max_rows": "",
+            "allow_reorder": "y",
+            "vertical_layout": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "81956320-94ec-3ef5-d682-4da4f62aaccc",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "e8a3f2d9-dc5b-4b1a-2e59-1a7776429058"
+                ]
+            },
+            "GridColumns": {
+                "model": "grid:GridColumn",
+                "related": [
+                    "785f1074-f9ca-f8e9-1280-2aefccef0b2f",
+                    "576298a3-6823-fcb8-fb79-29c6e03d8f84"
+                ]
+            }
+        }
+    },
+    "206db8bc-674b-5032-1543-a0fa328b311e": {
+        "site_id": 0,
+        "field_name": "page_content",
+        "field_label": "Page Content",
+        "field_instructions": "Content for this page.",
+        "field_type": "textarea",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 10,
+        "field_maxl": 0,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "y",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "xhtml",
+        "field_show_fmt": "y",
+        "field_order": 3,
+        "field_content_type": "any",
+        "field_settings": {
+            "field_show_file_selector": "n",
+            "db_column_type": "text",
+            "field_show_smileys": "n",
+            "field_show_formatting_btns": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "206db8bc-674b-5032-1543-a0fa328b311e",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "7d5aa7a8-14e0-21de-0bcd-87f6a7755a80"
+                ]
+            }
+        }
+    },
+    "5347b0d3-4376-269c-002a-40c8ff1409f7": {
+        "site_id": 0,
+        "field_name": "contact_address",
+        "field_label": "Contact Address",
+        "field_instructions": "Address where someone can send mail.",
+        "field_type": "grid",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 8,
+        "field_maxl": 0,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "n",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "xhtml",
+        "field_show_fmt": "y",
+        "field_order": 4,
+        "field_content_type": "any",
+        "field_settings": {
+            "grid_min_rows": 0,
+            "grid_max_rows": "",
+            "allow_reorder": "y",
+            "vertical_layout": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "5347b0d3-4376-269c-002a-40c8ff1409f7",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "6cd2d352-ad50-2bf5-5c17-731b3ee6e4f9"
+                ]
+            },
+            "GridColumns": {
+                "model": "grid:GridColumn",
+                "related": [
+                    "9921c149-bb72-d8fa-a10a-04924d8602d6",
+                    "e010377a-300d-14dd-7c0d-19cbbe8f0ab7",
+                    "1124f951-fe8f-998b-0b1e-72ce82a1ef62",
+                    "73e78d50-b668-dd54-c827-c0f18bf87f9c",
+                    "c9f0a0ab-2204-798a-f8d2-db2251092039"
+                ]
+            }
+        }
+    },
+    "cd8394d4-58c0-17bf-3605-532f8bbb81d1": {
+        "site_id": 0,
+        "field_name": "contact_email",
+        "field_label": "Contact Email",
+        "field_instructions": "Email address someone can send Email to.",
+        "field_type": "text",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 8,
+        "field_maxl": 256,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "n",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "none",
+        "field_show_fmt": "y",
+        "field_order": 6,
+        "field_content_type": "",
+        "field_settings": {
+            "field_maxl": 256,
+            "field_content_type": "",
+            "field_show_smileys": "n",
+            "field_show_file_selector": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "cd8394d4-58c0-17bf-3605-532f8bbb81d1",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "6cd2d352-ad50-2bf5-5c17-731b3ee6e4f9"
+                ]
+            }
+        }
+    },
+    "dddb05dc-53d4-63df-4f10-a0c4dc64cb05": {
+        "site_id": 0,
+        "field_name": "contact_phone",
+        "field_label": "Contact Phone",
+        "field_instructions": "Phone number someone can call.",
+        "field_type": "text",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 8,
+        "field_maxl": 256,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "n",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "none",
+        "field_show_fmt": "y",
+        "field_order": 5,
+        "field_content_type": "",
+        "field_settings": {
+            "field_maxl": 256,
+            "field_content_type": "",
+            "field_show_smileys": "n",
+            "field_show_file_selector": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "dddb05dc-53d4-63df-4f10-a0c4dc64cb05",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "6cd2d352-ad50-2bf5-5c17-731b3ee6e4f9"
+                ]
+            }
+        }
+    },
+    "d8a98f8d-33f1-b15b-bd64-941ef4a9bb45": {
+        "site_id": 0,
+        "field_name": "seo_desc",
+        "field_label": "SEO Description",
+        "field_instructions": "Page Description for use in HTML meta description tag, generally only seen by machines.",
+        "field_type": "textarea",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 2,
+        "field_maxl": 0,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "n",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "xhtml",
+        "field_show_fmt": "y",
+        "field_order": 6,
+        "field_content_type": "any",
+        "field_settings": {
+            "field_show_file_selector": "n",
+            "db_column_type": "text",
+            "field_show_smileys": "n",
+            "field_show_formatting_btns": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "d8a98f8d-33f1-b15b-bd64-941ef4a9bb45",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "4a757c97-b181-3745-0761-173761f0d592"
+                ]
+            }
+        }
+    },
+    "711a1d7e-e396-1c8d-2236-be86d6910217": {
+        "site_id": 0,
+        "field_name": "seo_title",
+        "field_label": "SEO Title",
+        "field_instructions": "Page title that will be added to browser titlebar\/tab.",
+        "field_type": "text",
+        "field_list_items": "",
+        "field_pre_populate": "n",
+        "field_pre_channel_id": 0,
+        "field_pre_field_id": 0,
+        "field_ta_rows": 8,
+        "field_maxl": 256,
+        "field_required": "n",
+        "field_text_direction": "ltr",
+        "field_search": "n",
+        "field_is_hidden": "n",
+        "field_is_conditional": "n",
+        "field_fmt": "none",
+        "field_show_fmt": "y",
+        "field_order": 5,
+        "field_content_type": "",
+        "field_settings": {
+            "field_maxl": 256,
+            "field_content_type": "",
+            "field_show_smileys": "n",
+            "field_show_file_selector": "n"
+        },
+        "legacy_field_data": "n",
+        "enable_frontedit": "y",
+        "uuid": "711a1d7e-e396-1c8d-2236-be86d6910217",
+        "associationsByUuid": {
+            "ChannelFieldGroups": {
+                "model": "ee:ChannelFieldGroup",
+                "related": [
+                    "4a757c97-b181-3745-0761-173761f0d592"
+                ]
+            }
+        }
+    }
+}

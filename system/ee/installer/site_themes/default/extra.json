@@ -1,18 +1,4 @@
 {
-	"upload_destinations": [
-		{
-			"name": "Blog",
-			"path": "asset/img/blog/"
-		},
-		{
-			"name": "Common",
-			"path": "asset/img/common/"
-		},
-		{
-			"name": "Home",
-			"path": "asset/img/home/"
-		}
-	],
 	"config": {
 		"site_404": "home/404",
 		"strict_urls": "y",

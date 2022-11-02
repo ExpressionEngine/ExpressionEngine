@@ -1,0 +1,104 @@
+{
+    "5e410c7a-f0eb-8c03-0bcd-9dac778d16aa": {
+        "site_id": 0,
+        "group_id": 0,
+        "parent_id": 0,
+        "cat_name": "News",
+        "cat_url_title": "news",
+        "cat_description": null,
+        "cat_image": null,
+        "cat_order": 1,
+        "uuid": "5e410c7a-f0eb-8c03-0bcd-9dac778d16aa",
+        "associationsByUuid": {
+            "CategoryGroup": {
+                "model": "ee:CategoryGroup",
+                "related": "b41bd980-02b3-c02f-24b5-77c588f65a78"
+            }
+        }
+    },
+    "503d867b-2c1a-b13c-1718-f06f37ffa8c3": {
+        "site_id": 0,
+        "group_id": 0,
+        "parent_id": 0,
+        "cat_name": "Personal",
+        "cat_url_title": "personal",
+        "cat_description": null,
+        "cat_image": null,
+        "cat_order": 2,
+        "uuid": "503d867b-2c1a-b13c-1718-f06f37ffa8c3",
+        "associationsByUuid": {
+            "CategoryGroup": {
+                "model": "ee:CategoryGroup",
+                "related": "b41bd980-02b3-c02f-24b5-77c588f65a78"
+            }
+        }
+    },
+    "095d9280-acf6-cec9-fce7-394021aefc14": {
+        "site_id": 0,
+        "group_id": 0,
+        "parent_id": 0,
+        "cat_name": "Photos",
+        "cat_url_title": "photos",
+        "cat_description": null,
+        "cat_image": null,
+        "cat_order": 3,
+        "uuid": "095d9280-acf6-cec9-fce7-394021aefc14",
+        "associationsByUuid": {
+            "CategoryGroup": {
+                "model": "ee:CategoryGroup",
+                "related": "b41bd980-02b3-c02f-24b5-77c588f65a78"
+            }
+        }
+    },
+    "5bf95dae-2fd6-f8eb-646d-1eadaa882525": {
+        "site_id": 0,
+        "group_id": 0,
+        "parent_id": 0,
+        "cat_name": "Videos",
+        "cat_url_title": "videos",
+        "cat_description": null,
+        "cat_image": null,
+        "cat_order": 4,
+        "uuid": "5bf95dae-2fd6-f8eb-646d-1eadaa882525",
+        "associationsByUuid": {
+            "CategoryGroup": {
+                "model": "ee:CategoryGroup",
+                "related": "b41bd980-02b3-c02f-24b5-77c588f65a78"
+            }
+        }
+    },
+    "05910ffa-db4c-5f88-5cb4-eb3d0a6e6f82": {
+        "site_id": 0,
+        "group_id": 0,
+        "parent_id": 0,
+        "cat_name": "Music",
+        "cat_url_title": "music",
+        "cat_description": null,
+        "cat_image": null,
+        "cat_order": 5,
+        "uuid": "05910ffa-db4c-5f88-5cb4-eb3d0a6e6f82",
+        "associationsByUuid": {
+            "CategoryGroup": {
+                "model": "ee:CategoryGroup",
+                "related": "b41bd980-02b3-c02f-24b5-77c588f65a78"
+            }
+        }
+    },
+    "f7f4e6fb-421e-4d9f-fbeb-b4440c3e03ef": {
+        "site_id": 0,
+        "group_id": 0,
+        "parent_id": 0,
+        "cat_name": "Not Shown",
+        "cat_url_title": "not-shown",
+        "cat_description": null,
+        "cat_image": null,
+        "cat_order": 1,
+        "uuid": "f7f4e6fb-421e-4d9f-fbeb-b4440c3e03ef",
+        "associationsByUuid": {
+            "CategoryGroup": {
+                "model": "ee:CategoryGroup",
+                "related": "456e5002-c009-a7c7-eb6c-0be801957873"
+            }
+        }
+    }
+}

@@ -82,11 +82,6 @@ abstract class AbstractChannels extends CP_Controller
         if (ee('Permission')->has('can_create_channels')) {
             $header['action_buttons'] = [
                 [
-                    'text' => lang('import'),
-                    'href' => '#',
-                    'rel' => 'import-channel'
-                ],
-                [
                     'text' => lang('new_channel'),
                     'href' => ee('CP/URL', 'channels/create')
                 ]

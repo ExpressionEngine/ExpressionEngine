@@ -60,7 +60,6 @@ class Channels extends AbstractChannelsController
         }
 
         $highlight_id = ee()->session->flashdata('highlight_id');
-        $imported_channels = ee()->session->flashdata('imported_channels') ?: [];
         $data = [];
         foreach ($channels as $channel) {
             $edit_url = ee('CP/URL')->make('channels/edit/' . $channel->getId());
@@ -70,7 +69,7 @@ class Channels extends AbstractChannelsController
                 'label' => $channel->channel_title,
                 'href' => $edit_url,
                 'extra' => LD . $channel->channel_name . RD,
-                'selected' => ($highlight_id && $channel->getId() == $highlight_id) or in_array($channel->getId(), $imported_channels),
+                'selected' => ($highlight_id && $channel->getId() == $highlight_id),
                 'toolbar_items' => [
                     'layout-set' => [
                         'href' => ee('CP/URL', 'channels/layouts/' . $channel->getId()),
@@ -105,8 +104,7 @@ class Channels extends AbstractChannelsController
         $vars['create_url'] = ee('CP/URL', 'channels/create');
         $vars['no_results'] = ['text' =>
             sprintf(lang('no_found'), lang('channels'))
-            . (ee('Permission')->has('can_create_channels') ? ' <a href="' . $vars['create_url'] . '">' . lang('add_new') . '</a> '
-            . lang('or') . ' <a href="#" rel="import-channel">' . lang('import') . '</a>' : '')];
+            . (ee('Permission')->has('can_create_channels') ? ' <a href="' . $vars['create_url'] . '">' . lang('add_new') . '</a>' : '')];
 
         ee()->view->cp_breadcrumbs = array(
             '' => lang('channels')

@@ -1,0 +1,13 @@
+{
+    "uniqid": "63624a8b663cb",
+    "components": [
+        "ee:CategoryGroup",
+        "ee:Category",
+        "ee:UploadDestination",
+        "ee:Status",
+        "ee:Channel",
+        "ee:ChannelFieldGroup",
+        "ee:ChannelField",
+        "grid:GridColumn"
+    ]
+}

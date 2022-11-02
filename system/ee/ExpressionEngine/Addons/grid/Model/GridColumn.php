@@ -33,15 +33,7 @@ class GridColumn extends Model
             'model' => 'ee:ChannelField',
             'from_key' => 'field_id',
             'to_key' => 'field_id',
-            'weak' => true,
-            'inverse' => array(
-                'name' => 'GridColumns',
-                'model' => 'grid:GridColumn',
-                'type' => 'hasMany',
-                'from_key' => 'field_id',
-                'to_key' => 'field_id',
-                'weak' => true
-            )
+            'weak' => true
         )
     );
 

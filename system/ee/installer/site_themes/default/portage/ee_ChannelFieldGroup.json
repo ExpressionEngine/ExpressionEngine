@@ -1,0 +1,106 @@
+{
+    "43dd7316-45e7-4c30-9527-7fcd5f86f962": {
+        "site_id": 0,
+        "group_name": "about",
+        "uuid": "43dd7316-45e7-4c30-9527-7fcd5f86f962",
+        "associationsByUuid": {
+            "Channels": {
+                "model": "ee:Channel",
+                "related": [
+                    "af5ec93d-96e3-eb51-7558-1d0cbeb476dd"
+                ]
+            },
+            "ChannelFields": {
+                "model": "ee:ChannelField",
+                "related": [
+                    "fbe0c50b-d908-d27a-3825-1eeb227629ef"
+                ]
+            }
+        }
+    },
+    "e8a3f2d9-dc5b-4b1a-2e59-1a7776429058": {
+        "site_id": 0,
+        "group_name": "blog",
+        "uuid": "e8a3f2d9-dc5b-4b1a-2e59-1a7776429058",
+        "associationsByUuid": {
+            "Channels": {
+                "model": "ee:Channel",
+                "related": [
+                    "a5296d94-dd38-6d76-d999-6cab86f3f521"
+                ]
+            },
+            "ChannelFields": {
+                "model": "ee:ChannelField",
+                "related": [
+                    "18a6255e-52d9-86d8-024e-7f54ccca045c",
+                    "d71d05dc-f569-8846-a8da-332ee06751a8",
+                    "a49ffad7-4741-4a9a-0775-366fec9bbc7d",
+                    "81956320-94ec-3ef5-d682-4da4f62aaccc"
+                ]
+            }
+        }
+    },
+    "7d5aa7a8-14e0-21de-0bcd-87f6a7755a80": {
+        "site_id": 0,
+        "group_name": "common",
+        "uuid": "7d5aa7a8-14e0-21de-0bcd-87f6a7755a80",
+        "associationsByUuid": {
+            "Channels": {
+                "model": "ee:Channel",
+                "related": [
+                    "af5ec93d-96e3-eb51-7558-1d0cbeb476dd",
+                    "00c03b7a-5eb7-1fb4-c9ba-5eff858d2ff4"
+                ]
+            },
+            "ChannelFields": {
+                "model": "ee:ChannelField",
+                "related": [
+                    "206db8bc-674b-5032-1543-a0fa328b311e"
+                ]
+            }
+        }
+    },
+    "6cd2d352-ad50-2bf5-5c17-731b3ee6e4f9": {
+        "site_id": 0,
+        "group_name": "contact",
+        "uuid": "6cd2d352-ad50-2bf5-5c17-731b3ee6e4f9",
+        "associationsByUuid": {
+            "Channels": {
+                "model": "ee:Channel",
+                "related": [
+                    "00c03b7a-5eb7-1fb4-c9ba-5eff858d2ff4"
+                ]
+            },
+            "ChannelFields": {
+                "model": "ee:ChannelField",
+                "related": [
+                    "5347b0d3-4376-269c-002a-40c8ff1409f7",
+                    "cd8394d4-58c0-17bf-3605-532f8bbb81d1",
+                    "dddb05dc-53d4-63df-4f10-a0c4dc64cb05"
+                ]
+            }
+        }
+    },
+    "4a757c97-b181-3745-0761-173761f0d592": {
+        "site_id": 0,
+        "group_name": "seo",
+        "uuid": "4a757c97-b181-3745-0761-173761f0d592",
+        "associationsByUuid": {
+            "Channels": {
+                "model": "ee:Channel",
+                "related": [
+                    "af5ec93d-96e3-eb51-7558-1d0cbeb476dd",
+                    "a5296d94-dd38-6d76-d999-6cab86f3f521",
+                    "00c03b7a-5eb7-1fb4-c9ba-5eff858d2ff4"
+                ]
+            },
+            "ChannelFields": {
+                "model": "ee:ChannelField",
+                "related": [
+                    "d8a98f8d-33f1-b15b-bd64-941ef4a9bb45",
+                    "711a1d7e-e396-1c8d-2236-be86d6910217"
+                ]
+            }
+        }
+    }
+}

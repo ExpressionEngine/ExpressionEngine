@@ -49,7 +49,6 @@ class Layouts extends AbstractChannelsController
                 'no_results' => [
                     'text' => sprintf(lang('no_found'), lang('channels'))
                         . ' <a href="' . ee('CP/URL', 'channels/create') . '">' . lang('add_new') . '</a> '
-                        . lang('or') . ' <a href="#" rel="import-channel">' . lang('import') . '</a>'
                 ],
                 'channel_id' => ''
             ];

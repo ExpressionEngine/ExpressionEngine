@@ -1,0 +1,16 @@
+{
+    "bea74aeb-6615-440b-98d9-89bc814613db": {
+        "status": "Default Page",
+        "status_order": 3,
+        "highlight": "2051B3",
+        "uuid": "bea74aeb-6615-440b-98d9-89bc814613db",
+        "associationsByUuid": {
+            "Channels": {
+                "model": "ee:Channel",
+                "related": [
+                    "af5ec93d-96e3-eb51-7558-1d0cbeb476dd"
+                ]
+            }
+        }
+    }
+}

@@ -1590,6 +1590,30 @@ class EE_Schema
 			KEY `viewtype_upload_id_member_id` (`viewtype`, `upload_id`, `member_id`)
 		);";
 
+		// portage
+		$Q[] = "CREATE TABLE `exp_portage_imports` (
+			`import_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`import_date` int(10) NOT NULL DEFAULT 0,
+			`member_id` int(10) unsigned NOT NULL,
+			`uniqid` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+			`version` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+			`components` text COLLATE utf8mb4_unicode_ci NOT NULL,
+			PRIMARY KEY (`import_id`),
+			KEY `member_id` (`member_id`)
+		);";
+
+		$Q[] = "CREATE TABLE IF NOT EXISTS `exp_portage_import_logs` (
+			`log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`import_id` int(10) unsigned NOT NULL,
+			`portage_action` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+			`model_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+			`model_uuid` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+			`model_prev_state` text COLLATE utf8mb4_unicode_ci NOT NULL,
+			PRIMARY KEY (`log_id`),
+			KEY `import_id` (`import_id`),
+			KEY `model_uuid` (`model_uuid`)
+		);";
+
         // Default menu set
         $Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
 

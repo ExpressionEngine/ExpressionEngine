@@ -1,0 +1,374 @@
+{
+    "b4078c0c-2975-2c5c-6d5a-d9a6ad83e6da": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 0,
+        "col_type": "file",
+        "col_label": "Image",
+        "col_name": "image",
+        "col_instructions": "Upload the image you want to use.",
+        "col_required": "n",
+        "col_search": "n",
+        "col_width": 0,
+        "col_settings": {
+            "field_content_type": "image",
+            "allowed_directories": "all",
+            "show_existing": "y",
+            "num_existing": "50",
+            "field_fmt": "none",
+            "field_required": "n"
+        },
+        "uuid": "b4078c0c-2975-2c5c-6d5a-d9a6ad83e6da",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "fbe0c50b-d908-d27a-3825-1eeb227629ef"
+            }
+        }
+    },
+    "86a90213-ac3a-47fa-aed6-9c4dea0ab956": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 1,
+        "col_type": "text",
+        "col_label": "Caption",
+        "col_name": "caption",
+        "col_instructions": "Credit and copyright for this image.",
+        "col_required": "n",
+        "col_search": "n",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_content_type": "all",
+            "field_text_direction": "ltr",
+            "field_maxl": "256",
+            "field_required": "n"
+        },
+        "uuid": "86a90213-ac3a-47fa-aed6-9c4dea0ab956",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "fbe0c50b-d908-d27a-3825-1eeb227629ef"
+            }
+        }
+    },
+    "45773d7d-84bc-757f-d870-35f69b780e6f": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 2,
+        "col_type": "select",
+        "col_label": "Alignment?",
+        "col_name": "align",
+        "col_instructions": "Align this image ot the left or right?",
+        "col_required": "n",
+        "col_search": "n",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_pre_populate": "n",
+            "field_pre_channel_id": "0",
+            "field_pre_field_id": "0",
+            "field_list_items": "none\nleft\nright",
+            "value_label_pairs": [],
+            "field_required": "n"
+        },
+        "uuid": "45773d7d-84bc-757f-d870-35f69b780e6f",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "fbe0c50b-d908-d27a-3825-1eeb227629ef"
+            }
+        }
+    },
+    "b8bdd6d1-a04f-c128-4213-5e6587538504": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 0,
+        "col_type": "text",
+        "col_label": "ID",
+        "col_name": "id",
+        "col_instructions": "Audio ID, i.e. 177363559",
+        "col_required": "n",
+        "col_search": "y",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_content_type": "all",
+            "field_text_direction": "ltr",
+            "field_maxl": "256",
+            "field_required": "n"
+        },
+        "uuid": "b8bdd6d1-a04f-c128-4213-5e6587538504",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "18a6255e-52d9-86d8-024e-7f54ccca045c"
+            }
+        }
+    },
+    "e95c1ef0-33c1-74be-2d46-0637d1f3032b": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 1,
+        "col_type": "select",
+        "col_label": "Type",
+        "col_name": "type",
+        "col_instructions": "Type of audio, choose one.",
+        "col_required": "n",
+        "col_search": "n",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_pre_populate": "n",
+            "field_pre_channel_id": "0",
+            "field_pre_field_id": "0",
+            "field_list_items": "soundcloud\nbandcamp",
+            "value_label_pairs": [],
+            "field_required": "n"
+        },
+        "uuid": "e95c1ef0-33c1-74be-2d46-0637d1f3032b",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "18a6255e-52d9-86d8-024e-7f54ccca045c"
+            }
+        }
+    },
+    "56ad133a-2558-5a78-cd5d-6aa356fa5653": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 0,
+        "col_type": "file",
+        "col_label": "Image",
+        "col_name": "image",
+        "col_instructions": "Upload the image you want to use.",
+        "col_required": "n",
+        "col_search": "y",
+        "col_width": 0,
+        "col_settings": {
+            "field_content_type": "image",
+            "allowed_directories": "all",
+            "show_existing": "y",
+            "num_existing": "50",
+            "field_fmt": "none",
+            "field_required": "n"
+        },
+        "uuid": "56ad133a-2558-5a78-cd5d-6aa356fa5653",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "a49ffad7-4741-4a9a-0775-366fec9bbc7d"
+            }
+        }
+    },
+    "72c7b1ed-103a-80cd-86b5-54017660f7b6": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 1,
+        "col_type": "text",
+        "col_label": "Caption",
+        "col_name": "caption",
+        "col_instructions": "Credit and copyright for this image.",
+        "col_required": "n",
+        "col_search": "y",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_content_type": "all",
+            "field_text_direction": "ltr",
+            "field_maxl": "256",
+            "field_required": "n"
+        },
+        "uuid": "72c7b1ed-103a-80cd-86b5-54017660f7b6",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "a49ffad7-4741-4a9a-0775-366fec9bbc7d"
+            }
+        }
+    },
+    "785f1074-f9ca-f8e9-1280-2aefccef0b2f": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 0,
+        "col_type": "text",
+        "col_label": "ID",
+        "col_name": "id",
+        "col_instructions": "Video ID, i.e. 8OcydG0RiqI",
+        "col_required": "n",
+        "col_search": "y",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_content_type": "all",
+            "field_text_direction": "ltr",
+            "field_maxl": "256",
+            "field_required": "n"
+        },
+        "uuid": "785f1074-f9ca-f8e9-1280-2aefccef0b2f",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "81956320-94ec-3ef5-d682-4da4f62aaccc"
+            }
+        }
+    },
+    "576298a3-6823-fcb8-fb79-29c6e03d8f84": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 1,
+        "col_type": "select",
+        "col_label": "Type",
+        "col_name": "type",
+        "col_instructions": "Type of video, choose one.",
+        "col_required": "n",
+        "col_search": "y",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_pre_populate": "n",
+            "field_pre_channel_id": "0",
+            "field_pre_field_id": "0",
+            "field_list_items": "youtube\nvimeo",
+            "value_label_pairs": [],
+            "field_required": "n"
+        },
+        "uuid": "576298a3-6823-fcb8-fb79-29c6e03d8f84",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "81956320-94ec-3ef5-d682-4da4f62aaccc"
+            }
+        }
+    },
+    "9921c149-bb72-d8fa-a10a-04924d8602d6": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 0,
+        "col_type": "text",
+        "col_label": "Street",
+        "col_name": "street",
+        "col_instructions": "Street address",
+        "col_required": "n",
+        "col_search": "n",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_content_type": "all",
+            "field_text_direction": "ltr",
+            "field_maxl": "256",
+            "field_required": "n"
+        },
+        "uuid": "9921c149-bb72-d8fa-a10a-04924d8602d6",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "5347b0d3-4376-269c-002a-40c8ff1409f7"
+            }
+        }
+    },
+    "e010377a-300d-14dd-7c0d-19cbbe8f0ab7": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 1,
+        "col_type": "text",
+        "col_label": "Street 2",
+        "col_name": "street_2",
+        "col_instructions": "Street address continued, e.g. Suite 2",
+        "col_required": "n",
+        "col_search": "n",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_content_type": "all",
+            "field_text_direction": "ltr",
+            "field_maxl": "256",
+            "field_required": "n"
+        },
+        "uuid": "e010377a-300d-14dd-7c0d-19cbbe8f0ab7",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "5347b0d3-4376-269c-002a-40c8ff1409f7"
+            }
+        }
+    },
+    "1124f951-fe8f-998b-0b1e-72ce82a1ef62": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 2,
+        "col_type": "text",
+        "col_label": "City",
+        "col_name": "city",
+        "col_instructions": "",
+        "col_required": "n",
+        "col_search": "n",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_content_type": "all",
+            "field_text_direction": "ltr",
+            "field_maxl": "256",
+            "field_required": "n"
+        },
+        "uuid": "1124f951-fe8f-998b-0b1e-72ce82a1ef62",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "5347b0d3-4376-269c-002a-40c8ff1409f7"
+            }
+        }
+    },
+    "73e78d50-b668-dd54-c827-c0f18bf87f9c": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 3,
+        "col_type": "text",
+        "col_label": "State",
+        "col_name": "state",
+        "col_instructions": "",
+        "col_required": "n",
+        "col_search": "n",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_content_type": "all",
+            "field_text_direction": "ltr",
+            "field_maxl": "256",
+            "field_required": "n"
+        },
+        "uuid": "73e78d50-b668-dd54-c827-c0f18bf87f9c",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "5347b0d3-4376-269c-002a-40c8ff1409f7"
+            }
+        }
+    },
+    "c9f0a0ab-2204-798a-f8d2-db2251092039": {
+        "field_id": 0,
+        "content_type": "channel",
+        "col_order": 4,
+        "col_type": "text",
+        "col_label": "ZIP",
+        "col_name": "zip",
+        "col_instructions": "",
+        "col_required": "n",
+        "col_search": "n",
+        "col_width": 0,
+        "col_settings": {
+            "field_fmt": "none",
+            "field_content_type": "all",
+            "field_text_direction": "ltr",
+            "field_maxl": "256",
+            "field_required": "n"
+        },
+        "uuid": "c9f0a0ab-2204-798a-f8d2-db2251092039",
+        "associationsByUuid": {
+            "ChannelField": {
+                "model": "ee:ChannelField",
+                "related": "5347b0d3-4376-269c-002a-40c8ff1409f7"
+            }
+        }
+    }
+}

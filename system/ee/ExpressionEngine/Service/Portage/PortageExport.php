@@ -55,6 +55,14 @@ class PortageExport
             $excludedModels[] = 'ee:Site';
         }
         foreach ($models as $model => $class) {
+            $modelName = explode(':', $model);
+            if ($modelName[0] != 'ee') {
+                //only installed add-ons
+                $addon = ee('Addon')->get($modelName[0]);
+                if (empty($addon) || !$addon->isInstalled()) {
+                    $excludedModels[] = $model;
+                }
+            }
             if (! in_array($model, $excludedModels)) {
                 try {
                     $modelInstance = ee('Model')->make($model);
@@ -246,6 +254,13 @@ class PortageExport
         }
 
         $record = new \StdClass();
+        $pathReplace = [];
+        if (!empty(ee()->config->item('base_url'))) {
+            $pathReplace[ee()->config->item('base_url')] = '{base_url}';
+        }
+        if (!empty(ee()->config->item('base_path'))) {
+            $pathReplace[ee()->config->item('base_path')] = '{base_path}';
+        }
         foreach ($this->modelFields[$model] as $property)
         {
             if ($property == $this->modelKeyFields[$model][0]) {
@@ -253,7 +268,12 @@ class PortageExport
             }
             if (! in_array($property, $this->modelKeyFields[$model])) {
                 // set the regular model fields
-                $record->{$property} = $modelRecord->getRawProperty($property);
+                $value = $modelRecord->getRawProperty($property);
+                // make path and url use config values, where possible
+                if (is_string($value) && !empty($pathReplace)) {
+                    $value = str_replace(array_keys($pathReplace), $pathReplace, $value);
+                }
+                $record->{$property} = $value;
                 // force some fields
                 if ($property == 'legacy_field_data') {
                     $record->{$property} = 'n';
@@ -270,33 +290,7 @@ class PortageExport
             $typeProperty = $model == 'grid:GridColumn' ? 'col_type' : 'field_type';
             $settingsProperty = $model == 'grid:GridColumn' ? 'col_settings' : 'field_settings';
             $ftClassName = ee()->api_channel_fields->include_handler($modelRecord->$typeProperty);
-            $reflection = new \ReflectionClass($ftClassName);
-            $instance = $reflection->newInstanceWithoutConstructor();
-            if (isset($instance->relationship_field_settings)) {
-                // update each relationship settings to use UUID
-                foreach ($instance->relationship_field_settings as $setting => $settingModel) {
-                    // force including these models into portage
-                    if (is_array($record->$settingsProperty[$setting])) {
-                        $relatedUuids = [];
-                        foreach ($record->$settingsProperty[$setting] as $relatedId) {
-                            if (is_numeric($relatedId)) {
-                                $relatedSettingModelRecord = ee('Model')->get($settingModel, (int) $relatedId)->first();
-                                if (!is_null($relatedSettingModelRecord)) {
-                                    $relatedUuidField = method_exists($relatedSettingModelRecord, 'getColumnPrefix') ? $relatedSettingModelRecord->getColumnPrefix() . 'uuid' : 'uuid';
-                                    $relatedUuids[] = $relatedSettingModelRecord->$relatedUuidField;
-                                }
-                            }
-                        }
-                        $record->$settingsProperty[$setting] = $relatedUuids;
-                    } else if (is_numeric($record->$settingsProperty[$setting])) {
-                        $relatedSettingModelRecord = ee('Model')->get($settingModel, (int) $record->$settingsProperty[$setting])->first();
-                        if (!is_null($relatedSettingModelRecord)) {
-                            $relatedUuidField = method_exists($relatedSettingModelRecord, 'getColumnPrefix') ? $relatedSettingModelRecord->getColumnPrefix() . 'uuid' : 'uuid';
-                            $record->$settingsProperty[$setting] = $relatedSettingModelRecord->$relatedUuidField;
-                        }
-                    }
-                }
-            }
+            $record = $this->setFieldSettingsProperty($record, $settingsProperty, $ftClassName);
         }
 
         // set the relationships
@@ -359,6 +353,46 @@ class PortageExport
         //
         // -------------------------------------------
 
+        return $record;
+    }
+
+    /**
+     * Set field / column settings property for fieldtypes
+     *
+     * @param object $modelInstance field/column model instance
+     * @param string $settingsProperty name of settings property
+     * @param string $ftClassName class name of fieldtype
+     * @return void
+     */
+    public function setFieldSettingsProperty($record, $settingsProperty, $ftClassName)
+    {
+        $reflection = new \ReflectionClass($ftClassName);
+        $instance = $reflection->newInstanceWithoutConstructor();
+        if (isset($instance->relationship_field_settings)) {
+            // update each relationship settings to use UUID
+            foreach ($instance->relationship_field_settings as $setting => $settingModel) {
+                // force including these models into portage
+                if (is_array($record->$settingsProperty[$setting])) {
+                    $relatedUuids = [];
+                    foreach ($record->$settingsProperty[$setting] as $relatedId) {
+                        if (is_numeric($relatedId)) {
+                            $relatedSettingModelRecord = ee('Model')->get($settingModel, (int) $relatedId)->first();
+                            if (!is_null($relatedSettingModelRecord)) {
+                                $relatedUuidField = method_exists($relatedSettingModelRecord, 'getColumnPrefix') ? $relatedSettingModelRecord->getColumnPrefix() . 'uuid' : 'uuid';
+                                $relatedUuids[] = $relatedSettingModelRecord->$relatedUuidField;
+                            }
+                        }
+                    }
+                    $record->$settingsProperty[$setting] = $relatedUuids;
+                } else if (is_numeric($record->$settingsProperty[$setting])) {
+                    $relatedSettingModelRecord = ee('Model')->get($settingModel, (int) $record->$settingsProperty[$setting])->first();
+                    if (!is_null($relatedSettingModelRecord)) {
+                        $relatedUuidField = method_exists($relatedSettingModelRecord, 'getColumnPrefix') ? $relatedSettingModelRecord->getColumnPrefix() . 'uuid' : 'uuid';
+                        $record->$settingsProperty[$setting] = $relatedSettingModelRecord->$relatedUuidField;
+                    }
+                }
+            }
+        }
         return $record;
     }
 

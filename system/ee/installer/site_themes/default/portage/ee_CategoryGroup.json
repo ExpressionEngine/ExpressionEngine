@@ -1,0 +1,48 @@
+{
+    "b41bd980-02b3-c02f-24b5-77c588f65a78": {
+        "site_id": 0,
+        "group_name": "Blog",
+        "sort_order": "c",
+        "exclude_group": 0,
+        "field_html_formatting": "all",
+        "can_edit_categories": null,
+        "can_delete_categories": null,
+        "uuid": "b41bd980-02b3-c02f-24b5-77c588f65a78",
+        "associationsByUuid": {
+            "Categories": {
+                "model": "ee:Category",
+                "related": [
+                    "5e410c7a-f0eb-8c03-0bcd-9dac778d16aa",
+                    "503d867b-2c1a-b13c-1718-f06f37ffa8c3",
+                    "095d9280-acf6-cec9-fce7-394021aefc14",
+                    "5bf95dae-2fd6-f8eb-646d-1eadaa882525",
+                    "05910ffa-db4c-5f88-5cb4-eb3d0a6e6f82"
+                ]
+            },
+            "Channels": {
+                "model": "ee:Channel",
+                "related": [
+                    "a5296d94-dd38-6d76-d999-6cab86f3f521"
+                ]
+            }
+        }
+    },
+    "456e5002-c009-a7c7-eb6c-0be801957873": {
+        "site_id": 0,
+        "group_name": "Slideshow",
+        "sort_order": "a",
+        "exclude_group": 0,
+        "field_html_formatting": "all",
+        "can_edit_categories": null,
+        "can_delete_categories": null,
+        "uuid": "456e5002-c009-a7c7-eb6c-0be801957873",
+        "associationsByUuid": {
+            "Categories": {
+                "model": "ee:Category",
+                "related": [
+                    "f7f4e6fb-421e-4d9f-fbeb-b4440c3e03ef"
+                ]
+            }
+        }
+    }
+}

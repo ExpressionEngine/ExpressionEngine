@@ -10,11 +10,9 @@
 
 namespace ExpressionEngine\Service\Portage;
 
-use Closure;
-use ExpressionEngine\Library\Data\Collection;
-use ExpressionEngine\Service\Portage\PortageExport;
 use ExpressionEngine\Model\Channel\ChannelField;
 use ExpressionEngine\Addons\Grid\Model\GridColumn;
+use ExpressionEngine\Model\File\UploadDestination;
 
 /**
  * Portage Service: Portage
@@ -260,7 +258,7 @@ class PortageImport
         $portageImport = ee('Model')->make('PortageImport');
         $portageImport->import_date = ee()->localize->now;
         $portageImport->member_id = ee()->session->userdata('member_id');
-        $portageImport->version = $this->base['version'];
+        $portageImport->version = isset($this->base['version']) ? $this->base['version'] : '';
         $portageImport->uniqid = $this->base['uniqid'];
         $portageImport->components = $this->base['components'];
         $portageImport->save();
@@ -279,6 +277,15 @@ class PortageImport
             }
             //
             // -------------------------------------------
+
+            // upload locations need to be created, if possible
+            if ($modelInstance instanceof UploadDestination) {
+                if ($modelInstance->adapter == 'local')
+                $parsedServerPath = rtrim(parse_config_variables($modelInstance->server_path), '\\/') . DIRECTORY_SEPARATOR;
+                if ((DIRECTORY_SEPARATOR == '/' && strpos($parsedServerPath, '/') === 0) || (DIRECTORY_SEPARATOR == '\\' && strpos($parsedServerPath, ':') === 1)) {
+                    ee('Filesystem')->mkDir($parsedServerPath);
+                }
+            }
 
             // log this change
             $importLog = ee('Model')->make('PortageImportLog');
@@ -477,11 +484,13 @@ class PortageImport
         //might be worth to allow skipping version checks for EE and addons?
 
         // can only import between same minor versions
-        $version = explode('.', $this->base['version']);
-        $app_version = explode('.', ee()->config->item('app_version'));
-        if ($app_version[0] != $version[0] || $app_version[1] != $version[1]) {
-            $this->result->addError(lang('portage_incompatible'));
-            return false;
+        if (isset($this->base['version'])) {
+            $version = explode('.', $this->base['version']);
+            $app_version = explode('.', ee()->config->item('app_version'));
+            if ($app_version[0] != $version[0] || $app_version[1] != $version[1]) {
+                $this->result->addError(lang('portage_incompatible'));
+                return false;
+            }
         }
 
         $this->components = $this->base['components'];

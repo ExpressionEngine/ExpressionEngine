@@ -130,16 +130,16 @@ class ThemeInstaller
             $theme_name = 'default';
         }
 
-        $set = ee('ChannelSet')->importDir($this->getChannelSetPath($theme_name));
-        $set->setSiteId(1);
-        $set->validate();
-        $set->save();
+        $portage = ee('PortageImport')->dir($this->getPortagePath($theme_name));
+        $portage->setSiteId(1);
+        $portage->validate();
+        $portage->save();
 
         $channel_set = $this->loadExtraData($theme_name);
 
         $this->createTemplates($theme_name, $channel_set->template_preferences);
         $this->createAssetFolders($theme_name);
-        $this->createUploadDestinations($theme_name, $channel_set->upload_destinations);
+        $this->createFileEntities($theme_name);
         $this->createEntries($theme_name);
         $this->setConfigItems($channel_set->config);
         $this->setMemberTheme($theme_name);
@@ -152,9 +152,9 @@ class ThemeInstaller
      * @param string $theme_name The theme name
      * @return string Path to theme's channel set directory
      */
-    private function getChannelSetPath($theme_name)
+    private function getPortagePath($theme_name)
     {
-        return $this->installer_path . 'site_themes/' . $theme_name;
+        return $this->installer_path . 'site_themes/' . $theme_name . '/portage/';
     }
 
     /**
@@ -165,7 +165,7 @@ class ThemeInstaller
      */
     private function loadExtraData($theme_name)
     {
-        return json_decode(file_get_contents($this->getChannelSetPath($theme_name) . '/extra.json'));
+        return json_decode(file_get_contents($this->installer_path . 'site_themes/' . $theme_name . '/extra.json'));
     }
 
     /**
@@ -311,6 +311,19 @@ class ThemeInstaller
         }
     }
 
+    private function flattenDirectoryMap(&$flatMap = [], $nestedMap = [], $keyPrefix = '/')
+    {
+        foreach ($nestedMap as $key => $val) {
+            $flatKey = rtrim($keyPrefix . $key, '/');
+            if (! isset($flatMap[$flatKey])) {
+                $flatMap[$flatKey] = $flatKey;
+            }
+            if (is_array($val)) {
+                $flatMap[$flatKey] = $this->flattenDirectoryMap($flatMap, $val, $flatKey . '/');
+            }
+        }
+    }
+
     /**
      * Create the upload locations
      * @param string $theme_name The name of the theme, used for pulling in
@@ -319,41 +332,30 @@ class ThemeInstaller
      * 	locations supplied by loadChannelSet
      * @return void
      */
-    private function createUploadDestinations($theme_name, $upload_locations)
+    private function createFileEntities($theme_name)
     {
         $img_url = "{base_url}themes/user/site/{$theme_name}/";
         $img_path = $this->theme_path . "user/site/{$theme_name}/";
 
         ee('Filesystem')->forceCopy($this->installer_path . 'site_themes/default/asset/', $this->theme_path . 'user/site/default/asset/');
 
-        foreach ($upload_locations as $upload_location_data) {
-            $path = $img_path . $upload_location_data->path;
+        $upload_locations = ee('Model')->get('UploadDestination')
+                ->filter('site_id', 1)
+                ->filter('adapter', 'local')
+                ->all();
 
-            $upload_destination = ee('Model')->make('UploadDestination');
-            $upload_destination->site_id = 1;
-            $upload_destination->name = $upload_location_data->name;
-            $upload_destination->url = $img_url . $upload_location_data->path;
-            $upload_destination->server_path = str_replace($this->base_path, '{base_path}', $path);
-            $upload_destination->save();
+        foreach ($upload_locations as $upload_destination) {
 
             $this->model_data['upload_destination'][strtolower($upload_destination->name)] = $upload_destination;
 
-            foreach (directory_map($path) as $filename) {
-                if (! is_array($filename) && is_file($path . '/' . $filename) && $filename != 'index.html') {
-                    $filepath = $path . '/' . $filename;
-                    $time = time();
-                    $file = ee('Model')->make('File');
-                    $file->site_id = 1;
-                    $file->upload_location_id = $upload_destination->id;
-                    $file->uploaded_by_member_id = 1;
-                    $file->modified_by_member_id = 1;
-                    $file->title = $filename;
-                    $file->file_name = $filename;
-                    $file->upload_date = $time;
-                    $file->modified_date = $time;
-                    $file->mime_type = mime_content_type($filepath);
-                    $file->file_size = filesize($filepath);
-                    $file->save();
+            $directoryMap = $upload_destination->getDirectoryMap();
+            $flatDirectoryMap = [];
+            $this->flattenDirectoryMap($flatDirectoryMap, $directoryMap);
+            $files = array_keys($flatDirectoryMap);
+            $files_count = count($files, COUNT_RECURSIVE);
+            if ($files_count > 0) {
+                foreach ($files as $filePath) {
+                    $upload_destination->syncFile($filePath);
                 }
             }
         }
