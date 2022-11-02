@@ -316,7 +316,7 @@ class PortageImport
                 if (isset($this->associations[$uuid])) {
                     foreach ($this->associations[$uuid] as $relationship => $relatioshipData) {
                         //perhaps we need to add an alias
-                        if (strpos(':', $relationship) !== false && substr($relationship, 0, 3) != 'ee:') {
+                        if (strpos($relationship, ':') !== false && substr($relationship, 0, 3) != 'ee:') {
                             $thirdPartyAssoc = explode(':', $relationship);
                             $modelInstance->alias($relationship, $thirdPartyAssoc[1]);
                             $relationship = $thirdPartyAssoc[1];
@@ -514,12 +514,12 @@ class PortageImport
                     continue;
                 }
                 $version = explode('.', $addonPortage['version']);
-                $addonVersion = explode('.', $addon->getInstalledVersion());
-                if (empty($addonVersion)) {
+                if (!$addon->isInstalled()) {
                     $this->result->addError(sprintf(lang('portage_addon_not_installed'), $addon->getName()));
                     $addonsNotCompatible = true;
                     continue;
                 }
+                $addonVersion = explode('.', $addon->getInstalledVersion());
                 if ($addonVersion[0] != $version[0] || $addonVersion[1] != $version[1]) {
                     $this->result->addError(sprintf(lang('portage_addon_incompatible'), $addon->getName()));
                     $addonsNotCompatible = true;
@@ -643,6 +643,12 @@ class PortageImport
         $uuidField = method_exists($modelInstance, 'getColumnPrefix') ? $modelInstance->getColumnPrefix() . 'uuid' : 'uuid';
         if (isset($this->associations[$uuid])) {
             foreach ($this->associations[$uuid] as $relationship => $relatioshipData) {
+                //perhaps we need to add an alias
+                if (strpos($relatioshipData['model'], ':') !== false && substr($relatioshipData['model'], 0, 3) != 'ee:') {
+                    $thirdPartyAssoc = explode(':', $relatioshipData['model']);
+                    $modelInstance->alias($thirdPartyAssoc[0] . ':' . $relationship, $relationship);
+                }
+                
                 // only if there are some data and the related models are included in portage
                 if (! empty($relatioshipData) && ! empty($relatioshipData['related']) && in_array($relatioshipData['model'], $this->components)) {
                     if (! is_array($relatioshipData['related'])) {
