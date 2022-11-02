@@ -59,6 +59,7 @@ class Cli
         'make:action' => Commands\CommandMakeAction::class,
         'make:addon' => Commands\CommandMakeAddon::class,
         'make:command' => Commands\CommandMakeCommand::class,
+        'make:extension-hook' => Commands\CommandMakeExtensionHook::class,
         'make:migration' => Commands\CommandMakeMigration::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,

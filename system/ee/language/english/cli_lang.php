@@ -156,6 +156,18 @@ $lang = array(
     // make:tag options
     'command_make_tag_option_addon'                 => 'Folder for third-party add-on you want to add tag to',
 
+    // Lang entries for command make:extension-hook
+    'command_make_extension_hook_description'                  => 'Implements an EE extension hook in an add-on',
+    'command_make_extension_hook_summary'                      => 'This interactively implements an EE extension hook in an existing third-party addon',
+    'command_make_extension_hook_lets_build_extension_hook'    => 'Let\'s implement an extension hook!',
+    'command_make_extension_hook_ask_extension_hook_name'      => 'What is the extension hook name?',
+    'command_make_extension_hook_ask_addon'                    => 'What add-on is the extension hook being added to?',
+    'command_make_extension_hook_building_extension_hook'      => 'Building Extension hook.',
+    'command_make_extension_hook_created_successfully'         => 'Extension hook created successfully!',
+
+    // make:extension-hook options
+    'command_make_extension_hook_option_addon'                 => 'Folder for third-party add-on you want to add extension hook to',
+
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',
     'command_make_widget_lets_build_widget'           => 'Let\'s build a widget!',

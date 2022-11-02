@@ -57,6 +57,7 @@ use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
 use ExpressionEngine\Service\Generator\ActionGenerator;
 use ExpressionEngine\Service\Generator\AddonGenerator;
 use ExpressionEngine\Service\Generator\CommandGenerator;
+use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\TagGenerator;
@@ -364,6 +365,13 @@ $setup = [
             $filesystem = $ee->make('Filesystem');
 
             return new CommandGenerator($filesystem, $data);
+        },
+
+        'ExtensionHookGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new ExtensionHookGenerator($filesystem, $str, $data);
         },
 
         'ModelGenerator' => function ($ee, $data) {
