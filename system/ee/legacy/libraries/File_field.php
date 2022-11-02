@@ -1000,6 +1000,7 @@ class File_field
 
             ee()->cp->add_js_script([
                 'file' => [
+                    'fields/file/file_field_drag_and_drop',
                     'fields/file/concurrency_queue',
                     'fields/file/file_upload_progress_table',
                     'fields/file/drag_and_drop_upload',

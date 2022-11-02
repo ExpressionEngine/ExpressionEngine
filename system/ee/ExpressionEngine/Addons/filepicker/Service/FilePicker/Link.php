@@ -45,6 +45,10 @@ class Link
      */
     public function render()
     {
+        ee()->load->library('file_field');
+        ee()->lang->loadfile('fieldtypes');
+        ee()->file_field->loadDragAndDropAssets();
+
         $url = $this->filepicker->getUrl();
 
         $url->addQueryStringVariables(array(
