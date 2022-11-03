@@ -63,7 +63,7 @@ class ExtensionHookGenerator
         // If we didnt get a real hook, set up a default
         if ($hookData === false) {
             $hookData = [
-                'name' => $hook,
+                'name' => $this->name,
                 'params' => '',
                 'library' => ''
             ];
