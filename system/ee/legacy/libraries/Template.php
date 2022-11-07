@@ -347,22 +347,22 @@ class EE_Template
             'template_id' => $this->template_id,
             'template_type' => $this->embed_type ?: $this->template_type,
             'is_ajax_request' => AJAX_REQUEST,
-            'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
+            'is_live_preview_request' => isset(ee()->session) && ee('LivePreview')->hasEntryData(),
         ];
 
         //Pro conditionals
         $added_globals['frontedit'] = false;
-        if (ee('pro:Access')->hasRequiredLicense() && ee('pro:Access')->hasDockPermission()) {
-            if (
-                REQ == 'PAGE' &&
-                ee()->session->userdata('admin_sess') == 1 &&
-                (ee()->config->item('enable_frontedit') == 'y' || ee()->config->item('enable_frontedit') === false) &&
-                (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) &&
-                ee()->TMPL->enable_frontedit != 'n' &&
-                ee()->input->cookie('frontedit') != 'off'
-            ) {
-                $added_globals['frontedit'] = true;
-            }
+        if (
+            REQ == 'PAGE' &&
+            ee()->session->userdata('admin_sess') == 1 &&
+            (ee()->config->item('enable_frontedit') == 'y' || ee()->config->item('enable_frontedit') === false) &&
+            (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) &&
+            ee('pro:Access')->hasRequiredLicense() &&
+            ee('pro:Access')->hasDockPermission() &&
+            ee()->TMPL->enable_frontedit != 'n' &&
+            ee()->input->cookie('frontedit') != 'off'
+        ) {
+            $added_globals['frontedit'] = true;
         }
 
         $added_globals = array_merge($added_globals, $this->getMemberVariables());
@@ -454,7 +454,7 @@ class EE_Template
         }
 
         // Parse error conditinal tags
-        $errors = ee()->session->flashdata('errors');
+        $errors = isset(ee()->session) ? ee()->session->flashdata('errors') : [];
 
         // Make sure to age the flashdata so it doesn't appear on the next request accidentally.
         // ee()->session->_age_flashdata();
@@ -2554,7 +2554,7 @@ class EE_Template
         }
 
         // Is the current user allowed to view this template?
-        if ($query->row('enable_http_auth') != 'y' && !ee('Permission')->isSuperAdmin()) {
+        if ($query->row('enable_http_auth') != 'y' && isset(ee()->session) && !ee('Permission')->isSuperAdmin()) {
             ee()->db->select('role_id');
             ee()->db->where('template_id', $query->row('template_id'));
             $results = ee()->db->get('templates_roles');
@@ -2654,7 +2654,7 @@ class EE_Template
             ee()->functions->template_type = $row['template_type'];
 
             // If JS or CSS request, reset Tracker Cookie
-            if ($this->template_type == 'js' or $this->template_type == 'css') {
+            if (isset(ee()->session) && ($this->template_type == 'js' or $this->template_type == 'css')) {
                 if (count(ee()->session->tracker) <= 1) {
                     ee()->session->tracker = array();
                 } else {
@@ -2679,9 +2679,11 @@ class EE_Template
 
         $cache_override = array('member');
 
-        foreach ($cache_override as $val) {
-            if (strncmp(ee()->uri->uri_string, "/{$val}/", strlen($val) + 2) == 0) {
-                $row['cache'] = 'n';
+        if (isset(ee()->uri) && !is_null(ee()->uri->uri_string)) {
+            foreach ($cache_override as $val) {
+                if (strncmp(ee()->uri->uri_string, "/{$val}/", strlen($val) + 2) == 0) {
+                    $row['cache'] = 'n';
+                }
             }
         }
 
@@ -2733,6 +2735,10 @@ class EE_Template
 
             if (file_exists($basepath)) {
                 $row['template_data'] = file_get_contents($basepath);
+                $templateFileEditDate = filemtime($basepath);
+                if ($templateFileEditDate > $row['edit_date']) {
+                    $this->template_edit_date = $templateFileEditDate;
+                }
             }
 
             if ($site_switch !== false) {
@@ -2998,7 +3004,7 @@ class EE_Template
             return $str;
         }
 
-        if (ee('Permission')->canUsePro()) {
+        if (isset(ee()->session) && ee('Permission')->canUsePro()) {
             $str = preg_replace("/\{\!--\s*(\/\/)*\s*disable\s*frontedit\s*--\}/s", '<!-- ${1}disable frontedit -->', $str);
         }
 
@@ -3093,7 +3099,9 @@ class EE_Template
         // Restore XML declaration if it was encoded
         $str = $this->restore_xml_declaration($str);
 
-        ee()->session->userdata['member_group'] = ee()->session->userdata['role_id'];
+        if (isset(ee()->session)) {
+            ee()->session->userdata['member_group'] = ee()->session->userdata['role_id'];
+        }
         $this->user_vars[] = 'member_group';
 
         // parse all standard global variables
@@ -3245,7 +3253,9 @@ class EE_Template
 
         // Add security hashes to forms
         // We do this here to keep the security hashes from being cached
-        $str = ee()->functions->add_form_security_hash($str);
+        if (defined('CSRF_TOKEN')) {
+            $str = ee()->functions->add_form_security_hash($str);
+        }
 
         // Add Action IDs form forms and links
         $str = ee()->functions->insert_action_ids($str);
@@ -4429,6 +4439,11 @@ class EE_Template
     protected function getMemberVariables()
     {
         static $vars;
+
+        if (!isset(ee()->session)) {
+            //early parsing, e.g. called from code and not web request
+            return [];
+        }
 
         if (empty($vars)) {
             foreach ($this->user_vars as $user_var) {

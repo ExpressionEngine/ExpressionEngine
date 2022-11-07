@@ -108,6 +108,18 @@ class Relationship extends React.Component {
         })
     }
 
+    // Opens a modal to edit an entry
+    openPublishEditForm (id) {
+        EE.cp.ModalForm.openForm({
+            url: EE.relationship.publishEditUrl.replace('###', id + '&' + $.param({ entry_ids: [id] })),
+            full: true,
+            iframe: true,
+            dataType: 'json',
+            success: this.entryWasEdited,
+            load: function (modal) {}
+        })
+    }
+
     filterItems (items, searchTerm) {
         items = items.map(item => {
             // Clone item so we don't modify reference types
@@ -167,6 +179,24 @@ class Relationship extends React.Component {
             selected = [result.item]
         }
 
+        this.setState({ selected: selected, items: [...this.state.items, result.item] })
+
+        modal.trigger('modal:close')
+    }
+
+    // Event when a entry was edited by the channel modal
+    entryWasEdited = (result, modal) => {
+        let selected = this.state.selected
+
+        if (this.props.multi) {
+            $.each(selected, function(i, el){
+               if (el.value == result.item.value) {
+                el.label = result.item.label
+               }
+            })
+        } else {
+            selected = [result.item]
+        }
         this.setState({ selected: selected, items: [...this.state.items, result.item] })
 
         modal.trigger('modal:close')
@@ -311,6 +341,10 @@ class Relationship extends React.Component {
                                     </div>
                                     <div class="list-item__content-right">
                                         <div className="button-group">
+                                            {this.props.can_add_items &&
+                                            <button type="button" title={EE.relationship.lang.edit} className="button button--small button--default" onClick={() => this.openPublishEditForm(item.value)}><i class="fal fa-pencil-alt"></i></button>
+                                            }
+
                                             <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--default"><i class="fal fa-fw fa-trash-alt"></i></button>
                                         </div>
                                     </div>

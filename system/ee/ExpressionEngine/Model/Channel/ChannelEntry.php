@@ -147,7 +147,7 @@ class ChannelEntry extends ContentModel
         'author_id' => 'required|isNatural|validateAuthorId',
         'channel_id' => 'required|validateMaxEntries',
         'ip_address' => 'ip_address',
-        'title' => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
+        'title' => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup,br,wbr]',
         'url_title' => 'required|maxLength[URL_TITLE_MAX_LENGTH]|alphaDashPeriodEmoji|validateUniqueUrlTitle[channel_id]',
         'status' => 'required',
         'entry_date' => 'required',

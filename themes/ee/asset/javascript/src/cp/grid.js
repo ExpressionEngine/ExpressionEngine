@@ -1008,8 +1008,29 @@ $(document).ready(function () {
 
 		return false;
 	});
-
 });
+
+function checkGrigWidthForResize() {
+	var gridTables = $('.grid-field');
+
+	gridTables.each(function(el) {
+
+		if ( $(this).parents('.hidden').length ) return;
+
+		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
+			var tableInnerWidth = $(this).find('.grid-field__table').parents('.fluid__item-field').innerWidth()
+		} else {
+			var tableInnerWidth = $(this).find('.grid-field__table').width();
+		}
+
+		var containerWidth = $(this).parents('.field-control').width();
+
+		if (containerWidth < tableInnerWidth) {
+			$(this).addClass('overwidth');
+		}
+	});
+}
+
 function checkGrigWidth() {
 	var gridTables = $('.grid-field');
 
@@ -1039,7 +1060,7 @@ $(window).on('load', function() {
 });
 
 $(window).on('resize', function() {
-	checkGrigWidth();
+	checkGrigWidthForResize();
 });
 
 })(jQuery);

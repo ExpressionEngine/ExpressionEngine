@@ -18,11 +18,13 @@ use ExpressionEngine\Model\Channel\ChannelField;
  */
 class Fields extends AbstractFieldsController
 {
+    private $fieldChannels = [];
+
     public function index()
     {
         $group_id = ee('Request')->get('group_id');
 
-        if ($group_id) {
+        if (!is_null($group_id)) {
             $base_url = ee('CP/URL')->make('fields', ['group_id' => $group_id]);
         } else {
             $base_url = ee('CP/URL')->make('fields');
@@ -54,6 +56,9 @@ class Fields extends AbstractFieldsController
             ->order('group_name')
             ->all()
             ->getDictionary('group_id', 'group_name');
+        if ($this->hasUngroupedFields === true) {
+            $group_ids = array_merge(['0' => lang('ungrouped')], $group_ids);
+        }
 
         $filters = ee('CP/Filter');
         $group_filter = $filters->make('group_id', 'group_filter', $group_ids);
@@ -76,13 +81,14 @@ class Fields extends AbstractFieldsController
 
         $total_fields = 0;
 
-        $group = $group_id && $group_id != 'all'
+        $group = !is_null($group_id) && $group_id != 'all'
             ? ee('Model')->get('ChannelFieldGroup', $group_id)->first()
             : null;
 
         // Are we showing a specific group? If so, we need to apply filtering differently
         // because we are acting on a collection instead of a query builder
         if ($group) {
+            $vars['cp_page_title'] = $group->group_name . '&mdash;' . lang('fields');
             $fields = $group->ChannelFields->sortBy('field_label')->asArray();
 
             if ($search = ee()->input->get_post('filter_by_keyword')) {
@@ -101,6 +107,7 @@ class Fields extends AbstractFieldsController
 
             $total_fields = count($fields);
         } else {
+            $vars['cp_page_title'] = lang('all_fields');
             $fields = ee('Model')->get('ChannelField')
                 ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
 
@@ -110,6 +117,16 @@ class Fields extends AbstractFieldsController
 
             if ($fieldtype = $filter_values['fieldtype']) {
                 $fields->filter('field_type', $fieldtype);
+            }
+
+            if ((string) $group_id === '0') {
+                $ungroupedQuery = ee('db')->query('SELECT DISTINCT exp_channel_fields.field_id FROM exp_channel_fields WHERE NOT EXISTS (SELECT field_id FROM exp_channel_field_groups_fields WHERE exp_channel_fields.field_id=exp_channel_field_groups_fields.field_id)');
+                $ungroupedFieldIds = [];
+                foreach ($ungroupedQuery->result_array() as $row) {
+                    $ungroupedFieldIds[] = $row['field_id'];
+                }
+                $fields->filter('field_id', 'IN', $ungroupedFieldIds);
+                $vars['cp_page_title'] = lang('ungrouped') . '&mdash;' . lang('fields');
             }
 
             $total_fields = $fields->count();
@@ -172,9 +189,6 @@ class Fields extends AbstractFieldsController
             ->currentPage($page)
             ->render($vars['base_url']);
 
-        $vars['cp_page_title'] = $group
-            ? $group->group_name . '&mdash;' . lang('fields')
-            : lang('all_fields');
         $vars['fields'] = $data;
         $vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('fields')), 'href' => $vars['create_url']];
 
@@ -455,9 +469,17 @@ class Fields extends AbstractFieldsController
                     ->defer();
 
                 if (ee('Request')->post('submit') == 'save_and_new') {
-                    $redirectUrl = ee('CP/URL')->make('fields/create');
+                    if (count($active_groups) == 1) {
+                        $redirectUrl = ee('CP/URL')->make('fields/create', ['group_id' => $active_groups[0]]);
+                    } else {
+                        $redirectUrl = ee('CP/URL')->make('fields/create');
+                    }
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
-                    $redirectUrl = ee('CP/URL')->make('fields');
+                    if (count($active_groups) == 1) {
+                        $redirectUrl = ee('CP/URL')->make('fields', ['group_id' => $active_groups[0]]);
+                    } else {
+                        $redirectUrl = ee('CP/URL')->make('fields');
+                    }
                 } else {
                     $redirectUrl = ee('CP/URL')->make('fields/edit/' . $field->getId());
                 }
@@ -597,6 +619,7 @@ class Fields extends AbstractFieldsController
 
     private function form(ChannelField $field = null)
     {
+        ee()->lang->load('pro');
         if (! $field) {
             $field = ee('Model')->make('ChannelField');
         }
@@ -688,6 +711,16 @@ class Fields extends AbstractFieldsController
                     )
                 ),
                 array(
+                    'title' => 'enable_frontedit',
+                    'desc' => 'enable_frontedit_field_desc',
+                    'fields' => array(
+                        'enable_frontedit' => array(
+                            'type' => 'yes_no',
+                            'value' => $field->enable_frontedit
+                        )
+                    )
+                ),
+                array(
                     'title' => 'make_conditional',
                     'desc' => 'make_conditional_desc',
                     'fields' => array(
@@ -701,18 +734,6 @@ class Fields extends AbstractFieldsController
                     )
                 ),
             ),
-        );
-
-        ee()->lang->load('pro');
-        $sections['pro_settings'][] = array(
-            'title' => 'enable_frontedit',
-            'desc' => 'enable_frontedit_field_desc',
-            'fields' => array(
-                'enable_frontedit' => array(
-                    'type' => 'yes_no',
-                    'value' => $field->enable_frontedit
-                )
-            )
         );
 
         $field_options = $field->getSettingsForm();
@@ -809,6 +830,42 @@ class Fields extends AbstractFieldsController
             );
         }
 
+        $this->_getFieldChannels($field);
+        $fieldFluidFields = ee('Model')->get('ChannelField')->filter('field_type', 'fluid_field')->all();
+        if (!is_null($fieldFluidFields)) {
+            foreach ($fieldFluidFields as $fieldFluidField) {
+                if (!empty($fieldFluidField->field_settings) && in_array($field->getId(), $fieldFluidField->field_settings['field_channel_fields'])) {
+                    $this->_getFieldChannels($fieldFluidField, lang('via') . ' ' . $fieldFluidField->field_name . ' (' . lang('fluid_field') . ')');
+                }
+            }
+        }
+
+        // -------------------------------------------
+        // 'cp_field_channels_list' hook.
+        //  - Let add-ons tell where else this field is used
+        //
+        if (ee()->extensions->active_hook('cp_field_channels_list') === true) {
+            $this->fieldChannels = ee()->extensions->call('cp_field_channels_list', $field, $this);
+        }
+        //
+        // -------------------------------------------
+
+        if (!$field->isNew() && !empty($this->fieldChannels)) {
+            foreach ($this->fieldChannels as $id => $channelData) {
+                $this->fieldChannels[$id]['extra'] = lang('assigned') . ' ' . implode(', ', $channelData['via']);
+            }
+            $sections[0][] = array(
+                'title' => 'field_channels',
+                'desc' => 'field_channels_desc',
+                'fields' => array(
+                    'field_channels' => array(
+                        'type' => 'html',
+                        'content' => ee('View')->make('ee:_shared/table-list')->render(['data' => $this->fieldChannels, 'disable_action' => true])
+                    )
+                )
+            );
+        }
+
         ee()->javascript->output('$(document).ready(function () {
             EE.cp.fieldToggleDisable();
         });');
@@ -816,6 +873,44 @@ class Fields extends AbstractFieldsController
         ee()->cp->add_js_script('file', array('cp/conditional_logic'));
 
         return $sections;
+    }
+
+    private function _getFieldChannels($field, $overrideVia = '')
+    {
+        if (!is_null($field->Channels)) {
+            foreach ($field->Channels as $fieldChannel) {
+                $via = empty($overrideVia) ? lang('directly') : $overrideVia;
+                if (!isset($this->fieldChannels[$fieldChannel->getId()])) {
+                    $this->fieldChannels[$fieldChannel->getId()] = [
+                        'id' => $fieldChannel->getId(),
+                        'label' => $fieldChannel->channel_title,
+                        'href' => ee('CP/URL', 'channels/edit/' . $fieldChannel->getId()),
+                        'via' => [$via]
+                    ];
+                } else {
+                    $this->fieldChannels[$fieldChannel->getId()]['via'][] = $via;
+                }
+            }
+        }
+        if (!is_null($field->ChannelFieldGroups)) {
+            foreach ($field->ChannelFieldGroups as $fieldGroup) {
+                if (!is_null($fieldGroup->Channels)) {
+                    foreach ($fieldGroup->Channels as $fieldChannel) {
+                        $via = empty($overrideVia) ? lang('via') . ' ' . $fieldGroup->group_name . ' (' . lang('field_group') . ')' : $overrideVia;
+                        if (!isset($this->fieldChannels[$fieldChannel->getId()])) {
+                            $this->fieldChannels[$fieldChannel->getId()] = [
+                                'id' => $fieldChannel->getId(),
+                                'label' => $fieldChannel->channel_title,
+                                'href' => ee('CP/URL', 'channels/edit/' . $fieldChannel->getId()),
+                                'via' => [$via],
+                            ];
+                        } else {
+                            $this->fieldChannels[$fieldChannel->getId()]['via'][] = $via;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private function remove($field_ids)

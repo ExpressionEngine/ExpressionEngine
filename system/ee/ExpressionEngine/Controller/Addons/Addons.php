@@ -13,6 +13,7 @@ namespace ExpressionEngine\Controller\Addons;
 use CP_Controller;
 use Michelf\MarkdownExtra;
 use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Service\Addon\Mcp;
 
 /**
  * Addons Controller
@@ -195,6 +196,7 @@ class Addons extends CP_Controller
             $addons[$key]['install_url'] = ee('CP/URL')->make('addons/install/' . $addon['package'], ['return' => $return_url->encode()]);
             $addons[$key]['update_url'] = ee('CP/URL')->make('addons/update/' . $addon['package'], ['return' => $return_url->encode()]);
             $addons[$key]['remove_url'] = ee('CP/URL')->make('addons/remove/' . $addon['package'], ['return' => $return_url->encode()]);
+            $addons[$key]['confirm_url'] = ee('CP/URL')->make('addons/confirm/' . $addon['package']);
         }
 
         // Sort the add-ons alphabetically
@@ -237,6 +239,60 @@ class Addons extends CP_Controller
         );
 
         ee()->cp->render('addons/index', $vars);
+    }
+
+    /** 
+     * Extra dialog for removal confirmation
+    */
+    public function confirm()
+    {
+        $vars = array();
+        $selected = ee()->uri->segment('4');
+        $desc = '';
+        $fields = [];
+
+        $channelFieldQuery = ee('Model')->get('ChannelField')
+            ->filter('field_type', $selected);
+        if ($channelFieldQuery->count() > 0) {
+            $title = lang('fieldtype_is_in_use');
+            $fields = array_merge($fields, $channelFieldQuery->all()->getDictionary('field_id', 'field_label'));
+        }
+
+        $gridFieldQuery = ee('db')->select('channel_fields.field_id, channel_fields.field_label')
+            ->from('channel_fields')
+            ->join('grid_columns', 'channel_fields.field_id = grid_columns.field_id', 'left')
+            ->where('col_type', $selected)
+            ->get();
+        if ($gridFieldQuery->num_rows() > 0) {
+            $title = lang('fieldtype_is_in_use');
+            foreach ($gridFieldQuery->result_array() as $row) {
+                $fields[$row['field_id']] = $row['field_label'];
+            }
+        }
+
+        if (!empty($fields)) {
+            $desc = implode(', ', $fields) . BR;
+        }
+
+        $desc .= lang('move_toggle_to_confirm');
+
+        if (isset($title)) {
+            $vars['fieldset'] = [
+                'group' => 'delete-confirm',
+                'setting' => [
+                    'title' => $title,
+                    'desc' => $desc,
+                    'fields' => [
+                        'confirm' => [
+                            'type' => 'toggle',
+                            'value' => 0,
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        ee()->cp->render('files/delete_confirm', $vars);
     }
 
     /**
@@ -1496,6 +1552,7 @@ class Addons extends CP_Controller
 
         // its possible that a module will try to call a method that does not exist
         // either by accident (ie: a missed function) or by deliberate user url hacking
+
         if (! method_exists($mod, $method)) {
             // 3.0 introduced camel-cased method names that are translated from a URL
             // segment separated by dashes or underscores
@@ -1506,11 +1563,17 @@ class Addons extends CP_Controller
             $method .= implode('', $words);
 
             if (! method_exists($mod, $method)) {
-                show_404();
+                if (! $mod instanceof Mcp) {
+                    show_404();
+                }
             }
         }
 
-        $_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
+        if ($mod instanceof Mcp && ! method_exists($mod, $method)) {
+            $_module_cp_body = $mod->setAddonName($addon)->route($method, $parameters);
+        } else {
+            $_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
+        }
 
         // unset reference
         ee()->remove('_mcp_reference');

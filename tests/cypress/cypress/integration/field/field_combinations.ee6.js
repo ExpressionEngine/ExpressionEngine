@@ -17,7 +17,7 @@ var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","
 var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Notes", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL", "Number", "SelectableButtons", "ValueSlider", "RangeSlider"];
 
 //grid is tested in a seperate test
-context.skip('Create combinations of field', () => {
+context('Create combinations of field', () => {
 
 	before(function(){
 		cy.task('db:seed')
@@ -136,7 +136,7 @@ context.skip('Create combinations of field', () => {
 		cy.visit('admin.php?/cp/fields')
 		cy.dismissLicenseAlert()
 		cy.get('div').contains('AA Checkboxes Test').click()
-		cy.get('div').contains('Value/Label Pairs').click()
+		cy.get('div.checkbox-label__text').contains('Value/Label Pairs').click()
 		cy.get('a').contains('Add New').click()
 		cy.get('input[name = "value_label_pairs[rows][new_row_1][value]"]').type('1')
 		cy.get('input[name = "value_label_pairs[rows][new_row_1][label]"]').type('one')
@@ -301,7 +301,7 @@ context.skip('Create combinations of field', () => {
 	it('Tests Select', () => {
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Select').click()
-		cy.get('div').contains('Value/Label Pairs').click()
+		cy.get('div.checkbox-label__text').contains('Value/Label Pairs').click()
 		cy.get('a').contains('Add New').click()
 		cy.get('input[name = "value_label_pairs[rows][new_row_1][value]"]').type('1one')
 		cy.get('input[name = "value_label_pairs[rows][new_row_1][label]"]').type('one')
@@ -485,7 +485,7 @@ context.skip('Create combinations of field', () => {
 		
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Selectable Buttons Test').click()
-		cy.get('div').contains('Value/Label Pairs').click()
+		cy.get('div.checkbox-label__text').contains('Value/Label Pairs').click()
 		cy.get('a').contains('Add New').click()
 		cy.get('input[name = "value_label_pairs[rows][new_row_1][value]"]').type('uno')
 		cy.get('input[name = "value_label_pairs[rows][new_row_1][label]"]').type('one')
@@ -701,7 +701,7 @@ context.skip('Create combinations of field', () => {
 function addToChannel(name){
 
 	let title = 'AA ' + name + ' Test'
-	cy.get('div').contains(title).click()
+	cy.get('div.checkbox-label__text').contains(title).click()
 }
 
 function addGroup(name){

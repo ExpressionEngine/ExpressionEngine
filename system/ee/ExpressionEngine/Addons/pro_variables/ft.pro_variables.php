@@ -43,6 +43,8 @@ class Pro_variables_ft extends EE_Fieldtype
      */
     public $has_array_data = true;
 
+    public $entry_manager_compatible = true;
+
     // --------------------------------------------------------------------
 
     /**
@@ -251,7 +253,7 @@ class Pro_variables_ft extends EE_Fieldtype
             $field = array(
                 'type'    => 'checkbox',
                 'choices' => $choices,
-                'value'   => explode("\n", $value),
+                'value'   => explode("\n", (string) $value),
                 'wrap'    => true
             );
         } else {
@@ -336,6 +338,11 @@ class Pro_variables_ft extends EE_Fieldtype
     public function replace_var($data, $params)
     {
         return LD . $data . RD;
+    }
+
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return $this->replace_tag($data);
     }
 
     // --------------------------------------------------------------------

@@ -74,6 +74,8 @@ gulp.task('app', ['_preflight'], function (cb) {
 		'build/',
 		'tests/',
 		'build-tools/',
+		'frontedit/',
+		'js-src/',
 		
 		'images/*/*',
 		'images/about',
@@ -384,6 +386,7 @@ gulp.task('_delete_files', function (cb) {
 		'npm-shrinkwrap.json',
 		'jest.config.js',
 		'babel.config.js',
+		'webpack.config.js',
 		'system/ee/ExpressionEngine/Addons/pro/composer.json',
 		'system/ee/ExpressionEngine/Addons/pro/composer.lock',
 		'system/ee/ExpressionEngine/Addons/pro/Composer.php',

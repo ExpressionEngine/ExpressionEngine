@@ -76,7 +76,7 @@ return array(
         ),
         'picture' => array(
             'tag_name' => lang('html_btn_picture'),
-            'tag_open' => '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />',
+            'tag_open' => '<img src="[![Link:!:http://]!]" alt="" height="" width="">',
             'tag_close' => '',
             'accesskey' => '',
             'classname' => 'html-upload'

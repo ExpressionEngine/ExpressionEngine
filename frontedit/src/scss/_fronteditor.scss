@@ -1,0 +1,562 @@
+// Space
+$s-xs: 5px;
+$s-s: 10px;
+$s-m: 20px;
+$s-l: 40px;
+$s-xl: 80px;
+
+// Inset space. Basically padding
+$s-inset-xs: $s-xs $s-xs $s-xs $s-xs;
+$s-inset-s:  $s-s $s-s $s-s $s-s;
+$s-inset-m:  $s-m $s-m $s-m $s-m;
+$s-inset-l:  $s-l $s-l $s-l $s-l;
+$s-inset-xl: $s-xl $s-xl $s-xl $s-xl;
+
+// Inset squashed space. Same as inset, but with more horizontal padding.
+$h-multiplier: 1.5;
+
+// Squashed space. More padding on the x axis.
+$sq-xs: round($s-xs * $h-multiplier);
+$sq-s:  round($s-s * $h-multiplier);
+$sq-m:  round($s-m * $h-multiplier);
+$sq-l:  round($s-l * $h-multiplier);
+$sq-xl: round($s-xl * $h-multiplier);
+
+$sq-inset-xs: $s-xs $sq-xs $s-xs $sq-xs;
+$sq-inset-s:  $s-s  $sq-s  $s-s  $sq-s;
+$sq-inset-m:  $s-m  $sq-m  $s-m  $sq-m;
+$sq-inset-l:  $s-l  $sq-l  $s-l  $sq-l;
+$sq-inset-xl: $s-xl $sq-xl $s-xl $sq-xl;
+
+// Width of the main sidebar
+$ee-sidebar-width: 200px;
+$ee-sidebar-width-collapsed: 59px;
+
+// Width of the secondary sidebar
+$secondary-sidebar-width: 310px;
+
+// Padding of the main container
+$main-content-padding-y: $s-l - 5px;
+$main-content-padding-x: $s-l;
+
+// Common Padding
+$padding-base-vertical: 8px;
+$padding-base-horizontal: 15px;
+$padding-base-horizontal-extra: 20px;
+
+$padding-large-vertical: 10px;
+$padding-large-horizontal: 20px;
+$padding-large-horizontal-extra: 25px;
+
+$padding-small-vertical:   5px;
+$padding-small-horizontal: 10px;
+$padding-small-horizontal-extra: 15px;
+
+$padding-xs-vertical: 2px;
+$padding-xs-horizontal: 7px;
+$padding-xs-horizontal-extra: 10px;
+
+// Corner radiuses (deprecated - use Border radiuses below)
+$corners-small: 3px;
+$corners: 5px;
+$corners-big: 8px;
+$corners-jumbo: 20px;
+
+// Border radiuses
+$border-radius-xsmall:  3px;
+$border-radius-small:  4px;
+$border-radius-base:  5px;
+$border-radius-large:  6px;
+$border-radius-xlarge:  8px;
+$border-radius-full:  1000px;
+
+// Font sizes
+$font-size-small: 0.8rem;
+$font-size-normal: 1rem;
+$font-size-large: 1.2rem;
+
+// Line height used for typography
+$line-height-large: 1.7;
+$line-height-normal: 1.6;
+$line-height-small: 1.5;
+
+// Fonts
+$font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Oxygen, Cantarell, sans-serif;
+
+// font-family: 'Inconsolata';
+$font-family-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas, "Courier New", monospace;
+
+// Transition speed
+$t-speed: 200ms;
+
+@mixin font-normal {
+  font-family: $font-family;
+}
+
+@mixin font-monospace {
+  font-family: $font-family-monospace;
+}
+
+// Button Sizes
+// -------------------------------------------------------------------
+
+@mixin button-size($padding-vertical, $padding-horizontal, $font-size, $line-height, $border-radius) {
+  padding: $padding-vertical $padding-horizontal !important;
+  font-size: $font-size;
+  line-height: $line-height;
+  border-radius: $border-radius;
+}
+
+// Button Variants
+// -------------------------------------------------------------------
+
+@mixin button-variant($color, $background, $border, $hover-bg, $hover-border) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+
+  &:focus,
+  &.focus {
+    color: $color;
+    background-color: $hover-bg;
+    border-color: $hover-border;
+  }
+  &:hover {
+    color: $color;
+    background-color: $hover-bg;
+        border-color: $hover-border;
+  }
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    color: $color;
+    background-color: $hover-bg;
+        border-color: $hover-border;
+
+    &:hover,
+    &:focus,
+    &.focus {
+      color: $color;
+      background-color: $hover-bg;
+          border-color: $hover-border;
+    }
+  }
+  &:active,
+  &.active,
+  .open > &.dropdown-toggle {
+    background-image: none;
+  }
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    &:hover,
+    &:focus,
+    &.focus {
+      background-color: $background;
+          border-color: $border;
+    }
+  }
+}
+
+// Media breakpoints
+// -------------------------------------------------------------------
+
+$mobile-width: 550px;
+$tablet-width: 768px;
+$desktop-width: 1024px;
+
+@mixin m-mobile-up {
+  @media (min-width: #{$mobile-width}) {
+    @content;
+  }
+}
+
+@mixin m-mobile-down {
+  @media (max-width: #{$mobile-width - 1px}) {
+    @content;
+  }
+}
+
+@mixin m-tablet-up {
+  @media (min-width: #{$tablet-width}) {
+    @content;
+  }
+}
+
+@mixin m-tablet-down {
+  @media (max-width: #{$tablet-width - 1px}) {
+    @content;
+  }
+}
+
+@mixin m-desktop {
+  @media (min-width: #{$desktop-width}) {
+    @content;
+  }
+}
+
+@mixin m-desktop-down {
+  @media (max-width: #{$desktop-width - 1px}) {
+    @content;
+  }
+}
+
+@mixin m-custom-down($width) {
+  @media (max-width: #{$width}) {
+    @content;
+  }
+}
+
+// Helpers
+// -------------------------------------------------------------------
+
+@mixin clear-float {
+  &:after {
+    clear: both;
+    content: "";
+    display: block;
+    font-size: 0;
+    height: 0;
+    visibility: hidden;
+  }
+}
+
+@mixin selection($color, $bg) {
+  ::selection {
+    color: $color;
+    background: $bg;
+  }
+
+  ::-moz-selection {
+    color: $color;
+    background: $bg;
+  }
+}
+
+@mixin placeholder {
+  &::-webkit-input-placeholder {@content}
+  &:-moz-placeholder           {@content}
+  &::-moz-placeholder          {@content}
+  &:-ms-input-placeholder      {@content}
+}
+
+@mixin tab-focus() {
+  outline: 0px auto -webkit-focus-ring-color;
+  outline-offset: -3px;
+}
+
+@mixin clearfix() {
+  &:before,
+  &:after {
+    content: " "; // 1
+    display: table; // 2
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+// Visual
+// -------------------------------------------------------------------
+
+@mixin shadow-modal() {
+  box-shadow: 0 8px 40px color(shadow-modal);
+}
+
+@mixin shadow-dropdown() {
+  // box-shadow: 0 4px 20px $color;
+  box-shadow: 0 1px 4px 0 color(shadow-dropdown);
+}
+
+@mixin gradient-striped($color: rgba(255, 255, 255, .25), $angle: 45deg) {
+  background-image: -webkit-linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent);
+  background-image: linear-gradient($angle, $color 25%, transparent 25%, transparent 50%, $color 50%, $color 75%, transparent 75%, transparent);
+}
+
+@mixin focus-visible {
+  &:focus {
+    @content;
+  }
+
+  // Hide the focus styles if the user is not using keyboard navigation
+  &:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+// Polyfill for :focus-visible
+// Hide the focus styles if the user is not using keyboard navigation
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+@mixin focus-outline {
+  outline: none;
+  // box-shadow: 0 0 0 2px color(bg-5), 0 0 0 4px color(keyboard-focus);
+}
+
+@mixin focus-outline-inset {
+  outline: none;
+  box-shadow: inset 0 0 0 2px color(keyboard-focus);
+}
+
+// Functions
+// -------------------------------------------------------------------
+
+@function str-replace($string, $search, $replace: '') {
+  $index: str-index($string, $search);
+
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+
+  @return $string;
+}
+
+
+
+.pro__dock {
+  height: 64px;
+  width: max-content;
+  max-width: 100%;
+  padding: 10px;
+  padding-left: 46px;
+  display: flex;
+  position: relative;
+  white-space: nowrap;
+  background-color: #ffffff;
+  border: 2px solid desaturate(darken(#5d63f1, 15), 15);
+  border-radius: $border-radius-large;
+  box-shadow: 0 3px 15px 0 rgba(0, 0, 0, 0.15);
+
+  @include m-tablet-down {
+    padding-left: 36px;
+  }
+
+  .pro__dock-drag {
+    font-size: 16px;
+    color: desaturate(darken(desaturate(lighten(#5D63F1, 32), 52), 35), 15);
+    opacity: .65;
+    cursor: move;
+    display: block;
+    padding: 11px 7px 11px 7px;
+    left: 11px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    @include m-tablet-down {
+      left: 8px;
+    }
+  }
+
+  .pro__dock--add-ons-wrapper {
+    display: inline-block;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .pro__dock--add-ons {
+    width: auto;
+    height: 40px;
+    list-style: none;
+    display: inline-table;
+    vertical-align: top;
+    white-space: nowrap;
+
+    li {
+      display: inline-block;
+      margin-right: 10px;
+      vertical-align: top;
+
+      @include m-tablet-down {
+        margin-right: 5px;
+      }
+
+      &:last-child {
+        margin-right: 0px;
+      }
+
+      a {
+        display: block;
+        height: 40px;
+      }
+
+      img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  }
+
+  .pro__dock--overflow.active {
+    position: relative;
+    margin-left: -5px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 10px;
+      height: 40px;
+      background-image: linear-gradient(to right, rgba(255,255,255,1.00), rgba(255,255,255,0.00));
+      display: block;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      width: 10px;
+      height: 40px;
+      background-image: linear-gradient(to left, rgba(255,255,255,1.00), rgba(255,255,255,0.00));
+      display: block;
+    }
+
+    .pro__dock--add-ons:first-child {
+      padding-left: 10px;
+    }
+
+    .pro__dock--add-ons-wrapper {
+      overflow: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      padding: 55px 100px 0 100px;
+      margin: -55px -100px 0 -100px;
+    }
+  }
+
+  .pro__dock-utilities {
+    list-style: none;
+    margin-left: 25px;
+    padding-left: 85px;
+    display: inline-table;
+    vertical-align: top;
+    position: relative;
+    border-left: 1px solid desaturate(darken(#5d63f1, 15), 15);
+
+    @include m-tablet-down {
+      margin-left: 15px;
+      padding-left: 73px;
+    }
+
+    li {
+      display: inline-block;
+      margin-right: 5px;
+      vertical-align: top;
+
+      &:last-child {
+        margin-right: 0px;
+      }
+
+      .toggle-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 22px;
+
+        @include m-tablet-down {
+          left: 15px;
+        }
+
+      }
+
+      .button {
+        width: 40px;
+        height: 40px;
+        font-size: 17px;
+        padding: 0px !important;
+        position: relative;
+
+        :first-child {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+    }
+  }
+}
+
+// Windows
+
+.pro__window {
+  width: 500px;
+  max-width: 100%;
+  background-color: #FFFFFF;
+  border: 2px solid desaturate(darken(#5d63f1, 15), 15);
+  border-radius: $border-radius-large;
+  box-shadow: 0 3px 15px 0 rgba(0, 0, 0, 0.15);
+  resize: horizontal;
+  overflow: auto;
+
+  &.pro__window-small {
+    width: 375px;
+  }
+
+  &.pro__window-large {
+    width: 800px;
+  }
+
+  .pro__window-header {
+    background-color: color(gray-0);
+    padding: 12px 15px 13px;
+    position: relative;
+    cursor: move;
+    border-radius: $border-radius-large $border-radius-large 0px 0px;
+    border-bottom: 1px solid color(panel-border);
+
+    h3 {
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 85%;
+      color: desaturate(darken(desaturate(lighten(#5D63F1, 32), 52), 35), 15);
+    }
+
+    .pro__window-close {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: desaturate(darken(desaturate(lighten(#5D63F1, 32), 52), 35), 15);
+    }
+  }
+
+  .pro__window-body {
+    padding: 15px 20px;
+  }
+
+  .pro__window-footer {
+    background-color: color(gray-0);
+    padding: 12px 15px;
+    position: relative;
+    border-radius: 0px 0px $border-radius-large $border-radius-large;
+    border-top: 1px solid color(panel-border);
+
+    .button {
+      margin-right: 2px;
+
+      &:last-child {
+        margin-right: 0px;
+      }
+    }
+
+    .pro__window-footer-link {
+      position: absolute;
+      font-size: .85rem;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: right;
+      display: block;
+    }
+  }
+}

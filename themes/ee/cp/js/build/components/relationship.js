@@ -65,6 +65,27 @@ function (_React$Component) {
       modal.trigger('modal:close');
     });
 
+    _defineProperty(_assertThisInitialized(_this), "entryWasEdited", function (result, modal) {
+      var selected = _this.state.selected;
+
+      if (_this.props.multi) {
+        $.each(selected, function (i, el) {
+          if (el.value == result.item.value) {
+            el.label = result.item.label;
+          }
+        });
+      } else {
+        selected = [result.item];
+      }
+
+      _this.setState({
+        selected: selected,
+        items: [].concat(_toConsumableArray(_this.state.items), [result.item])
+      });
+
+      modal.trigger('modal:close');
+    });
+
     _defineProperty(_assertThisInitialized(_this), "channelFilterChange", function (newValue) {
       _this.setState({
         channelFilter: newValue
@@ -247,6 +268,21 @@ function (_React$Component) {
           EE.cp.ModalForm.setTitle(title);
         }
       });
+    } // Opens a modal to edit an entry
+
+  }, {
+    key: "openPublishEditForm",
+    value: function openPublishEditForm(id) {
+      EE.cp.ModalForm.openForm({
+        url: EE.relationship.publishEditUrl.replace('###', id + '&' + $.param({
+          entry_ids: [id]
+        })),
+        full: true,
+        iframe: true,
+        dataType: 'json',
+        success: this.entryWasEdited,
+        load: function load(modal) {}
+      });
     }
   }, {
     key: "filterItems",
@@ -371,7 +407,16 @@ function (_React$Component) {
           "class": "list-item__content-right"
         }, React.createElement("div", {
           className: "button-group"
-        }, React.createElement("button", {
+        }, _this5.props.can_add_items && React.createElement("button", {
+          type: "button",
+          title: EE.relationship.lang.edit,
+          className: "button button--small button--default",
+          onClick: function onClick() {
+            return _this5.openPublishEditForm(item.value);
+          }
+        }, React.createElement("i", {
+          "class": "fal fa-pencil-alt"
+        })), React.createElement("button", {
           type: "button",
           title: EE.relationship.lang.remove,
           onClick: function onClick() {
