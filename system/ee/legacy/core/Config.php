@@ -261,7 +261,7 @@ class EE_Config
             }
         }
 
-        if (! file_exists(APPPATH . 'libraries/Sites.php') or ! isset($this->default_ini['multiple_sites_enabled']) or $this->default_ini['multiple_sites_enabled'] != 'y') {
+        if (! isset($this->default_ini['multiple_sites_enabled']) or $this->default_ini['multiple_sites_enabled'] != 'y') {
             $site_name = '';
             $site_id = 1;
         }
@@ -501,7 +501,7 @@ class EE_Config
      *
      * @access	public
      * @param	string	Name of the site
-     * @return	string
+     * @return	array
      */
     public function divination($which)
     {
@@ -600,7 +600,17 @@ class EE_Config
             'max_logged_searches',
             'rte_default_toolset',
             'rte_file_browser',
-            'forum_trigger'
+            'forum_trigger',
+            //pro config values
+            'login_logo',
+            'favicon',
+            'autosave_interval_seconds',
+            'enable_dock',
+            'enable_entry_cloning',
+            'enable_frontedit',
+            'automatic_frontedit_links',
+            'enable_mfa',
+            'anonymize_consent_logs',
         );
 
         $member_default = array(
@@ -684,13 +694,17 @@ class EE_Config
             'enable_entry_view_tracking',
             'enable_hit_tracking',
             'enable_online_user_tracking',
+            'enable_tracking_cookie',
             'force_redirect',
             'is_system_on',
             'cli_enabled',
             'multiple_sites_enabled',
             'newrelic_app_name',
             'use_newrelic',
-            'search_reindex_needed'
+            'search_reindex_needed',
+            'legacy_member_data',
+            'legacy_channel_data',
+            'legacy_category_field_data'
         ];
 
         $name = $which . '_default';
@@ -1662,8 +1676,8 @@ class EE_Config
      * Secondary lines of text used in configuration pages
      * This text appears below any given preference definition
      *
-     * @access	public
-     * @return	string[]	The secondary lines of text used in configuration pages
+     * @access public
+     * @return array The secondary lines of text used in configuration pages
      */
     public function get_config_field_subtext()
     {

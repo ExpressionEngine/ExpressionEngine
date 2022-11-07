@@ -22,6 +22,11 @@ function makeFilterableComponent(WrappedComponent) {
       this.ajaxFilter = (SelectList.countItems(this.initialItems) >= props.limit && props.filterUrl)
       this.ajaxTimer = null
       this.ajaxRequest = null
+
+      // We need this function only for checkbox that have selected elements and there are more than tooMany
+      if (props.tooMany && props.multi && this.props.selected.length) {
+        this.moveSelectableToTop();
+      }
     }
 
     itemsChanged = (items) => {
@@ -116,6 +121,28 @@ function makeFilterableComponent(WrappedComponent) {
         },
         error: () => {} // Defined to prevent error on .abort above
       })
+    }
+
+    moveSelectableToTop () {
+      var regularItems = this.state.items;
+      var selectedItems = this.props.selected;
+      var checked = [];
+
+      var unchecked = regularItems.filter(i => selectedItems.every(item => item.value != i.value));
+      var checkedIndex = selectedItems.map(el => el.value);
+      
+      regularItems.filter(function(item) {
+        selectedItems.forEach(function(el) {
+          if (item.value == el.value) {
+            checked.push(item);
+          }
+        })
+      });
+
+      // first shows checked elements then elements that are not checked
+      var newImemsOrder = checked.concat(unchecked);
+      this.setState({ items: newImemsOrder })
+      this.state.items = newImemsOrder
     }
 
     render() {

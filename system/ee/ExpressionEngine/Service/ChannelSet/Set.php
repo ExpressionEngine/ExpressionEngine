@@ -174,8 +174,7 @@ class Set
      */
     public function cleanUpSourceFiles()
     {
-        $filesystem = new Filesystem();
-        $filesystem->delete($this->getPath());
+        ee('Filesystem')->delete($this->getPath());
     }
 
     /**

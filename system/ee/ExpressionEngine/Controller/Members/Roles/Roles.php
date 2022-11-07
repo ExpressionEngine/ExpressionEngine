@@ -658,7 +658,6 @@ class Roles extends AbstractRolesController
                 [
                     'title' => 'require_mfa',
                     'desc' => 'require_mfa_desc',
-                    'group' => 'can_access_cp',
                     'caution' => true,
                     'fields' => [
                         'require_mfa' => [

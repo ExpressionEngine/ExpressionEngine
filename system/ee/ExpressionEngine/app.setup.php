@@ -11,7 +11,9 @@
 use ExpressionEngine\Library;
 use ExpressionEngine\Library\Filesystem;
 use ExpressionEngine\Library\Curl;
+use ExpressionEngine\Library\Emoji;
 use ExpressionEngine\Library\Resource;
+use ExpressionEngine\Library\String\Str;
 use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
@@ -52,11 +54,14 @@ use ExpressionEngine\Service\Template;
 use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
+use ExpressionEngine\Service\Generator\ActionGenerator;
 use ExpressionEngine\Service\Generator\AddonGenerator;
 use ExpressionEngine\Service\Generator\CommandGenerator;
-use ExpressionEngine\Service\Generator\ProletGenerator;
-use ExpressionEngine\Service\Generator\WidgetGenerator;
+use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
+use ExpressionEngine\Service\Generator\ProletGenerator;
+use ExpressionEngine\Service\Generator\TagGenerator;
+use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Model\Channel\ChannelEntry;
 
 // TODO should put the version in here at some point ...
@@ -109,6 +114,10 @@ $setup = [
             );
 
             return $grid;
+        },
+
+        'CP/Form' => function ($ee) {
+            return new Library\CP\Form();
         },
 
         'CP/JumpMenu' => function ($ee) {
@@ -186,10 +195,6 @@ $setup = [
             return new Event\Emitter();
         },
 
-        'Filesystem' => function ($ee) {
-            return new Filesystem\Filesystem();
-        },
-
         'Format' => function ($ee) {
             static $format_opts;
             if ($format_opts === null) {
@@ -202,8 +207,6 @@ $setup = [
                 'foreign_chars' => ee()->config->loadFile('foreign_chars'),
                 'stopwords' => ee()->config->loadFile('stopwords'),
                 'word_separator' => ee()->config->item('word_separator'),
-                'emoji_regex' => EMOJI_REGEX,
-                'emoji_map' => ee()->config->loadFile('emoji'),
             ];
 
             return new Formatter\FormatterFactory(ee()->lang, ee()->session, $config_items, $format_opts);
@@ -250,20 +253,6 @@ $setup = [
 
         'Profiler' => function ($ee) {
             return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri, ee('Format'));
-        },
-
-        'Permission' => function ($ee, $site_id = null) {
-            $userdata = ee()->session->all_userdata();
-            $member = ee()->session->getMember();
-            $site_id = ($site_id) ?: ee()->config->item('site_id');
-
-            return new Permission\Permission(
-                $ee->make('Model'),
-                $userdata,
-                ($member) ? $member->getPermissions() : [],
-                ($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
-                $site_id
-            );
         },
 
         'Resource' => function () {
@@ -351,8 +340,19 @@ $setup = [
             return new LivePreview\LivePreview(ee()->session);
         },
 
+        'Str' => function ($ee) {
+            return new Str();
+        },
+
         'Variables/Parser' => function ($ee) {
             return new Template\Variables\LegacyParser();
+        },
+
+        'ActionGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new ActionGenerator($filesystem, $str, $data);
         },
 
         'AddonGenerator' => function ($ee, $data) {
@@ -367,22 +367,36 @@ $setup = [
             return new CommandGenerator($filesystem, $data);
         },
 
-        'ProletGenerator' => function ($ee, $data) {
+        'ExtensionHookGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new ProletGenerator($filesystem, $data);
-        },
-
-        'WidgetGenerator' => function ($ee, $data) {
-            $filesystem = $ee->make('Filesystem');
-
-            return new WidgetGenerator($filesystem, $data);
+            return new ExtensionHookGenerator($filesystem, $str, $data);
         },
 
         'ModelGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
 
             return new ModelGenerator($filesystem, $data);
+        },
+
+        'ProletGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new ProletGenerator($filesystem, $data);
+        },
+
+        'TagGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new TagGenerator($filesystem, $str, $data);
+        },
+
+        'WidgetGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new WidgetGenerator($filesystem, $data);
         },
 
         'Consent' => function ($ee, $member_id = null) {
@@ -499,12 +513,20 @@ $setup = [
             return $db;
         },
 
+        'Emoji' => function ($ee) {
+            return new Emoji\Emoji();
+        },
+
         'Encrypt/Cookie' => function ($ee) {
             return new Encrypt\Cookie();
         },
 
         'File' => function ($ee) {
             return new File\Factory();
+        },
+
+        'Filesystem' => function ($ee) {
+            return new Filesystem\Filesystem();
         },
 
         'IpAddress' => function ($ee) {
@@ -541,6 +563,20 @@ $setup = [
             $app->setClassAliases();
 
             return new Model\DataStore($ee->make('Database'), $config);
+        },
+
+        'Permission' => function ($ee, $site_id = null) {
+            $userdata = ee()->session->all_userdata();
+            $member = ee()->session->getMember();
+            $site_id = ($site_id) ?: ee()->config->item('site_id');
+
+            return new Permission\Permission(
+                $ee->make('Model'),
+                $userdata,
+                ($member) ? $member->getPermissions() : [],
+                ($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
+                $site_id
+            );
         },
 
         'Request' => function ($ee) {

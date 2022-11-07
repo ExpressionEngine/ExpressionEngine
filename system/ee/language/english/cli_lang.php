@@ -62,6 +62,7 @@ $lang = array(
     'command_make_addon_option_consents'        => 'Consents. Multi-pass option.',
     'command_make_addon_option_cookies'         => 'Cookies to create, with a colon separating name and value (i.e. name:value). Multi-pass option.',
     'command_make_addon_option_hooks'           => 'Hooks in use. Multi-pass option.',
+    'command_make_addon_option_compatibility_mode'  => 'Generate add-on that is compatible with ExpressionEngine versions lower than 7.2.0 and lower than 6.4.0',
 
     // Lang entries for command make:command
     'command_make_command_description'          => 'Creates a new CLI command for an add-on',
@@ -128,6 +129,44 @@ $lang = array(
     'command_make_prolet_option_has_widget'            => 'Create a widget for the add-on after generating the prolet (optional)',
     'command_make_prolet_option_widget_name'           => 'Name of widget',
     'command_make_prolet_option_generate_icon'         => 'Generate a default add-on icon file when creating a prolet',
+
+    // Lang entries for command make:action
+    'command_make_action_description'                  => 'Creates a new action for an add-on',
+    'command_make_action_summary'                      => 'This interactively generates an EE Action for an existing third-party addon',
+    'command_make_action_lets_build_action'            => 'Let\'s build a new action!',
+    'command_make_action_ask_action_name'              => 'What is the action name?',
+    'command_make_action_ask_addon'                    => 'What add-on is the action being added to?',
+    'command_make_action_building_action'              => 'Building Action.',
+    'command_make_action_created_successfully'         => 'Action created successfully!',
+    'command_make_action_error_addon_must_have_module' => 'To generate an action, the add-on must have a module file.',
+
+    // make:action options
+    'command_make_action_option_addon'                 => 'Folder for third-party add-on you want to add action to',
+
+    // Lang entries for command make:tag
+    'command_make_tag_description'                  => 'Creates a new tag for an add-on',
+    'command_make_tag_summary'                      => 'This interactively generates an EE Tag for an existing third-party addon',
+    'command_make_tag_lets_build_tag'               => 'Let\'s build a new tag!',
+    'command_make_tag_ask_tag_name'                 => 'What is the tag name?',
+    'command_make_tag_ask_addon'                    => 'What add-on is the tag being added to?',
+    'command_make_tag_building_tag'                 => 'Building Tag.',
+    'command_make_tag_created_successfully'         => 'Tag created successfully!',
+    'command_make_tag_error_addon_must_have_module' => 'To generate a tag, the add-on must have a module file.',
+
+    // make:tag options
+    'command_make_tag_option_addon'                 => 'Folder for third-party add-on you want to add tag to',
+
+    // Lang entries for command make:extension-hook
+    'command_make_extension_hook_description'                  => 'Implements an EE extension hook in an add-on',
+    'command_make_extension_hook_summary'                      => 'This interactively implements an EE extension hook in an existing third-party addon',
+    'command_make_extension_hook_lets_build_extension_hook'    => 'Let\'s implement an extension hook!',
+    'command_make_extension_hook_ask_extension_hook_name'      => 'What is the extension hook name?',
+    'command_make_extension_hook_ask_addon'                    => 'What add-on is the extension hook being added to?',
+    'command_make_extension_hook_building_extension_hook'      => 'Building Extension hook.',
+    'command_make_extension_hook_created_successfully'         => 'Extension hook created successfully!',
+
+    // make:extension-hook options
+    'command_make_extension_hook_option_addon'                 => 'Folder for third-party add-on you want to add extension hook to',
 
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',
@@ -289,6 +328,24 @@ $lang = array(
     'command_update_run_hook_what_is_path_to_upgrade_config'    => 'What is the path to your upgrade.config.php? (defaults to SYSPATH)',
     'command_update_run_hook_custom_config_not_found'           => 'Custom config not found.',
 
+    // Lang entries for command sync:conditional-fields
+    'command_sync_conditional_fields_name'              => 'Sync Conditional Field Logic',
+    'command_sync_conditional_fields_description'       => 'Sync channel entry conditional logic',
+    'command_sync_conditional_fields_summary'           => 'Checks each channel entry to see if its connditional logic is correct. If it is not, it updates the conditional logic and saves the entry.',
+
+    // sync:conditional-fields options
+    'command_sync_conditional_fields_option_channel_id' => 'Channel ID to sync. Defaults to all channels',
+    'command_sync_conditional_fields_option_verbose'    => 'Verbose',
+    'command_sync_conditional_fields_option_clear'      => 'Clear',
+
+    // sync:conditional-fields output
+    'command_sync_conditional_fields_sync_utility'      => 'Conditional logic sync utility',
+    'command_sync_conditional_fields_syncing'           => 'Syncing %d channel entries',
+    'command_sync_conditional_fields_current_entry'     => 'Current channel entry: %s',
+    'command_sync_conditional_fields_entries_processed' => "Entries processed: %d\t%s\t%s",
+    'command_sync_conditional_fields_sync_complete'     => "Sync complete: %d entries\t%s\t%s",
+    'command_sync_conditional_fields_cleared_all_hidden_fields' => "Cleared all hidden fields",
+    'command_sync_conditional_fields_database_info'             => "Database: %d queries in %f seconds",
 );
 
 // EOF

@@ -291,6 +291,9 @@
 
 			// build block to insert
 			function build(string) {
+				if (clicked.className !== undefined && clicked.className.includes('html-upload')) {
+					localStorage.setItem('caretPosition', clicked.caretPosition);
+				}
 				openWith 	= prepare(clicked.openWith);
 				placeHolder = prepare(clicked.placeHolder);
 				replaceWith = prepare(clicked.replaceWith);

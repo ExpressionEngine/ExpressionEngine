@@ -280,6 +280,8 @@ $lang = array(
 
     'field_populate_manually' => 'Populate manually',
 
+    'field_populate_missing' => 'You must select a field to populate from',
+
     'field_tools' => 'Field tools',
 
     'field_type_options' => 'Field Options',

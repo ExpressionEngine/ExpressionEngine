@@ -51,6 +51,7 @@ class Consent extends Variables
             return $this->variables;
         }
 
+        ee()->load->library('typography');
         ee()->typography->initialize([
             'parse_images' => true,
             'allow_headings' => true,

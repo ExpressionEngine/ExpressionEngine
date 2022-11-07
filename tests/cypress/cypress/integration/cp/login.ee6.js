@@ -208,7 +208,7 @@ context('Login Page', () => {
 
         // We are now in the form where we need to type in our password
         // First lets click the checkbox item "CP Index"
-        cy.contains('CP Index').click();
+        cy.get('.checkbox-label__text').contains('CP Index').click();
 
         // Add a 5 second wait, since it couldnt find the password field
         cy.wait(5000);

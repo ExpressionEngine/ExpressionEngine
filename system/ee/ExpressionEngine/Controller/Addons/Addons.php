@@ -13,6 +13,7 @@ namespace ExpressionEngine\Controller\Addons;
 use CP_Controller;
 use Michelf\MarkdownExtra;
 use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Service\Addon\Mcp;
 
 /**
  * Addons Controller
@@ -729,6 +730,11 @@ class Addons extends CP_Controller
     public function settings($addon, $method = null)
     {
         $this->assertUserHasAccess($addon);
+		$info = ee('Addon')->get($addon);
+		
+		if (empty($info)) {
+            show_404();			
+		}	
 
         ee()->view->cp_page_title = lang('addon_manager');
 
@@ -741,7 +747,6 @@ class Addons extends CP_Controller
             $method = (ee()->input->get_post('method') !== false) ? ee()->input->get_post('method') : 'index';
         }
 
-        $info = ee('Addon')->get($addon);
         $licenseResponse = $info->checkCachedLicenseResponse();
         $licenseStatusBadge = '';
         switch ($licenseResponse) {
@@ -1016,6 +1021,10 @@ class Addons extends CP_Controller
             show_404();
         }
 
+		if (empty($info)) {
+            show_404();			
+		}		
+
         if (! $info->hasModule()) {
             return array();
         }
@@ -1085,6 +1094,10 @@ class Addons extends CP_Controller
         } catch (\Exception $e) {
             show_404();
         }
+		
+		if (empty($info)) {
+            show_404();			
+		}			
 
         if (! $info->hasPlugin()) {
             return array();
@@ -1136,6 +1149,10 @@ class Addons extends CP_Controller
         } catch (\Exception $e) {
             show_404();
         }
+		
+		if (empty($info)) {
+            show_404();			
+		}		
 
         if (! $info->hasFieldtype()) {
             return array();
@@ -1193,6 +1210,10 @@ class Addons extends CP_Controller
         } catch (\Exception $e) {
             show_404();
         }
+		
+		if (empty($info)) {
+            show_404();			
+		}
 
         if (! $info->hasJumpMenu()) {
             return array();
@@ -1229,6 +1250,10 @@ class Addons extends CP_Controller
         } catch (\Exception $e) {
             show_404();
         }
+		
+		if (empty($info)) {
+            show_404();			
+		}
 
         if (! $info->hasExtension()) {
             return array();
@@ -1472,6 +1497,7 @@ class Addons extends CP_Controller
 
         // its possible that a module will try to call a method that does not exist
         // either by accident (ie: a missed function) or by deliberate user url hacking
+
         if (! method_exists($mod, $method)) {
             // 3.0 introduced camel-cased method names that are translated from a URL
             // segment separated by dashes or underscores
@@ -1482,11 +1508,17 @@ class Addons extends CP_Controller
             $method .= implode('', $words);
 
             if (! method_exists($mod, $method)) {
-                show_404();
+                if (! $mod instanceof Mcp) {
+                    show_404();
+                }
             }
         }
 
-        $_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
+        if ($mod instanceof Mcp && ! method_exists($mod, $method)) {
+            $_module_cp_body = $mod->setAddonName($addon)->route($method, $parameters);
+        } else {
+            $_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
+        }
 
         // unset reference
         ee()->remove('_mcp_reference');

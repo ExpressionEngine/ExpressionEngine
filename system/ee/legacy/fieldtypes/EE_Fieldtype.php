@@ -833,7 +833,7 @@ abstract class EE_Fieldtype
             } else {
                 $field_options = $this->settings['field_list_items'];
             }
-        } else {
+        } elseif ($this->get_setting('field_pre_channel_id') !== 0) {
             $field = 'field_id_' . $this->settings['field_pre_field_id'];
 
             $data = ee('Model')->get('ChannelEntry')
@@ -1068,7 +1068,7 @@ abstract class EE_Fieldtype
     {
         $channels_options = ee()->cache->get('fieldtype/channel-field-list');
 
-        if (! empty($channels_options)) {
+        if ($channels_options !== false) {
             return $channels_options;
         }
 

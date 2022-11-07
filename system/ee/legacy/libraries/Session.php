@@ -353,7 +353,7 @@ class EE_Session
     public function create_new_session($member_id, $admin_session = false, $can_debug = false)
     {
         if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
-            $this->member_model = ee('Model')->get('Member', $member_id)->with('PrimaryRole', 'Roles', 'RoleGroups')->all()->first();
+            $this->_setupMemberModel($member_id);
         }
 
         if ($this->access_cp == true or $this->member_model->can('access_cp')) {
@@ -521,7 +521,7 @@ class EE_Session
      */
     public function fetch_guest_data()
     {
-        $role = ee('Model')->get('Role', 3)->first();
+        $role = ee('Model')->get('Role', 3)->with('RoleSettings', 'Permissions')->all()->first();
 
         $this->userdata = array_merge($this->userdata, $role->RoleSettings->getValues());
 
@@ -576,7 +576,7 @@ class EE_Session
     {
         $member_query = $this->_do_member_query();
 
-        if ($member_query->num_rows() == 0) {
+        if (empty($member_query) || $member_query->num_rows() == 0) {
             $this->_initialize_session();
 
             return false;
@@ -651,18 +651,10 @@ class EE_Session
 
         // Assign Sites, Channel, Template, and Module Access Privs
         if (REQ == 'CP') {
-            $permission = new ExpressionEngine\Service\Permission\Permission(
-                ee('Model'),
-                $this->all_userdata(),
-                $this->member_model->getPermissions(),
-                $this->member_model->Roles->getDictionary('role_id', 'name'),
-                ee()->config->item('site_id')
-            );
-
-            $this->_setup_channel_privs($permission->isSuperAdmin());
+            $this->_setup_channel_privs($this->member_model->isSuperAdmin());
             $this->_setup_module_privs();
             $this->_setup_template_privs();
-            $this->_setup_assigned_sites($permission->isSuperAdmin());
+            $this->_setup_assigned_sites($this->member_model->isSuperAdmin());
         }
 
         // Does the member have admin privileges?
@@ -960,6 +952,10 @@ class EE_Session
      */
     public function set_tracker_cookie($tracker = null)
     {
+        if (ee()->config->item('enable_tracking_cookie') === 'n') {
+            return true;
+        }
+        
         if (is_null($tracker)) {
             $tracker = $this->tracker;
         }
@@ -1172,10 +1168,7 @@ class EE_Session
     {
         // Query DB for member data.  Depending on the validation type we'll
         // either use the cookie data or the member ID gathered with the session query.
-
-        ee()->db->from(array('members m', 'role_settings g'))
-            ->where('g.site_id', (int) ee()->config->item('site_id'))
-            ->where('m.role_id', ' g.role_id', false);
+        $data = [];
 
         $member_id = $this->sdata['member_id'];
 
@@ -1186,18 +1179,37 @@ class EE_Session
             $member_id = ee()->remember->data('member_id');
         }
 
-        ee()->db->where('member_id', (int) $member_id);
+        if (! empty($member_id)) {
+            ee()->db->from(array('members m', 'role_settings g'))
+                ->where('g.site_id', (int) ee()->config->item('site_id'))
+                ->where('m.role_id', ' g.role_id', false);
 
-        $data = ee()->db->get();
+            ee()->db->where('member_id', (int) $member_id);
 
-        if (! is_object($this->member_model) || $member_model->member_id != $member_id) {
-            $this->member_model = ee('Model')->get('Member', $member_id)
-                ->with('PrimaryRole', 'Roles', 'RoleGroups')
-                ->all()
-                ->first();
+            $data = ee()->db->get();
+        }
+
+        if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
+            $this->_setupMemberModel($member_id);
         }
 
         return $data;
+    }
+
+    /**
+     * Pupulate member_model with logged in member object
+     *
+     * @param int $memberId
+     * @return Member model
+     */
+    private function _setupMemberModel($memberId)
+    {
+        $memberQuery = ee('Model')->get('Member', $memberId)
+                ->with('PrimaryRole', 'Roles', 'RoleGroups');
+        if (REQ == 'CP') {
+            $memberQuery->with('EntryManagerViews');
+        }
+        $this->member_model = $memberQuery->all()->first();
     }
 
     /**
