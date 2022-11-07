@@ -232,7 +232,7 @@ class Filesystem
     public function emptyDir($path, $add_index = true)
     {
         $this->deleteDir($path, true);
-        if($add_index) {
+        if ($add_index) {
             $this->addIndexHtml($path);
         }
     }
