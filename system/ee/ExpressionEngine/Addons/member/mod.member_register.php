@@ -150,10 +150,18 @@ class Member_register extends Member
             }
         }
 
+        // if we had errors and are redirecting back, populate them
         $field_values = ee()->session->flashdata('field_values');
 
         if (!empty($field_values)) {
             $reg_form = ee()->TMPL->parse_variables($reg_form, array($field_values));
+        }
+
+        // parse the errors
+        $error_tags = ee()->session->flashdata('error_tags');
+
+        if (!empty($error_tags)) {
+            $reg_form = ee()->TMPL->parse_variables($reg_form, array($error_tags));
         }
 
         $un_min_len = str_replace(
@@ -195,6 +203,7 @@ class Member_register extends Member
             'FROM' => ($this->in_forum == true) ? 'forum' : '',
             'P' => ee()->functions->get_protected_form_params([
                 'primary_role' => ee()->TMPL->fetch_param('primary_role'),
+                'error_handling' =>ee()->TMPL->fetch_param('error_handling'),
             ]),
         );
 
@@ -315,7 +324,7 @@ class Member_register extends Member
                     // Ensure their selection is actually a valid choice
                     if (! in_array(htmlentities($_POST[$field_name]), $options)) {
                         $valid = false;
-                        $cust_errors[] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
+                        $cust_errors['error:'.$field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
                     }
                 }
 
@@ -326,18 +335,18 @@ class Member_register extends Member
         }
 
         if (isset($_POST['email_confirm']) && $_POST['email'] != $_POST['email_confirm']) {
-            $cust_errors[] = lang('mbr_emails_not_match');
+            $cust_errors['error:email'] = lang('mbr_emails_not_match');
         }
 
         if (ee('Captcha')->shouldRequireCaptcha()) {
             if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
-                $cust_errors[] = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
+                $cust_errors['error:captcha'] = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
             }
         }
 
         if (ee()->config->item('require_terms_of_service') == 'y') {
             if (! isset($_POST['accept_terms'])) {
-                $cust_errors[] = lang('mbr_terms_of_service_required');
+                $cust_errors['error:accept_terms'] = lang('mbr_terms_of_service_required');
             }
         }
 
@@ -440,7 +449,7 @@ class Member_register extends Member
                     if ($key == 'matches') {
                         $error = lang('missmatched_passwords');
                     }
-                    $cust_errors[] = $error;
+                    $cust_errors['error:password'] = $error;
                 }
             }
         }
@@ -452,12 +461,14 @@ class Member_register extends Member
         }
 
         $field_errors = array();
+        $error_tags = array();
 
         if ($result->failed()) {
             $e = $result->getAllErrors();
             $errors = array_map('current', $e);
 
             foreach ($errors as $field => $error) {
+                // build out auto error page data    
                 $label = lang($field);
 
                 if (isset($field_labels[$field])) {
@@ -465,9 +476,18 @@ class Member_register extends Member
                 }
 
                 $field_errors[] = "<b>{$label}: </b>{$error}";
+
+                // add data for inline errors
+                $error_tags['error:'.$field] = $error;
             }
         }
 
+        // process inline errors
+        $this->process_inline_errors($protected, $error_tags, $cust_errors);
+        
+
+
+        // we're not using inline errors.. use default page
         $errors = array_merge($field_errors, $cust_errors, $this->errors);
 
         // Display error if there are any
@@ -634,6 +654,31 @@ class Member_register extends Member
         return ee()->db->select('board_forum_url, board_id, board_label')
             ->where('board_id', 1)
             ->get('forum_boards');
+    }
+
+
+    /**
+     * Processes inline errors from member registration
+     */     
+    private function process_inline_errors($protected, $error_tags, $cust_errors)
+    {
+        // are we using inline error handeling?
+        if(! empty($protected['error_handling']) && $protected['error_handling'] == 'inline')
+        {
+            // if we're using inline errors.
+            // add in custom errors
+            $error_tags = array_merge($error_tags, $cust_errors);
+
+            // populate flash data for custom error tags
+            ee()->session->set_flashdata('error_tags', $error_tags);
+            
+            // redirect back to page they were on.
+            $redirect_url = ee()->functions->form_backtrack(1);
+
+            if(!empty($redirect_url)) {
+                ee()->functions->redirect($redirect_url);
+            }
+        }
     }
 
     /**
