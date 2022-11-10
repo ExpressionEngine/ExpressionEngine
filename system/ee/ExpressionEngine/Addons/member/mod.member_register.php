@@ -671,8 +671,6 @@ class Member_register extends Member
             ->get('forum_boards');
     }
 
-
-
     /**
      * Member Self-Activation
      */
