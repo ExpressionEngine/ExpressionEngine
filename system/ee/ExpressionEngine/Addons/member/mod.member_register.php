@@ -196,6 +196,13 @@ class Member_register extends Member
             )
         );
 
+        $inline_errors = 'no';
+
+        if(ee()->TMPL->fetch_param('error_handling') == 'inline') {
+            // determine_error_return function looks for yes.
+            $inline_errors = 'yes';
+        }
+
         // Generate Form declaration
         $data['hidden_fields'] = array(
             'ACT' => ee()->functions->fetch_action_id('Member', 'register_member'),
@@ -203,9 +210,11 @@ class Member_register extends Member
             'FROM' => ($this->in_forum == true) ? 'forum' : '',
             'P' => ee()->functions->get_protected_form_params([
                 'primary_role' => ee()->TMPL->fetch_param('primary_role'),
-                'error_handling' =>ee()->TMPL->fetch_param('error_handling'),
+                'inline_errors' => $inline_errors,
             ]),
         );
+
+        
 
         if(!empty(ee()->TMPL->form_class)) {
             $data['class'] = ee()->TMPL->form_class;
@@ -482,13 +491,19 @@ class Member_register extends Member
             }
         }
 
-        // process inline errors
-        $this->process_inline_errors($protected, $error_tags, $cust_errors);
-        
 
+        // if we don't have a link we'll give them errors for core ee error screen
+        if(empty($return_error_link)) {
+            $errors = array_merge($field_errors, $cust_errors, $this->errors);
+        }
 
-        // we're not using inline errors.. use default page
-        $errors = array_merge($field_errors, $cust_errors, $this->errors);
+        // do we have a link?  If so we're giving them the inline errors
+        if(!empty($return_error_link)) {
+            $errors = array_merge($error_tags, $cust_errors);
+
+            // populate flash data for custom error tags
+            ee()->session->set_flashdata('error_tags', $errors);
+        }
 
         // Display error if there are any
         if (count($errors) > 0) {
@@ -657,29 +672,6 @@ class Member_register extends Member
     }
 
 
-    /**
-     * Processes inline errors from member registration
-     */     
-    private function process_inline_errors($protected, $error_tags, $cust_errors)
-    {
-        // are we using inline error handeling?
-        if(! empty($protected['error_handling']) && $protected['error_handling'] == 'inline')
-        {
-            // if we're using inline errors.
-            // add in custom errors
-            $error_tags = array_merge($error_tags, $cust_errors);
-
-            // populate flash data for custom error tags
-            ee()->session->set_flashdata('error_tags', $error_tags);
-            
-            // redirect back to page they were on.
-            $redirect_url = ee()->functions->form_backtrack(1);
-
-            if(!empty($redirect_url)) {
-                ee()->functions->redirect($redirect_url);
-            }
-        }
-    }
 
     /**
      * Member Self-Activation
