@@ -157,13 +157,6 @@ class Member_register extends Member
             $reg_form = ee()->TMPL->parse_variables($reg_form, array($field_values));
         }
 
-        // parse the errors
-        $error_tags = ee()->session->flashdata('error_tags');
-
-        if (!empty($error_tags)) {
-            $reg_form = ee()->TMPL->parse_variables($reg_form, array($error_tags));
-        }
-
         $un_min_len = str_replace(
             "%x",
             ee()->config->item('un_min_len'),
@@ -201,6 +194,13 @@ class Member_register extends Member
         if(ee()->TMPL->fetch_param('error_handling') == 'inline') {
             // determine_error_return function looks for yes.
             $inline_errors = 'yes';
+
+            // parse the errors
+            $error_tags = ee()->session->flashdata('error_tags');
+
+            if (!empty($error_tags)) {
+                $reg_form = ee()->TMPL->parse_variables($reg_form, array($error_tags));
+            }
         }
 
         // Generate Form declaration
