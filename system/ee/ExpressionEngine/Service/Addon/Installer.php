@@ -47,12 +47,16 @@ class Installer
             'has_publish_fields' => $this->has_publish_fields,
         ])->save();
 
+        // Loop through each action and install it
         foreach ($this->actions as $action) {
             if (!isset($action['class'])) {
                 $action['class'] = $classname;
             }
             ee('Model')->make('Action', $action)->save();
         }
+
+        // Install ext hooks
+        $this->activate_extension();
 
         ee('Migration')->migrateAllByType($this->shortname);
 
@@ -70,18 +74,28 @@ class Installer
         if ($current == '' or version_compare($current, $this->version, '==')) {
             return false;
         }
-        
+
+        // Loop through each action and insert it if it doesnt exist, update if it does
         foreach ($this->actions as $action) {
             if (!isset($action['class'])) {
                 $action['class'] = $classname;
             }
-            $model = ee('Model')->get('Action')->filter('class', $action['class'])->filter('method', $action['method'])->first();
-            if (!empty($model)) {
-                $model->save();
+
+            $actionModel = ee('Model')->get('Action')
+                ->filter('class', $action['class'])
+                ->filter('method', $action['method'])
+                ->first();
+
+            if (!empty($actionModel)) {
+                $actionModel->set($action)->save();
             } else {
                 ee('Model')->make('Action', $action)->save();
             }
         }
+
+        // Run the ext updater
+        $this->activate_extension();
+
         ee('Migration')->migrateAllByType($this->shortname);
 
         return true;
@@ -129,8 +143,9 @@ class Installer
     {
         $classname = $this->addon->getExtensionClass();
 
+        // Loop through each extension and insert it if it doesnt exist, update if it does
         foreach ($this->methods as $method) {
-            ee('Model')->make('Extension', [
+            $ext = [
                 'class' => $classname,
                 'method' => isset($method['method']) ? $method['method'] : $method['hook'],
                 'hook' => $method['hook'],
@@ -138,7 +153,21 @@ class Installer
                 'priority' => isset($method['priority']) ? (int) $method['priority'] : 10,
                 'version' => $this->addon->getVersion(),
                 'enabled' => (isset($method['enabled']) && in_array($method['enabled'], ['n', false])) ? 'n' : 'y'
-            ])->save();
+            ];
+
+            // Get the extension as a model
+            $extensionModel = ee('Model')->get('Extension')
+                ->filter('class', $ext['class'])
+                ->filter('hook', $ext['hook'])
+                ->first();
+
+            if (!empty($extensionModel)) {
+                // If we found an extension matching this one, update it
+                $extensionModel->set($ext)->save();
+            } else {
+                // If we didnt find a matching Extension, lets just insert it
+                ee('Model')->make('Extension', $ext)->save();
+            }
         }
 
         return true;
