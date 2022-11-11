@@ -85,6 +85,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     public function setHeading($heading)
     {
         $this->heading = $heading;
+
         return $this;
     }
 
@@ -105,6 +106,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     {
         $variables = $this->prepareBodyVars($variables);
         $this->body = ee('View')->make($this->addon_name . ':' . $view)->render($variables);
+
         return $this;
     }
 
@@ -136,6 +138,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     protected function addBreadcrumb($url, $text)
     {
         $this->breadcrumbs[$this->url($url, true)] = lang($text);
+
         return $this;
     }
 
@@ -146,6 +149,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     protected function setBreadcrumbs(array $breadcrumbs = [])
     {
         $this->breadcrumbs = $breadcrumbs;
+
         return $this;
     }
 
@@ -211,11 +215,9 @@ abstract class AbstractRoute extends CoreAbstractRoute
         $active = false;
         foreach ($this->sidebar_data as $title => $sidebar) {
             if ($sidebar['path'] != '') {
-
                 $subsHeader = $this->sidebar
                     ->addHeader(lang($title), $this->url($sidebar['path']));
             } else {
-
                 $subsHeader = $this->sidebar
                     ->addHeader(lang($title));
             }
@@ -225,7 +227,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
                     if ($this->active_sidebar == $url && !$active) {
                         $subsHeaderList->addItem(lang($title), $this->url($url))->isActive();
                         $active = true;
-                    } else if ($url == $this->getRoutePath() && !$active) {
+                    } elseif ($url == $this->getRoutePath() && !$active) {
                         $subsHeaderList->addItem(lang($title), $this->url($url))->isActive();
                         $active = true;
                     } else {

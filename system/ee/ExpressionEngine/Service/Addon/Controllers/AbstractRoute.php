@@ -14,5 +14,4 @@ use ExpressionEngine\Service\Addon\Exceptions\Controllers\RouteException;
 
 abstract class AbstractRoute extends Controller
 {
-
 }

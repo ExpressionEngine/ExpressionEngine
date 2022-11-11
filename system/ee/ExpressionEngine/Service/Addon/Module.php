@@ -35,6 +35,7 @@ class Module extends Controller
     protected function routeAction($method)
     {
         $object = $this->buildObject($method, true);
+
         return $this->route($object);
     }
 
@@ -46,6 +47,7 @@ class Module extends Controller
     protected function routeTag($method)
     {
         $object = $this->buildObject($method);
+
         return $this->route($object);
     }
 
@@ -57,7 +59,6 @@ class Module extends Controller
     protected function route($object)
     {
         if (class_exists($object)) {
-
             $controller = new $object();
             if ($controller instanceof ActionRoute) {
                 return $controller->process();
