@@ -18,7 +18,7 @@
  * - Logging in
  * - Logging out
  * - New member registration
- *	etc...
+ *  etc...
  *
  * In these examples, information submitted from a user needs to be received and processed.  Since
  * ExpressionEngine uses only one execution file (index.php) we need a way to know that an
@@ -76,7 +76,7 @@ class EE_Actions
             }
 
             $class = ucfirst($query->row('class'));
-            $method = strtolower($query->row('method'));
+            $method = ee('Str')->snakecase($query->row('method'));
             $csrf_exempt = (bool) $query->row('csrf_exempt');
         } else {
             // If the ID is not numeric we'll invoke the class/method manually
