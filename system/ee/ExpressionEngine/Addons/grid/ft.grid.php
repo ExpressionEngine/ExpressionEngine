@@ -612,9 +612,9 @@ class Grid_ft extends EE_Fieldtype
                             'vertical_layout_options' => array(
                                 'type' => 'radio',
                                 'choices' => array(
+                                    'auto' => lang('grid_auto'),
                                     'vertical_layout' => lang('grid_vertical_layout'),
                                     'horizontal_layout' => lang('grid_horizontal_layout'),
-                                    'auto' => lang('grid_auto'),
                                 ),
                                 'value' => isset($data['vertical_layout_options']) ? $data['vertical_layout_options'] : 'auto'
                             )
