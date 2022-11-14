@@ -20466,6 +20466,7 @@ a.ck.ck-button.ck-on {
   border: 1px solid var(--ee-fluid-item-border);
   position: static;
   width: 100%;
+  overflow-x: auto;
 }
 .fluid__item .fluid__item-fieldset {
   padding: 10px 15px 5px 15px;
