@@ -31768,6 +31768,10 @@ fieldset .field-control #eye {
   display: inherit;
 }
 
+.grid-field.horizontal-layout .table-responsive {
+  overflow-x: auto;
+}
+
 @media (max-width: 767px) {
   .grid-field__column-label {
     display: block;

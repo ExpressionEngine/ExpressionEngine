@@ -182,9 +182,9 @@ class Grid_ft extends EE_Fieldtype
             'reorder' => isset($this->settings['allow_reorder'])
                 ? get_bool_from_string($this->settings['allow_reorder'])
                 : true,
-            'vertical_layout' => isset($this->settings['vertical_layout'])
-                ? get_bool_from_string($this->settings['vertical_layout'])
-                : false
+            'vertical_layout_options' => isset($this->settings['vertical_layout_options'])
+                ? $this->settings['vertical_layout_options']
+                : 'auto',
         ));
         $grid->loadAssets();
         $grid->setNoResultsText(
@@ -606,12 +606,17 @@ class Grid_ft extends EE_Fieldtype
                         )
                     ),
                     array(
-                        'title' => 'grid_vertical_layout',
+                        'title' => 'grid_vertical_layout_title',
                         'desc' => 'grid_vertical_layout_desc',
                         'fields' => array(
-                            'vertical_layout' => array(
-                                'type' => 'yes_no',
-                                'value' => isset($data['vertical_layout']) ? $data['vertical_layout'] : 'n'
+                            'vertical_layout_options' => array(
+                                'type' => 'radio',
+                                'choices' => array(
+                                    'vertical_layout' => lang('grid_vertical_layout'),
+                                    'horizontal_layout' => lang('grid_horizontal_layout'),
+                                    'auto' => lang('grid_auto'),
+                                ),
+                                'value' => isset($data['vertical_layout_options']) ? $data['vertical_layout_options'] : 'auto'
                             )
                         )
                     )
@@ -777,7 +782,7 @@ class Grid_ft extends EE_Fieldtype
             'grid_min_rows' => empty($data['grid_min_rows']) ? 0 : $data['grid_min_rows'],
             'grid_max_rows' => empty($data['grid_max_rows']) ? '' : $data['grid_max_rows'],
             'allow_reorder' => empty($data['allow_reorder']) ? 'y' : $data['allow_reorder'],
-            'vertical_layout' => empty($data['vertical_layout']) ? 'n' : $data['vertical_layout']
+            'vertical_layout_options' => empty($data['vertical_layout_options']) ? 'auto' : $data['vertical_layout_options'],
         );
     }
 

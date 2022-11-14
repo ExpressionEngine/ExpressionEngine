@@ -371,6 +371,14 @@
   }
 }
 
+// HORIZONTAL GRID LAYOUT
+.grid-field.horizontal-layout {
+	.table-responsive {
+		overflow-x: auto;
+	}
+}
+
+
 // Collapse the grid field on mobile
 @include m-tablet-down {
 

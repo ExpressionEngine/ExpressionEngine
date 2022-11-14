@@ -277,7 +277,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				}
 			}, 50);
 
-			if (parentFieldControlWidth >= gridFieldWidth) {
+			if (!$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && (parentFieldControlWidth >= gridFieldWidth)) {
 				$(this.rowContainer).parents('.grid-field').removeClass('overwidth');
 			}
 		}
@@ -372,8 +372,15 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		}
 		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width()
 
-		if (parentFieldControlWidth < gridFieldWidth) {
+		if (!$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && (parentFieldControlWidth < gridFieldWidth)) {
 			$(this.rowContainer).parents('.grid-field').addClass('overwidth');
+		}
+
+		if ($(this.rowContainer).find('tr:not(.hidden) div[data-relationship-react]').length) {
+			$(this.rowContainer).find('tr:not(.hidden) div[data-relationship-react]').each(function(el) {
+				var button = $(this).find('.js-dropdown-toggle').get(0);
+				DropdownController.getDropdownForElement(button);
+			})
 		}
 
 		return el;
@@ -1011,7 +1018,7 @@ $(document).ready(function () {
 });
 
 function checkGrigWidthForResize() {
-	var gridTables = $('.grid-field');
+	var gridTables = $('.grid-field:not(.horizontal-layout)');
 
 	gridTables.each(function(el) {
 
@@ -1032,7 +1039,7 @@ function checkGrigWidthForResize() {
 }
 
 function checkGrigWidth() {
-	var gridTables = $('.grid-field');
+	var gridTables = $('.grid-field:not(.horizontal-layout)');;
 
 	gridTables.each(function(el) {
 
