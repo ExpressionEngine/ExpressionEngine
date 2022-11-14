@@ -15009,6 +15009,9 @@ input[type=button].btn-block {
 .filter-search-bar .filter-search-bar__search-row .filter-bar__item {
   margin-right: 0;
 }
+.filter-search-bar .checkbox-label .checkbox-label__text {
+  display: block;
+}
 
 .tab-bar {
   display: flex;
