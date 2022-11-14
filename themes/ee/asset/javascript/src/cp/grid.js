@@ -277,7 +277,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				}
 			}, 50);
 
-			if (parentFieldControlWidth >= gridFieldWidth) {
+			if (!$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && (parentFieldControlWidth >= gridFieldWidth)) {
 				$(this.rowContainer).parents('.grid-field').removeClass('overwidth');
 			}
 		}
@@ -372,8 +372,15 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		}
 		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width()
 
-		if (parentFieldControlWidth < gridFieldWidth) {
+		if (!$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && (parentFieldControlWidth < gridFieldWidth)) {
 			$(this.rowContainer).parents('.grid-field').addClass('overwidth');
+		}
+
+		if ($(this.rowContainer).find('tr:not(.hidden) div[data-relationship-react]').length) {
+			$(this.rowContainer).find('tr:not(.hidden) div[data-relationship-react]').each(function(el) {
+				var button = $(this).find('.js-dropdown-toggle').get(0);
+				DropdownController.getDropdownForElement(button);
+			})
 		}
 
 		return el;
@@ -1012,7 +1019,7 @@ $(document).ready(function () {
 });
 
 function checkGrigWidth() {
-	var gridTables = $('.grid-field');
+	var gridTables = $('.grid-field:not(.horizontal-layout)');
 
 	gridTables.each(function(el) {
 
@@ -1036,12 +1043,33 @@ function checkGrigWidth() {
 	});
 }
 
+function checkGrigWidthForResize() {
+	var gridTables = $('.grid-field:not(.horizontal-layout)');
+
+	gridTables.each(function(el) {
+
+		if ( $(this).parents('.hidden').length ) return;
+
+		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
+			var tableInnerWidth = $(this).find('.grid-field__table').parents('.fluid__item-field').innerWidth()
+		} else {
+			var tableInnerWidth = $(this).find('.grid-field__table').width();
+		}
+
+		var containerWidth = $(this).parents('.field-control').width();
+
+		if (containerWidth < tableInnerWidth) {
+			$(this).addClass('overwidth');
+		}
+	});
+}
+
 $(window).on('load', function() {
 	checkGrigWidth();
 });
 
 $(window).on('resize', function() {
-	checkGrigWidth();
+	checkGrigWidthForResize();
 });
 
 })(jQuery);
