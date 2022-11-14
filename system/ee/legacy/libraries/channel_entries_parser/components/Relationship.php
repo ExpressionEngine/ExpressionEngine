@@ -70,7 +70,17 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component
 
             $disabledFeatures = $pre->disabledFeatures();
             if (strpos($tagdata, 'categories') === false) {
-                $disabledFeatures[] = 'relationship_categories';
+                $disableCategories = true;
+                $tagStrings = array_merge($pre->pairs, $pre->singles);
+                foreach ($tagStrings as $string => $data) {
+                    if (strpos($string, 'category') !== false) {
+                        $disableCategories = false;
+                        break;
+                    }
+                }
+                if ($disableCategories) {
+                    $disabledFeatures[] = 'relationship_categories';
+                }
             }
 
             return ee()->relationships_parser->create(
