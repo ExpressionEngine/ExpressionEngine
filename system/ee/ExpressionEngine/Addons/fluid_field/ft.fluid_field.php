@@ -62,7 +62,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
             if (strpos($key, 'field_') === 0) {
                 $fluid_field_data_id = (int) str_replace('field_', '', $key);
-            } else if (strpos($key, 'new_field_') === 0) {
+            } elseif (strpos($key, 'new_field_') === 0) {
                 $new_field = "[$key]";
             }
 
@@ -73,7 +73,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
                 $group_name = (!is_null($field_group_id)) ? '[field_group_id_' . $field_group_id . ']' : '';
 
-                foreach($datum as $fieldId => $fieldValue) {
+                foreach ($datum as $fieldId => $fieldValue) {
                     if (strpos($fieldId, 'field_id_') === 0) {
                         $field_id = str_replace('field_id_', '', $fieldId);
                     }
@@ -174,7 +174,7 @@ class Fluid_field_ft extends EE_Fieldtype
             if (strpos($key, 'field_') === 0) {
                 $fluid_field_id = (int) str_replace('field_', '', $key);
             // New field - field_id_3[fields][new_field_1][field_group_1][field_id_2] = value
-            } else if (strpos($key, 'new_field_') === 0) {
+            } elseif (strpos($key, 'new_field_') === 0) {
                 $create = true;
             }
 
@@ -184,7 +184,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     $field_id = (int) str_replace('field_id_', '', $fieldKey);
                 }
 
-                if($create) {
+                if ($create) {
                     $fluid_field = ee('Model')->make('fluid_field:FluidField');
                     $fluid_field->fluid_field_id = $this->field_id;
                     $fluid_field->field_group_id = $field_group_id;
@@ -192,7 +192,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
                     $field = $fluid_field->getField();
                     $fluid_field_data_id = $fieldKey;
-                }else{
+                } else {
                     $fluid_field = $fluid_field_data[$fluid_field_id];
                     $fluid_field->field_group_id = $field_group_id;
 
@@ -206,7 +206,6 @@ class Fluid_field_ft extends EE_Fieldtype
                 $field->setData($fieldValue);
                 $field->validate($fieldValue);
                 $compiled_data_for_search[] = $field->save($fieldValue);
-
             }
         }
 
@@ -249,7 +248,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 // Existing field
                 if (strpos($key, 'field_') === 0) {
                     $id = str_replace('field_', '', $key);
-                    $group_key = 'group_'.$fluid_field_data[$id]->group;
+                    $group_key = 'group_' . $fluid_field_data[$id]->group;
                 // New field
                 } elseif (strpos($key, 'new_field_') === 0 && strpos($fieldKey, 'field_id_') === 0) {
                     $field_id = str_replace('field_id_', '', $fieldKey);
@@ -270,9 +269,9 @@ class Fluid_field_ft extends EE_Fieldtype
                 $previous_group_key = $group_key;
                 $group = ['id' => $field_group_id, 'order' => $g];
 
-                if($field_id) {
+                if ($field_id) {
                     $this->addField($i, $group, $field_id, [$fieldKey => $fieldValue]);
-                }else{
+                } else {
                     $this->updateField($fluid_field_data[$id], $i, $group, [$fieldKey => $fieldValue]);
                     unset($fluid_field_data[$id]);
                 }
@@ -281,7 +280,6 @@ class Fluid_field_ft extends EE_Fieldtype
 
                 $previous_field_group_id = $field_group_id;
             }
-
         }
 
         // Remove fields
@@ -448,7 +446,7 @@ class Fluid_field_ft extends EE_Fieldtype
         });
 
         if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            foreach($field_groups as $field_group) {
+            foreach ($field_groups as $field_group) {
                 $filter_options[] = \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
                     'name' => $field_group->group_name,
                     'label' =>  $field_group->group_name,
@@ -468,8 +466,8 @@ class Fluid_field_ft extends EE_Fieldtype
                 // group items
                 $fluid_field_data_groups = [];
 
-                $fluid_field_data->each(function($field) use(&$fluid_field_data_groups) {
-                    if(!array_key_exists($field->group, $fluid_field_data_groups)) {
+                $fluid_field_data->each(function ($field) use (&$fluid_field_data_groups) {
+                    if (!array_key_exists($field->group, $fluid_field_data_groups)) {
                         $fluid_field_data_groups[$field->group] = [];
                     }
 
@@ -488,7 +486,7 @@ class Fluid_field_ft extends EE_Fieldtype
                         'field_filters' => $filter_options
                     ];
 
-                    if($is_group) {
+                    if ($is_group) {
                         $field_group = $data[0]->ChannelFieldGroup; // might want to eager load this
                         $viewData = array_merge($viewData, [
                             'field_group' => $field_group,
@@ -499,7 +497,7 @@ class Fluid_field_ft extends EE_Fieldtype
                             }, $data),
                             'field_name' => $field_group->group_name,
                         ]);
-                    }else{
+                    } else {
                         $field = $data[0]->getField();
 
                         $field->setName($this->name() . '[fields][field_' . $data[0]->getId() . '][field_group_id_0][field_id_' . $field->getId() . ']');
@@ -536,7 +534,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
                     $group_name = (!is_null($field_group_id)) ? '[field_group_id_' . $field_group_id . ']' : '';
 
-                    foreach($datum as $fieldId => $fieldValue) {
+                    foreach ($datum as $fieldId => $fieldValue) {
                         if (strpos($fieldId, 'field_id_') === 0) {
                             $field_id = str_replace('field_id_', '', $fieldId);
                         }
@@ -558,14 +556,14 @@ class Fluid_field_ft extends EE_Fieldtype
 
                         $group_key = $key;
 
-                        if(array_key_exists($fluid_field_data_id, $field_group_map)) {
+                        if (array_key_exists($fluid_field_data_id, $field_group_map)) {
                             $group = $field_group_map[$fluid_field_data_id]->ChannelFieldGroup;
                             $group_key = $field_group_map[$fluid_field_data_id]->group;
-                        }else{
+                        } else {
                             $group = ($field_group_id > 0) ? $field_groups[$field_group_id] : null;
                         }
 
-                        if(!array_key_exists($group_key, $rows)) {
+                        if (!array_key_exists($group_key, $rows)) {
                             $rows[$group_key] = [];
                         }
                         $rows[$group_key][] = [
@@ -577,7 +575,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 }
             }
 
-            foreach($rows as $data) {
+            foreach ($rows as $data) {
                 $is_group = (count($data) > 1 || !is_null($data[0]['field_group']));
                 $view = ($is_group) ? 'fluid_field:fieldgroup' : 'fluid_field:field';
 
@@ -589,7 +587,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     'field_filters' => $filter_options
                 ];
 
-                if($is_group) {
+                if ($is_group) {
                     $field_group = $data[0]['field_group'];
                     $viewData = array_merge($viewData, [
                         'field_group' => $field_group,
@@ -598,7 +596,7 @@ class Fluid_field_ft extends EE_Fieldtype
                         }, $data),
                         'field_name' => $field_group->group_name,
                     ]);
-                }else{
+                } else {
                     $viewData = array_merge($viewData, [
                         'field' => $data[0]['field'],
                         'field_name' => $data[0]['field_name']
@@ -628,13 +626,13 @@ class Fluid_field_ft extends EE_Fieldtype
         }
 
         if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            foreach($field_groups as $field_group) {
+            foreach ($field_groups as $field_group) {
                 $templates .= ee('View')->make('fluid_field:fieldgroup')->render([
                     'field_group' => $field_group,
-                    'field_group_fields' => $field_group->ChannelFields->map(function($field) use($field_group) {
+                    'field_group_fields' => $field_group->ChannelFields->map(function ($field) use ($field_group) {
                         $f = $field->getField();
                         $f->setItem('fluid_field_data_id', null);
-                        $f->setName($this->name() .'[fields][new_field_0][field_group_id_' . $field_group->getId() . '][field_id_' . $field->getId() . ']');
+                        $f->setName($this->name() . '[fields][new_field_0][field_group_id_' . $field_group->getId() . '][field_id_' . $field->getId() . ']');
                         return $f;
                     }),
                     'field_name' => $field_group->group_name,
@@ -703,14 +701,13 @@ class Fluid_field_ft extends EE_Fieldtype
         );
 
         if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
-
             $custom_field_group_options = ee('Model')->get('ChannelFieldGroup')
                 ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
                 ->order('group_name')
                 ->with('ChannelFields')
                 ->all()
                 ->map(function ($group) {
-                    $hasFluid = $group->ChannelFields->filter(function($field) {
+                    $hasFluid = $group->ChannelFields->filter(function ($field) {
                         return $field->field_type === 'fluid_field';
                     })->count() > 0;
 
@@ -784,8 +781,8 @@ class Fluid_field_ft extends EE_Fieldtype
             ->filter('ChannelFields.field_id', 'NOT IN', $all['field_channel_fields'])
             ->all();
 
-        $field_groups->each(function($group) {
-            $group->ChannelFields->each(function($field) {
+        $field_groups->each(function ($group) {
+            $group->ChannelFields->each(function ($field) {
                 $field->createTable();
             });
         });
@@ -819,7 +816,7 @@ class Fluid_field_ft extends EE_Fieldtype
             }
         }
 
-        if(isset($this->settings['field_channel_field_groups'])) {
+        if (isset($this->settings['field_channel_field_groups'])) {
             $this->settings['field_channel_field_groups'] = array_filter($this->settings['field_channel_fields'], function ($value) {
                 return is_numeric($value);
             });
@@ -1003,8 +1000,10 @@ class Fluid_field_ft extends EE_Fieldtype
                     [$this->id()]
                 );
 
-                if (! isset($data["field_id_{$this->id()}"])
-                    || ! isset($data["field_id_{$this->id()}"]['fields'])) {
+                if (
+                    ! isset($data["field_id_{$this->id()}"])
+                    || ! isset($data["field_id_{$this->id()}"]['fields'])
+                ) {
                     return 0;
                 }
             }
