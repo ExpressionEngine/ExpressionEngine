@@ -104,8 +104,13 @@ abstract class AbstractRoute extends CoreAbstractRoute
      */
     public function setBody($view, array $variables = [])
     {
+        // If they didnt pass a view with a ':', lets assume its an addon view
+        if (! ee('Str')->string_contains($view, ':')) {
+            $view = $this->addon_name . ':' . $view;
+        }
+
         $variables = $this->prepareBodyVars($variables);
-        $this->body = ee('View')->make($this->addon_name . ':' . $view)->render($variables);
+        $this->body = ee('View')->make($view)->render($variables);
 
         return $this;
     }
