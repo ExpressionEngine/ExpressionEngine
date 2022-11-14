@@ -116,6 +116,17 @@ abstract class AbstractRoute extends CoreAbstractRoute
     }
 
     /**
+     * @param string $view
+     * @return $this
+     */
+    public function setOutput($htmlOutput)
+    {
+        $this->body = $htmlOutput;
+
+        return $this;
+    }
+
+    /**
      * Compiles some universal variables for use in views
      * @param array $variables
      */
