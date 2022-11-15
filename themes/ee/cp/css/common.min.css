@@ -34092,7 +34092,7 @@ a.ck.ck-button.ck-on {
   transform: rotate(180deg);
 }
 .fluid__item--collapsed .fluid__item-tools--item-closed {
-  display: block;
+  display: none;
 }
 
 .fluid__item-content {
