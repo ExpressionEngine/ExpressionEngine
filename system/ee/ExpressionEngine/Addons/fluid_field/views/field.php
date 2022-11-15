@@ -1,7 +1,7 @@
 <div class="fluid__item <?php if ($reorderable): ?>fluid__item--reorderable<?php endif ?>" data-field-name="<?=$field_name?>" data-field-type="<?=$field->getType()?>">
     <div class="fluid__item-content">
        <div class="fluid__item-fieldset ">
-         <div class="fluid__item-tools fluid__item-tools--item-open">
+        <div class="fluid__item-tools fluid__item-tools--item-open">
             <a href class="fluid__item-tool js-toggle-fluid-item">
                 <span class="sr-only"><?=lang('collapse')?></span>
                 <i class="fas fa-caret-square-up fa-fw"></i>
@@ -30,7 +30,11 @@
              <?php endforeach; ?>
              </div>
            <?php endif; ?>
-         </div>
+        </div>
+
+        <div class="fluid__item-tools fluid__item-tools--item-closed hidden">
+          <button type="button" class="fluid__item-tool js-toggle-fluid-item" title="<?=lang('expand')?>"><i class="fas fa-fw fa-angle-double-down"></i></button>
+        </div>
 
       <div class="field-instruct">
           <label>
@@ -56,9 +60,5 @@
             ?>
          <?=isset($errors) ? $errors->renderError($field_name) : ''?>
        </div>
-    </div>
-
-    <div class="fluid__item-tools fluid__item-tools--item-closed hidden">
-       <button type="button" class="fluid__item-tool js-toggle-fluid-item" title="<?=lang('expand')?>"><i class="fas fa-fw fa-angle-double-down"></i></button>
     </div>
 </div>
