@@ -229,14 +229,6 @@ class AddonGenerator
             $stub = $this->erase('{{conditional_hooks_uninstall}}', $stub);
         }
 
-        if ($this->compatibility_mode) {
-            $stub = $this->erase('{{actions}}', $stub);
-        } else {
-            $actions = $this->filesystem->read($this->stub('Module/ActionInstall.php'));
-            $actions = $this->write('slug_uc', $this->slug_uc, $actions);
-            $actions = $this->write('action_name', 'ExampleAction', $actions);
-            $stub = $this->write('actions', $actions, $stub);
-        }
         $this->putFile('upd.' . $this->slug . '.php', $stub);
 
         // Create module file

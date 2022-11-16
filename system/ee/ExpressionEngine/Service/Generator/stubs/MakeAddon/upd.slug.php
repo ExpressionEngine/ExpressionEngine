@@ -11,8 +11,6 @@ class {{slug_uc}}_upd extends Installer
     public $has_cp_backend = '{{has_cp_backend}}';
     public $has_publish_fields = '{{has_publish_fields}}';
 
-{{actions}}
-
     public function install()
     {
         parent::install();

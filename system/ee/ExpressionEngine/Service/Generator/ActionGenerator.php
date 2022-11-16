@@ -32,6 +32,7 @@ class ActionGenerator
         // Set required data for generator to use
         $this->ActionName = $this->str->studly($data['name']);
         $this->addon = $this->str->snakecase($data['addon']);
+        $this->csrf_exempt = $data['csrf_exempt'] ? 'true' : 'false';
 
         // Set up addon path, generator path, and stub path
         $this->init();
@@ -64,6 +65,8 @@ class ActionGenerator
         $actionStub = $this->write('ActionName', $this->ActionName, $actionStub);
 
         $this->putFile('Module/Actions/' . $this->ActionName . '.php', $actionStub);
+
+        $this->makeMigration();
     }
 
     private function stub($file)
@@ -87,5 +90,19 @@ class ActionGenerator
         if (!$this->filesystem->exists($this->addonPath . $path . $name)) {
             $this->filesystem->write($this->addonPath . $path . $name, $contents);
         }
+    }
+
+    private function makeMigration()
+    {
+        $migration_name = 'CreateAction' . $this->ActionName . 'ForAddon' . $this->addon;
+
+        $data = [
+            'action' => $this->ActionName,
+            'addon' => ucfirst($this->addon),
+            'csrf_exempt' => $this->csrf_exempt,
+        ];
+
+        $migration = ee('Migration')->generateMigration($migration_name, $this->addon);
+        ee('Migration', $migration)->writeMigrationFileFromTemplate('CreateAction', $data);
     }
 }

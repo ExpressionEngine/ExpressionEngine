@@ -139,9 +139,13 @@ $lang = array(
     'command_make_action_building_action'              => 'Building Action.',
     'command_make_action_created_successfully'         => 'Action created successfully!',
     'command_make_action_error_addon_must_have_module' => 'To generate an action, the add-on must have a module file.',
+    'command_make_action_installing_action'             => 'Installing action...',
+    'command_make_action_installed_action'              => 'Action installed!',
+    'command_make_action_addon_must_be_installed_to_install_action' => 'Could not install action. Add-on must first be installed. Action migration will be run when add-on is installed.',
 
     // make:action options
-    'command_make_action_option_addon'                 => 'Folder for third-party add-on you want to add action to',
+    'command_make_action_option_addon'              => 'Folder for third-party add-on you want to add action to',
+    'command_make_action_option_install'            =>'Install this action after creating it. This runs all current migrations for the specified add-on. Add-on must first be installed.',
 
     // Lang entries for command make:tag
     'command_make_tag_description'                  => 'Creates a new tag for an add-on',

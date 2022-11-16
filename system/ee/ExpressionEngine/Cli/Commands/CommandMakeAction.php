@@ -42,6 +42,7 @@ class CommandMakeAction extends Cli
      */
     public $commandOptions = [
         'addon,a:'        => 'command_make_action_option_addon',
+        'install,i'   => 'command_make_action_option_install',
     ];
 
     protected $data = [];
@@ -57,6 +58,7 @@ class CommandMakeAction extends Cli
         // Gather alll the action information
         $this->data['name'] = $this->getFirstUnnamedArgument("command_make_action_ask_action_name", null, true);
         $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_action_ask_addon", null, true);
+        $this->data['csrf_exempt'] = false;
 
         $this->info('command_make_action_building_action');
 
@@ -69,5 +71,19 @@ class CommandMakeAction extends Cli
         }
 
         $this->info('command_make_action_created_successfully');
+
+        // If install action is set, lets install it now
+        if ($this->option('--install')) {
+            $this->info('command_make_action_installing_action');
+
+            $addon = ee('Addon')->get($this->data['addon']);
+
+            if ($addon !== null && $addon->isInstalled()) {
+                ee('Migration')->migrateAllByType($this->data['addon']);
+                $this->info('command_make_action_installed_action');
+            } else {
+                $this->fail('command_make_action_addon_must_be_installed_to_install_action');
+            }
+        }
     }
 }
