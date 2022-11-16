@@ -52,10 +52,13 @@ trait FileUsageTrait
         if (!empty($dirsAndFilesInSubfolders)) {
             foreach ($dirsAndFilesInSubfolders as $dir_id => $file_names) {
                 $uploadLocation = ee('Model')->get('UploadDestination', $dir_id)->first(true);
-                foreach ($file_names as $i => $fileRealtivePath) {
-                    $file = $uploadLocation->getFileByPath($fileRealtivePath);
-                    if (!empty($file)) {
-                        $fileUsageReplacements[$file->getId()] = ['{filedir_' . $file->upload_location_id . '}' . $fileRealtivePath => '{file:' . $file->file_id . ':url}'];
+                // Make sure UploadLocation still exists, would be better if we could filter out these files earlier
+                if (!is_null($uploadLocation)) {
+                    foreach ($file_names as $i => $fileRealtivePath) {
+                        $file = $uploadLocation->getFileByPath($fileRealtivePath);
+                        if (!empty($file)) {
+                            $fileUsageReplacements[$file->getId()] = ['{filedir_' . $file->upload_location_id . '}' . $fileRealtivePath => '{file:' . $file->file_id . ':url}'];
+                        }
                     }
                 }
             }
