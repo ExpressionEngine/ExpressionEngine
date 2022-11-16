@@ -561,6 +561,10 @@ $lang = array(
 
     'textarea' => 'Textarea',
 
+    'fields_ajax_reorder_fail' => 'Failed to save fields order',
+
+    'fields_ajax_reorder_fail_desc' => 'We failed to save your new fields order. You may try to refresh the page and try again.',
+
     /* Statuses */
     'create_status' => 'New Status',
 

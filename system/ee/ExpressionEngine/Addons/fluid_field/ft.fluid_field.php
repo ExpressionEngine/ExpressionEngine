@@ -456,14 +456,12 @@ class Fluid_field_ft extends EE_Fieldtype
             ]);
         });
 
-        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
-            foreach ($field_groups as $field_group) {
-                $filter_options[] = \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
-                    'name' => $field_group->group_name,
-                    'label' =>  $field_group->group_name,
-                    'icon' => URL_THEMES . 'asset/img/' . 'default-addon-icon.svg'
-                ]);
-            }
+        foreach ($field_groups as $field_group) {
+            $filter_options[] = \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
+                'name' => $field_group->group_name,
+                'label' =>  $field_group->group_name,
+                'icon' => URL_THEMES . 'asset/img/' . 'default-addon-icon.svg'
+            ]);
         }
 
         $filters = ee('View')->make('fluid_field:filters')->render(array('filters' => $filter_options));
@@ -641,7 +639,7 @@ class Fluid_field_ft extends EE_Fieldtype
         foreach ($field_groups as $field_group) {
             $templates .= ee('View')->make('fluid_field:fieldgroup')->render([
                 'field_group' => $field_group,
-                'field_group_fields' => $field_group->ChannelFields->map(function($field) use($field_group) {
+                'field_group_fields' => $field_group->ChannelFields->sortBy('field_label')->sortBy('field_order')->map(function($field) use($field_group) {
                     $f = $field->getField();
                     $f->setItem('fluid_field_data_id', null);
                     $f->setName($this->name() .'[fields][new_field_0][field_group_id_' . $field_group->getId() . '][field_id_' . $field->getId() . ']');

@@ -9,7 +9,7 @@
                     <i class="icon--reorder reorder"></i>
                     <?= $field_group->group_name ?> <?php if ($show_field_type) : ?><span class="faded">(group)</span><?php endif ?>
                 </label>
-                <em><?= $field_group->group_name ?></em>
+                <em><?= $field_group->group_description ?></em>
             </div>
         </div>
 

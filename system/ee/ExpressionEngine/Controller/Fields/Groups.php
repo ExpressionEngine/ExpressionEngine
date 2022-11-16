@@ -300,6 +300,16 @@ class Groups extends AbstractFieldsController
                     )
                 ),
                 array(
+                    'title' => 'description',
+                    'desc' => '',
+                    'fields' => array(
+                        'group_description' => array(
+                            'type' => 'textarea',
+                            'value' => $field_group->group_description
+                        )
+                    )
+                        ),
+                array(
                     'title' => 'fields',
                     'desc' => 'fields_assign_to_group',
                     'button' => $add_fields_button,

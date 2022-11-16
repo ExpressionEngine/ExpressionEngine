@@ -27,7 +27,8 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
-                'addFluidFieldGroups'
+                'addFluidFieldGroups',
+                'addFieldGroupDescription'
             ]
         );
 
@@ -50,13 +51,29 @@ class Updater
                         'null' => true,
                         'default' => null
                     ],
-                    'group' => array(
+                    'group' => [
                         'type' => 'int',
                         'unsigned' => true,
                         'null' => true,
                         'default' => null
-                    )
+                    ]
                 )
+            );
+        }
+    }
+
+    private function addFieldGroupDescription()
+    {
+        if (!ee()->db->field_exists('group_description', 'field_groups')) {
+            ee()->smartforge->add_column(
+                'field_groups',
+                [
+                    'group_description' => [
+                        'type' => 'text',
+                        'null' => true,
+                        'default' => null
+                    ]
+                ]
             );
         }
     }
