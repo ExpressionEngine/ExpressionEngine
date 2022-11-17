@@ -42,6 +42,7 @@ class CommandMakeExtensionHook extends Cli
      */
     public $commandOptions = [
         'addon,a:'        => 'command_make_extension_hook_option_addon',
+        'install,i'   => 'command_make_extension_hook_option_install',
     ];
 
     protected $data = [];
@@ -69,5 +70,19 @@ class CommandMakeExtensionHook extends Cli
         }
 
         $this->info('command_make_extension_hook_created_successfully');
+
+        // If install hook is set, lets install it now
+        if ($this->option('--install')) {
+            $this->info('command_make_extension_hook_installing_hook');
+
+            $addon = ee('Addon')->get($this->data['addon']);
+
+            if ($addon !== null && $addon->isInstalled()) {
+                ee('Migration')->migrateAllByType($this->data['addon']);
+                $this->info('command_make_extension_hook_installed_hook');
+            } else {
+                $this->fail('command_make_extension_hook_addon_must_be_installed_to_install_hook');
+            }
+        }
     }
 }
