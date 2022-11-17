@@ -60,7 +60,7 @@ use ExpressionEngine\Service\Generator\CommandGenerator;
 use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
-use ExpressionEngine\Service\Generator\TagGenerator;
+use ExpressionEngine\Service\Generator\TemplateTagGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Model\Channel\ChannelEntry;
 
@@ -386,11 +386,11 @@ $setup = [
             return new ProletGenerator($filesystem, $data);
         },
 
-        'TagGenerator' => function ($ee, $data) {
+        'TemplateTagGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
             $str = $ee->make('Str');
 
-            return new TagGenerator($filesystem, $str, $data);
+            return new TemplateTagGenerator($filesystem, $str, $data);
         },
 
         'WidgetGenerator' => function ($ee, $data) {

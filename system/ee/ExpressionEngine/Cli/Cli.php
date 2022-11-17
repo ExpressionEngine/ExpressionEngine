@@ -63,7 +63,7 @@ class Cli
         'make:migration' => Commands\CommandMakeMigration::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
-        'make:tag' => Commands\CommandMakeTag::class,
+        'make:template-tag' => Commands\CommandMakeTemplateTag::class,
         'make:widget' => Commands\CommandMakeWidget::class,
         'migrate' => Commands\CommandMigrate::class,
         'migrate:all' => Commands\CommandMigrateAll::class,

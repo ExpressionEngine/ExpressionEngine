@@ -11,30 +11,29 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Service\Generator\TagGenerator;
 
 /**
  * Command to clear selected caches
  */
-class CommandMakeTag extends Cli
+class CommandMakeTemplateTag extends Cli
 {
     /**
      * name of command
      * @var string
      */
-    public $name = 'Tag Generator';
+    public $name = 'Template Tag Generator';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'make:tag';
+    public $signature = 'make:template-tag';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php make:tag MyNewTag --addon=my_existing_addon';
+    public $usage = 'php eecli.php make:template-tag MyNewTag --addon=my_existing_addon';
 
     /**
      * options available for use in command
@@ -62,7 +61,7 @@ class CommandMakeTag extends Cli
 
         try {
             // Build the tag
-            $service = ee('TagGenerator', $this->data);
+            $service = ee('TemplateTagGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());

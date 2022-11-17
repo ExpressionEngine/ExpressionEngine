@@ -13,7 +13,7 @@ namespace ExpressionEngine\Service\Generator;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Library\String\Str;
 
-class TagGenerator
+class TemplateTagGenerator
 {
     public $name;
     public $addon;
