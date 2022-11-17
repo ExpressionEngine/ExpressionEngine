@@ -98,19 +98,19 @@ abstract class AbstractRoute extends CoreAbstractRoute
     }
 
     /**
-     * @param string $view
+     * @param string $body HTML body or name of view
      * @param array $variables
      * @return $this
      */
-    public function setBody($view, array $variables = [])
+    public function setBody($body, array $variables = [])
     {
-        // If they didnt pass a view with a ':', lets assume its an addon view
-        if (! ee('Str')->string_contains($view, ':')) {
-            $view = $this->addon_name . ':' . $view;
+        // If $variables were passed, then we can assume they are setting a view
+        if (!empty($variables)) {
+            return $this->setView($body, $variables);
         }
 
-        $variables = $this->prepareBodyVars($variables);
-        $this->body = ee('View')->make($view)->render($variables);
+        // If it wasnt a view, we just assume it's the html body
+        $this->body = $body;
 
         return $this;
     }
@@ -119,9 +119,15 @@ abstract class AbstractRoute extends CoreAbstractRoute
      * @param string $view
      * @return $this
      */
-    public function setOutput($htmlOutput)
+    public function setView($view, array $variables = [])
     {
-        $this->body = $htmlOutput;
+        // If they didnt pass a view with a ':', lets assume its an addon view
+        if (! ee('Str')->string_contains($view, ':')) {
+            $view = $this->addon_name . ':' . $view;
+        }
+
+        $variables = $this->prepareBodyVars($variables);
+        $this->body = ee('View')->make($view)->render($variables);
 
         return $this;
     }
