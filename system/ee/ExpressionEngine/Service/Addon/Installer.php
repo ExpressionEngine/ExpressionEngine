@@ -132,6 +132,8 @@ class Installer
                 ->delete();
         }
 
+        $this->disable_extension();
+
         return true;
     }
 
