@@ -43,6 +43,7 @@ class CommandMakeAction extends Cli
     public $commandOptions = [
         'addon,a:'        => 'command_make_action_option_addon',
         'install,i'   => 'command_make_action_option_install',
+        'csrf_exempt,c'   => 'command_make_action_option_csrf_exempt',
     ];
 
     protected $data = [];
@@ -55,10 +56,10 @@ class CommandMakeAction extends Cli
     {
         $this->info('command_make_action_lets_build_action');
 
-        // Gather alll the action information
+        // Gather all the action information
         $this->data['name'] = $this->getFirstUnnamedArgument("command_make_action_ask_action_name", null, true);
         $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_action_ask_addon", null, true);
-        $this->data['csrf_exempt'] = false;
+        $this->data['csrf_exempt'] = (bool) $this->option('--csrf_exempt');
 
         $this->info('command_make_action_building_action');
 
