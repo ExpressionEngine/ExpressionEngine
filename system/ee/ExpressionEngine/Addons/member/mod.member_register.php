@@ -214,8 +214,6 @@ class Member_register extends Member
             ]),
         );
 
-        
-
         if(!empty(ee()->TMPL->form_class)) {
             $data['class'] = ee()->TMPL->form_class;
         }
