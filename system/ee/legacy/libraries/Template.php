@@ -109,6 +109,9 @@ class EE_Template
     private $user_vars = array();
     private $globals_regex;
 
+    protected $process_data = true;
+    protected $raw_data = null;
+
     protected $modified_vars = false;
 
     protected $ignore_fetch = ['url_title'];
@@ -4468,6 +4471,38 @@ class EE_Template
         }
 
         return $vars;
+    }
+
+    public function set_data($data)
+    {
+        if($this->process_data) {
+            return;
+        }
+        
+        // last tag data?
+        $this->raw_data = $data;
+    }
+
+    public function add_data($data, $key = null)
+    {
+        if ($this->process_data || empty($data)) {
+            return;
+        }
+
+        if(empty($this->raw_data)) {
+            $this->raw_data = [];
+        } 
+
+        if(!is_null($key)) {
+            $this->raw_data[$key] = $data;
+        }else{
+            $this->raw_data = array_merge_recursive($this->raw_data, $data);
+        }
+    }
+
+    public function get_data()
+    {
+        return ($this->process_data) ? null : $this->raw_data;
     }
 }
 // END CLASS

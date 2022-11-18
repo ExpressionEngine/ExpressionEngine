@@ -181,6 +181,7 @@ class Api_channel_fields extends Api
                 $settings = unserialize(base64_decode($row['field_settings']));
                 $settings['field_type'] = $row['field_type'];
                 $settings['field_fmt'] = $row['field_fmt'];
+                $settings['field_name'] = $row['field_name'];
 
                 $this->set_settings($row['field_id'], $settings);
             }
@@ -318,7 +319,7 @@ class Api_channel_fields extends Api
 
         // Merge field settings with the global settings
         $settings = array_merge($this->get_global_settings($field_type), $settings);
-
+        
         // Initialize fieldtype with settings for this field
         $this->field_types[$field_type]->_init(array(
             'settings' => $settings,
