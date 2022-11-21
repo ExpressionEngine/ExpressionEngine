@@ -72,10 +72,12 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component
             if (strpos($tagdata, 'categories') === false) {
                 $disableCategories = true;
                 $tagStrings = array_merge($pre->pairs, $pre->singles);
-                foreach ($tagStrings as $string => $data) {
-                    if (strpos($string, 'category') !== false) {
-                        $disableCategories = false;
-                        break;
+                if (!empty($tagStrings)) {
+                    foreach ($tagStrings as $string => $data) {
+                        if (strpos($string, 'category') !== false) {
+                            $disableCategories = false;
+                            break;
+                        }
                     }
                 }
                 if ($disableCategories) {
