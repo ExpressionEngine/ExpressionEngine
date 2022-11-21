@@ -1550,9 +1550,11 @@ class Addons extends CP_Controller
         // add validation callback support to the mcp class (see EE_form_validation for more info)
         ee()->set('_mcp_reference', $mod);
 
+        // make a copy of the original method name for method controller
+        $originalMethod = $method;
+
         // its possible that a module will try to call a method that does not exist
         // either by accident (ie: a missed function) or by deliberate user url hacking
-
         if (! method_exists($mod, $method)) {
             // 3.0 introduced camel-cased method names that are translated from a URL
             // segment separated by dashes or underscores
@@ -1570,9 +1572,7 @@ class Addons extends CP_Controller
         }
 
         if ($mod instanceof Mcp && ! method_exists($mod, $method)) {
-            // Go back to snakecase for calling the Mcp route method
-            $method = ee('Str')->snakecase($method);
-            $_module_cp_body = $mod->setAddonName($addon)->route($method, $parameters);
+            $_module_cp_body = $mod->setAddonName($addon)->route($originalMethod, $parameters);
         } else {
             $_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
         }
