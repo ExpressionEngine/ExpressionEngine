@@ -143,6 +143,11 @@ class Installer
      */
     public function activate_extension()
     {
+        // If we don't have the extension class, return false
+        if (! $this->addon->hasExtension()) {
+            return false;
+        }
+
         $classname = $this->addon->getExtensionClass();
 
         // Loop through each extension and insert it if it doesnt exist, update if it does
@@ -181,6 +186,11 @@ class Installer
      */
     public function disable_extension()
     {
+        // If we don't have the extension class, return false
+        if (! $this->addon->hasExtension()) {
+            return false;
+        }
+
         ee('Model')
             ->get('Extension')
             ->filter('class', $this->addon->getExtensionClass())
