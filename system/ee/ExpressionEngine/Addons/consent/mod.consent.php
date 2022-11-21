@@ -75,6 +75,8 @@ class Consent
             ]
         ];
 
+        ee()->TMPL->set_data(compact('form', 'consents'));
+
         return ee()->functions->form_declaration($form) . $tagdata . '</form>';
     }
 

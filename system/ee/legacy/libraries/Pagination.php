@@ -762,6 +762,7 @@ class Pagination_object
             $template_data = $this->_parse_conditional($template_data, 'previous', $this->_page_previous);
             $template_data = $this->_parse_conditional($template_data, 'next', $this->_page_next);
 
+            ee()->TMPL->add_data($parse_array, 'pagination');
             // Parse if total_pages conditionals
             $template_data = ee()->functions->prep_conditionals(
                 $template_data,

@@ -1434,7 +1434,8 @@ class Search
         $data['class'] = ee()->TMPL->form_class;
 
         $res = ee()->functions->form_declaration($data);
-
+        ee()->TMPL->set_data($res);
+        
         $res .= stripslashes(ee()->TMPL->tagdata);
 
         $res .= "</form>";
