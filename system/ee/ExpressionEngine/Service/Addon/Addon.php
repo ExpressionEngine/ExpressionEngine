@@ -637,7 +637,7 @@ class Addon
             ->count();
     }
 
-    private function makeConsentRequest($name, $values)
+    public function makeConsentRequest($name, $values)
     {
         $request = ee('Model')->make('ConsentRequest');
         $request->user_created = false; // App-generated request
