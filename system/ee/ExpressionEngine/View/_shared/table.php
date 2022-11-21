@@ -225,9 +225,9 @@
 
 else: ?>
     <div
-        class="grid-field <?php if (isset($vertical_layout_options)) {
-                if ($vertical_layout_options == 'vertical_layout') : echo ' vertical-layout';
-                elseif ($vertical_layout_options == 'horizontal_layout') : echo ' horizontal-layout';
+        class="grid-field <?php if (isset($vertical_layout)) {
+                if ($vertical_layout == 'y') : echo ' vertical-layout';
+                elseif ($vertical_layout == 'horizontal') : echo ' horizontal-layout';
                 else : echo 'entry-grid';
                 endif;
             }; ?>"
@@ -345,7 +345,7 @@ else: ?>
                     }
                 ?>
                     <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
-                        <?php if (isset($vertical_layout_options) && ($vertical_layout_options !== 'horizontal_layout')):?>
+                        <?php if (isset($vertical_layout) && ($vertical_layout !== 'horizontal')):?>
                         <td class="grid-field__item-fieldset hidden">
                             <div class="grid-field__item-tools grid-field__item-tools--item-open">
                                 <a href class="grid-field__item-tool js-toggle-grid-item">
