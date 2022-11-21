@@ -69,7 +69,7 @@
             // If we cloned a field group fire 'add' events on all of its fields
             if ($(fieldClone).data('field-type') == 'field_group') {
                 $(fieldClone).find('.fluid__item-field').each(function(index, element) {
-                    FluidField.fireEvent($(element).data('field-type'), 'add', [element]);
+                    FluidField.fireEvent($(element).data('field-type'), 'add', [$(element)]);
                 });
             }
 

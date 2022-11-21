@@ -215,6 +215,8 @@ $lang = array(
 
     'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
 
+    'nested_fluid_will_be_hidden' => 'Nested fluid fields will not be shown',
+
     'edit_channel' => 'Edit Channel',
 
     'invalid_short_name' => 'Your channel name must contain only alpha-numeric characters and no spaces.',

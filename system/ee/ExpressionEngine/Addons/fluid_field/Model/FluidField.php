@@ -143,7 +143,7 @@ class FluidField extends Model
             $field_data = ee()->extensions->call(
                 'fluid_field_get_all_data',
                 $field_data,
-                $fluid_field_id
+                $this->fluid_field_id
             );
         }
 

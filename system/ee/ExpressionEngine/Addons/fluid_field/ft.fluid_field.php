@@ -281,7 +281,10 @@ class Fluid_field_ft extends EE_Fieldtype
                 $group = ['id' => $field_group_id, 'order' => $g];
 
                 if ($field_id) {
-                    $this->addField($i, $group, $field_id, $value);
+                    $thisFieldValue = array_filter($value, function ($k) use ($field_id) {
+                        return strrpos($k, '_' . $field_id) === strlen($k) - strlen('_' . $field_id);
+                    }, ARRAY_FILTER_USE_KEY);
+                    $this->addField($i, $group, $field_id, $thisFieldValue);
                 } else {
                     $this->updateField($fluid_field_data[$id], $i, $group, $value);
                     unset($fluid_field_data[$id]);
@@ -718,12 +721,8 @@ class Fluid_field_ft extends EE_Fieldtype
             ->with('ChannelFields')
             ->all()
             ->map(function ($group) {
-                $hasFluid = $group->ChannelFields->filter(function($field) {
-                    return $field->field_type === 'fluid_field';
-                })->count() > 0;
-
                 return [
-                    'label' => ($hasFluid) ? "{$group->group_name} (nested fluid fields will be hidden)" : $group->group_name,
+                    'label' => $group->group_name,
                     'value' => $group->getId(),
                     'instructions' => LD . $group->group_name . RD
                 ];
@@ -731,6 +730,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $settings[] = array(
             'title' => 'custom_field_groups',
+            'desc' => 'nested_fluid_will_be_hidden',
             'fields' => array(
                 'field_channel_field_groups' => array(
                     'type' => 'checkbox',
