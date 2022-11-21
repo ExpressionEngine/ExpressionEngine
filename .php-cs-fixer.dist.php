@@ -12,7 +12,7 @@ return (new PhpCsFixer\Config)
         'binary_operator_spaces' => [
             'operators' => [
                 '=' => 'single_space',
-                '=>' => 'single_space',
+                '=>' => null,
             ]
         ],
         'blank_line_before_statement' => true,
