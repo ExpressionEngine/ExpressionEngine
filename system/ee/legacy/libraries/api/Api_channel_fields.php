@@ -319,7 +319,7 @@ class Api_channel_fields extends Api
 
         // Merge field settings with the global settings
         $settings = array_merge($this->get_global_settings($field_type), $settings);
-        
+
         // Initialize fieldtype with settings for this field
         $this->field_types[$field_type]->_init(array(
             'settings' => $settings,
