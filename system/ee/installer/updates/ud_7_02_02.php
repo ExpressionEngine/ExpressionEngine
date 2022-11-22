@@ -9,7 +9,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Updater\Version_7_2_1;
+namespace ExpressionEngine\Updater\Version_7_2_2;
 
 /**
  * Update
@@ -54,7 +54,7 @@ class Updater
                 ->first();
             if (is_null($request)) {
                 $addon->makeConsentRequest($name, $values);
-            } else if (! $request->consent_request_version_id) {
+            } elseif (! $request->consent_request_version_id) {
                 $version = ee('Model')->make('ConsentRequestVersion');
                 $version->request = $values['request'];
                 $version->request_format = (isset($values['request_format'])) ? $values['request_format'] : 'none';
