@@ -109,6 +109,9 @@ class EE_Template
     private $user_vars = array();
     private $globals_regex;
 
+    protected $process_data = true;
+    protected $raw_data = null;
+
     protected $modified_vars = false;
 
     protected $ignore_fetch = ['url_title'];
@@ -136,7 +139,7 @@ class EE_Template
         }
 
         $this->user_vars = array(
-            'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'username', 'screen_name',
+            'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'primary_role_short_name', 'username', 'screen_name',
             'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
             'total_forum_posts', 'total_forum_topics', 'total_forum_replies', 'mfa_enabled',
         );
@@ -245,7 +248,6 @@ class EE_Template
         //  - Modify template after tag parsing
         //
         if (ee()->extensions->active_hook('template_post_parse') === true) {
-
             // Populate the $currentTemplateInfo array
             $currentTemplateInfo = array();
             if (count($this->templates_loaded)) { // don't do this if we don't have any template info!
@@ -1817,7 +1819,7 @@ class EE_Template
 
                 // Replace the temporary markers we added earlier with the fully parsed data
 
-                $this->template = str_replace('M' . $i . $this->marker,  $return_data, $this->template);
+                $this->template = str_replace('M' . $i . $this->marker, $return_data, $this->template);
 
                 // Initialize data in case there are susequent loops
 
@@ -4468,6 +4470,38 @@ class EE_Template
         }
 
         return $vars;
+    }
+
+    public function set_data($data)
+    {
+        if ($this->process_data) {
+            return;
+        }
+
+        // last tag data?
+        $this->raw_data = $data;
+    }
+
+    public function add_data($data, $key = null)
+    {
+        if ($this->process_data || empty($data)) {
+            return;
+        }
+
+        if (empty($this->raw_data)) {
+            $this->raw_data = [];
+        }
+
+        if (!is_null($key)) {
+            $this->raw_data[$key] = $data;
+        } else {
+            $this->raw_data = array_merge_recursive($this->raw_data, $data);
+        }
+    }
+
+    public function get_data()
+    {
+        return ($this->process_data) ? null : $this->raw_data;
     }
 }
 // END CLASS

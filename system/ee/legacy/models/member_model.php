@@ -710,7 +710,7 @@ class Member_model extends CI_Model
     public function get_member_groups($additional_fields = array(), $additional_where = array(), $limit = '', $offset = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated("6.0.0", "ee('Model')->get('Member')");
 
         if (! is_array($additional_fields)) {
             $additional_fields = array($additional_fields);
