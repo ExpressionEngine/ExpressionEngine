@@ -337,20 +337,6 @@ class Member_model extends CI_Model
         $this->db->from("members AS m");
         $this->db->join('roles AS r', 'r.role_id = m.role_id');
         
-        // update old wheres being passed in
-        if(!empty($additional_where)) {
-            foreach ($additional_where as $key => $value) {
-                // we need to update data that gets passed in like below
-                // $where['mg.group_id'] = $mbr_groups;
-                
-                $new_key = str_replace('mg.', 'r.', $key);
-                $new_key = str_replace('.group_id', '.role_id', $key);
-                $additional_where[$new_key] = $value;
-
-                unset($additional_where[$key]);
-            }
-        }
-
         foreach ($additional_where as $where) {
             foreach ($where as $field => $value) {
                 if (is_array($value)) {
