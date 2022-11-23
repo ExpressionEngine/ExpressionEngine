@@ -150,6 +150,7 @@ class Member_register extends Member
             }
         }
 
+        // if we had errors and are redirecting back, populate them
         $field_values = ee()->session->flashdata('field_values');
 
         if (!empty($field_values)) {
@@ -188,6 +189,20 @@ class Member_register extends Member
             )
         );
 
+        $inline_errors = 'no';
+
+        if(ee()->TMPL->fetch_param('error_handling') == 'inline') {
+            // determine_error_return function looks for yes.
+            $inline_errors = 'yes';
+
+            // parse the errors
+            $error_tags = ee()->session->flashdata('error_tags');
+
+            if (!empty($error_tags)) {
+                $reg_form = ee()->TMPL->parse_variables($reg_form, array($error_tags));
+            }
+        }
+
         // Generate Form declaration
         $data['hidden_fields'] = array(
             'ACT' => ee()->functions->fetch_action_id('Member', 'register_member'),
@@ -195,6 +210,7 @@ class Member_register extends Member
             'FROM' => ($this->in_forum == true) ? 'forum' : '',
             'P' => ee()->functions->get_protected_form_params([
                 'primary_role' => ee()->TMPL->fetch_param('primary_role'),
+                'inline_errors' => $inline_errors,
             ]),
         );
 
@@ -315,7 +331,7 @@ class Member_register extends Member
                     // Ensure their selection is actually a valid choice
                     if (! in_array(htmlentities($_POST[$field_name]), $options)) {
                         $valid = false;
-                        $cust_errors[] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
+                        $cust_errors['error:'.$field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
                     }
                 }
 
@@ -326,18 +342,18 @@ class Member_register extends Member
         }
 
         if (isset($_POST['email_confirm']) && $_POST['email'] != $_POST['email_confirm']) {
-            $cust_errors[] = lang('mbr_emails_not_match');
+            $cust_errors['error:email'] = lang('mbr_emails_not_match');
         }
 
         if (ee('Captcha')->shouldRequireCaptcha()) {
             if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
-                $cust_errors[] = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
+                $cust_errors['error:captcha'] = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
             }
         }
 
         if (ee()->config->item('require_terms_of_service') == 'y') {
             if (! isset($_POST['accept_terms'])) {
-                $cust_errors[] = lang('mbr_terms_of_service_required');
+                $cust_errors['error:accept_terms'] = lang('mbr_terms_of_service_required');
             }
         }
 
@@ -440,7 +456,7 @@ class Member_register extends Member
                     if ($key == 'matches') {
                         $error = lang('missmatched_passwords');
                     }
-                    $cust_errors[] = $error;
+                    $cust_errors['error:password'] = $error;
                 }
             }
         }
@@ -452,12 +468,14 @@ class Member_register extends Member
         }
 
         $field_errors = array();
+        $error_tags = array();
 
         if ($result->failed()) {
             $e = $result->getAllErrors();
             $errors = array_map('current', $e);
 
             foreach ($errors as $field => $error) {
+                // build out auto error page data    
                 $label = lang($field);
 
                 if (isset($field_labels[$field])) {
@@ -465,10 +483,25 @@ class Member_register extends Member
                 }
 
                 $field_errors[] = "<b>{$label}: </b>{$error}";
+
+                // add data for inline errors
+                $error_tags['error:'.$field] = $error;
             }
         }
 
-        $errors = array_merge($field_errors, $cust_errors, $this->errors);
+
+        // if we don't have a link we'll give them errors for core ee error screen
+        if(empty($return_error_link)) {
+            $errors = array_merge($field_errors, $cust_errors, $this->errors);
+        }
+
+        // do we have a link?  If so we're giving them the inline errors
+        if(!empty($return_error_link)) {
+            $errors = array_merge($error_tags, $cust_errors);
+
+            // populate flash data for custom error tags
+            ee()->session->set_flashdata('error_tags', $errors);
+        }
 
         // Display error if there are any
         if (count($errors) > 0) {
