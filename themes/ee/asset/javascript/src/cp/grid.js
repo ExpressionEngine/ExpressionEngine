@@ -1063,16 +1063,16 @@ function checkGrigWidth() {
 	});
 }
 
-function removeHorizontalClass() {
+function addHorizontalClassToFluid() {
 	var grid = $('.grid-field.horizontal-layout');
 
 	if (grid.parents('.fluid__item-field').length) {
-		grid.parents('.fluid__item-field').find('.grid-field').removeClass('horizontal-layout');
+		grid.parents('.fluid__item-field').addClass('horizontal');
 	}
 }
 
 $(window).on('load', function() {
-	removeHorizontalClass();
+	addHorizontalClassToFluid();
 	checkGrigWidth();
 });
 
