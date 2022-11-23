@@ -329,6 +329,14 @@ class Pro_search_upd
             $this->_v700();
         }
 
+        // --------------------------------------
+        // Update to 8.0.1
+        // --------------------------------------
+
+        if (version_compare($current, '8.0.1', '<')) {
+            $this->_v801();
+        }
+
         $this->logMessageAboutLowVersion();
 
         // --------------------------------------
@@ -687,6 +695,24 @@ class Pro_search_upd
 
         $this->_add_hook('after_channel_entry_insert');
         $this->_add_hook('after_channel_entry_update');
+    }
+
+    /**
+     * Update routines for version 8.0.1
+     *
+     * @access     private
+     * @return     void
+     */
+    private function _v801()
+    {
+        // Template query
+        $sql = sprintf(
+            'ALTER TABLE `%s` MODIFY `ip_address` varchar(46) NOT NULL',
+            ee()->pro_search_log_model->table()
+        );
+
+        // Add the field to the table
+        ee()->db->query($sql);
     }
 
     private function logMessageAboutLowVersion()
