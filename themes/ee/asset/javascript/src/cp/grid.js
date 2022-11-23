@@ -267,7 +267,11 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			var gridFieldWidth = $(this.rowContainer).width();
 		}
 
-		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
+		if ($(this.rowContainer).parents('.field-control').length) {
+			var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
+		} else {
+			var parentFieldControlWidth = gridFieldWidth
+		}
 
 		if(rowCount == 0) {
 			var showAddButton = setInterval(function (){
@@ -370,7 +374,12 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		} else {
 			var gridFieldWidth = $(this.rowContainer).width();
 		}
-		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width()
+
+		if ($(this.rowContainer).parents('.field-control').length) {
+			var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
+		} else {
+			var parentFieldControlWidth = gridFieldWidth;
+		}
 
 		if (!$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && (parentFieldControlWidth < gridFieldWidth)) {
 			$(this.rowContainer).parents('.grid-field').addClass('overwidth');
@@ -1030,7 +1039,11 @@ function checkGrigWidthForResize() {
 			var tableInnerWidth = $(this).find('.grid-field__table').width();
 		}
 
-		var containerWidth = $(this).parents('.field-control').width();
+		if ($(this).parents('.field-control').length) {
+			var containerWidth = $(this).parents('.field-control').width();
+		} else {
+			var containerWidth = tableInnerWidth;
+		}
 
 		if (containerWidth < tableInnerWidth) {
 			$(this).addClass('overwidth');
@@ -1051,7 +1064,11 @@ function checkGrigWidth() {
 			var tableInnerWidth = $(this).find('.grid-field__table').width();
 		}
 
-		var containerWidth = $(this).parents('.field-control').width();
+		if ($(this).parents('.field-control').length) {
+			var containerWidth = $(this).parents('.field-control').width();
+		} else {
+			var containerWidth = tableInnerWidth;
+		}
 
 		if (containerWidth < tableInnerWidth) {
 			$(this).addClass('overwidth');
