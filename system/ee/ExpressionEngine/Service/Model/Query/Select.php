@@ -219,14 +219,17 @@ class Select extends Query
         $class = $meta->getClass();
 
         $fields = $this->getFields();
+        $requestedFieldIds = [];
 
         // Bail if this query is selecting specific fields and none of those
         // fields would be found in the field data tables
         if (! empty($fields)) {
             $found = false;
+            // if we need just some fields, get their IDs
             foreach ($fields as $field) {
-                if (strpos($field, 'field_id_') !== false) {
+                if (($pos = strpos($field, 'field_id_')) !== false) {
                     $found = true;
+                    $requestedFieldIds[] = substr($field, $pos + 9);
                 }
             }
 
@@ -262,7 +265,10 @@ class Select extends Query
             $fields = array();
             foreach ($structure_models as $model) {
                 foreach ($model->getAllCustomFields() as $f) {
-                    if (! $f->legacy_field_data) {
+                    // only mark for join the fields that are:
+                    // a) using their own tables
+                    // b) requested directly - or not custom fields specifically requested (which means all fields)
+                    if (! $f->legacy_field_data && (empty($requestedFieldIds) || in_array($f->field_id, $requestedFieldIds))) {
                         $fields[$f->field_id] = $f;
                     }
                 }
