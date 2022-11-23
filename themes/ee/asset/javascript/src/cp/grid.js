@@ -262,7 +262,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		}
 
 		if ($(this.rowContainer).parents('.fluid__item-field').length) {
-			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth()
+			var gridFieldWidth = $(this.rowContainer).innerWidth()
 		} else {
 			var gridFieldWidth = $(this.rowContainer).width();
 		}
