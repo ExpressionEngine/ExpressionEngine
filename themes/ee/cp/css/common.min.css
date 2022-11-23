@@ -18036,7 +18036,7 @@ fieldset .field-control #eye {
 }
 
 #routes .table-responsive {
-  overflow-x: inherit;
+  overflow-x: auto;
 }
 
 .grid-field__column-label {
