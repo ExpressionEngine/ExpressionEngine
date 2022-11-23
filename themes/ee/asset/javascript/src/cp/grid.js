@@ -262,7 +262,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		}
 
 		if ($(this.rowContainer).parents('.fluid__item-field').length) {
-			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth();
+			var gridFieldWidth = $(this.rowContainer).innerWidth();
 		} else {
 			var gridFieldWidth = $(this.rowContainer).width();
 		}
@@ -370,7 +370,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		}
 
 		if ($(this.rowContainer).parents('.fluid__item-field').length) {
-			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth()
+			var gridFieldWidth = $(this.rowContainer).innerWidth()
 		} else {
 			var gridFieldWidth = $(this.rowContainer).width();
 		}
@@ -1034,7 +1034,7 @@ function checkGrigWidthForResize() {
 		if ( $(this).parents('.hidden').length ) return;
 
 		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
-			var tableInnerWidth = $(this).find('.grid-field__table').parents('.fluid__item-field').innerWidth()
+			var tableInnerWidth = $(this).find('.grid-field__table').innerWidth()
 		} else {
 			var tableInnerWidth = $(this).find('.grid-field__table').width();
 		}
@@ -1059,7 +1059,7 @@ function checkGrigWidth() {
 		if ( $(this).parents('.hidden').length ) return;
 
 		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
-			var tableInnerWidth = $(this).find('.grid-field__table').parents('.fluid__item-field').innerWidth()
+			var tableInnerWidth = $(this).find('.grid-field__table').innerWidth()
 		} else {
 			var tableInnerWidth = $(this).find('.grid-field__table').width();
 		}
