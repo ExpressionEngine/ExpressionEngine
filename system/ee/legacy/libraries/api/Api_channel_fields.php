@@ -383,7 +383,7 @@ class Api_channel_fields extends Api
 
         ee()->load->remove_package_path($_ft_path);
 
-        return $res;
+        return !is_null($res) ? $res : '';
     }
 
     /**
