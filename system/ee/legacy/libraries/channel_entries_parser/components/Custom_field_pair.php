@@ -193,6 +193,12 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                         ));
                     }
 
+                    // if the fieldtype returned NULL, set to empty string
+                    // as templates are working with strings
+                    if (is_null($tpl_chunk)) {
+                        $tpl_chunk = '';
+                    }
+
                     //frontend edit link
                     $frontedit_disabled = false;
                     $frontedit_disabled_with_param = false;
