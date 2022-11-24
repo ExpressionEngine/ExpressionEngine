@@ -58,6 +58,7 @@ use ExpressionEngine\Service\Generator\ActionGenerator;
 use ExpressionEngine\Service\Generator\AddonGenerator;
 use ExpressionEngine\Service\Generator\CommandGenerator;
 use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
+use ExpressionEngine\Service\Generator\ExtensionGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\TemplateTagGenerator;
@@ -372,6 +373,13 @@ $setup = [
             $str = $ee->make('Str');
 
             return new ExtensionHookGenerator($filesystem, $str, $data);
+        },
+
+        'ExtensionGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new ExtensionGenerator($filesystem, $str, $data);
         },
 
         'ModelGenerator' => function ($ee, $data) {
