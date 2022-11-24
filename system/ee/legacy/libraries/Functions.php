@@ -300,7 +300,7 @@ class EE_Functions
         }
 
         foreach ($data as $key => $val) {
-            $str = str_replace('{' . $key . '}', $val, $str);
+            $str = str_replace('{' . $key . '}', (string)$val, $str);
         }
 
         return $str;
