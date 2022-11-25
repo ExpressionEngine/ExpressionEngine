@@ -524,6 +524,16 @@ class Channels extends AbstractChannelsController
                 )
             ),
             array(
+                'title' => 'title_field_instructions',
+                'desc' => 'title_field_instructions_desc',
+                'fields' => array(
+                    'title_field_instructions' => array(
+                        'type' => 'textarea',
+                        'value' => $channel->title_field_instructions
+                    )
+                )
+            ),
+            array(
                 'title' => 'field_groups',
                 'desc' => 'field_groups_desc',
                 'button' => $add_groups_button,

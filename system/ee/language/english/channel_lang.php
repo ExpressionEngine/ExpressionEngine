@@ -392,6 +392,10 @@ $lang = array(
 
     'title_field_label_desc' => 'Changes the title field label in the Publish form for this channel.',
 
+    'title_field_instructions' => 'Title field instructions',
+
+    'title_field_instructions_desc' => 'Instructions for authors on what to enter into title field for entries in this channel.',
+
     'url_path_settings' => '<abbr title="Unified Resource Locator">URL</abbr> and Path Settings',
 
     'url_title_prefix' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix',
