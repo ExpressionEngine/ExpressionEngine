@@ -822,6 +822,8 @@ class Email
                 $data['rate'] = ee()->input->get_post('redirect');
             } elseif (ee()->input->get_post('redirect') == 'none') {
                 $data['redirect'] = '';
+            } elseif (ee()->input->get_post('redirect') == 'return') {
+                ee()->functions->redirect($return_link);
             }
         }
 
