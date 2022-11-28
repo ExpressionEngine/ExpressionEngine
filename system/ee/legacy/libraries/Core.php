@@ -74,7 +74,7 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20221122');
+        define('APP_BUILD', '20221128');
         define('APP_VER', '7.2.2');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
@@ -268,10 +268,10 @@ class EE_Core
      * This method is a setter for the $cache class variable.
      * Note, this is not persistent across requests
      *
-     * @param 	string 	Super Class/Unique Identifier
-     * @param 	string 	Key for cached item
-     * @param 	mixed 	item to put in the cache
-     * @return 	object
+     * @param   string  Super Class/Unique Identifier
+     * @param   string  Key for cached item
+     * @param   mixed   item to put in the cache
+     * @return  object
      */
     public function set_cache($class, $key, $val)
     {
@@ -289,10 +289,10 @@ class EE_Core
      *
      * This method extracts a value from the session cache.
      *
-     * @param 	string 	Super Class/Unique Identifier
-     * @param 	string 	Key to extract from the cache.
-     * @param 	mixed 	Default value to return if key doesn't exist
-     * @return 	mixed
+     * @param   string  Super Class/Unique Identifier
+     * @param   string  Key to extract from the cache.
+     * @param   mixed   Default value to return if key doesn't exist
+     * @return  mixed
      */
     public function cache($class, $key, $default = false)
     {
@@ -563,14 +563,13 @@ class EE_Core
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->lang->load('pro');
                 ee('CP/Alert')->makeInline('shared-form')
-                        ->asIssue()
-                        ->withTitle(lang('mfa_required'))
-                        ->addToBody(lang('mfa_required_desc'))
-                        ->defer();
+                    ->asIssue()
+                    ->withTitle(lang('mfa_required'))
+                    ->addToBody(lang('mfa_required_desc'))
+                    ->defer();
                 ee()->functions->redirect(ee('CP/URL')->make('members/profile/pro/mfa'));
             }
         }
-
 
         // Load common helper files
         ee()->load->helper(array('url', 'form', 'quicktab', 'file'));
@@ -618,11 +617,13 @@ class EE_Core
                     ->asAttention()
                     ->canClose()
                     ->withTitle(lang('file_manager_compatibility_mode_warning'))
-                    ->addToBody(sprintf(
+                    ->addToBody(
+                        sprintf(
                         lang('file_manager_compatibility_mode_warning_desc'),
                         DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
                         ee('CP/URL')->make('utilities/file-usage')->compile(),
-                        ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
+                        ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode'
+                    )
                     )
                     ->now();
                 ee('Model')->get('Config')->filter('key', 'warn_file_manager_compatibility_mode')->delete();
