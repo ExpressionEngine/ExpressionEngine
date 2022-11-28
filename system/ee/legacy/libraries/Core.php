@@ -74,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20221121');
-        define('APP_VER', '7.2.1');
+        define('APP_BUILD', '20221128');
+        define('APP_VER', '7.2.2');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -324,11 +324,12 @@ class EE_Core
         );
 
         // Is this a asset request?  If so, we're done.
-        if (
-            isset($_GET['css']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'css')
-            || isset($_GET['js']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'js')
-        ) {
-            ee('Resource')->request_template();
+        if (isset($_GET['css']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) {
+            ee('Resource/Stylesheet')->request_template();
+            exit;
+        }
+        if (isset($_GET['js']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'js')) {
+            ee('Resource/Javascript')->request_template();
             exit;
         }
 

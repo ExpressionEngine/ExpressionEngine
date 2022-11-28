@@ -300,7 +300,7 @@ class EE_Functions
         }
 
         foreach ($data as $key => $val) {
-            $str = str_replace('{' . $key . '}', $val, $str);
+            $str = str_replace('{' . $key . '}', (string)$val, $str);
         }
 
         return $str;
@@ -919,6 +919,13 @@ class EE_Functions
      */
     public function fetch_assigned_channels($all_sites = false)
     {
+        if (REQ == 'CLI') {
+            $channels = ee('Model')->get('Channel')->fields('channel_id');
+            if (!$all_sites) {
+                $channels->filter('site_id', ee()->config->item('site_id'));
+            }
+            return $channels->all()->pluck('channel_id');
+        }
         if (ee()->session->getMember()) {
             return ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
         }

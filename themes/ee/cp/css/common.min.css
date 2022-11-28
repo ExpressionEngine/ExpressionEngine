@@ -28298,6 +28298,9 @@ input[type=button].btn-block {
 .filter-search-bar .filter-search-bar__search-row .filter-bar__item {
   margin-right: 0;
 }
+.filter-search-bar .checkbox-label .checkbox-label__text {
+  display: block;
+}
 
 .tab-bar {
   display: flex;
@@ -31558,7 +31561,7 @@ fieldset .field-control #eye {
 }
 
 #routes .table-responsive {
-  overflow-x: inherit;
+  overflow-x: auto;
 }
 
 .grid-field__column-label {
@@ -31766,72 +31769,85 @@ fieldset .field-control #eye {
 }
 .grid-field.vertical-layout .grid-field__column-label {
   display: inherit;
+  margin-bottom: 10px;
+}
+.grid-field.vertical-layout .grid-field__column-label label {
+  color: var(--ee-text-secondary);
+  margin: 0;
+}
+.grid-field.vertical-layout .grid-field__column-label em {
+  color: var(--ee-text-secondary);
+  font-style: normal;
+  margin: 0;
+}
+
+.grid-field.horizontal-layout .table-responsive {
+  overflow-x: auto;
 }
 
 @media (max-width: 767px) {
-  .grid-field__column-label {
+  .grid-field:not(.horizontal-layout) .grid-field__column-label {
     display: block;
   }
 
-  .grid-field .table-responsive {
+  .grid-field:not(.horizontal-layout) .table-responsive {
     box-shadow: none;
     border: none;
     border-radius: 0;
     overflow: inherit;
   }
 
-  .grid-field__table, .grid-field__table tbody, .grid-field__table th, .grid-field__table td, .grid-field__table tr {
+  .grid-field:not(.horizontal-layout) .grid-field__table, .grid-field:not(.horizontal-layout) .grid-field__table tbody, .grid-field:not(.horizontal-layout) .grid-field__table th, .grid-field:not(.horizontal-layout) .grid-field__table td, .grid-field:not(.horizontal-layout) .grid-field__table tr {
     display: block;
     border: none;
   }
-  .grid-field__table thead {
+  .grid-field:not(.horizontal-layout) .grid-field__table thead {
     display: none;
   }
-  .grid-field__table tr {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr {
     display: flex;
     flex-direction: column;
   }
-  .grid-field__table tr.hidden {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.hidden {
     display: none;
   }
-  .grid-field__table tr {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr {
     position: relative;
     border: 1px solid var(--ee-border);
     margin-bottom: 10px;
     padding-bottom: 15px;
     background-color: var(--ee-bg-blank);
   }
-  .grid-field__table tr.no-results {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.no-results {
     padding: 0px;
   }
-  .grid-field__table tr.no-results td {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.no-results td {
     padding-top: 0;
   }
-  .grid-field__table td {
+  .grid-field:not(.horizontal-layout) .grid-field__table td {
     display: block;
     border-bottom: none;
     padding: 10px 15px 10px 15px;
-    padding-bottom: 0;
   }
-  .grid-field__table tr.grid__item--collapsed {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.grid__item--collapsed {
     padding-bottom: 0 !important;
   }
-  .grid-field__table tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
     display: none !important;
   }
-  .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset {
     border-bottom: none !important;
   }
-  .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
     transform: rotate(180deg);
   }
 
-  .grid-field__column--tools {
+  .grid-field:not(.horizontal-layout) .grid-field__column--tools {
     text-align: left;
   }
-  .grid-field__column--tools .button, .grid-field__column--tools .pagination__link, .grid-field__column--tools .no-results a, .no-results .grid-field__column--tools a,
-.grid-field__column--tools .field-no-results a,
-.field-no-results .grid-field__column--tools a, .grid-field__column--tools .select-popup, .grid-field__column--tools select, .grid-field__column--tools .select__button, .grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field__column--tools a, .grid-field__column--tools .filter-bar__button, .grid-field__column--tools .license-status-badge {
+  .grid-field:not(.horizontal-layout) .grid-field__column--tools .button, .grid-field:not(.horizontal-layout) .grid-field__column--tools .pagination__link, .grid-field:not(.horizontal-layout) .grid-field__column--tools .no-results a, .no-results .grid-field:not(.horizontal-layout) .grid-field__column--tools a,
+.grid-field:not(.horizontal-layout) .grid-field__column--tools .field-no-results a,
+.field-no-results .grid-field:not(.horizontal-layout) .grid-field__column--tools a, .grid-field:not(.horizontal-layout) .grid-field__column--tools .select-popup, .grid-field:not(.horizontal-layout) .grid-field__column--tools select, .grid-field:not(.horizontal-layout) .grid-field__column--tools .select__button, .grid-field:not(.horizontal-layout) .grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field:not(.horizontal-layout) .grid-field__column--tools a, .grid-field:not(.horizontal-layout) .grid-field__column--tools .filter-bar__button, .grid-field:not(.horizontal-layout) .grid-field__column--tools .license-status-badge {
     margin-bottom: 0;
   }
 
@@ -31849,6 +31865,15 @@ fieldset .field-control #eye {
   }
   .entry-grid td.grid-field__column--tools, .vertical-layout td.grid-field__column--tools {
     display: none !important;
+  }
+
+  .grid-field.horizontal-layout tbody td {
+    border-right: 1px solid var(--ee-table-border);
+    min-width: 250px !important;
+    max-width: 600px !important;
+  }
+  .grid-field.horizontal-layout tbody td.grid-field__column--tools {
+    min-width: 80px !important;
   }
 }
 .live-preview__form-content .grid-field .grid-field__table,
@@ -31886,7 +31911,12 @@ fieldset .field-control #eye {
   max-width: 100%;
   display: flex;
   flex-wrap: wrap;
-  border-bottom: 1px solid var(--ee-table-border);
+}
+@media (min-width: 768px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) {
+    border-bottom: 1px solid var(--ee-table-border);
+  }
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden):last-child,
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden):last-child {
@@ -31894,13 +31924,7 @@ fieldset .field-control #eye {
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label),
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label) {
-  width: calc(100% - 135px);
-}
-@media (max-width: 1023px) {
-  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label),
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label) {
-    width: calc(100% - 100px);
-  }
+  width: 100%;
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .ee-form-error-message,
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .ee-form-error-message {
@@ -31912,15 +31936,19 @@ fieldset .field-control #eye {
   color: var(--ee-text-secondary);
   font-weight: 500;
   white-space: normal;
-  border-right: 1px solid var(--ee-table-border);
-  margin-right: 15px;
-  flex: 0 0 120px;
+  margin-bottom: 10px;
+  flex: 0 0 100%;
 }
-@media (max-width: 1023px) {
-  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label {
-    flex: 0 0 80px;
-  }
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label label,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label label {
+  color: var(--ee-text-secondary);
+  margin: 0;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label em,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label em {
+  font-style: normal;
+  color: var(--ee-text-secondary);
+  margin: 0;
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools,
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools {
@@ -31970,10 +31998,6 @@ fieldset .field-control #eye {
   padding: 0;
 }
 
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td {
-  flex-wrap: nowrap !important;
-  align-items: center;
-}
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td div:empty {
   display: none;
 }
@@ -34088,13 +34112,14 @@ a.ck.ck-button.ck-on {
   transform: rotate(180deg);
 }
 .fluid__item--collapsed .fluid__item-tools--item-closed {
-  display: block;
+  display: none;
 }
 
 .fluid__item-content {
   flex: 1 1;
   border-radius: 8px;
   transition: background 100ms ease, box-shadow 100ms ease;
+  width: 100%;
 }
 
 .fluid__item-tools {

@@ -990,8 +990,14 @@ class Sql_structure
         $structure_channel_ids = $this->_get_structure_channel_ids($include_listings);
 
         // Get the Channel Entries that have are in a Structure Channel
-        $channelEntries = ee('Model')->get('ChannelEntry')
-            ->filter('channel_id', 'IN', $structure_channel_ids)
+        $selectFields = array_map(function($field_data) {
+            return 'field_id_' . $field_data['field_id'];
+        }, $sql_fields);
+        $channelEntries = ee('Model')->get('ChannelEntry')->fields('entry_id', 'channel_id', 'site_id', 'title');
+        foreach ($selectFields as $field) {
+            $channelEntries->fields($field);
+        }
+        $channelEntries = $channelEntries->filter('channel_id', 'IN', $structure_channel_ids)
             ->filter('site_id', '==', $this->site_id)
             ->all();
 

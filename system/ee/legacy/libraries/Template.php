@@ -139,7 +139,7 @@ class EE_Template
         }
 
         $this->user_vars = array(
-            'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'username', 'screen_name',
+            'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'primary_role_short_name', 'username', 'screen_name',
             'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
             'total_forum_posts', 'total_forum_topics', 'total_forum_replies', 'mfa_enabled',
         );
@@ -2585,7 +2585,7 @@ class EE_Template
                     $query = ee()->db->select('a.template_id, a.template_data,
                         a.template_name, a.template_type, a.edit_date,
                         a.cache, a.refresh, a.hits, a.protect_javascript,
-                        a.allow_php, a.php_parse_location, b.group_name, a.group_id')
+                        a.allow_php, a.php_parse_location, b.group_name, a.group_id, a.enable_frontedit')
                         ->from('templates a')
                         ->join('template_groups b', 'a.group_id = b.group_id')
                         ->where('template_id', $query->row('no_auth_bounce'))
