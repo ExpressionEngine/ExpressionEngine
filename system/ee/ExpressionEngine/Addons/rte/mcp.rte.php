@@ -579,6 +579,10 @@ class Rte_mcp
             'editor.height',
             ee()->config->item('codemirror_height') !== false ? ee()->config->item('codemirror_height') : 200
         );
+        $fontSize = ee()->config->item('codemirror_fontsize');
+        if ($fontSize !== false) {
+            ee()->cp->add_to_head('<style type="text/css">.CodeMirror-scroll {font-size: ' . $fontSize . '}</style>');
+        }
         if (isset($config->settings['rte_advanced_config']) && $config->settings['rte_advanced_config'] == 'y') {
             //json editor is visible, initialize immediately
             ee()->javascript->output("
