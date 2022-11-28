@@ -487,7 +487,7 @@ class Cli
         }
     }
 
-    public function getOptionOrAskAddon($option, $askText = null, $default = null, $required = false)
+    public function getOptionOrAskAddon($option, $askText = null, $default = null, $required = true)
     {
         // Get option if it was passed
         if ($this->option($option)) {
