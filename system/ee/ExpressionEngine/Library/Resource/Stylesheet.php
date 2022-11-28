@@ -21,7 +21,7 @@ class Stylesheet extends Request
      */
     public function request_template()
     {
-        if ('_ee_channel_form_css' == rtrim(ee()->uri->uri_string(), '/')) {
+        if ('css/_ee_channel_form_css' == rtrim(ee()->uri->uri_string(), '/')) {
             return $this->_ee_channel_form_css();
         }
 

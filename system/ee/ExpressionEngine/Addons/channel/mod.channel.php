@@ -1193,6 +1193,11 @@ class Channel
 
         if ($channel = ee()->TMPL->fetch_param('channel')) {
             $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true)->getDictionary('channel_name', 'channel_id');
+            $channelInOperator = 'IN';
+            if (strpos($channel, 'not ') === 0) {
+                $channelInOperator = 'NOT IN';
+                $channel = substr($channel, 4);
+            }
             if (strpos($channel, '|') !== false) {
                 $options = preg_split('/\|/', $channel, -1, PREG_SPLIT_NO_EMPTY);
                 $options = array_map('trim', $options);
@@ -1211,7 +1216,7 @@ class Channel
             if (empty($channel_ids)) {
                 return '';
             } else {
-                $sql .= "AND t.channel_id IN (" . implode(',', $channel_ids) . ") ";
+                $sql .= "AND t.channel_id " . $channelInOperator . " (" . implode(',', $channel_ids) . ") ";
             }
         }
 
