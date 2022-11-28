@@ -14,6 +14,7 @@ use ExpressionEngine\Cli\CliFactory;
 use ExpressionEngine\Cli\Help;
 use ExpressionEngine\Cli\Status;
 use ExpressionEngine\Cli\Context\OptionFactory;
+use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class Cli
 {
@@ -105,6 +106,7 @@ class Cli
 
         // Initialize the object
         $factory = new CliFactory();
+        $this->filesystem = ee('Filesystem');
 
         $this->command = $factory->newContext($GLOBALS);
         $this->output = $factory->newStdio();
@@ -483,5 +485,77 @@ class Cli
             $this->description = isset($this->description) ? lang($this->description) : lang('command_' . $simplifiedSignature . '_description');
             $this->summary = isset($this->summary) ? lang($this->summary) : lang('command_' . $simplifiedSignature . '_description');
         }
+    }
+
+    public function getOptionOrAskAddon($option, $askText = null, $default = null, $required = false)
+    {
+        // Get option if it was passed
+        if ($this->option($option)) {
+            $addon = $this->option($option);
+            $this->validateAddonName($addon);
+
+            return $addon;
+        }
+
+        if (is_null($askText)) {
+            $askText = 'Select addon';
+        }
+
+        // Get the answer by asking
+        $answer = $this->askAddon(lang($askText), $default);
+
+        // If it was a required field and no answer was passed, fail
+        if ($required && empty(trim($answer))) {
+            $this->fail(lang('cli_error_is_required_field') . $option);
+        }
+
+        return $answer;
+    }
+
+    protected function askAddon($askText, $default)
+    {
+        $addonList = $this->getAddonList();
+        $askText = $askText . ' [' . implode(', ', $addonList) . ']: ';
+        $default = '';
+
+        // Get the answer by asking
+        $answer = $this->ask($askText, $default);
+
+        $this->validateAddonName($answer);
+
+        return $answer;
+    }
+
+    protected function validateAddonName($addon)
+    {
+        $addonList = $this->getAddonList();
+
+        if (!in_array($addon, $addonList)) {
+            $this->fail($addon . ' is not a valid addon');
+        }
+
+        return true;
+    }
+
+    protected function getAddonList()
+    {
+        $addons = [];
+        foreach ($this->filesystem->getDirectoryContents(PATH_THIRD) as $name) {
+            // Skip non-directories
+            if (! $this->filesystem->isDir($name)) {
+                continue;
+            }
+
+            // Skip add-ons without addon.setup.php file
+            if (! $this->filesystem->exists($name . '/addon.setup.php')) {
+                continue;
+            }
+
+            // Lets get the shortname
+            $addon_shortname = explode('/', $name);
+            $addons[] = end($addon_shortname);
+        }
+
+        return $addons;
     }
 }
