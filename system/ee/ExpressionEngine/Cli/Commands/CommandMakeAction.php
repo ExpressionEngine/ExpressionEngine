@@ -11,7 +11,6 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Service\Generator\ActionGenerator;
 
 /**
  * Command to clear selected caches
