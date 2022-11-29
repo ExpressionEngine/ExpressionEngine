@@ -55,7 +55,7 @@ class CommandMakeTemplateTag extends Cli
 
         // Gather alll the tag information
         $this->data['name'] = $this->getFirstUnnamedArgument("command_make_tag_ask_tag_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_tag_ask_addon", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_tag_ask_addon");
 
         $this->info('command_make_tag_building_tag');
 

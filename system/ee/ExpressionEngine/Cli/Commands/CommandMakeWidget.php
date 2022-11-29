@@ -60,8 +60,8 @@ class CommandMakeWidget extends Cli
         $this->info('command_make_widget_lets_build_widget');
 
         // Gather alll the widget information
-        $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_widget_ask_widget_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_widget_ask_addon", null, true);
+        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_widget_ask_widget_name", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_widget_ask_addon");
 
         $this->info('command_make_widget_building_widget');
 

@@ -58,7 +58,7 @@ class CommandMakeAction extends Cli
 
         // Gather all the action information
         $this->data['name'] = $this->getFirstUnnamedArgument("command_make_action_ask_action_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_action_ask_addon", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_action_ask_addon");
         $this->data['csrf_exempt'] = (bool) $this->option('--csrf_exempt');
 
         $this->info('command_make_action_building_action');

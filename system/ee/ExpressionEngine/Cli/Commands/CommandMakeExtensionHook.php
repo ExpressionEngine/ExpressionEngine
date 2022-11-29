@@ -57,7 +57,7 @@ class CommandMakeExtensionHook extends Cli
 
         // Gather all the extension_hook information
         $this->data['name'] = $this->getFirstUnnamedArgument("command_make_extension_hook_ask_extension_hook_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_extension_hook_ask_addon", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_extension_hook_ask_addon");
 
         $this->info('command_make_extension_hook_building_extension_hook');
 
