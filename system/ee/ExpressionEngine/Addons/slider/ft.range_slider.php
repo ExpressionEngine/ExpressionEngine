@@ -26,6 +26,8 @@ class Range_slider_ft extends Slider_ft
 
     public $has_array_data = true;
 
+    public $can_be_cloned = true;
+
     public $entry_manager_compatible = true;
 
     /**

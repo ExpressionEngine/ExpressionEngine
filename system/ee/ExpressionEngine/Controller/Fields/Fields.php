@@ -390,6 +390,17 @@ class Fields extends AbstractFieldsController
 
         $field_groups = $field->ChannelFieldGroups;
         $active_groups = $field_groups->pluck('group_id');
+
+        if (defined('CLONING_MODE') && CLONING_MODE === true) {
+            if ($_POST['field_label'] == $field->field_label) {
+                $_POST['field_label'] = lang('copy_of') . ' ' . $_POST['field_label'];
+            }
+            if ($_POST['field_name'] == $field->field_name) {
+                $_POST['field_name'] = 'copy_' . $_POST['field_name'];
+            }
+            return $this->create(!empty($active_groups) ? $active_groups[0] : null);
+        }
+
         $this->generateSidebar($active_groups);
 
         $errors = null;
@@ -545,6 +556,22 @@ class Fields extends AbstractFieldsController
                 'field_id' => $id,
             ),
         );
+
+        // can the field be cloned?
+        $f = $field->getField();
+        $ft_instance = $f->getNativeField();
+
+        if (! isset($ft_instance->has_array_data)
+            || $ft_instance->has_array_data == false
+            || (isset($ft_instance->can_be_cloned) && $ft_instance->can_be_cloned)) {
+            $vars['buttons'][] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_as_new_entry',
+                'text' => sprintf(lang('clone_to_new'), lang('field')),
+                'working' => 'btn_saving'
+            ];
+        }
 
         ee()->view->cp_page_title = lang('edit_field');
         ee()->view->extra_alerts = array('search-reindex');

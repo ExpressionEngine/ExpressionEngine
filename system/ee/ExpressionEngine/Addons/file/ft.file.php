@@ -24,6 +24,8 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
 
     public $has_array_data = true;
 
+    public $can_be_cloned = true;
+
     public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty', 'contains'];
 
     public $defaultEvaluationRule = 'isNotEmpty';
