@@ -332,7 +332,7 @@
 			tr.grid__item--collapsed {
 				padding-bottom: 0 !important;
 
-				td:not(.grid-field__item-fieldset) { display: none !important;}
+				// td:not(.grid-field__item-fieldset) { display: none !important;}
 
 				td.grid-field__item-fieldset {
 					border-bottom: none !important;
@@ -436,13 +436,13 @@
         padding: 0px;
 
         td {
-          padding-top: 0;
+          // padding-top: 0;
         }
       }
 		}
 
 		td {
-			display: block;
+			display: block !important;
 			border-bottom: none;
 			padding: $sq-inset-s;
 			// padding-bottom: 0;
@@ -514,26 +514,34 @@
 
 		tbody {
 			width: 100%;
+			border: none;
 
 			tr:not(.hidden) {
 				display: flex;
 				flex-direction: column;
-				width: 100%;
-				border-bottom: 3px solid var(--ee-table-border);
+				position: relative;
+				border: 1px solid var(--ee-border);
+				margin-bottom: 10px;
+				padding-bottom: 15px;
+				background-color: var(--ee-bg-blank);
 
-				&:last-child {
-					border-bottom: none;
+				// &:last-child {
+				// 	border-bottom: none;
 
-					@include m-tablet-down {
-						border-bottom-width: 1px;
-					}
-				}
+				// 	@include m-tablet-down {
+				// 		border-bottom-width: 1px;
+				// 	}
+				// }
 
 				td:not(.hidden) {
+					border-right: none;
+					min-width: 0;
 					width: 100%;
 					max-width: 100%;
-					display: flex;
-					flex-wrap: wrap;
+					display: block;
+					border-bottom: none;
+					padding: 10px 15px 10px 15px;
+					font-size: 1rem;
 
 					@include m-tablet-up {
 						border-bottom: 1px solid var(--ee-table-border);
@@ -594,18 +602,44 @@
 				border-bottom: none;
 				padding: 0;
 			}
+
+			tr.grid__item--collapsed {
+				padding-bottom: 0 !important;
+
+				td.grid-field__item-fieldset {
+					border-bottom: none !important;
+
+					.grid-field__item-tool {
+						transform: rotate(180deg);
+					}
+				}
+			}
 		}
 	}
 }
 
 .grid-field.overwidth {
+	.table-responsive {
+		border: none;
+		box-shadow: none;
+	}
+
 	.grid-field__table {
 		tbody tr:not(.hidden) {
 			td {
 				// flex-wrap: nowrap !important;
 				// align-items: center;
+				&.grid-field__column--tools { display: none !important;}
 
 				div:empty { display: none;}
+
+				&.grid-field__item-fieldset {
+					position: relative;
+
+					.grid-field__item-tools {
+						width: auto !important;
+					}
+				}
 			}
 		}
 	}
