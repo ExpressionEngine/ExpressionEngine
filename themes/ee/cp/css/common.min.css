@@ -31819,7 +31819,7 @@ fieldset .field-control #eye {
     padding: 0px;
   }
   .grid-field:not(.horizontal-layout) .grid-field__table td {
-    display: block;
+    display: block !important;
     border-bottom: none;
     padding: 10px 15px 10px 15px;
   }
@@ -32002,6 +32002,12 @@ fieldset .field-control #eye {
   transform: rotate(180deg);
 }
 
+.grid-field.overwidth {
+  padding: 10px;
+  background: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  border-radius: 5px;
+}
 .grid-field.overwidth .table-responsive {
   border: none;
   box-shadow: none;

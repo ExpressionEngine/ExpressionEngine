@@ -619,6 +619,11 @@
 }
 
 .grid-field.overwidth {
+	padding: 10px;
+	background: var(--ee-bg-0);
+	border: 1px solid var(--ee-border);
+	border-radius: 5px;
+
 	.table-responsive {
 		border: none;
 		box-shadow: none;
