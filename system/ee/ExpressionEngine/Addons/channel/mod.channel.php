@@ -3927,6 +3927,7 @@ class Channel
             }
 
             if (isset($field_index[$field_name]) && isset($data['field_id_' . $field_index[$field_name]])) {
+                // custom fields
                 $field_id = $field_index[$field_name];
                 $cat_field = $this->cat_field_models[$field_id];
 
@@ -3945,6 +3946,7 @@ class Channel
                     $tag
                 );
             } elseif (isset($data[$field_name])) {
+                // built-in fields
                 $content = $data[$field_name];
 
                 if (! empty($var_props['modifier'])) {
@@ -3956,6 +3958,7 @@ class Channel
                         ee()->api_channel_fields->field_type = 'file';
                         $content = ee()->file_field->parse_field($content);
                     } else {
+                        ee()->api_channel_fields->field_type = 'text';
                         $class = $fieldtype;
                     }
 
