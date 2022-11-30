@@ -24131,6 +24131,12 @@ tr.selected td {
   pointer-events: none;
 }
 
+.selectable_buttons .button.active, .selectable_buttons .active.pagination__link, .selectable_buttons .no-results a.active, .no-results .selectable_buttons a.active,
+.selectable_buttons .field-no-results a.active,
+.field-no-results .selectable_buttons a.active, .selectable_buttons .active.select-popup, .selectable_buttons select.active, .selectable_buttons .active.select__button, .selectable_buttons .active.license-status-badge, .selectable_buttons .active.filter-bar__button, .selectable_buttons .markItUpHeader ul a.active, .markItUpHeader ul .selectable_buttons a.active {
+  background: var(--ee-accent-light);
+}
+
 /*
 .button-group {
 	display: flex;

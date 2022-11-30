@@ -281,3 +281,11 @@
     }
   }
 }
+
+.selectable_buttons {
+  .button {
+    &.active {
+      background: var(--ee-accent-light);
+    }
+  }
+}
