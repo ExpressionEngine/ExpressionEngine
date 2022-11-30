@@ -31,6 +31,11 @@ class Api_template_structure extends Api
         'xml' => '.xml'
     );
 
+    protected $template_engine_file_extensions = [];
+    protected $template_engines = array(
+        '' => 'Native'
+    );
+
     /**
      * Constructor
      */
@@ -42,6 +47,7 @@ class Api_template_structure extends Api
 
         // initialize the reserved names array
         $this->_load_reserved_groups();
+        $this->_setup_template_engine_extensions();
     }
 
     /**
@@ -222,12 +228,14 @@ class Api_template_structure extends Api
      * @param	string
      * @return	string
      */
-    public function file_extensions($template_type)
+    public function file_extensions($template_type, $engine = null)
     {
         // Check our standard template types for a file extension
+        $engine = ($engine && array_key_exists($engine, $this->template_engines)) ? ".$engine" : null;
+
         if (isset($this->file_extensions[$template_type])) {
-            return $this->file_extensions[$template_type];
-        } elseif (isset(ee()->extensions)) { 
+            return implode('', array_filter([$engine, $this->file_extensions[$template_type]]));
+        } else { 
             // Check custom template types for a file extension
             // -------------------------------------------
             // 'template_types' hook.
@@ -239,12 +247,109 @@ class Api_template_structure extends Api
 
             if ($template_types != null) {
                 if (isset($template_types[$template_type]['template_file_extension'])) {
-                    return $template_types[$template_type]['template_file_extension'];
+                    return implode('', array_filter([$engine, $template_types[$template_type]['template_file_extension']]));
                 }
             }
         }
 
         return '';
+    }
+
+    /**
+     * Get a list of all available file extensions along with
+     * the default template type and template engine
+     *
+     * @return array
+     */
+    public function all_file_extensions()
+    {
+        $result = [];
+
+        foreach ($this->template_engine_file_extensions as $type => $extensions) {
+            foreach ($extensions as $extension) {
+                if (!array_key_exists($extension['extension'], $result)) {
+                    $result[$extension['extension']] = [
+                        'type' => $type,
+                        'engine' => $extension['engine']
+                    ];
+                }
+            }
+        }
+
+        // sort extensions by longest to shortest key
+        uksort($result, function ($a, $b) {
+            return strlen($b) - strlen($a);
+        });
+
+        return $result;
+    }
+
+    /**
+     * Create a mapping of template types and available extensions for each type
+     *
+     * @return void
+     */
+    private function _setup_template_engine_extensions()
+    {
+        $extensions = [];
+        $engines = array_keys($this->template_engines);
+
+        foreach ($this->file_extensions as $type => $extension) {
+            foreach ($engines as $engine) {
+                $ext = '.' . implode('.', array_filter([
+                    $engine,
+                    ltrim($extension, '.')
+                ]));
+                $extensions[$type][] = ['extension' => $ext, 'engine' => $engine ?: null];
+            }
+        }
+
+        // cache this locally
+        $this->template_engine_file_extensions = $extensions;
+    }
+
+
+    /**
+     * Register new template engine(s)
+     *
+     * @param array $engines
+     * @return void
+     */
+    public function register_template_engine($engines = array())
+    {
+        foreach ($engines as $key => $value) {
+            if (!array_key_exists($key, $this->template_engines)) {
+                $this->template_engines[$key] = $value;
+            }
+        }
+
+        // Refresh the template engine extension cache
+        $this->_setup_template_engine_extensions();
+    }
+
+    /**
+     * Retrieve information about a given template file
+     *
+     * @param string $template
+     * @return array|null
+     */
+    public function get_template_file_info($template)
+    {
+        foreach ($this->all_file_extensions() as $extension => $info) {
+            // If template ends with extension we are done.  This finds the most specific extension first
+            // because all_file_extensions returns a sorted list with longest extensions first
+            $extensionLength = strlen($extension);
+            if (substr_compare($template, $extension, -$extensionLength) === 0) {
+                return [
+                    'name' => substr($template, 0, -$extensionLength),
+                    'type' => $info['type'],
+                    'engine' => $info['engine'],
+                    'extension' => $extension
+                ];
+            }
+        }
+
+        return null;
     }
 }
 // END CLASS
