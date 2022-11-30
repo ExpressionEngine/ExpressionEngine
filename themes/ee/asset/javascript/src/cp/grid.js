@@ -194,6 +194,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 					$(document).trigger('entry:preview');
 				},
 				handle: '.js-grid-reorder-handle',
+				appendTo: '.tab-wrap',
 			};
 
 		params = $.extend(params, this.sortableParams);
