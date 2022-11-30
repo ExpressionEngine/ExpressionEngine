@@ -452,8 +452,21 @@ class Categories extends AbstractCategoriesController
         ee()->view->ajax_validate = true;
 
         if (! empty($_POST)) {
+            if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                $category->setId(null);
+                if ($_POST['cat_name'] == $category->cat_name) {
+                    $_POST['cat_name'] = lang('copy_of') . ' ' . $_POST['cat_name'];
+                }
+                if ($_POST['cat_url_title'] == $category->cat_url_title) {
+                    $_POST['cat_url_title'] = 'copy_' . $_POST['cat_url_title'];
+                }
+                $category->group_id = $group_id;
+                $category->parent_id = ee('Security/XSS')->clean($_POST['parent_id']);
+                $category->cat_order = null;
+                $category->markAsDirty();
+            }
             $category->set($_POST);
-            $category->parent_id = $_POST['parent_id'];
+            $category->parent_id = ee('Security/XSS')->clean($_POST['parent_id']);
             $result = $category->validate();
 
             if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result)) {
@@ -518,6 +531,16 @@ class Categories extends AbstractCategoriesController
                 'working' => 'btn_saving'
             ]
         ];
+
+        if (! $category->isNew()) {
+            $vars['buttons'][] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_as_new_entry',
+                'text' => sprintf(lang('clone_to_new'), lang('category')),
+                'working' => 'btn_saving'
+            ];
+        }
 
         if (AJAX_REQUEST) {
             return ee()->cp->render('_shared/form', $vars);
