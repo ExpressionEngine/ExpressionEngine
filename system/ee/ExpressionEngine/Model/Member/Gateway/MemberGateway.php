@@ -72,6 +72,7 @@ class MemberGateway extends Gateway
     protected $timezone;
     protected $time_format;
     protected $date_format;
+    protected $week_start;
     protected $include_seconds;
     protected $profile_theme;
     protected $forum_theme;

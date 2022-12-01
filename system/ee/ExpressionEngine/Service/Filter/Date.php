@@ -51,10 +51,12 @@ class Date extends Filter
         );
 
         $date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+        ee()->javascript->set_global('date.date_format', $date_format);
+
+        $week_start = ee()->session->userdata('week_start', (ee()->config->item('week_start') ?: 'sunday'));
+        ee()->javascript->set_global('date.week_start', $week_start);
 
         ee()->lang->loadfile('calendar');
-
-        ee()->javascript->set_global('date.date_format', $date_format);
         ee()->javascript->set_global('lang.date.months.full', array(
             lang('cal_january'),
             lang('cal_february'),

@@ -23,6 +23,7 @@ class General extends Settings
     public function index()
     {
         ee()->load->model('admin_model');
+        ee()->lang->loadfile('calendar');
 
         $site = ee('Model')->get('Site')
             ->filter('site_id', ee()->config->item('site_id'))
@@ -146,6 +147,21 @@ class General extends Settings
                             'choices' => array(
                                 '24' => lang('24_hour'),
                                 '12' => lang('12_hour')
+                            )
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'week_start',
+                    'desc' => 'week_start_desc',
+                    'fields' => array(
+                        'week_start' => array(
+                            'type' => 'radio',
+                            'choices' => array(
+                                'friday' => lang('cal_friday'),
+                                'saturday' => lang('cal_saturday'),
+                                'sunday' => lang('cal_sunday'),
+                                'monday' => lang('cal_monday')
                             )
                         )
                     )

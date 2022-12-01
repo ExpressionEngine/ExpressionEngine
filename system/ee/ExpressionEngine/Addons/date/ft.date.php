@@ -36,8 +36,13 @@ class Date_ft extends EE_Fieldtype
      */
     private function _parse_date($date)
     {
+        $include_time = true;
+        if (isset($this->settings['show_time']) && $this->settings['show_time'] == 'n') {
+            $include_time = false;
+        }
+
         // First we try with the configured date format
-        $timestamp = ee()->localize->string_to_timestamp($date, true, ee()->localize->get_date_format());
+        $timestamp = ee()->localize->string_to_timestamp($date, true, ee()->localize->get_date_format(false, $include_time));
 
         // If the date format didn't work, try something more fuzzy
         if ($timestamp === false) {
@@ -121,6 +126,11 @@ class Date_ft extends EE_Fieldtype
         $custom_date = '';
         $localize = true;
 
+        $include_time = true;
+        if (isset($this->settings['show_time']) && $this->settings['show_time'] == 'n') {
+            $include_time = false;
+        }
+
         if ((isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
             or (! is_numeric($field_data) && ! empty($field_data))) {
             // probably had a validation error so repopulate as-is
@@ -134,7 +144,7 @@ class Date_ft extends EE_Fieldtype
                 $field_data = $date;
 
                 if ($this->get_setting('always_show_date')) {
-                    $custom_date = ee()->localize->human_time();
+                    $custom_date = ee()->localize->human_time(null, true, false, $include_time);
                 }
             } else {	// Everything else
                 $field_dt = $this->get_setting('field_dt');
@@ -150,7 +160,7 @@ class Date_ft extends EE_Fieldtype
                 // the field doesn't get populated, but the calendar still
                 // shows the correct default.
                 if ($field_data) {
-                    $custom_date = ee()->localize->human_time($field_data, $localize);
+                    $custom_date = ee()->localize->human_time($field_data, $localize, false, $include_time);
                 }
             }
 
@@ -159,7 +169,10 @@ class Date_ft extends EE_Fieldtype
 
         ee()->lang->loadfile('calendar');
 
-        ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format());
+        ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format(false, $include_time));
+        $week_start = ee()->session->userdata('week_start', (ee()->config->item('week_start') ?: 'sunday'));
+        ee()->javascript->set_global('date.week_start', $week_start);
+
         ee()->javascript->set_global('lang.date.months.full', array(
             lang('cal_january'),
             lang('cal_february'),
@@ -203,13 +216,21 @@ class Date_ft extends EE_Fieldtype
 
         $localized = (! isset($_POST[$date_local])) ? (($localize === true) ? 'y' : 'n') : ee()->input->post($date_local, true);
 
+        $show_localize_options = 'ask';
+        if (isset($this->settings['localization']) && $this->settings['localization'] == 'fixed') {
+            $show_localize_options = 'fixed';
+        } elseif (isset($this->settings['localization']) && $this->settings['localization'] == 'localized') {
+            $show_localize_options = 'localized';
+        }
+
         return ee('View')->make('date:publish')->render(array(
             'has_localize_option' => (! in_array($this->field_name, $special) && $this->content_type() != 'grid'),
+            'show_localize_options' => $show_localize_options,
             'field_name' => $this->field_name,
             'value' => $custom_date,
             'localize_option_name' => $date_local,
             'localized' => $localized,
-            'date_format' => ee()->localize->get_date_format(),
+            'date_format' => ee()->localize->get_date_format(false, $include_time),
             'disabled' => $this->get_setting('field_disabled')
         ));
     }
@@ -259,6 +280,69 @@ class Date_ft extends EE_Fieldtype
         }
 
         return $date[0];
+    }
+
+    /**
+     * Display Settings
+     *
+     * @param  array  $data  Field Settings
+     * @return array  Field options
+     */
+    public function display_settings($data)
+    {
+        ee()->lang->loadfile('fieldtypes');
+
+        $settings = array(
+            array(
+                'title' => 'date_localization',
+                'desc' => 'date_localization_desc',
+                'fields' => array(
+                    'localization' => array(
+                        'type' => 'radio',
+                        'choices' => array(
+                            'localized' => lang('always_localized'),
+                            'fixed' => lang('always_fixed'),
+                            'ask' => lang('ask_each_time')
+                        ),
+                        'value' => (isset($data['localization'])) ? $data['localization'] : 'ask',
+                    )
+                )
+            ),
+            array(
+                'title' => 'show_time',
+                'desc' => 'show_time_desc',
+                'fields' => array(
+                    'show_time' => array(
+                        'type' => 'yes_no',
+                        'value' => isset($data['show_time']) ? $data['show_time'] : true,
+                    )
+                )
+            )
+        );
+
+        return array('field_options_date' => array(
+            'label' => 'field_options',
+            'group' => 'date',
+            'settings' => $settings
+        ));
+    }
+
+    /**
+     * Save Settings
+     *
+     * @param  array  $data  Field data
+     * @return array  Settings to save
+     */
+    public function save_settings($data)
+    {
+        $defaults = array(
+            'localization' => 'ask',
+            'show_time' => true
+        );
+
+        $all = array_merge($defaults, $data);
+
+        return array_intersect_key($all, $defaults);
     }
 
     public function grid_display_settings($data)

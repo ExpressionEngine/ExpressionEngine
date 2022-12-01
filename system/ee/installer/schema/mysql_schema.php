@@ -332,6 +332,7 @@ class EE_Schema
 			timezone varchar(50) NULL DEFAULT NULL,
 			time_format char(2) NULL DEFAULT NULL,
 			date_format varchar(8) NULL DEFAULT NULL,
+			week_start varchar(8) NULL DEFAULT NULL,
 			include_seconds char(1) NULL DEFAULT NULL,
 			profile_theme varchar(32) NULL DEFAULT NULL,
 			forum_theme varchar(32) NULL DEFAULT NULL,
