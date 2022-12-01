@@ -234,7 +234,7 @@ class Api_template_structure extends Api
         $engine = ($engine && array_key_exists($engine, $this->template_engines)) ? ".$engine" : null;
 
         if (isset($this->file_extensions[$template_type])) {
-            return implode('', array_filter([$engine, $this->file_extensions[$template_type]]));
+            return implode('', array_filter([$this->file_extensions[$template_type], $engine]));
         } else { 
             // Check custom template types for a file extension
             // -------------------------------------------
@@ -247,7 +247,7 @@ class Api_template_structure extends Api
 
             if ($template_types != null) {
                 if (isset($template_types[$template_type]['template_file_extension'])) {
-                    return implode('', array_filter([$engine, $template_types[$template_type]['template_file_extension']]));
+                    return implode('', array_filter([$template_types[$template_type]['template_file_extension'], $engine]));
                 }
             }
         }
@@ -296,9 +296,9 @@ class Api_template_structure extends Api
 
         foreach ($this->file_extensions as $type => $extension) {
             foreach ($engines as $engine) {
-                $ext = '.' . implode('.', array_filter([
-                    $engine,
-                    ltrim($extension, '.')
+                $ext = implode('.', array_filter([
+                    $extension,
+                    $engine
                 ]));
                 $extensions[$type][] = ['extension' => $ext, 'engine' => $engine ?: null];
             }
