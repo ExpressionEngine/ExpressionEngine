@@ -2,7 +2,7 @@
 	<?php if ($show_localize_options == 'localized') :
 		echo form_hidden($localize_option_name, '');
 	elseif ($show_localize_options == 'fixed') :
-		echo form_form_hiddenradio($localize_option_name, ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')));
+		echo form_hidden($localize_option_name, ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')));
 	?>
 	<?php else : ?>
 	<?php $extra = ($disabled) ? 'disabled' : '' ?>
