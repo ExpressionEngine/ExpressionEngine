@@ -172,6 +172,18 @@ $lang = array(
     // make:extension-hook options
     'command_make_extension_hook_option_addon'                 => 'Folder for third-party add-on you want to add extension hook to',
 
+    // Lang entries for command make:fieldtype
+    'command_make_fieldtype_description'                  => 'Generates a fieldtype for a given third-party add-on',
+    'command_make_fieldtype_summary'                      => 'This interactively generates a fieldtype in an existing third-party addon',
+    'command_make_fieldtype_lets_build_fieldtype'    => 'Let\'s implement a fieldtype!',
+    'command_make_fieldtype_ask_fieldtype_name'      => 'What is the fieldtype name?',
+    'command_make_fieldtype_ask_addon'                    => 'What add-on is the fieldtype being added to?',
+    'command_make_fieldtype_building_fieldtype'      => 'Building fieldype.',
+    'command_make_fieldtype_created_successfully'         => 'Fieldtype created successfully!',
+
+    // make:extension-hook options
+    'command_make_fieldtype_option_addon'                 => 'Folder for third-party add-on you want to add fieldtype to',
+
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',
     'command_make_widget_lets_build_widget'           => 'Let\'s build a widget!',

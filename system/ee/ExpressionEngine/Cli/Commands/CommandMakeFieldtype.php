@@ -70,11 +70,3 @@ class CommandMakeFieldtype extends Cli
         $this->info('command_make_fieldtype_created_successfully');
     }
 }
-
-// LANG:
-// command_make_fieldtype_option_addon
-// command_make_fieldtype_lets_build_fieldtype
-// command_make_fieldtype_ask_fieldtype_name
-// command_make_fieldtype_ask_addon
-// command_make_fieldtype_building_fieldtype
-// command_make_fieldtype_created_successfully
