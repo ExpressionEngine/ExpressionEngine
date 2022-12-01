@@ -32,6 +32,12 @@ class EE_Form_validation
      */
     public function __construct($rules = array())
     {
+        // Instantiating the controller sets ee()->__legacy_controller
+        // This fixes an issue with using form validation from the CLI
+        if (! isset(ee()->__legacy_controller)) {
+            new \Controller();
+        }
+
         $this->CI = ee()->get('__legacy_controller');
 
         // Validation rules can be stored in a config file.
