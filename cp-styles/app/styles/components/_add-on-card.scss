@@ -159,11 +159,16 @@
             text-transform: capitalize !important;
             color: var(--ee-button-secondary-color) !important;
             background: none !important;
+            font-weight: 700;
+
+            &:before { display: none;}
 
             &.no {
               color: var(--ee-error) !important;
               padding-left: 20px;
               position: relative;
+              margin-right: 20px;
+              font-weight: 400;
 
               &:before {
                 position: absolute;
