@@ -63,6 +63,7 @@ class Cli
         'make:extension-hook' => Commands\CommandMakeExtensionHook::class,
         'make:fieldtype' => Commands\CommandMakeFieldtype::class,
         'make:migration' => Commands\CommandMakeMigration::class,
+        'make:mcp-route' => Commands\CommandMakeMcpRoute::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
         'make:template-tag' => Commands\CommandMakeTemplateTag::class,

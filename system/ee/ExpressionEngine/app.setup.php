@@ -61,6 +61,7 @@ use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
 use ExpressionEngine\Service\Generator\ExtensionGenerator;
 use ExpressionEngine\Service\Generator\FieldtypeGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
+use ExpressionEngine\Service\Generator\McpRouteGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\TemplateTagGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
@@ -393,6 +394,12 @@ $setup = [
             $filesystem = $ee->make('Filesystem');
 
             return new ModelGenerator($filesystem, $data);
+        },
+
+        'McpRouteGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new McpRouteGenerator($filesystem, $data);
         },
 
         'ProletGenerator' => function ($ee, $data) {
