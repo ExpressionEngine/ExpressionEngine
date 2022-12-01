@@ -59,6 +59,7 @@ use ExpressionEngine\Service\Generator\AddonGenerator;
 use ExpressionEngine\Service\Generator\CommandGenerator;
 use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
 use ExpressionEngine\Service\Generator\ExtensionGenerator;
+use ExpressionEngine\Service\Generator\FieldtypeGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\TemplateTagGenerator;
@@ -380,6 +381,12 @@ $setup = [
             $str = $ee->make('Str');
 
             return new ExtensionGenerator($filesystem, $str, $data);
+        },
+
+        'FieldtypeGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new FieldtypeGenerator($filesystem, $data);
         },
 
         'ModelGenerator' => function ($ee, $data) {
