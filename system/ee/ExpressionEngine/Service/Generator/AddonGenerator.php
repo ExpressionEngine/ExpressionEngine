@@ -261,14 +261,21 @@ class AddonGenerator
         $this->putFile('mcp.' . $this->slug . '.php', $stub);
 
         if (! $this->compatibility_mode) {
+            $route = 'index';
+            $route_uc = 'Index';
+            $view = 'Index';
+
             // Create EEObjects CP route
-            $stub = $this->filesystem->read($this->stub('Mcp/IndexSlug.php'));
+            $stub = $this->filesystem->read($this->stub('Mcp/Route.php'));
+            $stub = $this->write('route', $route, $stub);
+            $stub = $this->write('route_uc', $route_uc, $stub);
+            $stub = $this->write('view', $view, $stub);
             $stub = $this->write('namespace', $this->namespace, $stub);
-            $this->putFile('Mcp/Index.php', $stub);
+            $this->putFile('Mcp/' . $route_uc . '.php', $stub);
 
             // Add Mcp view
-            $stub = $this->filesystem->read($this->stub('views/McpIndex.php'));
-            $this->putFile('views/McpIndex.php', $stub);
+            $stub = $this->filesystem->read($this->stub('views/View.php'));
+            $this->putFile('views/' . $view . '.php', $stub);
         }
         $this->createLangFile();
     }

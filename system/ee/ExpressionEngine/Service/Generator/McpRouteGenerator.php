@@ -11,26 +11,38 @@
 namespace ExpressionEngine\Service\Generator;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Library\String\Str;
 
 class McpRouteGenerator
 {
     public $name;
     public $addon;
     protected $filesystem;
+    protected $str;
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
 
-    public function __construct(Filesystem $filesystem, array $data)
+    public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
         // Set FS
         $this->filesystem = $filesystem;
+        $this->str = $str;
 
         // Set required data for generator to use
         $this->addon = $data['addon'];
+        $this->route = $this->str->snakecase($data['name']);
+        $this->route_uc = $this->str->studly($data['name']);
+        $this->view = $this->str->studly($data['name']);
+
+        $this->name = $data['name'];
 
         // Set up addon path, generator path, and stub path
         $this->init();
+
+        // Get namespace from addon setup file
+        $addonSetupArray = require $this->addonPath . 'addon.setup.php';
+        $this->namespace = $addonSetupArray['namespace'];
     }
 
     private function init()
@@ -44,12 +56,22 @@ class McpRouteGenerator
         }
 
         // Get stub path
-        $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/Mcp/';
+        $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/';
     }
 
     public function build()
     {
-        // Mcp route
+        // Create CP route
+        $cpRouteStub = $this->filesystem->read($this->stub('Mcp/Route.php'));
+        $cpRouteStub = $this->write('route', $this->route, $cpRouteStub);
+        $cpRouteStub = $this->write('route_uc', $this->route_uc, $cpRouteStub);
+        $cpRouteStub = $this->write('view', $this->view, $cpRouteStub);
+        $cpRouteStub = $this->write('namespace', $this->namespace, $cpRouteStub);
+        $this->putFile('Mcp/' . $this->route_uc . '.php', $cpRouteStub);
+
+        // Add Mcp view
+        $cpViewStub = $this->filesystem->read($this->stub('views/View.php'));
+        $this->putFile('views/' . $this->view . '.php', $cpViewStub);
 
         // View file:
 

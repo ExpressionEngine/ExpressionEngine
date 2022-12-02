@@ -398,8 +398,9 @@ $setup = [
 
         'McpRouteGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new McpRouteGenerator($filesystem, $data);
+            return new McpRouteGenerator($filesystem, $str, $data);
         },
 
         'ProletGenerator' => function ($ee, $data) {
