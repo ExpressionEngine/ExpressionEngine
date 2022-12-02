@@ -73,11 +73,28 @@ class McpRouteGenerator
         $cpViewStub = $this->filesystem->read($this->stub('views/View.php'));
         $this->putFile('views/' . $this->view . '.php', $cpViewStub);
 
-        // View file:
+        // Create mcp file if it doesnt exist:
+        $this->generateMcp();
 
         // TODO:
         // Update settings exist  in addon.setup.php
         // update $has_cp_backend in upd
+    }
+
+    private function generateMcp()
+    {
+        $addon = ee('Addon')->get($this->addon);
+
+        //  Only do this if there is no extension
+        if ($addon->hasControlPanel()) {
+            return;
+        }
+
+        // Create mcp file if it doesnt exist:
+        $mcpStub = $this->filesystem->read($this->stub('Mcp/mcp.slug.php'));
+        $mcpStub = $this->write('slug_uc', ucfirst($this->addon), $mcpStub);
+        $mcpStub = $this->write('slug', $this->addon, $mcpStub);
+        $this->putFile('mcp.' . $this->addon . '.php', $mcpStub);
     }
 
     private function stub($file)
