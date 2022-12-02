@@ -116,10 +116,12 @@ class Installer
             ->filter('module_name', $classname)
             ->delete();
 
-        ee('Model')
-            ->get('Module')
-            ->filter('module_name', $this->addon->getControlPanelClass())
-            ->delete();
+        if ($this->addon->hasControlPanel()) {
+            ee('Model')
+                ->get('Module')
+                ->filter('module_name', $this->addon->getControlPanelClass())
+                ->delete();
+        }
 
         foreach ($this->actions as $action) {
             if (!isset($action['class'])) {
