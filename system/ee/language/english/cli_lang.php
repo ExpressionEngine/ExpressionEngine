@@ -168,9 +168,13 @@ $lang = array(
     'command_make_extension_hook_ask_addon'                    => 'What add-on is the extension hook being added to?',
     'command_make_extension_hook_building_extension_hook'      => 'Building Extension hook.',
     'command_make_extension_hook_created_successfully'         => 'Extension hook created successfully!',
+    'command_make_extension_hook_installing_hook'             => 'Installing extension hook...',
+    'command_make_extension_hook_installed_hook'              => 'Extension hook installed!',
+    'command_make_extension_hook_addon_must_be_installed_to_install_hook' => 'Could not install extension hook. Add-on must first be installed. Extension hook migration will be run when add-on is installed.',
 
     // make:extension-hook options
     'command_make_extension_hook_option_addon'                 => 'Folder for third-party add-on you want to add extension hook to',
+    'command_make_extension_hook_option_install'               => 'Install this extension hook after creating it. This runs all current migrations for the specified add-on. Add-on must first be installed.',
 
     // Lang entries for command make:fieldtype
     'command_make_fieldtype_description'                  => 'Generates a fieldtype for a given third-party add-on',
