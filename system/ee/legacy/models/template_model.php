@@ -1039,6 +1039,11 @@ class Template_Entity
     /**
      *
      */
+    protected $template_engine;
+
+    /**
+     *
+     */
     protected $template_data;
 
     /**
