@@ -392,6 +392,24 @@ class Pages_tab
         $site->site_pages = $site_pages;
         $site->save();
     }
+
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $site_pages = ee()->config->item('site_pages');
+        $site_id = ee()->config->item('site_id');
+        $uri = array_key_exists($entry->entry_id, $site_pages[$site_id]['uris']) ? $site_pages[$site_id]['uris'][$entry->entry_id] : '';
+        if (!empty($uri)) {
+            return '<a href="' . str_replace('//', '/', ee()->functions->fetch_site_index(0, 0) . $uri) . '" target="_blank"><i class="fal fa-link"></i></a>';
+        }
+        return '';
+    }
+
+    public function getTableColumnConfig()
+    {
+        return [
+            'encode' => false
+        ];
+    }
 }
 
 // EOF
