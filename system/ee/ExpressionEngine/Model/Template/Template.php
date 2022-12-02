@@ -98,6 +98,7 @@ class Template extends FileSyncedModel
     protected $group_id;
     protected $template_name;
     protected $template_type;
+    protected $template_engine;
     protected $template_data;
     protected $template_notes;
     protected $edit_date;
