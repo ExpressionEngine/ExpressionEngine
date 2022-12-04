@@ -310,6 +310,9 @@ EE.cp.datePicker = {
 					break;
 				case 'saturday':
 					dayIndex = 6;
+					break;
+				default:
+					dayIndex = 0;
 			}
 
 			for (var i = dayIndex; i < EE.lang.date.days.length + dayIndex; i++) {
@@ -425,6 +428,7 @@ EE.cp.datePicker = {
 		},
 
 		first_day: function(year, month) {
+			var day;
 			switch (EE.date.week_start) {
 				case 'sunday':
 					day = 1;
@@ -437,6 +441,9 @@ EE.cp.datePicker = {
 					break;
 				case 'saturday':
 					day = 2;
+					break;
+				default:
+					day = 1;
 			}
 
 			return new Date(year, month, day).getDay();
