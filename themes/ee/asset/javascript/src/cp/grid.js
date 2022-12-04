@@ -180,6 +180,14 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 */
 	_bindSortable: function() {
 		var that = this,
+			appendElem;
+
+			if ($(that.root).parents('.tab-wrap').length) {
+				appendElem == '.tab-wrap';
+			} else {
+				appendElem == 'parent';
+			}
+
 			params = {
 				// Fire 'beforeSort' event on sort start
 				beforeSort: function(row) {
@@ -194,7 +202,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 					$(document).trigger('entry:preview');
 				},
 				handle: '.js-grid-reorder-handle',
-				appendTo: '.tab-wrap',
+				appendTo: appendElem,
 			};
 
 		params = $.extend(params, this.sortableParams);
@@ -299,7 +307,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				}
 			}, 50);
 
-			if (!$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && (parentFieldControlWidth >= gridFieldWidth)) {
+			if ( !$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && $(this.rowContainer).parents('.grid-field').hasClass('entry-grid') && (parentFieldControlWidth >= gridFieldWidth)) {
 				$(this.rowContainer).parents('.grid-field').removeClass('overwidth');
 				$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').hide()
 			}
@@ -400,7 +408,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			var parentFieldControlWidth = gridFieldWidth;
 		}
 
-		if (!$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && (parentFieldControlWidth < gridFieldWidth)) {
+		if ( !$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && $(this.rowContainer).parents('.grid-field').hasClass('entry-grid') && (parentFieldControlWidth < gridFieldWidth)) {
 			$(this.rowContainer).parents('.grid-field').addClass('overwidth');
 			$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').show()
 		}
@@ -1087,7 +1095,7 @@ function checkGrigWidthForResize() {
 			var containerWidth = tableInnerWidth;
 		}
 
-		if (containerWidth < tableInnerWidth) {
+		if ($(this).hasClass('entry-grid') && containerWidth < tableInnerWidth) {
 			$(this).addClass('overwidth');
 			$(this).find('.grid-field__item-fieldset').show();
 		}
@@ -1098,7 +1106,6 @@ function checkGrigWidth() {
 	var gridTables = $('.grid-field:not(.horizontal-layout)');
 
 	gridTables.each(function(el) {
-
 		if ( $(this).parents('.hidden').length ) return;
 
 		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
@@ -1113,12 +1120,12 @@ function checkGrigWidth() {
 			var containerWidth = tableInnerWidth;
 		}
 
-		if (containerWidth < tableInnerWidth) {
+		if ($(this).hasClass('entry-grid') && containerWidth < tableInnerWidth) {
 			$(this).addClass('overwidth');
 			$(this).find('.grid-field__item-fieldset').show();
 		}
 
-		if (containerWidth >= tableInnerWidth && $(window).width() > 1440) {
+		if ($(this).hasClass('entry-grid') && containerWidth >= tableInnerWidth && $(window).width() > 1440) {
 			$(this).removeClass('overwidth');
 			$(this).find('.grid-field__item-fieldset').hide();
 		}
