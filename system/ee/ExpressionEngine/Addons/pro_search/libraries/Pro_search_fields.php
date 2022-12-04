@@ -282,7 +282,10 @@ class Pro_search_fields
 
         if (! isset($cols[$field_id])) {
             // Init
-            $cols[$field_id] = array();
+            if (!is_array($cols)) {
+                $cols = [];
+                $cols[$field_id] = [];
+            }
 
             // Query all columns for this grid/matrix
             $query = ee()->db
