@@ -38,7 +38,6 @@ class Updater
         return true;
     }
 
-
     private function addTemplateEngineToTemplates()
     {
         if (!ee()->db->field_exists('template_engine', 'templates')) {
