@@ -198,9 +198,15 @@ $lang = array(
 
     'grid_allow_reorder' => 'Allow reordering of rows?',
 
-    'grid_vertical_layout' => 'Always use a vertical grid layout?',
+    'grid_vertical_layout' => 'Vertical layout',
 
-    'grid_vertical_layout_desc' => 'The fields within the grid will be stacked vertically on the publish form.',
+    'grid_horizontal_layout' => 'Horizontal layout',
+
+    'grid_auto' => 'Auto',
+
+    'grid_vertical_layout_title' => 'Grid layout',
+
+    'grid_vertical_layout_desc' => 'Choose how the field is displayed on publish pages.',
 
     'grid_chars_allowed' => 'Characters allowed.',
 
