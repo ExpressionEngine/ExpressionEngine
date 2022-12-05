@@ -34,7 +34,7 @@ class EE_Form_validation
     {
         // Instantiating the controller sets ee()->__legacy_controller
         // This fixes an issue with using form validation from the CLI
-        if (! isset(ee()->__legacy_controller)) {
+        if (! isset(ee()->__legacy_controller) && REQ === 'CLI') {
             new \Controller();
         }
 
