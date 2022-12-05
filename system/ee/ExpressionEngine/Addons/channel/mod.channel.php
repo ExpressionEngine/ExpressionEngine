@@ -1192,7 +1192,7 @@ class Channel
         /**------*/
 
         if ($channel = ee()->TMPL->fetch_param('channel')) {
-            $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true)->getDictionary('channel_name', 'channel_id');
+            $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true);
             $channelInOperator = 'IN';
             if (strpos($channel, 'not ') === 0) {
                 $channelInOperator = 'NOT IN';
@@ -1206,9 +1206,9 @@ class Channel
             }
             $channel_ids = array();
             foreach ($options as $option) {
-                foreach ($channels as $channel_name => $channel_id) {
-                    if (strtolower($option) == strtolower($channel_name)) {
-                        $channel_ids[] = $channels[$channel_name];
+                foreach ($channels as $channelModel) {
+                    if (strtolower($option) == strtolower($channelModel->channel_name)) {
+                        $channel_ids[] = $channelModel->channel_id;
                     }
                 }
             }
