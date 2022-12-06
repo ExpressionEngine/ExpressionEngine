@@ -10,6 +10,18 @@
 		<?php if (!empty($addon['description'])): ?>
 		<p class="add-on-card__desc" title="<?= $addon['description'] ?>"><?= $addon['description'] ?></p>
 		<?php endif; ?>
+
+		<?php if ($addon['installed'] && $addon['developer'] == 'EEHarbor') : ?>
+			<div class="add-on-card__table">
+				<table>
+					<tr>
+						<td style="display:none"><?= $addon['name'] ?></td>
+						<td style="display:none"><?= $addon['version'] ?></td>
+						<td><div class="toolbar-wrap"><ul class="toolbar"></ul></div></td>
+					</tr>
+				</table>
+			</div>
+		<?php endif; ?>
 	</div>
 
 	<?php if (!$addon['installed']) : ?>
