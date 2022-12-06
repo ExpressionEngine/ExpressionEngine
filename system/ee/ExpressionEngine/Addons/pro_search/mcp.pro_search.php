@@ -649,8 +649,8 @@ class Pro_search_mcp
                             'title'      => lang('both'),
                             'data-build' => 'both'
                         );
-                    }// make more clear that languages required for these tools. People thought they were missing
-                    else {
+                    } else {
+                        // make more clear that languages required for these tools. People thought they were missing
                         $items['glossary'] = array(
                             'href'       => '#',
                             'title'      => lang('set_langauge_to_use_tool'),
