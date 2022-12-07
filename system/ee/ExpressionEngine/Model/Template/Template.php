@@ -98,6 +98,7 @@ class Template extends FileSyncedModel
     protected $group_id;
     protected $template_name;
     protected $template_type;
+    protected $template_engine;
     protected $template_data;
     protected $template_notes;
     protected $edit_date;
@@ -197,11 +198,12 @@ class Template extends FileSyncedModel
     public function getFileExtension($template_type = null)
     {
         $type = $template_type ?: $this->template_type;
+        $engine = $this->template_engine ?: null;
 
         ee()->load->library('api');
         ee()->legacy_api->instantiate('template_structure');
 
-        return ee()->api_template_structure->file_extensions($type);
+        return ee()->api_template_structure->file_extensions($type, $engine);
     }
 
     /**

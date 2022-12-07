@@ -166,7 +166,7 @@ html.color-theme-in-transition *:after {
   --ee-fluid-item-border: #dfe0ef;
   --ee-slider-value-bg: #eaebfd;
   --ee-ee-update: #5D63F1;
-  --ee-ee-update-bg: #FFFFFF;
+  --ee-ee-update-bg: #eaebfd;
   --ee-ee-update-dev: #FFB40B;
   --ee-ee-update-dev-bg: #FFFFFF;
   --ee-ee-update-vital: #FA5252;
@@ -664,7 +664,7 @@ body[data-theme=dark] .inverted-theme {
   --ee-fluid-item-border: #dfe0ef;
   --ee-slider-value-bg: #eaebfd;
   --ee-ee-update: #5D63F1;
-  --ee-ee-update-bg: #FFFFFF;
+  --ee-ee-update-bg: #eaebfd;
   --ee-ee-update-dev: #FFB40B;
   --ee-ee-update-dev-bg: #FFFFFF;
   --ee-ee-update-vital: #FA5252;
@@ -24131,6 +24131,12 @@ tr.selected td {
   pointer-events: none;
 }
 
+.selectable_buttons .button.active, .selectable_buttons .active.pagination__link, .selectable_buttons .no-results a.active, .no-results .selectable_buttons a.active,
+.selectable_buttons .field-no-results a.active,
+.field-no-results .selectable_buttons a.active, .selectable_buttons .active.select-popup, .selectable_buttons select.active, .selectable_buttons .active.select__button, .selectable_buttons .active.license-status-badge, .selectable_buttons .active.filter-bar__button, .selectable_buttons .markItUpHeader ul a.active, .markItUpHeader ul .selectable_buttons a.active {
+  background: var(--ee-accent-light);
+}
+
 /*
 .button-group {
 	display: flex;
@@ -31383,6 +31389,51 @@ fieldset .field-control #eye {
     margin-top: 10px;
     display: block;
   }
+}
+
+.add-on-card__table {
+  white-space: nowrap;
+}
+.add-on-card__table table {
+  margin: 6px 0 -6px 0;
+  border: none;
+  background: none;
+}
+.add-on-card__table table td {
+  color: var(--ee-button-secondary-color);
+  padding: 0;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar {
+  display: flex;
+  flex-wrap: wrap;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a {
+  text-transform: capitalize !important;
+  color: var(--ee-button-secondary-color) !important;
+  background: none !important;
+  font-weight: 700;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a:before {
+  display: none;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a.no {
+  color: var(--ee-error) !important;
+  padding-left: 20px;
+  position: relative;
+  margin-right: 20px;
+  font-weight: 400;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a.no:before {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  flex-shrink: 0;
+  content: "\f06a";
+  font-weight: 400;
+  font-family: "Font Awesome 6 Pro";
 }
 
 .add-on-card.first-party .first-party-svg {

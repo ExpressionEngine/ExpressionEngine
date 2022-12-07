@@ -93,7 +93,7 @@ class Template_model extends CI_Model
         $this->legacy_api->instantiate('template_structure');
         $filepath = PATH_TMPL . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR
             . $template->get_group()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
-            . $this->api_template_structure->file_extensions($template->template_type);
+            . $this->api_template_structure->file_extensions($template->template_type, $template->template_engine);
 
         // We don't need the other site's configuration values anymore, so
         // reset them.  If we do this here we only have to do it once,
@@ -296,7 +296,7 @@ class Template_model extends CI_Model
             chmod($basepath, DIR_WRITE_MODE);
         }
 
-        $filename = $template->template_name . $this->api_template_structure->file_extensions($template->template_type);
+        $filename = $template->template_name . $this->api_template_structure->file_extensions($template->template_type, $template->template_engine);
 
         if (! $fp = fopen($basepath . DIRECTORY_SEPARATOR . $filename, FOPEN_WRITE_CREATE_DESTRUCTIVE)) {
             return false;
@@ -1035,6 +1035,11 @@ class Template_Entity
      *
      */
     protected $template_type;
+
+    /**
+     *
+     */
+    protected $template_engine;
 
     /**
      *
