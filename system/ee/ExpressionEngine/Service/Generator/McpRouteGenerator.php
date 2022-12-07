@@ -76,9 +76,44 @@ class McpRouteGenerator
         // Create mcp file if it doesnt exist:
         $this->generateMcp();
 
-        // TODO:
         // Update settings exist  in addon.setup.php
+        $this->updateAddonSetup();
+
         // update $has_cp_backend in upd
+        $this->updateUpdFile();
+    }
+
+    private function updateAddonSetup()
+    {
+        // load addon.setup file
+        $addonSetupFile = $this->filesystem->read($this->addonPath . 'addon.setup.php');
+
+        // get array into memory
+        $addonSetupArray = require $this->addonPath . 'addon.setup.php';
+
+        // The add-on setup has the settings_exist key
+        if (array_key_exists('settings_exist', $addonSetupArray)) {
+            $pattern = "/(settings_exist)([^=]+)(=>\s)(false|true)/";
+            $addonSetupFile = preg_replace($pattern, "$1$2$3true", $addonSetupFile);
+            $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
+        } else {
+            // The add-on setup does not have the settings_exist key. Add it
+            $pattern = '/(,)([^,]+)$/';
+            $addonSetupFile = preg_replace($pattern, ",\n    'settings_exist'    => true, $2", $addonSetupFile);
+            $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
+        }
+    }
+
+    private function updateUpdFile()
+    {
+        // Read the UPD file
+        $updFilePath = $this->addonPath . 'upd.' . $this->addon . '.php';
+        $updFile = $this->filesystem->read($updFilePath);
+
+        // Replace the has_cp_backend variable
+        $pattern = "/(has_cp_backend)([\s]*=[\s]*['\"])([^']*)(['\"];)/";
+        $updFile = preg_replace($pattern, "$1$2y$4", $updFile);
+        $this->filesystem->write($updFilePath, $updFile, true);
     }
 
     private function generateMcp()
