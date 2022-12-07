@@ -386,8 +386,9 @@ $setup = [
 
         'FieldtypeGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new FieldtypeGenerator($filesystem, $data);
+            return new FieldtypeGenerator($filesystem, $str, $data);
         },
 
         'ModelGenerator' => function ($ee, $data) {
