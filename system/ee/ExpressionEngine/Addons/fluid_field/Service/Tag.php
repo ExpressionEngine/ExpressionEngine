@@ -200,7 +200,7 @@ class Tag
     {
         $tag_info = $this->variable_parser_delegate->parseVariableProperties($tag);
 
-        return $field->replaceTag(false, $tag_info['params'], $tag_info['modifier'], $tag_info['full_modifier']);
+        return $field->replaceTag(false, $tag_info['params'], $tag_info['modifier'], $tag_info['full_modifier'], $tag_info['all_modifiers'] ?: []);
     }
 
     /**

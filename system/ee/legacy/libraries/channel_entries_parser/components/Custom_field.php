@@ -88,9 +88,6 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
             if ((isset($data['field_id_' . $field_id]) && $data['field_id_' . $field_id] !== '') or
                 array_key_exists($field['field_name'], $gfields) or // is a Grid single
                 array_key_exists($field['field_name'], $ffields)) { // is a Fluid single
-                $modifier = $field['modifier'];
-
-                $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
 
                 $obj = $ft_api->setup_handler($field_id, true);
 
@@ -108,19 +105,47 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                         $data['field_id_' . $field_id]
                     ));
 
-                    if (method_exists($obj, $parse_fnc)) {
-                        $entry = (string) $ft_api->apply($parse_fnc, array(
-                            $data,
-                            $field['params'],
-                            false
-                        ));
-                    } elseif (method_exists($obj, 'replace_tag_catchall')) {
-                        $entry = (string) $ft_api->apply('replace_tag_catchall', array(
-                            $data,
-                            $field['params'],
-                            false,
-                            $field['full_modifier']
-                        ));
+                    if (isset($field['all_modifiers']) && !empty($field['all_modifiers'])) {
+                        foreach ($field['all_modifiers'] as $modifier => $params) {
+                            $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
+
+                            if (method_exists($obj, $parse_fnc)) {
+                                $entry = (string) $ft_api->apply($parse_fnc, array(
+                                    $data,
+                                    $params,
+                                    false
+                                ));
+                                
+                            } elseif (method_exists($obj, 'replace_tag_catchall')) {
+                                $entry = (string) $ft_api->apply('replace_tag_catchall', array(
+                                    $data,
+                                    $params,
+                                    false,
+                                    $field['full_modifier']
+                                ));
+                            }
+                            // set the data to parsed variable for next cycle
+                            $data = $entry;
+                        }
+                    } else {
+                        $modifier = $field['modifier'];
+
+                        $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
+
+                        if (method_exists($obj, $parse_fnc)) {
+                            $entry = (string) $ft_api->apply($parse_fnc, array(
+                                $data,
+                                $field['params'],
+                                false
+                            ));
+                        } elseif (method_exists($obj, 'replace_tag_catchall')) {
+                            $entry = (string) $ft_api->apply('replace_tag_catchall', array(
+                                $data,
+                                $field['params'],
+                                false,
+                                $field['full_modifier']
+                            ));
+                        }
                     }
 
                     ee()->load->remove_package_path($_ft_path);

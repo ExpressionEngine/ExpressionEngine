@@ -46,7 +46,9 @@ class LegacyParser
             'invalid_modifier' => false,
         ];
 
+        // strip prefix
         $unprefixed_var = ltrim(preg_replace('/^' . $prefix . '/', '', $template_var));
+        // we don't need params - take away what's separated by space
         $orig_field_name_length = strpos($unprefixed_var, ' ') ?: strpos($unprefixed_var, "\n");
         if ($orig_field_name_length === false) {
             $orig_field_name = $unprefixed_var;
@@ -62,6 +64,8 @@ class LegacyParser
         $full_modifier_loc = strpos($orig_field_name, ':');
         $modifier_loc = strrpos($orig_field_name, ':');
 
+        // start with the leftmost modifier
+        // NOTE: previously we used only the last one
         if ($full_modifier_loc !== false) {
             $field_name = substr($orig_field_name, 0, $full_modifier_loc);
             $full_modifier = substr($orig_field_name, $full_modifier_loc + 1);
@@ -79,9 +83,41 @@ class LegacyParser
         }
 
         $props['field_name'] = trim($field_name);
-        $props['params'] = (trim($param_string) && ! $props['invalid_modifier']) ? $this->parseTagParameters($param_string) : [];
         $props['modifier'] = trim($modifier);
         $props['full_modifier'] = trim($full_modifier);
+        if (trim($param_string) && ! $props['invalid_modifier']) {
+            $props['params'] = $params = $this->parseTagParameters($param_string);
+            $prefix = $props['modifier'] . ':';
+            $prefix_legnth = strlen($prefix);
+            foreach ($props['params'] as $param => $value) {
+                if (strpos($param, $prefix) === 0) {
+                    $props['params'][substr($param, $prefix_legnth)] = $value;
+                }
+            }
+        } else {
+            $props['params'] = [];
+        }
+
+        $all_modifiers = explode(':', $props['full_modifier']);
+        if (count($all_modifiers) > 1) {
+            $props['all_modifiers'] = [];
+            foreach ($all_modifiers as $modifier) {
+                $modifier_params = $params;
+                $prefix = $modifier . ':';
+                $prefix_legnth = strlen($prefix);
+                foreach ($modifier_params as $param => $value) {
+                    if (strpos($param, $prefix) === 0) {
+                        $modifier_params[substr($param, $prefix_legnth)] = $value;
+                    }
+                }
+                $props['all_modifiers'][$modifier] = $modifier_params;
+            }
+            
+        } else {
+            $props['all_modifiers'] = [
+                $props['modifier'] => $props['params']
+            ];
+        }
 
         return $props;
     }
@@ -364,7 +400,7 @@ class LegacyParser
     {
         $conditionals = [];
 
-        foreach ($vars as $name => $value) {
+        foreach ($vars as $name => $content) {
             if (strpos($str, $name . ':') !== false) {
                 $prefix = '';
 
@@ -378,13 +414,28 @@ class LegacyParser
                 foreach ($extracted_vars['var_single'] as $modified_var) {
                     $var_props = $this->parseVariableProperties($modified_var, $prefix);
 
-                    // is the modifier valid?
-                    $method = 'replace_' . $var_props['modifier'];
-                    if (! method_exists($this, $method)) {
-                        continue;
+                    // in order to support multiple modifiers, we'll do this in a loop
+                    if (isset($var_props['all_modifiers']) && !empty($var_props['all_modifiers'])) {
+                        foreach ($var_props['all_modifiers'] as $modifier => $params) {
+                            // is the modifier valid?
+                            $method = 'replace_' . $modifier;
+                            if (! method_exists($this, $method)) {
+                                continue;
+                            }
+
+                            $content = $this->$method($content, $params);
+                        }
+                    } else {
+                        // fallback to just last modifier if 'all_modifiers' is not set
+                        // which should never happen, but...
+                        $method = 'replace_' . $var_props['modifier'];
+                        if (! method_exists($this, $method)) {
+                            continue;
+                        }
+
+                        $content = $this->$method($content, $var_props['params']);
                     }
 
-                    $content = $this->$method($value, $var_props['params']);
                     $str = str_replace(LD . $modified_var . RD, $content, $str);
                     $conditionals[$modified_var] = $content;
                 }

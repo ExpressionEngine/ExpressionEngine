@@ -701,10 +701,6 @@ class Grid_parser
             );
         }
 
-        // Determine the replace function to call based on presence of modifier
-        $modifier = $field['modifier'];
-        $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
-
         $fieldtype->_init(array(
             'row' => $data,
             'content_id' => $entry_id
@@ -719,16 +715,39 @@ class Grid_parser
 
         $data = $this->call('pre_process', $data['col_id_' . $column['col_id']]);
 
-        // Params sent to parse function
-        $params = array($data, $field['params'], $content);
+        if (isset($field['all_modifiers']) && !empty($field['all_modifiers'])) {
+            foreach ($field['all_modifiers'] as $modifier => $params) {
+                $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
 
-        // Sent to catchall if modifier function doesn't exist
-        if ($field['full_modifier'] && ! method_exists($fieldtype, $parse_fnc)) {
-            $parse_fnc = 'replace_tag_catchall';
-            $params[] = $field['full_modifier'];
+                // Params sent to parse function
+                $parse_params = array($data, $params, $content);
+
+                // Sent to catchall if modifier function doesn't exist
+                if ($field['full_modifier'] && ! method_exists($fieldtype, $parse_fnc)) {
+                    $parse_fnc = 'replace_tag_catchall';
+                    $parse_params[] = $field['full_modifier'];
+                }
+
+                $data = $this->call($parse_fnc, $parse_params, true);
+            }
+        } else {
+            // Determine the replace function to call based on presence of modifier
+            $modifier = $field['modifier'];
+            $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
+
+            // Params sent to parse function
+            $parse_params = array($data, $field['params'], $content);
+
+            // Sent to catchall if modifier function doesn't exist
+            if ($field['full_modifier'] && ! method_exists($fieldtype, $parse_fnc)) {
+                $parse_fnc = 'replace_tag_catchall';
+                $parse_params[] = $field['full_modifier'];
+            }
+
+            $data = $this->call($parse_fnc, $parse_params, true);
         }
 
-        return $this->call($parse_fnc, $params, true);
+        return $data;
     }
 }
 

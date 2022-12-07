@@ -3768,8 +3768,21 @@ class EE_Template
             } else {
                 $raw = $original;
             }
-            $content = ($method == 'replace_raw_content') ? $raw : $content;
-            $content = $this->$method($content, $var['params']);
+
+            if (isset($var['all_modifiers']) && !empty($var['all_modifiers'])) {
+                foreach ($var['all_modifiers'] as $modifier => $params) {
+                    $method = 'replace_' . $modifier;
+                    if (!method_exists($this, $method)) {
+                        continue;
+                    }
+                    $content = ($method == 'replace_raw_content') ? $raw : $content;
+                    $content = $this->$method($content, $params);
+                }
+            } else {
+                $content = ($method == 'replace_raw_content') ? $raw : $content;
+                $content = $this->$method($content, $var['params']);
+            }
+
             $this->conditional_vars[$tagname] = $content;
 
             $tagdata = $this->_parse_var_single($tag, $content, $tagdata);
