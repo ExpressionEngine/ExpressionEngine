@@ -64,7 +64,8 @@ class CommandMakeAddon extends Cli
         // Get description
         $this->data['description'] = $this->getOptionOrAsk(
             "--description",
-            "Add-on " . lang('command_make_addon_description_question')
+            "Add-on " . lang('command_make_addon_description_question'),
+            $this->data['name'] . ' description'
         );
 
         // Get version
@@ -78,13 +79,17 @@ class CommandMakeAddon extends Cli
         // Get author
         $this->data['author'] = $this->getOptionOrAsk(
             "--author",
-            "Add-on " . lang('command_make_addon_author_question')
+            "Add-on " . lang('command_make_addon_author_question'),
+            ee('Config')->get('cli_default_addon_author'),
+            true
         );
 
         // Get author_url
         $this->data['author_url'] = $this->getOptionOrAsk(
             "--author-url",
-            "Add-on " . lang('command_make_addon_author_url_question')
+            "Add-on " . lang('command_make_addon_author_url_question'),
+            ee('Config')->get('cli_default_addon_author_url'),
+            true
         );
 
         $this->info('command_make_addon_lets_build');
