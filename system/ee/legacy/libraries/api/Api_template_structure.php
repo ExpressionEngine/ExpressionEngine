@@ -247,7 +247,7 @@ class Api_template_structure extends Api
             //
             // -------------------------------------------
 
-            if ($template_types != null) {
+            if (isset($template_types) && !empty($template_types)) {
                 if (isset($template_types[$template_type]['template_file_extension'])) {
                     return implode('', array_filter([$template_types[$template_type]['template_file_extension'], $engine]));
                 }
