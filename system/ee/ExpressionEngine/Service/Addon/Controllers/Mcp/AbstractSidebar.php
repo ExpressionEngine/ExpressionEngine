@@ -89,6 +89,8 @@ abstract class AbstractSidebar
             $this->sidebar->addHeader(lang($this->header));
         }
 
+        $sidebarItems = [];
+
         // For each available route, create an item
         foreach ($this->getAbstractRoutes() as $route) {
             // If we are excluding this from the sidebar, do it now
@@ -96,53 +98,67 @@ abstract class AbstractSidebar
                 continue;
             }
 
-            // Get the items to set
-            $title = $this->getProperty($route, 'sidebar_title') ?: $this->getProperty($route, 'cp_page_title');
             $route_path = $this->getProperty($route, 'route_path');
-            $cp_url = ee('CP/URL')->make('addons/settings/' . $this->addon . '/' . $route_path);
-            $sidebar_icon = $this->getProperty($route, 'sidebar_icon');
-            $sidebar_is_folder = $this->getProperty($route, 'sidebar_is_folder');
-            $sidebar_is_list = $this->getProperty($route, 'sidebar_is_list');
-            $sidebar_divider_before = $this->getProperty($route, 'sidebar_divider_before');
-            $sidebar_divider_after = $this->getProperty($route, 'sidebar_divider_after');
 
+            // Get the items to set
+            $sidebarItem = [
+                'title' => $this->getProperty($route, 'sidebar_title') ?: $this->getProperty($route, 'cp_page_title'),
+                'route_path' => $route_path,
+                'cp_url' => ee('CP/URL')->make('addons/settings/' . $this->addon . '/' . $route_path),
+                'sidebar_icon' => $this->getProperty($route, 'sidebar_icon'),
+                'sidebar_is_folder' => $this->getProperty($route, 'sidebar_is_folder'),
+                'sidebar_is_list' => $this->getProperty($route, 'sidebar_is_list'),
+                'sidebar_divider_before' => $this->getProperty($route, 'sidebar_divider_before'),
+                'sidebar_divider_after' => $this->getProperty($route, 'sidebar_divider_after'),
+                'sidebar_priority' => $this->getProperty($route, 'sidebar_priority'),
+            ];
+
+            $sidebarItems[] = $sidebarItem;
+        }
+
+        // Sort the sidebar items by priority
+        usort($sidebarItems, function ($a, $b) {
+            return $b['sidebar_priority'] - $a['sidebar_priority'];
+        });
+
+        foreach ($sidebarItems as $sidebarItem) {
             // If there is supposed to be a divider before, add it now
-            if ($sidebar_divider_before) {
+            if ($sidebarItem['sidebar_divider_before']) {
                 $this->sidebar->addDivider();
             }
 
             // If the item is a folder, create it as a folder
-            if ($sidebar_is_folder) {
+            if ($sidebarItem['sidebar_is_folder']) {
                 $header = $this->sidebar->addHeader('');
-                $currentItem = $header->addFolderList(lang($title));
-                $item = $currentItem->addItem($title, $cp_url);
-                $this->folders[$route_path] = $currentItem;
+                $currentItem = $header->addFolderList(lang($sidebarItem['title']));
+                $item = $currentItem->addItem($sidebarItem['title'], $sidebarItem['cp_url']);
+                $this->folders[$sidebarItem['route_path']] = $currentItem;
 
             // If the item is a list, create it that way
-            } elseif ($sidebar_is_list) {
-                $header = $this->sidebar->addHeader(lang($title));
+            } elseif ($sidebarItem['sidebar_is_list']) {
+                $header = $this->sidebar->addHeader(lang($sidebarItem['title']));
                 $currentItem = $header->addBasicList();
 
                 // Add this to the lists array to easily access it later
-                $this->lists[$route_path] = $currentItem;
+                $this->lists[$sidebarItem['route_path']] = $currentItem;
             } else {
                 // Create a normal sidebar item
-                $currentItem = $this->sidebar->addItem(lang($title), $cp_url);
+                $currentItem = $this->sidebar->addItem(lang($sidebarItem['title']), $sidebarItem['cp_url']);
 
                 // Set the icon if it exists
-                if ($sidebar_icon) {
-                    $currentItem->withIcon($sidebar_icon);
+                if ($sidebarItem['sidebar_icon']) {
+                    $currentItem->withIcon($sidebarItem['sidebar_icon']);
                 }
 
-                $this->items[$route_path] = $currentItem;
+                $this->items[$sidebarItem['route_path']] = $currentItem;
             }
 
             // If there is supposed to be a divider after, process it now
-            if ($sidebar_divider_after) {
+            if ($sidebarItem['sidebar_divider_after']) {
                 $this->sidebar->addDivider();
             }
 
-            $this->routes[$route_path] = $currentItem;
+            $this->routes[$sidebarItem['route_path']] = $currentItem;
         }
     }
 

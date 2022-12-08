@@ -63,6 +63,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     protected $exclude_from_sidebar = false;
     protected $sidebar_divider_before = false;
     protected $sidebar_divider_after = false;
+    protected $sidebar_priority = 0;
 
     /**
      * @var Sidebar
