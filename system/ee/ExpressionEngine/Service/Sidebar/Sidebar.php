@@ -18,7 +18,7 @@ use ExpressionEngine\Service\View\ViewFactory;
 class Sidebar extends AbstractSidebar
 {
     public $collapsedState;
-    
+
     /**
      * Renders the sidebar
      *
@@ -157,6 +157,26 @@ class Sidebar extends AbstractSidebar
         $this->class = ' mb';
 
         return $this;
+    }
+
+    /**
+     * Gets the list
+     *
+     * @return BasicList
+     */
+    public function getList()
+    {
+        return $this->list;
+    }
+
+    /**
+     * Gets the items
+     *
+     * @return mixed BasicItem|Header|Divider
+     */
+    public function getItems()
+    {
+        return $this->items;
     }
 }
 

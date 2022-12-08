@@ -39,6 +39,34 @@ class BasicList
     }
 
     /**
+     * Gets an item in the list from the text
+     *
+     * @param string $url The text of the item to search for
+     * @return BasicItem The searched for item
+     */
+    public function getItemByUrl($url)
+    {
+        foreach ($this->items as &$item) {
+            if ((string) $item->getUrl() === $url) {
+                return $item;
+            }
+        }
+
+        // Item not found
+        return null;
+    }
+
+    /**
+     * Gets all items
+     *
+     * @return array of items in the basic list
+     */
+    public function getItems()
+    {
+        return $this->items;
+    }
+
+    /**
      * Renders this list. This should not be called directly. Instead use
      * the Sidebar's render method.
      *

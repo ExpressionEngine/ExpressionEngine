@@ -194,6 +194,26 @@ abstract class ListItem
     {
         return $this->removeClass('selected');
     }
+
+    /**
+     * Gets the item's text
+     *
+     * @return string $text
+     */
+    public function getText()
+    {
+        return $this->text;
+    }
+
+    /**
+     * Gets the item's url
+     *
+     * @return string $url
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
 }
 
 // EOF

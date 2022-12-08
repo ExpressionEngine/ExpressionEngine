@@ -197,6 +197,14 @@ class Header
 
         return $output;
     }
+
+    /**
+     * @return string the header list
+     */
+    public function getList()
+    {
+        return $this->list;
+    }
 }
 
 // EOF
