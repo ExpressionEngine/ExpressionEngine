@@ -47,6 +47,11 @@ abstract class AbstractSidebar
         return $this->sidebar;
     }
 
+    public function getAll()
+    {
+        return $this->routes;
+    }
+
     public function getLists()
     {
         return $this->lists;

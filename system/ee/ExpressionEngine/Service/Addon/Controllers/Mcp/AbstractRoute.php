@@ -53,8 +53,16 @@ abstract class AbstractRoute extends CoreAbstractRoute
     /**
      * @var ExpressionEngine\Service\Sidebar\BasicItem
      */
-    protected $sidebarItem = null;
+    protected $currentSidebarItem = null;
 
+    // Available properties to set
+    protected $sidebar_title = null;
+    protected $sidebar_icon = null;
+    protected $sidebar_is_folder = false;
+    protected $sidebar_is_list = false;
+    protected $exclude_from_sidebar = false;
+    protected $sidebar_divider_before = false;
+    protected $sidebar_divider_after = false;
 
     /**
      * @var Sidebar
@@ -188,7 +196,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
         $this->sidebar = new $sidebarClass($this->getAddonName(), $this->getRouteNamespace());
         $this->sidebar->process();
 
-        // Lets get the active item, set is to current, and then set it to active
+        // Lets get the active item, set it to current, and then set it to active
         foreach ($this->sidebar->getSidebar()->getItems() as $sidebarHeader) {
             // If this list is empty, no need to search it for the item
             if (!$sidebarHeader instanceof \Header) {
@@ -203,8 +211,8 @@ abstract class AbstractRoute extends CoreAbstractRoute
             }
 
             // Get the sidebar item based on the url
-            $this->sidebarItem = $basicList->getItemByUrl($this->url($this->route_path));
-            $this->sidebarItem->isActive();
+            $this->currentSidebarItem = $basicList->getItemByUrl($this->url($this->route_path));
+            $this->currentSidebarItem->isActive();
         }
 
         return $this;
@@ -226,15 +234,15 @@ abstract class AbstractRoute extends CoreAbstractRoute
     }
 
     /**
-     * @return
+     * @return mixed Siderbar Items
      */
     public function getCurrentSidebarItem()
     {
-        if (is_null($this->sidebarItem) && isset($this->sidebar->routes[$this->route_path])) {
-            $this->sidebarItem = $this->sidebar->routes[$this->route_path];
+        if (is_null($this->currentSidebarItem) && isset($this->sidebar->routes[$this->route_path])) {
+            $this->currentSidebarItem = $this->sidebar->routes[$this->route_path];
         }
 
-        return $this->sidebarItem;
+        return $this->currentSidebarItem;
     }
 
     public function getSidebarItems()
