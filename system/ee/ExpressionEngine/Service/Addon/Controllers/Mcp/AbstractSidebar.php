@@ -21,6 +21,11 @@ abstract class AbstractSidebar
 
     protected $routeClasses = [];
 
+    public $routes = [];
+    public $lists = [];
+    public $folders = [];
+    public $items = [];
+
     /**
      * @var CP/Sidebar
      */
@@ -42,14 +47,44 @@ abstract class AbstractSidebar
         return $this->sidebar;
     }
 
+    public function getLists()
+    {
+        return $this->lists;
+    }
+
+    public function getList($list)
+    {
+        return $this->lists[$list];
+    }
+
+    public function getItems()
+    {
+        return $this->items;
+    }
+
+    public function getItem($item)
+    {
+        return $this->items[$item];
+    }
+
+    public function getFolders()
+    {
+        return $this->folders;
+    }
+
+    public function getFolder($folder)
+    {
+        return $this->folders[$folder];
+    }
+
     public function processAutomatic()
     {
-        if (is_null($this->header)) {
-            $this->header = $this->addon;
+        // If the user sets a header, use it
+        if (! is_null($this->header)) {
+            $this->sidebar->addHeader(lang($this->header));
         }
-        $subsHeader = $this->sidebar->addHeader(lang($this->header));
-        $subsHeaderList = $subsHeader->addBasicList();
 
+        // For each available route, create an item
         foreach ($this->getAbstractRoutes() as $route) {
             // If we are excluding this from the sidebar, do it now
             if ($this->getProperty($route, 'exclude_from_sidebar')) {
@@ -58,16 +93,51 @@ abstract class AbstractSidebar
 
             // Get the items to set
             $title = $this->getProperty($route, 'sidebar_title') ?: $this->getProperty($route, 'cp_page_title');
-            $cp_url = ee('CP/URL')->make('addons/settings/' . $this->addon . '/' . $this->getProperty($route, 'route_path'));
+            $route_path = $this->getProperty($route, 'route_path');
+            $cp_url = ee('CP/URL')->make('addons/settings/' . $this->addon . '/' . $route_path);
             $sidebar_icon = $this->getProperty($route, 'sidebar_icon');
+            $sidebar_is_folder = $this->getProperty($route, 'sidebar_is_folder');
+            $sidebar_is_list = $this->getProperty($route, 'sidebar_is_list');
+            $sidebar_divider_before = $this->getProperty($route, 'sidebar_divider_before');
+            $sidebar_divider_after = $this->getProperty($route, 'sidebar_divider_after');
 
-            // Create sidebar item
-            $newItem = $subsHeaderList->addItem(lang($title), $cp_url);
-
-            // Set the icon if it exists
-            if ($sidebar_icon) {
-                $newItem->withIcon($sidebar_icon);
+            // If there is supposed to be a divider before, add it now
+            if ($sidebar_divider_before) {
+                $this->sidebar->addDivider();
             }
+
+            // If the item is a folder, create it as a folder
+            if ($sidebar_is_folder) {
+                $header = $this->sidebar->addHeader('');
+                $currentItem = $header->addFolderList(lang($title));
+                $item = $currentItem->addItem($title, $cp_url);
+                $this->folders[$route_path] = $currentItem;
+
+            // If the item is a list, create it that way
+            } elseif ($sidebar_is_list) {
+                $header = $this->sidebar->addHeader(lang($title));
+                $currentItem = $header->addBasicList();
+
+                // Add this to the lists array to easily access it later
+                $this->lists[$route_path] = $currentItem;
+            } else {
+                // Create a normal sidebar item
+                $currentItem = $this->sidebar->addItem(lang($title), $cp_url);
+
+                // Set the icon if it exists
+                if ($sidebar_icon) {
+                    $currentItem->withIcon($sidebar_icon);
+                }
+
+                $this->items[$route_path] = $currentItem;
+            }
+
+            // If there is supposed to be a divider after, process it now
+            if ($sidebar_divider_after) {
+                $this->sidebar->addDivider();
+            }
+
+            $this->routes[$route_path] = $currentItem;
         }
     }
 

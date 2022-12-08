@@ -12,6 +12,8 @@ namespace ExpressionEngine\Service\Addon\Controllers\Mcp;
 
 use ExpressionEngine\Service\Addon\Controllers\AbstractRoute as CoreAbstractRoute;
 use ExpressionEngine\Service\Addon\Exceptions\Controllers\Mcp\RouteException;
+use ExpressionEngine\Service\Sidebar\BasicList;
+use ExpressionEngine\Service\Sidebar\Header;
 
 abstract class AbstractRoute extends CoreAbstractRoute
 {
@@ -56,7 +58,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     /**
      * @var ExpressionEngine\Service\Sidebar\BasicItem
      */
-    protected $sidebarItem;
+    protected $sidebarItem = null;
 
     /**
      * @var bool
@@ -200,10 +202,15 @@ abstract class AbstractRoute extends CoreAbstractRoute
 
         // Lets get the active item, set is to current, and then set it to active
         foreach ($this->sidebar->getSidebar()->getItems() as $sidebarHeader) {
+            // If this list is empty, no need to search it for the item
+            if (!$sidebarHeader instanceof \Header) {
+                continue;
+            }
+
             $basicList = $sidebarHeader->getList();
 
             // If this list is empty, no need to search it for the item
-            if (empty($basicList)) {
+            if (empty($basicList) || !$basicList instanceof \BasicList) {
                 continue;
             }
 
@@ -235,6 +242,10 @@ abstract class AbstractRoute extends CoreAbstractRoute
      */
     public function getCurrentSidebarItem()
     {
+        if (is_null($this->sidebarItem) && isset($this->sidebar->routes[$this->route_path])) {
+            $this->sidebarItem = $this->sidebar->routes[$this->route_path];
+        }
+
         return $this->sidebarItem;
     }
 
