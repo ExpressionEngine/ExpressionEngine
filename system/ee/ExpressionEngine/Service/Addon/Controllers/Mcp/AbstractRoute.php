@@ -51,30 +51,18 @@ abstract class AbstractRoute extends CoreAbstractRoute
     protected $base_url = '';
 
     /**
-     * @var bool
-     */
-    protected $active_sidebar = false;
-
-    /**
      * @var ExpressionEngine\Service\Sidebar\BasicItem
      */
     protected $sidebarItem = null;
 
+
     /**
-     * @var bool
+     * @var Sidebar
      */
     protected $sidebar;
 
-    /**
-     * @var array
-     */
-    protected $sidebar_data = [];
-
     public function __construct()
     {
-        if ($this->sidebar_data) {
-            $this->generateSidebar();
-        }
     }
 
     /**
@@ -290,37 +278,5 @@ abstract class AbstractRoute extends CoreAbstractRoute
         }
 
         return $this->base_url;
-    }
-
-    /**
-     * @throws RouteException
-     */
-    protected function generateSidebar()
-    {
-        $this->sidebar = ee('CP/Sidebar')->make();
-        $active = false;
-        foreach ($this->sidebar_data as $title => $sidebar) {
-            if ($sidebar['path'] != '') {
-                $subsHeader = $this->sidebar
-                    ->addHeader(lang($title), $this->url($sidebar['path']));
-            } else {
-                $subsHeader = $this->sidebar
-                    ->addHeader(lang($title));
-            }
-            if (isset($sidebar['list']) && is_array($sidebar['list'])) {
-                $subsHeaderList = $subsHeader->addBasicList();
-                foreach ($sidebar['list'] as $title => $url) {
-                    if ($this->active_sidebar == $url && !$active) {
-                        $subsHeaderList->addItem(lang($title), $this->url($url))->isActive();
-                        $active = true;
-                    } elseif ($url == $this->getRoutePath() && !$active) {
-                        $subsHeaderList->addItem(lang($title), $this->url($url))->isActive();
-                        $active = true;
-                    } else {
-                        $subsHeaderList->addItem(lang($title), $this->url($url));
-                    }
-                }
-            }
-        }
     }
 }
