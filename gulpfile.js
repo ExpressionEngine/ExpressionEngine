@@ -56,10 +56,10 @@ function buildRteRedactorCss() {
 
 function buildRteRedactorJs() {
 	return src([rteRedactorFolder + 'redactor.js', rteRedactorFolder + 'plugins/**/*.js'])
-		.pipe(sourcemaps.init())	
+		// .pipe(sourcemaps.init())	
 		.pipe(concat('redactor.min.js'))
 		.pipe(uglify())
-		.pipe(sourcemaps.write('./'))
+		// .pipe(sourcemaps.write('./'))
 		.pipe(dest(rteRedactorFolder));
 }
 

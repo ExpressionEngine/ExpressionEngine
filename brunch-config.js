@@ -1,5 +1,6 @@
 // See http://brunch.io for documentation.
 module.exports = {
+    sourceMaps: false,
     files: {
         javascripts: {
             joinTo: {
