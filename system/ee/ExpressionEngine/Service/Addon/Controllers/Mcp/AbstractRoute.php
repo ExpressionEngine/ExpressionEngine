@@ -54,6 +54,16 @@ abstract class AbstractRoute extends CoreAbstractRoute
     protected $active_sidebar = false;
 
     /**
+     * @var ExpressionEngine\Service\Sidebar\BasicItem
+     */
+    protected $sidebarItem;
+
+    /**
+     * @var bool
+     */
+    protected $sidebar;
+
+    /**
      * @var array
      */
     protected $sidebar_data = [];
@@ -175,6 +185,36 @@ abstract class AbstractRoute extends CoreAbstractRoute
         return $this;
     }
 
+    public function processSidebar()
+    {
+        $sidebarClass = $this->getRouteNamespace() . '\Mcp\Sidebar';
+
+        // Check to see if the sidebar class exists. If not, return this
+        if (! class_exists($sidebarClass)) {
+            return $this;
+        }
+
+        // Process the sidebar
+        $this->sidebar = new $sidebarClass($this->getAddonName(), $this->getRouteNamespace());
+        $this->sidebar->process();
+
+        // Lets get the active item, set is to current, and then set it to active
+        foreach ($this->sidebar->getSidebar()->getItems() as $sidebarHeader) {
+            $basicList = $sidebarHeader->getList();
+
+            // If this list is empty, no need to search it for the item
+            if (empty($basicList)) {
+                continue;
+            }
+
+            // Get the sidebar item based on the url
+            $this->sidebarItem = $basicList->getItemByUrl($this->url($this->route_path));
+            $this->sidebarItem->isActive();
+        }
+
+        return $this;
+    }
+
     /**
      * @param string $path
      * @param bool $with_base
@@ -188,6 +228,19 @@ abstract class AbstractRoute extends CoreAbstractRoute
         }
 
         return ee('CP/URL')->make($path, $query)->compile();
+    }
+
+    /**
+     * @return
+     */
+    public function getCurrentSidebarItem()
+    {
+        return $this->sidebarItem;
+    }
+
+    public function getSidebarItems()
+    {
+        return $this->sidebar->routes;
     }
 
     /**

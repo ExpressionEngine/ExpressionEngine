@@ -37,7 +37,11 @@ class Mcp extends Controller
         if (class_exists($object)) {
             $controller = new $object();
             if ($controller instanceof Controllers\Mcp\AbstractRoute) {
-                return $controller->setAddonName($this->getAddonName())->process($this->id);
+                return $controller
+                    ->setAddonName($this->getAddonName())
+                    ->setRouteNamespace($this->getRouteNamespace())
+                    ->processSidebar()
+                    ->process($this->id);
             }
         }
 
