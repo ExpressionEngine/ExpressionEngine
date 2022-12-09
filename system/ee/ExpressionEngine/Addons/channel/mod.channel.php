@@ -1821,6 +1821,7 @@ class Channel
 
                             if (count($order_array) - 1 == $key) {
                                 $end .= ", t.entry_date " . $sort_array[$key];
+                                $distinct_select .= ', t.entry_date ';
                             }
 
                             $sort_array[$key] = false;
