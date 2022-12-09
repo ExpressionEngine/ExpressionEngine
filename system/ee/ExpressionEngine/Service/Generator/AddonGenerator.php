@@ -70,12 +70,20 @@ class AddonGenerator
     public function build()
     {
         $this->buildAddonSetup();
-
         $this->buildModule();
         $this->buildUpd();
         $this->createLangFile();
+        $this->createDefaultIcon();
 
         return true;
+    }
+
+    protected function createDefaultIcon()
+    {
+        // Copy the default icon into our addon
+        $defaultIcon = PATH_THEMES . 'asset/img/default-addon-icon.svg';
+
+        $this->filesystem->copy($defaultIcon, $this->addonPath . 'icon.svg');
     }
 
     protected function buildModule()
