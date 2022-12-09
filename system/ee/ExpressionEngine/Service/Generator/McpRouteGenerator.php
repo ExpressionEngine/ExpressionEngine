@@ -25,7 +25,7 @@ class McpRouteGenerator
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
-        // Set FS
+        // Set FS && string libraries
         $this->filesystem = $filesystem;
         $this->str = $str;
 

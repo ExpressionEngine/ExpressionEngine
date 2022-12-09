@@ -13,7 +13,7 @@ namespace ExpressionEngine\Cli\Commands;
 use ExpressionEngine\Cli\Cli;
 
 /**
- * Command to clear selected caches
+ * Command to make a fieldtype
  */
 class CommandMakeFieldtype extends Cli
 {
@@ -53,14 +53,14 @@ class CommandMakeFieldtype extends Cli
     {
         $this->info('command_make_fieldtype_lets_build_fieldtype');
 
-        // Gather all the mcp information
+        // Gather all the fieldtype information
         $this->data['name'] = $this->getFirstUnnamedArgument("command_make_fieldtype_ask_fieldtype_name", null, false);
         $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_fieldtype_ask_addon");
 
         $this->info('command_make_fieldtype_building_fieldtype');
 
         try {
-            // Build the mcp
+            // Build the fieldtype
             $service = ee('FieldtypeGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
