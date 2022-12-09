@@ -364,7 +364,6 @@ class File
         $parse_data = array();
         ee()->load->library('file_field');
         foreach ($this->query->result_array() as $count => $row) {
-
             $row['model_object'] = ee()->file_field->getFileModelForFieldData($row['file_id']);
             $row = ee()->file_field->parse_field($row);
             $row_prefs = $upload_prefs[$row['upload_location_id']];

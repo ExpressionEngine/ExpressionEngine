@@ -158,7 +158,18 @@ $lang = array(
     'command_make_tag_error_addon_must_have_module' => 'To generate a tag, the add-on must have a module file.',
 
     // make:template-tag options
-    'command_make_tag_option_addon'                 => 'Folder for third-party add-on you want to add tag to',
+    'command_make_tag_option_addon'                 => 'Folder for third-party add-on you want to add tag to.',
+
+    // Lang entries for command make:sidebar
+    'command_make_sidebar_description'                  => 'Creates a control panel sidebar for an add-on',
+    'command_make_sidebar_summary'                      => 'This generates a sidebar for an existing third-party addon',
+    'command_make_sidebar_lets_build_sidebar'               => 'Let\'s build an add-on sidebar!',
+    'command_make_sidebar_ask_addon'                    => 'What add-on is the sidebar being added to?',
+    'command_make_sidebar_building_sidebar'                 => 'Building Sidebar.',
+    'command_make_sidebar_created_successfully'         => 'Sidebar created successfully!',
+
+    // make:sidebar options
+    'command_make_sidebar_option_addon'                 => 'Folder for third-party add-on you want to add sidebar to.',
 
     // Lang entries for command make:extension-hook
     'command_make_extension_hook_description'                  => 'Implements an EE extension hook in an add-on',
