@@ -1196,7 +1196,12 @@ class Channel
         /**------*/
 
         if ($channel = ee()->TMPL->fetch_param('channel')) {
-            $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true)->getDictionary('channel_id', 'channel_name');
+            $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true);
+            $channelInOperator = 'IN';
+            if (strpos($channel, 'not ') === 0) {
+                $channelInOperator = 'NOT IN';
+                $channel = substr($channel, 4);
+            }
             if (strpos($channel, '|') !== false) {
                 $options = preg_split('/\|/', $channel, -1, PREG_SPLIT_NO_EMPTY);
                 $options = array_map('trim', $options);
@@ -1205,9 +1210,9 @@ class Channel
             }
             $channel_ids = array();
             foreach ($options as $option) {
-                foreach ($channels as $channel_id => $channel_name) {
-                    if (strtolower($option) == strtolower($channel_name)) {
-                        $channel_ids[] = $channel_id;
+                foreach ($channels as $channelModel) {
+                    if (strtolower($option) == strtolower($channelModel->channel_name)) {
+                        $channel_ids[] = $channelModel->channel_id;
                     }
                 }
             }
@@ -1215,7 +1220,7 @@ class Channel
             if (empty($channel_ids)) {
                 return '';
             } else {
-                $sql .= "AND t.channel_id IN (" . implode(',', $channel_ids) . ") ";
+                $sql .= "AND t.channel_id " . $channelInOperator . " (" . implode(',', $channel_ids) . ") ";
             }
         }
 
@@ -2464,6 +2469,7 @@ class Channel
             'absolute_offset' => $this->pagination->offset
         );
 
+        ee()->TMPL->set_data($data);
         $tagdata_loop_end = array($this, 'callback_tagdata_loop_end');
 
         $config = array(
@@ -2953,7 +2959,7 @@ class Channel
             $active_cat = parse_category($this->query_string);
 
             ee()->load->library('typography');
-
+            $all = [];
             $parent_ids = array();
 
             foreach ($this->cat_array as $val) {
@@ -2984,7 +2990,7 @@ class Channel
 
                 $cat_vars['count'] = ++$this->category_count;
                 $cat_vars['total_results'] = $total_results;
-
+                $all[] = $cat_vars;
                 $chunk = ee()->functions->prep_conditionals($chunk, $cat_vars);
 
                 $chunk = str_replace(
@@ -3041,7 +3047,7 @@ class Channel
                 $str = substr($str, 0, - ee()->TMPL->fetch_param('backspace'));
             }
         }
-
+        ee()->TMPL->set_data($all);
         ee()->load->library('file_field');
         $str = ee()->file_field->parse_string($str);
 
@@ -3916,6 +3922,7 @@ class Channel
             }
 
             if (isset($field_index[$field_name]) && isset($data['field_id_' . $field_index[$field_name]])) {
+                // custom fields
                 $field_id = $field_index[$field_name];
                 $cat_field = $this->cat_field_models[$field_id];
 
@@ -3934,6 +3941,7 @@ class Channel
                     $tag
                 );
             } elseif (isset($data[$field_name])) {
+                // built-in fields
                 $content = $data[$field_name];
 
                 if (! empty($var_props['modifier'])) {
@@ -3945,6 +3953,7 @@ class Channel
                         ee()->api_channel_fields->field_type = 'file';
                         $content = ee()->file_field->parse_field($content);
                     } else {
+                        ee()->api_channel_fields->field_type = 'text';
                         $class = $fieldtype;
                     }
 
@@ -4213,6 +4222,8 @@ class Channel
         foreach ($this->catfields as $v) {
             $cat_vars[$v['field_name']] = ($query->row('field_id_' . $v['field_id'])) ? $query->row('field_id_' . $v['field_id']) : '';
         }
+
+        ee()->TMPL->set_data($cat_vars);
 
         ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cat_vars);
 
@@ -4498,6 +4509,7 @@ class Channel
         } else {
             $vars['0']['prev_entry->title'] = $title;
         }
+        ee()->TMPL->set_data($vars['0']);
 
         return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
     }

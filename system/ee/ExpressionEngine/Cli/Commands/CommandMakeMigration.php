@@ -72,6 +72,13 @@ class CommandMakeMigration extends Cli
      * @var array
      */
     public $templateVariables = [];
+
+    /**
+     * Table name
+     * @var string
+     */
+    public $tableName = 'Generic';
+
     /**
      * Run the command
      * @return mixed
@@ -121,10 +128,12 @@ class CommandMakeMigration extends Cli
             $this->askMigrationCategory();
         }
 
+        $this->setTemplateName();
+
         // If tablename is explicitly passed, use that
         if ($this->option('--table')) {
             $this->tableName = $this->option('--table');
-        } else {
+        } elseif (! $this->isGenericMigration()) {
             $this->tableName = $this->guessTablename();
             $this->askTablename();
         }
@@ -134,8 +143,6 @@ class CommandMakeMigration extends Cli
 
         // Generates an instance of a migration model using a timestamped, processed filename
         $this->migration = ee('Migration')->generateMigration($this->migration_name, $this->migration_location);
-
-        $this->setTemplateName();
 
         // Print out info about generated migration
         $this->info('<<bold>>' . lang('command_make_migration_table_creating_migration') . $this->migration->migration);
@@ -227,8 +234,13 @@ class CommandMakeMigration extends Cli
 
     public function setTemplateName()
     {
-        if (in_array($this->migrationAction, array('create', 'update'))) {
+        if (in_array($this->migrationAction, array('create', 'update')) && $this->migrationCategory !== 'generic') {
             $this->templateName = ucfirst($this->migrationAction) . ucfirst($this->migrationCategory);
         }
+    }
+
+    public function isGenericMigration()
+    {
+        return ($this->templateName === 'GenericMigration');
     }
 }

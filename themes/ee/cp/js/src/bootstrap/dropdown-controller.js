@@ -89,6 +89,8 @@ var DropdownController = (function() {
 		if (dropdownShown) {
 			hideDropdown(dropdown, button)
 		} else {
+			dropdown._popper.update();
+			dropdown._popper.scheduleUpdate();
 			showDropdown(dropdown, button)
 		}
 	})
@@ -126,7 +128,8 @@ var DropdownController = (function() {
 			$(dropdown).find('.dropdown__search input').focus();
 		}
 
-		dropdown._popper.update()
+		dropdown._popper.update();
+		dropdown._popper.scheduleUpdate();
     }
 
     function hideDropdown(dropdown, button) {
@@ -141,7 +144,8 @@ var DropdownController = (function() {
 			var dropdown = this
 
 			if (dropdown._popper) {
-				dropdown._popper.update()
+				dropdown._popper.update();
+				dropdown._popper.scheduleUpdate();
 			}
 		})
 	}
@@ -200,7 +204,8 @@ var DropdownController = (function() {
 		hideAllDropdowns: hideAllDropdowns,
 		showDropdown: showDropdown,
 		hideDropdown: hideDropdown,
-		updateDropdownPositions: updateDropdownPositions
+		updateDropdownPositions: updateDropdownPositions,
+		getDropdownForElement: getDropdownForElement
 	}
 
 })();

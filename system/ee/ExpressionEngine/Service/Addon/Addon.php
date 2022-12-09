@@ -636,7 +636,7 @@ class Addon
             ->count();
     }
 
-    private function makeConsentRequest($name, $values)
+    public function makeConsentRequest($name, $values)
     {
         $request = ee('Model')->make('ConsentRequest');
         $request->user_created = false; // App-generated request
@@ -648,7 +648,7 @@ class Addon
             $version = ee('Model')->make('ConsentRequestVersion');
             $version->request = $values['request'];
             $version->request_format = (isset($values['request_format'])) ? $values['request_format'] : 'none';
-            $version->author_id = ee()->session->userdata('member_id');
+            $version->author_id = REQ != 'CLI' ? ee()->session->userdata('member_id') : 0;
             $version->create_date = ee()->localize->now;
             $request->Versions->add($version);
 

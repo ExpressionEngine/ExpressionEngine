@@ -155,6 +155,10 @@ class Stats
             foreach (ee()->stats->statdata('current_names') as $k => $v) {
                 $temp = $chunk;
 
+                if (empty($temp)) {
+                    continue;
+                }
+
                 if ($v['1'] == 'y') {
                     if (ee('Permission')->isSuperAdmin()) {
                         $temp = preg_replace("/" . LD . "name.*?" . RD . "/", $v['0'] . '*', $temp);
