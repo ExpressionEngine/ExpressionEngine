@@ -66,6 +66,7 @@ class Cli
         'make:mcp-route' => Commands\CommandMakeMcpRoute::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
+        'make:sidebar' => Commands\CommandMakeSidebar::class,
         'make:template-tag' => Commands\CommandMakeTemplateTag::class,
         'make:widget' => Commands\CommandMakeWidget::class,
         'migrate' => Commands\CommandMigrate::class,

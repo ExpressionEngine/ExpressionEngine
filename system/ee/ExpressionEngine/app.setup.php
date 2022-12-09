@@ -63,6 +63,7 @@ use ExpressionEngine\Service\Generator\FieldtypeGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
 use ExpressionEngine\Service\Generator\McpRouteGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
+use ExpressionEngine\Service\Generator\SidebarGenerator;
 use ExpressionEngine\Service\Generator\TemplateTagGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Model\Channel\ChannelEntry;
@@ -408,6 +409,13 @@ $setup = [
             $filesystem = $ee->make('Filesystem');
 
             return new ProletGenerator($filesystem, $data);
+        },
+
+        'SidebarGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new SidebarGenerator($filesystem, $str, $data);
         },
 
         'TemplateTagGenerator' => function ($ee, $data) {
