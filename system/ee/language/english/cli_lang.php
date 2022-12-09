@@ -75,7 +75,7 @@ $lang = array(
     'command_make_command_ask_command_name'     => 'Command name?',
     'command_make_command_ask_addon'            => 'What add-on do you want to add this to?',
     // make:command options
-    'command_make_command_option_addon'         => 'Folder for third-party add-on you want to add command to',
+    'command_make_command_option_addon'         => 'Folder for third-party add-on you want to add command to.',
     'command_make_command_option_description'   => 'Description of command',
     'command_make_command_option_signature'     => 'Signature for command (i.e. make:magic)',
 
@@ -124,7 +124,7 @@ $lang = array(
     'command_make_prolet_error_addon_must_have_icon'   => 'To generate a prolet, the add-on must have an icon. To generate a default icon, use --generate-icon.',
 
     // make:prolet options
-    'command_make_prolet_option_addon'                 => 'Folder for third-party add-on you want to add prolet to',
+    'command_make_prolet_option_addon'                 => 'Folder for third-party add-on you want to add prolet to.',
     'command_make_prolet_option_description'           => 'Description of prolet',
     'command_make_prolet_option_has_widget'            => 'Create a widget for the add-on after generating the prolet (optional)',
     'command_make_prolet_option_widget_name'           => 'Name of widget',
@@ -144,7 +144,7 @@ $lang = array(
     'command_make_action_addon_must_be_installed_to_install_action' => 'Could not install action. Add-on must first be installed. Action migration will be run when add-on is installed.',
 
     // make:action options
-    'command_make_action_option_addon'              => 'Folder for third-party add-on you want to add action to',
+    'command_make_action_option_addon'              => 'Folder for third-party add-on you want to add action to.',
     'command_make_action_option_install'            =>'Install this action after creating it. This runs all current migrations for the specified add-on. Add-on must first be installed.',
 
     // Lang entries for command make:template-tag
@@ -184,7 +184,7 @@ $lang = array(
     'command_make_extension_hook_addon_must_be_installed_to_install_hook' => 'Could not install extension hook. Add-on must first be installed. Extension hook migration will be run when add-on is installed.',
 
     // make:extension-hook options
-    'command_make_extension_hook_option_addon'                 => 'Folder for third-party add-on you want to add extension hook to',
+    'command_make_extension_hook_option_addon'                 => 'Folder for third-party add-on you want to add extension hook to.',
     'command_make_extension_hook_option_install'               => 'Install this extension hook after creating it. This runs all current migrations for the specified add-on. Add-on must first be installed.',
 
     // Lang entries for command make:fieldtype
@@ -197,7 +197,7 @@ $lang = array(
     'command_make_fieldtype_created_successfully'         => 'Fieldtype created successfully!',
 
     // make:fieldtype options
-    'command_make_fieldtype_option_addon'                 => 'Folder for third-party add-on you want to add fieldtype to',
+    'command_make_fieldtype_option_addon'                 => 'Folder for third-party add-on you want to add fieldtype to.',
 
     // Lang entries for command make:mcp-route
     'command_make_mcp_route_description'                  => 'Generates a control panel route for a given third-party add-on',
@@ -209,7 +209,7 @@ $lang = array(
     'command_make_mcp_route_created_successfully'         => 'Control panel route created successfully!',
 
     // make:mcp-route options
-    'command_make_mcp_route_option_addon'                 => 'Folder for third-party add-on you want to add Mcp Route to',
+    'command_make_mcp_route_option_addon'                 => 'Folder for third-party add-on you want to add Mcp Route to.',
 
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',
@@ -229,7 +229,7 @@ $lang = array(
     'command_make_model_ask_model_name'                         => 'Model name?',
     'command_make_model_ask_addon'                              => 'What add-on do you want to add this to?',
     // make:model options
-    'command_make_model_option_addon' => 'Folder for third-party add-on you want to add model to',
+    'command_make_model_option_addon' => 'Folder for third-party add-on you want to add model to.',
 
     // Lang entries for command migrate
     'command_migrate_description'                  => 'Runs specified migrations (all, core, or add-ons)',
