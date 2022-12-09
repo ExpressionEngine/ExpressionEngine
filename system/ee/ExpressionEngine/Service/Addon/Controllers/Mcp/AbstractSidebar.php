@@ -17,8 +17,14 @@ abstract class AbstractSidebar
      */
     protected $automatic = true;
 
-    protected $header = null;
+    /**
+     * @var string - optional header for the sidebar generation when set automatically
+     */
+    protected $header;
 
+    /**
+     * @var array - array of route classes used for getting properties
+     */
     protected $routeClasses = [];
 
     public $routes = [];

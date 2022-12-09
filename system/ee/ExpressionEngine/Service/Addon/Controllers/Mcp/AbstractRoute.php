@@ -251,6 +251,11 @@ abstract class AbstractRoute extends CoreAbstractRoute
         return $this->sidebar->routes;
     }
 
+    public function getSidebar()
+    {
+        return $this->sidebar->getSidebar();
+    }
+
     /**
      * @return array
      */
