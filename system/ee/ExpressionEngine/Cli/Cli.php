@@ -490,7 +490,7 @@ class Cli
         }
     }
 
-    public function getOptionOrAskAddon($option, $askText = null, $default = null, $required = true)
+    public function getOptionOrAskAddon($option, $askText = null, $default = 'first', $required = true)
     {
         // Get option if it was passed
         if ($this->option($option)) {
@@ -515,11 +515,16 @@ class Cli
         return $answer;
     }
 
-    protected function askAddon($askText, $default)
+    protected function askAddon($askText, $default = '')
     {
         $addonList = $this->getAddonList();
         $askText = $askText . ' (' . implode(', ', $addonList) . '): ';
-        $default = '';
+
+        // If the default is "first", then return the first element in the array
+        if ($default === 'first' && ! empty($addonList)) {
+            // Get the first array element
+            $default = reset($addonList);
+        }
 
         // Get the answer by asking
         $answer = $this->ask($askText, $default);
