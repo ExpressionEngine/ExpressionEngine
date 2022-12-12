@@ -31536,7 +31536,7 @@ fieldset .field-control #eye {
 .grid-field .table-responsive {
   box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
   border: 1px solid var(--ee-border);
-  overflow-x: visible;
+  overflow-x: auto;
 }
 
 .grid-field__table th {
@@ -31793,9 +31793,6 @@ fieldset .field-control #eye {
 .grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed {
   padding-bottom: 0 !important;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
-  display: none !important;
-}
 .grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
   border-bottom: none !important;
 }
@@ -31872,11 +31869,8 @@ fieldset .field-control #eye {
   .grid-field:not(.horizontal-layout) .grid-field__table tr.no-results {
     padding: 0px;
   }
-  .grid-field:not(.horizontal-layout) .grid-field__table tr.no-results td {
-    padding-top: 0;
-  }
   .grid-field:not(.horizontal-layout) .grid-field__table td {
-    display: block;
+    display: block !important;
     border-bottom: none;
     padding: 10px 15px 10px 15px;
   }
@@ -31938,30 +31932,28 @@ fieldset .field-control #eye {
 .live-preview__form-content .grid-field .grid-field__table tbody,
 .grid-field.overwidth .grid-field__table tbody {
   width: 100%;
+  border: none;
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden),
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  border-bottom: 3px solid var(--ee-table-border);
-}
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden):last-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden):last-child {
-  border-bottom: none;
-}
-@media (max-width: 767px) {
-  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden):last-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden):last-child {
-    border-bottom-width: 1px;
-  }
+  position: relative;
+  border: 1px solid var(--ee-border);
+  margin-bottom: 10px;
+  padding-bottom: 15px;
+  background-color: var(--ee-bg-blank);
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden),
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) {
+  border-right: none;
+  min-width: 0;
   width: 100%;
   max-width: 100%;
-  display: flex;
-  flex-wrap: wrap;
+  display: block;
+  border-bottom: none;
+  padding: 10px 15px 10px 15px;
+  font-size: 1rem;
 }
 @media (min-width: 768px) {
   .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden),
@@ -32048,9 +32040,40 @@ fieldset .field-control #eye {
   border-bottom: none;
   padding: 0;
 }
+.live-preview__form-content .grid-field .grid-field__table tbody tr.grid__item--collapsed,
+.grid-field.overwidth .grid-field__table tbody tr.grid__item--collapsed {
+  padding-bottom: 0 !important;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset,
+.grid-field.overwidth .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
+  border-bottom: none !important;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool,
+.grid-field.overwidth .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  transform: rotate(180deg);
+}
 
+.grid-field.overwidth {
+  padding: 10px;
+  background: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  border-radius: 5px;
+}
+.grid-field.overwidth .table-responsive {
+  border: none;
+  box-shadow: none;
+}
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools {
+  display: none !important;
+}
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td div:empty {
   display: none;
+}
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td.grid-field__item-fieldset {
+  position: relative;
+}
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td.grid-field__item-fieldset .grid-field__item-tools {
+  width: auto !important;
 }
 
 .select {
