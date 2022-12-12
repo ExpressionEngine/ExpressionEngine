@@ -518,7 +518,7 @@ class Cli
     protected function askAddon($askText, $default)
     {
         $addonList = $this->getAddonList();
-        $askText = $askText . ' [' . implode(', ', $addonList) . ']: ';
+        $askText = $askText . ' (' . implode(', ', $addonList) . '): ';
         $default = '';
 
         // Get the answer by asking
