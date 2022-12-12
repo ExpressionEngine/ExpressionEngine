@@ -25,7 +25,7 @@ class Module extends Controller
      */
     protected function isActRequest($method)
     {
-        return substr($method, -6) == 'action' && ee()->input->get_post('ACT');
+        return (bool) ee()->input->get_post('ACT');
     }
 
     /**
@@ -78,16 +78,26 @@ class Module extends Controller
      * @return string
      * @throws ControllerException
      */
-    protected function buildObject($method, $action = false)
+    protected function buildObject($method, $action = false, $useModuleFolder = false)
     {
-        $object = '\\' . $this->getRouteNamespace() . '\\Module\\';
-        if ($action) {
-            $object .= 'Actions\\';
-        } else {
-            $object .= 'Tags\\';
+        $object = '\\' . $this->getRouteNamespace();
+
+        // If we're using the old module folder method
+        if ($useModuleFolder) {
+            $object .= '\\Module';
         }
 
+        if ($action) {
+            $object .= '\\Actions\\';
+        } else {
+            $object .= '\\Tags\\';
+        }
         $object .= Str::studly($method);
+
+        // If we cant find that class, try the module folder class
+        if (! class_exists($object) && ! $useModuleFolder) {
+            return $this->buildObject($method, $action, true);
+        }
 
         return $object;
     }

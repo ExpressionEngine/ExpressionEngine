@@ -55,7 +55,7 @@ class ActionGenerator
         }
 
         // Get stub path
-        $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/Module/';
+        $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/';
     }
 
     public function build()
@@ -64,7 +64,7 @@ class ActionGenerator
         $actionStub = $this->write('namespace', ucfirst($this->namespace), $actionStub);
         $actionStub = $this->write('ActionName', $this->ActionName, $actionStub);
 
-        $this->putFile('Module/Actions/' . $this->ActionName . '.php', $actionStub);
+        $this->putFile('Actions/' . $this->ActionName . '.php', $actionStub);
 
         $this->makeMigration();
     }

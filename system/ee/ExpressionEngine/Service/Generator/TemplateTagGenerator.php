@@ -55,7 +55,7 @@ class TemplateTagGenerator
         }
 
         // Get stub path
-        $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/Module/';
+        $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/';
     }
 
     public function build()
@@ -66,7 +66,7 @@ class TemplateTagGenerator
         $tagStub = $this->write('TagName', $this->TagName, $tagStub);
         $tagStub = $this->write('tag_name', $this->tag_name, $tagStub);
 
-        $this->putFile('Module/Tags/' . $this->TagName . '.php', $tagStub);
+        $this->putFile('Tags/' . $this->TagName . '.php', $tagStub);
     }
 
     private function stub($file)

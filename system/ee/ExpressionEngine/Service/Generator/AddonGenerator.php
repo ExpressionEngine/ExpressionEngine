@@ -89,7 +89,7 @@ class AddonGenerator
     protected function buildModule()
     {
         // Create module file
-        $stub = $this->filesystem->read($this->stub('Module/mod.slug.php'));
+        $stub = $this->filesystem->read($this->stub('mod.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
         $stub = $this->write('slug', $this->slug, $stub);
         $this->putFile('mod.' . $this->slug . '.php', $stub);
@@ -104,7 +104,6 @@ class AddonGenerator
         $stub = $this->write('version', $this->version, $stub);
         $stub = $this->write('has_cp_backend', $this->has_cp_backend, $stub);
         $stub = $this->write('has_publish_fields', $this->has_publish_fields, $stub);
-
         $this->putFile('upd.' . $this->slug . '.php', $stub);
     }
 
