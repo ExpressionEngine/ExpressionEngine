@@ -1,6 +1,6 @@
 <?php
 
-namespace {{namespace}}\Mcp;
+namespace {{namespace}}\ControlPanel;
 
 use ExpressionEngine\Service\Addon\Controllers\Mcp\AbstractSidebar;
 

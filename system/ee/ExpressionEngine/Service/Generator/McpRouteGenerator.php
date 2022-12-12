@@ -67,11 +67,11 @@ class McpRouteGenerator
         $cpRouteStub = $this->write('route_uc', $this->route_uc, $cpRouteStub);
         $cpRouteStub = $this->write('view', $this->view, $cpRouteStub);
         $cpRouteStub = $this->write('namespace', $this->namespace, $cpRouteStub);
-        $this->putFile('Mcp/' . $this->route_uc . '.php', $cpRouteStub);
+        $this->putFile('ControlPanel/Routes/' . $this->route_uc . '.php', $cpRouteStub);
 
         // Add Mcp view
         $cpViewStub = $this->filesystem->read($this->stub('views/View.php'));
-        $this->putFile('views/' . $this->view . '.php', $cpViewStub);
+        $this->putFile('Views/' . $this->view . '.php', $cpViewStub);
 
         // Create mcp file if it doesnt exist:
         $this->generateMcp();

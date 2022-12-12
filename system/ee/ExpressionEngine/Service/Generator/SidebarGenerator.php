@@ -59,7 +59,7 @@ class SidebarGenerator
         // Create add-on control panel sidebar
         $sidebarStub = $this->filesystem->read($this->stub('Sidebar.php'));
         $sidebarStub = $this->write('namespace', $this->namespace, $sidebarStub);
-        $this->putFile('Mcp/Sidebar.php', $sidebarStub);
+        $this->putFile('ControlPanel/Sidebar.php', $sidebarStub);
     }
 
     private function stub($file)

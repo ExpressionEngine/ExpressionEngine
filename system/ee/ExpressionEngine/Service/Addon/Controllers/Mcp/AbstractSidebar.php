@@ -193,9 +193,9 @@ abstract class AbstractSidebar
         $routes = [];
 
         // Loop through each route file
-        $contents = ee('Filesystem')->getDirectoryContents(PATH_THIRD . $this->addon . '/Mcp/');
+        $contents = ee('Filesystem')->getDirectoryContents(PATH_THIRD . $this->addon . '/ControlPanel/Routes/');
         foreach ($contents as $c) {
-            $class = $this->namespace . '\Mcp\\' . substr(basename($c), 0, -4);
+            $class = $this->namespace . '\ControlPanel\Routes\\' . substr(basename($c), 0, -4);
 
             if (class_exists($class) && is_subclass_of($class, 'ExpressionEngine\Service\Addon\Controllers\Mcp\AbstractRoute')) {
                 $routes[] = $class;

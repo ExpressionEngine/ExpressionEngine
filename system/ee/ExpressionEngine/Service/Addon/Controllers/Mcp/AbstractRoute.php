@@ -186,7 +186,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
 
     public function processSidebar()
     {
-        $sidebarClass = $this->getRouteNamespace() . '\Mcp\Sidebar';
+        $sidebarClass = $this->getRouteNamespace() . '\ControlPanel\Sidebar';
 
         // Check to see if the sidebar class exists. If not, return this
         if (! class_exists($sidebarClass)) {

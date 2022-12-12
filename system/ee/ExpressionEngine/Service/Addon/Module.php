@@ -78,7 +78,7 @@ class Module extends Controller
      * @return string
      * @throws ControllerException
      */
-    protected function buildObject($method, $action = false, $useModuleFolder = false)
+    protected function buildObject($method, $action = false, $useModuleFolder = true)
     {
         $object = '\\' . $this->getRouteNamespace();
 
@@ -94,9 +94,10 @@ class Module extends Controller
         }
         $object .= Str::studly($method);
 
-        // If we cant find that class, try the module folder class
-        if (! class_exists($object) && ! $useModuleFolder) {
-            return $this->buildObject($method, $action, true);
+        // If we cant find the old location in the modules fodler, try the new location
+        // without the modules folder. This is done in this order to the error message shows the new way
+        if (! class_exists($object) && $useModuleFolder) {
+            return $this->buildObject($method, $action, false);
         }
 
         return $object;

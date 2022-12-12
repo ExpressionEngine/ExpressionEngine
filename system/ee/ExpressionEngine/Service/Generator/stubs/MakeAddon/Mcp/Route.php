@@ -1,6 +1,6 @@
 <?php
 
-namespace {{namespace}}\Mcp;
+namespace {{namespace}}\ControlPanel\Routes;
 
 use ExpressionEngine\Service\Addon\Controllers\Mcp\AbstractRoute;
 
