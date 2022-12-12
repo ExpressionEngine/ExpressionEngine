@@ -22,6 +22,8 @@
             endif ?>
 			</ul>
 
+			<?=(isset($remove_confirmation) ? $remove_confirmation : '')?>
+
 			<div class="ajax"><?=isset($ajax_default) ? $ajax_default : '' ?></div>
 		</div>
 
