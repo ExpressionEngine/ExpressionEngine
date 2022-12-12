@@ -199,17 +199,17 @@ $lang = array(
     // make:fieldtype options
     'command_make_fieldtype_option_addon'                 => 'Folder for third-party add-on you want to add fieldtype to.',
 
-    // Lang entries for command make:mcp-route
-    'command_make_mcp_route_description'                  => 'Generates a control panel route for a given third-party add-on',
-    'command_make_mcp_route_summary'                      => 'This interactively generates a control panel route in an existing third-party addon',
-    'command_make_mcp_route_lets_build_mcp_route'    => 'Let\'s create a control panel route!',
-    'command_make_mcp_route_ask_route_name'      => 'What is the route name?',
-    'command_make_mcp_route_ask_addon'                    => 'What add-on is the route being added to?',
-    'command_make_mcp_route_building_mcp_route'      => 'Building control panel route.',
-    'command_make_mcp_route_created_successfully'         => 'Control panel route created successfully!',
+    // Lang entries for command make:cp-route
+    'command_make_cp_route_description'                  => 'Generates a control panel route for a given third-party add-on',
+    'command_make_cp_route_summary'                      => 'This interactively generates a control panel route in an existing third-party addon',
+    'command_make_cp_route_lets_build_mcp_route'    => 'Let\'s create a control panel route!',
+    'command_make_cp_route_ask_route_name'      => 'What is the route name?',
+    'command_make_cp_route_ask_addon'                    => 'What add-on is the route being added to?',
+    'command_make_cp_route_building_mcp_route'      => 'Building control panel route.',
+    'command_make_cp_route_created_successfully'         => 'Control panel route created successfully!',
 
-    // make:mcp-route options
-    'command_make_mcp_route_option_addon'                 => 'Folder for third-party add-on you want to add Mcp Route to.',
+    // make:cp-route options
+    'command_make_cp_route_option_addon'                 => 'Folder for third-party add-on you want to add Mcp Route to.',
 
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',

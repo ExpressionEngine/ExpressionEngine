@@ -15,32 +15,32 @@ use ExpressionEngine\Cli\Cli;
 /**
  * Command to clear selected caches
  */
-class CommandMakeMcpRoute extends Cli
+class CommandMakeCpRoute extends Cli
 {
     /**
      * name of command
      * @var string
      */
-    public $name = 'Mcp Route Generator';
+    public $name = 'Control Panel Route Generator';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'make:mcp-route';
+    public $signature = 'make:cp-route';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php make:mcp-route MyNewRoute --addon=my_existing_addon';
+    public $usage = 'php eecli.php make:cp-route MyNewRoute --addon=my_existing_addon';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        'addon,a:'        => 'command_make_mcp_route_option_addon',
+        'addon,a:'        => 'command_make_cp_route_option_addon',
     ];
 
     protected $data = [];
@@ -51,22 +51,22 @@ class CommandMakeMcpRoute extends Cli
      */
     public function handle()
     {
-        $this->info('command_make_mcp_route_lets_build_mcp_route');
+        $this->info('command_make_cp_route_lets_build_mcp_route');
 
         // Gather all the mcp information
-        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_mcp_route_ask_route_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_mcp_route_ask_addon");
+        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_cp_route_ask_route_name", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_cp_route_ask_addon");
 
-        $this->info('command_make_mcp_route_building_mcp_route');
+        $this->info('command_make_cp_route_building_mcp_route');
 
         try {
             // Build the mcp
-            $service = ee('McpRouteGenerator', $this->data);
+            $service = ee('CpRouteGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
 
-        $this->info('command_make_mcp_route_created_successfully');
+        $this->info('command_make_cp_route_created_successfully');
     }
 }

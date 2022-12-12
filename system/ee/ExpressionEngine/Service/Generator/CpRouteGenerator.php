@@ -13,7 +13,7 @@ namespace ExpressionEngine\Service\Generator;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Library\String\Str;
 
-class McpRouteGenerator
+class CpRouteGenerator
 {
     public $name;
     public $addon;

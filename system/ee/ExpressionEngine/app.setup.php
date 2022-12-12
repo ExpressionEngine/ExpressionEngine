@@ -57,11 +57,11 @@ use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
 use ExpressionEngine\Service\Generator\ActionGenerator;
 use ExpressionEngine\Service\Generator\AddonGenerator;
 use ExpressionEngine\Service\Generator\CommandGenerator;
+use ExpressionEngine\Service\Generator\CpRouteGenerator;
 use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
 use ExpressionEngine\Service\Generator\ExtensionGenerator;
 use ExpressionEngine\Service\Generator\FieldtypeGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
-use ExpressionEngine\Service\Generator\McpRouteGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\SidebarGenerator;
 use ExpressionEngine\Service\Generator\TemplateTagGenerator;
@@ -398,11 +398,11 @@ $setup = [
             return new ModelGenerator($filesystem, $data);
         },
 
-        'McpRouteGenerator' => function ($ee, $data) {
+        'CpRouteGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
             $str = $ee->make('Str');
 
-            return new McpRouteGenerator($filesystem, $str, $data);
+            return new CpRouteGenerator($filesystem, $str, $data);
         },
 
         'ProletGenerator' => function ($ee, $data) {
