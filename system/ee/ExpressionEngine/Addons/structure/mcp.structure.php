@@ -664,7 +664,7 @@ class Structure_mcp
         }
 
         if (count($to_be_deleted) > 0) {
-            $this->set_cp_title('delete_channels');
+            $this->set_cp_title('confirm_delete_channels');
             ee()->cp->set_breadcrumb($this->base_url, ee()->lang->line('structure_module_name'));
 
             // Get channel titles
