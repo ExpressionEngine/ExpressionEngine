@@ -28,6 +28,10 @@ abstract class AbstractFields extends CP_Controller
     {
         parent::__construct();
 
+        if (! ee('Permission')->has('can_admin_channels')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         if (! ee('Permission')->hasAny(
             'can_create_channel_fields',
             'can_edit_channel_fields',

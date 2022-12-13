@@ -9,6 +9,7 @@
 $modal_vars = array(
     'name' => 'modal-confirm-' . $name,
     'form_url' => $remove_url,
+    'remove_confirmation' => isset($remove_confirmation) ? $remove_confirmation : '',
     'hidden' => array(
         $removal_key => ''
     )

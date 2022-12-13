@@ -54,8 +54,24 @@ abstract class AbstractFiles extends CP_Controller
 
         $header = $sidebar->addHeader(lang('upload_directories'));
 
+        $removeConfirmationFieldset = [
+            'group' => 'delete-confirm',
+            'setting' => [
+                'title' => lang('remove_files_from_disk'),
+                'desc' => lang('toggle_on_to_remove_files'),
+                'fields' => [
+                    'remove_files' => [
+                        'type' => 'toggle',
+                        'value' => 0,
+                    ]
+                ]
+            ]
+        ];
+        $removeConfirmation = ee('View')->make('ee:_shared/form/fieldset')->render($removeConfirmationFieldset);
+
         $list = $header->addFolderList('directory')
-            ->withNoResultsText(lang('zero_directories_found'));
+            ->withNoResultsText(lang('zero_directories_found'))
+            ->withRemoveConfirmation($removeConfirmation);
 
         if (ee('Permission')->can('create_upload_directories')) {
             $header->withButton(lang('new'), ee('CP/URL')->make('files/uploads/create'));
@@ -87,7 +103,6 @@ abstract class AbstractFiles extends CP_Controller
             }
 
             $display_name = htmlspecialchars($destination->name, ENT_QUOTES, 'UTF-8');
-
             $item = $list->addItem($display_name, ee('CP/URL')->make('files/directory/' . $destination->id))
                 ->withIcon('hdd')
                 ->withEditUrl(ee('CP/URL')->make('files/uploads/edit/' . $destination->id))

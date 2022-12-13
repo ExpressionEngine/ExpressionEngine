@@ -174,13 +174,13 @@ class EE_relationship_tree_builder
                 foreach ($authorFields as $field) {
                     $entriesQuery->fields('Author.' . $field);
                 }
-                $entries_result = $entriesQuery->all()
+                $entries_result = $entriesQuery->all(true)
                     ->getModChannelResultsArray($disabled);
                 unset($entriesQuery);
             } else {
                 $entries_result = ee('Model')->get('ChannelEntry', $unique_entry_ids)
                     ->with($entriesQueryWith)
-                    ->all()
+                    ->all(true)
                     ->getModChannelResultsArray($disabledFeatures);
             }
 
