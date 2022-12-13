@@ -11,14 +11,17 @@
 namespace ExpressionEngine\Service\Generator;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Library\String\Str;
 use ExpressionEngine\Service\Generator\Enums\FieldtypeCompatibility;
 use ExpressionEngine\Service\Generator\Enums\Hooks;
 
 class AddonGenerator
 {
+    protected $filesystem;
+    protected $str;
+
     public $name;
     public $data;
-    public $filesystem;
     public $slug;
     public $slug_uc;
     public $namespace;
@@ -33,13 +36,16 @@ class AddonGenerator
     protected $generatorPath;
     protected $addonPath;
 
-    public function __construct(Filesystem $filesystem, array $data)
+    public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
         ee()->load->helper('string');
 
+        // Set FS and String library
         $this->filesystem = $filesystem;
+        $this->str = $str;
+
         $this->name = $data['name'];
-        $this->slug = $this->slug($data['name']);
+        $this->slug = $this->str->snakecase($data['name']);
         $this->slug_uc = ucfirst($this->slug);
 
         // Setup the generator data
@@ -125,8 +131,8 @@ class AddonGenerator
     public function createNamespace($data)
     {
         // Make studly case and strip non-alpha characters
-        $name = $this->alphaFilter($this->studly($data['name']));
-        $author = $this->alphaFilter($this->studly($data['author']));
+        $name = $this->str->alphaFilter($this->str->studly($data['name']));
+        $author = $this->str->alphaFilter($this->str->studly($data['author']));
 
         // Namespace should be the Add-on name
         $namespace = $name;
@@ -172,34 +178,5 @@ class AddonGenerator
         if (!$this->filesystem->exists($this->addonPath . $path . $name)) {
             $this->filesystem->write($this->addonPath . $path . $name, $contents);
         }
-    }
-
-    private function erase($string, $contents)
-    {
-        return str_replace($string, '', $contents);
-    }
-
-    private function clearLine($string, $contents)
-    {
-        return preg_replace("/" . preg_quote($string) . "\R/", '', $contents);
-    }
-
-    public function slug($word)
-    {
-        $word = strtolower($word);
-
-        return str_replace(['-', ' ', '.'], '_', $word);
-    }
-
-    public function studly($word)
-    {
-        $word = mb_convert_case($word, MB_CASE_TITLE);
-
-        return  str_replace(['-', '_', ' ', '.'], '', $word);
-    }
-
-    public function alphaFilter($string)
-    {
-        return preg_replace("/[^A-Za-z]/", '', $string);
     }
 }

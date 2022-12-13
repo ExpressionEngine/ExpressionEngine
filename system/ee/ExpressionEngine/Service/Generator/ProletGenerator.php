@@ -11,20 +11,23 @@
 namespace ExpressionEngine\Service\Generator;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Library\String\Str;
 
 class ProletGenerator
 {
     public $name;
     public $addon;
     protected $filesystem;
+    protected $str;
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
 
-    public function __construct(Filesystem $filesystem, array $data)
+    public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
-        // Set FS
+        // Set FS and String library
         $this->filesystem = $filesystem;
+        $this->str = $str;
 
         // Set required data for generator to use
         $this->name = $data['name'];
@@ -103,24 +106,5 @@ class ProletGenerator
         if (!$this->filesystem->exists($this->addonPath . $path . $name)) {
             $this->filesystem->write($this->addonPath . $path . $name, $contents);
         }
-    }
-
-    public function slug($word)
-    {
-        $word = strtolower($word);
-
-        return str_replace(['-', ' ', '.'], '_', $word);
-    }
-
-    public function studly($word)
-    {
-        $word = mb_convert_case($word, MB_CASE_TITLE);
-
-        return  str_replace(['-', '_', ' ', '.'], '', $word);
-    }
-
-    public function string_contains($textToSearch, $word)
-    {
-        return (strpos($textToSearch, $word) !== false);
     }
 }

@@ -361,14 +361,16 @@ $setup = [
 
         'AddonGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new AddonGenerator($filesystem, $data);
+            return new AddonGenerator($filesystem, $str, $data);
         },
 
         'CommandGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new CommandGenerator($filesystem, $data);
+            return new CommandGenerator($filesystem, $str, $data);
         },
 
         'ExtensionHookGenerator' => function ($ee, $data) {
@@ -394,8 +396,9 @@ $setup = [
 
         'ModelGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new ModelGenerator($filesystem, $data);
+            return new ModelGenerator($filesystem, $str, $data);
         },
 
         'CpRouteGenerator' => function ($ee, $data) {
@@ -407,8 +410,9 @@ $setup = [
 
         'ProletGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new ProletGenerator($filesystem, $data);
+            return new ProletGenerator($filesystem, $str, $data);
         },
 
         'SidebarGenerator' => function ($ee, $data) {
@@ -427,8 +431,9 @@ $setup = [
 
         'WidgetGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new WidgetGenerator($filesystem, $data);
+            return new WidgetGenerator($filesystem, $str, $data);
         },
 
         'Consent' => function ($ee, $member_id = null) {

@@ -66,4 +66,14 @@ class Str
     {
         return (strpos($textToSearch, $word) !== false);
     }
+
+    /**
+     * Filters $string so it only contains alpha characters
+     * @param string $string
+     * @return string
+     */
+    public static function alphaFilter($string)
+    {
+        return preg_replace("/[^A-Za-z]/", '', $string);
+    }
 }

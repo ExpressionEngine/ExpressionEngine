@@ -25,7 +25,7 @@ class ActionGenerator
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
-        // Set FS
+        // Set FS and String library
         $this->filesystem = $filesystem;
         $this->str = $str;
 
