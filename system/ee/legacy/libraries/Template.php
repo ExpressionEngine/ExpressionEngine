@@ -2964,7 +2964,7 @@ class EE_Template
      */
     public function remove_ee_comments($str)
     {
-        if (strpos($str, '{!--') === false) {
+        if (strpos((string) $str, '{!--') === false) {
             return $str;
         }
 
