@@ -24,7 +24,8 @@ function makeFilterableComponent(WrappedComponent) {
       this.ajaxRequest = null
 
       // We need this function only for checkbox that have selected elements and there are more than tooMany
-      if (props.tooMany && props.multi && this.props.selected.length) {
+      // excluding categories on the Entry page
+      if (props.tooMany && props.multi && this.props.selected.length && !props.name.startsWith("categories[")) {
         this.moveSelectableToTop();
       }
     }

@@ -17863,6 +17863,51 @@ fieldset .field-control #eye {
   }
 }
 
+.add-on-card__table {
+  white-space: nowrap;
+}
+.add-on-card__table table {
+  margin: 6px 0 -6px 0;
+  border: none;
+  background: none;
+}
+.add-on-card__table table td {
+  color: var(--ee-button-secondary-color);
+  padding: 0;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar {
+  display: flex;
+  flex-wrap: wrap;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a {
+  text-transform: capitalize !important;
+  color: var(--ee-button-secondary-color) !important;
+  background: none !important;
+  font-weight: 700;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a:before {
+  display: none;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a.no {
+  color: var(--ee-error) !important;
+  padding-left: 20px;
+  position: relative;
+  margin-right: 20px;
+  font-weight: 400;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a.no:before {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  flex-shrink: 0;
+  content: "\f06a";
+  font-weight: 400;
+  font-family: "Font Awesome 5 Free";
+}
+
 .add-on-card.first-party .first-party-svg {
   color: var(--ee-brand-primary);
   max-width: 50px;
@@ -25491,5 +25536,3 @@ label.field-option-required {
 body[data-theme="dark"] .fluid__footer img {
     filter: invert();
 }
-
-/*# sourceMappingURL=common.min.css.map*/
