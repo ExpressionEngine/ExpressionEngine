@@ -192,13 +192,32 @@ abstract class AbstractSidebar
     {
         $routes = [];
 
-        // Loop through each route file
-        $contents = ee('Filesystem')->getDirectoryContents(PATH_THIRD . $this->addon . '/ControlPanel/Routes/');
-        foreach ($contents as $c) {
-            $class = $this->namespace . '\ControlPanel\Routes\\' . substr(basename($c), 0, -4);
+        // Locations of route folders we need to check
+        $routeLocations = [
+            [
+                'path' => PATH_THIRD . $this->addon . '/ControlPanel/Routes/',
+                'namespace' => $this->namespace . '\ControlPanel\Routes\\'
+            ],
+            [
+                'path' => PATH_THIRD . $this->addon . '/Mcp/',
+                'namespace' => $this->namespace . '\Mcp\\'
+            ],
+        ];
 
-            if (class_exists($class) && is_subclass_of($class, 'ExpressionEngine\Service\Addon\Controllers\Mcp\AbstractRoute')) {
-                $routes[] = $class;
+        foreach ($routeLocations as $routeLocation) {
+            // If the directory doesnt exist, skip it
+            if (! ee('Filesystem')->exists($routeLocation['path'])) {
+                continue;
+            }
+
+            // Loop through each route file in that directory
+            $contents = ee('Filesystem')->getDirectoryContents($routeLocation['path']);
+            foreach ($contents as $c) {
+                $class = $routeLocation['namespace'] . substr(basename($c), 0, -4);
+
+                if (class_exists($class) && is_subclass_of($class, 'ExpressionEngine\Service\Addon\Controllers\Mcp\AbstractRoute')) {
+                    $routes[] = $class;
+                }
             }
         }
 

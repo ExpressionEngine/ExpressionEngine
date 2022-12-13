@@ -120,7 +120,7 @@ class CpRouteGenerator
     {
         $addon = ee('Addon')->get($this->addon);
 
-        //  Only do this if there is no extension
+        //  Only do this if there is no mcp file
         if ($addon->hasControlPanel()) {
             return;
         }
