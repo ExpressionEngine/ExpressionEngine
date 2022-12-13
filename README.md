@@ -45,7 +45,7 @@ ExpressionEngine separates your content from your design, enabling you to make s
 
 If you're new to ExpressionEngine, check out:
 
-- [The Big Picture](https://docs.expressionengine.com/latest/intro/the_big_picture.html)
+- [The Big Picture](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html)
 - [Building a Simple News Site from Start to Finish](https://docs.expressionengine.com/latest/how_to/building_a_simple_news_site.html)
 - [10-minute ExpressionEngine Primer](https://www.youtube.com/watch?v=qKaOirMRz2s) on ExpressionEngineTV
 

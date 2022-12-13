@@ -241,11 +241,13 @@ class Api_template_structure extends Api
             // 'template_types' hook.
             //  - Provide information for custom template types.
             //
-            $template_types = ee()->extensions->call('template_types', array());
+            if (isset(ee()->extensions)) {
+                $template_types = ee()->extensions->call('template_types', array());
+            }
             //
             // -------------------------------------------
 
-            if ($template_types != null) {
+            if (isset($template_types) && !empty($template_types)) {
                 if (isset($template_types[$template_type]['template_file_extension'])) {
                     return implode('', array_filter([$template_types[$template_type]['template_file_extension'], $engine]));
                 }

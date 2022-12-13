@@ -48,6 +48,11 @@ class FolderList
     protected $can_reorder = false;
 
     /**
+     * @var string Extra confirmation message or toggle to delete
+     */
+    protected $remove_confirmation;
+
+    /**
      * Constructor: sets the name of the list
      *
      * @param string $text The text of the header
@@ -67,6 +72,19 @@ class FolderList
     public function withRemoveUrl($url)
     {
         $this->remove_url = $url;
+
+        return $this;
+    }
+
+    /**
+     * Sets removal conformation HTML
+     *
+     * @param string $html
+     * @return self
+     */
+    public function withRemoveConfirmation($html)
+    {
+        $this->remove_confirmation = $html;
 
         return $this;
     }
@@ -152,6 +170,7 @@ class FolderList
                 'name' => $this->name,
                 'remove_url' => $this->remove_url,
                 'removal_key' => $this->removal_key,
+                'remove_confirmation' => $this->remove_confirmation,
                 'can_reorder' => $this->can_reorder
             ));
     }

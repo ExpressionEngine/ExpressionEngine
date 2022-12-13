@@ -105,7 +105,7 @@ $lang = array(
     'settings_n_a'                  => 'n/a',
     'channel_settings_none'         => 'You haven\'t added any channels yet',
     'channel_settings_add'          => 'Add Channels',
-    'delete_channels'                       => 'Are you sure you want to remove these channels from Structure?',
+    'confirm_delete_channels'               => 'Are you sure you want to remove these channels from Structure?',
 
     'setting_trailing_slash' => "Add Trailing Slash to Page URLs",
 
