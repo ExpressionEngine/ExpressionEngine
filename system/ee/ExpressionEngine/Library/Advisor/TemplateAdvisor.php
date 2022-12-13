@@ -69,11 +69,13 @@ class TemplateAdvisor
                     'link' => ee('CP/URL', 'cp/design/snippets/edit/' . $template->getId())->compile()
                 ];
             }
+			
+			$template_data = (empty($template_data)) ? '' : $template_data;
 
             $template_data = ee()->template->remove_ee_comments($template_data);
 
             $tags_found = preg_match_all($regexp, $template_data, $keys, PREG_PATTERN_ORDER);
-
+			
             $tmpl_info['details'][] = $keys;
 
             foreach ($keys[0] as $key) {
