@@ -12,8 +12,9 @@ namespace ExpressionEngine\Service\Addon\Controllers\Mcp;
 
 use ExpressionEngine\Service\Addon\Controllers\AbstractRoute as CoreAbstractRoute;
 use ExpressionEngine\Service\Addon\Exceptions\Controllers\Mcp\RouteException;
-use ExpressionEngine\Service\Sidebar\BasicList;
 use ExpressionEngine\Service\Sidebar\Header;
+use ExpressionEngine\Service\Sidebar\BasicItem;
+use ExpressionEngine\Service\Sidebar\BasicList;
 
 abstract class AbstractRoute extends CoreAbstractRoute
 {
@@ -55,7 +56,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
      */
     protected $currentSidebarItem = null;
 
-    // Available properties to set
+    // Available sidebar properties to set
     protected $sidebar_title = null;
     protected $sidebar_icon = null;
     protected $sidebar_is_folder = false;
@@ -197,22 +198,12 @@ abstract class AbstractRoute extends CoreAbstractRoute
         $this->sidebar = new $sidebarClass($this->getAddonName(), $this->getRouteNamespace());
         $this->sidebar->process();
 
-        // Lets get the active item, set it to current, and then set it to active
-        foreach ($this->sidebar->getSidebar()->getItems() as $sidebarHeader) {
-            // If this list is empty, no need to search it for the item
-            if (!$sidebarHeader instanceof \Header) {
-                continue;
-            }
+        // If there are no current sidebar items set, this will set one
+        // When using automatic, we should already have a current sidebar item
+        $this->autoSetCurrentSidebar();
 
-            $basicList = $sidebarHeader->getList();
-
-            // If this list is empty, no need to search it for the item
-            if (empty($basicList) || !$basicList instanceof \BasicList) {
-                continue;
-            }
-
-            // Get the sidebar item based on the url
-            $this->currentSidebarItem = $basicList->getItemByUrl($this->url($this->route_path));
+        // If we found one, set it to active
+        if (!empty($this->currentSidebarItem)) {
             $this->currentSidebarItem->isActive();
         }
 
@@ -239,11 +230,32 @@ abstract class AbstractRoute extends CoreAbstractRoute
      */
     public function getCurrentSidebarItem()
     {
-        if (is_null($this->currentSidebarItem) && isset($this->sidebar->routes[$this->route_path])) {
-            $this->currentSidebarItem = $this->sidebar->routes[$this->route_path];
+        // If we dont have a sidebar item, try to get it
+        if (empty($this->currentSidebarItem)) {
+            $this->autoSetCurrentSidebar();
         }
 
         return $this->currentSidebarItem;
+    }
+
+    public function autoSetCurrentSidebar()
+    {
+        // If the current sidebar item is set, lets just return
+        if (!empty($this->currentSidebarItem)) {
+            return;
+        }
+
+        // This is something that is set when using the auto-sidebar generation
+        if (isset($this->sidebar->routes[$this->route_path])) {
+            $this->currentSidebarItem = $this->sidebar->routes[$this->route_path];
+        }
+
+        // If the item was added manually, we need to get it from the sidebar object
+        $this->currentSidebarItem = $this->sidebar->getSidebar()->getItemByUrl($this->url($this->route_path));
+
+        if (!is_null($this->currentSidebarItem)) {
+            $this->currentSidebarItem->isActive();
+        }
     }
 
     public function getSidebarItems()

@@ -214,6 +214,16 @@ abstract class ListItem
     {
         return $this->url;
     }
+
+    /**
+     * Checks to see if the item's url matches the passed url
+     *
+     * @return bool
+     */
+    public function urlMatches($url)
+    {
+        return ((string) $this->getUrl() === (string) $url);
+    }
 }
 
 // EOF

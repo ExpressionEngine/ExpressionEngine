@@ -176,15 +176,15 @@ class FolderList
     }
 
     /**
-     * Gets an item in the list from the text
+     * Gets an item in the list from the url
      *
-     * @param string $url The text of the item to search for
-     * @return BasicItem The searched for item
+     * @param string $url The url of the item to search for
+     * @return FolderItem The searched for item
      */
     public function getItemByUrl($url)
     {
         foreach ($this->items as &$item) {
-            if ((string) $item->getUrl() === $url) {
+            if (method_exists($item, 'urlMatches') && $item->urlMatches($url)) {
                 return $item;
             }
         }

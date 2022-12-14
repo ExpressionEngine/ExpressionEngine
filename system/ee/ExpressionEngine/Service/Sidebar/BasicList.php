@@ -46,8 +46,9 @@ class BasicList
      */
     public function getItemByUrl($url)
     {
+        // Loop through items in the list, and
         foreach ($this->items as &$item) {
-            if ((string) $item->getUrl() === $url) {
+            if (method_exists($item, 'urlMatches') && $item->urlMatches($url)) {
                 return $item;
             }
         }

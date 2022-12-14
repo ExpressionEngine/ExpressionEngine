@@ -178,6 +178,45 @@ class Sidebar extends AbstractSidebar
     {
         return $this->items;
     }
+
+    public function getItemByUrl($url)
+    {
+        $matchedItem = null;
+
+        // Loop through the items and search for
+        foreach ($this->getItems() as $item) {
+            // If the sidebar item implement urlMatches, lets check if it matches
+            if (method_exists($item, 'urlMatches') && $item->urlMatches($url)) {
+                $matchedItem = $item;
+            }
+
+            // If this is a header, search through the sub-items for the selected one
+            if ($item instanceof Header) {
+                $foundItem = $item->getItemByUrl($url);
+                if (!is_null($foundItem)) {
+                    $matchedItem = $foundItem;
+                }
+            }
+        }
+
+        // If there is a list
+        if (!empty($this->getList())) {
+            $foundItem = $this->getList()->getItemByUrl($url);
+            if (!is_null($foundItem)) {
+                $matchedItem = $foundItem;
+            }
+        }
+
+        // If there is a list
+        if (!empty($this->getList())) {
+            $foundItem = $this->getList()->getItemByUrl($url);
+            if (!is_null($foundItem)) {
+                $matchedItem = $foundItem;
+            }
+        }
+
+        return  $matchedItem;
+    }
 }
 
 // EOF

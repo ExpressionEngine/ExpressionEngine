@@ -205,6 +205,20 @@ class Header
     {
         return $this->list;
     }
+
+    public function getItemByUrl($url)
+    {
+        // If there is a list
+        if (!empty($this->getList())) {
+            $item = $this->getList()->getItemByUrl($url);
+            if (!is_null($item)) {
+                return $item;
+            }
+        }
+
+        // Item not found
+        return null;
+    }
 }
 
 // EOF
