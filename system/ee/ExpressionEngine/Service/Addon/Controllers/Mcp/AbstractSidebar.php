@@ -170,13 +170,19 @@ abstract class AbstractSidebar
 
     protected function getProperty($class, $property)
     {
-        $ref = $this->getRouteClass($class);
+        $refClass = $this->getRouteClass($class);
 
-        if (! $ref->hasProperty($property)) {
+        // The class doesnt have the property, so we return null
+        if (! $refClass->hasProperty($property)) {
             return null;
         }
 
-        return $ref->getProperty($property)->getValue(new $class());
+        // Get the property and set it to accessible
+        $property = $refClass->getProperty($property);
+        $property->setAccessible(true);
+
+        // Get the value of the property
+        return $property->getValue(new $class());
     }
 
     protected function getRouteClass($class)
