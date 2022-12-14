@@ -25114,10 +25114,13 @@ body[data-theme="dark"] {
 }
 .app-modal--fullscreen {
   bottom: 0;
+  height: 100%;
   flex-direction: column;
   padding: 0;
   top: 0;
   width: 100%;
+  overflow: auto;
+  position: fixed;
 }
 .app-modal--fullscreen .app-notice--banner {
   flex: 0 1 auto;

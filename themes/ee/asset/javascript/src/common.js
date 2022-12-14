@@ -666,7 +666,10 @@ $(document).ready(function(){
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
+			if ($(this).is('.app-modal--fullscreen'))
+			{
+				$('body').css('overflow','hidden');
+			}else if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
 			{
 				setTimeout(function() {
 					$(document).scrollTop(0);
