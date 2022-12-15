@@ -289,6 +289,7 @@ $(document).ready(function () {
 
 	// Removing a tab
 	tabs.on('click', '.tab-remove', function(e) {
+		e.preventDefault();
 		var tab = $(this).parents('.tab-bar__tab').eq(0);
 		var index = $('.tab-bar .tab-bar__tab').index(tab);
 		var tabContents = sheets.filter('.' + $(tab).attr('rel'));
