@@ -345,7 +345,7 @@ $(document).ready(function () {
 				input.after($('<em></em>').append(input.data('duplicate')));
 				input.parents('fieldset').addClass('invalid');
 			} else {
-				$('.tab-bar__tab[rel="t-'+index+'"]').find('span.tab-name').replaceWith('<span>'+tab_name+'</span>');
+				$('.tab-bar__tab[rel="t-'+index+'"]').find('span.tab-name').replaceWith('<span class="tab-name">'+tab_name+'</span>');
 
 				EE.publish_layout[index]['id'] = tab_id;
 				EE.publish_layout[index]['name'] = tab_name;
