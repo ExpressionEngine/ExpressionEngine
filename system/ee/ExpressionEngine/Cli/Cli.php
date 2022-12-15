@@ -263,7 +263,7 @@ class Cli
 
         $this->output->out(lang($question) . ' ' . $defaultChoice);
 
-        $result = $this->input->in();
+        $result = (string) $this->input->in();
 
         return $result ? addslashes($result) : $default;
     }
@@ -289,7 +289,7 @@ class Cli
         return $argument;
     }
 
-    public function getOptionOrAsk($option, $askText, $default = null, $required = false)
+    public function getOptionOrAsk($option, $askText, $default = '', $required = false)
     {
         // Get option if it was passed
         if ($this->option($option)) {
@@ -297,7 +297,7 @@ class Cli
         }
 
         // Get the answer by asking
-        $answer = $this->ask($askText, $default);
+        $answer = (string) $this->ask($askText, $default);
 
         // If it was a required field and no answer was passed, fail
         if ($required && empty(trim($answer))) {
