@@ -183,9 +183,9 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			appendElem;
 
 			if ($(that.root).parents('.tab-wrap').length) {
-				appendElem == '.tab-wrap';
+				appendElem = '.tab-wrap';
 			} else {
-				appendElem == 'parent';
+				appendElem = 'parent';
 			}
 
 			params = {
