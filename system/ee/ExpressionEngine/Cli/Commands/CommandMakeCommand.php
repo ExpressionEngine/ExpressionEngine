@@ -11,7 +11,6 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Service\Generator\CommandGenerator;
 
 /**
  * Command to clear selected caches
@@ -62,8 +61,8 @@ class CommandMakeCommand extends Cli
         $this->info('command_make_command_lets_build_command');
 
         // Gather all the command information
-        $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_command_ask_command_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_command_ask_addon", null, true);
+        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_command_ask_command_name", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_command_ask_addon");
         $this->data['description'] = $this->getOptionOrAsk('--description', "command_make_command_ask_description");
         $this->data['signature'] = $this->getOptionOrAsk('--signature', "command_make_command_ask_signature", null, true);
 

@@ -70,6 +70,11 @@ class Query extends Utilities
             )
         ]);
 
+        $fontSize = ee()->config->item('codemirror_fontsize');
+        if ($fontSize !== false) {
+            ee()->cp->add_to_head('<style type="text/css">.CodeMirror-scroll {font-size: ' . $fontSize . '}</style>');
+        }
+
         ee()->view->cp_breadcrumbs = array(
             '' => lang('sql_query_form')
         );

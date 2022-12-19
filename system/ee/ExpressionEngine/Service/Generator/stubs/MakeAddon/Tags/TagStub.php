@@ -1,6 +1,6 @@
 <?php
 
-namespace {{namespace}}\Module\Tags;
+namespace {{namespace}}\Tags;
 
 use ExpressionEngine\Service\Addon\Controllers\Tag\AbstractRoute;
 

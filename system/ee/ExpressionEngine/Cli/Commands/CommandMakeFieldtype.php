@@ -13,42 +13,37 @@ namespace ExpressionEngine\Cli\Commands;
 use ExpressionEngine\Cli\Cli;
 
 /**
- * Command to clear selected caches
+ * Command to make a fieldtype
  */
-class CommandMakeModel extends Cli
+class CommandMakeFieldtype extends Cli
 {
     /**
      * name of command
      * @var string
      */
-    public $name = 'Model Generator';
+    public $name = 'Fieldtype Generator';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'make:model';
+    public $signature = 'make:fieldtype';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php make:model MyAwesomeModel --addon=my_existing_addon';
+    public $usage = 'php eecli.php make:fieldtype MyNewFieldtype --addon=my_existing_addon';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        'addon,a:' => 'command_make_model_option_addon',
+        'addon,a:'        => 'command_make_fieldtype_option_addon',
     ];
 
     protected $data = [];
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * Run the command
@@ -56,22 +51,22 @@ class CommandMakeModel extends Cli
      */
     public function handle()
     {
-        $this->info('command_make_model_lets_build_model');
+        $this->info('command_make_fieldtype_lets_build_fieldtype');
 
-        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_model_ask_model_name");
-        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_model_ask_addon");
+        // Gather all the fieldtype information
+        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_fieldtype_ask_fieldtype_name", null, false);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_fieldtype_ask_addon");
 
-        $this->info('command_make_model_lets_build');
+        $this->info('command_make_fieldtype_building_fieldtype');
 
         try {
-            // Build the model
-            $service = ee('ModelGenerator', $this->data);
-
+            // Build the fieldtype
+            $service = ee('FieldtypeGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
 
-        $this->info('command_make_model_created_successfully');
+        $this->info('command_make_fieldtype_created_successfully');
     }
 }

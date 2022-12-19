@@ -12,10 +12,12 @@ namespace ExpressionEngine\Service\Generator;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Library\Filesystem\FilesystemException;
+use ExpressionEngine\Library\String\Str;
 
 class CommandGenerator
 {
     protected $filesystem;
+    protected $str;
     protected $name;
     protected $className;
     protected $signature;
@@ -25,11 +27,14 @@ class CommandGenerator
     protected $addonPath;
     protected $stubPath;
 
-    public function __construct(Filesystem $filesystem, array $data)
+    public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
-        $studlyName = $this->studly($data['name']);
+        // Set FS and String library
+        $this->filesystem = $filesystem;
+        $this->str = $str;
 
-        $this->filesystem  = $filesystem;
+        $studlyName = $this->str->studly($data['name']);
+
         $this->name = $data['name'];
         $this->addon = $data['addon'];
         $this->addonPath = PATH_THIRD . $this->addon;
@@ -114,7 +119,6 @@ class CommandGenerator
             $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$commandString$5$6$7", $addonSetupFile);
             $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
         } else { // The add-on setup does not have the commands array
-
             $pattern = '/(,)([^,]+)$/';
             $addonSetupFile = preg_replace($pattern, ",\n    $commandStub $2", $addonSetupFile);
             $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
@@ -142,17 +146,5 @@ class CommandGenerator
         if (!$this->filesystem->exists($this->commandsPath . $path . $name)) {
             $this->filesystem->write($this->commandsPath . $path . $name, $contents);
         }
-    }
-
-    public function studly($word)
-    {
-        $word = mb_convert_case($word, MB_CASE_TITLE);
-
-        return  str_replace(['-', '_', ' ', '.'], '', $word);
-    }
-
-    public function string_contains($textToSearch, $word)
-    {
-        return (strpos($textToSearch, $word) !== false);
     }
 }

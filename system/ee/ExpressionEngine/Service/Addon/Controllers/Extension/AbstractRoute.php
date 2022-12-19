@@ -14,5 +14,4 @@ use ExpressionEngine\Service\Addon\Controllers\AbstractRoute as CoreAbstractRout
 
 abstract class AbstractRoute extends CoreAbstractRoute
 {
-
 }
