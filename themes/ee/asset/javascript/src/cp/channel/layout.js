@@ -410,10 +410,23 @@ $(document).ready(function () {
 
 	$('.layout-item__title input').on('blur',  function() {
 		var value = $(this).val().trim();
-		console.log(EE.publish_layout);
+		var old_text = $(this).parents('.layout-item__title').find('.title').text();
+		var open_tab_index = 0;
+
+		$('div.tab').each(function(index){
+			if ($(this).hasClass('tab-open')) {
+				open_tab_index = index;
+			}
+		});
+
 		if ( !value.length ) {
 			$(this).hide().siblings('.title').show();
 		} else {
+			$.each(EE.publish_layout[open_tab_index].fields, function(i, el) {
+				if (el.title != undefined && el.title === old_text) {
+					EE.publish_layout[open_tab_index].fields[i]['title'] = value;
+				}
+			});
 			$(this).hide().siblings('.title').text(value).show();
 		}
 	}).hide();
