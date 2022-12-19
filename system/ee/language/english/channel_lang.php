@@ -140,6 +140,8 @@ $lang = array(
 
     'member_group' => 'Member group',
 
+    'rename_tab' => 'Rename tab',
+
     'roles_desc' => 'Choose the member role(s) to apply this layout to.',
 
     'new_layout' => 'New Layout',
@@ -163,6 +165,8 @@ $lang = array(
     'tab_name_desc' => 'Short name for this tab.',
 
     'tab_name_required' => 'Please choose a name for your tab.',
+
+    'tab_new_name' => 'Tab New Name',
 
     /* Channel Create/Edit */
     'category_groups_not_found' => 'No <b>category groups</b> found',
