@@ -55,6 +55,11 @@
     &:last-child {
       margin-left: 2px;
     }
+
+    &.title {
+    	margin: 0;
+    	cursor: pointer;
+    }
   }
 }
 

@@ -337,4 +337,24 @@ $(document).ready(function () {
 	} else {
 		$('body').append(debug);
 	}
+
+	// rename field title
+
+	$('body').on('click', '.layout-item__title .title', function() {
+		var $this = $(this);
+		$this.hide().siblings("input").show().focus().select();
+	}).each( function() {
+		var $this = $(this);
+		$this.text($this.siblings("input").val());
+	});
+
+	$('.layout-item__title input').on('blur',  function() {
+		var value = $(this).val().trim();
+		console.log(EE.publish_layout);
+		if ( !value.length ) {
+			$(this).hide().siblings('.title').show();
+		} else {
+			$(this).hide().siblings('.title').text(value).show();
+		}
+	}).hide();
 });
