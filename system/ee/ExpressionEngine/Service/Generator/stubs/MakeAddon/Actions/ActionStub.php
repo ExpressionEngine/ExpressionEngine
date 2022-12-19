@@ -1,6 +1,6 @@
 <?php
 
-namespace {{namespace}}\Module\Actions;
+namespace {{namespace}}\Actions;
 
 use ExpressionEngine\Service\Addon\Controllers\Action\AbstractRoute;
 

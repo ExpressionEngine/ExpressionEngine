@@ -13,7 +13,7 @@ namespace ExpressionEngine\Service\Generator;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Library\String\Str;
 
-class TagGenerator
+class ExtensionGenerator
 {
     public $name;
     public $addon;
@@ -30,43 +30,33 @@ class TagGenerator
         $this->str = $str;
 
         // Set required data for generator to use
-        $this->TagName = $this->str->studly($data['name']);
-        $this->tag_name = $this->str->snakecase($data['name']);
         $this->addon = $this->str->snakecase($data['addon']);
 
         // Set up addon path, generator path, and stub path
         $this->init();
-
-        $addonSetupArray = require $this->addonPath . 'addon.setup.php';
-        $this->namespace = $addonSetupArray['namespace'];
     }
 
     private function init()
     {
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
         $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
-        $this->tagsPath = SYSPATH . 'user/addons/' . $this->addon . '/';
 
         // Make sure the addon exists
         if (! ee('Addon')->get($this->addon)) {
             throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
-        } elseif (! file_exists($this->addonPath . 'mod.' . $this->addon . '.php')) {
-            throw new \Exception(lang('command_make_tag_error_addon_must_have_module'), 1);
         }
 
         // Get stub path
-        $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/Module/';
+        $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/Extension/';
     }
 
     public function build()
     {
-        $tagStub = $this->filesystem->read($this->stub('Tags/TagStub.php'));
-        $tagStub = $this->write('slug', $this->addon, $tagStub);
-        $tagStub = $this->write('namespace', ucfirst($this->namespace), $tagStub);
-        $tagStub = $this->write('TagName', $this->TagName, $tagStub);
-        $tagStub = $this->write('tag_name', $this->tag_name, $tagStub);
+        $extStub = $this->filesystem->read($this->stub('ext.slug.php'));
+        $extStub = $this->write('slug_uc', ucfirst($this->addon), $extStub);
+        $extStub = $this->write('slug', $this->addon, $extStub);
 
-        $this->putFile('Module/Tags/' . $this->TagName . '.php', $tagStub);
+        $this->putFile('ext.' . $this->addon . '.php', $extStub);
     }
 
     private function stub($file)

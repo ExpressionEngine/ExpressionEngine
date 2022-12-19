@@ -15,40 +15,35 @@ use ExpressionEngine\Cli\Cli;
 /**
  * Command to clear selected caches
  */
-class CommandMakeModel extends Cli
+class CommandMakeCpRoute extends Cli
 {
     /**
      * name of command
      * @var string
      */
-    public $name = 'Model Generator';
+    public $name = 'Control Panel Route Generator';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'make:model';
+    public $signature = 'make:cp-route';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php make:model MyAwesomeModel --addon=my_existing_addon';
+    public $usage = 'php eecli.php make:cp-route MyNewRoute --addon=my_existing_addon';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        'addon,a:' => 'command_make_model_option_addon',
+        'addon,a:'        => 'command_make_cp_route_option_addon',
     ];
 
     protected $data = [];
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * Run the command
@@ -56,22 +51,22 @@ class CommandMakeModel extends Cli
      */
     public function handle()
     {
-        $this->info('command_make_model_lets_build_model');
+        $this->info('command_make_cp_route_lets_build_mcp_route');
 
-        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_model_ask_model_name");
-        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_model_ask_addon");
+        // Gather all the mcp information
+        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_cp_route_ask_route_name", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_cp_route_ask_addon");
 
-        $this->info('command_make_model_lets_build');
+        $this->info('command_make_cp_route_building_mcp_route');
 
         try {
-            // Build the model
-            $service = ee('ModelGenerator', $this->data);
-
+            // Build the mcp
+            $service = ee('CpRouteGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
 
-        $this->info('command_make_model_created_successfully');
+        $this->info('command_make_cp_route_created_successfully');
     }
 }

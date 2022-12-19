@@ -30,7 +30,7 @@
 				<?php
                 $icon = '';
                 if (strpos($tab->id, 'custom_') !== false) {
-                    $icon = '<i class="tab-remove">';
+                    $icon = '<i class="tab-edit"></i><i class="tab-remove">';
                 } else {
                     if ($tab->isVisible()) {
                         $icon = '<i class="tab-on">';
@@ -39,7 +39,7 @@
                     }
                 }
                 ?>
-				<button type="button" class="tab-bar__tab js-tab-button <?php if ($index == 0): ?>active<?php endif; ?>" rel="t-<?=$index?>"><?=lang($tab->title)?> <?php if ($tab->title != 'publish'): ?><?=$icon?></i><?php endif; ?></button>
+				<button type="button" class="tab-bar__tab js-tab-button <?php if ($index == 0): ?>active<?php endif; ?>" rel="t-<?=$index?>"><span class="tab-name"><?=lang($tab->title)?></span> <?php if ($tab->title != 'publish'): ?><?=$icon?></i><?php endif; ?></button>
 			<?php endforeach; ?>
 			</div>
 
@@ -127,6 +127,39 @@
 						</div>
           </div>
 					</form>
+	</div>
+</div>
+<?php ee('CP/Modal')->endModal(); ?>
+
+<?php ee('CP/Modal')->startModal('rename-tab'); ?>
+<div class="modal-wrap modal-rename-tab hidden">
+	<div class="modal modal--no-padding dialog">
+
+		<div class="dialog__header">
+			<h2 class="dialog__title"><?=lang('rename_tab')?></h2>
+			<div class="dialog__close js-modal-close"><i class="fal fa-times"></i></div>
+		</div>
+
+		<div class="dialog__body">
+			<p class="current-tab-id hidden" data-current_id data-old_name></p>
+			<form class="settings">
+				<fieldset>
+					<div class="field-instruct">
+						<label><?=lang('tab_new_name')?></label>
+						<em><?=lang('tab_name_desc')?></em>
+					</div>
+					<div class="field-control">
+						<input type="text" name="tab_name" data-illegal="<?=lang('illegal_tab_name')?>" data-duplicate="<?=lang('duplicate_tab_name')?>">
+					</div>
+				</fieldset>
+			</form>
+		</div>
+
+		<div class="dialog__actions dialog__actions--with-bg">
+			<div class="dialog__buttons">
+				<button class="button button--primary"><?=lang('rename_tab')?></button>
+			</div>
+		</div>
 	</div>
 </div>
 <?php ee('CP/Modal')->endModal(); ?>

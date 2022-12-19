@@ -25,7 +25,7 @@ class Module extends Controller
      */
     protected function isActRequest($method)
     {
-        return substr($method, -6) == 'action' && ee()->input->get_post('ACT');
+        return (bool) ee()->input->get_post('ACT');
     }
 
     /**
@@ -35,6 +35,7 @@ class Module extends Controller
     protected function routeAction($method)
     {
         $object = $this->buildObject($method, true);
+
         return $this->route($object);
     }
 
@@ -46,6 +47,7 @@ class Module extends Controller
     protected function routeTag($method)
     {
         $object = $this->buildObject($method);
+
         return $this->route($object);
     }
 
@@ -57,7 +59,6 @@ class Module extends Controller
     protected function route($object)
     {
         if (class_exists($object)) {
-
             $controller = new $object();
             if ($controller instanceof ActionRoute) {
                 return $controller->process();
@@ -77,16 +78,27 @@ class Module extends Controller
      * @return string
      * @throws ControllerException
      */
-    protected function buildObject($method, $action = false)
+    protected function buildObject($method, $action = false, $useModuleFolder = true)
     {
-        $object = '\\' . $this->getRouteNamespace() . '\\Module\\';
-        if ($action) {
-            $object .= 'Actions\\';
-        } else {
-            $object .= 'Tags\\';
+        $object = '\\' . $this->getRouteNamespace();
+
+        // If we're using the old module folder method
+        if ($useModuleFolder) {
+            $object .= '\\Module';
         }
 
+        if ($action) {
+            $object .= '\\Actions\\';
+        } else {
+            $object .= '\\Tags\\';
+        }
         $object .= Str::studly($method);
+
+        // If we cant find the old location in the modules fodler, try the new location
+        // without the modules folder. This is done in this order to the error message shows the new way
+        if (! class_exists($object) && $useModuleFolder) {
+            return $this->buildObject($method, $action, false);
+        }
 
         return $object;
     }

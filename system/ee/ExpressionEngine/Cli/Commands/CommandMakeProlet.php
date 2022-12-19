@@ -64,8 +64,8 @@ class CommandMakeProlet extends Cli
         $this->info('command_make_prolet_lets_build_prolet');
 
         // Gather alll the prolet information
-        $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_prolet_ask_prolet_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_prolet_ask_addon", null, true);
+        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_prolet_ask_prolet_name", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_prolet_ask_addon");
         $this->data['description'] = $this->getOptionOrAsk('--description', "command_make_prolet_ask_description");
 
         // Add flag for generating a default icon file

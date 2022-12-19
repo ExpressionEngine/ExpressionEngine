@@ -34,6 +34,7 @@ class Controller
     public function setRouteNamespace($namespace)
     {
         $this->route_namespace = $namespace;
+
         return $this;
     }
 
@@ -63,6 +64,7 @@ class Controller
     public function setAddonName($addon_name)
     {
         $this->addon_name = $addon_name;
+
         return $this;
     }
 

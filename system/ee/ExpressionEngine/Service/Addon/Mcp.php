@@ -37,7 +37,11 @@ class Mcp extends Controller
         if (class_exists($object)) {
             $controller = new $object();
             if ($controller instanceof Controllers\Mcp\AbstractRoute) {
-                return $controller->setAddonName($this->getAddonName())->process($this->id);
+                return $controller
+                    ->setAddonName($this->getAddonName())
+                    ->setRouteNamespace($this->getRouteNamespace())
+                    ->processSidebar()
+                    ->process($this->id);
             }
         }
 
@@ -87,9 +91,14 @@ class Mcp extends Controller
      * @return string
      * @throws ControllerException
      */
-    protected function buildObject($domain)
+    protected function buildObject($domain, $useMcpClass = true)
     {
-        $object = '\\' . $this->getRouteNamespace() . '\\Mcp\\' . Str::studly($domain);
+        // This is to support the old way (Mcp/ folder) and the new supported way (ControlPanel/ folder)
+        if ($useMcpClass) {
+            $object = '\\' . $this->getRouteNamespace() . '\\Mcp\\' . Str::studly($domain);
+        } else {
+            $object = '\\' . $this->getRouteNamespace() . '\\ControlPanel\\Routes\\' . Str::studly($domain);
+        }
 
         if ($this->action) {
             $stub = '\\' . Str::studly($this->action);
@@ -97,8 +106,13 @@ class Mcp extends Controller
                 $object = $object . $stub;
             } else {
                 $this->id = $this->action;
-                $this->action = null;
             }
+        }
+
+        // If we cant find the old location in the Mcp folder, try the new location in the ControlPanel folder.
+        // This is done in this order so the error message shows the new way
+        if (! class_exists($object) && $useMcpClass) {
+            return $this->buildObject($domain, false);
         }
 
         return $object;

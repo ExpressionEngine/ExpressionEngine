@@ -75,6 +75,26 @@ class ExtensionHookGenerator
         $extensionHookStub = $this->write('hook_methods', $hookData['params'], $extensionHookStub);
 
         $this->putFile('Extensions/' . $this->ExtensionHookName . '.php', $extensionHookStub);
+
+        // Generate Ext file if necessary
+        $this->generateExtension();
+
+        $this->makeMigration();
+    }
+
+    private function generateExtension()
+    {
+        $addon = ee('Addon')->get($this->addon);
+
+        //  Only do this if there is no extension
+        if ($addon->hasExtension()) {
+            return;
+        }
+
+        $data = ['addon' => $this->addon];
+
+        $service = ee('ExtensionGenerator', $data);
+        $service->build();
     }
 
     private function stub($file)
@@ -98,5 +118,20 @@ class ExtensionHookGenerator
         if (!$this->filesystem->exists($this->addonPath . $path . $name)) {
             $this->filesystem->write($this->addonPath . $path . $name, $contents);
         }
+    }
+
+    private function makeMigration()
+    {
+        $migration_name = 'CreateExtHook' . $this->ExtensionHookName . 'ForAddon' . $this->str->studly($this->addon);
+
+        $data = [
+            'classname' => $migration_name,
+            'ext_method' => $this->name,
+            'ext_hook' => $this->name,
+            'addon' => $this->addon,
+        ];
+
+        $migration = ee('Migration')->generateMigration($migration_name, $this->addon);
+        ee('Migration', $migration)->writeMigrationFileFromTemplate('CreateExtensionHook', $data);
     }
 }
