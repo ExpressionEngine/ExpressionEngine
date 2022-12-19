@@ -31,6 +31,7 @@ class EE_Template
     public $tag_cache_status = '';          // Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
     public $cache_timestamp = '';
     public $template_type = '';         // Type of template (webpage, rss)
+    public $template_engine = '';         // Engine for rendering Template
     public $embed_type = '';            // Type of template for embedded template
     public $template_hits = 0;
     public $php_parse_location = 'output';  // Where in the chain the PHP gets parsed
@@ -2649,6 +2650,7 @@ class EE_Template
         // Set template edit date
         $this->template_edit_date = $row['edit_date'];
         $this->protect_javascript = ($row['protect_javascript'] == 'y') ? true : false;
+        $this->template_engine = $row['template_engine'] ?: null;
 
         // Set template type for our page headers
         if ($this->template_type == '') {
@@ -2733,7 +2735,7 @@ class EE_Template
 
             $basepath = PATH_TMPL . ee()->config->item('site_short_name') . '/'
                 . $row['group_name'] . '.group/' . $row['template_name']
-                . ee()->api_template_structure->file_extensions($row['template_type']);
+                . ee()->api_template_structure->file_extensions($row['template_type'], $row['template_engine']);
 
             if (file_exists($basepath)) {
                 $row['template_data'] = file_get_contents($basepath);
@@ -2847,12 +2849,13 @@ class EE_Template
 
         // Note- we should add the extension before checking.
 
-        foreach (ee()->api_template_structure->file_extensions as $type => $temp_ext) {
+        foreach (ee()->api_template_structure->all_file_extensions() as $temp_ext => $ext_info) {
             if (file_exists($basepath . '/' . $template . $temp_ext)) {
                 // found it with an extension
                 $filename = $template . $temp_ext;
                 $ext = $temp_ext;
-                $template_type = $type;
+                $template_type = $ext_info['type'];
+                $template_engine = $ext_info['engine'];
 
                 break;
             }
@@ -2901,6 +2904,7 @@ class EE_Template
             'group_id' => $group_id,
             'template_name' => $template,
             'template_type' => $template_type,
+            'template_engine' => $template_engine,
             'template_data' => file_get_contents($basepath . '/' . $filename),
             'edit_date' => ee()->localize->now,
             'last_author_id' => '1',    // assume a super admin
@@ -4374,14 +4378,16 @@ class EE_Template
                         continue;
                     }
 
-                    $ext = strtolower(ltrim(strrchr($template, '.'), '.'));
-                    if (!in_array('.' . $ext, ee()->api_template_structure->file_extensions)) {
+                    $info = ee()->api_template_structure->get_template_file_info($template);
+
+                    if (!$info) {
                         continue;
                     }
 
-                    $ext_length = strlen($ext) + 1;
-                    $template_name = substr($template, 0, -$ext_length);
-                    $template_type = array_search('.' . $ext, ee()->api_template_structure->file_extensions);
+                    $ext = $info['extension'];
+                    $template_name = $info['name'];
+                    $template_type = $info['type'];
+                    $template_engine = $info['engine'];
 
                     if (in_array($template_name, $existing[$group])) {
                         continue;
@@ -4399,6 +4405,7 @@ class EE_Template
                         'group_id' => $group_id,
                         'template_name' => $template_name,
                         'template_type' => $template_type,
+                        'template_engine' => $template_engine,
                         'template_data' => file_get_contents($basepath . '/' . $group . '/' . $template),
                         'edit_date' => ee()->localize->now,
                         'last_author_id' => ee()->session->userdata('member_id'),

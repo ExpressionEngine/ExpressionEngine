@@ -239,7 +239,7 @@ $snow-theme: (
 
   // EE Update Indicators
   ee-update: $brand-primary,
-  ee-update-bg: $gray-blank,
+  ee-update-bg: lighten($brand-primary, 30%),
   ee-update-dev: $brand-warning,
   ee-update-dev-bg: $gray-blank,
   ee-update-vital: $brand-danger,

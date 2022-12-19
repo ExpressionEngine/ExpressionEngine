@@ -9,7 +9,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Updater\Version_7_2_3;
+namespace ExpressionEngine\Updater\Version_7_2_5;
 
 /**
  * Update
@@ -27,7 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
-                'addTemplateEngineToTemplates',
+                'addTitleInstructions',
             ]
         );
 
@@ -38,20 +38,17 @@ class Updater
         return true;
     }
 
-    private function addTemplateEngineToTemplates()
+    private function addTitleInstructions()
     {
-        if (!ee()->db->field_exists('template_engine', 'templates')) {
+        if (! ee()->db->field_exists('title_field_instructions', 'channels')) {
             ee()->smartforge->add_column(
-                'templates',
-                [
-                    'template_engine' => [
-                        'type' => 'varchar',
-                        'constraint' => 24,
-                        'default' => null,
+                'channels',
+                array(
+                    'title_field_instructions' => array(
+                        'type' => 'TEXT',
                         'null' => true
-                    ]
-                ],
-                'template_type'
+                    )
+                )
             );
         }
     }

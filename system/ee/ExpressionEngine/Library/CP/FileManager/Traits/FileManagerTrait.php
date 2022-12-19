@@ -299,7 +299,7 @@ trait FileManagerTrait
             // We only need to eager load contents for destinations that are displaying
             // files in this current page of the listing
             if (! in_array($file->upload_location_id, $destinationsToEagerLoad)) {
-                if ($file->UploadDestination->exists()) {
+                if ($file->UploadDestination->adapter != 'local' && $file->UploadDestination->exists()) {
                     $file->UploadDestination->eagerLoadContents();
                 }
                 $destinationsToEagerLoad[$file->upload_location_id] = $file->upload_location_id;

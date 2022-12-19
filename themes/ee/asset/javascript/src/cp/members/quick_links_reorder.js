@@ -14,6 +14,7 @@
 $(document).ready(function() {
 
 	$('table').eeTableReorder({
+		appendTo: 'table',
 		afterSort: function(row) {
 			$.ajax({
 				url: EE.quick_links.reorder_url,

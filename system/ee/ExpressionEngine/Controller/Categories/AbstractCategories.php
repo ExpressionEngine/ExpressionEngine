@@ -26,6 +26,10 @@ abstract class AbstractCategories extends CP_Controller
 
         ee('CP/Alert')->makeDeprecationNotice()->now();
 
+        if (! ee('Permission')->has('can_admin_channels')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         // Allow AJAX requests for category editing
         if (AJAX_REQUEST && in_array(
             ee()->router->method,

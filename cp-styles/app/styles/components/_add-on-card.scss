@@ -138,6 +138,58 @@
 	}
 }
 
+.add-on-card__table {
+  white-space: nowrap;
+
+  table {
+    margin: 6px 0 -6px 0;
+    border: none;
+    background: none;
+
+    td {
+      color: var(--ee-button-secondary-color);
+      padding: 0;
+
+      .toolbar-wrap {
+        .toolbar {
+          display: flex;
+          flex-wrap: wrap;
+
+          a {
+            text-transform: capitalize !important;
+            color: var(--ee-button-secondary-color) !important;
+            background: none !important;
+            font-weight: 700;
+
+            &:before { display: none;}
+
+            &.no {
+              color: var(--ee-error) !important;
+              padding-left: 20px;
+              position: relative;
+              margin-right: 20px;
+              font-weight: 400;
+
+              &:before {
+                position: absolute;
+                top: 2px;
+                left: 0;
+                width: 20px;
+                height: 20px;
+                display: inline-block;
+                flex-shrink: 0;
+                content: "\f06a";
+                font-weight: 400;;
+                font-family: 'Font Awesome 6 Pro';
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 .add-on-card.first-party .first-party-svg {
   color: color(brand-primary);
   max-width: 50px;

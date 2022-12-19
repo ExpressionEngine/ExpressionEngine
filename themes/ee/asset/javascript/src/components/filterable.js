@@ -33,9 +33,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 function makeFilterableComponent(WrappedComponent) {
   var _temp;
 
-  return _temp =
-  /*#__PURE__*/
-  function (_React$Component) {
+  return _temp = /*#__PURE__*/function (_React$Component) {
     _inherits(_temp, _React$Component);
 
     function _temp(props) {
@@ -107,8 +105,9 @@ function makeFilterableComponent(WrappedComponent) {
       _this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filterUrl;
       _this.ajaxTimer = null;
       _this.ajaxRequest = null; // We need this function only for checkbox that have selected elements and there are more than tooMany
+      // excluding categories on the Entry page
 
-      if (props.tooMany && props.multi && _this.props.selected.length) {
+      if (props.tooMany && props.multi && _this.props.selected.length && !props.name.startsWith("categories[")) {
         _this.moveSelectableToTop();
       }
 

@@ -924,6 +924,7 @@ class EE_Schema
 			group_id int(6) unsigned NOT NULL,
 			template_name varchar(50) NOT NULL,
 			template_type varchar(16) NOT NULL default 'webpage',
+            template_engine varchar(24) DEFAULT NULL,
 			template_data mediumtext NULL,
 			template_notes text NULL,
 			edit_date int(10) NOT NULL DEFAULT 0,
