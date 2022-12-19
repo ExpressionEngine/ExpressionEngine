@@ -68,6 +68,12 @@ class CommandMakeMigration extends Cli
     public $templateName = 'GenericMigration';
 
     /**
+     * Template variables
+     * @var array
+     */
+    public $templateVariables = [];
+
+    /**
      * Table name
      * @var string
      */
@@ -132,6 +138,9 @@ class CommandMakeMigration extends Cli
             $this->askTablename();
         }
 
+        // Set tablename
+        $this->templateVariables['table'] = $this->tableName;
+
         // Generates an instance of a migration model using a timestamped, processed filename
         $this->migration = ee('Migration')->generateMigration($this->migration_name, $this->migration_location);
 
@@ -143,7 +152,7 @@ class CommandMakeMigration extends Cli
         $this->info(lang('command_make_migration_table_file_location') . $this->migration->getFilepath());
         $this->info(lang('command_make_migration_table_template_name') . $this->templateName);
 
-        ee('Migration', $this->migration)->writeMigrationFileFromTemplate($this->templateName, $this->tableName);
+        ee('Migration', $this->migration)->writeMigrationFileFromTemplate($this->templateName, $this->templateVariables);
 
         $this->info('<<bold>>' . lang('command_make_migration_successfully_wrote_file'));
     }

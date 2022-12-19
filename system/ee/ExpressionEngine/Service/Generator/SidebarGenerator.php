@@ -13,7 +13,7 @@ namespace ExpressionEngine\Service\Generator;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Library\String\Str;
 
-class ProletGenerator
+class SidebarGenerator
 {
     public $name;
     public $addon;
@@ -25,17 +25,19 @@ class ProletGenerator
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
-        // Set FS and String library
+        // Set FS && string libraries
         $this->filesystem = $filesystem;
         $this->str = $str;
 
         // Set required data for generator to use
-        $this->name = $data['name'];
         $this->addon = $data['addon'];
-        $this->generateIcon = $data['generate-icon'];
 
         // Set up addon path, generator path, and stub path
         $this->init();
+
+        // Get namespace from addon setup file
+        $addonSetupArray = require $this->addonPath . 'addon.setup.php';
+        $this->namespace = $addonSetupArray['namespace'];
     }
 
     private function init()
@@ -43,46 +45,21 @@ class ProletGenerator
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
         $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
 
-        // This will copy the default icon into our addon, if the add-on doesnt already have an icon
-        if ($this->generateIcon && !$this->addonHasIcon()) {
-            $defaultIcon = PATH_THEMES . 'asset/img/default-addon-icon.svg';
-
-            $this->filesystem->copy($defaultIcon, $this->addonPath . 'icon.svg');
-        }
-
         // Make sure the addon exists
         if (! ee('Addon')->get($this->addon)) {
             throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
-        } elseif (! file_exists($this->addonPath . 'mod.' . $this->addon . '.php')) {
-            throw new \Exception(lang('command_make_prolet_error_addon_must_have_module'), 1);
-        } elseif (! $this->addonHasIcon()) {
-            throw new \Exception(lang('command_make_prolet_error_addon_must_have_icon'), 1);
         }
 
         // Get stub path
-        $this->stubPath = $this->generatorPath . '/stubs/';
+        $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/Mcp/';
     }
 
     public function build()
     {
-        $proletStub = $this->filesystem->read($this->stub('prolet.php'));
-        $proletStub = $this->write('addon', ucfirst($this->addon), $proletStub);
-        $proletStub = $this->write('name', $this->name, $proletStub);
-
-        $this->putFile('pro.' . $this->addon . '.php', $proletStub);
-
-        if (ee('Addon')->get($this->addon)->isInstalled()) {
-            // Update prolets in EE
-            $addon = ee('pro:Addon')->get($this->addon);
-            $addon->updateProlets();
-        }
-    }
-
-    private function addonHasIcon()
-    {
-        $addon = ee('Addon')->get($this->addon);
-
-        return ! (stripos($addon->getIconUrl(), 'default-addon-icon.svg') !== false);
+        // Create add-on control panel sidebar
+        $sidebarStub = $this->filesystem->read($this->stub('Sidebar.php'));
+        $sidebarStub = $this->write('namespace', $this->namespace, $sidebarStub);
+        $this->putFile('ControlPanel/Sidebar.php', $sidebarStub);
     }
 
     private function stub($file)

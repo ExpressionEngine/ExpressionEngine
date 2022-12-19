@@ -12,6 +12,9 @@ namespace ExpressionEngine\Service\Addon\Controllers\Mcp;
 
 use ExpressionEngine\Service\Addon\Controllers\AbstractRoute as CoreAbstractRoute;
 use ExpressionEngine\Service\Addon\Exceptions\Controllers\Mcp\RouteException;
+use ExpressionEngine\Service\Sidebar\Header;
+use ExpressionEngine\Service\Sidebar\BasicItem;
+use ExpressionEngine\Service\Sidebar\BasicList;
 
 abstract class AbstractRoute extends CoreAbstractRoute
 {
@@ -49,20 +52,27 @@ abstract class AbstractRoute extends CoreAbstractRoute
     protected $base_url = '';
 
     /**
-     * @var bool
+     * @var ExpressionEngine\Service\Sidebar\BasicItem
      */
-    protected $active_sidebar = false;
+    protected $currentSidebarItem = null;
+
+    // Available sidebar properties to set
+    protected $sidebar_title = null;
+    protected $sidebar_icon = null;
+    protected $sidebar_is_folder = false;
+    protected $sidebar_is_list = false;
+    protected $exclude_from_sidebar = false;
+    protected $sidebar_divider_before = false;
+    protected $sidebar_divider_after = false;
+    protected $sidebar_priority = 0;
 
     /**
-     * @var array
+     * @var Sidebar
      */
-    protected $sidebar_data = [];
+    protected $sidebar;
 
     public function __construct()
     {
-        if ($this->sidebar_data) {
-            $this->generateSidebar();
-        }
     }
 
     /**
@@ -85,6 +95,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     public function setHeading($heading)
     {
         $this->heading = $heading;
+
         return $this;
     }
 
@@ -97,14 +108,37 @@ abstract class AbstractRoute extends CoreAbstractRoute
     }
 
     /**
-     * @param string $view
+     * @param string $body HTML body or name of view
      * @param array $variables
      * @return $this
      */
-    public function setBody($view, array $variables = [])
+    public function setBody($body, array $variables = [])
     {
+        // If $variables were passed, then we can assume they are setting a view
+        if (!empty($variables)) {
+            return $this->setView($body, $variables);
+        }
+
+        // If it wasnt a view, we just assume it's the html body
+        $this->body = $body;
+
+        return $this;
+    }
+
+    /**
+     * @param string $view
+     * @return $this
+     */
+    public function setView($view, array $variables = [])
+    {
+        // If they didnt pass a view with a ':', lets assume its an addon view
+        if (! ee('Str')->string_contains($view, ':')) {
+            $view = $this->addon_name . ':' . $view;
+        }
+
         $variables = $this->prepareBodyVars($variables);
-        $this->body = ee('View')->make($this->addon_name . ':' . $view)->render($variables);
+        $this->body = ee('View')->make($view)->render($variables);
+
         return $this;
     }
 
@@ -136,6 +170,7 @@ abstract class AbstractRoute extends CoreAbstractRoute
     protected function addBreadcrumb($url, $text)
     {
         $this->breadcrumbs[$this->url($url, true)] = lang($text);
+
         return $this;
     }
 
@@ -146,6 +181,32 @@ abstract class AbstractRoute extends CoreAbstractRoute
     protected function setBreadcrumbs(array $breadcrumbs = [])
     {
         $this->breadcrumbs = $breadcrumbs;
+
+        return $this;
+    }
+
+    public function processSidebar()
+    {
+        $sidebarClass = $this->getRouteNamespace() . '\ControlPanel\Sidebar';
+
+        // Check to see if the sidebar class exists. If not, return this
+        if (! class_exists($sidebarClass)) {
+            return $this;
+        }
+
+        // Process the sidebar
+        $this->sidebar = new $sidebarClass($this->getAddonName(), $this->getRouteNamespace());
+        $this->sidebar->process();
+
+        // If there are no current sidebar items set, this will set one
+        // When using automatic, we should already have a current sidebar item
+        $this->autoSetCurrentSidebar();
+
+        // If we found one, set it to active
+        if (!empty($this->currentSidebarItem)) {
+            $this->currentSidebarItem->isActive();
+        }
+
         return $this;
     }
 
@@ -162,6 +223,49 @@ abstract class AbstractRoute extends CoreAbstractRoute
         }
 
         return ee('CP/URL')->make($path, $query)->compile();
+    }
+
+    /**
+     * @return mixed Siderbar Items
+     */
+    public function getCurrentSidebarItem()
+    {
+        // If we dont have a sidebar item, try to get it
+        if (empty($this->currentSidebarItem)) {
+            $this->autoSetCurrentSidebar();
+        }
+
+        return $this->currentSidebarItem;
+    }
+
+    public function autoSetCurrentSidebar()
+    {
+        // If the current sidebar item is set, lets just return
+        if (!empty($this->currentSidebarItem)) {
+            return;
+        }
+
+        // This is something that is set when using the auto-sidebar generation
+        if (isset($this->sidebar->routes[$this->route_path])) {
+            $this->currentSidebarItem = $this->sidebar->routes[$this->route_path];
+        }
+
+        // If the item was added manually, we need to get it from the sidebar object
+        $this->currentSidebarItem = $this->sidebar->getSidebar()->getItemByUrl($this->url($this->route_path));
+
+        if (!is_null($this->currentSidebarItem)) {
+            $this->currentSidebarItem->isActive();
+        }
+    }
+
+    public function getSidebarItems()
+    {
+        return $this->sidebar->routes;
+    }
+
+    public function getSidebar()
+    {
+        return $this->sidebar->getSidebar();
     }
 
     /**
@@ -200,39 +304,5 @@ abstract class AbstractRoute extends CoreAbstractRoute
         }
 
         return $this->base_url;
-    }
-
-    /**
-     * @throws RouteException
-     */
-    protected function generateSidebar()
-    {
-        $this->sidebar = ee('CP/Sidebar')->make();
-        $active = false;
-        foreach ($this->sidebar_data as $title => $sidebar) {
-            if ($sidebar['path'] != '') {
-
-                $subsHeader = $this->sidebar
-                    ->addHeader(lang($title), $this->url($sidebar['path']));
-            } else {
-
-                $subsHeader = $this->sidebar
-                    ->addHeader(lang($title));
-            }
-            if (isset($sidebar['list']) && is_array($sidebar['list'])) {
-                $subsHeaderList = $subsHeader->addBasicList();
-                foreach ($sidebar['list'] as $title => $url) {
-                    if ($this->active_sidebar == $url && !$active) {
-                        $subsHeaderList->addItem(lang($title), $this->url($url))->isActive();
-                        $active = true;
-                    } else if ($url == $this->getRoutePath() && !$active) {
-                        $subsHeaderList->addItem(lang($title), $this->url($url))->isActive();
-                        $active = true;
-                    } else {
-                        $subsHeaderList->addItem(lang($title), $this->url($url));
-                    }
-                }
-            }
-        }
     }
 }

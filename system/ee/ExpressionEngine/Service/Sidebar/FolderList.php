@@ -174,6 +174,34 @@ class FolderList
                 'can_reorder' => $this->can_reorder
             ));
     }
+
+    /**
+     * Gets an item in the list from the url
+     *
+     * @param string $url The url of the item to search for
+     * @return FolderItem The searched for item
+     */
+    public function getItemByUrl($url)
+    {
+        foreach ($this->items as &$item) {
+            if (method_exists($item, 'urlMatches') && $item->urlMatches($url)) {
+                return $item;
+            }
+        }
+
+        // Item not found
+        return null;
+    }
+
+    /**
+     * Gets all items
+     *
+     * @return array of items in the basic list
+     */
+    public function getItems()
+    {
+        return $this->items;
+    }
 }
 
 // EOF

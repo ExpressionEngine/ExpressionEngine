@@ -8,15 +8,13 @@ use ExpressionEngine\Service\Addon\Installer;
 
 class {{slug_uc}}_upd extends Installer
 {
-    public $has_cp_backend = '{{has_cp_backend}}';
-    public $has_publish_fields = '{{has_publish_fields}}';
-
-{{actions}}
+    public $has_cp_backend = 'n';
+    public $has_publish_fields = 'n';
 
     public function install()
     {
         parent::install();
-{{conditional_hooks}}
+
         return true;
     }
 
@@ -31,7 +29,7 @@ class {{slug_uc}}_upd extends Installer
     public function uninstall()
     {
         parent::uninstall();
-{{conditional_hooks_uninstall}}
+
         return true;
     }
 }
