@@ -839,13 +839,18 @@ class Member_settings extends Member
             ee()->channel_form_lib->datepicker = get_bool_from_string(ee()->TMPL->fetch_param('datepicker', 'y'));
             ee()->channel_form_lib->compile_js();
 
-            $return = ee()->functions->form_declaration(array(
-                'id' => 'cform',
-                'hidden_fields' => array(
-                    'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
-                    'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
-                )
-            )) . $template . '</form>';
+            if (ee()->TMPL->fetch_param('form_name', '') != "") {
+                $data['name'] = ee()->TMPL->fetch_param('form_name');
+            }
+
+            $data['id'] = 'cform'
+            $data['class'] = ee()->TMPL->form_class;
+
+            $data['hidden_fields'] = array(
+                'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
+                'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile'));
+
+            $return = ee()->functions->form_declaration($data) . $template . '</form>';
             //make head appear by default
             if (preg_match('/' . LD . 'form_assets' . RD . '/', $return)) {
                 $return = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $return);
