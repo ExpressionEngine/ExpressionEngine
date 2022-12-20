@@ -843,7 +843,7 @@ class Member_settings extends Member
                 $data['name'] = ee()->TMPL->fetch_param('form_name');
             }
 
-            $data['id'] = 'cform'
+            $data['id'] = 'cform';
             $data['class'] = ee()->TMPL->form_class;
 
             $data['hidden_fields'] = array(
