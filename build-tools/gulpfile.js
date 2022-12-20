@@ -343,6 +343,7 @@ gulp.task('_delete_files', function (cb) {
 		'.languagebabel',
 		'.mailmap',
 		'.php_cs.dist',
+		'.php-cs-fixer.dist.php',
 		'brunch-config.js',
 		'AUTHORS.md',
 		'build.json',
