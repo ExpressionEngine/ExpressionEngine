@@ -256,6 +256,8 @@ class Portage extends Utilities
             }
         }
 
+        ee()->cache->delete('/portage-import');
+
         ee()->view->cp_breadcrumbs = array(
             '' => lang('portage')
         );
@@ -265,9 +267,9 @@ class Portage extends Utilities
     }
 
     /**
-     * Import a channel set
+     * Perform sanity checks and prepare portage import via AJAX calls 
      */
-    public function doImport()
+    public function prepareImport()
     {
         ee()->lang->load('form_validation');
         $path = ee('Request')->get('path');
@@ -298,57 +300,229 @@ class Portage extends Utilities
         $result = $portage->validate();
 
         if ($result->isValid()) {
-            $portage->save();
-            $portage->cleanUpSourceFiles();
+            // load initial page with list of components
 
-            $alert = ee('CP/Alert')->makeInline('shared-form')
-                ->asSuccess()
-                ->withTitle(lang('portage_imported'))
-                ->addToBody(lang('portage_imported_desc'))
-                ->defer();
+            ee()->cp->add_js_script('file', 'cp/utilities/portage');
 
-            ee()->functions->redirect(ee('CP/URL', 'utilities/portage/import'));
+            ee()->javascript->set_global([
+                'portageImport' => [
+                    'endpoint' => ee('CP/URL')->make('utilities/portage/processPrepareImport', ['path' => ee('Request')->get('path')])->compile(),
+                    'components' => $portage->getComponents(),
+                    'desc' => lang('update_file_usage_desc'),
+                    'base_url' => ee('CP/URL')->make('utilities/portage/prepareImport', ['path' => ee('Request')->get('path')])->compile(),
+                    'ajax_fail_banner' => ee('CP/Alert')->makeInline('portage-fail')
+                        ->asIssue()
+                        ->withTitle(lang('update_file_usage_fail'))
+                        ->addToBody('%body%')
+                        ->render()
+                ]
+            ]);
+
+            $vars = [
+                'base_url' => ee('CP/URL')->make('utilities/portage/processPrepareImport', ['path' => ee('Request')->get('path')])->compile(),
+                'hide_top_buttons' => true,
+                'save_btn_text' => 'update',
+                'save_btn_text_working' => 'updating',
+                'sections' => [
+                    [
+                        [
+                            'title' => 'update_file_usage',
+                            'desc' => lang('update_file_usage_desc'),
+                            'fields' => [
+                                'progress' => [
+                                    'type' => 'html',
+                                    'content' => ee()->load->view('_shared/progress_bar', array('percent' => 0), true)
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+            ];
+
+            ee('CP/Alert')->makeInline('update_file_usage_explained')
+                ->asTip()
+                ->cannotClose()
+                ->addToBody(sprintf(
+                    lang('update_file_usage_explained_desc'),
+                    DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
+                    ee('CP/URL')->make('utilities/db-backup')->compile(),
+                    ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
+                )
+                ->now();
+
+            ee()->view->extra_alerts = ['update_file_usage_explained'];
+
+            ee()->view->cp_page_title = lang('update_file_usage');
+
+            ee()->view->cp_breadcrumbs = array(
+                '' => lang('update_file_usage')
+            );
+
+            ee()->cp->render('settings/form', $vars);
+
         }
 
-        if ($result->isRecoverable()) {
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asIssue()
-                ->withTitle(lang('portage_duplicates_error'))
-                ->addToBody(lang('portage_duplicates_error_desc'))
-                ->now();
-        } else {
-            $portage->cleanUpSourceFiles();
-            $errors = $result->getErrors();
-            $allModelErrors = $result->getModelErrors();
-            foreach ($allModelErrors as $uuid => $model_errors) {
-                foreach ($model_errors as $model_error) {
-                    list($model, $field, $rule) = $model_error;
-                    $title_field = $result->getTitleFieldFor($model);
-                    $title = !empty($title_field) ? $model->$title_field : $model->getId();
-                    foreach ($rule as $error) {
-                        list($key, $params) = $error->getLanguageData();
-                        $errors[] = '<b>' . array_reverse(explode(':', $model->getName()))[0] . ':</b> <code>' . $title . '</code>: <code>' . lang($field) . '</code> &mdash; ' . vsprintf(lang($key), (array) $params);
-                    }
-                }
-            }
+    }
 
+    /**
+     * Import from saved model snapshots
+     */
+    public function doImport()
+    {
+        $path = ee('Request')->get('path');
+        $path = ee('Encrypt')->decode(
+            $path,
+            ee()->config->item('session_crypt_key')
+        );
+
+        // no path or unacceptable path? abort!
+        if (! $path || strpos($path, '..') !== false || ! file_exists($path)) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
                 ->withTitle(lang('portage_import_error'))
-                ->addToBody($errors)
+                ->addToBody(lang('portage_path_not_valid'))
                 ->defer();
 
             ee()->functions->redirect(ee('CP/URL', 'utilities/portage/import'));
         }
 
-        $vars = $this->createAliasForm($portage, $result);
+        // load up the set
+        $portage = ee('PortageImport')->dir($path);
+        // we might have been redirected back here, so cache might exist
+        $cache = $portage->loadCache();
+
+        // posted values? grab 'em
+        if (isset($_POST)) {
+            $portage->setAliases($_POST);
+        }
+
+        $vars = [
+            'base_url' => ee('CP/URL')->make('utilities/portage/processDoImport', ['path' => ee('Request')->get('path')])->compile(),
+            'hide_top_buttons' => true,
+            'save_btn_text' => 'update',
+            'save_btn_text_working' => 'updating',
+            'sections' => [
+                [
+                    [
+                        'title' => 'update_file_usage',
+                        'desc' => lang('update_file_usage_desc'),
+                        'fields' => [
+                            'progress' => [
+                                'type' => 'html',
+                                'content' => ee()->load->view('_shared/progress_bar', array('percent' => 0), true)
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+        ];
+
+        ee('CP/Alert')->makeInline('update_file_usage_explained')
+            ->asTip()
+            ->cannotClose()
+            ->addToBody(sprintf(
+                lang('update_file_usage_explained_desc'),
+                DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
+                ee('CP/URL')->make('utilities/db-backup')->compile(),
+                ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode')
+            )
+            ->now();
+
+        ee()->view->extra_alerts = ['update_file_usage_explained'];
+
+        ee()->view->cp_page_title = lang('update_file_usage');
 
         ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('channels')->compile() => lang('channels')
+            '' => lang('update_file_usage')
         );
 
-        ee()->view->cp_page_title = lang('portage_import');
+        // check result for errors
+        if (! empty($cache)) {
+            $result = $portage->getValidationResult();
+            // reset validation result, as we'll be starting over
+            $portage->resetValidationResult();
+        } else {
+            $result = $portage->validate();
+        }
+        if (empty($portage->getComponents())) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asIssue()
+                ->withTitle(lang('portage_import_error'))
+                ->addToBody(lang('no_valid_portage'))
+                ->defer();
+
+            ee()->functions->redirect(ee('CP/URL', 'utilities/portage/import'));
+        }
+
+        if (! $result->isValid()) {
+            // if recoverable errors, show form
+            if ($result->isRecoverable()) {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('portage_duplicates_error'))
+                    ->addToBody(lang('portage_duplicates_error_desc'))
+                    ->now();
+
+                $vars = $this->createAliasForm($portage, $result);
+                return ee()->cp->render('settings/form', $vars);
+                //ee()->functions->redirect(ee('CP/URL')->make('utilities/portage/processPrepareImport', ['path' => ee('Request')->get('path')]));
+            } else {
+                // if errors are not recoverable, show message
+                $portage->cleanUpSourceFiles();
+                $errors = $result->getErrors();
+                $allModelErrors = $result->getModelErrors();
+                foreach ($allModelErrors as $uuid => $model_errors) {
+                    foreach ($model_errors as $model_error) {
+                        list($model, $field, $rule) = $model_error;
+                        $title_field = $result->getTitleFieldFor($model);
+                        $title = !empty($title_field) ? $model->$title_field : $model->getId();
+                        foreach ($rule as $error) {
+                            list($key, $params) = $error->getLanguageData();
+                            $errors[] = '<b>' . array_reverse(explode(':', $model->getName()))[0] . ':</b> <code>' . $title . '</code>: <code>' . lang($field) . '</code> &mdash; ' . vsprintf(lang($key), (array) $params);
+                        }
+                    }
+                }
+    
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('portage_import_error'))
+                    ->addToBody($errors)
+                    ->defer();
+    
+                ee()->functions->redirect(ee('CP/URL', 'utilities/portage/import'));
+            }
+        }
+
+        // no errors, log the import start
+        $portageImport = ee('Model')->make('PortageImport');
+        $portageImport->import_date = ee()->localize->now;
+        $portageImport->member_id = ee()->session->userdata('member_id');
+        $portageImport->version = $portage->getVersion();
+        $portageImport->uniqid = $portage->getUniqid();
+        $portageImport->components = $portage->getComponents();
+        $portageImport->save();
+
+        $portage->setImportId($portageImport->getId());
+
+        // otherwise, start ajax saving
+        ee()->cp->add_js_script('file', 'cp/utilities/portage');
+
+        ee()->javascript->set_global([
+            'portageImport' => [
+                'endpoint' => ee('CP/URL')->make('utilities/portage/processDoImport', ['path' => ee('Request')->get('path')])->compile(),
+                'components' => $portage->getComponents(),
+                'desc' => lang('update_file_usage_desc'),
+                'base_url' => ee('CP/URL')->make('utilities/portage/doImport', ['path' => ee('Request')->get('path')])->compile(),
+                'ajax_fail_banner' => ee('CP/Alert')->makeInline('portage-fail')
+                    ->asIssue()
+                    ->withTitle(lang('update_file_usage_fail'))
+                    ->addToBody('%body%')
+                    ->render()
+            ]
+        ]);
+
         ee()->cp->render('settings/form', $vars);
+
     }
 
     private function createAliasForm($portage, $result)
@@ -492,6 +666,87 @@ class Portage extends Utilities
         );
 
         return $vars;
+    }
+
+    /**
+     * Process import
+     *
+     * @access	public
+     * @return	void
+     */
+    public function processDoImport()
+    {
+        // Only accept POST requests
+        if (is_null(ee('Request')->post('progress')) || empty(ee('Request')->post('components'))) {
+            show_404();
+        }
+
+        $steps = [
+            'load',
+            'save',
+            'relate'
+        ];
+
+        $path = ee('Request')->get('path');
+        $path = ee('Encrypt')->decode(
+            $path,
+            ee()->config->item('session_crypt_key')
+        );
+        $portage = ee('PortageImport')->dir($path);
+
+        $components = explode(',', ee('Request')->post('components'));
+
+        $progress = (int) ee('Request')->post('progress');
+
+        // clean the runtime files when we start
+        if ($progress == 0) {
+            if (file_exists($portage->getPath() . 'runtime')) {
+                ee('Filesystem')->delete($portage->getPath() . 'runtime');
+            }
+        }
+
+        $step = ee('Request')->post('step');
+        $stepIndex = array_search($step, $steps);
+        $stepProgress = $progress - count($components) * $stepIndex;
+        $currentComponent = $components[$stepProgress];
+
+        if (isset($components[$stepProgress])) {
+            $fn = $step . 'Component';
+            $portage->{$fn}($components[$stepProgress]);
+        }
+
+        $progress++;
+
+        // should we go to next step?
+        if (($stepProgress +1) >= count($components)) {
+            // are there any errors to display?
+            if (! $portage->getValidationResult()->isValid()) {
+                ee()->output->send_ajax_response([
+                    'status' => 'error',
+                    'redirect' => true
+                ]);
+            }
+            $stepIndex++;
+        }
+
+        if ($stepIndex >= count($steps)) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asSuccess()
+                ->withTitle(lang('update_file_usage_success'))
+                ->addToBody(lang('update_file_usage_success_desc'))
+                ->defer();
+
+            ee()->output->send_ajax_response(['status' => 'finished']);
+        }
+
+        $step = $steps[$stepIndex];
+
+        ee()->output->send_ajax_response([
+            'status' => 'in_progress',
+            'progress' => $progress,
+            'component' => $currentComponent,
+            'step' => $step
+        ]);
     }
 }
 // END CLASS

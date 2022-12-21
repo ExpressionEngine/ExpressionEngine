@@ -47,6 +47,9 @@ class PortageExport
      */
     public function getPortableModels()
     {
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('channel_fields');
+        
         $models = ee('App')->getModels();
         $portableModels = [];
         $excludedModels = ['ee:MemberGroup'];

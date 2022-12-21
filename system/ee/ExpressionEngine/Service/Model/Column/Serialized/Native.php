@@ -24,6 +24,9 @@ class Native extends SerializedType
      */
     public static function unserialize($db_data)
     {
+        if (is_array($db_data)) {
+            return $db_data;
+        }
         return !is_null($db_data) && strlen($db_data) ? unserialize($db_data) : array();
     }
 

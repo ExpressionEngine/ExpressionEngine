@@ -24,6 +24,9 @@ class Base64Native extends SerializedType
      */
     public static function unserialize($db_data)
     {
+        if (is_array($db_data)) {
+            return $db_data;
+        }
         return (!is_null($db_data) && strlen($db_data)) ? unserialize(base64_decode($db_data)) : array();
     }
 
