@@ -138,6 +138,7 @@ class EE_Core
                 $provider->registerCookiesSettings();
             }
             $provider->registerFilesystemAdapters();
+            $provider->registerVariableModifiers();
         }
         if (REQ != 'CLI') {
             ee('CookieRegistry')->loadCookiesSettings();

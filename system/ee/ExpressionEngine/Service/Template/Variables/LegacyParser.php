@@ -419,7 +419,7 @@ class LegacyParser
                         foreach ($var_props['all_modifiers'] as $modifier => $params) {
                             // is the modifier valid?
                             $method = 'replace_' . $modifier;
-                            if (! method_exists($this, $method)) {
+                            if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($modifier)) {
                                 continue;
                             }
 
@@ -429,7 +429,7 @@ class LegacyParser
                         // fallback to just last modifier if 'all_modifiers' is not set
                         // which should never happen, but...
                         $method = 'replace_' . $var_props['modifier'];
-                        if (! method_exists($this, $method)) {
+                        if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($var_props['modifier'])) {
                             continue;
                         }
 

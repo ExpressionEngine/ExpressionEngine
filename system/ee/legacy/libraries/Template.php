@@ -3746,7 +3746,7 @@ class EE_Template
 
             // is the modifier valid?
             $method = 'replace_' . $var['modifier'];
-            if (!method_exists($this, $method)) {
+            if (!method_exists($this, $method) && ! ee('Variables/Modifiers')->has($var['modifier'])) {
                 continue;
             }
 
@@ -3772,7 +3772,7 @@ class EE_Template
             if (isset($var['all_modifiers']) && !empty($var['all_modifiers'])) {
                 foreach ($var['all_modifiers'] as $modifier => $params) {
                     $method = 'replace_' . $modifier;
-                    if (!method_exists($this, $method)) {
+                    if (!method_exists($this, $method) && ! ee('Variables/Modifiers')->has($modifier)) {
                         continue;
                     }
                     $content = ($method == 'replace_raw_content') ? $raw : $content;

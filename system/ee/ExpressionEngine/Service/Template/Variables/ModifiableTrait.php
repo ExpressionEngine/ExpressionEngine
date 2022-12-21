@@ -21,6 +21,48 @@ namespace ExpressionEngine\Service\Template\Variables;
 trait ModifiableTrait
 {
     /**
+     * Call add-on provided modifier
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return string
+     */
+    public function __call($name, $arguments)
+    {
+        if (count($arguments) == 0) {
+            throw new \InvalidArgumentException('No data provided to modifier');
+        }
+        $data = $arguments[0];
+        $params = array();
+        if (isset($arguments[1])) {
+            $params = $arguments[1];
+        }
+        $tagdata = false;
+        if (isset($arguments[2])) {
+            $tagdata = $arguments[2];
+        }
+
+        // the name should start 'replace_' because that's how modifiers get called
+        if (strpos($name, 'replace_') !== 0) {
+            return $data;
+        }
+        // get the clean modifier name now
+        $name = substr($name, 8);
+
+        // if modifier not registered, just return data
+        $modifiers = ee('Variables/Modifiers')->all();
+        if (! array_key_exists($name, $modifiers)) {
+            return $data;
+        }
+
+        // run the processor
+        $class = $modifiers[$name];
+        $object = new $class;
+
+        return (string) $object->modify($data, $params, $tagdata);
+    }
+    
+    /**
      * :attr_safe modifier
      */
     public function replace_attr_safe($data, $params = array(), $tagdata = false)

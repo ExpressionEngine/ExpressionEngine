@@ -393,7 +393,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
                     foreach ($field['all_modifiers'] as $modifier => $params) {
                         $method = 'replace_' . $modifier;
 
-                        if (! method_exists($this, $method)) {
+                        if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($modifier)) {
                             continue;
                         }
 
@@ -411,7 +411,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
                 } else {
                     $method = 'replace_' . $field['modifier'];
 
-                    if (! method_exists($this, $method)) {
+                    if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($field['modifier'])) {
                         return $tagdata;
                     }
 
