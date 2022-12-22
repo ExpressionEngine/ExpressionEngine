@@ -95,7 +95,7 @@ class LegacyParser
                 }
             }
         } else {
-            $props['params'] = [];
+            $props['params'] = $params = [];
         }
 
         $all_modifiers = explode(':', $props['full_modifier']);
@@ -112,7 +112,6 @@ class LegacyParser
                 }
                 $props['all_modifiers'][$modifier] = $modifier_params;
             }
-            
         } else {
             $props['all_modifiers'] = [
                 $props['modifier'] => $props['params']
