@@ -658,7 +658,13 @@ class EE_Output
             $content .= "<li>" . $errors . "</li>\n";
         } else {
             foreach ($errors as $val) {
-                $content .= "<li>" . $val . "</li>\n";
+                if (! is_array($val)) {
+                    $content .= "<li>" . $val . "</li>\n";
+                } else {
+                    foreach ($val as $child_val) {
+                        $content .= "<li>" . $child_val . "</li>\n";
+                    }
+                }
             }
         }
 
