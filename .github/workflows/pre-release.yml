@@ -94,7 +94,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
-          fromTag: ${{ steps.prev_release_tag.outputs.tag }}
+          #fromTag: ${{ steps.prev_release_tag.outputs.tag }}
+          fromTag: 7.2.4
           toTag: ${{ steps.build_json.outputs.BUILD_VERSION }}
           configuration: build-tools/changelog.config.json
 
