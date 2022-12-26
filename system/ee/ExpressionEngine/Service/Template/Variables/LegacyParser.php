@@ -399,7 +399,7 @@ class LegacyParser
     {
         $conditionals = [];
 
-        foreach ($vars as $name => $content) {
+        foreach ($vars as $name => $value) {
             if (strpos($str, $name . ':') !== false) {
                 $prefix = '';
 
@@ -411,6 +411,7 @@ class LegacyParser
                 $extracted_vars = $this->extractVariables($str, $name);
 
                 foreach ($extracted_vars['var_single'] as $modified_var) {
+                    $content = $value;
                     $var_props = $this->parseVariableProperties($modified_var, $prefix);
 
                     // in order to support multiple modifiers, we'll do this in a loop
