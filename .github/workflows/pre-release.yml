@@ -95,8 +95,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
           #fromTag: ${{ steps.prev_release_tag.outputs.tag }}
-          fromTag: 7.2.4
-          toTag: ${{ steps.build_json.outputs.BUILD_VERSION }}
+          fromTag: "7.2.4"
+          toTag: "${{ steps.build_json.outputs.BUILD_VERSION }}"
           configuration: build-tools/changelog.config.json
 
       - uses: ncipollo/release-action@v1.12.0
@@ -134,7 +134,7 @@ jobs:
       steps:
 
             - name: Checkout repo
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
               with:
                 repository: ExpressionEngine/ExpressionEngine
                 path: __repo
@@ -200,7 +200,7 @@ jobs:
               run: php -S localhost:8888 &
 
             - name: Run Cypress Tests
-              uses: cypress-io/github-action@v2
+              uses: cypress-io/github-action@v5
               with:
                 browser: chrome
                 headless: true

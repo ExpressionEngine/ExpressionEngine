@@ -20,10 +20,10 @@ jobs:
         steps:
 
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Checkout Pro
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
               with:
                 repository: EllisLab/ExpressionEngine-Pro
                 token: ${{ secrets.ORG_ACCESS_TOKEN }}
@@ -83,7 +83,7 @@ jobs:
                 ls -lar tests/cypress/support/templates/pro.group/
 
             - name: Run Cypress Tests
-              uses: cypress-io/github-action@v2
+              uses: cypress-io/github-action@v5
               with:
                 browser: chrome
                 headless: true

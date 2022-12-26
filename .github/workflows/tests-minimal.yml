@@ -180,7 +180,7 @@ jobs:
               id: specs
 
             - name: Run Cypress Tests (without dashboard)
-              uses: cypress-io/github-action@v2
+              uses: cypress-io/github-action@v5
               if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
               with:
                 spec: ${{ steps.specs.outputs.SPECS }}
@@ -197,7 +197,7 @@ jobs:
                 chrome-version: beta
 
             - name: Run Cypress Tests
-              uses: cypress-io/github-action@v2
+              uses: cypress-io/github-action@v5
               if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
               with:
                 browser: chrome
