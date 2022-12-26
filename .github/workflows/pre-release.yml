@@ -15,10 +15,10 @@ jobs:
       version: ${{ steps.build_json.outputs.BUILD_VERSION }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@v3
         with:
             php-version: '7.4'
             extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
@@ -26,7 +26,7 @@ jobs:
             ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '10'
 
@@ -46,7 +46,7 @@ jobs:
         working-directory: build-tools
         run: |
           content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
-          echo "::set-output name=BUILD_VERSION::$content"
+          echo "BUILD_VERSION=$content" >> $GITHUB_OUTPUT
 
       - name: Run build process
         working-directory: build-tools
@@ -58,7 +58,7 @@ jobs:
           gulp app --local --nogit --head --skip-lint --jira-collector --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Archive Build files
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: EE${{ steps.build_json.outputs.BUILD_VERSION }}
           path: build-tools/builds
@@ -88,20 +88,18 @@ jobs:
           repository: ExpressionEngine/ExpressionEngine
           regex: '^\d+\.\d+\.\d+$'
 
-      - name: Fetch list of tags
-        run: |
-          git fetch --tags
-
       - name: Build Changelog
         id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v1
+        uses: mikepenz/release-changelog-builder-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
-          fromTag: ${{ steps.prev_release_tag.outputs.tag }}
+          #fromTag: ${{ steps.prev_release_tag.outputs.tag }}
+          fromTag: 7.2.4
+          toTag: ${{ steps.build_json.outputs.BUILD_VERSION }}
           configuration: build-tools/changelog.config.json
 
-      - uses: ncipollo/release-action@v1.10.0
+      - uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} DP ${{ env.dp_ver }}
@@ -210,14 +208,14 @@ jobs:
                 config-file: updater.cypress.json
 
             - name: Archive screenshots
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               if: failure()
               with:
                 name: cypress-tests-updater
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               if: failure()
               with:
                 name: updater.error.log

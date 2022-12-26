@@ -25,10 +25,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
           - name: Checkout code
-            uses: actions/checkout@v2
+            uses: actions/checkout@v3
 
           - name: Cache repository info
-            uses: actions/cache@v2
+            uses: actions/cache@v3
             with:
               path: .git
               key: cache-ee-git-${{ github.sha }}
@@ -42,7 +42,7 @@ jobs:
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
           - name: Setup node
-            uses: actions/setup-node@v2
+            uses: actions/setup-node@v3
             with:
               node-version: '10'
 
@@ -55,7 +55,7 @@ jobs:
             working-directory: build-tools
             run: |
               content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
-              echo "::set-output name=BUILD_VERSION::$content"
+              echo "BUILD_VERSION=$content" >> $GITHUB_OUTPUT
 
           - name: Run build process 
             working-directory: build-tools

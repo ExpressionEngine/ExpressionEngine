@@ -91,14 +91,14 @@ jobs:
                 config-file: feature.cypress.json
 
             - name: Archive screenshots
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               if: failure()
               with:
                 name: cypress-tests
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               if: failure()
               with:
                 name: error.log
