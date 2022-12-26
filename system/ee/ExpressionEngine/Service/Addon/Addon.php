@@ -111,7 +111,6 @@ class Addon
         }
 
         if ($this->hasPlugin()) {
-
             // Check for an installed plugin
             // @TODO restore the model approach once we have solved the
             // circular dependency between the Add-on service and the
@@ -632,12 +631,12 @@ class Addon
 
     private function hasConsentRequestInstalled($name)
     {
-        return (bool)ee('Model')->get('ConsentRequest')
+        return (bool) ee('Model')->get('ConsentRequest')
             ->filter('consent_name', $name)
             ->count();
     }
 
-    private function makeConsentRequest($name, $values)
+    public function makeConsentRequest($name, $values)
     {
         $request = ee('Model')->make('ConsentRequest');
         $request->user_created = false; // App-generated request
@@ -649,7 +648,7 @@ class Addon
             $version = ee('Model')->make('ConsentRequestVersion');
             $version->request = $values['request'];
             $version->request_format = (isset($values['request_format'])) ? $values['request_format'] : 'none';
-            $version->author_id = ee()->session->userdata('member_id');
+            $version->author_id = REQ != 'CLI' ? ee()->session->userdata('member_id') : 0;
             $version->create_date = ee()->localize->now;
             $request->Versions->add($version);
 
@@ -793,6 +792,7 @@ class Addon
 
         if (!ee()->cache->file->is_writable('/addons-status')) {
             $this->logLicenseError('license_error_file_not_writable');
+
             return false;
         }
 
@@ -801,6 +801,7 @@ class Addon
         // Make sure the cache exists and has the proper integrity to use.
         if (empty($cache) || empty($integrity) || hash('sha256', $cache) !== $integrity) {
             $this->logLicenseError('license_error_file_broken');
+
             return false;
         }
 
@@ -808,6 +809,7 @@ class Addon
 
         if (empty($json) || !$data = json_decode($json, true)) {
             $this->logLicenseError('license_error_file_broken');
+
             return false;
         }
 
@@ -816,6 +818,7 @@ class Addon
 
         if ($sha !== hash('sha256', json_encode($data))) {
             $this->logLicenseError('license_error_file_broken');
+
             return false;
         }
 

@@ -233,7 +233,8 @@
 
 	.tab-remove,
 	.tab-on,
-	.tab-off{
+	.tab-off,
+	.tab-edit{
 		cursor: pointer;
 
 		&:before{
@@ -286,6 +287,18 @@
 		top: 12px;
 
 			@include m-tablet-up {
+				right: 0;
+				top: 3px;
+			}
+	}
+
+	.tab-edit:before {
+		color: color(brand-primary);
+		content: fa-content($fa-var-pencil);
+		right: 10px;
+		top: 13px;
+
+		@include m-tablet-up {
 				right: 0;
 				top: 3px;
 			}

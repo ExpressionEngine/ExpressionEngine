@@ -250,6 +250,11 @@ abstract class AbstractDesign extends CP_Controller
             );
         }
 
+        $fontSize = ee()->config->item('codemirror_fontsize');
+        if ($fontSize !== false) {
+            ee()->cp->add_to_head('<style type="text/css">.CodeMirror-scroll {font-size: ' . $fontSize . '}</style>');
+        }
+
         ee()->cp->add_js_script(
             array(
                 'plugin' => 'ee_codemirror',

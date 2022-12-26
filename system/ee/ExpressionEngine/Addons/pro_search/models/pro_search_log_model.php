@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -53,7 +52,7 @@ class Pro_search_log_model extends Pro_search_model
                 'site_id'      => 'int(4) unsigned NOT NULL',
                 'member_id'    => 'int(10) unsigned NOT NULL',
                 'search_date'  => 'int(10) unsigned NOT NULL',
-                'ip_address'   => 'varchar(16) NOT NULL',
+                'ip_address'   => 'varchar(46) NOT NULL',
                 'keywords'     => 'varchar(150) NOT NULL',
                 'parameters'   => 'TEXT NOT NULL',
                 'num_results'  => 'int(10) unsigned'

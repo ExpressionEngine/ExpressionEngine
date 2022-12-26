@@ -312,6 +312,10 @@ $lang = array(
 
     'zero_upload_directories_found' => 'No <b>upload directories</b> found.',
 
+    'remove_files_from_disk' => 'Remove files from disk?',
+
+    'toggle_on_to_remove_files' => 'Switch the toggle on to physically remove the files',
+
     /* Uploads */
     'add_manipulation' => 'Add New Manipulation',
 

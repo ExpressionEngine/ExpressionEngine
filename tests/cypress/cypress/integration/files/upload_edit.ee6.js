@@ -262,7 +262,7 @@ context('Upload Destination Create/Edit', () => {
     page.get('wrap').should('not.have.text','No manipulations created')
     page.get('grid_add_no_results').should('not.be.visible')
     page.get('grid_add').should('exist').should('be.visible')
-    page.get('grid_rows').should('have.length', 1) // Excludes header
+    page.get('grid_rows').should('have.length', 2)
 
     // Make sure watermarks are available
     const options = ["0", "1"]
@@ -398,7 +398,7 @@ context('Upload Destination Create/Edit', () => {
     page.height_for_row(1).parent().find('em.ee-form-error-message').should('not.exist')
 
     page.get('grid_add').click()
-    page.get('grid_rows').should('have.length', 2) //check without header
+    page.get('grid_rows').should('have.length', 3)
 
     cy.route("POST", "**/files/uploads/**").as("ajax33");
     page.name_for_row(2).trigger('blur')
@@ -698,13 +698,13 @@ context('Upload Destination Create/Edit', () => {
 
     // Test row deletion
     page.delete_for_row(2).click()
-    page.get('grid_rows').should('have.length', 2) // Header and two rows
+    page.get('grid_rows').should('have.length', 3)
 
     page.submit()
     page.get('wrap').contains('Upload directory saved')
     cy.hasNoErrors()
 
-    page.get('grid_rows').should('have.length', 2) // Header and two rows
+    page.get('grid_rows').should('have.length', 3)
 
     page.name_for_row(1).invoke('val').then((text) => {
       expect(text).equal('some_name')

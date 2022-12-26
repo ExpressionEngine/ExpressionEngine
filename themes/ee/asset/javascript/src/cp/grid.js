@@ -117,6 +117,7 @@ $.fn.miniGrid = function(params) {
 Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 	init: function() {
+		this._hideToolbarRowForVerticalLayout();
 		this._bindSortable();
 		this._bindAddButton();
 		this._bindDeleteButton();
@@ -134,6 +135,22 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Allow access to this Grid.Publish object from the DOM element;
 		// this may be a bad idea
 		this.root.data('GridInstance', this)
+	},
+
+	/**
+	 * Hide first td if it has class grid-field__item-fieldset
+	**/
+	_hideToolbarRowForVerticalLayout: function() {
+		var that = this;
+
+		var notEmptyRows = this.rowContainer.children(this.rowSelector).not(this.emptyField);
+		notEmptyRows.each(function(){
+			var gridFieldType = $(this).parents('.grid-field');
+
+			if (gridFieldType.hasClass('vertical-layout')) {
+				$(this).find('.grid-field__item-fieldset').show();
+			}
+		})
 	},
 
 	/**
@@ -163,6 +180,14 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 */
 	_bindSortable: function() {
 		var that = this,
+			appendElem;
+
+			if ($(that.root).parents('.tab-wrap').length) {
+				appendElem = '.tab-wrap';
+			} else {
+				appendElem = 'parent';
+			}
+
 			params = {
 				// Fire 'beforeSort' event on sort start
 				beforeSort: function(row) {
@@ -176,7 +201,8 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 					that._fireEvent('afterSort', row);
 					$(document).trigger('entry:preview');
 				},
-				handle: '.js-grid-reorder-handle'
+				handle: '.js-grid-reorder-handle',
+				appendTo: appendElem,
 			};
 
 		params = $.extend(params, this.sortableParams);
@@ -262,12 +288,16 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		}
 
 		if ($(this.rowContainer).parents('.fluid__item-field').length) {
-			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth()
+			var gridFieldWidth = $(this.rowContainer).innerWidth();
 		} else {
 			var gridFieldWidth = $(this.rowContainer).width();
 		}
 
-		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
+		if ($(this.rowContainer).parents('.field-control').length) {
+			var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
+		} else {
+			var parentFieldControlWidth = gridFieldWidth
+		}
 
 		if(rowCount == 0) {
 			var showAddButton = setInterval(function (){
@@ -277,8 +307,9 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				}
 			}, 50);
 
-			if (parentFieldControlWidth >= gridFieldWidth) {
+			if ( !$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && $(this.rowContainer).parents('.grid-field').hasClass('entry-grid') && (parentFieldControlWidth >= gridFieldWidth)) {
 				$(this.rowContainer).parents('.grid-field').removeClass('overwidth');
+				$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').hide()
 			}
 		}
 	},
@@ -366,14 +397,31 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		}
 
 		if ($(this.rowContainer).parents('.fluid__item-field').length) {
-			var gridFieldWidth = $(this.rowContainer).parents('.fluid__item-field').innerWidth()
+			var gridFieldWidth = $(this.rowContainer).innerWidth()
 		} else {
 			var gridFieldWidth = $(this.rowContainer).width();
 		}
-		var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width()
 
-		if (parentFieldControlWidth < gridFieldWidth) {
+		if ($(this.rowContainer).parents('.field-control').length) {
+			var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
+		} else {
+			var parentFieldControlWidth = gridFieldWidth;
+		}
+
+		if ( !$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && $(this.rowContainer).parents('.grid-field').hasClass('entry-grid') && (parentFieldControlWidth < gridFieldWidth)) {
 			$(this.rowContainer).parents('.grid-field').addClass('overwidth');
+			$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').show()
+		}
+
+		if ($(this.rowContainer).find('tr:not(.hidden) div[data-relationship-react]').length) {
+			$(this.rowContainer).find('tr:not(.hidden) div[data-relationship-react]').each(function(el) {
+				var button = $(this).find('.js-dropdown-toggle').get(0);
+				DropdownController.getDropdownForElement(button);
+			})
+		}
+
+		if ($(this.rowContainer).parents('.grid-field').hasClass('vertical-layout')) {
+			$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').show();
 		}
 
 		return el;
@@ -986,12 +1034,26 @@ $(document).ready(function () {
 	$('body').on('click', '.grid-field .js-toggle-grid-item', function() {
 		$(this).parents('tr').toggleClass('grid__item--collapsed');
 
+		if ($(this).parents('tr').hasClass('grid__item--collapsed')) {
+			$(this).parents('tr').find('td:not(.grid-field__item-fieldset)').each(function() {
+				$(this).hide();
+			});
+		} else {
+			$(this).parents('tr').find('td:not(.grid-field__item-fieldset)').each(function() {
+				$(this).show();
+			});
+		}
+
 		return false;
 	});
 
 	// Hide all grid items
 	$('body').on('click', '.grid-field .js-hide-all-grid-field-items', function() {
 		$(this).parents('tbody').find('tr:not(.hidden)').addClass('grid__item--collapsed');
+
+		$(this).parents('tbody').find('tr:not(.hidden)').find('td:not(.grid-field__item-fieldset)').each(function() {
+			$(this).hide();
+		});
 
 		// Hide the dropdown menu
 		$('.js-dropdown-toggle.dropdown-open').trigger('click');
@@ -1003,6 +1065,10 @@ $(document).ready(function () {
 	$('body').on('click', '.grid-field .js-show-all-grid-field-items', function() {
 		$(this).parents('tbody').find('tr:not(.hidden)').removeClass('grid__item--collapsed');
 
+		$(this).parents('tbody').find('tr:not(.hidden)').find('td:not(.grid-field__item-fieldset)').each(function() {
+			$(this).show();
+		});
+
 		// Hide the dropdown menu
 		$('.js-dropdown-toggle.dropdown-open').trigger('click');
 
@@ -1011,51 +1077,71 @@ $(document).ready(function () {
 });
 
 function checkGrigWidthForResize() {
-	var gridTables = $('.grid-field');
+	var gridTables = $('.grid-field:not(.horizontal-layout)');
 
 	gridTables.each(function(el) {
 
 		if ( $(this).parents('.hidden').length ) return;
 
 		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
-			var tableInnerWidth = $(this).find('.grid-field__table').parents('.fluid__item-field').innerWidth()
+			var tableInnerWidth = $(this).find('.grid-field__table').innerWidth()
 		} else {
 			var tableInnerWidth = $(this).find('.grid-field__table').width();
 		}
 
-		var containerWidth = $(this).parents('.field-control').width();
+		if ($(this).parents('.field-control').length) {
+			var containerWidth = $(this).parents('.field-control').width();
+		} else {
+			var containerWidth = tableInnerWidth;
+		}
 
-		if (containerWidth < tableInnerWidth) {
+		if ($(this).hasClass('entry-grid') && containerWidth < tableInnerWidth) {
 			$(this).addClass('overwidth');
+			$(this).find('.grid-field__item-fieldset').show();
 		}
 	});
 }
 
 function checkGrigWidth() {
-	var gridTables = $('.grid-field');
+	var gridTables = $('.grid-field:not(.horizontal-layout)');
 
 	gridTables.each(function(el) {
-
 		if ( $(this).parents('.hidden').length ) return;
 
 		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
-			var tableInnerWidth = $(this).find('.grid-field__table').parents('.fluid__item-field').innerWidth()
+			var tableInnerWidth = $(this).find('.grid-field__table').innerWidth()
 		} else {
 			var tableInnerWidth = $(this).find('.grid-field__table').width();
 		}
 
-		var containerWidth = $(this).parents('.field-control').width();
-
-		if (containerWidth < tableInnerWidth) {
-			$(this).addClass('overwidth');
+		if ($(this).parents('.field-control').length) {
+			var containerWidth = $(this).parents('.field-control').width();
+		} else {
+			var containerWidth = tableInnerWidth;
 		}
 
-		if (containerWidth >= tableInnerWidth && $(window).width() > 1440) {
+		if ($(this).hasClass('entry-grid') && containerWidth < tableInnerWidth) {
+			$(this).addClass('overwidth');
+			$(this).find('.grid-field__item-fieldset').show();
+		}
+
+		if ($(this).hasClass('entry-grid') && containerWidth >= tableInnerWidth && $(window).width() > 1440) {
 			$(this).removeClass('overwidth');
+			$(this).find('.grid-field__item-fieldset').hide();
 		}
 	});
 }
+
+function addHorizontalClassToFluid() {
+	var grid = $('.grid-field.horizontal-layout');
+
+	if (grid.parents('.fluid__item-field').length) {
+		grid.parents('.fluid__item-field').addClass('horizontal');
+	}
+}
+
 $(window).on('load', function() {
+	addHorizontalClassToFluid();
 	checkGrigWidth();
 });
 

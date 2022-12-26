@@ -150,6 +150,7 @@ class Pro_variables
 
             // Call display output
             $it = $obj->replace_tag($tagdata);
+            ee()->TMPL->set_data($it);
         } else {
             $this->_log("Var {$var} not found -- returning no results");
             $it = ee()->TMPL->no_results();

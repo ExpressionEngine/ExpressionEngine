@@ -790,6 +790,13 @@ class ChannelEntry extends ContentModel
             htmlentities($this->Channel->title_field_label, ENT_QUOTES, 'UTF-8')
         );
 
+        if (! is_null($this->Channel->title_field_instructions) && $this->Channel->title_field_instructions != '') {
+            $this->getCustomField('title')->setItem(
+                'field_instructions',
+                $this->Channel->title_field_instructions
+            );
+        }
+
         $this->usesCustomFields();
 
         $fields = $this->getCustomFields();

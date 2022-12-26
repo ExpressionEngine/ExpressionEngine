@@ -166,7 +166,7 @@ html.color-theme-in-transition *:after {
   --ee-fluid-item-border: #dfe0ef;
   --ee-slider-value-bg: #eaebfd;
   --ee-ee-update: #5D63F1;
-  --ee-ee-update-bg: #FFFFFF;
+  --ee-ee-update-bg: #eaebfd;
   --ee-ee-update-dev: #FFB40B;
   --ee-ee-update-dev-bg: #FFFFFF;
   --ee-ee-update-vital: #FA5252;
@@ -664,7 +664,7 @@ body[data-theme=dark] .inverted-theme {
   --ee-fluid-item-border: #dfe0ef;
   --ee-slider-value-bg: #eaebfd;
   --ee-ee-update: #5D63F1;
-  --ee-ee-update-bg: #FFFFFF;
+  --ee-ee-update-bg: #eaebfd;
   --ee-ee-update-dev: #FFB40B;
   --ee-ee-update-dev-bg: #FFFFFF;
   --ee-ee-update-vital: #FA5252;
@@ -1226,6 +1226,7 @@ button-toolbar span:before,
 .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .tab-off:before,
+.ee-debugger .tab-bar--editable .tab-edit:before,
 .select-popup:not([multiple])::after,
 select:not([multiple])::after,
 .select__button-label::after,
@@ -1251,6 +1252,7 @@ input[type=checkbox]:after,
 .tab-bar--editable .tab-remove:before,
 .tab-bar--editable .tab-on:before,
 .tab-bar--editable .tab-off:before,
+.tab-bar--editable .tab-edit:before,
 .sidebar__link.remove:after,
 .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after,
 .app-modal__dismiss a:before,
@@ -1288,12 +1290,14 @@ tr.missing:hover td:not(.reorder-col):first-child:before,
 .icon--settings, [class^=icon--],
 [class*=" icon--"], .icon-reorder, .layout-item__handle::after, .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
-.ee-debugger .tab-bar--editable .tab-off:before, .select-popup:not([multiple])::after, select:not([multiple])::after, .select__button-label::after, .checklist li:before, .field-closed .sub-arrow:before, .fieldset---closed .sub-arrow:before, .fluid-closed .sub-arrow:before, .sub-arrow:before, .fieldset-invalid > label:after, .fieldset-invalid > .field-instruct label:after, .fieldset-security-caution > .field-instruct label:after, .fieldset-required > .field-instruct label:after, .checkbox--small:after,
+.ee-debugger .tab-bar--editable .tab-off:before,
+.ee-debugger .tab-bar--editable .tab-edit:before, .select-popup:not([multiple])::after, select:not([multiple])::after, .select__button-label::after, .checklist li:before, .field-closed .sub-arrow:before, .fieldset---closed .sub-arrow:before, .fluid-closed .sub-arrow:before, .sub-arrow:before, .fieldset-invalid > label:after, .fieldset-invalid > .field-instruct label:after, .fieldset-security-caution > .field-instruct label:after, .fieldset-required > .field-instruct label:after, .checkbox--small:after,
 input[type=checkbox].checkbox--small:after, .checkbox--large:after,
 input[type=checkbox].checkbox--large:after, .checkbox:after, input[type=checkbox]:after, .widget--support::before, [class^=widget-icon--],
 [class*=" widget-icon--"], .dropdown__link--selected::before, .tab-bar--editable .tab-remove:before,
 .tab-bar--editable .tab-on:before,
-.tab-bar--editable .tab-off:before, .sidebar__link.remove:after, .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .app-modal__dismiss a:before, .m-close:before, .app-notice__dismiss::before, .app-notice__icon::before, .app-notice---loading > .app-notice__tag .app-notice__icon::before,
+.tab-bar--editable .tab-off:before,
+.tab-bar--editable .tab-edit:before, .sidebar__link.remove:after, .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .app-modal__dismiss a:before, .m-close:before, .app-notice__dismiss::before, .app-notice__icon::before, .app-notice---loading > .app-notice__tag .app-notice__icon::before,
 .alert--loading > .app-notice__tag .app-notice__icon::before, .app-notice---success > .app-notice__tag .app-notice__icon::before,
 .alert--success > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .app-notice__icon::before,
 .alert--attention > .app-notice__tag .app-notice__icon::before, .column-sort::after, tr.missing td:not(.reorder-col):first-child:before, tr.missing:hover td:not(.reorder-col):first-child:before {
@@ -1394,14 +1398,18 @@ input[type=checkbox].checkbox--large:after, .checkbox:after, input[type=checkbox
 .dropdown__item a:not(.dropdown__item-button) .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-on:before,
 .dropdown__item a:not(.dropdown__item-button) .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-off:before, .dropdown__item a:not(.dropdown__item-button) .select-popup:not([multiple])::after, .dropdown__item a:not(.dropdown__item-button) select:not([multiple])::after, .dropdown__item a:not(.dropdown__item-button) .select__button-label::after, .dropdown__item a:not(.dropdown__item-button) .checklist li:before, .checklist .dropdown__item a:not(.dropdown__item-button) li:before, .dropdown__item a:not(.dropdown__item-button) .field-closed .sub-arrow:before, .field-closed .dropdown__item a:not(.dropdown__item-button) .sub-arrow:before, .dropdown__item a:not(.dropdown__item-button) .fieldset---closed .sub-arrow:before, .fieldset---closed .dropdown__item a:not(.dropdown__item-button) .sub-arrow:before, .dropdown__item a:not(.dropdown__item-button) .fluid-closed .sub-arrow:before, .fluid-closed .dropdown__item a:not(.dropdown__item-button) .sub-arrow:before, .dropdown__item a:not(.dropdown__item-button) .sub-arrow:before, .dropdown__item a:not(.dropdown__item-button) .fieldset-invalid > label:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .checkbox--small:after,
+.ee-debugger .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-off:before,
+.dropdown__item a:not(.dropdown__item-button) .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-edit:before, .dropdown__item a:not(.dropdown__item-button) .select-popup:not([multiple])::after, .dropdown__item a:not(.dropdown__item-button) select:not([multiple])::after, .dropdown__item a:not(.dropdown__item-button) .select__button-label::after, .dropdown__item a:not(.dropdown__item-button) .checklist li:before, .checklist .dropdown__item a:not(.dropdown__item-button) li:before, .dropdown__item a:not(.dropdown__item-button) .field-closed .sub-arrow:before, .field-closed .dropdown__item a:not(.dropdown__item-button) .sub-arrow:before, .dropdown__item a:not(.dropdown__item-button) .fieldset---closed .sub-arrow:before, .fieldset---closed .dropdown__item a:not(.dropdown__item-button) .sub-arrow:before, .dropdown__item a:not(.dropdown__item-button) .fluid-closed .sub-arrow:before, .fluid-closed .dropdown__item a:not(.dropdown__item-button) .sub-arrow:before, .dropdown__item a:not(.dropdown__item-button) .sub-arrow:before, .dropdown__item a:not(.dropdown__item-button) .fieldset-invalid > label:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .checkbox--small:after,
 .dropdown__item a:not(.dropdown__item-button) input[type=checkbox].checkbox--small:after, .dropdown__item a:not(.dropdown__item-button) .checkbox--large:after,
 .dropdown__item a:not(.dropdown__item-button) input[type=checkbox].checkbox--large:after, .dropdown__item a:not(.dropdown__item-button) .checkbox:after, .dropdown__item a:not(.dropdown__item-button) input[type=checkbox]:after, .dropdown__item a:not(.dropdown__item-button) .widget--support::before, .dropdown__item a:not(.dropdown__item-button) [class^=widget-icon--],
 .dropdown__item a:not(.dropdown__item-button) [class*=" widget-icon--"], .dropdown__item a:not(.dropdown__item-button) tr.missing td:not(.reorder-col):first-child:before, tr.missing .dropdown__item a:not(.dropdown__item-button) td:not(.reorder-col):first-child:before, .dropdown__item a:not(.dropdown__item-button) .column-sort::after, .dropdown__item a:not(.dropdown__item-button) .app-notice__icon::before, .dropdown__item a:not(.dropdown__item-button) .app-notice__dismiss::before, .dropdown__item a:not(.dropdown__item-button) .m-close:before, .dropdown__item a:not(.dropdown__item-button) .app-modal__dismiss a:before, .app-modal__dismiss .dropdown__item a:not(.dropdown__item-button) a:before, .dropdown__item a:not(.dropdown__item-button) .sidebar__link.remove:after, .dropdown__item a:not(.dropdown__item-button) .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .dropdown__item a:not(.dropdown__item-button) a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-remove:before, .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-remove:before,
 .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-on:before,
 .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-on:before,
 .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-off:before,
-.tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-off:before, .dropdown__item a:not(.dropdown__item-button) .dropdown__link--selected::before, .dropdown__link--selected::before, .dropdown__link .fas, .select__dropdown-item .fas, .button__within-dropdown .fas, .dropdown__link .fal, .dropdown__link [class*=fields-grid-tool-]:before, .dropdown__link .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .dropdown__link .tab-remove:before,
+.tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-off:before,
+.dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-edit:before, .dropdown__item a:not(.dropdown__item-button) .dropdown__link--selected::before, .dropdown__link--selected::before, .dropdown__link .fas, .select__dropdown-item .fas, .button__within-dropdown .fas, .dropdown__link .fal, .dropdown__link [class*=fields-grid-tool-]:before, .dropdown__link .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .dropdown__link .tab-remove:before,
 .dropdown__link .tab-wrap .tabs.layout .tab-on:before,
 .tab-wrap .tabs.layout .dropdown__link .tab-on:before,
 .dropdown__link .tab-wrap .tabs.layout .tab-off:before,
@@ -1411,7 +1419,9 @@ input[type=checkbox].checkbox--large:after, .checkbox:after, input[type=checkbox
 .dropdown__link .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .dropdown__link .tab-on:before,
 .dropdown__link .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .dropdown__link .tab-off:before, .dropdown__link .select-popup:not([multiple])::after, .dropdown__link select:not([multiple])::after, .select__dropdown-item .fal, .select__dropdown-item [class*=fields-grid-tool-]:before, .select__dropdown-item .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .select__dropdown-item .tab-remove:before,
+.ee-debugger .tab-bar--editable .dropdown__link .tab-off:before,
+.dropdown__link .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .dropdown__link .tab-edit:before, .dropdown__link .select-popup:not([multiple])::after, .dropdown__link select:not([multiple])::after, .select__dropdown-item .fal, .select__dropdown-item [class*=fields-grid-tool-]:before, .select__dropdown-item .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .select__dropdown-item .tab-remove:before,
 .select__dropdown-item .tab-wrap .tabs.layout .tab-on:before,
 .tab-wrap .tabs.layout .select__dropdown-item .tab-on:before,
 .select__dropdown-item .tab-wrap .tabs.layout .tab-off:before,
@@ -1421,7 +1431,9 @@ input[type=checkbox].checkbox--large:after, .checkbox:after, input[type=checkbox
 .select__dropdown-item .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .select__dropdown-item .tab-on:before,
 .select__dropdown-item .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .select__dropdown-item .tab-off:before, .select__dropdown-item .select-popup:not([multiple])::after, .select__dropdown-item select:not([multiple])::after, .dropdown__link .select__button-label::after, .select__dropdown-item .select__button-label::after, .dropdown__link .checklist li:before, .select__dropdown-item .checklist li:before, .checklist .dropdown__link li:before, .checklist .select__dropdown-item li:before, .dropdown__link .field-closed .sub-arrow:before, .select__dropdown-item .field-closed .sub-arrow:before, .field-closed .dropdown__link .sub-arrow:before, .field-closed .select__dropdown-item .sub-arrow:before, .dropdown__link .fieldset---closed .sub-arrow:before, .select__dropdown-item .fieldset---closed .sub-arrow:before, .fieldset---closed .dropdown__link .sub-arrow:before, .fieldset---closed .select__dropdown-item .sub-arrow:before, .dropdown__link .fluid-closed .sub-arrow:before, .select__dropdown-item .fluid-closed .sub-arrow:before, .fluid-closed .dropdown__link .sub-arrow:before, .fluid-closed .select__dropdown-item .sub-arrow:before, .dropdown__link .sub-arrow:before, .select__dropdown-item .sub-arrow:before, .dropdown__link .fieldset-invalid > label:after, .select__dropdown-item .fieldset-invalid > label:after, .dropdown__link .fieldset-invalid > .field-instruct label:after, .select__dropdown-item .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .dropdown__link label:after, .fieldset-invalid > .field-instruct .select__dropdown-item label:after, .dropdown__link .fieldset-security-caution > .field-instruct label:after, .select__dropdown-item .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .dropdown__link label:after, .fieldset-security-caution > .field-instruct .select__dropdown-item label:after, .dropdown__link .fieldset-required > .field-instruct label:after, .select__dropdown-item .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .dropdown__link label:after, .fieldset-required > .field-instruct .select__dropdown-item label:after, .dropdown__link .checkbox--small:after, .select__dropdown-item .checkbox--small:after,
+.ee-debugger .tab-bar--editable .select__dropdown-item .tab-off:before,
+.select__dropdown-item .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .select__dropdown-item .tab-edit:before, .select__dropdown-item .select-popup:not([multiple])::after, .select__dropdown-item select:not([multiple])::after, .dropdown__link .select__button-label::after, .select__dropdown-item .select__button-label::after, .dropdown__link .checklist li:before, .select__dropdown-item .checklist li:before, .checklist .dropdown__link li:before, .checklist .select__dropdown-item li:before, .dropdown__link .field-closed .sub-arrow:before, .select__dropdown-item .field-closed .sub-arrow:before, .field-closed .dropdown__link .sub-arrow:before, .field-closed .select__dropdown-item .sub-arrow:before, .dropdown__link .fieldset---closed .sub-arrow:before, .select__dropdown-item .fieldset---closed .sub-arrow:before, .fieldset---closed .dropdown__link .sub-arrow:before, .fieldset---closed .select__dropdown-item .sub-arrow:before, .dropdown__link .fluid-closed .sub-arrow:before, .select__dropdown-item .fluid-closed .sub-arrow:before, .fluid-closed .dropdown__link .sub-arrow:before, .fluid-closed .select__dropdown-item .sub-arrow:before, .dropdown__link .sub-arrow:before, .select__dropdown-item .sub-arrow:before, .dropdown__link .fieldset-invalid > label:after, .select__dropdown-item .fieldset-invalid > label:after, .dropdown__link .fieldset-invalid > .field-instruct label:after, .select__dropdown-item .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .dropdown__link label:after, .fieldset-invalid > .field-instruct .select__dropdown-item label:after, .dropdown__link .fieldset-security-caution > .field-instruct label:after, .select__dropdown-item .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .dropdown__link label:after, .fieldset-security-caution > .field-instruct .select__dropdown-item label:after, .dropdown__link .fieldset-required > .field-instruct label:after, .select__dropdown-item .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .dropdown__link label:after, .fieldset-required > .field-instruct .select__dropdown-item label:after, .dropdown__link .checkbox--small:after, .select__dropdown-item .checkbox--small:after,
 .dropdown__link input[type=checkbox].checkbox--small:after,
 .select__dropdown-item input[type=checkbox].checkbox--small:after, .dropdown__link .checkbox--large:after, .select__dropdown-item .checkbox--large:after,
 .dropdown__link input[type=checkbox].checkbox--large:after,
@@ -1437,10 +1449,12 @@ input[type=checkbox].checkbox--large:after, .checkbox:after, input[type=checkbox
 .button__within-dropdown .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .button__within-dropdown .tab-on:before,
 .button__within-dropdown .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .button__within-dropdown .tab-off:before, .button__within-dropdown .select-popup:not([multiple])::after, .button__within-dropdown select:not([multiple])::after, .button__within-dropdown .select__button-label::after, .button__within-dropdown .checklist li:before, .checklist .button__within-dropdown li:before, .button__within-dropdown .field-closed .sub-arrow:before, .field-closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fieldset---closed .sub-arrow:before, .fieldset---closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fluid-closed .sub-arrow:before, .fluid-closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fieldset-invalid > label:after, .button__within-dropdown .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .checkbox--small:after,
+.ee-debugger .tab-bar--editable .button__within-dropdown .tab-off:before,
+.button__within-dropdown .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .button__within-dropdown .tab-edit:before, .button__within-dropdown .select-popup:not([multiple])::after, .button__within-dropdown select:not([multiple])::after, .button__within-dropdown .select__button-label::after, .button__within-dropdown .checklist li:before, .checklist .button__within-dropdown li:before, .button__within-dropdown .field-closed .sub-arrow:before, .field-closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fieldset---closed .sub-arrow:before, .fieldset---closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fluid-closed .sub-arrow:before, .fluid-closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fieldset-invalid > label:after, .button__within-dropdown .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .checkbox--small:after,
 .button__within-dropdown input[type=checkbox].checkbox--small:after, .button__within-dropdown .checkbox--large:after,
 .button__within-dropdown input[type=checkbox].checkbox--large:after, .button__within-dropdown .checkbox:after, .button__within-dropdown input[type=checkbox]:after, .button__within-dropdown .widget--support::before, .button__within-dropdown [class^=widget-icon--],
-.button__within-dropdown [class*=" widget-icon--"], .dropdown__link tr.missing td:not(.reorder-col):first-child:before, .select__dropdown-item tr.missing td:not(.reorder-col):first-child:before, tr.missing .dropdown__link td:not(.reorder-col):first-child:before, tr.missing .select__dropdown-item td:not(.reorder-col):first-child:before, .button__within-dropdown tr.missing td:not(.reorder-col):first-child:before, tr.missing .button__within-dropdown td:not(.reorder-col):first-child:before, .dropdown__link .column-sort::after, .select__dropdown-item .column-sort::after, .button__within-dropdown .column-sort::after, .dropdown__link .app-notice---attention > .app-notice__tag .app-notice__icon::before, .select__dropdown-item .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .dropdown__link .app-notice__icon::before, .app-notice---attention > .app-notice__tag .select__dropdown-item .app-notice__icon::before, .button__within-dropdown .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .button__within-dropdown .app-notice__icon::before,
+.button__within-dropdown [class*=" widget-icon--"], .button__within-dropdown .dropdown__link--selected::before, .dropdown__link tr.missing td:not(.reorder-col):first-child:before, .select__dropdown-item tr.missing td:not(.reorder-col):first-child:before, tr.missing .dropdown__link td:not(.reorder-col):first-child:before, tr.missing .select__dropdown-item td:not(.reorder-col):first-child:before, .button__within-dropdown tr.missing td:not(.reorder-col):first-child:before, tr.missing .button__within-dropdown td:not(.reorder-col):first-child:before, .dropdown__link .column-sort::after, .select__dropdown-item .column-sort::after, .button__within-dropdown .column-sort::after, .dropdown__link .app-notice---attention > .app-notice__tag .app-notice__icon::before, .select__dropdown-item .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .dropdown__link .app-notice__icon::before, .app-notice---attention > .app-notice__tag .select__dropdown-item .app-notice__icon::before, .button__within-dropdown .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .button__within-dropdown .app-notice__icon::before,
 .dropdown__link .alert--attention > .app-notice__tag .app-notice__icon::before,
 .select__dropdown-item .alert--attention > .app-notice__tag .app-notice__icon::before,
 .alert--attention > .app-notice__tag .dropdown__link .app-notice__icon::before,
@@ -1470,7 +1484,13 @@ input[type=checkbox].checkbox--large:after, .checkbox:after, input[type=checkbox
 .tab-bar--editable .dropdown__link .tab-off:before,
 .tab-bar--editable .select__dropdown-item .tab-off:before,
 .button__within-dropdown .tab-bar--editable .tab-off:before,
-.tab-bar--editable .button__within-dropdown .tab-off:before, .dropdown__link .far, .select__dropdown-item .far, .button__within-dropdown .far, .sidebar__link i, .add-on-layout .secondary-sidebar .sidebar__section-title a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) i, .jump-menu__link .fas, .jump-menu__link .fal, .jump-menu__link [class*=fields-grid-tool-]:before, .jump-menu__link .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .jump-menu__link .tab-remove:before,
+.tab-bar--editable .button__within-dropdown .tab-off:before,
+.dropdown__link .tab-bar--editable .tab-edit:before,
+.select__dropdown-item .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .dropdown__link .tab-edit:before,
+.tab-bar--editable .select__dropdown-item .tab-edit:before,
+.button__within-dropdown .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .button__within-dropdown .tab-edit:before, .dropdown__link .far, .select__dropdown-item .far, .button__within-dropdown .far, .sidebar__link i, .add-on-layout .secondary-sidebar .sidebar__section-title a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) i, .jump-menu__link .fas, .jump-menu__link .fal, .jump-menu__link [class*=fields-grid-tool-]:before, .jump-menu__link .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .jump-menu__link .tab-remove:before,
 .jump-menu__link .tab-wrap .tabs.layout .tab-on:before,
 .tab-wrap .tabs.layout .jump-menu__link .tab-on:before,
 .jump-menu__link .tab-wrap .tabs.layout .tab-off:before,
@@ -1480,14 +1500,18 @@ input[type=checkbox].checkbox--large:after, .checkbox:after, input[type=checkbox
 .jump-menu__link .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .jump-menu__link .tab-on:before,
 .jump-menu__link .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .jump-menu__link .tab-off:before, .jump-menu__link .select-popup:not([multiple])::after, .jump-menu__link select:not([multiple])::after, .jump-menu__link .select__button-label::after, .jump-menu__link .checklist li:before, .checklist .jump-menu__link li:before, .jump-menu__link .field-closed .sub-arrow:before, .field-closed .jump-menu__link .sub-arrow:before, .jump-menu__link .fieldset---closed .sub-arrow:before, .fieldset---closed .jump-menu__link .sub-arrow:before, .jump-menu__link .fluid-closed .sub-arrow:before, .fluid-closed .jump-menu__link .sub-arrow:before, .jump-menu__link .sub-arrow:before, .jump-menu__link .fieldset-invalid > label:after, .jump-menu__link .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .jump-menu__link label:after, .jump-menu__link .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .jump-menu__link label:after, .jump-menu__link .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .jump-menu__link label:after, .jump-menu__link .checkbox--small:after,
+.ee-debugger .tab-bar--editable .jump-menu__link .tab-off:before,
+.jump-menu__link .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .jump-menu__link .tab-edit:before, .jump-menu__link .select-popup:not([multiple])::after, .jump-menu__link select:not([multiple])::after, .jump-menu__link .select__button-label::after, .jump-menu__link .checklist li:before, .checklist .jump-menu__link li:before, .jump-menu__link .field-closed .sub-arrow:before, .field-closed .jump-menu__link .sub-arrow:before, .jump-menu__link .fieldset---closed .sub-arrow:before, .fieldset---closed .jump-menu__link .sub-arrow:before, .jump-menu__link .fluid-closed .sub-arrow:before, .fluid-closed .jump-menu__link .sub-arrow:before, .jump-menu__link .sub-arrow:before, .jump-menu__link .fieldset-invalid > label:after, .jump-menu__link .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .jump-menu__link label:after, .jump-menu__link .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .jump-menu__link label:after, .jump-menu__link .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .jump-menu__link label:after, .jump-menu__link .checkbox--small:after,
 .jump-menu__link input[type=checkbox].checkbox--small:after, .jump-menu__link .checkbox--large:after,
 .jump-menu__link input[type=checkbox].checkbox--large:after, .jump-menu__link .checkbox:after, .jump-menu__link input[type=checkbox]:after, .jump-menu__link .widget--support::before, .jump-menu__link [class^=widget-icon--],
 .jump-menu__link [class*=" widget-icon--"], .jump-menu__link .dropdown__link--selected::before, .jump-menu__link .tab-bar--editable .tab-remove:before, .tab-bar--editable .jump-menu__link .tab-remove:before,
 .jump-menu__link .tab-bar--editable .tab-on:before,
 .tab-bar--editable .jump-menu__link .tab-on:before,
 .jump-menu__link .tab-bar--editable .tab-off:before,
-.tab-bar--editable .jump-menu__link .tab-off:before, .jump-menu__link .sidebar__link.remove:after, .jump-menu__link .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .jump-menu__link a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .jump-menu__link tr.missing td:not(.reorder-col):first-child:before, tr.missing .jump-menu__link td:not(.reorder-col):first-child:before, .jump-menu__link .column-sort::after, .jump-menu__link .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .jump-menu__link .app-notice__icon::before,
+.tab-bar--editable .jump-menu__link .tab-off:before,
+.jump-menu__link .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .jump-menu__link .tab-edit:before, .jump-menu__link .sidebar__link.remove:after, .jump-menu__link .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .jump-menu__link a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .jump-menu__link tr.missing td:not(.reorder-col):first-child:before, tr.missing .jump-menu__link td:not(.reorder-col):first-child:before, .jump-menu__link .column-sort::after, .jump-menu__link .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .jump-menu__link .app-notice__icon::before,
 .jump-menu__link .alert--attention > .app-notice__tag .app-notice__icon::before,
 .alert--attention > .app-notice__tag .jump-menu__link .app-notice__icon::before, .jump-menu__link .app-notice---success > .app-notice__tag .app-notice__icon::before, .app-notice---success > .app-notice__tag .jump-menu__link .app-notice__icon::before,
 .jump-menu__link .alert--success > .app-notice__tag .app-notice__icon::before,
@@ -18219,12 +18243,14 @@ readers do not read off random characters that represent icons */
 .icon--settings, [class^=icon--],
 [class*=" icon--"], .icon-reorder, .layout-item__handle::after, .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
-.ee-debugger .tab-bar--editable .tab-off:before, .select-popup:not([multiple])::after, select:not([multiple])::after, .select__button-label::after, .checklist li:before, .field-closed .sub-arrow:before, .fieldset---closed .sub-arrow:before, .fluid-closed .sub-arrow:before, .sub-arrow:before, .fieldset-invalid > label:after, .fieldset-invalid > .field-instruct label:after, .fieldset-security-caution > .field-instruct label:after, .fieldset-required > .field-instruct label:after, .checkbox--small:after,
+.ee-debugger .tab-bar--editable .tab-off:before,
+.ee-debugger .tab-bar--editable .tab-edit:before, .select-popup:not([multiple])::after, select:not([multiple])::after, .select__button-label::after, .checklist li:before, .field-closed .sub-arrow:before, .fieldset---closed .sub-arrow:before, .fluid-closed .sub-arrow:before, .sub-arrow:before, .fieldset-invalid > label:after, .fieldset-invalid > .field-instruct label:after, .fieldset-security-caution > .field-instruct label:after, .fieldset-required > .field-instruct label:after, .checkbox--small:after,
 input[type=checkbox].checkbox--small:after, .checkbox--large:after,
 input[type=checkbox].checkbox--large:after, .checkbox:after, input[type=checkbox]:after, .widget--support::before, [class^=widget-icon--],
 [class*=" widget-icon--"], .dropdown__link--selected::before, .tab-bar--editable .tab-remove:before,
 .tab-bar--editable .tab-on:before,
-.tab-bar--editable .tab-off:before, .sidebar__link.remove:after, .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .app-modal__dismiss a:before, .m-close:before, .app-notice__dismiss::before, .app-notice__icon::before, .app-notice---loading > .app-notice__tag .app-notice__icon::before,
+.tab-bar--editable .tab-off:before,
+.tab-bar--editable .tab-edit:before, .sidebar__link.remove:after, .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .app-modal__dismiss a:before, .m-close:before, .app-notice__dismiss::before, .app-notice__icon::before, .app-notice---loading > .app-notice__tag .app-notice__icon::before,
 .alert--loading > .app-notice__tag .app-notice__icon::before, .app-notice---success > .app-notice__tag .app-notice__icon::before,
 .alert--success > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .app-notice__icon::before,
 .alert--attention > .app-notice__tag .app-notice__icon::before, .column-sort::after, tr.missing td:not(.reorder-col):first-child:before, tr.missing:hover td:not(.reorder-col):first-child:before,
@@ -22438,12 +22464,16 @@ td i[class*=" icon--"], td i.icon-reorder, td i.layout-item__handle::after, td .
 td .ee-debugger .tab-bar--editable i.tab-on:before,
 .ee-debugger .tab-bar--editable td i.tab-on:before,
 td .ee-debugger .tab-bar--editable i.tab-off:before,
-.ee-debugger .tab-bar--editable td i.tab-off:before, td i.select-popup:not([multiple])::after, td i.select__button-label::after, td .field-closed i.sub-arrow:before, .field-closed td i.sub-arrow:before, td .fieldset---closed i.sub-arrow:before, .fieldset---closed td i.sub-arrow:before, td .fluid-closed i.sub-arrow:before, .fluid-closed td i.sub-arrow:before, td i.sub-arrow:before, td i.checkbox--small:after, td i.checkbox--large:after, td i.checkbox:after, td i.widget--support::before, td i[class^=widget-icon--],
+.ee-debugger .tab-bar--editable td i.tab-off:before,
+td .ee-debugger .tab-bar--editable i.tab-edit:before,
+.ee-debugger .tab-bar--editable td i.tab-edit:before, td i.select-popup:not([multiple])::after, td i.select__button-label::after, td .field-closed i.sub-arrow:before, .field-closed td i.sub-arrow:before, td .fieldset---closed i.sub-arrow:before, .fieldset---closed td i.sub-arrow:before, td .fluid-closed i.sub-arrow:before, .fluid-closed td i.sub-arrow:before, td i.sub-arrow:before, td i.checkbox--small:after, td i.checkbox--large:after, td i.checkbox:after, td i.widget--support::before, td i[class^=widget-icon--],
 td i[class*=" widget-icon--"], td i.dropdown__link--selected::before, td .tab-bar--editable i.tab-remove:before, .tab-bar--editable td i.tab-remove:before,
 td .tab-bar--editable i.tab-on:before,
 .tab-bar--editable td i.tab-on:before,
 td .tab-bar--editable i.tab-off:before,
-.tab-bar--editable td i.tab-off:before, td i.sidebar__link.remove:after, td i.m-close:before, td i.app-notice__dismiss::before, td i.app-notice__icon::before, td .app-notice---loading > .app-notice__tag i.app-notice__icon::before, .app-notice---loading > .app-notice__tag td i.app-notice__icon::before,
+.tab-bar--editable td i.tab-off:before,
+td .tab-bar--editable i.tab-edit:before,
+.tab-bar--editable td i.tab-edit:before, td i.sidebar__link.remove:after, td i.m-close:before, td i.app-notice__dismiss::before, td i.app-notice__icon::before, td .app-notice---loading > .app-notice__tag i.app-notice__icon::before, .app-notice---loading > .app-notice__tag td i.app-notice__icon::before,
 td .alert--loading > .app-notice__tag i.app-notice__icon::before,
 .alert--loading > .app-notice__tag td i.app-notice__icon::before, td .app-notice---success > .app-notice__tag i.app-notice__icon::before, .app-notice---success > .app-notice__tag td i.app-notice__icon::before,
 td .alert--success > .app-notice__tag i.app-notice__icon::before,
@@ -24131,6 +24161,12 @@ tr.selected td {
   pointer-events: none;
 }
 
+.selectable_buttons .button.active, .selectable_buttons .active.pagination__link, .selectable_buttons .no-results a.active, .no-results .selectable_buttons a.active,
+.selectable_buttons .field-no-results a.active,
+.field-no-results .selectable_buttons a.active, .selectable_buttons .active.select-popup, .selectable_buttons select.active, .selectable_buttons .active.select__button, .selectable_buttons .active.license-status-badge, .selectable_buttons .active.filter-bar__button, .selectable_buttons .markItUpHeader ul a.active, .markItUpHeader ul .selectable_buttons a.active {
+  background: var(--ee-accent-light);
+}
+
 /*
 .button-group {
 	display: flex;
@@ -24430,7 +24466,14 @@ fieldset[disabled] .field-no-results a,
 .ee-debugger .tab-bar--editable .button--default .tab-off:before,
 .ee-debugger .tab-bar--editable .date-picker-wrap .date-picker-today-button .tab-off:before,
 .date-picker-wrap .ee-debugger .tab-bar--editable .date-picker-today-button .tab-off:before,
-.ee-debugger .tab-bar--editable .pagination__link .tab-off:before, .button--default .select-popup:not([multiple])::after, .date-picker-wrap .date-picker-today-button .select-popup:not([multiple])::after, .pagination__link .select-popup:not([multiple])::after, .button--default select:not([multiple])::after, .date-picker-wrap .date-picker-today-button select:not([multiple])::after, .pagination__link select:not([multiple])::after, .select-popup .fal, .select-popup [class*=fields-grid-tool-]:before, .select-popup .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .select-popup .tab-remove:before,
+.ee-debugger .tab-bar--editable .pagination__link .tab-off:before,
+.button--default .ee-debugger .tab-bar--editable .tab-edit:before,
+.date-picker-wrap .date-picker-today-button .ee-debugger .tab-bar--editable .tab-edit:before,
+.pagination__link .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .button--default .tab-edit:before,
+.ee-debugger .tab-bar--editable .date-picker-wrap .date-picker-today-button .tab-edit:before,
+.date-picker-wrap .ee-debugger .tab-bar--editable .date-picker-today-button .tab-edit:before,
+.ee-debugger .tab-bar--editable .pagination__link .tab-edit:before, .button--default .select-popup:not([multiple])::after, .date-picker-wrap .date-picker-today-button .select-popup:not([multiple])::after, .pagination__link .select-popup:not([multiple])::after, .button--default select:not([multiple])::after, .date-picker-wrap .date-picker-today-button select:not([multiple])::after, .pagination__link select:not([multiple])::after, .select-popup .fal, .select-popup [class*=fields-grid-tool-]:before, .select-popup .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .select-popup .tab-remove:before,
 .select-popup .tab-wrap .tabs.layout .tab-on:before,
 .tab-wrap .tabs.layout .select-popup .tab-on:before,
 .select-popup .tab-wrap .tabs.layout .tab-off:before,
@@ -24440,7 +24483,9 @@ fieldset[disabled] .field-no-results a,
 .select-popup .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .select-popup .tab-on:before,
 .select-popup .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .select-popup .tab-off:before, .select-popup .select-popup:not([multiple])::after, .select-popup select:not([multiple])::after, select .fal, select [class*=fields-grid-tool-]:before, select .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout select .tab-remove:before,
+.ee-debugger .tab-bar--editable .select-popup .tab-off:before,
+.select-popup .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .select-popup .tab-edit:before, .select-popup .select-popup:not([multiple])::after, .select-popup select:not([multiple])::after, select .fal, select [class*=fields-grid-tool-]:before, select .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout select .tab-remove:before,
 select .tab-wrap .tabs.layout .tab-on:before,
 .tab-wrap .tabs.layout select .tab-on:before,
 select .tab-wrap .tabs.layout .tab-off:before,
@@ -24450,7 +24495,9 @@ select [class*=" icon--"], select .icon-reorder, select .layout-item__handle::af
 select .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable select .tab-on:before,
 select .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable select .tab-off:before, select .select-popup:not([multiple])::after, select select:not([multiple])::after, .button--default .select__button-label::after, .date-picker-wrap .date-picker-today-button .select__button-label::after, .pagination__link .select__button-label::after, .select-popup .select__button-label::after, select .select__button-label::after, .select__button .fal, .select__button [class*=fields-grid-tool-]:before, .select__button .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .select__button .tab-remove:before,
+.ee-debugger .tab-bar--editable select .tab-off:before,
+select .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable select .tab-edit:before, select .select-popup:not([multiple])::after, select select:not([multiple])::after, .button--default .select__button-label::after, .date-picker-wrap .date-picker-today-button .select__button-label::after, .pagination__link .select__button-label::after, .select-popup .select__button-label::after, select .select__button-label::after, .select__button .fal, .select__button [class*=fields-grid-tool-]:before, .select__button .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .select__button .tab-remove:before,
 .select__button .tab-wrap .tabs.layout .tab-on:before,
 .tab-wrap .tabs.layout .select__button .tab-on:before,
 .select__button .tab-wrap .tabs.layout .tab-off:before,
@@ -24460,7 +24507,9 @@ select .ee-debugger .tab-bar--editable .tab-off:before,
 .select__button .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .select__button .tab-on:before,
 .select__button .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .select__button .tab-off:before, .select__button .select-popup:not([multiple])::after, .select__button select:not([multiple])::after, .select__button .select__button-label::after, .button--default .checklist li:before, .date-picker-wrap .date-picker-today-button .checklist li:before, .pagination__link .checklist li:before, .select-popup .checklist li:before, select .checklist li:before, .select__button .checklist li:before, .checklist .button--default li:before, .checklist .date-picker-wrap .date-picker-today-button li:before, .date-picker-wrap .checklist .date-picker-today-button li:before, .checklist .pagination__link li:before, .checklist .select-popup li:before, .checklist select li:before, .checklist .select__button li:before, .button--default .field-closed .sub-arrow:before, .date-picker-wrap .date-picker-today-button .field-closed .sub-arrow:before, .pagination__link .field-closed .sub-arrow:before, .select-popup .field-closed .sub-arrow:before, select .field-closed .sub-arrow:before, .select__button .field-closed .sub-arrow:before, .field-closed .button--default .sub-arrow:before, .field-closed .date-picker-wrap .date-picker-today-button .sub-arrow:before, .date-picker-wrap .field-closed .date-picker-today-button .sub-arrow:before, .field-closed .pagination__link .sub-arrow:before, .field-closed .select-popup .sub-arrow:before, .field-closed select .sub-arrow:before, .field-closed .select__button .sub-arrow:before, .button--default .fieldset---closed .sub-arrow:before, .date-picker-wrap .date-picker-today-button .fieldset---closed .sub-arrow:before, .pagination__link .fieldset---closed .sub-arrow:before, .select-popup .fieldset---closed .sub-arrow:before, select .fieldset---closed .sub-arrow:before, .select__button .fieldset---closed .sub-arrow:before, .fieldset---closed .button--default .sub-arrow:before, .fieldset---closed .date-picker-wrap .date-picker-today-button .sub-arrow:before, .date-picker-wrap .fieldset---closed .date-picker-today-button .sub-arrow:before, .fieldset---closed .pagination__link .sub-arrow:before, .fieldset---closed .select-popup .sub-arrow:before, .fieldset---closed select .sub-arrow:before, .fieldset---closed .select__button .sub-arrow:before, .button--default .fluid-closed .sub-arrow:before, .date-picker-wrap .date-picker-today-button .fluid-closed .sub-arrow:before, .pagination__link .fluid-closed .sub-arrow:before, .select-popup .fluid-closed .sub-arrow:before, select .fluid-closed .sub-arrow:before, .select__button .fluid-closed .sub-arrow:before, .fluid-closed .button--default .sub-arrow:before, .fluid-closed .date-picker-wrap .date-picker-today-button .sub-arrow:before, .date-picker-wrap .fluid-closed .date-picker-today-button .sub-arrow:before, .fluid-closed .pagination__link .sub-arrow:before, .fluid-closed .select-popup .sub-arrow:before, .fluid-closed select .sub-arrow:before, .fluid-closed .select__button .sub-arrow:before, .button--default .sub-arrow:before, .date-picker-wrap .date-picker-today-button .sub-arrow:before, .pagination__link .sub-arrow:before, .select-popup .sub-arrow:before, select .sub-arrow:before, .select__button .sub-arrow:before, .button--default .fieldset-invalid > label:after, .date-picker-wrap .date-picker-today-button .fieldset-invalid > label:after, .pagination__link .fieldset-invalid > label:after, .select-popup .fieldset-invalid > label:after, select .fieldset-invalid > label:after, .select__button .fieldset-invalid > label:after, .button--default .fieldset-invalid > .field-instruct label:after, .date-picker-wrap .date-picker-today-button .fieldset-invalid > .field-instruct label:after, .pagination__link .fieldset-invalid > .field-instruct label:after, .select-popup .fieldset-invalid > .field-instruct label:after, select .fieldset-invalid > .field-instruct label:after, .select__button .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .button--default label:after, .fieldset-invalid > .field-instruct .date-picker-wrap .date-picker-today-button label:after, .date-picker-wrap .fieldset-invalid > .field-instruct .date-picker-today-button label:after, .fieldset-invalid > .field-instruct .pagination__link label:after, .fieldset-invalid > .field-instruct .select-popup label:after, .fieldset-invalid > .field-instruct select label:after, .fieldset-invalid > .field-instruct .select__button label:after, .button--default .fieldset-security-caution > .field-instruct label:after, .date-picker-wrap .date-picker-today-button .fieldset-security-caution > .field-instruct label:after, .pagination__link .fieldset-security-caution > .field-instruct label:after, .select-popup .fieldset-security-caution > .field-instruct label:after, select .fieldset-security-caution > .field-instruct label:after, .select__button .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .button--default label:after, .fieldset-security-caution > .field-instruct .date-picker-wrap .date-picker-today-button label:after, .date-picker-wrap .fieldset-security-caution > .field-instruct .date-picker-today-button label:after, .fieldset-security-caution > .field-instruct .pagination__link label:after, .fieldset-security-caution > .field-instruct .select-popup label:after, .fieldset-security-caution > .field-instruct select label:after, .fieldset-security-caution > .field-instruct .select__button label:after, .button--default .fieldset-required > .field-instruct label:after, .date-picker-wrap .date-picker-today-button .fieldset-required > .field-instruct label:after, .pagination__link .fieldset-required > .field-instruct label:after, .select-popup .fieldset-required > .field-instruct label:after, select .fieldset-required > .field-instruct label:after, .select__button .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .button--default label:after, .fieldset-required > .field-instruct .date-picker-wrap .date-picker-today-button label:after, .date-picker-wrap .fieldset-required > .field-instruct .date-picker-today-button label:after, .fieldset-required > .field-instruct .pagination__link label:after, .fieldset-required > .field-instruct .select-popup label:after, .fieldset-required > .field-instruct select label:after, .fieldset-required > .field-instruct .select__button label:after, .button--default .checkbox--small:after, .date-picker-wrap .date-picker-today-button .checkbox--small:after, .pagination__link .checkbox--small:after, .select-popup .checkbox--small:after, select .checkbox--small:after, .select__button .checkbox--small:after,
+.ee-debugger .tab-bar--editable .select__button .tab-off:before,
+.select__button .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .select__button .tab-edit:before, .select__button .select-popup:not([multiple])::after, .select__button select:not([multiple])::after, .select__button .select__button-label::after, .button--default .checklist li:before, .date-picker-wrap .date-picker-today-button .checklist li:before, .pagination__link .checklist li:before, .select-popup .checklist li:before, select .checklist li:before, .select__button .checklist li:before, .checklist .button--default li:before, .checklist .date-picker-wrap .date-picker-today-button li:before, .date-picker-wrap .checklist .date-picker-today-button li:before, .checklist .pagination__link li:before, .checklist .select-popup li:before, .checklist select li:before, .checklist .select__button li:before, .button--default .field-closed .sub-arrow:before, .date-picker-wrap .date-picker-today-button .field-closed .sub-arrow:before, .pagination__link .field-closed .sub-arrow:before, .select-popup .field-closed .sub-arrow:before, select .field-closed .sub-arrow:before, .select__button .field-closed .sub-arrow:before, .field-closed .button--default .sub-arrow:before, .field-closed .date-picker-wrap .date-picker-today-button .sub-arrow:before, .date-picker-wrap .field-closed .date-picker-today-button .sub-arrow:before, .field-closed .pagination__link .sub-arrow:before, .field-closed .select-popup .sub-arrow:before, .field-closed select .sub-arrow:before, .field-closed .select__button .sub-arrow:before, .button--default .fieldset---closed .sub-arrow:before, .date-picker-wrap .date-picker-today-button .fieldset---closed .sub-arrow:before, .pagination__link .fieldset---closed .sub-arrow:before, .select-popup .fieldset---closed .sub-arrow:before, select .fieldset---closed .sub-arrow:before, .select__button .fieldset---closed .sub-arrow:before, .fieldset---closed .button--default .sub-arrow:before, .fieldset---closed .date-picker-wrap .date-picker-today-button .sub-arrow:before, .date-picker-wrap .fieldset---closed .date-picker-today-button .sub-arrow:before, .fieldset---closed .pagination__link .sub-arrow:before, .fieldset---closed .select-popup .sub-arrow:before, .fieldset---closed select .sub-arrow:before, .fieldset---closed .select__button .sub-arrow:before, .button--default .fluid-closed .sub-arrow:before, .date-picker-wrap .date-picker-today-button .fluid-closed .sub-arrow:before, .pagination__link .fluid-closed .sub-arrow:before, .select-popup .fluid-closed .sub-arrow:before, select .fluid-closed .sub-arrow:before, .select__button .fluid-closed .sub-arrow:before, .fluid-closed .button--default .sub-arrow:before, .fluid-closed .date-picker-wrap .date-picker-today-button .sub-arrow:before, .date-picker-wrap .fluid-closed .date-picker-today-button .sub-arrow:before, .fluid-closed .pagination__link .sub-arrow:before, .fluid-closed .select-popup .sub-arrow:before, .fluid-closed select .sub-arrow:before, .fluid-closed .select__button .sub-arrow:before, .button--default .sub-arrow:before, .date-picker-wrap .date-picker-today-button .sub-arrow:before, .pagination__link .sub-arrow:before, .select-popup .sub-arrow:before, select .sub-arrow:before, .select__button .sub-arrow:before, .button--default .fieldset-invalid > label:after, .date-picker-wrap .date-picker-today-button .fieldset-invalid > label:after, .pagination__link .fieldset-invalid > label:after, .select-popup .fieldset-invalid > label:after, select .fieldset-invalid > label:after, .select__button .fieldset-invalid > label:after, .button--default .fieldset-invalid > .field-instruct label:after, .date-picker-wrap .date-picker-today-button .fieldset-invalid > .field-instruct label:after, .pagination__link .fieldset-invalid > .field-instruct label:after, .select-popup .fieldset-invalid > .field-instruct label:after, select .fieldset-invalid > .field-instruct label:after, .select__button .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .button--default label:after, .fieldset-invalid > .field-instruct .date-picker-wrap .date-picker-today-button label:after, .date-picker-wrap .fieldset-invalid > .field-instruct .date-picker-today-button label:after, .fieldset-invalid > .field-instruct .pagination__link label:after, .fieldset-invalid > .field-instruct .select-popup label:after, .fieldset-invalid > .field-instruct select label:after, .fieldset-invalid > .field-instruct .select__button label:after, .button--default .fieldset-security-caution > .field-instruct label:after, .date-picker-wrap .date-picker-today-button .fieldset-security-caution > .field-instruct label:after, .pagination__link .fieldset-security-caution > .field-instruct label:after, .select-popup .fieldset-security-caution > .field-instruct label:after, select .fieldset-security-caution > .field-instruct label:after, .select__button .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .button--default label:after, .fieldset-security-caution > .field-instruct .date-picker-wrap .date-picker-today-button label:after, .date-picker-wrap .fieldset-security-caution > .field-instruct .date-picker-today-button label:after, .fieldset-security-caution > .field-instruct .pagination__link label:after, .fieldset-security-caution > .field-instruct .select-popup label:after, .fieldset-security-caution > .field-instruct select label:after, .fieldset-security-caution > .field-instruct .select__button label:after, .button--default .fieldset-required > .field-instruct label:after, .date-picker-wrap .date-picker-today-button .fieldset-required > .field-instruct label:after, .pagination__link .fieldset-required > .field-instruct label:after, .select-popup .fieldset-required > .field-instruct label:after, select .fieldset-required > .field-instruct label:after, .select__button .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .button--default label:after, .fieldset-required > .field-instruct .date-picker-wrap .date-picker-today-button label:after, .date-picker-wrap .fieldset-required > .field-instruct .date-picker-today-button label:after, .fieldset-required > .field-instruct .pagination__link label:after, .fieldset-required > .field-instruct .select-popup label:after, .fieldset-required > .field-instruct select label:after, .fieldset-required > .field-instruct .select__button label:after, .button--default .checkbox--small:after, .date-picker-wrap .date-picker-today-button .checkbox--small:after, .pagination__link .checkbox--small:after, .select-popup .checkbox--small:after, select .checkbox--small:after, .select__button .checkbox--small:after,
 .button--default input[type=checkbox].checkbox--small:after,
 .date-picker-wrap .date-picker-today-button input[type=checkbox].checkbox--small:after,
 .pagination__link input[type=checkbox].checkbox--small:after,
@@ -24504,7 +24553,20 @@ select .tab-bar--editable .tab-off:before,
 .tab-bar--editable .pagination__link .tab-off:before,
 .tab-bar--editable .select-popup .tab-off:before,
 .tab-bar--editable select .tab-off:before,
-.tab-bar--editable .select__button .tab-off:before, .filter-bar__button .fal, .filter-bar__button [class*=fields-grid-tool-]:before, .filter-bar__button .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .filter-bar__button .tab-remove:before,
+.tab-bar--editable .select__button .tab-off:before,
+.button--default .tab-bar--editable .tab-edit:before,
+.date-picker-wrap .date-picker-today-button .tab-bar--editable .tab-edit:before,
+.pagination__link .tab-bar--editable .tab-edit:before,
+.select-popup .tab-bar--editable .tab-edit:before,
+select .tab-bar--editable .tab-edit:before,
+.select__button .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .button--default .tab-edit:before,
+.tab-bar--editable .date-picker-wrap .date-picker-today-button .tab-edit:before,
+.date-picker-wrap .tab-bar--editable .date-picker-today-button .tab-edit:before,
+.tab-bar--editable .pagination__link .tab-edit:before,
+.tab-bar--editable .select-popup .tab-edit:before,
+.tab-bar--editable select .tab-edit:before,
+.tab-bar--editable .select__button .tab-edit:before, .filter-bar__button .fal, .filter-bar__button [class*=fields-grid-tool-]:before, .filter-bar__button .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .filter-bar__button .tab-remove:before,
 .filter-bar__button .tab-wrap .tabs.layout .tab-on:before,
 .tab-wrap .tabs.layout .filter-bar__button .tab-on:before,
 .filter-bar__button .tab-wrap .tabs.layout .tab-off:before,
@@ -24514,14 +24576,18 @@ select .tab-bar--editable .tab-off:before,
 .filter-bar__button .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .filter-bar__button .tab-on:before,
 .filter-bar__button .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .filter-bar__button .tab-off:before, .filter-bar__button .select-popup:not([multiple])::after, .filter-bar__button select:not([multiple])::after, .filter-bar__button .select__button-label::after, .filter-bar__button .checklist li:before, .checklist .filter-bar__button li:before, .filter-bar__button .field-closed .sub-arrow:before, .field-closed .filter-bar__button .sub-arrow:before, .filter-bar__button .fieldset---closed .sub-arrow:before, .fieldset---closed .filter-bar__button .sub-arrow:before, .filter-bar__button .fluid-closed .sub-arrow:before, .fluid-closed .filter-bar__button .sub-arrow:before, .filter-bar__button .sub-arrow:before, .filter-bar__button .fieldset-invalid > label:after, .filter-bar__button .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .filter-bar__button label:after, .filter-bar__button .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .filter-bar__button label:after, .filter-bar__button .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .filter-bar__button label:after, .filter-bar__button .checkbox--small:after,
+.ee-debugger .tab-bar--editable .filter-bar__button .tab-off:before,
+.filter-bar__button .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .filter-bar__button .tab-edit:before, .filter-bar__button .select-popup:not([multiple])::after, .filter-bar__button select:not([multiple])::after, .filter-bar__button .select__button-label::after, .filter-bar__button .checklist li:before, .checklist .filter-bar__button li:before, .filter-bar__button .field-closed .sub-arrow:before, .field-closed .filter-bar__button .sub-arrow:before, .filter-bar__button .fieldset---closed .sub-arrow:before, .fieldset---closed .filter-bar__button .sub-arrow:before, .filter-bar__button .fluid-closed .sub-arrow:before, .fluid-closed .filter-bar__button .sub-arrow:before, .filter-bar__button .sub-arrow:before, .filter-bar__button .fieldset-invalid > label:after, .filter-bar__button .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .filter-bar__button label:after, .filter-bar__button .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .filter-bar__button label:after, .filter-bar__button .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .filter-bar__button label:after, .filter-bar__button .checkbox--small:after,
 .filter-bar__button input[type=checkbox].checkbox--small:after, .filter-bar__button .checkbox--large:after,
 .filter-bar__button input[type=checkbox].checkbox--large:after, .filter-bar__button .checkbox:after, .filter-bar__button input[type=checkbox]:after, .filter-bar__button .widget--support::before, .filter-bar__button [class^=widget-icon--],
 .filter-bar__button [class*=" widget-icon--"], .filter-bar__button .dropdown__link--selected::before, .filter-bar__button .tab-bar--editable .tab-remove:before, .tab-bar--editable .filter-bar__button .tab-remove:before,
 .filter-bar__button .tab-bar--editable .tab-on:before,
 .tab-bar--editable .filter-bar__button .tab-on:before,
 .filter-bar__button .tab-bar--editable .tab-off:before,
-.tab-bar--editable .filter-bar__button .tab-off:before, .button--default .sidebar__link.remove:after, .date-picker-wrap .date-picker-today-button .sidebar__link.remove:after, .button--default .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .date-picker-wrap .date-picker-today-button .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .button--default a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .date-picker-wrap .date-picker-today-button a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .date-picker-wrap .add-on-layout .secondary-sidebar .sidebar__section-title .date-picker-today-button a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .pagination__link .sidebar__link.remove:after, .pagination__link .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .pagination__link a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .select-popup .sidebar__link.remove:after, .select-popup .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .select-popup a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, select .sidebar__link.remove:after, select .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title select a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .select__button .sidebar__link.remove:after, .select__button .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .select__button a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .filter-bar__button .sidebar__link.remove:after, .filter-bar__button .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .filter-bar__button a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .button--default .app-modal__dismiss a:before, .date-picker-wrap .date-picker-today-button .app-modal__dismiss a:before, .pagination__link .app-modal__dismiss a:before, .select-popup .app-modal__dismiss a:before, select .app-modal__dismiss a:before, .select__button .app-modal__dismiss a:before, .filter-bar__button .app-modal__dismiss a:before, .app-modal__dismiss .button--default a:before, .app-modal__dismiss .date-picker-wrap .date-picker-today-button a:before, .date-picker-wrap .app-modal__dismiss .date-picker-today-button a:before, .app-modal__dismiss .pagination__link a:before, .app-modal__dismiss .select-popup a:before, .app-modal__dismiss select a:before, .app-modal__dismiss .select__button a:before, .app-modal__dismiss .filter-bar__button a:before, .button--default .m-close:before, .date-picker-wrap .date-picker-today-button .m-close:before, .pagination__link .m-close:before, .select-popup .m-close:before, select .m-close:before, .select__button .m-close:before, .filter-bar__button .m-close:before, .markItUpHeader ul a .fal, .markItUpHeader ul a [class*=fields-grid-tool-]:before, .markItUpHeader ul a .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .markItUpHeader ul a .tab-remove:before,
+.tab-bar--editable .filter-bar__button .tab-off:before,
+.filter-bar__button .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .filter-bar__button .tab-edit:before, .button--default .sidebar__link.remove:after, .date-picker-wrap .date-picker-today-button .sidebar__link.remove:after, .button--default .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .date-picker-wrap .date-picker-today-button .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .button--default a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .date-picker-wrap .date-picker-today-button a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .date-picker-wrap .add-on-layout .secondary-sidebar .sidebar__section-title .date-picker-today-button a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .pagination__link .sidebar__link.remove:after, .pagination__link .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .pagination__link a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .select-popup .sidebar__link.remove:after, .select-popup .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .select-popup a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, select .sidebar__link.remove:after, select .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title select a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .select__button .sidebar__link.remove:after, .select__button .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .select__button a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .filter-bar__button .sidebar__link.remove:after, .filter-bar__button .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .filter-bar__button a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .button--default .app-modal__dismiss a:before, .date-picker-wrap .date-picker-today-button .app-modal__dismiss a:before, .pagination__link .app-modal__dismiss a:before, .select-popup .app-modal__dismiss a:before, select .app-modal__dismiss a:before, .select__button .app-modal__dismiss a:before, .filter-bar__button .app-modal__dismiss a:before, .app-modal__dismiss .button--default a:before, .app-modal__dismiss .date-picker-wrap .date-picker-today-button a:before, .date-picker-wrap .app-modal__dismiss .date-picker-today-button a:before, .app-modal__dismiss .pagination__link a:before, .app-modal__dismiss .select-popup a:before, .app-modal__dismiss select a:before, .app-modal__dismiss .select__button a:before, .app-modal__dismiss .filter-bar__button a:before, .button--default .m-close:before, .date-picker-wrap .date-picker-today-button .m-close:before, .pagination__link .m-close:before, .select-popup .m-close:before, select .m-close:before, .select__button .m-close:before, .filter-bar__button .m-close:before, .markItUpHeader ul a .fal, .markItUpHeader ul a [class*=fields-grid-tool-]:before, .markItUpHeader ul a .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .markItUpHeader ul a .tab-remove:before,
 .markItUpHeader ul a .tab-wrap .tabs.layout .tab-on:before,
 .tab-wrap .tabs.layout .markItUpHeader ul a .tab-on:before,
 .markItUpHeader ul a .tab-wrap .tabs.layout .tab-off:before,
@@ -24531,14 +24597,18 @@ select .tab-bar--editable .tab-off:before,
 .markItUpHeader ul a .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .markItUpHeader ul a .tab-on:before,
 .markItUpHeader ul a .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .markItUpHeader ul a .tab-off:before, .markItUpHeader ul a .select-popup:not([multiple])::after, .markItUpHeader ul a select:not([multiple])::after, .markItUpHeader ul a .select__button-label::after, .markItUpHeader ul a .checklist li:before, .checklist .markItUpHeader ul a li:before, .markItUpHeader ul a .field-closed .sub-arrow:before, .field-closed .markItUpHeader ul a .sub-arrow:before, .markItUpHeader ul a .fieldset---closed .sub-arrow:before, .fieldset---closed .markItUpHeader ul a .sub-arrow:before, .markItUpHeader ul a .fluid-closed .sub-arrow:before, .fluid-closed .markItUpHeader ul a .sub-arrow:before, .markItUpHeader ul a .sub-arrow:before, .markItUpHeader ul a .fieldset-invalid > label:after, .markItUpHeader ul a .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .markItUpHeader ul a label:after, .markItUpHeader ul a .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .markItUpHeader ul a label:after, .markItUpHeader ul a .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .markItUpHeader ul a label:after, .markItUpHeader ul a .checkbox--small:after,
+.ee-debugger .tab-bar--editable .markItUpHeader ul a .tab-off:before,
+.markItUpHeader ul a .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .markItUpHeader ul a .tab-edit:before, .markItUpHeader ul a .select-popup:not([multiple])::after, .markItUpHeader ul a select:not([multiple])::after, .markItUpHeader ul a .select__button-label::after, .markItUpHeader ul a .checklist li:before, .checklist .markItUpHeader ul a li:before, .markItUpHeader ul a .field-closed .sub-arrow:before, .field-closed .markItUpHeader ul a .sub-arrow:before, .markItUpHeader ul a .fieldset---closed .sub-arrow:before, .fieldset---closed .markItUpHeader ul a .sub-arrow:before, .markItUpHeader ul a .fluid-closed .sub-arrow:before, .fluid-closed .markItUpHeader ul a .sub-arrow:before, .markItUpHeader ul a .sub-arrow:before, .markItUpHeader ul a .fieldset-invalid > label:after, .markItUpHeader ul a .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .markItUpHeader ul a label:after, .markItUpHeader ul a .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .markItUpHeader ul a label:after, .markItUpHeader ul a .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .markItUpHeader ul a label:after, .markItUpHeader ul a .checkbox--small:after,
 .markItUpHeader ul a input[type=checkbox].checkbox--small:after, .markItUpHeader ul a .checkbox--large:after,
 .markItUpHeader ul a input[type=checkbox].checkbox--large:after, .markItUpHeader ul a .checkbox:after, .markItUpHeader ul a input[type=checkbox]:after, .markItUpHeader ul a .widget--support::before, .markItUpHeader ul a [class^=widget-icon--],
 .markItUpHeader ul a [class*=" widget-icon--"], .markItUpHeader ul a .dropdown__link--selected::before, .markItUpHeader ul a .tab-bar--editable .tab-remove:before, .tab-bar--editable .markItUpHeader ul a .tab-remove:before,
 .markItUpHeader ul a .tab-bar--editable .tab-on:before,
 .tab-bar--editable .markItUpHeader ul a .tab-on:before,
 .markItUpHeader ul a .tab-bar--editable .tab-off:before,
-.tab-bar--editable .markItUpHeader ul a .tab-off:before, .markItUpHeader ul a .sidebar__link.remove:after, .markItUpHeader ul a .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .markItUpHeader ul a a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .markItUpHeader ul a .app-modal__dismiss a:before, .app-modal__dismiss .markItUpHeader ul a a:before, .markItUpHeader ul a .m-close:before, .button--default tr.missing td:not(.reorder-col):first-child:before, .date-picker-wrap .date-picker-today-button tr.missing td:not(.reorder-col):first-child:before, .pagination__link tr.missing td:not(.reorder-col):first-child:before, .select-popup tr.missing td:not(.reorder-col):first-child:before, select tr.missing td:not(.reorder-col):first-child:before, .select__button tr.missing td:not(.reorder-col):first-child:before, .filter-bar__button tr.missing td:not(.reorder-col):first-child:before, tr.missing .button--default td:not(.reorder-col):first-child:before, tr.missing .date-picker-wrap .date-picker-today-button td:not(.reorder-col):first-child:before, .date-picker-wrap tr.missing .date-picker-today-button td:not(.reorder-col):first-child:before, tr.missing .pagination__link td:not(.reorder-col):first-child:before, tr.missing .select-popup td:not(.reorder-col):first-child:before, tr.missing select td:not(.reorder-col):first-child:before, tr.missing .select__button td:not(.reorder-col):first-child:before, tr.missing .filter-bar__button td:not(.reorder-col):first-child:before, .markItUpHeader ul a tr.missing td:not(.reorder-col):first-child:before, tr.missing .markItUpHeader ul a td:not(.reorder-col):first-child:before, .button--default .column-sort::after, .date-picker-wrap .date-picker-today-button .column-sort::after, .pagination__link .column-sort::after, .select-popup .column-sort::after, select .column-sort::after, .select__button .column-sort::after, .filter-bar__button .column-sort::after, .markItUpHeader ul a .column-sort::after, .button--default .app-notice---attention > .app-notice__tag .app-notice__icon::before, .date-picker-wrap .date-picker-today-button .app-notice---attention > .app-notice__tag .app-notice__icon::before, .pagination__link .app-notice---attention > .app-notice__tag .app-notice__icon::before, .select-popup .app-notice---attention > .app-notice__tag .app-notice__icon::before, select .app-notice---attention > .app-notice__tag .app-notice__icon::before, .select__button .app-notice---attention > .app-notice__tag .app-notice__icon::before, .filter-bar__button .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .button--default .app-notice__icon::before, .app-notice---attention > .app-notice__tag .date-picker-wrap .date-picker-today-button .app-notice__icon::before, .date-picker-wrap .app-notice---attention > .app-notice__tag .date-picker-today-button .app-notice__icon::before, .app-notice---attention > .app-notice__tag .pagination__link .app-notice__icon::before, .app-notice---attention > .app-notice__tag .select-popup .app-notice__icon::before, .app-notice---attention > .app-notice__tag select .app-notice__icon::before, .app-notice---attention > .app-notice__tag .select__button .app-notice__icon::before, .app-notice---attention > .app-notice__tag .filter-bar__button .app-notice__icon::before, .markItUpHeader ul a .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .markItUpHeader ul a .app-notice__icon::before,
+.tab-bar--editable .markItUpHeader ul a .tab-off:before,
+.markItUpHeader ul a .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .markItUpHeader ul a .tab-edit:before, .markItUpHeader ul a .sidebar__link.remove:after, .markItUpHeader ul a .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .markItUpHeader ul a a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .markItUpHeader ul a .app-modal__dismiss a:before, .app-modal__dismiss .markItUpHeader ul a a:before, .markItUpHeader ul a .m-close:before, .button--default tr.missing td:not(.reorder-col):first-child:before, .date-picker-wrap .date-picker-today-button tr.missing td:not(.reorder-col):first-child:before, .pagination__link tr.missing td:not(.reorder-col):first-child:before, .select-popup tr.missing td:not(.reorder-col):first-child:before, select tr.missing td:not(.reorder-col):first-child:before, .select__button tr.missing td:not(.reorder-col):first-child:before, .filter-bar__button tr.missing td:not(.reorder-col):first-child:before, tr.missing .button--default td:not(.reorder-col):first-child:before, tr.missing .date-picker-wrap .date-picker-today-button td:not(.reorder-col):first-child:before, .date-picker-wrap tr.missing .date-picker-today-button td:not(.reorder-col):first-child:before, tr.missing .pagination__link td:not(.reorder-col):first-child:before, tr.missing .select-popup td:not(.reorder-col):first-child:before, tr.missing select td:not(.reorder-col):first-child:before, tr.missing .select__button td:not(.reorder-col):first-child:before, tr.missing .filter-bar__button td:not(.reorder-col):first-child:before, .markItUpHeader ul a tr.missing td:not(.reorder-col):first-child:before, tr.missing .markItUpHeader ul a td:not(.reorder-col):first-child:before, .button--default .column-sort::after, .date-picker-wrap .date-picker-today-button .column-sort::after, .pagination__link .column-sort::after, .select-popup .column-sort::after, select .column-sort::after, .select__button .column-sort::after, .filter-bar__button .column-sort::after, .markItUpHeader ul a .column-sort::after, .button--default .app-notice---attention > .app-notice__tag .app-notice__icon::before, .date-picker-wrap .date-picker-today-button .app-notice---attention > .app-notice__tag .app-notice__icon::before, .pagination__link .app-notice---attention > .app-notice__tag .app-notice__icon::before, .select-popup .app-notice---attention > .app-notice__tag .app-notice__icon::before, select .app-notice---attention > .app-notice__tag .app-notice__icon::before, .select__button .app-notice---attention > .app-notice__tag .app-notice__icon::before, .filter-bar__button .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .button--default .app-notice__icon::before, .app-notice---attention > .app-notice__tag .date-picker-wrap .date-picker-today-button .app-notice__icon::before, .date-picker-wrap .app-notice---attention > .app-notice__tag .date-picker-today-button .app-notice__icon::before, .app-notice---attention > .app-notice__tag .pagination__link .app-notice__icon::before, .app-notice---attention > .app-notice__tag .select-popup .app-notice__icon::before, .app-notice---attention > .app-notice__tag select .app-notice__icon::before, .app-notice---attention > .app-notice__tag .select__button .app-notice__icon::before, .app-notice---attention > .app-notice__tag .filter-bar__button .app-notice__icon::before, .markItUpHeader ul a .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .markItUpHeader ul a .app-notice__icon::before,
 .button--default .alert--attention > .app-notice__tag .app-notice__icon::before,
 .date-picker-wrap .date-picker-today-button .alert--attention > .app-notice__tag .app-notice__icon::before,
 .pagination__link .alert--attention > .app-notice__tag .app-notice__icon::before,
@@ -27024,7 +27094,9 @@ input[type=button].btn-block {
 .main-nav__title h1 .tab-bar--editable .tab-on:before,
 .tab-bar--editable .main-nav__title h1 .tab-on:before,
 .main-nav__title h1 .tab-bar--editable .tab-off:before,
-.tab-bar--editable .main-nav__title h1 .tab-off:before, .main-nav__title h1 .sidebar__link.remove:after, .main-nav__title h1 .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .main-nav__title h1 a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .main-nav__title h1 .app-modal__dismiss a:before, .app-modal__dismiss .main-nav__title h1 a:before, .main-nav__title h1 .m-close:before, .main-nav__title h1 tr.missing td:not(.reorder-col):first-child:before, tr.missing .main-nav__title h1 td:not(.reorder-col):first-child:before, .main-nav__title h1 .column-sort::after, .main-nav__title h1 .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .main-nav__title h1 .app-notice__icon::before,
+.tab-bar--editable .main-nav__title h1 .tab-off:before,
+.main-nav__title h1 .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .main-nav__title h1 .tab-edit:before, .main-nav__title h1 .sidebar__link.remove:after, .main-nav__title h1 .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .main-nav__title h1 a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .main-nav__title h1 .app-modal__dismiss a:before, .app-modal__dismiss .main-nav__title h1 a:before, .main-nav__title h1 .m-close:before, .main-nav__title h1 tr.missing td:not(.reorder-col):first-child:before, tr.missing .main-nav__title h1 td:not(.reorder-col):first-child:before, .main-nav__title h1 .column-sort::after, .main-nav__title h1 .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .main-nav__title h1 .app-notice__icon::before,
 .main-nav__title h1 .alert--attention > .app-notice__tag .app-notice__icon::before,
 .alert--attention > .app-notice__tag .main-nav__title h1 .app-notice__icon::before, .main-nav__title h1 .app-notice---success > .app-notice__tag .app-notice__icon::before, .app-notice---success > .app-notice__tag .main-nav__title h1 .app-notice__icon::before,
 .main-nav__title h1 .alert--success > .app-notice__tag .app-notice__icon::before,
@@ -27477,7 +27549,9 @@ input[type=button].btn-block {
 .jump-menu__link .tab-bar--editable .tab-on:before,
 .tab-bar--editable .jump-menu__link .tab-on:before,
 .jump-menu__link .tab-bar--editable .tab-off:before,
-.tab-bar--editable .jump-menu__link .tab-off:before, .jump-menu__link .sidebar__link.remove:after, .jump-menu__link .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .jump-menu__link a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .jump-menu__link tr.missing td:not(.reorder-col):first-child:before, tr.missing .jump-menu__link td:not(.reorder-col):first-child:before, .jump-menu__link .column-sort::after, .jump-menu__link .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .jump-menu__link .app-notice__icon::before,
+.tab-bar--editable .jump-menu__link .tab-off:before,
+.jump-menu__link .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .jump-menu__link .tab-edit:before, .jump-menu__link .sidebar__link.remove:after, .jump-menu__link .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .jump-menu__link a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .jump-menu__link tr.missing td:not(.reorder-col):first-child:before, tr.missing .jump-menu__link td:not(.reorder-col):first-child:before, .jump-menu__link .column-sort::after, .jump-menu__link .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .jump-menu__link .app-notice__icon::before,
 .jump-menu__link .alert--attention > .app-notice__tag .app-notice__icon::before,
 .alert--attention > .app-notice__tag .jump-menu__link .app-notice__icon::before, .jump-menu__link .app-notice---success > .app-notice__tag .app-notice__icon::before, .app-notice---success > .app-notice__tag .jump-menu__link .app-notice__icon::before,
 .jump-menu__link .alert--success > .app-notice__tag .app-notice__icon::before,
@@ -28298,6 +28372,9 @@ input[type=button].btn-block {
 .filter-search-bar .filter-search-bar__search-row .filter-bar__item {
   margin-right: 0;
 }
+.filter-search-bar .checkbox-label .checkbox-label__text {
+  display: block;
+}
 
 .tab-bar {
   display: flex;
@@ -28491,12 +28568,14 @@ input[type=button].btn-block {
 }
 .tab-bar--editable .tab-remove,
 .tab-bar--editable .tab-on,
-.tab-bar--editable .tab-off {
+.tab-bar--editable .tab-off,
+.tab-bar--editable .tab-edit {
   cursor: pointer;
 }
 .tab-bar--editable .tab-remove:before,
 .tab-bar--editable .tab-on:before,
-.tab-bar--editable .tab-off:before {
+.tab-bar--editable .tab-off:before,
+.tab-bar--editable .tab-edit:before {
   display: inline;
   padding: 4px;
   transform: translateY(-1px);
@@ -28506,7 +28585,8 @@ input[type=button].btn-block {
 @media (max-width: 767px) {
   .tab-bar--editable .tab-remove:before,
 .tab-bar--editable .tab-on:before,
-.tab-bar--editable .tab-off:before {
+.tab-bar--editable .tab-off:before,
+.tab-bar--editable .tab-edit:before {
     position: absolute;
   }
 }
@@ -28542,6 +28622,18 @@ input[type=button].btn-block {
 }
 @media (min-width: 768px) {
   .tab-bar--editable .tab-on:before {
+    right: 0;
+    top: 3px;
+  }
+}
+.tab-bar--editable .tab-edit:before {
+  color: var(--ee-brand-primary);
+  content: "\f303";
+  right: 10px;
+  top: 13px;
+}
+@media (min-width: 768px) {
+  .tab-bar--editable .tab-edit:before {
     right: 0;
     top: 3px;
   }
@@ -28671,7 +28763,9 @@ input[type=button].btn-block {
 .dropdown__link .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .dropdown__link .tab-on:before,
 .dropdown__link .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .dropdown__link .tab-off:before, .dropdown__link .select-popup:not([multiple])::after, .dropdown__link select:not([multiple])::after, .select__dropdown-item .fal, .select__dropdown-item [class*=fields-grid-tool-]:before, .select__dropdown-item .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .select__dropdown-item .tab-remove:before,
+.ee-debugger .tab-bar--editable .dropdown__link .tab-off:before,
+.dropdown__link .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .dropdown__link .tab-edit:before, .dropdown__link .select-popup:not([multiple])::after, .dropdown__link select:not([multiple])::after, .select__dropdown-item .fal, .select__dropdown-item [class*=fields-grid-tool-]:before, .select__dropdown-item .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .select__dropdown-item .tab-remove:before,
 .select__dropdown-item .tab-wrap .tabs.layout .tab-on:before,
 .tab-wrap .tabs.layout .select__dropdown-item .tab-on:before,
 .select__dropdown-item .tab-wrap .tabs.layout .tab-off:before,
@@ -28681,7 +28775,9 @@ input[type=button].btn-block {
 .select__dropdown-item .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .select__dropdown-item .tab-on:before,
 .select__dropdown-item .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .select__dropdown-item .tab-off:before, .select__dropdown-item .select-popup:not([multiple])::after, .select__dropdown-item select:not([multiple])::after, .dropdown__link .select__button-label::after, .select__dropdown-item .select__button-label::after, .dropdown__link .checklist li:before, .select__dropdown-item .checklist li:before, .checklist .dropdown__link li:before, .checklist .select__dropdown-item li:before, .dropdown__link .field-closed .sub-arrow:before, .select__dropdown-item .field-closed .sub-arrow:before, .field-closed .dropdown__link .sub-arrow:before, .field-closed .select__dropdown-item .sub-arrow:before, .dropdown__link .fieldset---closed .sub-arrow:before, .select__dropdown-item .fieldset---closed .sub-arrow:before, .fieldset---closed .dropdown__link .sub-arrow:before, .fieldset---closed .select__dropdown-item .sub-arrow:before, .dropdown__link .fluid-closed .sub-arrow:before, .select__dropdown-item .fluid-closed .sub-arrow:before, .fluid-closed .dropdown__link .sub-arrow:before, .fluid-closed .select__dropdown-item .sub-arrow:before, .dropdown__link .sub-arrow:before, .select__dropdown-item .sub-arrow:before, .dropdown__link .fieldset-invalid > label:after, .select__dropdown-item .fieldset-invalid > label:after, .dropdown__link .fieldset-invalid > .field-instruct label:after, .select__dropdown-item .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .dropdown__link label:after, .fieldset-invalid > .field-instruct .select__dropdown-item label:after, .dropdown__link .fieldset-security-caution > .field-instruct label:after, .select__dropdown-item .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .dropdown__link label:after, .fieldset-security-caution > .field-instruct .select__dropdown-item label:after, .dropdown__link .fieldset-required > .field-instruct label:after, .select__dropdown-item .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .dropdown__link label:after, .fieldset-required > .field-instruct .select__dropdown-item label:after, .dropdown__link .checkbox--small:after, .select__dropdown-item .checkbox--small:after, .dropdown__link .checkbox--large:after, .select__dropdown-item .checkbox--large:after, .dropdown__link .checkbox:after, .select__dropdown-item .checkbox:after, .dropdown__link input[type=checkbox]:after, .select__dropdown-item input[type=checkbox]:after, .dropdown__link .widget--support::before, .select__dropdown-item .widget--support::before, .dropdown__link [class^=widget-icon--], .select__dropdown-item [class^=widget-icon--],
+.ee-debugger .tab-bar--editable .select__dropdown-item .tab-off:before,
+.select__dropdown-item .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .select__dropdown-item .tab-edit:before, .select__dropdown-item .select-popup:not([multiple])::after, .select__dropdown-item select:not([multiple])::after, .dropdown__link .select__button-label::after, .select__dropdown-item .select__button-label::after, .dropdown__link .checklist li:before, .select__dropdown-item .checklist li:before, .checklist .dropdown__link li:before, .checklist .select__dropdown-item li:before, .dropdown__link .field-closed .sub-arrow:before, .select__dropdown-item .field-closed .sub-arrow:before, .field-closed .dropdown__link .sub-arrow:before, .field-closed .select__dropdown-item .sub-arrow:before, .dropdown__link .fieldset---closed .sub-arrow:before, .select__dropdown-item .fieldset---closed .sub-arrow:before, .fieldset---closed .dropdown__link .sub-arrow:before, .fieldset---closed .select__dropdown-item .sub-arrow:before, .dropdown__link .fluid-closed .sub-arrow:before, .select__dropdown-item .fluid-closed .sub-arrow:before, .fluid-closed .dropdown__link .sub-arrow:before, .fluid-closed .select__dropdown-item .sub-arrow:before, .dropdown__link .sub-arrow:before, .select__dropdown-item .sub-arrow:before, .dropdown__link .fieldset-invalid > label:after, .select__dropdown-item .fieldset-invalid > label:after, .dropdown__link .fieldset-invalid > .field-instruct label:after, .select__dropdown-item .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .dropdown__link label:after, .fieldset-invalid > .field-instruct .select__dropdown-item label:after, .dropdown__link .fieldset-security-caution > .field-instruct label:after, .select__dropdown-item .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .dropdown__link label:after, .fieldset-security-caution > .field-instruct .select__dropdown-item label:after, .dropdown__link .fieldset-required > .field-instruct label:after, .select__dropdown-item .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .dropdown__link label:after, .fieldset-required > .field-instruct .select__dropdown-item label:after, .dropdown__link .checkbox--small:after, .select__dropdown-item .checkbox--small:after, .dropdown__link .checkbox--large:after, .select__dropdown-item .checkbox--large:after, .dropdown__link .checkbox:after, .select__dropdown-item .checkbox:after, .dropdown__link input[type=checkbox]:after, .select__dropdown-item input[type=checkbox]:after, .dropdown__link .widget--support::before, .select__dropdown-item .widget--support::before, .dropdown__link [class^=widget-icon--], .select__dropdown-item [class^=widget-icon--],
 .dropdown__link [class*=" widget-icon--"],
 .select__dropdown-item [class*=" widget-icon--"], .dropdown__link .dropdown__link--selected::before, .select__dropdown-item .dropdown__link--selected::before, .button__within-dropdown .fal, .button__within-dropdown [class*=fields-grid-tool-]:before, .button__within-dropdown .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .button__within-dropdown .tab-remove:before,
 .button__within-dropdown .tab-wrap .tabs.layout .tab-on:before,
@@ -28693,7 +28789,9 @@ input[type=button].btn-block {
 .button__within-dropdown .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .button__within-dropdown .tab-on:before,
 .button__within-dropdown .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .button__within-dropdown .tab-off:before, .button__within-dropdown .select-popup:not([multiple])::after, .button__within-dropdown select:not([multiple])::after, .button__within-dropdown .select__button-label::after, .button__within-dropdown .checklist li:before, .checklist .button__within-dropdown li:before, .button__within-dropdown .field-closed .sub-arrow:before, .field-closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fieldset---closed .sub-arrow:before, .fieldset---closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fluid-closed .sub-arrow:before, .fluid-closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fieldset-invalid > label:after, .button__within-dropdown .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .checkbox--small:after, .button__within-dropdown .checkbox--large:after, .button__within-dropdown .checkbox:after, .button__within-dropdown input[type=checkbox]:after, .button__within-dropdown .widget--support::before, .button__within-dropdown [class^=widget-icon--],
+.ee-debugger .tab-bar--editable .button__within-dropdown .tab-off:before,
+.button__within-dropdown .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .button__within-dropdown .tab-edit:before, .button__within-dropdown .select-popup:not([multiple])::after, .button__within-dropdown select:not([multiple])::after, .button__within-dropdown .select__button-label::after, .button__within-dropdown .checklist li:before, .checklist .button__within-dropdown li:before, .button__within-dropdown .field-closed .sub-arrow:before, .field-closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fieldset---closed .sub-arrow:before, .fieldset---closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fluid-closed .sub-arrow:before, .fluid-closed .button__within-dropdown .sub-arrow:before, .button__within-dropdown .sub-arrow:before, .button__within-dropdown .fieldset-invalid > label:after, .button__within-dropdown .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .button__within-dropdown label:after, .button__within-dropdown .checkbox--small:after, .button__within-dropdown .checkbox--large:after, .button__within-dropdown .checkbox:after, .button__within-dropdown input[type=checkbox]:after, .button__within-dropdown .widget--support::before, .button__within-dropdown [class^=widget-icon--],
 .button__within-dropdown [class*=" widget-icon--"], .button__within-dropdown .dropdown__link--selected::before, .dropdown__link tr.missing td:not(.reorder-col):first-child:before, .select__dropdown-item tr.missing td:not(.reorder-col):first-child:before, tr.missing .dropdown__link td:not(.reorder-col):first-child:before, tr.missing .select__dropdown-item td:not(.reorder-col):first-child:before, .button__within-dropdown tr.missing td:not(.reorder-col):first-child:before, tr.missing .button__within-dropdown td:not(.reorder-col):first-child:before, .dropdown__link .column-sort::after, .select__dropdown-item .column-sort::after, .button__within-dropdown .column-sort::after, .dropdown__link .app-notice---attention > .app-notice__tag .app-notice__icon::before, .select__dropdown-item .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .dropdown__link .app-notice__icon::before, .app-notice---attention > .app-notice__tag .select__dropdown-item .app-notice__icon::before, .button__within-dropdown .app-notice---attention > .app-notice__tag .app-notice__icon::before, .app-notice---attention > .app-notice__tag .button__within-dropdown .app-notice__icon::before,
 .dropdown__link .alert--attention > .app-notice__tag .app-notice__icon::before,
 .select__dropdown-item .alert--attention > .app-notice__tag .app-notice__icon::before,
@@ -28724,7 +28822,13 @@ input[type=button].btn-block {
 .tab-bar--editable .dropdown__link .tab-off:before,
 .tab-bar--editable .select__dropdown-item .tab-off:before,
 .button__within-dropdown .tab-bar--editable .tab-off:before,
-.tab-bar--editable .button__within-dropdown .tab-off:before, .dropdown__link .far, .select__dropdown-item .far, .button__within-dropdown .far {
+.tab-bar--editable .button__within-dropdown .tab-off:before,
+.dropdown__link .tab-bar--editable .tab-edit:before,
+.select__dropdown-item .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .dropdown__link .tab-edit:before,
+.tab-bar--editable .select__dropdown-item .tab-edit:before,
+.button__within-dropdown .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .button__within-dropdown .tab-edit:before, .dropdown__link .far, .select__dropdown-item .far, .button__within-dropdown .far {
   margin-right: 5px;
   color: var(--ee-text-secondary);
 }
@@ -28829,7 +28933,9 @@ input[type=button].btn-block {
 .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-on:before,
 .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-on:before,
 .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-off:before,
-.tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-off:before, .dropdown__item a:not(.dropdown__item-button) .dropdown__link--selected::before {
+.tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-off:before,
+.dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-edit:before, .dropdown__item a:not(.dropdown__item-button) .dropdown__link--selected::before {
   margin-right: 5px;
   color: var(--ee-text-secondary);
 }
@@ -30193,7 +30299,9 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
 .lots-of-checkboxes__selection .tab-bar--editable .tab-on:before,
 .tab-bar--editable .lots-of-checkboxes__selection .tab-on:before,
 .lots-of-checkboxes__selection .tab-bar--editable .tab-off:before,
-.tab-bar--editable .lots-of-checkboxes__selection .tab-off:before, .lots-of-checkboxes__selection .dropdown__link--selected::before, .lots-of-checkboxes__selection [class^=widget-icon--],
+.tab-bar--editable .lots-of-checkboxes__selection .tab-off:before,
+.lots-of-checkboxes__selection .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .lots-of-checkboxes__selection .tab-edit:before, .lots-of-checkboxes__selection .dropdown__link--selected::before, .lots-of-checkboxes__selection [class^=widget-icon--],
 .lots-of-checkboxes__selection [class*=" widget-icon--"], .lots-of-checkboxes__selection .widget--support::before, .lots-of-checkboxes__selection .checkbox:after, .lots-of-checkboxes__selection input[type=checkbox]:after, .lots-of-checkboxes__selection .checkbox--large:after, .lots-of-checkboxes__selection .checkbox--small:after {
   color: var(--ee-accent);
 }
@@ -30791,7 +30899,9 @@ fieldset .field-control #eye {
 .note-fieldtype .note-fieldtype__icon .tab-bar--editable .tab-on:before,
 .tab-bar--editable .note-fieldtype .note-fieldtype__icon .tab-on:before,
 .note-fieldtype .note-fieldtype__icon .tab-bar--editable .tab-off:before,
-.tab-bar--editable .note-fieldtype .note-fieldtype__icon .tab-off:before, .note-fieldtype .note-fieldtype__icon .dropdown__link--selected::before, .note-fieldtype .note-fieldtype__icon [class^=widget-icon--],
+.tab-bar--editable .note-fieldtype .note-fieldtype__icon .tab-off:before,
+.note-fieldtype .note-fieldtype__icon .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .note-fieldtype .note-fieldtype__icon .tab-edit:before, .note-fieldtype .note-fieldtype__icon .dropdown__link--selected::before, .note-fieldtype .note-fieldtype__icon [class^=widget-icon--],
 .note-fieldtype .note-fieldtype__icon [class*=" widget-icon--"], .note-fieldtype .note-fieldtype__icon .widget--support::before, .note-fieldtype .note-fieldtype__icon .checkbox:after, .note-fieldtype .note-fieldtype__icon input[type=checkbox]:after, .note-fieldtype .note-fieldtype__icon .checkbox--large:after, .note-fieldtype .note-fieldtype__icon .checkbox--small:after, .note-fieldtype .note-fieldtype__icon .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .note-fieldtype .note-fieldtype__icon label:after, .note-fieldtype .note-fieldtype__icon .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .note-fieldtype .note-fieldtype__icon label:after, .note-fieldtype .note-fieldtype__icon .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .note-fieldtype .note-fieldtype__icon label:after, .note-fieldtype .note-fieldtype__icon .fieldset-invalid > label:after, .note-fieldtype .note-fieldtype__icon .sub-arrow:before {
   margin: 0;
   margin-left: 11px;
@@ -31382,6 +31492,51 @@ fieldset .field-control #eye {
   }
 }
 
+.add-on-card__table {
+  white-space: nowrap;
+}
+.add-on-card__table table {
+  margin: 6px 0 -6px 0;
+  border: none;
+  background: none;
+}
+.add-on-card__table table td {
+  color: var(--ee-button-secondary-color);
+  padding: 0;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar {
+  display: flex;
+  flex-wrap: wrap;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a {
+  text-transform: capitalize !important;
+  color: var(--ee-button-secondary-color) !important;
+  background: none !important;
+  font-weight: 700;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a:before {
+  display: none;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a.no {
+  color: var(--ee-error) !important;
+  padding-left: 20px;
+  position: relative;
+  margin-right: 20px;
+  font-weight: 400;
+}
+.add-on-card__table table td .toolbar-wrap .toolbar a.no:before {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  flex-shrink: 0;
+  content: "\f06a";
+  font-weight: 400;
+  font-family: "Font Awesome 6 Pro";
+}
+
 .add-on-card.first-party .first-party-svg {
   color: var(--ee-brand-primary);
   max-width: 50px;
@@ -31482,7 +31637,7 @@ fieldset .field-control #eye {
 .grid-field .table-responsive {
   box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
   border: 1px solid var(--ee-border);
-  overflow-x: visible;
+  overflow-x: auto;
 }
 
 .grid-field__table th {
@@ -31558,7 +31713,7 @@ fieldset .field-control #eye {
 }
 
 #routes .table-responsive {
-  overflow-x: inherit;
+  overflow-x: auto;
 }
 
 .grid-field__column-label {
@@ -31739,9 +31894,6 @@ fieldset .field-control #eye {
 .grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed {
   padding-bottom: 0 !important;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
-  display: none !important;
-}
 .grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
   border-bottom: none !important;
 }
@@ -31766,72 +31918,82 @@ fieldset .field-control #eye {
 }
 .grid-field.vertical-layout .grid-field__column-label {
   display: inherit;
+  margin-bottom: 10px;
+}
+.grid-field.vertical-layout .grid-field__column-label label {
+  color: var(--ee-text-secondary);
+  margin: 0;
+}
+.grid-field.vertical-layout .grid-field__column-label em {
+  color: var(--ee-text-secondary);
+  font-style: normal;
+  margin: 0;
+}
+
+.grid-field.horizontal-layout .table-responsive {
+  overflow-x: auto;
 }
 
 @media (max-width: 767px) {
-  .grid-field__column-label {
+  .grid-field:not(.horizontal-layout) .grid-field__column-label {
     display: block;
   }
 
-  .grid-field .table-responsive {
+  .grid-field:not(.horizontal-layout) .table-responsive {
     box-shadow: none;
     border: none;
     border-radius: 0;
     overflow: inherit;
   }
 
-  .grid-field__table, .grid-field__table tbody, .grid-field__table th, .grid-field__table td, .grid-field__table tr {
+  .grid-field:not(.horizontal-layout) .grid-field__table, .grid-field:not(.horizontal-layout) .grid-field__table tbody, .grid-field:not(.horizontal-layout) .grid-field__table th, .grid-field:not(.horizontal-layout) .grid-field__table td, .grid-field:not(.horizontal-layout) .grid-field__table tr {
     display: block;
     border: none;
   }
-  .grid-field__table thead {
+  .grid-field:not(.horizontal-layout) .grid-field__table thead {
     display: none;
   }
-  .grid-field__table tr {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr {
     display: flex;
     flex-direction: column;
   }
-  .grid-field__table tr.hidden {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.hidden {
     display: none;
   }
-  .grid-field__table tr {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr {
     position: relative;
     border: 1px solid var(--ee-border);
     margin-bottom: 10px;
     padding-bottom: 15px;
     background-color: var(--ee-bg-blank);
   }
-  .grid-field__table tr.no-results {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.no-results {
     padding: 0px;
   }
-  .grid-field__table tr.no-results td {
-    padding-top: 0;
-  }
-  .grid-field__table td {
-    display: block;
+  .grid-field:not(.horizontal-layout) .grid-field__table td {
+    display: block !important;
     border-bottom: none;
     padding: 10px 15px 10px 15px;
-    padding-bottom: 0;
   }
-  .grid-field__table tr.grid__item--collapsed {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.grid__item--collapsed {
     padding-bottom: 0 !important;
   }
-  .grid-field__table tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
     display: none !important;
   }
-  .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset {
     border-bottom: none !important;
   }
-  .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  .grid-field:not(.horizontal-layout) .grid-field__table tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
     transform: rotate(180deg);
   }
 
-  .grid-field__column--tools {
+  .grid-field:not(.horizontal-layout) .grid-field__column--tools {
     text-align: left;
   }
-  .grid-field__column--tools .button, .grid-field__column--tools .pagination__link, .grid-field__column--tools .no-results a, .no-results .grid-field__column--tools a,
-.grid-field__column--tools .field-no-results a,
-.field-no-results .grid-field__column--tools a, .grid-field__column--tools .select-popup, .grid-field__column--tools select, .grid-field__column--tools .select__button, .grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field__column--tools a, .grid-field__column--tools .filter-bar__button, .grid-field__column--tools .license-status-badge {
+  .grid-field:not(.horizontal-layout) .grid-field__column--tools .button, .grid-field:not(.horizontal-layout) .grid-field__column--tools .pagination__link, .grid-field:not(.horizontal-layout) .grid-field__column--tools .no-results a, .no-results .grid-field:not(.horizontal-layout) .grid-field__column--tools a,
+.grid-field:not(.horizontal-layout) .grid-field__column--tools .field-no-results a,
+.field-no-results .grid-field:not(.horizontal-layout) .grid-field__column--tools a, .grid-field:not(.horizontal-layout) .grid-field__column--tools .select-popup, .grid-field:not(.horizontal-layout) .grid-field__column--tools select, .grid-field:not(.horizontal-layout) .grid-field__column--tools .select__button, .grid-field:not(.horizontal-layout) .grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field:not(.horizontal-layout) .grid-field__column--tools a, .grid-field:not(.horizontal-layout) .grid-field__column--tools .filter-bar__button, .grid-field:not(.horizontal-layout) .grid-field__column--tools .license-status-badge {
     margin-bottom: 0;
   }
 
@@ -31850,6 +32012,15 @@ fieldset .field-control #eye {
   .entry-grid td.grid-field__column--tools, .vertical-layout td.grid-field__column--tools {
     display: none !important;
   }
+
+  .grid-field.horizontal-layout tbody td {
+    border-right: 1px solid var(--ee-table-border);
+    min-width: 250px !important;
+    max-width: 600px !important;
+  }
+  .grid-field.horizontal-layout tbody td.grid-field__column--tools {
+    min-width: 80px !important;
+  }
 }
 .live-preview__form-content .grid-field .grid-field__table,
 .grid-field.overwidth .grid-field__table {
@@ -31862,31 +32033,34 @@ fieldset .field-control #eye {
 .live-preview__form-content .grid-field .grid-field__table tbody,
 .grid-field.overwidth .grid-field__table tbody {
   width: 100%;
+  border: none;
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden),
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  border-bottom: 3px solid var(--ee-table-border);
-}
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden):last-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden):last-child {
-  border-bottom: none;
-}
-@media (max-width: 767px) {
-  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden):last-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden):last-child {
-    border-bottom-width: 1px;
-  }
+  position: relative;
+  border: 1px solid var(--ee-border);
+  margin-bottom: 10px;
+  padding-bottom: 15px;
+  background-color: var(--ee-bg-blank);
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden),
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) {
+  border-right: none;
+  min-width: 0;
   width: 100%;
   max-width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  border-bottom: 1px solid var(--ee-table-border);
+  display: block;
+  border-bottom: none;
+  padding: 10px 15px 10px 15px;
+  font-size: 1rem;
+}
+@media (min-width: 768px) {
+  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden),
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) {
+    border-bottom: 1px solid var(--ee-table-border);
+  }
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden):last-child,
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden):last-child {
@@ -31894,13 +32068,7 @@ fieldset .field-control #eye {
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label),
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label) {
-  width: calc(100% - 135px);
-}
-@media (max-width: 1023px) {
-  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label),
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label) {
-    width: calc(100% - 100px);
-  }
+  width: 100%;
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .ee-form-error-message,
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .ee-form-error-message {
@@ -31912,15 +32080,19 @@ fieldset .field-control #eye {
   color: var(--ee-text-secondary);
   font-weight: 500;
   white-space: normal;
-  border-right: 1px solid var(--ee-table-border);
-  margin-right: 15px;
-  flex: 0 0 120px;
+  margin-bottom: 10px;
+  flex: 0 0 100%;
 }
-@media (max-width: 1023px) {
-  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label {
-    flex: 0 0 80px;
-  }
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label label,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label label {
+  color: var(--ee-text-secondary);
+  margin: 0;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label em,
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label em {
+  font-style: normal;
+  color: var(--ee-text-secondary);
+  margin: 0;
 }
 .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools,
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools {
@@ -31969,13 +32141,40 @@ fieldset .field-control #eye {
   border-bottom: none;
   padding: 0;
 }
+.live-preview__form-content .grid-field .grid-field__table tbody tr.grid__item--collapsed,
+.grid-field.overwidth .grid-field__table tbody tr.grid__item--collapsed {
+  padding-bottom: 0 !important;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset,
+.grid-field.overwidth .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
+  border-bottom: none !important;
+}
+.live-preview__form-content .grid-field .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool,
+.grid-field.overwidth .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  transform: rotate(180deg);
+}
 
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td {
-  flex-wrap: nowrap !important;
-  align-items: center;
+.grid-field.overwidth {
+  padding: 10px;
+  background: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  border-radius: 5px;
+}
+.grid-field.overwidth .table-responsive {
+  border: none;
+  box-shadow: none;
+}
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools {
+  display: none !important;
 }
 .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td div:empty {
   display: none;
+}
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td.grid-field__item-fieldset {
+  position: relative;
+}
+.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td.grid-field__item-fieldset .grid-field__item-tools {
+  width: auto !important;
 }
 
 .select {
@@ -32073,7 +32272,9 @@ fieldset .field-control #eye {
 .select__dropdown-item .tab-bar--editable .tab-on:before,
 .tab-bar--editable .select__dropdown-item .tab-on:before,
 .select__dropdown-item .tab-bar--editable .tab-off:before,
-.tab-bar--editable .select__dropdown-item .tab-off:before, .select__dropdown-item .dropdown__link--selected::before, .select__dropdown-item [class^=widget-icon--],
+.tab-bar--editable .select__dropdown-item .tab-off:before,
+.select__dropdown-item .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .select__dropdown-item .tab-edit:before, .select__dropdown-item .dropdown__link--selected::before, .select__dropdown-item [class^=widget-icon--],
 .select__dropdown-item [class*=" widget-icon--"], .select__dropdown-item .widget--support::before, .select__dropdown-item .checkbox:after, .select__dropdown-item input[type=checkbox]:after, .select__dropdown-item .checkbox--large:after, .select__dropdown-item .checkbox--small:after, .select__dropdown-item .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .select__dropdown-item label:after, .select__dropdown-item .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .select__dropdown-item label:after, .select__dropdown-item .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .select__dropdown-item label:after, .select__dropdown-item .fieldset-invalid > label:after, .select__dropdown-item .sub-arrow:before, .select__dropdown-item .checklist li:before, .checklist .select__dropdown-item li:before, .select__dropdown-item .select__button-label::after {
   color: var(--ee-text-secondary);
 }
@@ -32351,12 +32552,14 @@ body[data-theme=dark] .select-popup {
 }
 .ee-debugger .tab-bar--editable .tab-remove,
 .ee-debugger .tab-bar--editable .tab-on,
-.ee-debugger .tab-bar--editable .tab-off {
+.ee-debugger .tab-bar--editable .tab-off,
+.ee-debugger .tab-bar--editable .tab-edit {
   cursor: pointer;
 }
 .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
-.ee-debugger .tab-bar--editable .tab-off:before {
+.ee-debugger .tab-bar--editable .tab-off:before,
+.ee-debugger .tab-bar--editable .tab-edit:before {
   display: inline;
   padding: 4px;
   transform: translateY(-1px);
@@ -32366,7 +32569,8 @@ body[data-theme=dark] .select-popup {
 @media (max-width: 767px) {
   .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
-.ee-debugger .tab-bar--editable .tab-off:before {
+.ee-debugger .tab-bar--editable .tab-off:before,
+.ee-debugger .tab-bar--editable .tab-edit:before {
     position: absolute;
   }
 }
@@ -32402,6 +32606,18 @@ body[data-theme=dark] .select-popup {
 }
 @media (min-width: 768px) {
   .ee-debugger .tab-bar--editable .tab-on:before {
+    right: 0;
+    top: 3px;
+  }
+}
+.ee-debugger .tab-bar--editable .tab-edit:before {
+  color: var(--ee-brand-primary);
+  content: "\f303";
+  right: 10px;
+  top: 13px;
+}
+@media (min-width: 768px) {
+  .ee-debugger .tab-bar--editable .tab-edit:before {
     right: 0;
     top: 3px;
   }
@@ -34088,13 +34304,14 @@ a.ck.ck-button.ck-on {
   transform: rotate(180deg);
 }
 .fluid__item--collapsed .fluid__item-tools--item-closed {
-  display: block;
+  display: none;
 }
 
 .fluid__item-content {
   flex: 1 1;
   border-radius: 8px;
   transition: background 100ms ease, box-shadow 100ms ease;
+  width: 100%;
 }
 
 .fluid__item-tools {
@@ -37782,14 +37999,18 @@ body[data-theme="dark"] {
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-bar--editable .tab-on:before,
 .tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-on:before,
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-bar--editable .tab-off:before,
-.tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-off:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .dropdown__link--selected::before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target [class^=widget-icon--],
+.tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-off:before,
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-edit:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .dropdown__link--selected::before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target [class^=widget-icon--],
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target [class*=" widget-icon--"], .secondary-sidebar-toggle .secondary-sidebar-toggle__target .widget--support::before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .checkbox:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target input[type=checkbox]:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .checkbox--large:after,
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target input[type=checkbox].checkbox--large:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .checkbox--small:after,
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target input[type=checkbox].checkbox--small:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .secondary-sidebar-toggle .secondary-sidebar-toggle__target label:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .secondary-sidebar-toggle .secondary-sidebar-toggle__target label:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .secondary-sidebar-toggle .secondary-sidebar-toggle__target label:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fieldset-invalid > label:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .sub-arrow:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .field-closed .sub-arrow:before, .field-closed .secondary-sidebar-toggle .secondary-sidebar-toggle__target .sub-arrow:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fieldset---closed .sub-arrow:before, .fieldset---closed .secondary-sidebar-toggle .secondary-sidebar-toggle__target .sub-arrow:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fluid-closed .sub-arrow:before, .fluid-closed .secondary-sidebar-toggle .secondary-sidebar-toggle__target .sub-arrow:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .checklist li:before, .checklist .secondary-sidebar-toggle .secondary-sidebar-toggle__target li:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .select__button-label::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .select-popup:not([multiple])::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target select:not([multiple])::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .ee-debugger .tab-bar--editable .tab-remove:before, .ee-debugger .tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-remove:before,
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-on:before,
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-off:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .layout-item__handle::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .secondary-sidebar-toggle .secondary-sidebar-toggle__target a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .icon-reorder, .secondary-sidebar-toggle .secondary-sidebar-toggle__target [class^=icon--],
+.ee-debugger .tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-off:before,
+.secondary-sidebar-toggle .secondary-sidebar-toggle__target .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-edit:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .layout-item__handle::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .secondary-sidebar-toggle .secondary-sidebar-toggle__target a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .icon-reorder, .secondary-sidebar-toggle .secondary-sidebar-toggle__target [class^=icon--],
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target [class*=" icon--"], .secondary-sidebar-toggle .secondary-sidebar-toggle__target .icon-settings,
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target .icon--settings, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .has-sub::after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .menu-wrap .develop .has-sub::before, .menu-wrap .develop .secondary-sidebar-toggle .secondary-sidebar-toggle__target .has-sub::before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .toolbar a:after, .toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .toolbar a:before, .toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .toolbar span:after, .toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target span:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .toolbar span:before, .toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target span:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target button-toolbar a:after, button-toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target button-toolbar a:before, button-toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target button-toolbar span:after, button-toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target span:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target button-toolbar span:before, button-toolbar .secondary-sidebar-toggle .secondary-sidebar-toggle__target span:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fields-keyvalue-item .toolbar .reorder a:before, .fields-keyvalue-item .toolbar .reorder .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .fields-keyvalue-item .toolbar .remove a:after, .fields-keyvalue-item .toolbar .remove .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:after, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tbl-list .reorder:before, .tbl-list .secondary-sidebar-toggle .secondary-sidebar-toggle__target .reorder:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .filters a.add:before, .filters .secondary-sidebar-toggle .secondary-sidebar-toggle__target a.add:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .filters .filter-clear a:before, .filters .filter-clear .secondary-sidebar-toggle .secondary-sidebar-toggle__target a:before, .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-remove:before,
 .secondary-sidebar-toggle .secondary-sidebar-toggle__target .tab-wrap .tabs.layout .tab-on:before,
@@ -38087,14 +38308,18 @@ body[data-theme="dark"] {
 .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-bar--editable .tab-on:before,
 .tab-bar--editable .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-on:before,
 .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-bar--editable .tab-off:before,
-.tab-bar--editable .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-off:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .dropdown__link--selected::before, .ee-sidebar__items-bottom .ee-pro__indicator-badge [class^=widget-icon--],
+.tab-bar--editable .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-off:before,
+.ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-edit:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .dropdown__link--selected::before, .ee-sidebar__items-bottom .ee-pro__indicator-badge [class^=widget-icon--],
 .ee-sidebar__items-bottom .ee-pro__indicator-badge [class*=" widget-icon--"], .ee-sidebar__items-bottom .ee-pro__indicator-badge .widget--support::before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .checkbox:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge input[type=checkbox]:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .checkbox--large:after,
 .ee-sidebar__items-bottom .ee-pro__indicator-badge input[type=checkbox].checkbox--large:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .checkbox--small:after,
 .ee-sidebar__items-bottom .ee-pro__indicator-badge input[type=checkbox].checkbox--small:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .ee-sidebar__items-bottom .ee-pro__indicator-badge label:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .ee-sidebar__items-bottom .ee-pro__indicator-badge label:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .ee-sidebar__items-bottom .ee-pro__indicator-badge label:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .fieldset-invalid > label:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .sub-arrow:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .field-closed .sub-arrow:before, .field-closed .ee-sidebar__items-bottom .ee-pro__indicator-badge .sub-arrow:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .fieldset---closed .sub-arrow:before, .fieldset---closed .ee-sidebar__items-bottom .ee-pro__indicator-badge .sub-arrow:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .fluid-closed .sub-arrow:before, .fluid-closed .ee-sidebar__items-bottom .ee-pro__indicator-badge .sub-arrow:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .checklist li:before, .checklist .ee-sidebar__items-bottom .ee-pro__indicator-badge li:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .select__button-label::after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .select-popup:not([multiple])::after, .ee-sidebar__items-bottom .ee-pro__indicator-badge select:not([multiple])::after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .ee-debugger .tab-bar--editable .tab-remove:before, .ee-debugger .tab-bar--editable .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-remove:before,
 .ee-sidebar__items-bottom .ee-pro__indicator-badge .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-on:before,
 .ee-sidebar__items-bottom .ee-pro__indicator-badge .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-off:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .layout-item__handle::after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .ee-sidebar__items-bottom .ee-pro__indicator-badge a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .icon-reorder, .ee-sidebar__items-bottom .ee-pro__indicator-badge [class^=icon--],
+.ee-debugger .tab-bar--editable .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-off:before,
+.ee-sidebar__items-bottom .ee-pro__indicator-badge .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-edit:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .layout-item__handle::after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .ee-sidebar__items-bottom .ee-pro__indicator-badge a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .icon-reorder, .ee-sidebar__items-bottom .ee-pro__indicator-badge [class^=icon--],
 .ee-sidebar__items-bottom .ee-pro__indicator-badge [class*=" icon--"], .ee-sidebar__items-bottom .ee-pro__indicator-badge .icon-settings,
 .ee-sidebar__items-bottom .ee-pro__indicator-badge .icon--settings, .ee-sidebar__items-bottom .ee-pro__indicator-badge .has-sub::after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .menu-wrap .develop .has-sub::before, .menu-wrap .develop .ee-sidebar__items-bottom .ee-pro__indicator-badge .has-sub::before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .toolbar a:after, .toolbar .ee-sidebar__items-bottom .ee-pro__indicator-badge a:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .toolbar a:before, .toolbar .ee-sidebar__items-bottom .ee-pro__indicator-badge a:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .toolbar span:after, .toolbar .ee-sidebar__items-bottom .ee-pro__indicator-badge span:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .toolbar span:before, .toolbar .ee-sidebar__items-bottom .ee-pro__indicator-badge span:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge button-toolbar a:after, button-toolbar .ee-sidebar__items-bottom .ee-pro__indicator-badge a:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge button-toolbar a:before, button-toolbar .ee-sidebar__items-bottom .ee-pro__indicator-badge a:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge button-toolbar span:after, button-toolbar .ee-sidebar__items-bottom .ee-pro__indicator-badge span:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge button-toolbar span:before, button-toolbar .ee-sidebar__items-bottom .ee-pro__indicator-badge span:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .fields-keyvalue-item .toolbar .reorder a:before, .fields-keyvalue-item .toolbar .reorder .ee-sidebar__items-bottom .ee-pro__indicator-badge a:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .fields-keyvalue-item .toolbar .remove a:after, .fields-keyvalue-item .toolbar .remove .ee-sidebar__items-bottom .ee-pro__indicator-badge a:after, .ee-sidebar__items-bottom .ee-pro__indicator-badge .tbl-list .reorder:before, .tbl-list .ee-sidebar__items-bottom .ee-pro__indicator-badge .reorder:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .filters a.add:before, .filters .ee-sidebar__items-bottom .ee-pro__indicator-badge a.add:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .filters .filter-clear a:before, .filters .filter-clear .ee-sidebar__items-bottom .ee-pro__indicator-badge a:before, .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-remove:before,
 .ee-sidebar__items-bottom .ee-pro__indicator-badge .tab-wrap .tabs.layout .tab-on:before,
@@ -38138,14 +38363,18 @@ body[data-theme="dark"] {
 .sidebar-toggle .tab-bar--editable .tab-on:before,
 .tab-bar--editable .sidebar-toggle .tab-on:before,
 .sidebar-toggle .tab-bar--editable .tab-off:before,
-.tab-bar--editable .sidebar-toggle .tab-off:before, .sidebar-toggle .dropdown__link--selected::before, .sidebar-toggle [class^=widget-icon--],
+.tab-bar--editable .sidebar-toggle .tab-off:before,
+.sidebar-toggle .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .sidebar-toggle .tab-edit:before, .sidebar-toggle .dropdown__link--selected::before, .sidebar-toggle [class^=widget-icon--],
 .sidebar-toggle [class*=" widget-icon--"], .sidebar-toggle .widget--support::before, .sidebar-toggle .checkbox:after, .sidebar-toggle input[type=checkbox]:after, .sidebar-toggle .checkbox--large:after,
 .sidebar-toggle input[type=checkbox].checkbox--large:after, .sidebar-toggle .checkbox--small:after,
 .sidebar-toggle input[type=checkbox].checkbox--small:after, .sidebar-toggle .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .sidebar-toggle label:after, .sidebar-toggle .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .sidebar-toggle label:after, .sidebar-toggle .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .sidebar-toggle label:after, .sidebar-toggle .fieldset-invalid > label:after, .sidebar-toggle .sub-arrow:before, .sidebar-toggle .field-closed .sub-arrow:before, .field-closed .sidebar-toggle .sub-arrow:before, .sidebar-toggle .fieldset---closed .sub-arrow:before, .fieldset---closed .sidebar-toggle .sub-arrow:before, .sidebar-toggle .fluid-closed .sub-arrow:before, .fluid-closed .sidebar-toggle .sub-arrow:before, .sidebar-toggle .checklist li:before, .checklist .sidebar-toggle li:before, .sidebar-toggle .select__button-label::after, .sidebar-toggle .select-popup:not([multiple])::after, .sidebar-toggle select:not([multiple])::after, .sidebar-toggle .ee-debugger .tab-bar--editable .tab-remove:before, .ee-debugger .tab-bar--editable .sidebar-toggle .tab-remove:before,
 .sidebar-toggle .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .sidebar-toggle .tab-on:before,
 .sidebar-toggle .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .sidebar-toggle .tab-off:before, .sidebar-toggle .layout-item__handle::after, .sidebar-toggle .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .sidebar-toggle a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .sidebar-toggle .icon-reorder, .sidebar-toggle [class^=icon--],
+.ee-debugger .tab-bar--editable .sidebar-toggle .tab-off:before,
+.sidebar-toggle .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .sidebar-toggle .tab-edit:before, .sidebar-toggle .layout-item__handle::after, .sidebar-toggle .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .sidebar-toggle a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .sidebar-toggle .icon-reorder, .sidebar-toggle [class^=icon--],
 .sidebar-toggle [class*=" icon--"], .sidebar-toggle .icon-settings,
 .sidebar-toggle .icon--settings, .sidebar-toggle .has-sub::after, .sidebar-toggle .menu-wrap .develop .has-sub::before, .menu-wrap .develop .sidebar-toggle .has-sub::before, .sidebar-toggle .toolbar a:after, .toolbar .sidebar-toggle a:after, .sidebar-toggle .toolbar a:before, .toolbar .sidebar-toggle a:before, .sidebar-toggle .toolbar span:after, .toolbar .sidebar-toggle span:after, .sidebar-toggle .toolbar span:before, .toolbar .sidebar-toggle span:before, .sidebar-toggle button-toolbar a:after, button-toolbar .sidebar-toggle a:after, .sidebar-toggle button-toolbar a:before, button-toolbar .sidebar-toggle a:before, .sidebar-toggle button-toolbar span:after, button-toolbar .sidebar-toggle span:after, .sidebar-toggle button-toolbar span:before, button-toolbar .sidebar-toggle span:before, .sidebar-toggle .fields-keyvalue-item .toolbar .reorder a:before, .fields-keyvalue-item .toolbar .reorder .sidebar-toggle a:before, .sidebar-toggle .fields-keyvalue-item .toolbar .remove a:after, .fields-keyvalue-item .toolbar .remove .sidebar-toggle a:after, .sidebar-toggle .tbl-list .reorder:before, .tbl-list .sidebar-toggle .reorder:before, .sidebar-toggle .filters a.add:before, .filters .sidebar-toggle a.add:before, .sidebar-toggle .filters .filter-clear a:before, .filters .filter-clear .sidebar-toggle a:before, .sidebar-toggle .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .sidebar-toggle .tab-remove:before,
 .sidebar-toggle .tab-wrap .tabs.layout .tab-on:before,
@@ -38308,14 +38537,18 @@ body[data-theme="dark"] {
 .login__title .tab-bar--editable .tab-on:before,
 .tab-bar--editable .login__title .tab-on:before,
 .login__title .tab-bar--editable .tab-off:before,
-.tab-bar--editable .login__title .tab-off:before, .login__title .dropdown__link--selected::before, .login__title [class^=widget-icon--],
+.tab-bar--editable .login__title .tab-off:before,
+.login__title .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .login__title .tab-edit:before, .login__title .dropdown__link--selected::before, .login__title [class^=widget-icon--],
 .login__title [class*=" widget-icon--"], .login__title .widget--support::before, .login__title .checkbox:after, .login__title input[type=checkbox]:after, .login__title .checkbox--large:after,
 .login__title input[type=checkbox].checkbox--large:after, .login__title .checkbox--small:after,
 .login__title input[type=checkbox].checkbox--small:after, .login__title .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .login__title label:after, .login__title .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .login__title label:after, .login__title .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .login__title label:after, .login__title .fieldset-invalid > label:after, .login__title .sub-arrow:before, .login__title .field-closed .sub-arrow:before, .field-closed .login__title .sub-arrow:before, .login__title .fieldset---closed .sub-arrow:before, .fieldset---closed .login__title .sub-arrow:before, .login__title .fluid-closed .sub-arrow:before, .fluid-closed .login__title .sub-arrow:before, .login__title .checklist li:before, .checklist .login__title li:before, .login__title .select__button-label::after, .login__title .select-popup:not([multiple])::after, .login__title select:not([multiple])::after, .login__title .ee-debugger .tab-bar--editable .tab-remove:before, .ee-debugger .tab-bar--editable .login__title .tab-remove:before,
 .login__title .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .login__title .tab-on:before,
 .login__title .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .login__title .tab-off:before, .login__title .layout-item__handle::after, .login__title .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .login__title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .login__title .icon-reorder, .login__title [class^=icon--],
+.ee-debugger .tab-bar--editable .login__title .tab-off:before,
+.login__title .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .login__title .tab-edit:before, .login__title .layout-item__handle::after, .login__title .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .login__title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .login__title .icon-reorder, .login__title [class^=icon--],
 .login__title [class*=" icon--"], .login__title .icon-settings,
 .login__title .icon--settings, .login__title .has-sub::after, .login__title .menu-wrap .develop .has-sub::before, .menu-wrap .develop .login__title .has-sub::before, .login__title .toolbar a:after, .toolbar .login__title a:after, .login__title .toolbar a:before, .toolbar .login__title a:before, .login__title .toolbar span:after, .toolbar .login__title span:after, .login__title .toolbar span:before, .toolbar .login__title span:before, .login__title button-toolbar a:after, button-toolbar .login__title a:after, .login__title button-toolbar a:before, button-toolbar .login__title a:before, .login__title button-toolbar span:after, button-toolbar .login__title span:after, .login__title button-toolbar span:before, button-toolbar .login__title span:before, .login__title .fields-keyvalue-item .toolbar .reorder a:before, .fields-keyvalue-item .toolbar .reorder .login__title a:before, .login__title .fields-keyvalue-item .toolbar .remove a:after, .fields-keyvalue-item .toolbar .remove .login__title a:after, .login__title .tbl-list .reorder:before, .tbl-list .login__title .reorder:before, .login__title .filters a.add:before, .filters .login__title a.add:before, .login__title .filters .filter-clear a:before, .filters .filter-clear .login__title a:before, .login__title .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .login__title .tab-remove:before,
 .login__title .tab-wrap .tabs.layout .tab-on:before,
@@ -38433,7 +38666,9 @@ body[data-theme="dark"] {
 .f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-on:before,
 .tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-on:before,
 .f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-off:before,
-.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-off:before, .f_manager-wrapper tr.app-listing__row i.dropdown__link--selected::before, .f_manager-wrapper tr.app-listing__row i[class^=widget-icon--],
+.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-off:before,
+.f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-edit:before,
+.tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-edit:before, .f_manager-wrapper tr.app-listing__row i.dropdown__link--selected::before, .f_manager-wrapper tr.app-listing__row i[class^=widget-icon--],
 .f_manager-wrapper tr.app-listing__row i[class*=" widget-icon--"], .f_manager-wrapper tr.app-listing__row i.widget--support::before, .f_manager-wrapper tr.app-listing__row i.checkbox:after, .f_manager-wrapper tr.app-listing__row i.checkbox--large:after, .f_manager-wrapper tr.app-listing__row i.checkbox--small:after, .f_manager-wrapper tr.app-listing__row i.sub-arrow:before, .f_manager-wrapper tr.app-listing__row i.select__button-label::after, .f_manager-wrapper tr.app-listing__row i.select-popup:not([multiple])::after, .f_manager-wrapper tr.app-listing__row i.layout-item__handle::after, .f_manager-wrapper tr.app-listing__row i.icon-reorder, .f_manager-wrapper tr.app-listing__row i[class^=icon--],
 .f_manager-wrapper tr.app-listing__row i[class*=" icon--"], .f_manager-wrapper tr.app-listing__row i.icon-settings,
 .f_manager-wrapper tr.app-listing__row i.icon--settings, .f_manager-wrapper tr.app-listing__row i.has-sub::after, .f_manager-wrapper tr.app-listing__row .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .f_manager-wrapper tr.app-listing__row i.has-sub::before, .f_manager-wrapper tr.app-listing__row .tbl-list i.reorder:before, .tbl-list .f_manager-wrapper tr.app-listing__row i.reorder:before, .f_manager-wrapper tr.app-listing__row .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
@@ -38601,7 +38836,9 @@ body[data-theme="dark"] {
 .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
 .tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-on:before,
 .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-off:before,
-.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before, .file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-edit:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-edit:before, .file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before, .file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
 .file-grid__wrapper .file-thumbnail i[class*=" widget-icon--"], .file-grid__wrapper .file-thumbnail i.widget--support::before, .file-grid__wrapper .file-thumbnail i.checkbox:after, .file-grid__wrapper .file-thumbnail i.checkbox--large:after, .file-grid__wrapper .file-thumbnail i.checkbox--small:after, .file-grid__wrapper .file-thumbnail i.sub-arrow:before, .file-grid__wrapper .file-thumbnail i.select__button-label::after, .file-grid__wrapper .file-thumbnail i.select-popup:not([multiple])::after, .file-grid__wrapper .file-thumbnail i.layout-item__handle::after, .file-grid__wrapper .file-thumbnail i.icon-reorder, .file-grid__wrapper .file-thumbnail i[class^=icon--],
 .file-grid__wrapper .file-thumbnail i[class*=" icon--"], .file-grid__wrapper .file-thumbnail i.icon-settings,
 .file-grid__wrapper .file-thumbnail i.icon--settings, .file-grid__wrapper .file-thumbnail i.has-sub::after, .file-grid__wrapper .file-thumbnail .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .file-grid__wrapper .file-thumbnail i.has-sub::before, .file-grid__wrapper .file-thumbnail .tbl-list i.reorder:before, .tbl-list .file-grid__wrapper .file-thumbnail i.reorder:before, .file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-remove:before,
@@ -38622,7 +38859,9 @@ body[data-theme="dark"] {
 .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-on:before,
 .tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-on:before,
 .file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-off:before,
-.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before, .file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before, .file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-off:before,
+.file-grid__wrapper .file-thumbnail .tab-bar--editable i.tab-edit:before,
+.tab-bar--editable .file-grid__wrapper .file-thumbnail i.tab-edit:before, .file-grid__wrapper .file-thumbnail i.dropdown__link--selected::before, .file-grid__wrapper .file-thumbnail i[class^=widget-icon--],
 .file-grid__wrapper .file-thumbnail i[class*=" widget-icon--"], .file-grid__wrapper .file-thumbnail i.widget--support::before, .file-grid__wrapper .file-thumbnail i.checkbox:after, .file-grid__wrapper .file-thumbnail i.checkbox--large:after, .file-grid__wrapper .file-thumbnail i.checkbox--small:after, .file-grid__wrapper .file-thumbnail i.sub-arrow:before, .file-grid__wrapper .file-thumbnail i.select__button-label::after, .file-grid__wrapper .file-thumbnail i.select-popup:not([multiple])::after, .file-grid__wrapper .file-thumbnail i.layout-item__handle::after, .file-grid__wrapper .file-thumbnail i.icon-reorder, .file-grid__wrapper .file-thumbnail i[class^=icon--],
 .file-grid__wrapper .file-thumbnail i[class*=" icon--"], .file-grid__wrapper .file-thumbnail i.icon-settings,
 .file-grid__wrapper .file-thumbnail i.icon--settings, .file-grid__wrapper .file-thumbnail i.has-sub::after, .file-grid__wrapper .file-thumbnail .menu-wrap .develop i.has-sub::before, .menu-wrap .develop .file-grid__wrapper .file-thumbnail i.has-sub::before, .file-grid__wrapper .file-thumbnail .tbl-list i.reorder:before, .tbl-list .file-grid__wrapper .file-thumbnail i.reorder:before, .file-grid__wrapper .file-thumbnail .tab-wrap .tabs.layout i.tab-remove:before, .tab-wrap .tabs.layout .file-grid__wrapper .file-thumbnail i.tab-remove:before,
@@ -38885,14 +39124,18 @@ body[data-theme="dark"] {
 .danger-link:hover .tab-bar--editable .tab-on:before,
 .tab-bar--editable .danger-link:hover .tab-on:before,
 .danger-link:hover .tab-bar--editable .tab-off:before,
-.tab-bar--editable .danger-link:hover .tab-off:before, .danger-link:hover .dropdown__link--selected::before, .danger-link:hover [class^=widget-icon--],
+.tab-bar--editable .danger-link:hover .tab-off:before,
+.danger-link:hover .tab-bar--editable .tab-edit:before,
+.tab-bar--editable .danger-link:hover .tab-edit:before, .danger-link:hover .dropdown__link--selected::before, .danger-link:hover [class^=widget-icon--],
 .danger-link:hover [class*=" widget-icon--"], .danger-link:hover .widget--support::before, .danger-link:hover .checkbox:after, .danger-link:hover input[type=checkbox]:after, .danger-link:hover .checkbox--large:after,
 .danger-link:hover input[type=checkbox].checkbox--large:after, .danger-link:hover .checkbox--small:after,
 .danger-link:hover input[type=checkbox].checkbox--small:after, .danger-link:hover .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .danger-link:hover label:after, .danger-link:hover .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .danger-link:hover label:after, .danger-link:hover .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .danger-link:hover label:after, .danger-link:hover .fieldset-invalid > label:after, .danger-link:hover .sub-arrow:before, .danger-link:hover .field-closed .sub-arrow:before, .field-closed .danger-link:hover .sub-arrow:before, .danger-link:hover .fieldset---closed .sub-arrow:before, .fieldset---closed .danger-link:hover .sub-arrow:before, .danger-link:hover .fluid-closed .sub-arrow:before, .fluid-closed .danger-link:hover .sub-arrow:before, .danger-link:hover .checklist li:before, .checklist .danger-link:hover li:before, .danger-link:hover .select__button-label::after, .danger-link:hover .select-popup:not([multiple])::after, .danger-link:hover select:not([multiple])::after, .danger-link:hover .ee-debugger .tab-bar--editable .tab-remove:before, .ee-debugger .tab-bar--editable .danger-link:hover .tab-remove:before,
 .danger-link:hover .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .danger-link:hover .tab-on:before,
 .danger-link:hover .ee-debugger .tab-bar--editable .tab-off:before,
-.ee-debugger .tab-bar--editable .danger-link:hover .tab-off:before, .danger-link:hover .layout-item__handle::after, .danger-link:hover .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .danger-link:hover a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .danger-link:hover .icon-reorder, .danger-link:hover [class^=icon--],
+.ee-debugger .tab-bar--editable .danger-link:hover .tab-off:before,
+.danger-link:hover .ee-debugger .tab-bar--editable .tab-edit:before,
+.ee-debugger .tab-bar--editable .danger-link:hover .tab-edit:before, .danger-link:hover .layout-item__handle::after, .danger-link:hover .add-on-layout .secondary-sidebar .sidebar__section-title a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .add-on-layout .secondary-sidebar .sidebar__section-title .danger-link:hover a.remove:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link):after, .danger-link:hover .icon-reorder, .danger-link:hover [class^=icon--],
 .danger-link:hover [class*=" icon--"], .danger-link:hover .icon-settings,
 .danger-link:hover .icon--settings, .danger-link:hover .has-sub::after, .danger-link:hover .menu-wrap .develop .has-sub::before, .menu-wrap .develop .danger-link:hover .has-sub::before, .danger-link:hover .toolbar a:after, .toolbar .danger-link:hover a:after, .danger-link:hover .toolbar a:before, .toolbar .danger-link:hover a:before, .danger-link:hover .toolbar span:after, .toolbar .danger-link:hover span:after, .danger-link:hover .toolbar span:before, .toolbar .danger-link:hover span:before, .danger-link:hover button-toolbar a:after, button-toolbar .danger-link:hover a:after, .danger-link:hover button-toolbar a:before, button-toolbar .danger-link:hover a:before, .danger-link:hover button-toolbar span:after, button-toolbar .danger-link:hover span:after, .danger-link:hover button-toolbar span:before, button-toolbar .danger-link:hover span:before, .danger-link:hover .fields-keyvalue-item .toolbar .reorder a:before, .fields-keyvalue-item .toolbar .reorder .danger-link:hover a:before, .danger-link:hover .fields-keyvalue-item .toolbar .remove a:after, .fields-keyvalue-item .toolbar .remove .danger-link:hover a:after, .danger-link:hover .tbl-list .reorder:before, .tbl-list .danger-link:hover .reorder:before, .danger-link:hover .filters a.add:before, .filters .danger-link:hover a.add:before, .danger-link:hover .filters .filter-clear a:before, .filters .filter-clear .danger-link:hover a:before, .danger-link:hover .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .danger-link:hover .tab-remove:before,
 .danger-link:hover .tab-wrap .tabs.layout .tab-on:before,
@@ -39287,10 +39530,13 @@ body[data-theme="dark"] {
 }
 .app-modal--fullscreen {
   bottom: 0;
+  height: 100%;
   flex-direction: column;
   padding: 0;
   top: 0;
   width: 100%;
+  overflow: auto;
+  position: fixed;
 }
 .app-modal--fullscreen .app-notice--banner {
   flex: 0 1 auto;
@@ -39709,5 +39955,3 @@ label.field-option-required {
 body[data-theme="dark"] .fluid__footer img {
     filter: invert();
 }
-
-/*# sourceMappingURL=common.min.css.map*/

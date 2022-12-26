@@ -14,6 +14,7 @@
 	border: 1px solid color(fluid-item-border);
   position: static;
   width: 100%;
+   // overflow-x: auto;
 
   .fluid__item-fieldset {
     padding: 10px 15px 5px 15px;
@@ -87,7 +88,7 @@
 	}
 
 	.fluid__item-tools--item-closed {
-		display: block;
+		display: none;
 	}
 }
 
@@ -97,6 +98,7 @@
 
 	border-radius: $corners-big;
 	transition: background 100ms ease, box-shadow 100ms ease;
+	width: 100%;
 }
 
 .fluid__item-tools {

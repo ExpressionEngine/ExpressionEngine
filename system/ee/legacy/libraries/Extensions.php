@@ -14,10 +14,10 @@
 class EE_Extensions
 {
     public $extensions = array();
-    public $end_script = false;	// To return or not to return
-    public $last_call = false;	// The data returned from the last called method for this hook
-    public $in_progress = '';		// Last hook called.  Prevents loops.
-    public $s_cache = array();	// Array of previously unserialized settings
+    public $end_script = false; // To return or not to return
+    public $last_call = false;  // The data returned from the last called method for this hook
+    public $in_progress = '';       // Last hook called.  Prevents loops.
+    public $s_cache = array();  // Array of previously unserialized settings
     public $version_numbers = array(); // To track the version of an extension
 
     /**
@@ -70,10 +70,10 @@ class EE_Extensions
      * Used in ExpressionEngine to call an extension based on whichever
      * hook is being triggered
      *
-     * @access	public
-     * @param	string	Name of the  extension hook
-     * @param	mixed
-     * @return	mixed
+     * @access  public
+     * @param   string  Name of the  extension hook
+     * @param   mixed
+     * @return  mixed
      */
     public function call($which)
     {
@@ -212,8 +212,8 @@ class EE_Extensions
      *
      * Getter for the $extensions property
      *
-     * @param	string		name of the extension hook
-     * @return	array|bool	Hook details array or FALSE if not active
+     * @param   string      name of the extension hook
+     * @return  array|bool  Hook details array or FALSE if not active
      **/
     public function get_active_hook_info($hook)
     {
@@ -229,9 +229,9 @@ class EE_Extensions
      *
      * Check If Hook Has Activated Extension
      *
-     * @access	public
-     * @param	string	Name of the  extension hook
-     * @return	bool
+     * @access  public
+     * @param   string  Name of the  extension hook
+     * @return  bool
      */
     public function active_hook($which)
     {

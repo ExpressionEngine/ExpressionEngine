@@ -26,3 +26,7 @@
                     </div>
                 <?php endif; ?>
             </div>
+
+            <div class="fluid__item-tools fluid__item-tools--item-closed hidden">
+                <button type="button" class="fluid__item-tool js-toggle-fluid-item" title="<?=lang('expand')?>"><i class="fal fa-fw fa-angle-double-down"></i></button>
+            </div>
