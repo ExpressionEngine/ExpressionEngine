@@ -94,9 +94,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
-          #fromTag: ${{ steps.prev_release_tag.outputs.tag }}
-          fromTag: "7.2.4"
-          toTag: "${{ steps.build_json.outputs.BUILD_VERSION }}"
+          fromTag: ${{ steps.prev_release_tag.outputs.tag }}
+          toTag: ${{ steps.build_json.outputs.BUILD_VERSION }}
           configuration: build-tools/changelog.config.json
 
       - uses: ncipollo/release-action@v1.12.0
@@ -203,7 +202,6 @@ jobs:
               uses: cypress-io/github-action@v5
               with:
                 browser: chrome
-                headless: true
                 working-directory: tests/cypress
                 config-file: updater.cypress.json
 

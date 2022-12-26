@@ -185,7 +185,6 @@ jobs:
               with:
                 spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
-                headless: true
                 working-directory: tests/cypress
                 config-file: cypress.json
               env:
@@ -201,7 +200,6 @@ jobs:
               if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
               with:
                 browser: chrome
-                headless: true
                 working-directory: tests/cypress
                 config-file: cypress.json
                 record: true

@@ -219,7 +219,6 @@ jobs:
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
-                headless: true
                 working-directory: tests/cypress
                 config-file: cypress.json
                 record: true
@@ -235,7 +234,6 @@ jobs:
               uses: cypress-io/github-action@v5
               with:
                 browser: chrome
-                headless: true
                 working-directory: tests/cypress
                 config-file: cypress.without-pro.json
                 record: true
