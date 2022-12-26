@@ -18,9 +18,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v3
+        uses: shivammathur/setup-php@v2
         with:
-            php-version: '7.4'
+            php-version: '8.1'
             extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
             coverage: none
             ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M

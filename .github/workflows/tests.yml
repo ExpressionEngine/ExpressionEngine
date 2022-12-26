@@ -35,7 +35,7 @@ jobs:
           - name: Setup PHP
             uses: shivammathur/setup-php@v2
             with:
-                php-version: '7.4'
+                php-version: '8.1'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
@@ -70,7 +70,7 @@ jobs:
               mv ExpressionEngine${{ steps.build_json.outputs.BUILD_VERSION }} ExpressionEngine
 
           - name: Cache built EE version
-            uses: actions/cache@v2
+            uses: actions/cache@v3
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
@@ -111,13 +111,31 @@ jobs:
                   - php: 8.1
                     os: ubuntu-latest
                     containers: 5
+                  - php: 8.2
+                    os: ubuntu-latest
+                    containers: 0
+                  - php: 8.2
+                    os: ubuntu-latest
+                    containers: 1
+                  - php: 8.2
+                    os: ubuntu-latest
+                    containers: 2
+                  - php: 8.2
+                    os: ubuntu-latest
+                    containers: 3
+                  - php: 8.2
+                    os: ubuntu-latest
+                    containers: 4
+                  - php: 8.2
+                    os: ubuntu-latest
+                    containers: 5
 
         name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}
 
         steps:
 
             - name: Use cached EE build
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                 path: build-tools/builds/ExpressionEngine
                 key: cache-ee-build-${{ github.sha }}
@@ -127,7 +145,7 @@ jobs:
                 cp -R build-tools/builds/ExpressionEngine/* ./
 
             - name: Restore cached git history
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                 path: .git
                 key: cache-ee-git-${{ github.sha }}
