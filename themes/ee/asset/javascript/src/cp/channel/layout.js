@@ -190,7 +190,6 @@ $(document).ready(function () {
 			}
 			start_pos = null;
 			start_tab = null;
-			// console.log(EE.publish_layout);
 		}
 	};
 
@@ -259,7 +258,7 @@ $(document).ready(function () {
 
 				tabs.find('.tab-bar__tab').droppable("destroy");
 
-				tabs.append('<a class="tab-bar__tab js-tab-button" href="" rel="t-' + index + '">' + tab_name + '<span class="tab-remove"></span></a>');
+				tabs.append('<a class="tab-bar__tab js-tab-button" href="" rel="t-' + index + '"><span class="tab-name">' + tab_name + '</span><span class="tab-edit"></span><span class="tab-remove"></span></a>');
 				sheets.filter('.t-' + (index - 1)).after('<div class="tab t-' + index + '"><div class="layout-item-wrapper"></div></div>');
 
 				makeTabsDroppable();
@@ -289,6 +288,7 @@ $(document).ready(function () {
 
 	// Removing a tab
 	tabs.on('click', '.tab-remove', function(e) {
+		e.preventDefault();
 		var tab = $(this).parents('.tab-bar__tab').eq(0);
 		var index = $('.tab-bar .tab-bar__tab').index(tab);
 		var tabContents = sheets.filter('.' + $(tab).attr('rel'));
@@ -301,6 +301,66 @@ $(document).ready(function () {
 		EE.publish_layout.splice(index, 1);
 		tab.remove();
 		tabContents.remove();
+	});
+
+	// Edit tab name
+	tabs.on('click', '.tab-edit', function(e) {
+		e.preventDefault();
+		var tab = $(this).parents('.tab-bar__tab').eq(0);
+		var tab_index = tabs.find('.tab-bar__tab').index(tab);
+		var tab_old_name = EE.publish_layout[tab_index]['name'];
+		$('.modal-rename-tab .current-tab-id').attr('data-current_id', tab_index);
+		$('.modal-rename-tab .current-tab-id').attr('data-old_name', tab_old_name);
+		$('.modal-rename-tab').trigger('modal:open');
+	});
+
+	$('.modal-rename-tab button').on('click', function(e) {
+		e.preventDefault();
+		var input = $('.modal-rename-tab input[name="tab_name"]');
+		var tab_name = $('.modal-rename-tab input[name="tab_name"]').val();
+		var tab_id = 'custom__' + tab_name.replace(/ /g, "_").replace(/&/g, "and").toLowerCase();
+		var index = $('.modal-rename-tab .current-tab-id').attr('data-current_id');
+		var tab_old_name  = $('.modal-rename-tab .current-tab-id').attr('data-old_name');
+
+		var legalChars = /^[^*>:+()\[\]=|"'.#$]+$/; // allow all unicode characters except for css selectors and $
+
+		$('.modal-rename-tab .setting-field em').remove();
+		input.parents('fieldset').removeClass('invalid');
+
+		if (tab_name === "") {
+			$('.modal-rename-tab').trigger('modal:close');
+		} else if ( ! legalChars.test(tab_name)) {
+			// Show the illegal_tab_name alert
+			input.after($('<em></em>').append(input.data('illegal')));
+			input.parents('fieldset').addClass('invalid');
+		} else {
+			var duplicate = false;
+			for (var x = 0; x < EE.publish_layout.length; x++) {
+				if (EE.publish_layout[x].id == tab_id) {
+					duplicate = true;
+				}
+			}
+
+			if (duplicate) {
+				// Show the duplicate_tab_name alert
+				input.after($('<em></em>').append(input.data('duplicate')));
+				input.parents('fieldset').addClass('invalid');
+			} else {
+				var button = $('.tab-bar__tab')[index];
+				$(button).find('span.tab-name').replaceWith('<span class="tab-name">'+tab_name+'</span>');
+
+				EE.publish_layout[index]['id'] = tab_id;
+				EE.publish_layout[index]['name'] = tab_name;
+
+				$('.modal-rename-tab .js-modal-close').trigger('click');
+			}
+		}
+	});
+
+	$('.modal-rename-tab .js-modal-close').on('click', function(e) {
+		$('.modal-rename-tab input[name="tab_name"]').val('');
+		$('.modal-rename-tab .setting-field em').remove();
+		$('.modal-rename-tab input[name="tab_name"]').parents('fieldset').removeClass('invalid');
 	});
 
 	// Saving the hide/unhide state of fields

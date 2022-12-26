@@ -1,20 +1,20 @@
 <?php
 
-namespace {{namespace}}\Mcp;
+namespace {{namespace}}\ControlPanel\Routes;
 
 use ExpressionEngine\Service\Addon\Controllers\Mcp\AbstractRoute;
 
-class Index extends AbstractRoute
+class {{route_uc}} extends AbstractRoute
 {
     /**
      * @var string
      */
-    protected $route_path = 'index';
+    protected $route_path = '{{route}}';
 
     /**
      * @var string
      */
-    protected $cp_page_title = 'home';
+    protected $cp_page_title = '{{route_uc}}';
 
     /**
      * @param false $id
@@ -22,14 +22,14 @@ class Index extends AbstractRoute
      */
     public function process($id = false)
     {
-        $this->addBreadcrumb('index', 'Home');
+        $this->addBreadcrumb('{{route}}', '{{route_uc}}');
 
         $variables = [
-            'name' => 'Matt',
+            'name' => 'My Name',
             'color' => 'Green'
         ];
 
-        $this->setBody('McpIndex', $variables);
+        $this->setBody('{{view}}', $variables);
 
         return $this;
     }

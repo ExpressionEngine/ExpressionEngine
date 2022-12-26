@@ -58,8 +58,8 @@ class CommandMakeModel extends Cli
     {
         $this->info('command_make_model_lets_build_model');
 
-        $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_model_ask_model_name");
-        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_model_ask_addon");
+        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_model_ask_model_name");
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_model_ask_addon");
 
         $this->info('command_make_model_lets_build');
 

@@ -14,5 +14,4 @@ use ExpressionEngine\Service\Addon\Exceptions\Controllers\RouteException as Base
 
 class RouteException extends BaseRouteException
 {
-
 }

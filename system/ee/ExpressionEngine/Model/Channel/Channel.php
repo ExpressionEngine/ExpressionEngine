@@ -210,6 +210,7 @@ class Channel extends StructureModel
     protected $max_revisions = 10;
     protected $default_entry_title;
     protected $title_field_label;
+    protected $title_field_instructions;
     protected $url_title_prefix;
     protected $max_entries;
     protected $preview_url;

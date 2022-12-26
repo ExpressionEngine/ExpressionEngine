@@ -126,6 +126,7 @@
 			items: '.fluid__item',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper,	// Custom sort handler
 			cancel: '.no-drag',
+			appendTo: 'div.panel-body',
 			start: function (event, ui) {
 				$(ui.item).addClass('fluid__item--dragging')
 

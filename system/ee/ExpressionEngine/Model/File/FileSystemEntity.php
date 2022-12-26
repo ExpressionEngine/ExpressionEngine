@@ -408,6 +408,10 @@ class FileSystemEntity extends ContentModel
 
     public function onBeforeDelete()
     {
+        if (ee('Request')->isPost() && ee('Request')->post('remove_files') !== null && ee('Request')->post('remove_files') != 1) {
+            // this is hacky, but currently only way to prevent file deleting when upload destination is removed in CP
+            return;
+        }
         $this->deleteAllFiles();
     }
 
