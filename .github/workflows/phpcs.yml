@@ -39,4 +39,7 @@ jobs:
 
           - name: Check PHP code style
             id: phpcs
-            run: phpcs -q --standard=/home/runner/work/ExpressionEngine/ExpressionEngine/phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
+            run: |
+              ls
+              cat phpcs.ruleset.xml
+              phpcs -q --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
