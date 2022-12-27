@@ -24,7 +24,7 @@ return (new PhpCsFixer\Config)
         'method_chaining_indentation' => true,
         'no_blank_lines_after_phpdoc' => true,
         'no_extra_blank_lines' => true,
-        'no_trailing_comma_in_singleline_array' => true,
+        'no_trailing_comma_in_singleline' => true,
         'no_spaces_around_offset' => true,
         'no_whitespace_before_comma_in_array' => true,
         'normalize_index_brace' => true,

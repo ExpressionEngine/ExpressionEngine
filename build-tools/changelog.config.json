@@ -18,6 +18,6 @@
     ],
     "sort": "DESC",
     "template": "${{CHANGELOG}}",
-    "pr_template": "- ${{TITLE}}\n   - PR: #${{NUMBER}}",
+    "pr_template": "- ${{TITLE}}",
     "empty_template": "- no changes"
   }
