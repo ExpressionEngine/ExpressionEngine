@@ -5,8 +5,8 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude('vendor')
     ->in(__DIR__);
 
-return (new PhpCsFixer\Config)
-    ->setRules([
+$config = new PhpCsFixer\Config();
+return $config->setRules([
         '@PSR12' => true,
         'array_indentation' => true,
         'binary_operator_spaces' => [
@@ -17,7 +17,7 @@ return (new PhpCsFixer\Config)
         ],
         'blank_line_before_statement' => true,
         'cast_spaces' => true,
-        'concat_space' => [ 'spacing' => 'one' ],
+        'concat_space' => ['spacing' => 'one'],
         'indentation_type' => true,
         'linebreak_after_opening_tag' => true,
         'lowercase_static_reference' => false,
