@@ -54,11 +54,19 @@ jobs:
 
           - name: Check PHP code style
             id: phpcs
-            run: phpcs -q --report-checkstyle=./build-tools/phpcs-report.xml --standard=phpcs.ruleset.xml ${{ steps.changed_files.outputs.all_changed_files }}
+            run: phpcs -q --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }}
+
+          - name: Check PHP code style
+            id: phpcs
+            run: phpcs -q --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
+
+          - name: Check PHP code style
+            id: phpcs
+            run: phpcs --report-full --report-checkstyle=./phpcs-report.xml
 
           - name: Show PHPCS results in PR
             if: ${{ always() && steps.phpcs.outcome == 'failure' }}
-            run: cs2pr ./build-tools/phpcs-report.xml
+            run: cs2pr ./phpcs-report.xml
 
           - name: Setup node
             uses: actions/setup-node@v3
