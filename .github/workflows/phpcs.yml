@@ -30,7 +30,7 @@ jobs:
                 php-version: '8.1'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
-                tools: cs2pr
+                tools: php-cs-fixer, cs2pr
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=512M
 
           - name: Check PHP code style
