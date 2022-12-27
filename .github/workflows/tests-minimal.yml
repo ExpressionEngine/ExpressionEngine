@@ -45,17 +45,16 @@ jobs:
                 php-version: '8.1'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
+                tools: cs2pr, phpcs
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
           - name: Install PHP check tools
             working-directory: build-tools
             run: composer install
 
-          - name: Run PHPCS inspection
-            uses: rtCamp/action-phpcs-code-review@v2
-            env:
-              GH_BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              PHPCS_STANDARD_FILE_NAME: "phpcs.ruleset.xml"
+          - name: Check PHP code style
+            id: phpcs
+            run: phpcs -q --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
 
           - name: Setup node
             uses: actions/setup-node@v3
