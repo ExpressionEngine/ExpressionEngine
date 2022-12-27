@@ -42,4 +42,4 @@ jobs:
             run: |
               ls
               cat phpcs.ruleset.xml
-              phpcs -q --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
+              phpcs -q --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }}
