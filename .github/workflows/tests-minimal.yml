@@ -50,7 +50,7 @@ jobs:
 
           - name: Check PHP code style
             id: phpcs
-            run: phpcs -q --standard=ExpressionEngine --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
+            run: phpcs -q --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
 
           - name: Setup node
             uses: actions/setup-node@v3
