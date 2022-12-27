@@ -56,8 +56,8 @@ jobs:
             id: phpcs
             run: phpcs -q --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }}
 
-          - name: Check PHP code style
-            id: phpcs
+          - name: Check PHP code style 2
+            id: phpcs2
             run: phpcs -q --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
 
           - name: Check PHP code style
