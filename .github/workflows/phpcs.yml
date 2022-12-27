@@ -30,16 +30,10 @@ jobs:
                 php-version: '8.1'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
-                tools: cs2pr, phpcs
+                tools: cs2pr
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=512M
-
-          - name: Install PHP check tools
-            working-directory: build-tools
-            run: composer install
 
           - name: Check PHP code style
             id: phpcs
             run: |
-              ls
-              cat phpcs.ruleset.xml
-              phpcs -q --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }}
+              php-cs-fixer fix -vvv --dry-run --config=.php-cs-fixer.dist.php --format=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
