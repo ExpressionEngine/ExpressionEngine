@@ -54,7 +54,7 @@ jobs:
 
           - name: Check PHP code style
             id: phpcs
-            run: phpcs ${{ steps.changed_files.outputs.all_changed_files }}
+            run: phpcs -q --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }}
 
           - name: Check PHP code style 2
             id: phpcs2
