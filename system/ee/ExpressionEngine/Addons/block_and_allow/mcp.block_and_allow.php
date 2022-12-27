@@ -34,7 +34,8 @@ class Block_and_allow_mcp
      */
     public function index()
     {
-        if (! ee()->db->table_exists("blockedlist")) {
+        if (! ee()->db->table_exists("blockedlist")) 
+        {
             show_error(lang("ref_no_blockedlist_table"));
         }
 

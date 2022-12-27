@@ -29,8 +29,7 @@ class Block_and_allow_upd extends Installer
      * @access public
      * @return bool
      */
-    public function install()
-    {
+    public function install() {
         $installed = parent::install();
         if ($installed) {
             ee()->load->dbforge();
