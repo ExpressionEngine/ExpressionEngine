@@ -5,17 +5,12 @@
     <arg name="extensions" value="php"/>
     <arg name="tab-width" value="4"/>
 
-    <config name="installed_paths" value="build-tools/vendor/phpcompatibility/php-compatibility" />
-
-    <!-- Run against the PHPCompatibility ruleset -->
-    <rule ref="PHPCompatibility" />
-
-    <!-- Check for cross-version support for PHP 7.2 and higher. -->
-    <config name="testVersion" value="7.2-"/>
-
     <!-- Code MUST follow all rules outlined in PSR-12. -->
     <rule ref="PSR12">
         <exclude name="Generic.Files.LineLength" />
+        <exclude name="Generic.Files.LineEndings.InvalidEOLChar" />
+        <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps" />
+        <exclude name="PSR1.Classes.ClassDeclaration" />
         <exclude name="PSR2.Methods.MethodDeclaration" />
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
         <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock" />

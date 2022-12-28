@@ -35,5 +35,4 @@ jobs:
 
           - name: Check PHP code style
             id: phpcs
-            run: |
-              php-cs-fixer fix -vvv --dry-run --config=.php-cs-fixer.dist.php --format=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
+            run: phpcs --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
