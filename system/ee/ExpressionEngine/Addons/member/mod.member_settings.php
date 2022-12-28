@@ -848,7 +848,8 @@ class Member_settings extends Member
 
             $data['hidden_fields'] = array(
                 'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
-                'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile'));
+                'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
+            );
 
             $return = ee()->functions->form_declaration($data) . $template . '</form>';
             //make head appear by default
