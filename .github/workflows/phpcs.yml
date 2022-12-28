@@ -40,9 +40,4 @@ jobs:
           - name: Check PHP code style
             id: check
             continue-on-error: true
-            run: phpcs --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }}
-
-          - name: Update the PR
-            id: display
-            continue-on-error: true
-            run: phpcs --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
+            run: phpcs -p -vvv --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }}
