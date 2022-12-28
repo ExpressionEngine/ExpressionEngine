@@ -27,7 +27,7 @@ jobs:
           - name: Setup PHP
             uses: shivammathur/setup-php@v2
             with:
-                php-version: '7.4'
+                php-version: '8.1'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
                 tools: phpcs, cs2pr
@@ -40,4 +40,4 @@ jobs:
           - name: Check PHP code style
             id: check
             continue-on-error: true
-            run: phpcs -p -vvv --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }}
+            run: phpcs --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
