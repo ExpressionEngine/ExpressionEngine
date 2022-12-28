@@ -30,9 +30,13 @@ jobs:
                 php-version: '8.1'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
-                tools: php-cs-fixer, cs2pr
+                tools: phpcs, cs2pr
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=512M
 
           - name: Check PHP code style
-            id: phpcs
+            id: check
+            run: phpcs --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }}
+
+          - name: Update the PR
+            id: display
             run: phpcs --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr
