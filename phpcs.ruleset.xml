@@ -14,6 +14,7 @@
         <exclude name="PSR2.Methods.MethodDeclaration" />
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
         <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock" />
+        <exclude name="PSR2.Classes.PropertyDeclaration.Underscore" />
     </rule>
 
 </ruleset>
