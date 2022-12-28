@@ -33,6 +33,10 @@ jobs:
                 tools: phpcs, cs2pr
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=512M
 
+          - name: Install dependencies
+            working-directory: build-tools
+            run: composer install
+
           - name: Check PHP code style
             id: check
             continue-on-error: true

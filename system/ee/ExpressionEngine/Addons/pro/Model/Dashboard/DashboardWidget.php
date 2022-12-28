@@ -156,8 +156,7 @@ class DashboardWidget extends Model
             $file_path = PATH_THIRD . $this->widget_source . '/widgets/' . $this->widget_file . '.' . $this->widget_type;
         }
 
-        switch ($this->widget_type) 
-        {
+        switch ($this->widget_type) {
             case 'php':
                 if (empty($file_path)) {
                     return $html; //no valid path
