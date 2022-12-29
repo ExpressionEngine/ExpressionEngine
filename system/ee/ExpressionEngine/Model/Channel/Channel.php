@@ -42,6 +42,7 @@ class Channel extends StructureModel
         'enable_versioning' => 'boolString',
         'search_excerpt' => 'int',
         'conditional_sync_required' => 'boolString',
+        'enforce_auto_url_title' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -142,6 +143,7 @@ class Channel extends StructureModel
         'search_results_url' => 'xss',
         'rss_url' => 'xss',
         'default_entry_title' => 'xss',
+        'enforce_auto_url_title' => 'enum[y,n]',
         'url_title_prefix' => 'alphaDash|xss',
         'channel_notify_emails' => 'validateEmails',
         'comment_notify_emails' => 'validateEmails',
@@ -212,6 +214,7 @@ class Channel extends StructureModel
     protected $title_field_label;
     protected $title_field_instructions;
     protected $url_title_prefix;
+    protected $enforce_auto_url_title;
     protected $max_entries;
     protected $preview_url;
     protected $allow_preview = true;

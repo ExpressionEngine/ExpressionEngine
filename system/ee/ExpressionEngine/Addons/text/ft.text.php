@@ -116,6 +116,10 @@ class Text_ft extends EE_Fieldtype
             'field_content_type' => $type
         );
 
+        if ($this->get_setting('readonly')) {
+            $field['readonly'] = true;
+        }
+
         if ($this->get_setting('field_disabled')) {
             $field['disabled'] = 'disabled';
         }
