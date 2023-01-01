@@ -2764,6 +2764,7 @@ class Channel
 
         $str = '';
         $strict_empty = (ee()->TMPL->fetch_param('restrict_channel') == 'no') ? 'no' : 'yes';
+        $all = [];
 
         if (ee()->TMPL->fetch_param('style') == '' or ee()->TMPL->fetch_param('style') == 'nested') {
             $this->category_tree(array(
