@@ -12,6 +12,7 @@ use ExpressionEngine\Model\File\UploadDestination;
 use ExpressionEngine\Addons\FilePicker\FilePicker as Picker;
 use ExpressionEngine\Service\File\ViewType;
 use ExpressionEngine\Library\CP\FileManager\Traits\FileManagerTrait;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * File Picker Module control panel
@@ -38,7 +39,7 @@ class Filepicker_mcp
     protected function getUserUploadDirectories()
     {
         $dirs = ee('Model')->get('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->order('name', 'asc')
             ->all();
@@ -53,7 +54,7 @@ class Filepicker_mcp
     protected function getSystemUploadDirectories()
     {
         $dirs = ee('Model')->get('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', '!=', 0)
             ->all();
 
@@ -151,7 +152,7 @@ class Filepicker_mcp
         // Generate the contents of the new folder modal
         $newFolderModal = ee('View')->make('files/modals/folder')->render([
             'name' => 'modal-new-folder',
-            'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
+            'form_url' => ee('CP/URL')->make('files/createSubdirectory')->compile(),
             'choices' => $this->getUploadLocationsAndDirectoriesDropdownChoices(),
             'selected' => (int) ee('Request')->get('directory_id'),
         ]);

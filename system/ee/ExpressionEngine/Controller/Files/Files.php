@@ -64,7 +64,7 @@ class Files extends AbstractFilesController
     public function directory(int $id)
     {
         $dir = ee('Model')->get('UploadDestination', $id)
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->first();
 
         if (! $dir) {
@@ -284,7 +284,7 @@ class Files extends AbstractFilesController
             ->with('UploadDestination')
             ->fields('file_id')
             ->filter('UploadDestination.module_id', 0)
-            ->filter('site_id', ee()->config->item('site_id'));
+            ->filter('File.site_id', ee()->config->item('site_id'));
 
         $this->exportFiles($files->all()->pluck('file_id'));
 
@@ -727,7 +727,7 @@ class Files extends AbstractFilesController
 
         $id = ee()->input->post('dir_id');
         $dir = ee('Model')->get('UploadDestination', $id)
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->first();
 
         if (! $dir) {

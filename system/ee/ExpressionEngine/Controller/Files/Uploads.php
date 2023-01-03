@@ -182,14 +182,14 @@ class Uploads extends AbstractFilesController
         $adapter_groups = [];
         $adapter_choices = [];
         $adapter_settings = [];
-        foreach($adapters as $key => $adapter) {
+        foreach ($adapters as $key => $adapter) {
             $adapter_choices[$key] = lang('adapter_' . $key);
             $adapter_groups[$key] = "adapter_{$key}";
             $adapterFields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->adapter == $key) ? $settingsValues : []);
-            if(!empty($adapterFields)) {
-                foreach($adapterFields as $field) {
+            if (!empty($adapterFields)) {
+                foreach ($adapterFields as $field) {
                     // Prefix all field names for the adapter
-                    foreach($field['fields'] as $input_name => $input) {
+                    foreach ($field['fields'] as $input_name => $input) {
                         $prefixed_name = implode('', [
                             "_for_adapter[{$key}]",
                             (strpos($input_name, '[') !== false) ? '['. str_replace('[', '][', $input_name) : "[{$input_name}]"
@@ -246,13 +246,32 @@ class Uploads extends AbstractFilesController
                                     'children' => $allowed_types,
                                 ]
                             ],
-                            'value' => $upload_destination->allowed_types ? (in_array('all', $upload_destination->allowed_types) ? ['--'] : $upload_destination->allowed_types): ['img'],
+                            'value' => $upload_destination->allowed_types ? (in_array('all', $upload_destination->allowed_types) ? ['--'] : $upload_destination->allowed_types) : ['img'],
                             'toggle_all' => false,
                         ),
                     )
                 ),
             )
         );
+
+        if (bool_config_item('multiple_sites_enabled')) {
+            $vars['sections'][0][] = array(
+                'title' => 'enable_partial_on_all_sites',
+                'desc' => 'enable_partial_on_all_sites_desc',
+                'fields' => array(
+                    'site_id' => array(
+                        'type' => 'inline_radio',
+                        'choices' => array(
+                            '0' => 'all_sites',
+                            ee()->config->item('site_id') => ee()->config->item('site_label') . ' ' . lang('only')
+                        ),
+                        'encode' => false,
+                        'value' => '0',
+                    )
+                )
+            );
+        }
+
         $vars['sections'] = array_merge($vars['sections'], array(
             'browser_behavior' => array(
                 array(
@@ -790,7 +809,7 @@ class Uploads extends AbstractFilesController
 
         if (ee('Permission')->isSuperAdmin()) {
             $upload_destination = ee('Model')->get('UploadDestination', $upload_id)
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                 ->first();
         } else {
             $member = ee()->session->getMember();

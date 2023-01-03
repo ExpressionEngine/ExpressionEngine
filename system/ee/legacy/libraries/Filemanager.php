@@ -144,7 +144,7 @@ class Filemanager
         $dir = ee('Model')->get('UploadDestination', $dir_id);
 
         if (! $ignore_site_id) {
-            $dir->filter('site_id', ee()->config->item('site_id'));
+            $dir->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         }
 
         if ($dir->count() < 1) {
@@ -302,6 +302,7 @@ class Filemanager
         $prefs['upload_location_id'] = $directory['id'];
 
         $prefs = array_merge($prefs, $dir_prefs);
+        $prefs['site_id'] = ee()->config->item('site_id');
 
         if (! isset($prefs['dimensions'])) {
             $prefs['dimensions'] = array();
@@ -1605,7 +1606,7 @@ class Filemanager
         $directories = ee('Model')->get('UploadDestination');
 
         if (!$ignore_site_id) {
-            $directories->filter('site_id', ee()->config->item('site_id'));
+            $directories->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         }
 
         $dirs = $directories->all()->indexBy('id');
