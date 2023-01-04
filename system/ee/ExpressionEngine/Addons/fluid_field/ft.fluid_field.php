@@ -212,7 +212,6 @@ class Fluid_field_ft extends EE_Fieldtype
                 $field->setData($fieldValue);
                 $field->validate($fieldValue);
                 $compiled_data_for_search[] = $field->save($fieldValue);
-
             }
         }
 
@@ -249,7 +248,6 @@ class Fluid_field_ft extends EE_Fieldtype
             $group_key = $key;
 
             foreach ($value as $fieldKey => $fieldValue) {
-
                 if (strpos($fieldKey, 'field_id_') !== 0) {
                     continue;
                 }
@@ -259,7 +257,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 // Existing field
                 if (strpos($key, 'field_') === 0 && (!defined('CLONING_MODE') || CLONING_MODE !== true)) {
                     $id = str_replace('field_', '', $key);
-                    $group_key = 'group_'.$fluid_field_data[$id]->group;
+                    $group_key = 'group_' . $fluid_field_data[$id]->group;
                 // New field
                 } elseif (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
                     $field_id = str_replace('field_id_', '', $fieldKey);
@@ -433,6 +431,8 @@ class Fluid_field_ft extends EE_Fieldtype
     {
         $fields = '';
 
+        $field_channel_field_groups = isset($this->settings['field_channel_field_groups']) ? $this->settings['field_channel_field_groups'] : [];
+
         $field_templates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
             ->order('field_label')
             ->all();
@@ -440,12 +440,12 @@ class Fluid_field_ft extends EE_Fieldtype
         $all_fields = ee('Model')->get('ChannelField')
             ->with('ChannelFieldGroups')
             ->filter('field_id', 'IN', $this->settings['field_channel_fields'])
-            ->orFilter('ChannelFieldGroups.group_id', 'IN', $this->settings['field_channel_field_groups'])
+            ->orFilter('ChannelFieldGroups.group_id', 'IN', $field_channel_field_groups)
             ->order('field_label')
             ->all()
             ->indexByIds();
 
-        $field_groups = ee('Model')->get('ChannelFieldGroup', $this->settings['field_channel_field_groups'])
+        $field_groups = ee('Model')->get('ChannelFieldGroup', $field_channel_field_groups)
             ->with('ChannelFields')
             ->order('group_name')
             ->all();
@@ -478,7 +478,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 // group items
                 $fluid_field_data_groups = [];
 
-                $fluid_field_data->each(function($field) use(&$fluid_field_data_groups) {
+                $fluid_field_data->each(function ($field) use (&$fluid_field_data_groups) {
                     if (!array_key_exists($field->group, $fluid_field_data_groups)) {
                         $fluid_field_data_groups[$field->group] = [];
                     }
@@ -642,10 +642,10 @@ class Fluid_field_ft extends EE_Fieldtype
         foreach ($field_groups as $field_group) {
             $templates .= ee('View')->make('fluid_field:fieldgroup')->render([
                 'field_group' => $field_group,
-                'field_group_fields' => $field_group->ChannelFields->sortBy('field_label')->sortBy('field_order')->map(function($field) use($field_group) {
+                'field_group_fields' => $field_group->ChannelFields->sortBy('field_label')->sortBy('field_order')->map(function ($field) use ($field_group) {
                     $f = $field->getField();
                     $f->setItem('fluid_field_data_id', null);
-                    $f->setName($this->name() .'[fields][new_field_0][field_group_id_' . $field_group->getId() . '][field_id_' . $field->getId() . ']');
+                    $f->setName($this->name() . '[fields][new_field_0][field_group_id_' . $field_group->getId() . '][field_id_' . $field->getId() . ']');
                     return $f;
                 }),
                 'field_name' => $field_group->group_name,
@@ -791,8 +791,8 @@ class Fluid_field_ft extends EE_Fieldtype
             ->filter('ChannelFields.field_id', 'NOT IN', $all['field_channel_fields'])
             ->all();
 
-        $field_groups->each(function($group) {
-            $group->ChannelFields->each(function($field) {
+        $field_groups->each(function ($group) {
+            $group->ChannelFields->each(function ($field) {
                 $field->createTable();
             });
         });
@@ -1010,8 +1010,10 @@ class Fluid_field_ft extends EE_Fieldtype
                     [$this->id()]
                 );
 
-                if (! isset($data["field_id_{$this->id()}"])
-                    || ! isset($data["field_id_{$this->id()}"]['fields'])) {
+                if (
+                    ! isset($data["field_id_{$this->id()}"])
+                    || ! isset($data["field_id_{$this->id()}"]['fields'])
+                ) {
                     return 0;
                 }
             }
