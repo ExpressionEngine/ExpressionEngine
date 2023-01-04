@@ -56,7 +56,7 @@ trait FileManagerTrait
         $files = ee('Model')->get($model)
             // ->fields($model . '.*', 'UploadDestination.server_path', 'UploadDestination.url');
             ->with('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'));
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         if (empty($upload_location_id)) {
             $files->filter('UploadDestination.module_id', 0);
         } else {

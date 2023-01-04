@@ -302,7 +302,6 @@ class Filemanager
         $prefs['upload_location_id'] = $directory['id'];
 
         $prefs = array_merge($prefs, $dir_prefs);
-        $prefs['site_id'] = ee()->config->item('site_id');
 
         if (! isset($prefs['dimensions'])) {
             $prefs['dimensions'] = array();

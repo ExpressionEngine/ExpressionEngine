@@ -256,17 +256,13 @@ class Uploads extends AbstractFilesController
 
         if (bool_config_item('multiple_sites_enabled')) {
             $vars['sections'][0][] = array(
-                'title' => 'enable_partial_on_all_sites',
-                'desc' => 'enable_partial_on_all_sites_desc',
+                'title' => 'share_directory_on_all_sites',
+                'desc' => 'share_directory_on_all_sites_desc',
                 'fields' => array(
-                    'site_id' => array(
-                        'type' => 'inline_radio',
-                        'choices' => array(
-                            '0' => 'all_sites',
-                            ee()->config->item('site_id') => ee()->config->item('site_label') . ' ' . lang('only')
-                        ),
-                        'encode' => false,
-                        'value' => '0',
+                    'share_directory' => array(
+                        'type' => 'yes_no',
+                        'value' => $upload_destination->site_id === 0,
+                        'disabled' => ! $upload_destination->isNew()
                     )
                 )
             );
@@ -640,6 +636,11 @@ class Uploads extends AbstractFilesController
     private function validateUploadPreferences($upload_destination)
     {
         $upload_destination->set($_POST);
+
+        if ($upload_destination->isNew() && ee('Request')->post('share_directory') == 'y') {
+            $upload_destination->site_id = 0;
+        }
+
         // Pull adapter specific configuration
         if (isset($_POST['_for_adapter']) && isset($_POST['_for_adapter'][$_POST['adapter']])) {
             $adapterSettings = $_POST['_for_adapter'][$_POST['adapter']];
@@ -746,7 +747,7 @@ class Uploads extends AbstractFilesController
 
         foreach ($new_sizes as $row_id => $columns) {
             $model = ee('Model')->make('FileDimension', $columns);
-            $model->site_id = ee()->config->item('site_id');
+            $model->site_id = $upload_destination->site_id;
             $upload_destination->FileDimensions[] = $model;
 
             $validate[$row_id] = $model;

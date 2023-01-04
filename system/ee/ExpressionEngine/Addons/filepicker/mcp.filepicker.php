@@ -54,7 +54,7 @@ class Filepicker_mcp
     protected function getSystemUploadDirectories()
     {
         $dirs = ee('Model')->get('UploadDestination')
-            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
+            ->filter('site_id', ee()->config->item('site_id'))
             ->filter('module_id', '!=', 0)
             ->all();
 
@@ -230,7 +230,7 @@ class Filepicker_mcp
     private function fileInfo($id)
     {
         $file = ee('Model')->get('File', $id)
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->first();
 
         if (! $file || ! $file->exists()) {

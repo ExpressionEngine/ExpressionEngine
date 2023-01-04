@@ -284,7 +284,7 @@ class Files extends AbstractFilesController
             ->with('UploadDestination')
             ->fields('file_id')
             ->filter('UploadDestination.module_id', 0)
-            ->filter('File.site_id', ee()->config->item('site_id'));
+            ->filter('File.site_id', 'IN', [0, ee()->config->item('site_id')]);
 
         $this->exportFiles($files->all()->pluck('file_id'));
 
@@ -818,7 +818,7 @@ class Files extends AbstractFilesController
 
         // Loop through the files and add them to the zip
         $files = ee('Model')->get('File', $file_ids)
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->all()
             ->filter(function ($file) use ($member) {
                 return $file->memberHasAccess($member);
@@ -867,7 +867,7 @@ class Files extends AbstractFilesController
         $member = ee()->session->getMember();
 
         $files = ee('Model')->get('FileSystemEntity', $file_ids)
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->all()
             ->filter(function ($file) use ($member) {
                 return $file->memberHasAccess($member);
