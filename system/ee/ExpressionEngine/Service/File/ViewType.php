@@ -27,9 +27,8 @@ class ViewType
     {
         $views = ['list', 'thumb'];
         $viewtype_prefs = [];
-
         if (ee()->input->cookie('viewtype')) {
-            $viewtype_prefs = unserialize(ee()->input->cookie('viewtype'));
+            $viewtype_prefs = json_decode(ee()->input->cookie('viewtype'), true);
             if (isset($viewtype_prefs[$destination]) && in_array($viewtype_prefs[$destination], $views)) {
                 $viewtype = $viewtype_prefs[$destination];
             }
@@ -38,7 +37,7 @@ class ViewType
         if (in_array(ee()->input->get('viewtype'), $views)) {
             if (!isset($viewtype_prefs[$destination]) || $viewtype != ee()->input->get('viewtype')) {
                 $viewtype_prefs[$destination] = ee()->input->get('viewtype');
-                ee()->input->set_cookie('viewtype', serialize($viewtype_prefs), 31104000);
+                ee()->input->set_cookie('viewtype', json_encode($viewtype_prefs), 31104000);
             }
             $viewtype = ee()->input->get('viewtype');
         }
