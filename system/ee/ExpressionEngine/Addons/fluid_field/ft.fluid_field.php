@@ -70,7 +70,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
             if (strpos($key, 'field_') === 0) {
                 $fluid_field_data_id = (int) str_replace('field_', '', $key);
-            } else if (strpos($key, 'new_field_') === 0) {
+            } elseif (strpos($key, 'new_field_') === 0) {
                 $new_field = "[$key]";
             }
 
@@ -84,6 +84,10 @@ class Fluid_field_ft extends EE_Fieldtype
                 foreach ($datum as $fieldId => $fieldValue) {
                     if (strpos($fieldId, 'field_id_') === 0) {
                         $field_id = str_replace('field_id_', '', $fieldId);
+                    }
+
+                    if (empty($field_id)) {
+                        continue;
                     }
 
                     $field_name = implode('', array_filter([
@@ -190,6 +194,10 @@ class Fluid_field_ft extends EE_Fieldtype
             foreach ($value as $fieldKey => $fieldValue) {
                 if (strpos($fieldKey, 'field_id_') === 0) {
                     $field_id = (int) str_replace('field_id_', '', $fieldKey);
+                }
+
+                if (empty($field_id)) {
+                    continue;
                 }
 
                 if ($create) {
