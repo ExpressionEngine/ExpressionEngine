@@ -81,6 +81,7 @@
 
 		$('.fluid').on('click', 'a.js-fluid-remove', function(e) {
 			var el = $(this).closest('.fluid__item');
+			var fluidCount = $(this).parents('.fluid').attr('data-field-count');
 
             // If we removed a field group fire 'remove' events on all of its fields
             if ($(el).data('field-type') == 'field_group') {

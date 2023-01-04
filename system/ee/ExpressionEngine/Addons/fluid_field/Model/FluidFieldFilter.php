@@ -36,8 +36,8 @@ class FluidFieldFilter
 
     public function setAttributes($attributes)
     {
-        foreach($attributes as $attribute => $value) {
-            if(in_array($attribute, $this->fields)) {
+        foreach ($attributes as $attribute => $value) {
+            if (in_array($attribute, $this->fields)) {
                 $this->attributes[$attribute] = $value;
             }
         }
@@ -52,6 +52,4 @@ class FluidFieldFilter
     {
         return (isset($this->attributes[$key])) ? $this->attributes[$key] : null;
     }
-
-
 }
