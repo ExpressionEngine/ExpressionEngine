@@ -352,17 +352,17 @@ class Colorpicker_ft extends EE_Fieldtype
         $grid->loadAssets();
         $grid->setColumns([
             'colors' => [
-                'label' => '',
+                'label' => 'Color',
             ],
             'name' => [
-                'label' => '',
+                'label' => 'Name',
             ],
         ]);
         $grid->setNoResultsText(lang('no_colorpicker_swatches'), lang('add_new'));
 
         $grid->setBlankRow([
             ['html' => $this->createColorPicker(['inputName' => 'color'], true)],
-            ['html' => form_input('name', '', 'placeholder="Name"')]
+            ['html' => form_input('name', '')]
         ]);
 
         $grid->setData([]);
@@ -373,6 +373,8 @@ class Colorpicker_ft extends EE_Fieldtype
             $i = 1;
 
             foreach ($data['value_swatches'] as $color) {
+                $name = '';
+
                 if (strpos($color, '|') !== false) {
                     $parts = explode('|', $color);
                     $color = $parts[0];
