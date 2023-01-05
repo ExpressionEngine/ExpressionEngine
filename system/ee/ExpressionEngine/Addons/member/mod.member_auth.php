@@ -800,7 +800,7 @@ class Member_auth extends Member
         $reset_url .= '?id=' . $resetcode . $forum_id;
 
         if (! empty($protected['email_template'])) {
-            $email_template = ee()->TMPL->fetch_template_and_parse_from_path($protected['email_template']);
+            $email_template = ee()->TMPL->fetch_template_from_path($protected['email_template']);
         } else {
             $email_template = $template['data'];
         }
