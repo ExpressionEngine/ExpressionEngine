@@ -37433,7 +37433,7 @@ body[data-theme="dark"] {
   background-color: transparent;
 }
 .fields-keyvalue-item .field-control {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   padding: 0 5px;
 }
 .fields-keyvalue-item .field-control:first-of-type {
@@ -37444,7 +37444,7 @@ body[data-theme="dark"] {
   display: flex;
 }
 .fields-keyvalue-header .field-instruct {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   margin-bottom: 5px;
 }
 .fields-keyvalue-header .field-instruct label {
@@ -37457,7 +37457,7 @@ body[data-theme="dark"] {
   padding-right: 0;
 }
 .fields-keyvalue-header .field-instruct:last-child {
-  padding-left: 0;
+  padding-left: 5px;
 }
 
 /*
