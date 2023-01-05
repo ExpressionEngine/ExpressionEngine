@@ -103,14 +103,8 @@ class Pro_search_filters
 
                 // Compose file name
                 // Compose class name
-                if (version_compare(ee()->config->item('app_version'), '7.0.0', '>=')) {
-                    $file = $dir . "/psf.{$item}.php";
-                    $class = 'Pro_search_filter_' . $item;
-                }
-                else {
-                    $file = $dir . "/lsf.{$item}.php";
-                    $class = 'Low_search_filter_' . $item;
-                }
+                $file = $dir . "/psf.{$item}.php";
+                $class = 'Pro_search_filter_' . $item;
 
                 // Skip if not a file
                 if (! file_exists($file)) {
