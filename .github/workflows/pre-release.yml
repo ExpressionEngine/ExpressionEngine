@@ -4,10 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
-      - 6.x
-  push:
-    branches:
-      - feature/6.x/preparing-to-release
+      - '*.x'
 
 jobs:
   build:
@@ -18,19 +15,19 @@ jobs:
       version: ${{ steps.build_json.outputs.BUILD_VERSION }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
 
       - name: Checkout Pro
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: EllisLab/ExpressionEngine-Pro
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: __pro
 
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '10'
 
@@ -50,7 +47,7 @@ jobs:
         working-directory: build-tools
         run: |
           content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
-          echo "::set-output name=BUILD_VERSION::$content"
+          echo "BUILD_VERSION=$content" >> $GITHUB_OUTPUT
 
       - name: Run build process
         working-directory: build-tools
@@ -63,7 +60,7 @@ jobs:
           gulp app --local --nogit --head --skip-lint --jira-collector --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Archive Build files
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: EE${{ steps.build_json.outputs.BUILD_VERSION }}
           path: build-tools/builds
@@ -97,16 +94,26 @@ jobs:
         run: |
           git fetch --tags
 
+      - name: Get previous release tag
+        id: prev_release_tag
+        continue-on-error: true
+        uses: oprypin/find-latest-tag@v1
+        with:
+          repository: ExpressionEngine/ExpressionEngine
+          regex: '^\d+\.\d+\.\d+$'
+          releases-only: true
+
       - name: Build Changelog
         id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v1
+        uses: mikepenz/release-changelog-builder-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
           fromTag: ${{ steps.prev_release_tag.outputs.tag }}
+          toTag: ${{ steps.build_json.outputs.BUILD_VERSION }}
           configuration: build-tools/changelog.config.json
 
-      - uses: ncipollo/release-action@v1
+      - uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: "build-tools/builds/ExpressionEngine*,build-tools/builds/signature*"
           name: ExpressionEngine ${{ steps.build_json.outputs.BUILD_VERSION }} DP ${{ env.dp_ver }}
@@ -141,7 +148,7 @@ jobs:
       steps:
 
             - name: Checkout repo
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
               with:
                 repository: ExpressionEngine/ExpressionEngine
                 path: __repo
@@ -207,22 +214,21 @@ jobs:
               run: php -S localhost:8888 &
 
             - name: Run Cypress Tests
-              uses: cypress-io/github-action@v2
+              uses: cypress-io/github-action@v5
               with:
                 browser: chrome
-                headless: true
                 working-directory: tests/cypress
                 config-file: updater.cypress.json
 
             - name: Archive screenshots
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               if: failure()
               with:
                 name: cypress-tests-updater
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               if: failure()
               with:
                 name: updater.error.log
