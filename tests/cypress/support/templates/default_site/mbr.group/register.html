@@ -8,6 +8,7 @@
         <p>
             <label for="username">Username*:</label><br />
             <input type="text" name="username" id="username" value="{if username}{username}{/if}"/><br />
+            <a href="javascript:validate_username()">validate username</a>
         </p>
 
         <p>
@@ -47,3 +48,85 @@
 
     <input type="submit" value="Register" id="submit" class="btn btn-primary" />
 {/exp:member:registration_form}
+
+<script type="text/javascript">
+    var validationUrl = '{exp:member:validation_url fields="password_rank"}';
+
+    // Creat visual password strength meter block
+    var rankWrap = '<div class="rank-wrap"><p class="status-tag "><span class="rank_text"></span></p></div>';
+
+    // Find password input
+    var passwordInput = document.querySelector('input[name="password"]');
+
+    // Create wrapper container. It can be added in the html part and needed for the correct positioning of the password strength meter block on the page 
+    var wrapper = document.createElement('span');
+
+    passwordInput.parentNode.insertBefore(wrapper, passwordInput);
+
+    // move passwordInput into wrapper
+    wrapper.appendChild(passwordInput);
+
+    // Closest parent for password input
+    var passwordInputContainer = passwordInput.parentElement;
+
+    passwordInputContainer.style.position = 'relative';
+    passwordInputContainer.style.display = 'block';
+
+    // Insert visual password strength meter block after password input
+    passwordInput.insertAdjacentHTML('afterend', rankWrap);
+
+    document.getElementsByName('password')[0].addEventListener('keyup', function(e){
+        var inputValLength = this.value.length;
+
+        //create a new XMLHttpRequest object
+        var request = new XMLHttpRequest();
+
+        //configure it to do an asynchronous GET request for some URL
+        request.open("POST", validationUrl, true);
+        request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+        //add a listener for the "load" event, which
+        //will happen when the data returns
+        request.addEventListener("load", function() {
+            if (request.status >= 200 && request.status < 400) {
+                var data = JSON.parse(request.responseText);
+                if (inputValLength == 0) {
+                    document.querySelector('.rank-wrap').style.display = 'none';
+                    document.querySelector('.rank-wrap > p').className = '';
+                    document.querySelector('.rank-wrap .rank_text').textContent = '';
+                } else {
+                    var rank_text = data['rank_text'].toLowerCase();
+                    var classList = 'status-tag ' + rank_text;
+                    document.querySelector('.rank-wrap > p').className = classList;
+                    document.querySelector('.rank-wrap .rank_text').textContent = rank_text;
+                    document.querySelector('.rank-wrap').style.display = 'block';
+                }
+            } else {
+
+            }
+        });
+
+        //finally, send the request to the server
+        request.send('password=' + e.target.value);
+    });
+
+function validate_username() {
+
+    var url = '{exp:member:validation_url fields="username"}';
+
+    //create a new XMLHttpRequest object
+    var request = new XMLHttpRequest();
+
+    //configure it to do an asynchronous GET request for some URL
+    request.open("POST", url, true);
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+
+    //finally, send the request to the server
+    request.send('username=' + document.getElementsByName('username')[0].value);
+
+    return false;
+}
+</script>
