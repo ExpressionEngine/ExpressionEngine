@@ -859,13 +859,20 @@ class Member_memberlist extends Member
         }
 
         if ($is_search_form && !empty($tagdata)) {
-            $template = ee()->functions->form_declaration(array(
-                'hidden_fields' => array(
-                    'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
-                    'RET' => ee()->TMPL->fetch_param('return') != '' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
-                    'no_result_page' => ee()->TMPL->fetch_param('no_result_page')
-                )
-            )) . $template . '</form>';
+            $data = [];
+            if (ee()->TMPL->fetch_param('form_name', '') != "") {
+                $data['name'] = ee()->TMPL->fetch_param('form_name');
+            }
+
+            $data['id'] = ee()->TMPL->form_id;
+            $data['class'] = ee()->TMPL->form_class;
+
+            $data['hidden_fields'] = array(
+                'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
+                'RET' => ee()->TMPL->fetch_param('return') != '' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
+                'no_result_page' => ee()->TMPL->fetch_param('no_result_page'));
+
+            $template = ee()->functions->form_declaration($data) . $template . '</form>';
         } else {
             $template = str_replace(LD . "form_declaration" . RD, $form_open, $template);
             $form_open_member_search = ee()->functions->form_declaration(array(
