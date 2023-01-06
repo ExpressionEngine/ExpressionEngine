@@ -808,7 +808,7 @@ class File_field
             return '';
         }
 
-        if (strpos((string) $data, 'file:') !== false ) {
+        if (strpos((string) $data, 'file:') !== false) {
             if (preg_match_all('/{file\:(\d+)\:url}/', (string) $data, $matches, PREG_SET_ORDER)) {
                 $file_ids = [];
                 foreach ($matches as $match) {
