@@ -41,6 +41,7 @@
                     // Don't do reordering logic if the table is empty
                     $reorder = $reorder && ! empty($data);
                     $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+                    $header_sorts = null;
 
                     if ($reorder_header): ?>
                         <th class="reorder-col"><span class="ico reorder fal fa-bars"></span></th>
