@@ -28,7 +28,7 @@ class Filesystem
             $syspath = str_replace('\\', '/', SYSPATH);
             $openBaseDir = ini_get('open_basedir');
             // Check if open_basedir restrictions are in effect
-            /*if (!empty($openBaseDir)) {
+            if (!empty($openBaseDir)) {
                 // Find the open_basedir root that our $syspath lives under
                 foreach (explode(':', ini_get('open_basedir')) as $path) {
                     $normalizedPath = str_replace('\\', '/', $path);
@@ -39,13 +39,13 @@ class Filesystem
             } else {
                 // If open_basedir is not enabled set our root to the top directory in the syspath
                 $syspathRoot = realpath($syspath . str_repeat('../', substr_count($syspath, '/') - 1));
-            }*/
+            }
             $adapter = new Adapter\Local([
-                'path' => $syspath//$this->normalizeAbsolutePath($syspathRoot ?: $syspath)
+                'path' => $this->normalizeAbsolutePath($syspathRoot ?: $syspath)
             ]);
         } else {
             // Fix prefixes
-            //$adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
+            $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
         }
         // Create the cache store
         $cacheStore = new Flysystem\Cached\Storage\Memory();
@@ -58,7 +58,7 @@ class Filesystem
         $config = array_merge($defaults, $config);
 
         $this->flysystem = new Flysystem\Filesystem($adapter, $config);
-        /*$this->flysystem->addPlugin(new Flysystem\Plugin\GetWithMetadata());*/
+        $this->flysystem->addPlugin(new Flysystem\Plugin\GetWithMetadata());
     }
 
     /**
