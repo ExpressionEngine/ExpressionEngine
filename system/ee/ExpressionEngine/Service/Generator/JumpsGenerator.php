@@ -57,6 +57,9 @@ class JumpsGenerator
         $jumpStub = $this->write('addon', $this->addon, $jumpStub);
 
         $this->putFile('jump.' . $this->addon . '.php', $jumpStub);
+
+        // Clear all jump caches
+        ee('CP/JumpMenu')->clearAllCaches();
     }
 
     private function stub($file)

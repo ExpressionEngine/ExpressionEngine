@@ -51,6 +51,7 @@ class CommandMakeJump extends Cli
      */
     public function handle()
     {
+        ee('CP/JumpMenu')->clearAllCaches();
         $this->info('command_make_cp_jumps');
 
         // Gather all the mcp information

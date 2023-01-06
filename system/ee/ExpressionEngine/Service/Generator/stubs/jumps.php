@@ -24,16 +24,16 @@ use ExpressionEngine\Service\JumpMenu\AbstractJumpMenu;
   protected static $items = [
         'index' => array(
             'icon' => 'fa-file',
-            'command' => '{{Addon}} index',
-            'command_title' => '{{Addon}} index',
+            'command' => 'index',
+            'command_title' => 'Index Page',
             'dynamic' => false,
             'requires_keyword' => false,
             'target' => ''
         ),
         'settings' => array(
             'icon' => 'fa-cog',
-            'command' => '{{Addon}} settings',
-            'command_title' => '<b>{{Addon}} settings</b>',
+            'command' => 'settings',
+            'command_title' => 'Settings',
             'dynamic' => false,
             'requires_keyword' => false,
             'target' => 'settings'
