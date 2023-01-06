@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -101,21 +100,32 @@ class Pro_search_filters
                     continue;
                 }
 
-                // Compose file name
-                // Compose class name
-                $file = $dir . "/psf.{$item}.php";
-                $class = 'Pro_search_filter_' . $item;
+                $possibleFiles = [
+                    $dir . "/lsf.{$item}.php",
+                    $dir . "/psf.{$item}.php",
+                ];
 
-                // Skip if not a file
-                if (! file_exists($file)) {
-                    continue;
-                }
+                $possibleClasses = [
+                    'Low_search_filter_' . $item,
+                    'Pro_search_filter_' . $item,
+                ];
 
-                if (! class_exists($class)) {
+                // Check low search files and pro search files for available filters
+                foreach ($possibleFiles as $file) {
+                    // Skip if not a file
+                    if (! file_exists($file)) {
+                        continue;
+                    }
+
+                    // Load the class
                     require_once($file);
-                }
 
-                $this->_filters[$item] = new $class();
+                    foreach ($possibleClasses as $class) {
+                        if (class_exists($class)) {
+                            $this->_filters[$item] = new $class();
+                        }
+                    }
+                }
             }
         }
 
