@@ -148,17 +148,17 @@ $lang = array(
     'command_make_action_option_install'            =>'Install this action after creating it. This runs all current migrations for the specified add-on. Add-on must first be installed.',
 
     // Lang entries for command make:template-tag
-    'command_make_tag_description'                  => 'Creates a new tag for an add-on',
-    'command_make_tag_summary'                      => 'This interactively generates an EE Tag for an existing third-party addon',
-    'command_make_tag_lets_build_tag'               => 'Let\'s build a new tag!',
-    'command_make_tag_ask_tag_name'                 => 'What is the tag name?',
-    'command_make_tag_ask_addon'                    => 'What add-on is the tag being added to?',
-    'command_make_tag_building_tag'                 => 'Building Tag.',
-    'command_make_tag_created_successfully'         => 'Tag created successfully!',
-    'command_make_tag_error_addon_must_have_module' => 'To generate a tag, the add-on must have a module file.',
+    'command_make_template_tag_description'                  => 'Creates a new tag for an add-on',
+    'command_make_template_tag_summary'                      => 'This interactively generates an EE Tag for an existing third-party addon',
+    'command_make_template_tag_lets_build_tag'               => 'Let\'s build a new tag!',
+    'command_make_template_tag_ask_tag_name'                 => 'What is the tag name?',
+    'command_make_template_tag_ask_addon'                    => 'What add-on is the tag being added to?',
+    'command_make_template_tag_building_tag'                 => 'Building Tag.',
+    'command_make_template_tag_created_successfully'         => 'Tag created successfully!',
+    'command_make_template_tag_error_addon_must_have_module' => 'To generate a tag, the add-on must have a module file.',
 
     // make:template-tag options
-    'command_make_tag_option_addon'                 => 'Folder for third-party add-on you want to add tag to.',
+    'command_make_template_tag_option_addon'                 => 'Folder for third-party add-on you want to add tag to.',
 
     // Lang entries for command make:sidebar
     'command_make_sidebar_description'                  => 'Creates a control panel sidebar for an add-on',
