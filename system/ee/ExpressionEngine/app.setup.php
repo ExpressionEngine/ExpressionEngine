@@ -61,6 +61,7 @@ use ExpressionEngine\Service\Generator\CpRouteGenerator;
 use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
 use ExpressionEngine\Service\Generator\ExtensionGenerator;
 use ExpressionEngine\Service\Generator\FieldtypeGenerator;
+use ExpressionEngine\Service\Generator\JumpsGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\SidebarGenerator;

@@ -63,6 +63,7 @@ class Cli
         'make:extension-hook' => Commands\CommandMakeExtensionHook::class,
         'make:fieldtype' => Commands\CommandMakeFieldtype::class,
         'make:migration' => Commands\CommandMakeMigration::class,
+        'make:jump' => Commands\CommandMakeJump::class,
         'make:cp-route' => Commands\CommandMakeCpRoute::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
