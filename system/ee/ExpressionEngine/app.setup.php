@@ -395,6 +395,13 @@ $setup = [
             return new FieldtypeGenerator($filesystem, $str, $data);
         },
 
+        'JumpsGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new JumpsGenerator($filesystem, $str, $data);
+        },
+
         'ModelGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
             $str = $ee->make('Str');

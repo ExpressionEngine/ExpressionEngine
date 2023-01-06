@@ -30,9 +30,7 @@ class JumpsGenerator
         $this->str = $str;
 
         // Set required data for generator to use
-        $this->name = $data['name'];
         $this->addon = $data['addon'];
-        // $this->generateIcon = $data['generate-icon'];
 
         // Set up addon path, generator path, and stub path
         $this->init();
@@ -43,23 +41,10 @@ class JumpsGenerator
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
         $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
 
-        // This will copy the default icon into our addon, if the add-on doesnt already have an icon
-        // if ($this->generateIcon && !$this->addonHasIcon()) {
-        //     $defaultIcon = PATH_THEMES . 'asset/img/default-addon-icon.svg';
-
-        //     $this->filesystem->copy($defaultIcon, $this->addonPath . 'icon.svg');
-        // }
-
         // Make sure the addon exists
         if (! ee('Addon')->get($this->addon)) {
             throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
         } 
-        // if (! file_exists($this->addonPath . 'mod.' . $this->addon . '.php')) {
-        //     throw new \Exception(lang('command_make_prolet_error_addon_must_have_module'), 1);
-        // } 
-        // if (! $this->addonHasIcon()) {
-        //     throw new \Exception(lang('command_make_prolet_error_addon_must_have_icon'), 1);
-        // }
 
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs/';
@@ -67,24 +52,11 @@ class JumpsGenerator
 
     public function build()
     {
-        $proletStub = $this->filesystem->read($this->stub('jumps.php'));
-        $proletStub = $this->write('addon', ucfirst($this->addon), $proletStub);
-        $proletStub = $this->write('name', $this->name, $proletStub);
+        $jumpStub = $this->filesystem->read($this->stub('jumps.php'));
+        $jumpStub = $this->write('Addon', ucfirst($this->addon), $jumpStub);
+        $jumpStub = $this->write('addon', $this->addon, $jumpStub);
 
-        $this->putFile('pro.' . $this->addon . '.php', $proletStub);
-
-        if (ee('Addon')->get($this->addon)->isInstalled()) {
-            // Update prolets in EE
-            $addon = ee('pro:Addon')->get($this->addon);
-            $addon->updateProlets();
-        }
-    }
-
-    private function addonHasIcon()
-    {
-        $addon = ee('Addon')->get($this->addon);
-
-        return ! (stripos($addon->getIconUrl(), 'default-addon-icon.svg') !== false);
+        $this->putFile('jump.' . $this->addon . '.php', $jumpStub);
     }
 
     private function stub($file)

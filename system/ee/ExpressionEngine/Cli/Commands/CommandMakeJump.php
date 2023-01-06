@@ -61,7 +61,7 @@ class CommandMakeJump extends Cli
 
         try {
             // Build the mcp
-            $service = ee('CpRouteGenerator', $this->data);
+            $service = ee('JumpsGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());

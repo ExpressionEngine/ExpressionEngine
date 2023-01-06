@@ -212,7 +212,9 @@ $lang = array(
     'command_make_cp_route_option_addon'                 => 'Folder for third-party add-on you want to add Mcp Route to.',
 
     // Lang entries for command make:jump
-    'command_make_cp_jumps file'                         => 'Let\'s create an add-on Jump File!',
+    'command_make_jump_description'                      => 'Generates a jump menu file for a given third-party add-on.',
+    'command_make_jump_summary'                          => 'This interactively generates a jump menu file in an existing third-party addon',
+    'command_make_cp_jumps'                              => 'Let\'s create an add-on Jump File!',
     'command_make_cp_jumps_ask_addon'                    => 'What add-on is the Jumps file being added to?',
     'command_make_cp_jumps_building_jumps'               => 'Building Add-on Jumps file now.',
     'command_make_cp_jumps_created_successfully'         => 'Jumps file successfully created!',

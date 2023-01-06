@@ -2,16 +2,16 @@
 /**
  * Jump Menu 
  *
- * This file must be in your /system/user/addons/assets directory of your ExpressionEngine installation
+ * This file must be in your /system/user/addons/{{addon}} directory of your ExpressionEngine installation
  *
- * @package             {{addon}}
+ * @package             {{Addon}}
  * @author              
  * @copyright           
  * @link                
  */
 use ExpressionEngine\Service\JumpMenu\AbstractJumpMenu;
 
- class {{addon}}_jump extends AbstractJumpMenu
+ class {{Addon}}_jump extends AbstractJumpMenu
  {
 
     /**
@@ -21,22 +21,22 @@ use ExpressionEngine\Service\JumpMenu\AbstractJumpMenu;
      * https://docs.expressionengine.com/latest/development/jump-menu.html
      */
 
-  protected static $items = array(
- /*       'folders' => array(
+  protected static $items = [
+        'index' => array(
             'icon' => 'fa-file',
-            'command' => 'view folders',
-            'command_title' => 'View <b>Folders</b>',
+            'command' => '{{Addon}} index',
+            'command_title' => '{{Addon}} index',
             'dynamic' => false,
             'requires_keyword' => false,
             'target' => ''
         ),
-        'updateIndexes' => array(
+        'settings' => array(
             'icon' => 'fa-cog',
-            'command' => 'update indexes',
-            'command_title' => '<b>Update Indexes</b>',
+            'command' => '{{Addon}} settings',
+            'command_title' => '<b>{{Addon}} settings</b>',
             'dynamic' => false,
             'requires_keyword' => false,
-            'target' => 'update_indexes'
-        );
-        */
+            'target' => 'settings'
+        )
+    ];
 }
