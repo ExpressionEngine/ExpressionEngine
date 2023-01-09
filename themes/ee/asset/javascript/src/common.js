@@ -1169,24 +1169,4 @@ $(document).ready(function(){
 	        	$(this).attr('data-max', maxValue);
         	});
         }
-
-    // check and remove unused for desktop screen size grid column
-    function checkScreenSize() {
-    	if (window.innerWidth > 767) {
-    		$('.grid-field').each(function() {
-    			var gridTable = $(this);
-    			if(gridTable.hasClass('entry-grid')) {
-    				var entryGrid = $(this);
-    				var deleteElement = entryGrid.find('.grid-field__item-fieldset');
-
-    				deleteElement.each(function(el) {
-    					$(this).remove();
-    				})
-    			}
-    		})
-    		
-    	}
-    }
-
-    checkScreenSize();
 }); // close (document).ready
