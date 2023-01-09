@@ -95,7 +95,7 @@ class Colorpicker_ft extends EE_Fieldtype
     {
         ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
-        return $this->create_colorpicker([
+        return $this->createColorPicker([
             'allowedColors' => $this->get_setting('allowed_colors'),
             'inputId' => $this->field_id,
             'inputName' => $this->field_name,
@@ -110,7 +110,7 @@ class Colorpicker_ft extends EE_Fieldtype
      * Creates a color picker input with the specified values
      * The values are passed to the react color picker component
     */
-    private function create_colorpicker($info, $disabled = false)
+    private function createColorPicker($info, $disabled = false)
     {
         $data = base64_encode(json_encode($info));
 
@@ -126,10 +126,10 @@ class Colorpicker_ft extends EE_Fieldtype
     /**
      * Replace the field tag on the frontend.
      *
-     * @param string  Stored data for the field
-     * @param array   The tag's parameters
-     * @param mixed   If the tag is a pair, the tagdata. Otherwise FALSE.
-     * @return string Parsed tagdata
+     * @param string $data Stored data for the field
+     * @param array  $params The tag's parameters
+     * @param mixed  $tagdata If the tag is a pair, the tagdata. Otherwise FALSE.
+     * @return string
      */
     public function replace_tag($data, $params = array(), $tagdata = false)
     {
@@ -138,11 +138,36 @@ class Colorpicker_ft extends EE_Fieldtype
     }
 
     /**
+     * @param string $data Stored data for the field
+     * @param array  $params The tag's parameters
+     * @param mixed  $tagdata If the tag is a pair, the tagdata. Otherwise FALSE.
+     * @return string
+     */
+    public function replace_name($data, $params = [], $tagdata = false)
+    {
+        $swatches = $this->get_setting('value_swatches');
+        $collection = [];
+
+        foreach ($swatches as $swatch) {
+            if (strpos($swatch, '|') !== false) {
+                $parts = explode('|', $swatch);
+                $collection[$parts[0]] = $parts[1];
+            }
+        }
+
+        if (array_key_exists($data, $collection)) {
+            return $collection[$data];
+        }
+
+        return $data;
+    }
+
+    /**
      * :contrast_color modifier
      *
      * Returns a black or white color in contrast to the fields color
      */
-    public function replace_contrast_color($data, $params = array(), $tagdata = false)
+    public function replace_contrast_color($data, $params = [], $tagdata = false)
     {
         try {
             $color = new Color($data);
@@ -170,12 +195,12 @@ class Colorpicker_ft extends EE_Fieldtype
         // The settings contain color picker fields,
         // so when the user chooses the color picker fieldtype, render them
         ee()->javascript->output('$(document).ready(function () {
-			$("input[name=field_type]").change(function () {
-				setTimeout(function () {
-					ColorPicker.renderFields()
-				}, 100);
-			})
-		})');
+            $("input[name=field_type]").change(function () {
+                setTimeout(function () {
+                    ColorPicker.renderFields()
+                }, 100);
+            })
+        })');
 
         $data = array_merge($this->default_settings, $data);
 
@@ -205,12 +230,12 @@ class Colorpicker_ft extends EE_Fieldtype
                 'fields' => [
                     'colorpicker_default_color' => [
                         'type' => 'html',
-                        'content' => $this->create_colorpicker([
+                        'content' => $this->createColorPicker([
                             'allowedColors' => 'any',
                             'initialColor' => $data['colorpicker_default_color'],
                             'inputName' => 'colorpicker_default_color'
                         ])
-                    ]
+                    ],
                 ]
             ],
             [
@@ -280,7 +305,8 @@ class Colorpicker_ft extends EE_Fieldtype
             $data['value_swatches'] = $data['value_swatches']['rows'];
 
             foreach ($data['value_swatches'] as $row) {
-                $value_colors[] = $row['color'];
+                $colorName = isset($row['name']) && $row['name'] !== '' ? '|' . $row['name'] : '';
+                $value_colors[] = $row['color'] . $colorName;
             }
         }
 
@@ -303,7 +329,19 @@ class Colorpicker_ft extends EE_Fieldtype
 
             return $manual_colors;
         } else {
-            return $this->get_setting('value_swatches');
+            $swatches = $this->get_setting('value_swatches');
+            $collection = [];
+
+            foreach ($swatches as $swatch) {
+                if (strpos($swatch, '|') !== false) {
+                    $parts = explode('|', $swatch);
+                    $collection[] = $parts[0];
+                } else {
+                    $collection[] = $swatch;
+                }
+            }
+
+            return $collection;
         }
     }
 
@@ -312,13 +350,19 @@ class Colorpicker_ft extends EE_Fieldtype
         $grid = ee('CP/MiniGridInput', array('field_name' => 'value_swatches'));
 
         $grid->loadAssets();
-        $grid->setColumns(['colors' => ['label' => '']]);
+        $grid->setColumns([
+            'colors' => [
+                'label' => 'Color',
+            ],
+            'name' => [
+                'label' => 'Name',
+            ],
+        ]);
         $grid->setNoResultsText(lang('no_colorpicker_swatches'), lang('add_new'));
 
         $grid->setBlankRow([
-            // array('html' => '<input name="color" />'),
-            // array('html' => form_input('color', ''))
-            array('html' => $this->create_colorpicker(['inputName' => 'color'], true))
+            ['html' => $this->createColorPicker(['inputName' => 'color'], true)],
+            ['html' => form_input('name', '')]
         ]);
 
         $grid->setData([]);
@@ -329,15 +373,25 @@ class Colorpicker_ft extends EE_Fieldtype
             $i = 1;
 
             foreach ($data['value_swatches'] as $color) {
+                $name = '';
+
+                if (strpos($color, '|') !== false) {
+                    $parts = explode('|', $color);
+                    $color = $parts[0];
+                    $name = $parts[1];
+                }
+
                 $pairs[] = array(
                     'attrs' => array('row_id' => $i),
                     'columns' => array(
-                        // array('html' => form_input('color', $color))
                         [
-                            'html' => $this->create_colorpicker([
+                            'html' => $this->createColorPicker([
                                 'initialColor' => $color,
                                 'inputName' => 'color'
                             ])
+                        ],
+                        [
+                            'html' => form_input('name', $name ?? '')
                         ]
                     )
                 );
