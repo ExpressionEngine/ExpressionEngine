@@ -260,10 +260,10 @@ class EE_Core
      * This method is a setter for the $cache class variable.
      * Note, this is not persistent across requests
      *
-     * @param 	string 	Super Class/Unique Identifier
-     * @param 	string 	Key for cached item
-     * @param 	mixed 	item to put in the cache
-     * @return 	object
+     * @param   string  Super Class/Unique Identifier
+     * @param   string  Key for cached item
+     * @param   mixed   item to put in the cache
+     * @return  object
      */
     public function set_cache($class, $key, $val)
     {
@@ -281,10 +281,10 @@ class EE_Core
      *
      * This method extracts a value from the session cache.
      *
-     * @param 	string 	Super Class/Unique Identifier
-     * @param 	string 	Key to extract from the cache.
-     * @param 	mixed 	Default value to return if key doesn't exist
-     * @return 	mixed
+     * @param   string  Super Class/Unique Identifier
+     * @param   string  Key to extract from the cache.
+     * @param   mixed   Default value to return if key doesn't exist
+     * @return  mixed
      */
     public function cache($class, $key, $default = false)
     {
