@@ -17,7 +17,7 @@ use ExpressionEngine\Library\CP\EntryManager;
  */
 class Title extends EntryManager\Columns\Title
 {
-    public function renderTableCell($data, $field_id, $file, $viewtype = 'list')
+    public function renderTableCell($data, $field_id, $file, $viewtype = 'list', $pickerMode = false, $addQueryString = [])
     {
         $title = $file->title;
 

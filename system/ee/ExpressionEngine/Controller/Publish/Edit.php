@@ -181,6 +181,14 @@ class Edit extends AbstractPublishController
 
         $statuses = ee('Model')->get('Status')->all(true)->indexBy('status');
 
+        $addQueryString = ee('CP/URL')->getCurrentUrl()->qs;
+        if ($page != 1) {
+            $addQueryString['page'] = $page;
+        }
+        if (isset($addQueryString['page']) && isset($addQueryString['sort_col']) && $addQueryString['sort_col'] == 'edit_date') {
+            unset($addQueryString['page']);
+        }
+
         foreach ($entries as $entry) {
             // wW had a delete cascade issue that could leave entries orphaned and
             // resulted in errors, so we'll sneakily use this controller to clean up
@@ -203,7 +211,7 @@ class Edit extends AbstractPublishController
 
             $data[] = array(
                 'attrs' => $attrs,
-                'columns' => $column_renderer->getRenderedTableRowForEntry($entry)
+                'columns' => $column_renderer->getRenderedTableRowForEntry($entry, 'list', false, $addQueryString)
             );
         }
 

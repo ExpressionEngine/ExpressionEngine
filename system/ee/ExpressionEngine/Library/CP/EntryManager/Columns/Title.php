@@ -29,12 +29,12 @@ class Title extends Column
         ];
     }
 
-    public function renderTableCell($data, $field_id, $entry)
+    public function renderTableCell($data, $field_id, $entry, $viewtype = 'list', $pickerMode = false, $addQueryString = [])
     {
         $title = ee('Format')->make('Text', $entry->title)->convertToEntities();
 
         if ($this->canEdit($entry)) {
-            $edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
+            $edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, $addQueryString);
             $title = '<a href="' . $edit_link . '">' . $title . '</a>';
         }
 
