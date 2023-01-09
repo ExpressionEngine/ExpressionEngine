@@ -20,6 +20,12 @@ class EE_Core
     private $ee_loaded = false;
     private $cp_loaded = false;
 
+    // Store data for just this page load.
+    // Multi-dimensional array with module/class name,
+    // e.g. $this->cache['module']['var_name']
+    // Use set_cache() and cache() methods.
+    public $cache = array();
+
     /**
      * Sets constants, sets paths contants to appropriate directories, loads
      * the database and generally prepares the system to run.
@@ -489,8 +495,10 @@ class EE_Core
 
         // Show the control panel home page in the event that a
         // controller class isn't found in the URL
-        if (ee()->router->fetch_class() == ''/* OR
-            ! isset($_GET['S'])*/) {
+        if (
+            ee()->router->fetch_class() == ''/* OR
+            ! isset($_GET['S'])*/
+        ) {
             ee()->functions->redirect(BASE . AMP . 'C=homepage');
         }
 
@@ -524,9 +532,11 @@ class EE_Core
 
         // Does an admin session exist?
         // Only the "login" class can be accessed when there isn't an admin session
-        if (ee()->session->userdata('admin_sess') == 0  //if not logged in
+        if (
+            ee()->session->userdata('admin_sess') == 0  //if not logged in
             && ee()->router->fetch_class(true) !== 'login' // if not on login page
-            && ee()->router->fetch_class() != 'css') { // and the class isnt css
+            && ee()->router->fetch_class() != 'css'
+        ) { // and the class isnt css
             // has their session Timed out and they are requesting a page?
             // Grab the URL, base64_encode it and send them to the login screen.
             $safe_refresh = ee()->cp->get_safe_refresh();
@@ -545,8 +555,10 @@ class EE_Core
         // Is the user banned or not allowed CP access?
         // Before rendering the full control panel we'll make sure the user isn't banned
         // But only if they are not a Super Admin, as they can not be banned
-        if ((! ee('Permission')->isSuperAdmin() && ee()->session->ban_check('ip')) or
-            (ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp'))) {
+        if (
+            (! ee('Permission')->isSuperAdmin() && ee()->session->ban_check('ip')) or
+            (ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp'))
+        ) {
             return ee()->output->fatal_error(lang('not_authorized'));
         }
 
@@ -671,8 +683,10 @@ class EE_Core
         $forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
         $profile_trigger = ee()->config->item('profile_trigger');
 
-        if ($forum_trigger &&
-            in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))) {
+        if (
+            $forum_trigger &&
+            in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))
+        ) {
             require PATH_MOD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
@@ -781,8 +795,10 @@ class EE_Core
     public function _garbage_collection()
     {
         if (class_exists('Stats')) {
-            if (ee()->stats->statdata('last_cache_clear')
-                && ee()->stats->statdata('last_cache_clear') > 1) {
+            if (
+                ee()->stats->statdata('last_cache_clear')
+                && ee()->stats->statdata('last_cache_clear') > 1
+            ) {
                 $last_clear = ee()->stats->statdata('last_cache_clear');
             }
         }
