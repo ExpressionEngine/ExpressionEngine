@@ -79,6 +79,9 @@ class CommandListCommands extends Cli
         $headers = array();
 
         foreach ($available as $availableCommand => $availableClass) {
+            if (!is_string($availableClass)) {
+                continue;
+            }
             $availableHydratedClass = new $availableClass();
 
             // Get the command header
@@ -131,8 +134,11 @@ class CommandListCommands extends Cli
                 $this->command_col_width = $length;
             }
 
+            if (!is_string($availableClass)) {
+                continue;
+            }
             $availableHydratedClass = new $availableClass();
-            $length = strlen($availableHydratedClass->description);
+            $length = strlen((string) $availableHydratedClass->description);
             if ($length >= $this->desc_col_width) {
                 $this->desc_col_width = $length;
             }

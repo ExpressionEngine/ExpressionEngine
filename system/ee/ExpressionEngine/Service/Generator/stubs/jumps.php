@@ -1,19 +1,14 @@
 <?php
 /**
- * Jump Menu 
+ * Jump Menu
  *
  * This file must be in your /system/user/addons/{{addon}} directory of your ExpressionEngine installation
  *
- * @package             {{Addon}}
- * @author              
- * @copyright           
- * @link                
  */
 use ExpressionEngine\Service\JumpMenu\AbstractJumpMenu;
 
- class {{Addon}}_jump extends AbstractJumpMenu
- {
-
+class {{Addon}}_jump extends AbstractJumpMenu
+{
     /**
      * Define the add-ons jumps in array below.
      * See Docs for array reference
@@ -21,7 +16,7 @@ use ExpressionEngine\Service\JumpMenu\AbstractJumpMenu;
      * https://docs.expressionengine.com/latest/development/jump-menu.html
      */
 
-  protected static $items = [
+    protected static $items = [
         'index' => array(
             'icon' => 'fa-file',
             'command' => 'index',
