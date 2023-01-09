@@ -164,6 +164,8 @@ $lang = array(
     "lexicon_removed_word" =>
     "Removed “%s”.",
 
+    "set_langauge_to_use_tool" =>
+    "* language setting missing: Pick a language to enable",
     //----------------------------------------
     // Edit collection page - fields
     //----------------------------------------
