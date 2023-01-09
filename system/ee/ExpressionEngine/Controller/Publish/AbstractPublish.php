@@ -462,6 +462,11 @@ abstract class AbstractPublish extends CP_Controller
         $qs = $_GET;
         unset($qs['S'], $qs['D'], $qs['C'], $qs['M']);
 
+        // Loop through and clean GET values
+        foreach($qs as $key => $value){
+            $qs[$k] = ee('Security/XSS')->clean($value);
+        }
+
         if (ee('Request')->get('modal_form') == 'y') {
             $next_entry_id = ee('Request')->get('next_entry_id');
 
