@@ -205,8 +205,10 @@ class EE_Core
         ee()->config->set_item('secure_forms', $secure_forms);
 
         // Set the path to the "themes" folder
-        if (ee()->config->item('theme_folder_path') !== false &&
-            ee()->config->item('theme_folder_path') != '') {
+        if (
+            ee()->config->item('theme_folder_path') !== false &&
+            ee()->config->item('theme_folder_path') != ''
+        ) {
             $theme_path = preg_replace("#/+#", "/", ee()->config->item('theme_folder_path') . '/');
         } else {
             $theme_path = substr(APPPATH, 0, - strlen(SYSDIR . '/expressionengine/')) . 'themes/';
