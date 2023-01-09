@@ -20,6 +20,12 @@ class EE_Core
     private $ee_loaded = false;
     private $cp_loaded = false;
 
+    // Store data for just this page load.
+    // Multi-dimensional array with module/class name,
+    // e.g. $this->cache['module']['var_name']
+    // Use set_cache() and cache() methods.
+    public $cache = array();
+
     /**
      * Sets constants, sets paths contants to appropriate directories, loads
      * the database and generally prepares the system to run.
@@ -68,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20221213');
-        define('APP_VER', '6.4.3');
+        define('APP_BUILD', '20230105');
+        define('APP_VER', '6.4.4');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -205,8 +211,10 @@ class EE_Core
         ee()->config->set_item('secure_forms', $secure_forms);
 
         // Set the path to the "themes" folder
-        if (ee()->config->item('theme_folder_path') !== false &&
-            ee()->config->item('theme_folder_path') != '') {
+        if (
+            ee()->config->item('theme_folder_path') !== false &&
+            ee()->config->item('theme_folder_path') != ''
+        ) {
             $theme_path = preg_replace("#/+#", "/", ee()->config->item('theme_folder_path') . '/');
         } else {
             $theme_path = substr(APPPATH, 0, - strlen(SYSDIR . '/expressionengine/')) . 'themes/';
@@ -258,10 +266,10 @@ class EE_Core
      * This method is a setter for the $cache class variable.
      * Note, this is not persistent across requests
      *
-     * @param 	string 	Super Class/Unique Identifier
-     * @param 	string 	Key for cached item
-     * @param 	mixed 	item to put in the cache
-     * @return 	object
+     * @param   string  Super Class/Unique Identifier
+     * @param   string  Key for cached item
+     * @param   mixed   item to put in the cache
+     * @return  object
      */
     public function set_cache($class, $key, $val)
     {
@@ -279,10 +287,10 @@ class EE_Core
      *
      * This method extracts a value from the session cache.
      *
-     * @param 	string 	Super Class/Unique Identifier
-     * @param 	string 	Key to extract from the cache.
-     * @param 	mixed 	Default value to return if key doesn't exist
-     * @return 	mixed
+     * @param   string  Super Class/Unique Identifier
+     * @param   string  Key to extract from the cache.
+     * @param   mixed   Default value to return if key doesn't exist
+     * @return  mixed
      */
     public function cache($class, $key, $default = false)
     {
@@ -487,8 +495,10 @@ class EE_Core
 
         // Show the control panel home page in the event that a
         // controller class isn't found in the URL
-        if (ee()->router->fetch_class() == ''/* OR
-            ! isset($_GET['S'])*/) {
+        if (
+            ee()->router->fetch_class() == ''/* OR
+            ! isset($_GET['S'])*/
+        ) {
             ee()->functions->redirect(BASE . AMP . 'C=homepage');
         }
 
@@ -522,9 +532,11 @@ class EE_Core
 
         // Does an admin session exist?
         // Only the "login" class can be accessed when there isn't an admin session
-        if (ee()->session->userdata('admin_sess') == 0  //if not logged in
+        if (
+            ee()->session->userdata('admin_sess') == 0  //if not logged in
             && ee()->router->fetch_class(true) !== 'login' // if not on login page
-            && ee()->router->fetch_class() != 'css') { // and the class isnt css
+            && ee()->router->fetch_class() != 'css'
+        ) { // and the class isnt css
             // has their session Timed out and they are requesting a page?
             // Grab the URL, base64_encode it and send them to the login screen.
             $safe_refresh = ee()->cp->get_safe_refresh();
@@ -543,8 +555,10 @@ class EE_Core
         // Is the user banned or not allowed CP access?
         // Before rendering the full control panel we'll make sure the user isn't banned
         // But only if they are not a Super Admin, as they can not be banned
-        if ((! ee('Permission')->isSuperAdmin() && ee()->session->ban_check('ip')) or
-            (ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp'))) {
+        if (
+            (! ee('Permission')->isSuperAdmin() && ee()->session->ban_check('ip')) or
+            (ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp'))
+        ) {
             return ee()->output->fatal_error(lang('not_authorized'));
         }
 
@@ -669,8 +683,10 @@ class EE_Core
         $forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
         $profile_trigger = ee()->config->item('profile_trigger');
 
-        if ($forum_trigger &&
-            in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))) {
+        if (
+            $forum_trigger &&
+            in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))
+        ) {
             require PATH_MOD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
@@ -779,8 +795,10 @@ class EE_Core
     public function _garbage_collection()
     {
         if (class_exists('Stats')) {
-            if (ee()->stats->statdata('last_cache_clear')
-                && ee()->stats->statdata('last_cache_clear') > 1) {
+            if (
+                ee()->stats->statdata('last_cache_clear')
+                && ee()->stats->statdata('last_cache_clear') > 1
+            ) {
                 $last_clear = ee()->stats->statdata('last_cache_clear');
             }
         }
