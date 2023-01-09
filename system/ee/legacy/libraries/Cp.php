@@ -251,6 +251,7 @@ class Cp
             'cp.appVer' => APP_VER,
             'cp.licenseKey' => ee()->config->item('site_license_key'),
             'cp.lvUrl' => 'https://updates.expressionengine.com/check',
+            'cp.usesPro' => ee('pro:Access')->requiresValidLicense(),
             'cp.installedAddons' => json_encode($installed_modules_js)
         ));
 

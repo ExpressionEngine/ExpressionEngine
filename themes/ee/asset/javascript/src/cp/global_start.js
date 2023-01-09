@@ -254,7 +254,8 @@ EE.cp.validateLicense = function() {
 				{
 					site_name: EE.site_name,
 					site_id: EE.site_id,
-					site_url: EE.site_url
+					site_url: EE.site_url,
+					usesPro: EE.cp.usesPro
 				}
 			]
 		},
