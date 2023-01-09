@@ -89,19 +89,11 @@ jobs:
         with:
           repository: ExpressionEngine/ExpressionEngine
           regex: '^\d+\.\d+\.\d+$'
+          releases-only: true
 
       - name: Fetch list of tags
         run: |
           git fetch --tags
-
-      - name: Get previous release tag
-        id: prev_release_tag
-        continue-on-error: true
-        uses: oprypin/find-latest-tag@v1
-        with:
-          repository: ExpressionEngine/ExpressionEngine
-          regex: '^\d+\.\d+\.\d+$'
-          releases-only: true
 
       - name: Build Changelog
         id: build_changelog
