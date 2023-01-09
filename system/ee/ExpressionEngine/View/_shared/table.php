@@ -346,7 +346,7 @@ else: ?>
                     }
                 ?>
                     <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
-                        <?php if (isset($vertical_layout) && ($vertical_layout !== 'horizontal')):?>
+                        <?php if (REQ == 'CP' && isset($vertical_layout) && ($vertical_layout !== 'horizontal')):?>
                         <td class="grid-field__item-fieldset" style="display: none;">
                             <div class="grid-field__item-tools grid-field__item-tools--item-open">
                                 <a href class="grid-field__item-tool js-toggle-grid-item">
