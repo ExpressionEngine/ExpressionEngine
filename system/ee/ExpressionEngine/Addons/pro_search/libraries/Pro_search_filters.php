@@ -100,6 +100,11 @@ class Pro_search_filters
                     continue;
                 }
 
+                // Skip if we're trying to load something from low search
+                if (strpos($path, 'low_search') !== false) {
+                    continue;
+                }
+
                 $possibleFiles = [
                     $dir . "/lsf.{$item}.php",
                     $dir . "/psf.{$item}.php",
