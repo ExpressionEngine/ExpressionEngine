@@ -212,8 +212,10 @@ class EE_Core
         ee()->config->set_item('secure_forms', $secure_forms);
 
         // Set the path to the "themes" folder
-        if (ee()->config->item('theme_folder_path') !== false &&
-            ee()->config->item('theme_folder_path') != '') {
+        if (
+            ee()->config->item('theme_folder_path') !== false &&
+            ee()->config->item('theme_folder_path') != ''
+        ) {
             $theme_path = preg_replace("#/+#", "/", ee()->config->item('theme_folder_path') . '/');
         } else {
             $theme_path = substr(APPPATH, 0, - strlen(SYSDIR . '/expressionengine/')) . 'themes/';
@@ -497,8 +499,10 @@ class EE_Core
 
         // Show the control panel home page in the event that a
         // controller class isn't found in the URL
-        if (ee()->router->fetch_class() == ''/* OR
-            ! isset($_GET['S'])*/) {
+        if (
+            ee()->router->fetch_class() == ''/* OR
+            ! isset($_GET['S'])*/
+        ) {
             ee()->functions->redirect(BASE . AMP . 'C=homepage');
         }
 
@@ -532,9 +536,11 @@ class EE_Core
 
         // Does an admin session exist?
         // Only the "login" class can be accessed when there isn't an admin session
-        if (ee()->session->userdata('admin_sess') == 0  //if not logged in
+        if (
+            ee()->session->userdata('admin_sess') == 0  //if not logged in
             && ee()->router->fetch_class(true) !== 'login' // if not on login page
-            && ee()->router->fetch_class() != 'css') { // and the class isnt css
+            && ee()->router->fetch_class() != 'css'
+        ) { // and the class isnt css
             // has their session Timed out and they are requesting a page?
             // Grab the URL, base64_encode it and send them to the login screen.
             $safe_refresh = ee()->cp->get_safe_refresh();
@@ -553,8 +559,10 @@ class EE_Core
         // Is the user banned or not allowed CP access?
         // Before rendering the full control panel we'll make sure the user isn't banned
         // But only if they are not a Super Admin, as they can not be banned
-        if ((! ee('Permission')->isSuperAdmin() && ee()->session->ban_check('ip')) or
-            (ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp'))) {
+        if (
+            (! ee('Permission')->isSuperAdmin() && ee()->session->ban_check('ip')) or
+            (ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp'))
+        ) {
             return ee()->output->fatal_error(lang('not_authorized'));
         }
 
@@ -619,11 +627,11 @@ class EE_Core
                     ->withTitle(lang('file_manager_compatibility_mode_warning'))
                     ->addToBody(
                         sprintf(
-                        lang('file_manager_compatibility_mode_warning_desc'),
-                        DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
-                        ee('CP/URL')->make('utilities/file-usage')->compile(),
-                        ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode'
-                    )
+                            lang('file_manager_compatibility_mode_warning_desc'),
+                            DOC_URL . 'control-panel/file-manager/file-manager.html#compatibility-mode',
+                            ee('CP/URL')->make('utilities/file-usage')->compile(),
+                            ee('CP/URL')->make('settings/content-design')->compile() . '#fieldset-file_manager_compatibility_mode'
+                        )
                     )
                     ->now();
                 ee('Model')->get('Config')->filter('key', 'warn_file_manager_compatibility_mode')->delete();
@@ -696,8 +704,10 @@ class EE_Core
         $forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
         $profile_trigger = ee()->config->item('profile_trigger');
 
-        if ($forum_trigger &&
-            in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))) {
+        if (
+            $forum_trigger &&
+            in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))
+        ) {
             require PATH_THIRD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
@@ -806,8 +816,10 @@ class EE_Core
     public function _garbage_collection()
     {
         if (class_exists('Stats')) {
-            if (ee()->stats->statdata('last_cache_clear')
-                && ee()->stats->statdata('last_cache_clear') > 1) {
+            if (
+                ee()->stats->statdata('last_cache_clear')
+                && ee()->stats->statdata('last_cache_clear') > 1
+            ) {
                 $last_clear = ee()->stats->statdata('last_cache_clear');
             }
         }
