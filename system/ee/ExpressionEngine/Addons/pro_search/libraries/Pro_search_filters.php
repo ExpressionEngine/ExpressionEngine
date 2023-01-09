@@ -83,6 +83,9 @@ class Pro_search_filters
         // include parent filter class
         if (! class_exists('Pro_search_filter')) {
             require_once(PATH_ADDONS . 'pro_search/filter.pro_search.php');
+
+            // Add an alias so the old filter class name can still work
+            class_alias('Pro_search_filter', 'Low_search_filter');
         }
 
         // Load directory helper
@@ -97,6 +100,11 @@ class Pro_search_filters
 
                 // Skip if not a dir
                 if (! is_dir($dir)) {
+                    continue;
+                }
+
+                // Skip if we're trying to load something from low search
+                if (strpos($path, 'low_search') !== false) {
                     continue;
                 }
 
