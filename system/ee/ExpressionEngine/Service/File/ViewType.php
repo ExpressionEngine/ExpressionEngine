@@ -34,7 +34,7 @@ class ViewType
             if (json_last_error() !== JSON_ERROR_NONE) {
                 // Lets try to get the preferences from the cookie still
                 $viewtype_prefs = $this->rebuildViewtypeFromSerializedCookie();
-                ee()->input->set_cookie('viewtype', json_endcode($viewtype_prefs), 31104000);
+                ee()->input->set_cookie('viewtype', json_encode($viewtype_prefs), 31104000);
             }
 
             // If the viewtype is set, and its one of our available viewtypes, we set it and return it
