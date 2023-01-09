@@ -250,6 +250,7 @@ EE.cp.validateLicense = function() {
 			appVer: EE.cp.appVer,
 			license: EE.cp.licenseKey,
 			addons: installedAddons,
+			usesPro: EE.cp.usesPro,
 			meta: [
 				{
 					site_name: EE.site_name,
