@@ -19,5 +19,10 @@
     "sort": "DESC",
     "template": "${{CHANGELOG}}",
     "pr_template": "- ${{TITLE}}",
-    "empty_template": "- no changes"
+    "empty_template": "- no changes",
+    "base_branches": [
+      "6.dev",
+      "6.x",
+      "release/6.*"
+    ]
   }
