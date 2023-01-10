@@ -102,6 +102,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
           fromTag: ${{ steps.prev_release_tag.outputs.tag }}
+          toTag: ${{ github.event.pull_request.head.sha }}
           configuration: build-tools/changelog.config.json
 
       - uses: ncipollo/release-action@v1.12.0
