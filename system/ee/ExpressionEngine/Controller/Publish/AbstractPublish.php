@@ -463,7 +463,7 @@ abstract class AbstractPublish extends CP_Controller
         unset($qs['S'], $qs['D'], $qs['C'], $qs['M']);
 
         // Loop through and clean GET values
-        foreach($qs as $key => $value){
+        foreach ($qs as $key => $value) {
             $qs[$k] = ee('Security/XSS')->clean($value);
         }
 
@@ -487,7 +487,6 @@ abstract class AbstractPublish extends CP_Controller
 
             return $result;
         } elseif (ee()->input->post('submit') == 'save' || (defined('CLONING_MODE') && CLONING_MODE === true)) {
-
             // If we just cloned an entry, we set the "status changed" warning banner
             if ((defined('CLONING_MODE') && CLONING_MODE === true)) {
                 $cloneAlert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
