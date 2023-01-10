@@ -109,11 +109,11 @@ class EE_Template
     private $layout_contents = '';
     private $user_vars = array();
     private $globals_regex;
-
     protected $process_data = true;
     protected $raw_data = null;
 
     protected $modified_vars = false;
+    protected $mb_available;
 
     protected $ignore_fetch = ['url_title'];
 

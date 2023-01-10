@@ -15,6 +15,8 @@ class EE_Input
 {
     public $SID = ''; // Session ID extracted from the URI segments
 
+    public $security;
+    public $uni;
     public $ip_address = false;
     public $user_agent = false;
     public $_allow_get_array = true;

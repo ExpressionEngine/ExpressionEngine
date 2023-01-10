@@ -13,6 +13,8 @@
  */
 class Addons_model extends CI_Model
 {
+    protected $db;
+
     public function __construct()
     {
         if (!isset($this->db)) {
