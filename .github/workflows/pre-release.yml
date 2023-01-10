@@ -91,10 +91,6 @@ jobs:
           regex: '^6\.\d+\.\d+$'
           releases-only: true
 
-      - name: Fetch list of tags
-        run: |
-          git fetch --tags
-
       - name: Build Changelog
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@v3
@@ -102,6 +98,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
           fromTag: ${{ steps.prev_release_tag.outputs.tag }}
+          toTag: ${{ github.event.pull_request.head.sha }}
           configuration: build-tools/changelog.config.json
 
       - uses: ncipollo/release-action@v1.12.0
