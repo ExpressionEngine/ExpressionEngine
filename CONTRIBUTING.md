@@ -57,6 +57,7 @@ Even if you can't write code, you can help triage bugs!
     - [Branches / Semantic Versioning](#branches--semantic-versioning)
     - [Unrelated Code Changes](#unrelated-code-changes)
     - [Proposing Large Changes](#proposing-large-changes)
+- [Pull Requests](#pull-requests)
 - [Documentation](#documentation)
 - [Tests](#tests)
 - [Code Review](#code-review)
@@ -78,18 +79,19 @@ Don't worry about your commit history, you can make small, atomic commits. Frequ
 
 #### Branches / Semantic Versioning
 
-You will want to make sure your fork is easily updated from the upstream repo, so do not make changes on any published branches, including `6.x`. Recommended branch names are namespaced and unique, e.g.:
+You will want to make sure your fork is easily updated from the upstream repo, so do not make changes on any published branches, including `7.x`. Recommended branch names are namespaced and unique, and should include major version number, e.g.:
 
-- `feature/my-feature-slug`
-- `bug/bug-description-slug`
+- `feature/7.x/my-feature-slug`
+- `bug/7.x/bug-description-slug`
 
 | Branch | Purpose |
 | ------ | ------- |
-| 6.x |  Currently released version. Never target or branch.
-| 6.dev | Next planned release. |
+| 7.x |  Currently released EE7 version. Never target or branch.
+| 7.dev | Next planned EE7 release. |
+| 6.x |  Currently released EE6 version. Never target or branch.
+| 6.dev | Next planned EE6 release. |
 
-Ensure that any PRs you submit are based against `6.dev`. No PRs will be accepted into `6.x`
-
+Ensure that any PRs you submit are based against `7.dev` or `6.dev`.
 
 **Legacy Branches**
 
@@ -114,9 +116,20 @@ Often, new features have the best implementation when user-facing documentation 
 
 If your idea is not useful to 80% of users and typical use cases, it may be better to build your idea as an add-on.
 
-### Documentation
+### Pull Requests
 
 Every pull request should have its title set to line that will form a changelog entry, ex. `Resolved #1234 where switching theme to pink did not work for non-superadmins`, referencing the corresponding GitHub issue. When a version is released, these items are moved to the User Guide release branch to publish the changes.
+
+In the pull request body, give a good description of what is the nature of change and reasoning behind it. Provide links to external references/discussions if appropriate.
+
+If your pull request resolves a project issue, provide a link with closing keyword, e.g.
+`Resolves https://github.com/ExpressionEngine/ExpressionEngine/issues/1235`
+
+Assign this PR appropriate label depending on what is does, e.g. `Bug:Accepted`, or `enhancement`
+
+If documentation update is needed, provide link to corresponding pull request in ExpressionEngine-User-Guide.
+
+### Documentation
 
 All additive changes and new features should have a corresponding pull request in the [User Guide repository](https://github.com/ExpressionEngine/ExpressionEngine-User-Guide) that documents the changes.
 
@@ -156,7 +169,7 @@ You can ping `@ExpressionEngine/Maintainers` if your change is urgent. Please pr
 
 ### Coding Styles
 
-As off ExpressionEngine 6, all new code submitted to the ExpressionEngine core should follow the PSR-12 recommendations. [https://expressionengine.com/blog/expressionengine-adopts-psr-12](https://expressionengine.com/blog/expressionengine-adopts-psr-12)
+As of ExpressionEngine 6 and greater, all new code submitted to the ExpressionEngine core should follow the PSR-12 recommendations. [https://expressionengine.com/blog/expressionengine-adopts-psr-12](https://expressionengine.com/blog/expressionengine-adopts-psr-12)
 
 For specific style guidelines, reference the ExpressionEngine User Guide: [Development Style & Syntax](https://docs.expressionengine.com/latest/development/guidelines/general.html). Feel free to open a pull request against that page to make suggestions or corrections.
 
