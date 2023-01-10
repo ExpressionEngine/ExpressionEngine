@@ -1,17 +1,5 @@
 <?php
 
-if (! defined('BASEPATH')) {
-    exit('No direct script access allowed');
-}
-
-/**
- * Pro Search language file
- *
- * @package        pro_search
- * @author         ExpressionEngine
- * @link           https://expressionengine.com/
- * @copyright      Copyright (c) 2022, ExpressionEngine
- */
 $lang = array(
 
     //----------------------------------------
