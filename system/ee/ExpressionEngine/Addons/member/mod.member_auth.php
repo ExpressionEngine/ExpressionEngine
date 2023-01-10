@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -768,11 +768,11 @@ class Member_auth extends Member
                 $reset_url = ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url;
             }
         } else {
-            $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password');
+            $reset_url = ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password';
         }
 
         // Add the reset code and possible forum_id to the reset pass url.
-        $reset_url .= '?id=' . $resetcode . $forum_id;
+        $reset_url = reduce_double_slashes($reset_url . '?id=' . $resetcode . $forum_id);
 
         if (! empty($protected['email_template'])) {
             $email_template = ee()->TMPL->fetch_template_and_parse_from_path($protected['email_template']);

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -290,6 +290,7 @@ $(document).ready(function () {
 
 	// Removing a tab
 	tabs.on('click', '.tab-remove', function(e) {
+		e.preventDefault();
 		var tab = $(this).parents('.tab-bar__tab').eq(0);
 		var index = $('.tab-bar .tab-bar__tab').index(tab);
 		var tabContents = sheets.filter('.' + $(tab).attr('rel'));

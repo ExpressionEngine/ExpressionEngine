@@ -20,7 +20,7 @@ jobs:
         steps:
 
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -64,22 +64,21 @@ jobs:
                 ls -lar tests/cypress/support/templates/
 
             - name: Run Cypress Tests
-              uses: cypress-io/github-action@v2
+              uses: cypress-io/github-action@v5
               with:
                 browser: chrome
-                headless: true
                 working-directory: tests/cypress
                 config-file: feature.cypress.json
 
             - name: Archive screenshots
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               if: failure()
               with:
                 name: cypress-tests
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               if: failure()
               with:
                 name: error.log
