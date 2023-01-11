@@ -613,9 +613,11 @@ class Table
 
             foreach ($row['columns'] as $column) {
                 // Only search searchable columns
-                if ($column['type'] == self::COL_TEXT or
-                    $column['type'] == self::COL_STATUS) {
-                    if (strpos(strtolower($column['content']), strtolower($this->config['search'])) !== false) {
+                if (
+                    $column['type'] == self::COL_TEXT or
+                    $column['type'] == self::COL_STATUS
+                ) {
+                    if (!empty($column['content']) && strpos(strtolower($column['content']), strtolower($this->config['search'])) !== false) {
                         // Found a match, move on to the next row
                         $match = true;
 

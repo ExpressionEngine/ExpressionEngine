@@ -141,7 +141,7 @@ jobs:
                   coverage: none
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/docker/config.php', 'system/user/config/config.php');"
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
 
             - name: Install PHP Unit Test dependencies
               working-directory: system/ee/ExpressionEngine/Tests/

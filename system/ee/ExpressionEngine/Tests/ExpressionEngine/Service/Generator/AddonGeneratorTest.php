@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Tests\Service\Generator;
 
 use ExpressionEngine\Service\Generator\AddonGenerator;
+use ExpressionEngine\Library\String\Str;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -21,9 +22,16 @@ class AddonGeneratorTest extends TestCase
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
 
         // Populate with sample data
-        $data = [];
+        $str = new Str();
+        $data = [
+            'name' => 'test',
+            'description' => 'test desc',
+            'version' => '1.0.0',
+            'author' => 'PacketTide',
+            'author_url' => 'https://packettide.com'
+        ];
 
-        $this->addonGenerator = new AddonGenerator($this->filesystem, $data);
+        $this->addonGenerator = new AddonGenerator($this->filesystem, $str, $data);
     }
 
     public function tearDown(): void
