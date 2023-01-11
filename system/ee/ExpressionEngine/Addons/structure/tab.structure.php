@@ -21,6 +21,7 @@ class Structure_tab
     public $version;
     public $sql;
     public $structure;
+    public $nset;
 
     public function __construct()
     {
