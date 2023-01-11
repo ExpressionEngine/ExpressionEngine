@@ -20,6 +20,7 @@ class Sql_structure
     public $data = array();
     public $cids = array();
     public $lcids = array();
+    public $cache;
 
     public function __construct()
     {

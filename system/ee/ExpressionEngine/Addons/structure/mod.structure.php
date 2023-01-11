@@ -28,6 +28,10 @@ class Structure extends Channel
     public $channel_type = '';
     public $debug = false;
 
+    public $query_string;
+    public $cat_trigger;
+    public $site_pages;
+
     public function __construct()
     {
         parent::__construct();

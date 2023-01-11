@@ -18,6 +18,10 @@ use ExpressionEngine\Structure\Conduit\PersistentCache;
  */
 class Structure_tab
 {
+    public $version;
+    public $sql;
+    public $structure;
+
     public function __construct()
     {
         $this->version = STRUCTURE_VERSION;
