@@ -157,7 +157,7 @@ class Text extends Formatter
                 return $this;
             }
 
-            $censored = preg_split('/[\n|\|]/', $censored, null, PREG_SPLIT_NO_EMPTY);
+            $censored = preg_split('/[\n|\|]/', $censored, 0, PREG_SPLIT_NO_EMPTY);
 
             foreach ($censored as $key => $bad) {
                 $length = strlen($bad);
@@ -300,7 +300,6 @@ class Text extends Formatter
                         $this->content = str_replace($match[0], $emoji_map[$match[1]], $this->content);
                     }
                 }
-
             }
         }
 
@@ -379,7 +378,7 @@ class Text extends Formatter
 
         $json_options = 0;
         if (isset($options['options'])) {
-            foreach (preg_split('/[\s\|]/', $options['options'], null, PREG_SPLIT_NO_EMPTY) as $param) {
+            foreach (preg_split('/[\s\|]/', $options['options'], 0, PREG_SPLIT_NO_EMPTY) as $param) {
                 $json_options += constant($param);
             }
         }
@@ -483,7 +482,7 @@ class Text extends Formatter
         }
 
         $find = $this->removeEvalModifier($find);
-        $valid = @preg_match($find, null);
+        $valid = @preg_match($find, '');
 
         // valid regex only, unless DEBUG is enabled
         if ($valid !== false or DEBUG) {
