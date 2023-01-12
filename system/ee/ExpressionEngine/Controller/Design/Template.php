@@ -170,6 +170,22 @@ class Template extends AbstractDesignController
             ),
         );
 
+        // If we have multiple Template Engines registered we'll splice in the
+        // choices just after Template Types
+        $engines = ee()->api_template_structure->get_template_engines();
+        if (count($engines) > 1) {
+            array_splice($vars['sections'][0], 2, 0, array(array(
+                'title' => 'template_engine',
+                'fields' => array(
+                    'template_engine' => array(
+                        'type' => 'radio',
+                        'choices' => $engines,
+                        'value' => $template->template_engine
+                    )
+                )
+            )));
+        }
+
         $this->generateSidebar($group->group_id);
         ee()->view->cp_page_title = lang('create_new_template');
 
@@ -568,6 +584,10 @@ class Template extends AbstractDesignController
             return false;
         }
 
+        if ($_POST['template_engine'] === '') {
+            $_POST['template_engine'] = null;
+        }
+
         $template->set($_POST);
         $template->edit_date = ee()->localize->now;
         $template->last_author_id = ee()->session->userdata('member_id');
@@ -594,7 +614,7 @@ class Template extends AbstractDesignController
                 ->withTitle(lang('update_template_error'))
                 ->addToBody(lang('update_template_error_desc'))
                 ->now();
-        } else if (ee('Request')->post('allowed_roles') !== null) {
+        } elseif (ee('Request')->post('allowed_roles') !== null) {
             $access = ee()->input->post('allowed_roles') ?: array();
 
             $roles = ee('Model')->get('Role', $access)
@@ -845,6 +865,21 @@ class Template extends AbstractDesignController
                 )
             )
         );
+
+        $engines = ee()->api_template_structure->get_template_engines();
+        if (count($engines) > 1) {
+            $sections[0][] = array(
+                'title' => 'template_engine',
+                'fields' => array(
+                    'template_engine' => array(
+                        'type' => 'radio',
+                        'choices' => $engines,
+                        'value' => $template->template_engine
+                    )
+                )
+            );
+        }
+
         $sections[0][] = array(
             'title' => 'enable_caching',
             'desc' => 'enable_caching_desc',
