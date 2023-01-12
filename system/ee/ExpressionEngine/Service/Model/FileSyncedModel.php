@@ -162,9 +162,14 @@ abstract class FileSyncedModel extends Model
      */
     protected function writeToFile()
     {
-        $path = (string) $this->getFilePath();
+        $path = $this->getFilePath();
+
+        if (!isset($path)) {
+            return;
+        }
+
         $directory = ee('Filesystem')->dirname($path);
-        if (isset($path) && ee('Filesystem')->exists($directory) && ee('Filesystem')->isWritable($directory)) {
+        if (ee('Filesystem')->exists($directory) && ee('Filesystem')->isWritable($directory)) {
             ee('Filesystem')->write($path, $this->serializeFileData(), true);
         }
     }
