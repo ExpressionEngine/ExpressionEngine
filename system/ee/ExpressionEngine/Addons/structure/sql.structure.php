@@ -1852,7 +1852,7 @@ class Sql_structure
     public function get_member_groups()
     {
         foreach (['can_create_entries', 'can_edit_other_entries', 'can_edit_self_entries'] as $permission) {
-            ${$permission} = ee('Model')->get('Permission')
+            $$permission = ee('Model')->get('Permission')
                 ->fields('role_id')
                 ->filter('permission', 'LIKE', $permission . '%')
                 ->filter('site_id', ee()->config->item('site_id'))

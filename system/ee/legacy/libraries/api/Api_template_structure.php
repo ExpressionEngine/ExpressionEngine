@@ -138,8 +138,8 @@ class Api_template_structure extends Api
         $data = array();
 
         foreach (array('group_name', 'group_order', 'is_site_default', 'site_id') as $field) {
-            if (isset(${$field})) {
-                $data[$field] = ${$field};
+            if (isset($$field)) {
+                $data[$field] = $$field;
             }
         }
 
