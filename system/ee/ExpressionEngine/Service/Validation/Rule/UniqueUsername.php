@@ -22,7 +22,7 @@ class UniqueUsername extends ValidationRule
     public function validate($key, $value)
     {
         $count = ee('Model')->get('Member')
-            ->filter('username', $value)
+            ->filter('username', (string) $value)
             ->count();
 
         return ($count <= 0);
