@@ -80,7 +80,7 @@ class PortageImport
      * @var Array of things that would create duplicates and need to be renamed
      *
      * Looks like so:
-     *		[model => [shortname] => [field_to_change => newvalue]]
+     *      [model => [shortname] => [field_to_change => newvalue]]
      *
      * The shortname will always be the name as specified in the channel set
      * definition so that we can relate entities by name. The _original_ shortname
@@ -88,8 +88,6 @@ class PortageImport
      * never be used for identification. Do not trust `$model->shortname`.
      */
     private $aliases = array();
-
-
 
     public function __construct($site_id)
     {
@@ -123,6 +121,7 @@ class PortageImport
     public function dir($dir)
     {
         $this->setPath($dir);
+
         return $this;
     }
 
@@ -266,8 +265,7 @@ class PortageImport
         ee()->legacy_api->instantiate('channel_fields');
 
         // save everything - some relationships might still be missing
-        foreach ($this->portageImportElements as $uuid => $modelInstance)
-        {
+        foreach ($this->portageImportElements as $uuid => $modelInstance) {
             // -------------------------------------------
             // 'portage_import_before_save' hook.
             //  - Modify the model before saving
@@ -280,8 +278,9 @@ class PortageImport
 
             // upload locations need to be created, if possible
             if ($modelInstance instanceof UploadDestination) {
-                if ($modelInstance->adapter == 'local')
-                $parsedServerPath = rtrim(parse_config_variables($modelInstance->server_path), '\\/') . DIRECTORY_SEPARATOR;
+                if ($modelInstance->adapter == 'local') {
+                    $parsedServerPath = rtrim(parse_config_variables($modelInstance->server_path), '\\/') . DIRECTORY_SEPARATOR;
+                }
                 if ((DIRECTORY_SEPARATOR == '/' && strpos($parsedServerPath, '/') === 0) || (DIRECTORY_SEPARATOR == '\\' && strpos($parsedServerPath, ':') === 1)) {
                     ee('Filesystem')->mkDir($parsedServerPath);
                 }
@@ -309,8 +308,7 @@ class PortageImport
             }
         }
         // now, set the relationships
-        foreach ($this->portageImportElements as $uuid => $modelInstance)
-        {
+        foreach ($this->portageImportElements as $uuid => $modelInstance) {
             $uuidField = method_exists($modelInstance, 'getColumnPrefix') ? $modelInstance->getColumnPrefix() . 'uuid' : 'uuid';
             if (isset($this->associations[$uuid]) || $modelInstance instanceof ChannelField) {
                 if (isset($this->associations[$uuid])) {
@@ -335,6 +333,7 @@ class PortageImport
                                 foreach ($relatedUuids as $relatedUuid) {
                                     if (! isset($this->portageImportElements[$relatedUuid])) {
                                         $related = ee('Model')->get($relatioshipData['model'])->filter($uuidField, 'IN', $relatedUuids)->all();
+
                                         break;
                                     }
                                     $related[] = $this->portageImportElements[$relatedUuid];
@@ -377,8 +376,7 @@ class PortageImport
                     ee()->load->model('grid_model');
                     ee()->grid_model->create_field($modelInstance->getId(), 'channel');
                     $columns = ee('Model')->get('grid:GridColumn')->filter('field_id', $modelInstance->getId())->all();
-                    foreach ($columns as $column)
-                    {
+                    foreach ($columns as $column) {
                         $column = $column->toArray();
                         ee()->api_channel_fields->setup_handler($column['col_type']);
                         ee()->api_channel_fields->set_datatype(
@@ -408,7 +406,6 @@ class PortageImport
                 }
                 //
                 // -------------------------------------------
-
             }
         }
 
@@ -445,7 +442,7 @@ class PortageImport
                         }
                     }
                     $ftSettings[$setting] = $relatedIds;
-                } else if (substr_count($ftSettings[$setting], '-') == 4) {//looks like UUID
+                } elseif (substr_count($ftSettings[$setting], '-') == 4) {//looks like UUID
                     $relatedSettingModelRecord = ee('Model')->get($settingModel)->filter('uuid', $ftSettings[$setting])->first();
                     if (!is_null($relatedSettingModelRecord)) {
                         $ftSettings[$setting] = $relatedSettingModelRecord->getId();
@@ -454,6 +451,7 @@ class PortageImport
             }
             $modelInstance->$settingsProperty = $ftSettings;
         }
+
         return $modelInstance;
     }
 
@@ -489,6 +487,7 @@ class PortageImport
             $app_version = explode('.', ee()->config->item('app_version'));
             if ($app_version[0] != $version[0] || $app_version[1] != $version[1]) {
                 $this->result->addError(lang('portage_incompatible'));
+
                 return false;
             }
         }
@@ -511,18 +510,21 @@ class PortageImport
                 if (empty($addon)) {
                     $this->result->addError(sprintf(lang('portage_addon_missing'), $addonPortage['name']));
                     $addonsNotCompatible = true;
+
                     continue;
                 }
                 $version = explode('.', $addonPortage['version']);
                 if (!$addon->isInstalled()) {
                     $this->result->addError(sprintf(lang('portage_addon_not_installed'), $addon->getName()));
                     $addonsNotCompatible = true;
+
                     continue;
                 }
                 $addonVersion = explode('.', $addon->getInstalledVersion());
                 if ($addonVersion[0] != $version[0] || $addonVersion[1] != $version[1]) {
                     $this->result->addError(sprintf(lang('portage_addon_incompatible'), $addon->getName()));
                     $addonsNotCompatible = true;
+
                     continue;
                 }
             }
@@ -534,8 +536,7 @@ class PortageImport
         $currentSite = ee('Model')->get('Site', $this->site_id)->first();
 
         $portableModels = ee('PortageExport')->getPortableModels();
-        foreach ($this->components as $model)
-        {
+        foreach ($this->components as $model) {
             if ($model == 'add-ons') {
                 continue;
             }
@@ -597,7 +598,7 @@ class PortageImport
                 }
 
                 // set overrides posted in the form
-                
+
                 if (isset($this->aliases[$model]) && isset($this->aliases[$model][$uuid])) {
                     foreach ($this->aliases[$model][$uuid] as $field => $value) {
                         if (strpos($field, 'portage__') !== 0) {
@@ -625,7 +626,6 @@ class PortageImport
                 $result = $modelInstance->validate();
 
                 if ($result->failed()) {
-
                     foreach ($result->getFailed() as $field => $rules) {
                         $this->result->addModelError($modelInstance, $field, $rules);
                     }
@@ -648,7 +648,7 @@ class PortageImport
                     $thirdPartyAssoc = explode(':', $relatioshipData['model']);
                     $modelInstance->alias($thirdPartyAssoc[0] . ':' . $relationship, $relationship);
                 }
-                
+
                 // only if there are some data and the related models are included in portage
                 if (! empty($relatioshipData) && ! empty($relatioshipData['related']) && in_array($relatioshipData['model'], $this->components)) {
                     if (! is_array($relatioshipData['related'])) {
@@ -659,6 +659,7 @@ class PortageImport
                 }
             }
         }
+
         return $modelInstance;
     }
 
@@ -672,6 +673,7 @@ class PortageImport
     {
         if (! file_exists($this->path . $file)) {
             $this->result->addError(sprintf(lang('portage_file_invalid'), $file));
+
             return false;
         }
 
@@ -679,10 +681,10 @@ class PortageImport
 
         if (empty($json)) {
             $this->result->addError(sprintf(lang('portage_file_invalid'), $file));
+
             return false;
         }
 
         return $json;
     }
-
 }
