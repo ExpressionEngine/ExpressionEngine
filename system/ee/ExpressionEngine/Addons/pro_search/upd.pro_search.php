@@ -337,6 +337,10 @@ class Pro_search_upd
             $this->_v801();
         }
 
+        if (version_compare($current, '8.0.2', '<')) {
+            $this->_v802();
+        }
+
         $this->logMessageAboutLowVersion();
 
         // --------------------------------------
@@ -713,6 +717,31 @@ class Pro_search_upd
 
         // Add the field to the table
         ee()->db->query($sql);
+    }
+
+    /**
+     * Update routines for version 8.0.2
+     *
+     * @access     private
+     * @return     void
+     */
+    private function _v802()
+    {
+        // If build_index_act_key is empty, we assign a new random key
+        if (empty(ee()->pro_search_settings->get('build_index_act_key'))) {
+            // If there is an existing license key, we will use that
+            if (!empty(ee()->pro_search_settings->get('license_key'))) {
+                $key = ee()->pro_search_settings->get('license_key');
+            } else {
+                // Make a pseudo-random key for the Build Index ACT key
+                $key = strtoupper(bin2hex(random_bytes(20)));
+            }
+
+            ee()->pro_search_settings->set(['build_index_act_key' => $key]);
+
+            ee()->db->where('class', $this->class_name . '_ext');
+            ee()->db->update('extensions', array('settings' => serialize(ee()->pro_search_settings->get())));
+        }
     }
 
     private function logMessageAboutLowVersion()
