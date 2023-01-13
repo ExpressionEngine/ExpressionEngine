@@ -281,11 +281,12 @@ class Pro_search_fields
         $cols = pro_get_cache(__CLASS__, $table);
 
         if (! isset($cols[$field_id])) {
-            // Init
+            // If $cols is not an array, we need to make it an array first
             if (!is_array($cols)) {
                 $cols = [];
-                $cols[$field_id] = [];
             }
+
+            $cols[$field_id] = [];
 
             // Query all columns for this grid/matrix
             $query = ee()->db
