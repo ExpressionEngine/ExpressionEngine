@@ -9,7 +9,7 @@ if (! defined('BASEPATH')) {
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'structure/addon.setup.php';
@@ -664,7 +664,7 @@ class Structure_mcp
         }
 
         if (count($to_be_deleted) > 0) {
-            $this->set_cp_title('delete_channels');
+            $this->set_cp_title('confirm_delete_channels');
             ee()->cp->set_breadcrumb($this->base_url, ee()->lang->line('structure_module_name'));
 
             // Get channel titles

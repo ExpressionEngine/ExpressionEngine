@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -74,6 +74,8 @@ class Consent
                 'consent_names' => ee('Encrypt')->encode(json_encode($requests->pluck('consent_name'))),
             ]
         ];
+
+        ee()->TMPL->set_data(compact('form', 'consents'));
 
         return ee()->functions->form_declaration($form) . $tagdata . '</form>';
     }

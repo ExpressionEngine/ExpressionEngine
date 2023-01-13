@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -31,6 +31,7 @@ class EE_Template
     public $tag_cache_status = '';          // Status of tag cache (NO_CACHE, CURRENT, EXPIRED)
     public $cache_timestamp = '';
     public $template_type = '';         // Type of template (webpage, rss)
+    public $template_engine = '';         // Engine for rendering Template
     public $embed_type = '';            // Type of template for embedded template
     public $template_hits = 0;
     public $php_parse_location = 'output';  // Where in the chain the PHP gets parsed
@@ -109,6 +110,9 @@ class EE_Template
     private $user_vars = array();
     private $globals_regex;
 
+    protected $process_data = true;
+    protected $raw_data = null;
+
     protected $modified_vars = false;
 
     protected $ignore_fetch = ['url_title'];
@@ -136,7 +140,7 @@ class EE_Template
         }
 
         $this->user_vars = array(
-            'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'username', 'screen_name',
+            'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'primary_role_short_name', 'username', 'screen_name',
             'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
             'total_forum_posts', 'total_forum_topics', 'total_forum_replies', 'mfa_enabled',
         );
@@ -244,7 +248,6 @@ class EE_Template
         //  - Modify template after tag parsing
         //
         if (ee()->extensions->active_hook('template_post_parse') === true) {
-
             // Populate the $currentTemplateInfo array
             $currentTemplateInfo = array();
             if (count($this->templates_loaded)) { // don't do this if we don't have any template info!
@@ -351,17 +354,17 @@ class EE_Template
 
         //Pro conditionals
         $added_globals['frontedit'] = false;
-        if (ee('pro:Access')->hasRequiredLicense() && ee('pro:Access')->hasDockPermission()) {
-            if (
-                REQ == 'PAGE' &&
-                ee()->session->userdata('admin_sess') == 1 &&
-                (ee()->config->item('enable_frontedit') == 'y' || ee()->config->item('enable_frontedit') === false) &&
-                (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) &&
-                ee()->TMPL->enable_frontedit != 'n' &&
-                ee()->input->cookie('frontedit') != 'off'
-            ) {
-                $added_globals['frontedit'] = true;
-            }
+        if (
+            REQ == 'PAGE' &&
+            ee()->session->userdata('admin_sess') == 1 &&
+            (ee()->config->item('enable_frontedit') == 'y' || ee()->config->item('enable_frontedit') === false) &&
+            (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) &&
+            ee('pro:Access')->hasRequiredLicense() &&
+            ee('pro:Access')->hasDockPermission() &&
+            ee()->TMPL->enable_frontedit != 'n' &&
+            ee()->input->cookie('frontedit') != 'off'
+        ) {
+            $added_globals['frontedit'] = true;
         }
 
         $added_globals = array_merge($added_globals, $this->getMemberVariables());
@@ -453,7 +456,7 @@ class EE_Template
         }
 
         // Parse error conditinal tags
-        $errors = ee()->session->flashdata('errors');
+        $errors = isset(ee()->session) ? ee()->session->flashdata('errors') : [];
 
         // Make sure to age the flashdata so it doesn't appear on the next request accidentally.
         // ee()->session->_age_flashdata();
@@ -1816,7 +1819,7 @@ class EE_Template
 
                 // Replace the temporary markers we added earlier with the fully parsed data
 
-                $this->template = str_replace('M' . $i . $this->marker,  $return_data, $this->template);
+                $this->template = str_replace('M' . $i . $this->marker, $return_data, $this->template);
 
                 // Initialize data in case there are susequent loops
 
@@ -2582,7 +2585,7 @@ class EE_Template
                     $query = ee()->db->select('a.template_id, a.template_data,
                         a.template_name, a.template_type, a.edit_date,
                         a.cache, a.refresh, a.hits, a.protect_javascript,
-                        a.allow_php, a.php_parse_location, b.group_name, a.group_id')
+                        a.allow_php, a.php_parse_location, b.group_name, a.group_id, a.enable_frontedit')
                         ->from('templates a')
                         ->join('template_groups b', 'a.group_id = b.group_id')
                         ->where('template_id', $query->row('no_auth_bounce'))
@@ -2646,6 +2649,7 @@ class EE_Template
         // Set template edit date
         $this->template_edit_date = $row['edit_date'];
         $this->protect_javascript = ($row['protect_javascript'] == 'y') ? true : false;
+        $this->template_engine = $row['template_engine'] ?: null;
 
         // Set template type for our page headers
         if ($this->template_type == '') {
@@ -2730,7 +2734,7 @@ class EE_Template
 
             $basepath = PATH_TMPL . ee()->config->item('site_short_name') . '/'
                 . $row['group_name'] . '.group/' . $row['template_name']
-                . ee()->api_template_structure->file_extensions($row['template_type']);
+                . ee()->api_template_structure->file_extensions($row['template_type'], $row['template_engine']);
 
             if (file_exists($basepath)) {
                 $row['template_data'] = file_get_contents($basepath);
@@ -2844,12 +2848,13 @@ class EE_Template
 
         // Note- we should add the extension before checking.
 
-        foreach (ee()->api_template_structure->file_extensions as $type => $temp_ext) {
+        foreach (ee()->api_template_structure->all_file_extensions() as $temp_ext => $ext_info) {
             if (file_exists($basepath . '/' . $template . $temp_ext)) {
                 // found it with an extension
                 $filename = $template . $temp_ext;
                 $ext = $temp_ext;
-                $template_type = $type;
+                $template_type = $ext_info['type'];
+                $template_engine = $ext_info['engine'];
 
                 break;
             }
@@ -2898,6 +2903,7 @@ class EE_Template
             'group_id' => $group_id,
             'template_name' => $template,
             'template_type' => $template_type,
+            'template_engine' => $template_engine,
             'template_data' => file_get_contents($basepath . '/' . $filename),
             'edit_date' => ee()->localize->now,
             'last_author_id' => '1',    // assume a super admin
@@ -3003,7 +3009,7 @@ class EE_Template
             return $str;
         }
 
-        if (ee('Permission')->canUsePro()) {
+        if (isset(ee()->session) && ee('Permission')->canUsePro()) {
             $str = preg_replace("/\{\!--\s*(\/\/)*\s*disable\s*frontedit\s*--\}/s", '<!-- ${1}disable frontedit -->', $str);
         }
 
@@ -3098,7 +3104,9 @@ class EE_Template
         // Restore XML declaration if it was encoded
         $str = $this->restore_xml_declaration($str);
 
-        ee()->session->userdata['member_group'] = ee()->session->userdata['role_id'];
+        if (isset(ee()->session)) {
+            ee()->session->userdata['member_group'] = ee()->session->userdata['role_id'];
+        }
         $this->user_vars[] = 'member_group';
 
         // parse all standard global variables
@@ -4369,14 +4377,16 @@ class EE_Template
                         continue;
                     }
 
-                    $ext = strtolower(ltrim(strrchr($template, '.'), '.'));
-                    if (!in_array('.' . $ext, ee()->api_template_structure->file_extensions)) {
+                    $info = ee()->api_template_structure->get_template_file_info($template);
+
+                    if (!$info) {
                         continue;
                     }
 
-                    $ext_length = strlen($ext) + 1;
-                    $template_name = substr($template, 0, -$ext_length);
-                    $template_type = array_search('.' . $ext, ee()->api_template_structure->file_extensions);
+                    $ext = $info['extension'];
+                    $template_name = $info['name'];
+                    $template_type = $info['type'];
+                    $template_engine = $info['engine'];
 
                     if (in_array($template_name, $existing[$group])) {
                         continue;
@@ -4394,6 +4404,7 @@ class EE_Template
                         'group_id' => $group_id,
                         'template_name' => $template_name,
                         'template_type' => $template_type,
+                        'template_engine' => $template_engine,
                         'template_data' => file_get_contents($basepath . '/' . $group . '/' . $template),
                         'edit_date' => ee()->localize->now,
                         'last_author_id' => ee()->session->userdata('member_id'),
@@ -4437,6 +4448,11 @@ class EE_Template
     {
         static $vars;
 
+        if (!isset(ee()->session)) {
+            //early parsing, e.g. called from code and not web request
+            return [];
+        }
+
         if (empty($vars)) {
             foreach ($this->user_vars as $user_var) {
                 $vars['logged_in_' . $user_var] = ee()->session->userdata[$user_var];
@@ -4460,6 +4476,38 @@ class EE_Template
         }
 
         return $vars;
+    }
+
+    public function set_data($data)
+    {
+        if ($this->process_data) {
+            return;
+        }
+
+        // last tag data?
+        $this->raw_data = $data;
+    }
+
+    public function add_data($data, $key = null)
+    {
+        if ($this->process_data || empty($data)) {
+            return;
+        }
+
+        if (empty($this->raw_data)) {
+            $this->raw_data = [];
+        }
+
+        if (!is_null($key)) {
+            $this->raw_data[$key] = $data;
+        } else {
+            $this->raw_data = array_merge_recursive($this->raw_data, $data);
+        }
+    }
+
+    public function get_data()
+    {
+        return ($this->process_data) ? null : $this->raw_data;
     }
 }
 // END CLASS

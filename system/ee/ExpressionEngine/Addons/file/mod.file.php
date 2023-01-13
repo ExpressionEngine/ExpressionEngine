@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -364,7 +364,6 @@ class File
         $parse_data = array();
         ee()->load->library('file_field');
         foreach ($this->query->result_array() as $count => $row) {
-
             $row['model_object'] = ee()->file_field->getFileModelForFieldData($row['file_id']);
             $row = ee()->file_field->parse_field($row);
             $row_prefs = $upload_prefs[$row['upload_location_id']];

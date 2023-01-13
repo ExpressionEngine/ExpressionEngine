@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -79,9 +79,16 @@ class ColumnFactory
      */
     private static function getStandardColumns()
     {
-        return array_map(function ($identifier, $column) {
-            return static::getColumn($identifier);
-        }, array_keys(static::$standard_columns), static::$standard_columns);
+        return array_filter(
+            array_map(function ($identifier, $column) {
+                if ($identifier != 'comments' || bool_config_item('enable_comments')) {
+                    return static::getColumn($identifier);
+                }
+            }, array_keys(static::$standard_columns), static::$standard_columns),
+            function ($column) {
+                return (! empty($column));
+            }
+        );
     }
 
     /**

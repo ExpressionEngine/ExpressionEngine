@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -69,6 +69,11 @@ class Query extends Utilities
                 'vendor/codemirror/sql',
             )
         ]);
+
+        $fontSize = ee()->config->item('codemirror_fontsize');
+        if ($fontSize !== false) {
+            ee()->cp->add_to_head('<style type="text/css">.CodeMirror-scroll {font-size: ' . $fontSize . '}</style>');
+        }
 
         ee()->view->cp_breadcrumbs = array(
             '' => lang('sql_query_form')

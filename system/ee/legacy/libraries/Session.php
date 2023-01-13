@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -532,6 +532,7 @@ class EE_Session
         $this->userdata['primary_role_id'] = $this->userdata['group_id'] = $role->getId();
         $this->userdata['primary_role_name'] = $this->userdata['group_title'] = $role->name;
         $this->userdata['primary_role_description'] = $this->userdata['group_description'] = $role->description;
+        $this->userdata['primary_role_short_name'] = $role->short_name;
         $this->userdata['total_comments'] = 0;
         $this->userdata['total_entries'] = 0;
         $this->userdata['private_messages'] = 0;
@@ -599,6 +600,7 @@ class EE_Session
         // Add in Primary Role data
         $this->userdata['primary_role_id'] = $this->member_model->PrimaryRole->getId();
         $this->userdata['primary_role_name'] = $this->member_model->PrimaryRole->name;
+        $this->userdata['primary_role_short_name'] = $this->member_model->PrimaryRole->short_name;
         $this->userdata['primary_role_description'] = $this->member_model->PrimaryRole->description;
 
         // Member Group backwards compatibility

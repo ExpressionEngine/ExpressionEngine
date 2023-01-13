@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -771,6 +771,11 @@ class Member_settings extends Member
 
         $result_row = $this->member->getValues();
 
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('channel_fields');
+        // we need to reset this, because might have already been populated by channel:entries tag
+        ee()->api_channel_fields->custom_fields = array();
+
         if ($query->num_rows() > 0) {
             foreach ($this->member->getDisplay()->getFields() as $field) {
                 if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
@@ -839,13 +844,20 @@ class Member_settings extends Member
             ee()->channel_form_lib->datepicker = get_bool_from_string(ee()->TMPL->fetch_param('datepicker', 'y'));
             ee()->channel_form_lib->compile_js();
 
-            $return = ee()->functions->form_declaration(array(
-                'id' => 'cform',
-                'hidden_fields' => array(
-                    'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
-                    'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
-                )
-            )) . $template . '</form>';
+            $data = [];
+            if (ee()->TMPL->fetch_param('form_name', '') != "") {
+                $data['name'] = ee()->TMPL->fetch_param('form_name');
+            }
+
+            $data['id'] = 'cform';
+            $data['class'] = ee()->TMPL->form_class;
+
+            $data['hidden_fields'] = array(
+                'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
+                'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
+            );
+
+            $return = ee()->functions->form_declaration($data) . $template . '</form>';
             //make head appear by default
             if (preg_match('/' . LD . 'form_assets' . RD . '/', $return)) {
                 $return = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $return);

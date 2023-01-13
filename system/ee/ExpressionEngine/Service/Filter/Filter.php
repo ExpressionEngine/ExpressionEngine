@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -58,7 +58,7 @@ abstract class Filter
     /**
      * @var string The value to use for the custom input's placeholder="" attribute
      */
-    protected $placeholder;
+    protected $placeholder = '';
 
     /**
      * @var bool Whether or not this filter has a custom <input> element

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -154,6 +154,10 @@ class Stats
 
             foreach (ee()->stats->statdata('current_names') as $k => $v) {
                 $temp = $chunk;
+
+                if (empty($temp)) {
+                    continue;
+                }
 
                 if ($v['1'] == 'y') {
                     if (ee('Permission')->isSuperAdmin()) {

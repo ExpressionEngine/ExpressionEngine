@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -52,10 +52,13 @@ trait FileUsageTrait
         if (!empty($dirsAndFilesInSubfolders)) {
             foreach ($dirsAndFilesInSubfolders as $dir_id => $file_names) {
                 $uploadLocation = ee('Model')->get('UploadDestination', $dir_id)->first(true);
-                foreach ($file_names as $i => $fileRealtivePath) {
-                    $file = $uploadLocation->getFileByPath($fileRealtivePath);
-                    if (!empty($file)) {
-                        $fileUsageReplacements[$file->getId()] = ['{filedir_' . $file->upload_location_id . '}' . $fileRealtivePath => '{file:' . $file->file_id . ':url}'];
+                // Make sure UploadLocation still exists, would be better if we could filter out these files earlier
+                if (!is_null($uploadLocation)) {
+                    foreach ($file_names as $i => $fileRealtivePath) {
+                        $file = $uploadLocation->getFileByPath($fileRealtivePath);
+                        if (!empty($file)) {
+                            $fileUsageReplacements[$file->getId()] = ['{filedir_' . $file->upload_location_id . '}' . $fileRealtivePath => '{file:' . $file->file_id . ':url}'];
+                        }
                     }
                 }
             }

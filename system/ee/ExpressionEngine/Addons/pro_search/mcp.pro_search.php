@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -649,7 +649,21 @@ class Pro_search_mcp
                             'title'      => lang('both'),
                             'data-build' => 'both'
                         );
+                    } else {
+                        // make more clear that languages required for these tools. People thought they were missing
+                        $items['glossary'] = array(
+                            'href'       => '#',
+                            'title'      => lang('set_langauge_to_use_tool'),
+                            'disabled' => 'true'
+                        );
+
+                        $items['sync'] = array(
+                            'href'       => '#',
+                            'title'      => lang('set_langauge_to_use_tool'),
+                            'disabled' => 'true'
+                        );
                     }
+
 
                     // Add custom row
                     $row[] = array(

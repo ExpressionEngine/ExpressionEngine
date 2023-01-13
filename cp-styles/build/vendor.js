@@ -2825,4 +2825,3 @@ hljs.registerLanguage("http", function (e) {
   };
 });
 
-//# sourceMappingURL=vendor.js.map

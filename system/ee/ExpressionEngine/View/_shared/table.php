@@ -225,7 +225,12 @@
 
 else: ?>
     <div
-        class="grid-field <?php if (isset($vertical_layout) && $vertical_layout) : echo 'vertical-layout' ; elseif (isset($vertical_layout)) : echo 'entry-grid'; endif; ?>"
+        class="grid-field <?php if (isset($vertical_layout)) {
+                if ($vertical_layout == 'y') : echo ' vertical-layout';
+                elseif ($vertical_layout == 'horizontal') : echo ' horizontal-layout';
+                else : echo 'entry-grid';
+                endif;
+            }; ?>"
         id="<?=$grid_field_name?>">
 
     <div class="table-responsive">
@@ -340,8 +345,8 @@ else: ?>
                     }
                 ?>
                     <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
-                        <?php if (isset($vertical_layout)):?>
-                        <td class="grid-field__item-fieldset hidden">
+                        <?php if (isset($vertical_layout) && ($vertical_layout !== 'horizontal')):?>
+                        <td class="grid-field__item-fieldset" style="display: none;">
                             <div class="grid-field__item-tools grid-field__item-tools--item-open">
                                 <a href class="grid-field__item-tool js-toggle-grid-item">
                                     <span class="sr-only"><?=lang('collapse')?></span>

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -219,6 +219,7 @@ class Channel extends StructureModel
     protected $max_revisions = 10;
     protected $default_entry_title;
     protected $title_field_label;
+    protected $title_field_instructions;
     protected $url_title_prefix;
     protected $max_entries;
     protected $preview_url;

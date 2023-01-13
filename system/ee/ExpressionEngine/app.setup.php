@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,6 +13,7 @@ use ExpressionEngine\Library\Filesystem;
 use ExpressionEngine\Library\Curl;
 use ExpressionEngine\Library\Emoji;
 use ExpressionEngine\Library\Resource;
+use ExpressionEngine\Library\String\Str;
 use ExpressionEngine\Service\Addon;
 use ExpressionEngine\Service\Alert;
 use ExpressionEngine\Service\Category;
@@ -53,11 +54,19 @@ use ExpressionEngine\Service\Template;
 use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
+use ExpressionEngine\Service\Generator\ActionGenerator;
 use ExpressionEngine\Service\Generator\AddonGenerator;
 use ExpressionEngine\Service\Generator\CommandGenerator;
-use ExpressionEngine\Service\Generator\ProletGenerator;
-use ExpressionEngine\Service\Generator\WidgetGenerator;
+use ExpressionEngine\Service\Generator\CpRouteGenerator;
+use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
+use ExpressionEngine\Service\Generator\ExtensionGenerator;
+use ExpressionEngine\Service\Generator\FieldtypeGenerator;
+use ExpressionEngine\Service\Generator\JumpsGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
+use ExpressionEngine\Service\Generator\ProletGenerator;
+use ExpressionEngine\Service\Generator\SidebarGenerator;
+use ExpressionEngine\Service\Generator\TemplateTagGenerator;
+use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Model\Channel\ChannelEntry;
 
 // TODO should put the version in here at some point ...
@@ -336,38 +345,103 @@ $setup = [
             return new LivePreview\LivePreview(ee()->session);
         },
 
+        'Str' => function ($ee) {
+            return new Str();
+        },
+
         'Variables/Parser' => function ($ee) {
             return new Template\Variables\LegacyParser();
         },
 
+        'ActionGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new ActionGenerator($filesystem, $str, $data);
+        },
+
         'AddonGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new AddonGenerator($filesystem, $data);
+            return new AddonGenerator($filesystem, $str, $data);
         },
 
         'CommandGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new CommandGenerator($filesystem, $data);
+            return new CommandGenerator($filesystem, $str, $data);
         },
 
-        'ProletGenerator' => function ($ee, $data) {
+        'ExtensionHookGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new ProletGenerator($filesystem, $data);
+            return new ExtensionHookGenerator($filesystem, $str, $data);
         },
 
-        'WidgetGenerator' => function ($ee, $data) {
+        'ExtensionGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new WidgetGenerator($filesystem, $data);
+            return new ExtensionGenerator($filesystem, $str, $data);
+        },
+
+        'FieldtypeGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new FieldtypeGenerator($filesystem, $str, $data);
+        },
+
+        'JumpsGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new JumpsGenerator($filesystem, $str, $data);
         },
 
         'ModelGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
 
-            return new ModelGenerator($filesystem, $data);
+            return new ModelGenerator($filesystem, $str, $data);
+        },
+
+        'CpRouteGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new CpRouteGenerator($filesystem, $str, $data);
+        },
+
+        'ProletGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new ProletGenerator($filesystem, $str, $data);
+        },
+
+        'SidebarGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new SidebarGenerator($filesystem, $str, $data);
+        },
+
+        'TemplateTagGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new TemplateTagGenerator($filesystem, $str, $data);
+        },
+
+        'WidgetGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new WidgetGenerator($filesystem, $str, $data);
         },
 
         'Consent' => function ($ee, $member_id = null) {
@@ -525,10 +599,10 @@ $setup = [
             return new Member\Member();
         },
 
-        'MimeType' => function($ee) {
+        'MimeType' => function ($ee) {
             $mimeType = new ExpressionEngine\Library\Mime\MimeType();
             $mimeType->whitelistMimesFromConfig();
-            
+
             return $mimeType;
         },
 

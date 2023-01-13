@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -70,7 +70,19 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component
 
             $disabledFeatures = $pre->disabledFeatures();
             if (strpos($tagdata, 'categories') === false) {
-                $disabledFeatures[] = 'relationship_categories';
+                $disableCategories = true;
+                $tagStrings = array_merge($pre->pairs, $pre->singles);
+                if (!empty($tagStrings)) {
+                    foreach ($tagStrings as $string => $data) {
+                        if (strpos($string, 'category') !== false) {
+                            $disableCategories = false;
+                            break;
+                        }
+                    }
+                }
+                if ($disableCategories) {
+                    $disabledFeatures[] = 'relationship_categories';
+                }
             }
 
             return ee()->relationships_parser->create(

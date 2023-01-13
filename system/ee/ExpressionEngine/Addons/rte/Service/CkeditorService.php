@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -31,13 +31,18 @@ class CkeditorService extends AbstractRteService implements RteService
             //would rather prefer this in combo loader, but that's for CP only
             ee()->cp->add_js_script(['file' => [
                 'fields/rte/ckeditor/ckeditor',
-                'fields/rte/rte',
-                'fields/file/file_field_drag_and_drop',
-                'fields/file/concurrency_queue',
-                'fields/file/file_upload_progress_table',
-                'fields/file/drag_and_drop_upload',
-                'fields/grid/file_grid']
+                'fields/rte/rte']
             ]);
+
+            if (REQ == 'CP') {
+                ee()->cp->add_js_script(['file' => [
+                    'fields/file/file_field_drag_and_drop',
+                    'fields/file/concurrency_queue',
+                    'fields/file/file_upload_progress_table',
+                    'fields/file/drag_and_drop_upload',
+                    'fields/grid/file_grid']
+                ]);
+            }
 
             $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
             $lang_code = ee()->lang->code($language);

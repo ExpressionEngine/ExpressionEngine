@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -181,6 +181,7 @@ class Api_channel_fields extends Api
                 $settings = unserialize(base64_decode($row['field_settings']));
                 $settings['field_type'] = $row['field_type'];
                 $settings['field_fmt'] = $row['field_fmt'];
+                $settings['field_name'] = $row['field_name'];
 
                 $this->set_settings($row['field_id'], $settings);
             }

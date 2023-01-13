@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -147,11 +147,10 @@ class Text_ft extends EE_Fieldtype
             if ($this->get_setting('field_show_file_selector')) {
                 $fp = new FilePicker();
                 $fp->inject(ee()->view);
-                $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('directory' => 'all'));
+                $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('field_upload_locations' => 'all', 'hasUpload' => true));
 
                 ee()->cp->add_js_script(array(
                     'file' => array(
-                        'fields/textarea/cp',
                         'fields/textarea/textarea'
                     ),
                     'plugin' => array('ee_txtarea')

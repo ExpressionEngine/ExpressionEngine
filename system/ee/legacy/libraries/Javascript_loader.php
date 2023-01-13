@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -55,7 +55,7 @@ class Javascript_loader
             $files = explode(',', ee()->input->get_post($type));
 
             if ($type == 'template') {
-                if (!isset(ee()->TMPL)) {
+                if (!isset(ee()->JS_TMPL)) {
                     ee()->load->library('template', null, 'JS_TMPL');
                 }
                 foreach ($files as $templateId) {

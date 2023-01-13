@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 if (! defined('BASEPATH')) {
@@ -150,6 +150,7 @@ class Pro_variables
 
             // Call display output
             $it = $obj->replace_tag($tagdata);
+            ee()->TMPL->set_data($it);
         } else {
             $this->_log("Var {$var} not found -- returning no results");
             $it = ee()->TMPL->no_results();

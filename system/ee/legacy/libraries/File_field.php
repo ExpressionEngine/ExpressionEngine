@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -968,43 +968,46 @@ class File_field
             }
         }
 
-        ee()->javascript->set_global([
-            'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
-            'lang.file_dnd_choose_file_directory' => lang('file_dnd_choose_file_directory'),
-            'lang.file_dnd_upload_to' => lang('file_dnd_upload_to'),
-            'lang.file_dnd_choose_directory_before_uploading' => lang('file_dnd_choose_directory_before_uploading'),
-            'lang.file_dnd_choose_directory_btn' => lang('file_dnd_choose_directory_btn'),
-            'lang.file_dnd_choose_existing' => lang('file_dnd_choose_existing'),
-            'lang.file_dnd_dismiss' => lang('file_dnd_dismiss'),
-            'lang.file_dnd_drop_file' => lang('file_dnd_drop_file'),
-            'lang.file_dnd_drop_files' => lang('file_dnd_drop_files'),
-            'lang.file_dnd_file_name' => lang('file_dnd_file_name'),
-            'lang.file_dnd_filter_directories' => lang('file_dnd_filter_directories'),
-            'lang.file_dnd_images_only' => lang('file_dnd_images_only'),
-            'lang.file_dnd_progress' => lang('file_dnd_progress'),
-            'lang.file_dnd_resolve_conflict' => lang('file_dnd_resolve_conflict'),
-            'lang.file_dnd_conflict' => lang('file_dnd_conflict'),
-            'lang.file_dnd_single_file_allowed' => lang('file_dnd_single_file_allowed'),
-            'lang.file_dnd_unexpected_error' => lang('file_dnd_unexpected_error'),
-            'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
-            'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
-            'lang.file_dnd_create_directory' => lang('file_dnd_create_directory'),
+        if (REQ == 'CP') {
+            ee()->javascript->set_global([
+                'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
+                'lang.file_dnd_choose_file_directory' => lang('file_dnd_choose_file_directory'),
+                'lang.file_dnd_upload_to' => lang('file_dnd_upload_to'),
+                'lang.file_dnd_choose_directory_before_uploading' => lang('file_dnd_choose_directory_before_uploading'),
+                'lang.file_dnd_choose_directory_btn' => lang('file_dnd_choose_directory_btn'),
+                'lang.file_dnd_choose_existing' => lang('file_dnd_choose_existing'),
+                'lang.file_dnd_dismiss' => lang('file_dnd_dismiss'),
+                'lang.file_dnd_drop_file' => lang('file_dnd_drop_file'),
+                'lang.file_dnd_drop_files' => lang('file_dnd_drop_files'),
+                'lang.file_dnd_file_name' => lang('file_dnd_file_name'),
+                'lang.file_dnd_filter_directories' => lang('file_dnd_filter_directories'),
+                'lang.file_dnd_images_only' => lang('file_dnd_images_only'),
+                'lang.file_dnd_progress' => lang('file_dnd_progress'),
+                'lang.file_dnd_resolve_conflict' => lang('file_dnd_resolve_conflict'),
+                'lang.file_dnd_conflict' => lang('file_dnd_conflict'),
+                'lang.file_dnd_single_file_allowed' => lang('file_dnd_single_file_allowed'),
+                'lang.file_dnd_unexpected_error' => lang('file_dnd_unexpected_error'),
+                'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
+                'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
+                'lang.file_dnd_create_directory' => lang('file_dnd_create_directory'),
 
-            'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
-            'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),
-            'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile(),
-            'dragAndDrop.filepickerEndpoint' => ee('CP/FilePicker')->make('all')->getUrl()->compile(),
-            'dragAndDrop.filepickerUploadEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/upload')->compile()
-        ]);
+                'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
+                'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),
+                'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile(),
+                'dragAndDrop.filepickerEndpoint' => ee('CP/FilePicker')->make('all')->getUrl()->compile(),
+                'dragAndDrop.filepickerUploadEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/upload')->compile()
+            ]);
 
-        ee()->cp->add_js_script([
-            'file' => [
-                'fields/file/concurrency_queue',
-                'fields/file/file_upload_progress_table',
-                'fields/file/drag_and_drop_upload',
-                'fields/grid/file_grid'
-            ],
-        ]);
+            ee()->cp->add_js_script([
+                'file' => [
+                    'fields/file/file_field_drag_and_drop',
+                    'fields/file/concurrency_queue',
+                    'fields/file/file_upload_progress_table',
+                    'fields/file/drag_and_drop_upload',
+                    'fields/grid/file_grid'
+                ],
+            ]);
+        }
     }
 }
 

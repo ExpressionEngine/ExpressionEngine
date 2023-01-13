@@ -6,7 +6,7 @@
  *
  * @see      https://expressionengine.com/
  *
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,7 +21,7 @@ class Stylesheet extends Request
      */
     public function request_template()
     {
-        if ('_ee_channel_form_css' == rtrim(ee()->uri->uri_string(), '/')) {
+        if ('css/_ee_channel_form_css' == rtrim(ee()->uri->uri_string(), '/')) {
             return $this->_ee_channel_form_css();
         }
 

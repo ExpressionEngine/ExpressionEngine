@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -408,6 +408,10 @@ class FileSystemEntity extends ContentModel
 
     public function onBeforeDelete()
     {
+        if (ee('Request')->isPost() && ee('Request')->post('remove_files') !== null && ee('Request')->post('remove_files') != 1) {
+            // this is hacky, but currently only way to prevent file deleting when upload destination is removed in CP
+            return;
+        }
         $this->deleteAllFiles();
     }
 

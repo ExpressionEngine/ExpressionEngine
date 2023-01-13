@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,6 +32,12 @@ class EE_Form_validation
      */
     public function __construct($rules = array())
     {
+        // Instantiating the controller sets ee()->__legacy_controller
+        // This fixes an issue with using form validation from the CLI
+        if (! isset(ee()->__legacy_controller) && REQ === 'CLI') {
+            new \Controller();
+        }
+
         $this->CI = ee()->get('__legacy_controller');
 
         // Validation rules can be stored in a config file.

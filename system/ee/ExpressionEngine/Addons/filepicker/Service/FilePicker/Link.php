@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -45,6 +45,10 @@ class Link
      */
     public function render()
     {
+        ee()->load->library('file_field');
+        ee()->lang->loadfile('fieldtypes');
+        ee()->file_field->loadDragAndDropAssets();
+
         $url = $this->filepicker->getUrl();
 
         $url->addQueryStringVariables(array(

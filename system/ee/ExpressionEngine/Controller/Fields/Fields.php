@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -850,7 +850,7 @@ class Fields extends AbstractFieldsController
         //
         // -------------------------------------------
 
-        if (!empty($this->fieldChannels)) {
+        if (!$field->isNew() && !empty($this->fieldChannels)) {
             foreach ($this->fieldChannels as $id => $channelData) {
                 $this->fieldChannels[$id]['extra'] = lang('assigned') . ' ' . implode(', ', $channelData['via']);
             }

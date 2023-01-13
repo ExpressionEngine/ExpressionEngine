@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -79,6 +79,9 @@ class CommandListCommands extends Cli
         $headers = array();
 
         foreach ($available as $availableCommand => $availableClass) {
+            if (!is_string($availableClass)) {
+                continue;
+            }
             $availableHydratedClass = new $availableClass();
 
             // Get the command header
@@ -131,8 +134,11 @@ class CommandListCommands extends Cli
                 $this->command_col_width = $length;
             }
 
+            if (!is_string($availableClass)) {
+                continue;
+            }
             $availableHydratedClass = new $availableClass();
-            $length = strlen($availableHydratedClass->description);
+            $length = strlen((string) $availableHydratedClass->description);
             if ($length >= $this->desc_col_width) {
                 $this->desc_col_width = $length;
             }

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -193,6 +193,12 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                         ));
                     }
 
+                    // if the fieldtype returned NULL, set to empty string
+                    // as templates are working with strings
+                    if (is_null($tpl_chunk)) {
+                        $tpl_chunk = '';
+                    }
+
                     //frontend edit link
                     $frontedit_disabled = false;
                     $frontedit_disabled_with_param = false;
@@ -209,7 +215,10 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                     if (!$frontedit_disabled) {
                         $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
                     }
-                    $tpl_chunk = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tpl_chunk);
+
+                    if (! empty($tpl_chunk)) {
+                        $tpl_chunk = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tpl_chunk);
+                    }
 
                     $tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
 
