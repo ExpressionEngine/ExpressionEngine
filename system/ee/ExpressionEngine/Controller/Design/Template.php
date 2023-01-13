@@ -45,8 +45,10 @@ class Template extends AbstractDesignController
             show_error(sprintf(lang('error_no_template_group'), $group_name));
         }
 
-        if (! in_array($group->group_id, $this->assigned_template_groups) ||
-             ! ee('Permission')->can('create_templates_template_group_id_' . $group->getId())) {
+        if (
+            ! in_array($group->group_id, $this->assigned_template_groups) ||
+            ! ee('Permission')->can('create_templates_template_group_id_' . $group->getId())
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -172,6 +174,8 @@ class Template extends AbstractDesignController
 
         // If we have multiple Template Engines registered we'll splice in the
         // choices just after Template Types
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('template_structure');
         $engines = ee()->api_template_structure->get_template_engines();
         if (count($engines) > 1) {
             array_splice($vars['sections'][0], 2, 0, array(array(
@@ -221,8 +225,10 @@ class Template extends AbstractDesignController
 
         $group = $template->getTemplateGroup();
 
-        if (! in_array($group->group_id, $this->assigned_template_groups) ||
-             ! ee('Permission')->can('edit_templates_template_group_id_' . $group->getId())) {
+        if (
+            ! in_array($group->group_id, $this->assigned_template_groups) ||
+            ! ee('Permission')->can('edit_templates_template_group_id_' . $group->getId())
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -425,8 +431,10 @@ class Template extends AbstractDesignController
 
         $group = $template->getTemplateGroup();
 
-        if (! in_array($group->group_id, $this->assigned_template_groups) ||
-             ! ee('Permission')->can('manage_settings_template_group_id_' . $group->getId())) {
+        if (
+            ! in_array($group->group_id, $this->assigned_template_groups) ||
+            ! ee('Permission')->can('manage_settings_template_group_id_' . $group->getId())
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -601,10 +609,12 @@ class Template extends AbstractDesignController
         // for that field. Then it'll return. Since we may be validating
         // a field on a TemplateRoute model we should check for that
         // befaore outputting an ajax response.
-        if (! isset($_POST['save_modal'])
+        if (
+            ! isset($_POST['save_modal'])
             && isset($field)
             && $template->hasProperty($field)
-            && $response = $this->ajaxValidation($result)) {
+            && $response = $this->ajaxValidation($result)
+        ) {
             ee()->output->send_ajax_response($response);
         }
 
@@ -866,6 +876,8 @@ class Template extends AbstractDesignController
             )
         );
 
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('template_structure');
         $engines = ee()->api_template_structure->get_template_engines();
         if (count($engines) > 1) {
             $sections[0][] = array(

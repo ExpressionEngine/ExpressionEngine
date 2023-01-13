@@ -239,8 +239,6 @@ class Template extends FileSyncedModel
 
     /**
      * Saves a new template revision and rotates revisions based on 'max_tmpl_revisions' config item
-     *
-     * @param	Template	$template	Saved template model object
      */
     public function saveNewTemplateRevision()
     {
