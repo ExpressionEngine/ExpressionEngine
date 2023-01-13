@@ -592,7 +592,7 @@ class Template extends AbstractDesignController
             return false;
         }
 
-        if ($_POST['template_engine'] === '') {
+        if (isset($_POST['template_engine']) && $_POST['template_engine'] === '') {
             $_POST['template_engine'] = null;
         }
 
