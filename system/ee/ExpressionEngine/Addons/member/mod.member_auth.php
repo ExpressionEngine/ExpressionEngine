@@ -974,7 +974,11 @@ class Member_auth extends Member
         $validationResult = ee('Validation')->make($validationRules)->validate($pw_data);
 
         if ($validationResult->isNotValid()) {
-            return ee()->output->show_user_error('submission', $validationResult->getAllErrors(), '', $return_error_link);
+            $errors = [];
+            foreach ($validationResult->getAllErrors() as $error) {
+                $errors = array_merge($errors, array_values($error));
+            }
+            return ee()->output->show_user_error('submission', $errors, '', $return_error_link);
         }
 
         // Update the database with the new password.  Apply the appropriate salt first.
