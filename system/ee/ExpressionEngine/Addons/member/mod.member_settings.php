@@ -2028,7 +2028,11 @@ UNGA;
         /**  Display errors if there are any
         /** -------------------------------------*/
         if ($validationResult->isNotValid()) {
-            return ee()->output->show_user_error('submission', $validationResult->getAllErrors());
+            $errors = [];
+            foreach ($validationResult->getAllErrors() as $error) {
+                $errors = array_merge($errors, array_values($error));
+            }
+            return ee()->output->show_user_error('submission', $errors);
         }
 
         if ($un_exists) {
