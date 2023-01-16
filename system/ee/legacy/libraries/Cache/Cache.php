@@ -190,6 +190,20 @@ class Cache extends EE_Driver_Library
     }
 
     /**
+     * Checks whether cache key is writable
+     *
+     * @return	bool
+     */
+    public function is_writable($key = '', $scope = Cache::LOCAL_SCOPE)
+    {
+        if(method_exists($this->{$this->_adapter}, 'is_writable')) {
+            return $this->{$this->_adapter}->is_writable($key, $scope);
+        }
+
+        return true;
+    }
+
+    /**
      * Returns the name of the adapter currently in use
      *
      * @return	string	Name of adapter

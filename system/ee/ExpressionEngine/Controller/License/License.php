@@ -65,7 +65,7 @@ class License extends CP_Controller
         $data['sha'] = hash('sha256', json_encode($data));
 
         $encrypted = ee('Encrypt')->encode(json_encode($data), ee()->config->item('session_crypt_key'));
-        ee()->cache->file->save('/addons-status', $encrypted . '||s=' . hash('sha256', $encrypted), 0);
+        ee()->cache->save('/addons-status', $encrypted . '||s=' . hash('sha256', $encrypted), 0);
 
         return ee()->output->send_ajax_response(array(
             'messageType' => 'success',

@@ -784,13 +784,13 @@ class Addon
     public function checkCachedLicenseResponse()
     {
         // See if we have a cached check.
-        $cached = ee()->cache->file->get('/addons-status');
+        $cached = ee()->cache->get('/addons-status');
 
         if (empty($cached)) {
             return false;
         }
 
-        if (!ee()->cache->file->is_writable('/addons-status')) {
+        if (!ee()->cache->is_writable('/addons-status')) {
             $this->logLicenseError('license_error_file_not_writable');
 
             return false;

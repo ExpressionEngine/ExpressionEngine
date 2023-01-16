@@ -430,7 +430,7 @@ class Member extends ContentModel
     public function onAfterSave()
     {
         parent::onAfterSave();
-        ee()->cache->file->delete('jumpmenu/' . md5($this->member_id));
+        ee()->cache->delete('jumpmenu/' . md5($this->member_id));
     }
 
     public function onAfterDelete()
@@ -627,7 +627,7 @@ class Member extends ContentModel
         if (!empty($this->_cpHomepageUrl)) {
             return $this->_cpHomepageUrl;
         }
-        
+
         $cp_homepage = null;
         $cp_homepage_custom = 'homepage';
 
