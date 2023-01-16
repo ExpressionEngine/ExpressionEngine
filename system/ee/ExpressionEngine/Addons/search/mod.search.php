@@ -1281,13 +1281,18 @@ class Search
                 preg_replace(
                     '/\s+/',
                     ' ',
-                    preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_' . $row['search_excerpt']])
+                    preg_replace('/<[\/?][p|br|div|h1|h2|h3|h4|h5|h6]*>/', ' ', $row['field_id_' . $row['search_excerpt']])
                 )
             );
 
             $excerpt = trim($full_text);
             if (strpos($excerpt, "\r") !== false or strpos($excerpt, "\n") !== false) {
                 $excerpt = str_replace(array("\r\n", "\r", "\n"), " ", $excerpt);
+            }
+            // pipes are used in Checbockes and also in Grid, where those could be backslashed
+            // strip them all
+            if (strpos($excerpt, "|") !== false) {
+                $excerpt = str_replace(array("\|", "|"), " ", $excerpt);
             }
             $excerpt = ee()->functions->word_limiter($excerpt, 50);
 
