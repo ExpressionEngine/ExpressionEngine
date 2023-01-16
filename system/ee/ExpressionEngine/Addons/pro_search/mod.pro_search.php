@@ -1488,7 +1488,7 @@ class Pro_search
 
         // Make sure the IDs
         if (! is_array($ids)) {
-            $ids = preg_split('/\D+/', $ids, null, PREG_SPLIT_NO_EMPTY);
+            $ids = preg_split('/\D+/', $ids, 0, PREG_SPLIT_NO_EMPTY);
         }
 
         // Filter the ids, bail out if we end up empty
