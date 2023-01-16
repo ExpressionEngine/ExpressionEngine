@@ -121,6 +121,7 @@ jobs:
               with:
                 path: build-tools/builds/ExpressionEngine
                 key: cache-ee-build-${{ github.sha }}
+                enableCrossOsArchive: true
 
             - name: Move vendor files (Linux)
               if: runner.os != 'Windows'

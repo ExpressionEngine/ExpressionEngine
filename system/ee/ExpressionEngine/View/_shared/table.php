@@ -41,7 +41,6 @@
                     // Don't do reordering logic if the table is empty
                     $reorder = $reorder && ! empty($data);
                     $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
-                    $header_sorts = null;
 
                     if ($reorder_header): ?>
                         <th class="reorder-col"><span class="ico reorder fal fa-bars"></span></th>
@@ -318,7 +317,7 @@ else: ?>
     <?php endif ?>
 
         <tbody>
-            <tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns) + isset($header_sorts) ? intval($header_sorts) : 0)?>">
+            <tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns) + intval($header_sorts))?>">
             <?php
             // Output this if Grid input so we can dynamically show it via JS
             ?>

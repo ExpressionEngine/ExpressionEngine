@@ -86,7 +86,7 @@ jobs:
         uses: oprypin/find-latest-tag@v1
         with:
           repository: ExpressionEngine/ExpressionEngine
-          regex: '^\d+\.\d+\.\d+$'
+          regex: '^7\.\d+\.\d+$'
           releases-only: true
 
       - name: Build Changelog
@@ -96,7 +96,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
         with:
           fromTag: ${{ steps.prev_release_tag.outputs.tag }}
-          toTag: ${{ steps.build_json.outputs.BUILD_VERSION }}
+          toTag: ${{ github.event.pull_request.head.sha }}
           configuration: build-tools/changelog.config.json
 
       - uses: ncipollo/release-action@v1.12.0
