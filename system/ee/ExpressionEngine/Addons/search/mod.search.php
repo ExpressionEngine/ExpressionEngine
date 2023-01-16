@@ -13,15 +13,15 @@
  */
 class Search
 {
-    public $min_length = 3;			// Minimum length of search keywords
-    public $max_length = 60;			// Maximum length of search keywords (logged to varchar(60))...
-    public $cache_expire = 2;			// How many hours should we keep search caches?
+    public $min_length = 3;     // Minimum length of search keywords
+    public $max_length = 60;    // Maximum length of search keywords (logged to varchar(60))...
+    public $cache_expire = 2;   // How many hours should we keep search caches?
     public $keywords = "";
     public $terms = [];
-    public $text_format = 'xhtml';		// Excerpt text formatting
-    public $html_format = 'all';		// Excerpt html formatting
-    public $auto_links = 'y';			// Excerpt auto-linking: y/n
-    public $allow_img_url = 'n';			// Excerpt - allow images:  y/n
+    public $text_format = 'xhtml';  // Excerpt text formatting
+    public $html_format = 'all';    // Excerpt html formatting
+    public $auto_links = 'y';       // Excerpt auto-linking: y/n
+    public $allow_img_url = 'n';    // Excerpt - allow images:  y/n
     public $channel_array = array();
     public $cat_array = array();
     public $fields = array();
@@ -420,7 +420,7 @@ class Search
         // "Any Channel" is chosen
 
         // If we get channel_ids on previous step, we don't need to get them again
-        if(empty($channel_array)) {
+        if (empty($channel_array)) {
             ee()->db->select('channel_id');
             if (!empty($this->_meta['channel'])) {
                 ee()->functions->ar_andor_string($this->_meta['channel'], 'channel_name');
@@ -536,15 +536,15 @@ class Search
         // is the comment module installed?
         if (ee()->addons_model->module_installed('comment')) {
             // do we need to search on comments?
-            if(isset($this->_meta['search_in']) && $this->_meta['search_in'] == 'everywhere') {
+            if (isset($this->_meta['search_in']) && $this->_meta['search_in'] == 'everywhere') {
                 $sql .= "LEFT JOIN exp_comments ON exp_channel_titles.entry_id = exp_comments.entry_id ";
             }
         }
 
         // do we need to limit to categories?
-        if (!empty($this->_meta['category']) OR !empty($_POST['cat_id'])) {
-            $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
-			LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
+        if (!empty($this->_meta['category']) or !empty($_POST['cat_id'])) {
+            $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id 
+                LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
         }
 
         /** ----------------------------------------------
@@ -1060,8 +1060,8 @@ class Search
     /**
      * Returns a validated search id, checking first for a parameter and second in the query string
      *
-     * @access	private
-     * @return	mixed 	The validated search id or FALSE
+     * @access  private
+     * @return  mixed   The validated search id or FALSE
      */
     private function _get_search_id()
     {
@@ -1315,30 +1315,14 @@ class Search
         $path = reduce_double_slashes(ee()->functions->prep_query_string($url) . '/' . $row['url_title']);
         $idpath = reduce_double_slashes(ee()->functions->prep_query_string($url) . '/' . $row['entry_id']);
 
-        $tagdata = preg_replace(
-            "/" . LD . 'auto_path' . RD . "/",
-            $path,
-            $tagdata,
-            $this->tag_count('auto_path', $tagdata)
-        );
-        $tagdata = preg_replace(
-            "/" . LD . 'id_auto_path' . RD . "/",
-            $idpath,
-            $tagdata,
-            $this->tag_count('id_auto_path', $tagdata)
-        );
-        $tagdata = preg_replace(
-            "/" . LD . 'excerpt' . RD . "/",
-            $this->_escape_replacement_pattern($excerpt),
-            $tagdata,
-            $this->tag_count('excerpt', $tagdata)
-        );
-        $tagdata = preg_replace(
-            "/" . LD . 'full_text' . RD . "/",
-            $this->_escape_replacement_pattern($full_text),
-            $tagdata,
-            $this->tag_count('full_text', $tagdata)
-        );
+        $vars = [
+            'auto_path' => $path,
+            'id_auto_path' => $idpath,
+            'excerpt' => $excerpt,
+            'full_text' => $full_text
+        ];
+
+        $tagdata = ee()->TMPL->parse_variables_row($tagdata, $vars);
 
         $m_paths = $this->get_member_path_tags($tagdata);
 
@@ -1423,13 +1407,17 @@ class Search
             'meta' => $meta
         );
 
-        if (ee()->TMPL->fetch_param('name') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'))) {
+        if (
+            ee()->TMPL->fetch_param('name') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'))
+        ) {
             $data['name'] = ee()->TMPL->fetch_param('name');
         }
 
-        if (ee()->TMPL->fetch_param('id') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))) {
+        if (
+            ee()->TMPL->fetch_param('id') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))
+        ) {
             $data['id'] = ee()->TMPL->fetch_param('id');
             ee()->TMPL->log_item('Simple Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
         } else {
@@ -1572,13 +1560,17 @@ class Search
             'meta' => $meta
         );
 
-        if (ee()->TMPL->fetch_param('name') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'))) {
+        if (
+            ee()->TMPL->fetch_param('name') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'))
+        ) {
             $data['name'] = ee()->TMPL->fetch_param('name');
         }
 
-        if (ee()->TMPL->fetch_param('id') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))) {
+        if (
+            ee()->TMPL->fetch_param('id') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))
+        ) {
             $data['id'] = ee()->TMPL->fetch_param('id');
             ee()->TMPL->log_item('Advanced Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
         } elseif (ee()->TMPL->form_id != '') {
