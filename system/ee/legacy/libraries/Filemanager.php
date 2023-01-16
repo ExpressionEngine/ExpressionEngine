@@ -2762,8 +2762,7 @@ class Filemanager
                 'dimensions' => ee()->image_lib->get_image_properties($new['path'], true),
                 'file_info' => get_file_info($new['path'])
             );
-            $filesystem->delete($file_path);
-            $filesystem->writeStream($file_path, fopen($new['path'], 'r+'));
+            ee('Filesystem')->forceCopy($new['path'], $file_path, $filesystem);
         }
 
         ee()->image_lib->clear();
@@ -2810,8 +2809,7 @@ class Filemanager
                 'dimensions' => ee()->image_lib->get_image_properties($new['path'], true),
                 'file_info' => get_file_info($new['path'])
             );
-            $filesystem->delete($file_path);
-            $filesystem->writeStream($file_path, fopen($new['path'], 'r+'));
+            ee('Filesystem')->forceCopy($new['path'], $file_path, $filesystem);
         }
 
         ee()->image_lib->clear();
@@ -2865,8 +2863,7 @@ class Filemanager
                 'dimensions' => ee()->image_lib->get_image_properties($new['path'], true),
                 'file_info' => get_file_info($new['path'])
             );
-            $filesystem->delete($file_path);
-            $filesystem->writeStream($file_path, fopen($new['path'], 'r+'));
+            ee('Filesystem')->forceCopy($new['path'], $file_path, $filesystem);
         }
 
         ee()->image_lib->clear();

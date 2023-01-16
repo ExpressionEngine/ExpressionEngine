@@ -24,7 +24,7 @@ class Filesystem
     {
         if (is_null($adapter)) {
             $syspathRoot = null;
-            // Normalize the System Path and then find the root 
+            // Normalize the System Path and then find the root
             $syspath = str_replace('\\', '/', SYSPATH);
             $openBaseDir = ini_get('open_basedir');
             // Check if open_basedir restrictions are in effect
@@ -422,34 +422,36 @@ class Filesystem
      *
      * @param String $source File or directory to copy
      * @param String $dest Path to the duplicate
+     * @param Filesystem|null $destinationFilesystem Filesystem for the destination
      */
-    public function forceCopy($source, $dest)
+    public function forceCopy($source, $dest, $destinationFilesystem = null)
     {
         $source = $this->normalizeRelativePath($source);
-        $dest = $this->normalizeRelativePath($dest);
+        $that = ($destinationFilesystem) ?: $this;
+        $dest = $that->normalizeRelativePath($dest);
         $destBackup = rtrim($dest, '\\/').'.backup';
 
         if (!$this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
         }
 
-        if($this->exists($destBackup)) {
-            $this->delete($destBackup);
+        if($that->exists($destBackup)) {
+            $that->delete($destBackup);
         }
 
-        if($this->exists($dest)) {
-            $this->rename($dest, $destBackup);
+        if($that->exists($dest)) {
+            $that->rename($dest, $destBackup);
         }
 
         try {
-            $this->copy($source, $dest);
+            $this->copy($source, $dest, (!is_null($destinationFilesystem)) ? $that : null);
         }catch(\Exception $e) {
-            $this->rename($destBackup, $dest);
+            $that->rename($destBackup, $dest);
             throw $e;
         }
 
-        if ($this->exists($destBackup)) {
-            $this->delete($destBackup);
+        if ($that->exists($destBackup)) {
+            $that->delete($destBackup);
         }
 
     }
@@ -1000,7 +1002,7 @@ class Filesystem
         if($file === false) {
             throw new \Exception('Cannot create temp file at "'.sys_get_temp_dir().'"');
         }
-        
+
         $path = stream_get_meta_data($file)['uri'];
 
         return compact('file', 'path');
