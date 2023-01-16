@@ -89,9 +89,11 @@ class Fluid_field_ft extends EE_Fieldtype
             $f = $field->getField();
             $ft_instance = $f->getNativeField();
 
-            if (isset($ft_instance->has_array_data)
+            if (
+                isset($ft_instance->has_array_data)
                 && $ft_instance->has_array_data
-                && ! is_array($data['field_id_' . $field_id])) {
+                && ! is_array($data['field_id_' . $field_id])
+            ) {
                 $data['field_id_' . $field_id] = array();
             }
 
@@ -174,13 +176,15 @@ class Fluid_field_ft extends EE_Fieldtype
                 }
             }
 
-            $field->setItem('field_search', true);
             $field->setItem('fluid_field_data_id', $fluid_field_data_id);
 
             foreach ($value as $field_data) {
                 $field->setData($field_data);
                 $field->validate($field_data);
-                $compiled_data_for_search[] = $field->save($field_data);
+                $subfield = $field->save($field_data);
+                if ($field->getItem('field_search')) {
+                    $compiled_data_for_search[] = $subfield;
+                }
             }
         }
 
@@ -729,8 +733,10 @@ class Fluid_field_ft extends EE_Fieldtype
                     [$this->id()]
                 );
 
-                if (! isset($data["field_id_{$this->id()}"])
-                    || ! isset($data["field_id_{$this->id()}"]['fields'])) {
+                if (
+                    ! isset($data["field_id_{$this->id()}"])
+                    || ! isset($data["field_id_{$this->id()}"]['fields'])
+                ) {
                     return 0;
                 }
             }
