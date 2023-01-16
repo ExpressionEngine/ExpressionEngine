@@ -83,7 +83,6 @@ class Filemanager
         $basename = $filesystem->basename($filename);
         $dirname = ($filesystem->dirname($filename) !== '.') ? $filesystem->dirname($filename) . '/' : '';
 
-
         // clean up the filename
         if ($parameters['convert_spaces'] === true) {
             $basename = preg_replace("/\s+/", "_", $basename);
@@ -92,7 +91,7 @@ class Filemanager
         $basename = ee()->security->sanitize_filename($basename);
         $filename = $dirname . $basename;
 
-        if($parameters['ignore_dupes'] === false) {
+        if ($parameters['ignore_dupes'] === false) {
             $filename = $prefs['directory']->getFilesystem()->getUniqueFilename($filename);
         }
 
@@ -239,7 +238,7 @@ class Filemanager
      */
     public function get_image_dimensions($file_path, $filesystem = null)
     {
-        if(!$filesystem) {
+        if (!$filesystem) {
             // Set the filesystem to basedir of $file_path to accommodate tmp dir
             $adapter = new \ExpressionEngine\Library\Filesystem\Adapter\Local(['path' => dirname($file_path)]);
             $filesystem = new \ExpressionEngine\Library\Filesystem\Filesystem($adapter);
@@ -252,7 +251,7 @@ class Filemanager
         // PHP7.4 does not come with GD JPEG processing by default
         // So, we need to run this check.
         if (function_exists('getimagesize')) {
-            $imageSize = $filesystem->actLocally($file_path, function($path) {
+            $imageSize = $filesystem->actLocally($file_path, function ($path) {
                 return @getimagesize($path);
             });
 
@@ -333,6 +332,7 @@ class Filemanager
                 foreach ($prefs['allowed_types'] as $allowed_type) {
                     if (ee('MimeType')->isOfKind($mime, $allowed_type)) {
                         $safeForUpload = true;
+
                         break;
                     }
                 }
@@ -371,7 +371,7 @@ class Filemanager
             }
 
             $prefs = $this->max_hw_check($image_path, array_merge($prefs, [
-                 // If we're using a temp image we need to pass along a null filesystem in some cases
+                // If we're using a temp image we need to pass along a null filesystem in some cases
                 'filesystem' => isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? null : $directory['upload_destination']->getFilesystem()
             ]));
 
@@ -1132,10 +1132,10 @@ class Filemanager
         ee()->load->helper('file');
 
         $filesystem = $prefs['directory']->getFilesystem();
-        $file_path =  str_replace('\\', '/', $filesystem->absolute($file_path));
+        $file_path = str_replace('\\', '/', $filesystem->absolute($file_path));
 
         $img_path = ($prefs['directory']->adapter == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
-        $dirname =  rtrim(str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))), '/') . '/';
+        $dirname = rtrim(str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))), '/') . '/';
         if (empty($img_path) || strpos($dirname, $img_path) === 0) {
             $img_path = $dirname;
         }
@@ -1229,10 +1229,10 @@ class Filemanager
                 $size['resize_type'] = 'none';
             }
 
-            if($size['short_name'] == 'thumbs') {
-                if($prefs['width'] > $prefs['height']) {
+            if ($size['short_name'] == 'thumbs') {
+                if ($prefs['width'] > $prefs['height']) {
                     $size['height'] = 0;
-                }else{
+                } else {
                     $size['width'] = 0;
                 }
             }
@@ -2005,7 +2005,7 @@ class Filemanager
                 );
             }
         }
-        
+
         // Save file to database
         $saved = $this->save_file($file_data['relative_path'], $dir, $file_data);
 
@@ -2242,7 +2242,7 @@ class Filemanager
             return ['error' => lang('file_exists') ?? 'file_exists'];
         }
 
-        if(!$upload_directory['directory']->getFilesystem()->rename($old_file_name, $new_file_name)) {
+        if (!$upload_directory['directory']->getFilesystem()->rename($old_file_name, $new_file_name)) {
             return ['error' => lang('copy_error') ?? 'copy_error'];
         }
 
@@ -2454,7 +2454,7 @@ class Filemanager
         $new_depth = $directory_depth - 1;
         $indexFiles = array('index.html', 'index.htm', 'index.php');
 
-        foreach($source->getDirectoryContents() as $path) {
+        foreach ($source->getDirectoryContents() as $path) {
             // Remove '.', '..', and hidden files [optional]
             if (!trim($path, '.') || ($hidden == false && $path[0] == '.')) {
                 continue;
@@ -2469,10 +2469,10 @@ class Filemanager
             } elseif (($directory_depth < 1 || $new_depth > 0) && $source->isDir($path)) {
                 $filedata[$path] = $source->getDirectoryContents($path, false, $hidden); //directory_map($source_dir . $file . DIRECTORY_SEPARATOR, $new_depth, $hidden);
             }
-
         }
 
         sort($filedata);
+
         return $filedata;
     }
 
@@ -2721,8 +2721,12 @@ class Filemanager
     /**
      * Image crop
      */
-    public function _do_crop($file_path)
+    public function _do_crop($file_path, $filesystem = null)
     {
+        $filesystem = ($filesystem) ?: ee('Filesystem');
+        $source = $filesystem->copyToTempFile($file_path);
+        $new = $filesystem->createTempFile();
+
         $config = array(
             'width' => ee()->input->post('crop_width'),
             'maintain_ratio' => false,
@@ -2732,8 +2736,8 @@ class Filemanager
             'master_dim' => 'width',
             'library_path' => ee()->config->item('image_library_path'),
             'image_library' => ee()->config->item('image_resize_protocol'),
-            'source_image' => $file_path,
-            'new_image' => $file_path
+            'source_image' => $source['path'],
+            'new_image' => $new['path']
         );
 
         // Must initialize seperately in case image_lib was loaded previously
@@ -2748,16 +2752,18 @@ class Filemanager
             }
         }
 
-        $reponse = array();
+        $response = array();
 
         if (isset($errors)) {
             $response['errors'] = $errors;
         } else {
             ee()->load->helper('file');
             $response = array(
-                'dimensions' => ee()->image_lib->get_image_properties('', true),
-                'file_info' => get_file_info($file_path)
+                'dimensions' => ee()->image_lib->get_image_properties($new['path'], true),
+                'file_info' => get_file_info($new['path'])
             );
+            $filesystem->delete($file_path);
+            $filesystem->writeStream($file_path, fopen($new['path'], 'r+'));
         }
 
         ee()->image_lib->clear();
@@ -2768,14 +2774,18 @@ class Filemanager
     /**
      * Do image rotation.
      */
-    public function _do_rotate($file_path)
+    public function _do_rotate($file_path, $filesystem = null)
     {
+        $filesystem = ($filesystem) ?: ee('Filesystem');
+        $source = $filesystem->copyToTempFile($file_path);
+        $new = $filesystem->createTempFile();
+
         $config = array(
             'rotation_angle' => ee()->input->post('rotate'),
             'library_path' => ee()->config->item('image_library_path'),
             'image_library' => ee()->config->item('image_resize_protocol'),
-            'source_image' => $file_path,
-            'new_image' => $file_path
+            'source_image' => $source['path'],
+            'new_image' => $new['path']
         );
 
         // Must initialize seperately in case image_lib was loaded previously
@@ -2790,16 +2800,18 @@ class Filemanager
             }
         }
 
-        $reponse = array();
+        $response = array();
 
         if (isset($errors)) {
             $response['errors'] = $errors;
         } else {
             ee()->load->helper('file');
             $response = array(
-                'dimensions' => ee()->image_lib->get_image_properties('', true),
-                'file_info' => get_file_info($file_path)
+                'dimensions' => ee()->image_lib->get_image_properties($new['path'], true),
+                'file_info' => get_file_info($new['path'])
             );
+            $filesystem->delete($file_path);
+            $filesystem->writeStream($file_path, fopen($new['path'], 'r+'));
         }
 
         ee()->image_lib->clear();
@@ -2810,15 +2822,19 @@ class Filemanager
     /**
      * Do image resizing.
      */
-    public function _do_resize($file_path)
+    public function _do_resize($file_path, $filesystem = null)
     {
+        $filesystem = ($filesystem) ?: ee('Filesystem');
+        $source = $filesystem->copyToTempFile($file_path);
+        $new = $filesystem->createTempFile();
+
         $config = array(
             'width' => ee()->input->get_post('resize_width'),
             'maintain_ratio' => ee()->input->get_post('constrain'),
             'library_path' => ee()->config->item('image_library_path'),
             'image_library' => ee()->config->item('image_resize_protocol'),
-            'source_image' => $file_path,
-            'new_image' => $file_path
+            'source_image' => $source['path'],
+            'new_image' => $new['path']
         );
 
         if (ee()->input->get_post('resize_height') != '') {
@@ -2846,9 +2862,11 @@ class Filemanager
         } else {
             ee()->load->helper('file');
             $response = array(
-                'dimensions' => ee()->image_lib->get_image_properties('', true),
-                'file_info' => get_file_info($file_path)
+                'dimensions' => ee()->image_lib->get_image_properties($new['path'], true),
+                'file_info' => get_file_info($new['path'])
             );
+            $filesystem->delete($file_path);
+            $filesystem->writeStream($file_path, fopen($new['path'], 'r+'));
         }
 
         ee()->image_lib->clear();

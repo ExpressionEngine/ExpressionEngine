@@ -236,12 +236,12 @@ class File extends AbstractFilesController
             $response = null;
             switch ($action) {
                 case 'crop':
-                    $response = ee()->filemanager->_do_crop($file->getAbsolutePath());
+                    $response = ee()->filemanager->_do_crop($file->getAbsolutePath(), $file->getFilesystem());
 
                     break;
 
                 case 'rotate':
-                    $response = ee()->filemanager->_do_rotate($file->getAbsolutePath());
+                    $response = ee()->filemanager->_do_rotate($file->getAbsolutePath(), $file->getFilesystem());
 
                     break;
 
@@ -258,7 +258,7 @@ class File extends AbstractFilesController
                         }
                     }
 
-                    $response = ee()->filemanager->_do_resize($file->getAbsolutePath());
+                    $response = ee()->filemanager->_do_resize($file->getAbsolutePath(), $file->getFilesystem());
 
                     break;
             }
