@@ -447,7 +447,7 @@ class Filesystem
 
         try {
             $this->copy($source, $dest, (!is_null($destinationFilesystem)) ? $that : null);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $that->rename($destBackup, $dest);
 
             throw $e;
@@ -666,7 +666,7 @@ class Filesystem
 
         try {
             $size = $this->flysystem->getSize($path);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
 
         return $size;
