@@ -1294,6 +1294,10 @@ class Search
             if (strpos($excerpt, "|") !== false) {
                 $excerpt = str_replace(array("\|", "|"), " ", $excerpt);
             }
+            // strip variables, we're not going to parse anything
+            if (strpos($excerpt, LD) !== false) {
+                $excerpt = preg_replace("/" . LD . "[^;\n]+?" . RD . "/", '', $excerpt);
+            }
             $excerpt = ee()->functions->word_limiter($excerpt, 50);
 
             $typography = array(
