@@ -30464,7 +30464,7 @@ ul.field-nested ul li ul::before {
   border-radius: 0;
 }
 
-#fieldset-statuses .checkbox-label {
+#fieldset-statuses div[data-select-react] .checkbox-label {
   background-color: var(--ee-bg-0);
   border: 1px solid var(--ee-border);
   box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
@@ -30472,43 +30472,43 @@ ul.field-nested ul li ul::before {
   position: relative;
   margin-bottom: 8px;
 }
-#fieldset-statuses .checkbox-label .checkbox-label__text {
+#fieldset-statuses div[data-select-react] .checkbox-label .checkbox-label__text {
   height: 45px;
   position: relative;
 }
-#fieldset-statuses .checkbox-label input[type=checkbox] {
+#fieldset-statuses div[data-select-react] .checkbox-label input[type=checkbox] {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   left: 40px;
 }
-#fieldset-statuses .checkbox-label .icon-reorder {
+#fieldset-statuses div[data-select-react] .checkbox-label .icon-reorder {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   left: 15px;
 }
-#fieldset-statuses .checkbox-label .status-tag, #fieldset-statuses .checkbox-label .st-spam,
-#fieldset-statuses .checkbox-label .st-error,
-#fieldset-statuses .checkbox-label .st-closed,
-#fieldset-statuses .checkbox-label .st-banned,
-#fieldset-statuses .checkbox-label .st-open,
-#fieldset-statuses .checkbox-label .st-draft,
-#fieldset-statuses .checkbox-label .st-pending,
-#fieldset-statuses .checkbox-label .st-info,
-#fieldset-statuses .checkbox-label .st-note,
-#fieldset-statuses .checkbox-label .st-warning,
-#fieldset-statuses .checkbox-label .st-locked,
-#fieldset-statuses .checkbox-label .st-unlocked,
-#fieldset-statuses .checkbox-label .st-enable,
-#fieldset-statuses .checkbox-label .st-disable,
-#fieldset-statuses .checkbox-label .st-status {
+#fieldset-statuses div[data-select-react] .checkbox-label .status-tag, #fieldset-statuses div[data-select-react] .checkbox-label .st-spam,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-error,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-closed,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-banned,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-open,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-draft,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-pending,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-info,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-note,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-warning,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-locked,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-unlocked,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-enable,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-disable,
+#fieldset-statuses div[data-select-react] .checkbox-label .st-status {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   left: 67px;
 }
-#fieldset-statuses .checkbox-label .button-group.button-group-flyout-right {
+#fieldset-statuses div[data-select-react] .checkbox-label .button-group.button-group-flyout-right {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
