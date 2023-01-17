@@ -379,13 +379,31 @@ class Search
                             $channel_array[] = $channel->channel_id;
                         }
 
-                        $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+                        if (
+                            empty($channel_meta['options']) ||
+                            ($channel_meta['not'] === false && in_array($channel->channel_name, $channel_meta['options'])) ||
+                            ($channel_meta['not'] === true && !in_array($channel->channel_name, $channel_meta['options']))
+                        ) {
+                            $channelSearchableFields = [];
+                            foreach ($channel->getAllCustomFields() as $field) {
+                                if ($field->field_search) {
+                                    $channelSearchableFields[$field->getId()] = $field;
+                                }
+                            }
+                            $custom_fields = array_merge($custom_fields, $channelSearchableFields);
+                        }
                     }
-                    $this->custom_fields = array_chunk($custom_fields, 50);
+                    if (count($custom_fields) > 50) {
+                        ee()->load->library('logger');
+                        ee()->logger->developer('Searching more than 50 custom fields is not supported. We recommend restricting search to specific channels, reducing number of searchable fields or switching to Pro Search.', true, 60 * 60 * 24 * 30);
+                        $this->custom_fields = array_chunk($custom_fields, 50);
+                    } else {
+                        $this->custom_fields = $custom_fields;
+                    }
                 }
             }
 
-            foreach (array_shift($this->custom_fields) as $field) {
+            foreach ($this->custom_fields as $field) {
                 if ($field->field_search) {
                     if (!isset($fields[$field->field_id])) {
                         $fields[$field->field_id] = $field->field_id;
