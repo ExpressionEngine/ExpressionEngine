@@ -235,7 +235,7 @@ class Api_template_structure extends Api
 
         if (isset($this->file_extensions[$template_type])) {
             return implode('', array_filter([$this->file_extensions[$template_type], $engine]));
-        } else { 
+        } else {
             // Check custom template types for a file extension
             // -------------------------------------------
             // 'template_types' hook.
@@ -310,7 +310,6 @@ class Api_template_structure extends Api
         $this->template_engine_file_extensions = $extensions;
     }
 
-
     /**
      * Register new template engine(s)
      *
@@ -327,6 +326,16 @@ class Api_template_structure extends Api
 
         // Refresh the template engine extension cache
         $this->_setup_template_engine_extensions();
+    }
+
+    /**
+     * Get a list of template engines
+     *
+     * @return array
+     */
+    public function get_template_engines()
+    {
+        return $this->template_engines;
     }
 
     /**
