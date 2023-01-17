@@ -1208,7 +1208,7 @@ class Search
             $pagination->build($pagination->total_items, $pagination->per_page);
             $sql .= " LIMIT " . $pagination->offset . ", " . $pagination->per_page;
         } else {
-            $sql .= " LIMIT 0, 100";
+            $sql .= " LIMIT 0, " . max($pagination->per_page, 100);
         }
 
         $query = ee()->db->query($sql);
