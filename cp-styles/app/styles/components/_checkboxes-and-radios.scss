@@ -406,7 +406,7 @@ ul.field-nested ul {
 
 // Custom styling for Statuses checkbox lists
 #fieldset-statuses {
-	.channel-statuses {
+	&.channel-statuses {
 	  .checkbox-label {
 	    background-color: color(bg-0);
 	    border: 1px solid color(border);
