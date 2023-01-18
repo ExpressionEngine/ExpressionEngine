@@ -191,6 +191,8 @@ $lang = array(
 
     'file_dnd_upload_new' => 'Upload New',
 
+    'file_grid_vertical_layout_title' => 'File Grid layout',
+
     /* Grid */
     'grid_add_field' => 'add new field',
 
