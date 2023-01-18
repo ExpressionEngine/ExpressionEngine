@@ -300,6 +300,8 @@ class Search
             'where' => ee()->TMPL->fetch_param('where', ''),
             'show_expired' => ee()->TMPL->fetch_param('show_expired', ''),
             'show_future_entries' => ee()->TMPL->fetch_param('show_future_entries'),
+            'orderby' => ee()->TMPL->fetch_param('orderby', 'entry_date'),
+            'sort' => ee()->TMPL->fetch_param('sort', 'desc'),
             'result_page' => ee()->TMPL->fetch_param('result_page', 'search/results'),
             'no_result_page' => ee()->TMPL->fetch_param('no_result_page', ''),
             'site_ids' => $site_ids
@@ -971,34 +973,48 @@ class Search
         /** ----------------------------------------------
         /**  Set sort order
         /** ----------------------------------------------*/
-        $order_by = (! isset($_POST['order_by'])) ? 'date' : $_POST['order_by'];
+
+        $order_by = isset($this->_meta['orderby']) ? $this->_meta['orderby'] : 'entry_date';
+        $order_by = (! isset($_POST['order_by'])) ? $order_by : $_POST['order_by'];
         $orderby = (! isset($_POST['orderby'])) ? $order_by : $_POST['orderby'];
 
         $end = '';
 
+        $sort = isset($this->_meta['sort']) ? $this->_meta['sort'] : 'desc';
+        $sort = (! isset($_POST['sort'])) ? $sort : $_POST['sort'];
+        $order = (! isset($_POST['sort_order'])) ? $sort : $_POST['sort_order'];
+
+        if (strtolower($order) != 'asc' and strtolower($order) != 'desc') {
+            $order = 'desc';
+        }
+
         switch ($orderby) {
             case 'most_comments':
-                $end .= " ORDER BY comment_total ";
+                $end .= " ORDER BY comment_total " . $order . ", entry_date";
 
                 break;
             case 'recent_comment':
-                $end .= " ORDER BY recent_comment_date ";
+                $end .= " ORDER BY recent_comment_date " . $order . ", entry_date";
 
                 break;
             case 'title':
-                $end .= " ORDER BY title ";
+            case 'status':
+            case 'entry_id':
+            case 'url_title':
+            case 'edit_date':
+            case 'comment_total':
+            case 'expiration_date':
+            case 'view_count_one':
+            case 'view_count_two':
+            case 'view_count_three':
+            case 'view_count_four':
+                $end .= " ORDER BY " . $orderby . " " . $order . ", entry_date";
 
                 break;
             default:
-                $end .= " ORDER BY entry_date ";
+                $end .= " ORDER BY entry_date";
 
                 break;
-        }
-
-        $order = (! isset($_POST['sort_order'])) ? 'desc' : $_POST['sort_order'];
-
-        if ($order != 'asc' and $order != 'desc') {
-            $order = 'desc';
         }
 
         $end .= " " . $order;
@@ -1406,8 +1422,8 @@ class Search
 
     /**
      * For when preg_quote is too much, we just need to escape replacement patterns
-     * @param  string	String to escape
-     * @return string	Escaped string
+     * @param  string   String to escape
+     * @return string   Escaped string
      */
     private function _escape_replacement_pattern($string)
     {
@@ -1450,7 +1466,7 @@ class Search
 
         $res = ee()->functions->form_declaration($data);
         ee()->TMPL->set_data($res);
-        
+
         $res .= stripslashes(ee()->TMPL->tagdata);
 
         $res .= "</form>";
