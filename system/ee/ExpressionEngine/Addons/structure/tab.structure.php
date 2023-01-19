@@ -68,7 +68,7 @@ class Structure_tab
             StaticCache::set('publish_tabs__get_structure_channels', $structure_channels);
         }
 
-        $channel_type = $structure_channels[$channel_id]['type'];
+        $channel_type = $structure_channels[$channel_id]['type'] ?? null;
 
         ee()->lang->loadfile('structure');
 
@@ -544,7 +544,7 @@ class Structure_tab
         }
 
         $structure_channels = $this->structure->get_structure_channels();
-        $channel_type = $structure_channels[$channel_id]['type'];
+        $channel_type = $structure_channels[$channel_id]['type'] ?? null;
         $allow_dupes = false;
 
         if ($channel_type == 'page' || $channel_type == 'listing') {
