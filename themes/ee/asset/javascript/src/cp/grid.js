@@ -210,7 +210,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		params = $.extend(params, this.sortableParams);
 
-		this.root.eeGridTableReorder(params);
+		this.root.eeTableReorder(params);
 	},
 
 	/**

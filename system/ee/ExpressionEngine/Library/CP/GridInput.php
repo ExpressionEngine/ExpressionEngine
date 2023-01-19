@@ -204,7 +204,6 @@ class GridInput extends Table
             $this->cp->add_js_script('plugin', 'ui.touch.punch');
             $this->cp->add_js_script('plugin', 'ee_table_reorder');
             $this->cp->add_js_script('file', 'cp/grid');
-            $this->cp->add_js_script('file', 'cp/ee_grid_table_reorder');
 
             $assets_loaded = true;
         }
