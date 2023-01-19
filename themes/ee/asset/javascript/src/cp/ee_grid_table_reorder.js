@@ -14,20 +14,13 @@ $.fn.eeGridTableReorder = function(params) {
 
 		$(config.sortableContainer, this).sortable({
 			axis: 'y',
-			forcePlaceholderSize: true,
 			appendTo: config.appendTo,
 			handle: config.handle,
 			cancel: config.cancel,
 			items: config.item,
 			containment: config.containment,
-			sort: EE.sortable_sort_helper,
 			cursor: "move",
 			tolerance: 'pointer',
-			sort: (event, ui) => {
-				try {
-					EE.sortable_sort_helper(event, ui)
-				} catch (error) {}
-			},
 			helper: function(event, row)	// Fix issue where cell widths collapse on drag
 			{
 				var $originals = row.children();
@@ -52,6 +45,7 @@ $.fn.eeGridTableReorder = function(params) {
 				{
 					params.beforeSort(ui.item);
 				}
+				ui.placeholder.height(ui.helper.height());
 			},
 			// After sort finishes
 			stop: function(event, ui)
