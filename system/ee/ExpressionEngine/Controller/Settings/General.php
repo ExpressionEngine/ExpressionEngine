@@ -319,7 +319,7 @@ class General extends Settings
                     ->withTitle(sprintf(lang('version_update_available'), $version_info['version']));
                 if ($isMajorUpdate) {
                     $banner->addToBody(lang('version_update_is_major') . '<br><br>');
-                } else if ($isVitalUpdate) {
+                } elseif ($isVitalUpdate) {
                     $banner->addToBody(lang('version_update_is_vital') . '<br><br>');
                 }
                 if ($version_major < 7) {
