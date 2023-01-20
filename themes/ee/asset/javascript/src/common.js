@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -638,7 +638,6 @@ $(document).ready(function(){
 		})
 
 		$('body').on('modal:open', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
-
 			// Hide any dropdowns that are currently shown
 			DropdownController.hideAllDropdowns()
 
@@ -697,7 +696,10 @@ $(document).ready(function(){
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
+			if ($(this).is('.app-modal--fullscreen'))
+			{
+				$('body').css('overflow','hidden');
+			}else if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
 			{
 				setTimeout(function() {
 					$(document).scrollTop(0);

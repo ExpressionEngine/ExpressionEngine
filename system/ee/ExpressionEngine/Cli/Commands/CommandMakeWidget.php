@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -60,8 +60,8 @@ class CommandMakeWidget extends Cli
         $this->info('command_make_widget_lets_build_widget');
 
         // Gather alll the widget information
-        $this->data['name'] =  $this->getFirstUnnamedArgument("command_make_widget_ask_widget_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_widget_ask_addon", null, true);
+        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_widget_ask_widget_name", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_widget_ask_addon");
 
         $this->info('command_make_widget_building_widget');
 

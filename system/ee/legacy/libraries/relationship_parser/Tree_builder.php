@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
  require_once APPPATH . 'libraries/datastructures/Tree.php';
@@ -174,13 +174,13 @@ class EE_relationship_tree_builder
                 foreach ($authorFields as $field) {
                     $entriesQuery->fields('Author.' . $field);
                 }
-                $entries_result = $entriesQuery->all()
+                $entries_result = $entriesQuery->all(true)
                     ->getModChannelResultsArray($disabled);
                 unset($entriesQuery);
             } else {
                 $entries_result = ee('Model')->get('ChannelEntry', $unique_entry_ids)
                     ->with($entriesQueryWith)
-                    ->all()
+                    ->all(true)
                     ->getModChannelResultsArray($disabledFeatures);
             }
 

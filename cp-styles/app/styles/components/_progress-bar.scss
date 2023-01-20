@@ -49,4 +49,40 @@
 	}
 }
 
+progress {
+	border: 0;
+	height: 10px;
+	border-radius: 6px;
+	background-color: color(bg-10);
+}
+progress::-webkit-progress-bar {
+	border: 0;
+	height: 10px;
+	border-radius: 6px;
+	background-color: color(bg-10);
+}
+progress::-webkit-progress-value {
+	border: 0;
+	height: 10px;
+	border-radius: 6px;
+	background-color: color(accent);
+	transition: width 100ms ease;
 
+	@include gradient-striped();
+	background-size: 50px 50px;
+
+	animation: progress-bar-stripes 0.8s linear infinite;
+}
+
+progress::-moz-progress-bar {
+	border: 0;
+	height: 10px;
+	border-radius: 6px;
+	background-color: color(accent);
+	transition: width 100ms ease;
+
+	@include gradient-striped();
+	background-size: 50px 50px;
+
+	animation: progress-bar-stripes 0.8s linear infinite;
+}

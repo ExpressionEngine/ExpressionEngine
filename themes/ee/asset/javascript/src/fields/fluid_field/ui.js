@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -126,6 +126,7 @@
 			items: '.fluid__item',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper,	// Custom sort handler
 			cancel: '.no-drag',
+			appendTo: 'div.panel-body',
 			start: function (event, ui) {
 				$(ui.item).addClass('fluid__item--dragging')
 

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,7 +24,8 @@ function makeFilterableComponent(WrappedComponent) {
       this.ajaxRequest = null
 
       // We need this function only for checkbox that have selected elements and there are more than tooMany
-      if (props.tooMany && props.multi && this.props.selected.length) {
+      // excluding categories on the Entry page
+      if (props.tooMany && props.multi && this.props.selected.length && !props.name.startsWith("categories[")) {
         this.moveSelectableToTop();
       }
     }

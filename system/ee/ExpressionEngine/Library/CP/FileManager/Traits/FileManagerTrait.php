@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -299,7 +299,7 @@ trait FileManagerTrait
             // We only need to eager load contents for destinations that are displaying
             // files in this current page of the listing
             if (! in_array($file->upload_location_id, $destinationsToEagerLoad)) {
-                if ($file->UploadDestination->exists()) {
+                if ($file->UploadDestination->adapter != 'local' && $file->UploadDestination->exists()) {
                     $file->UploadDestination->eagerLoadContents();
                 }
                 $destinationsToEagerLoad[$file->upload_location_id] = $file->upload_location_id;

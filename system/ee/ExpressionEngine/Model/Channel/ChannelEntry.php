@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -789,6 +789,13 @@ class ChannelEntry extends ContentModel
             'field_label',
             htmlentities($this->Channel->title_field_label, ENT_QUOTES, 'UTF-8')
         );
+
+        if (! is_null($this->Channel->title_field_instructions) && $this->Channel->title_field_instructions != '') {
+            $this->getCustomField('title')->setItem(
+                'field_instructions',
+                $this->Channel->title_field_instructions
+            );
+        }
 
         $this->usesCustomFields();
 

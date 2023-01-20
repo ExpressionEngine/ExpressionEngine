@@ -4,44 +4,43 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Service\Generator\TagGenerator;
 
 /**
  * Command to clear selected caches
  */
-class CommandMakeTag extends Cli
+class CommandMakeJump extends Cli
 {
     /**
      * name of command
      * @var string
      */
-    public $name = 'Tag Generator';
+    public $name = 'Add Jumps File Generator';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'make:tag';
+    public $signature = 'make:jump';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php make:tag MyNewTag --addon=my_existing_addon';
+    public $usage = 'php eecli.php make:jump --addon=my_existing_addon';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        'addon,a:'        => 'command_make_tag_option_addon',
+        'addon,a:'        => 'command_make_jump_file_addon',
     ];
 
     protected $data = [];
@@ -52,22 +51,23 @@ class CommandMakeTag extends Cli
      */
     public function handle()
     {
-        $this->info('command_make_tag_lets_build_tag');
+        ee('CP/JumpMenu')->clearAllCaches();
+        $this->info('command_make_cp_jumps');
 
-        // Gather alll the tag information
-        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_tag_ask_tag_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_make_tag_ask_addon", null, true);
+        // Gather all the mcp information
+        // $this->data['name'] = $this->getFirstUnnamedArgument("command_make_cp_route_ask_route_name", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_cp_jumps_ask_addon");
 
-        $this->info('command_make_tag_building_tag');
+        $this->info('command_make_cp_jumps_building_jumps');
 
         try {
-            // Build the tag
-            $service = ee('TagGenerator', $this->data);
+            // Build the mcp
+            $service = ee('JumpsGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
 
-        $this->info('command_make_tag_created_successfully');
+        $this->info('command_make_cp_jumps_created_successfully');
     }
 }

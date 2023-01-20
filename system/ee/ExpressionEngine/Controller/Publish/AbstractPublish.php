@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -123,7 +123,6 @@ abstract class AbstractPublish extends CP_Controller
             'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-',
             'publish.has_conditional_fields' => $usesConditionalFields,
             'user.can_edit_html_buttons' => ee('Permission')->can('edit_html_buttons'),
-            'user.foo' => false,
             'user_id' => ee()->session->userdata('member_id'),
             'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
         ));
@@ -453,12 +452,20 @@ abstract class AbstractPublish extends CP_Controller
             ? ee('CP/Alert')->makeStandard()
             : ee('CP/Alert')->makeInline('entry-form');
 
-        $lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
+        $lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'), ee()->localize->human_time($entry->edit_date));
 
         $alert->asSuccess()
             ->withTitle(lang($action . '_entry_success'))
             ->addToBody($lang_string)
             ->defer();
+
+        $qs = $_GET;
+        unset($qs['S'], $qs['D'], $qs['C'], $qs['M']);
+
+        // Loop through and clean GET values
+        foreach ($qs as $key => $value) {
+            $qs[$key] = ee('Security/XSS')->clean($value);
+        }
 
         if (ee('Request')->get('modal_form') == 'y') {
             $next_entry_id = ee('Request')->get('next_entry_id');
@@ -480,7 +487,6 @@ abstract class AbstractPublish extends CP_Controller
 
             return $result;
         } elseif (ee()->input->post('submit') == 'save' || (defined('CLONING_MODE') && CLONING_MODE === true)) {
-
             // If we just cloned an entry, we set the "status changed" warning banner
             if ((defined('CLONING_MODE') && CLONING_MODE === true)) {
                 $cloneAlert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
@@ -498,11 +504,15 @@ abstract class AbstractPublish extends CP_Controller
             } elseif (ee()->input->post('return') != '') {
                 $redirect_url = ee()->input->post('return');
             } else {
-                $redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+                $redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId(), $qs);
             }
             ee()->functions->redirect($redirect_url);
         } elseif (ee()->input->post('submit') == 'save_and_close') {
-            $redirect_url = ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id));
+            if (! empty($qs)) {
+                $redirect_url = ee('CP/URL')->make('publish/edit/', $qs);
+            } else {
+                $redirect_url = ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id));
+            }
 
             /* -------------------------------------
             /*  'entry_save_and_close_redirect' hook.
@@ -510,7 +520,7 @@ abstract class AbstractPublish extends CP_Controller
             /*  - Added 4.0.0
             */
             if (ee()->extensions->active_hook('entry_save_and_close_redirect')) {
-                $redirect_url = ee()->extensions->call('entry_save_and_close_redirect', $entry);
+                $redirect_url = ee()->extensions->call('entry_save_and_close_redirect', $entry, $redirect_url);
             }
             /*
             /* -------------------------------------*/
