@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -545,6 +545,7 @@ class EE_Schema
 			max_revisions smallint(4) unsigned NOT NULL default 10,
 			default_entry_title varchar(100) NULL DEFAULT NULL,
 			title_field_label varchar(100) NOT NULL DEFAULT 'Title',
+			title_field_instructions TEXT NULL,
 			url_title_prefix varchar(80) NULL DEFAULT NULL,
 			preview_url varchar(100) NULL DEFAULT NULL,
 			allow_preview char(1) NOT NULL default 'y',
@@ -923,6 +924,7 @@ class EE_Schema
 			group_id int(6) unsigned NOT NULL,
 			template_name varchar(50) NOT NULL,
 			template_type varchar(16) NOT NULL default 'webpage',
+            template_engine varchar(24) DEFAULT NULL,
 			template_data mediumtext NULL,
 			template_notes text NULL,
 			edit_date int(10) NOT NULL DEFAULT 0,

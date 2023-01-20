@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -14,6 +14,7 @@ use ExpressionEngine\Cli\CliFactory;
 use ExpressionEngine\Cli\Help;
 use ExpressionEngine\Cli\Status;
 use ExpressionEngine\Cli\Context\OptionFactory;
+use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class Cli
 {
@@ -59,11 +60,15 @@ class Cli
         'make:action' => Commands\CommandMakeAction::class,
         'make:addon' => Commands\CommandMakeAddon::class,
         'make:command' => Commands\CommandMakeCommand::class,
+        'make:cp-route' => Commands\CommandMakeCpRoute::class,
         'make:extension-hook' => Commands\CommandMakeExtensionHook::class,
+        'make:fieldtype' => Commands\CommandMakeFieldtype::class,
+        'make:jump' => Commands\CommandMakeJump::class,
         'make:migration' => Commands\CommandMakeMigration::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
-        'make:tag' => Commands\CommandMakeTag::class,
+        'make:sidebar' => Commands\CommandMakeSidebar::class,
+        'make:template-tag' => Commands\CommandMakeTemplateTag::class,
         'make:widget' => Commands\CommandMakeWidget::class,
         'migrate' => Commands\CommandMigrate::class,
         'migrate:all' => Commands\CommandMigrateAll::class,
@@ -105,6 +110,7 @@ class Cli
 
         // Initialize the object
         $factory = new CliFactory();
+        $this->filesystem = ee('Filesystem');
 
         $this->command = $factory->newContext($GLOBALS);
         $this->output = $factory->newStdio();
@@ -258,7 +264,7 @@ class Cli
 
         $this->output->out(lang($question) . ' ' . $defaultChoice);
 
-        $result = $this->input->in();
+        $result = (string) $this->input->in();
 
         return $result ? addslashes($result) : $default;
     }
@@ -284,7 +290,7 @@ class Cli
         return $argument;
     }
 
-    public function getOptionOrAsk($option, $askText, $default = null, $required = false)
+    public function getOptionOrAsk($option, $askText, $default = '', $required = false)
     {
         // Get option if it was passed
         if ($this->option($option)) {
@@ -292,7 +298,7 @@ class Cli
         }
 
         // Get the answer by asking
-        $answer = $this->ask($askText, $default);
+        $answer = (string) $this->ask($askText, $default);
 
         // If it was a required field and no answer was passed, fail
         if ($required && empty(trim($answer))) {
@@ -481,7 +487,84 @@ class Cli
         if (isset($this->signature)) {
             $simplifiedSignature = str_replace([':', '-'], '_', $this->signature);
             $this->description = isset($this->description) ? lang($this->description) : lang('command_' . $simplifiedSignature . '_description');
-            $this->summary = isset($this->summary) ? lang($this->summary) : lang('command_' . $simplifiedSignature . '_description');
+            $this->summary = isset($this->summary) ? lang($this->summary) : lang('command_' . $simplifiedSignature . '_summary');
         }
+    }
+
+    public function getOptionOrAskAddon($option, $askText = null, $default = 'first', $required = true)
+    {
+        // Get option if it was passed
+        if ($this->option($option)) {
+            $addon = $this->option($option);
+            $this->validateAddonName($addon);
+
+            return $addon;
+        }
+
+        if (is_null($askText)) {
+            $askText = 'Select addon';
+        }
+
+        // Get the answer by asking
+        $answer = $this->askAddon(lang($askText), $default);
+
+        // If it was a required field and no answer was passed, fail
+        if ($required && empty(trim($answer))) {
+            $this->fail(lang('cli_error_is_required_field') . $option);
+        }
+
+        return $answer;
+    }
+
+    protected function askAddon($askText, $default = '')
+    {
+        $addonList = $this->getAddonList();
+        $askText = $askText . ' (' . implode(', ', $addonList) . '): ';
+
+        // If the default is "first", then return the first element in the array
+        if ($default === 'first' && ! empty($addonList)) {
+            // Get the first array element
+            $default = reset($addonList);
+        }
+
+        // Get the answer by asking
+        $answer = $this->ask($askText, $default);
+
+        $this->validateAddonName($answer);
+
+        return $answer;
+    }
+
+    protected function validateAddonName($addon)
+    {
+        $addonList = $this->getAddonList();
+
+        if (!in_array($addon, $addonList)) {
+            $this->fail($addon . ' is not a valid addon');
+        }
+
+        return true;
+    }
+
+    protected function getAddonList()
+    {
+        $addons = [];
+        foreach ($this->filesystem->getDirectoryContents(PATH_THIRD) as $name) {
+            // Skip non-directories
+            if (! $this->filesystem->isDir($name)) {
+                continue;
+            }
+
+            // Skip add-ons without addon.setup.php file
+            if (! $this->filesystem->exists($name . '/addon.setup.php')) {
+                continue;
+            }
+
+            // Lets get the shortname
+            $addon_shortname = explode('/', $name);
+            $addons[] = end($addon_shortname);
+        }
+
+        return $addons;
     }
 }

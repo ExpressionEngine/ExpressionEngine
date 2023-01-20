@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -36,6 +36,35 @@ class BasicList
         $this->items[] = $item;
 
         return $item;
+    }
+
+    /**
+     * Gets an item in the list from the text
+     *
+     * @param string $url The text of the item to search for
+     * @return BasicItem The searched for item
+     */
+    public function getItemByUrl($url)
+    {
+        // Loop through items in the list, and
+        foreach ($this->items as &$item) {
+            if (method_exists($item, 'urlMatches') && $item->urlMatches($url)) {
+                return $item;
+            }
+        }
+
+        // Item not found
+        return null;
+    }
+
+    /**
+     * Gets all items
+     *
+     * @return array of items in the basic list
+     */
+    public function getItems()
+    {
+        return $this->items;
     }
 
     /**

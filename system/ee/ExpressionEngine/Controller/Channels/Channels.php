@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -520,6 +520,16 @@ class Channels extends AbstractChannelsController
                     'title_field_label' => array(
                         'type' => 'text',
                         'value' => $channel->title_field_label
+                    )
+                )
+            ),
+            array(
+                'title' => 'title_field_instructions',
+                'desc' => 'title_field_instructions_desc',
+                'fields' => array(
+                    'title_field_instructions' => array(
+                        'type' => 'textarea',
+                        'value' => $channel->title_field_instructions
                     )
                 )
             ),

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,6 +25,10 @@ abstract class AbstractCategories extends CP_Controller
         parent::__construct();
 
         ee('CP/Alert')->makeDeprecationNotice()->now();
+
+        if (! ee('Permission')->has('can_admin_channels')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
 
         // Allow AJAX requests for category editing
         if (AJAX_REQUEST && in_array(

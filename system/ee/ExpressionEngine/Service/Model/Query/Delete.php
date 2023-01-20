@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -349,6 +349,14 @@ class Delete extends Query
             }
 
             $name = $relation->getName();
+
+            // for delete queries, we don't need full set of columns
+            // ... and some might be already gone because of previous queries
+            $relation_meta = $this->store->getMetaDataReader($relation->getTargetModel());
+            $relation_pk = $relation_meta->getPrimaryKey();
+            if (count($withs)) {
+                $query->fields('CurrentlyDeleting.' . $relation_pk);
+            }
             $models = $query->with($withs)->all();
 
             foreach ($models as $model) {

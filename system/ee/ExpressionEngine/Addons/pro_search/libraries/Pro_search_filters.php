@@ -4,10 +4,9 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -84,6 +83,9 @@ class Pro_search_filters
         // include parent filter class
         if (! class_exists('Pro_search_filter')) {
             require_once(PATH_ADDONS . 'pro_search/filter.pro_search.php');
+
+            // Add an alias so the old filter class name can still work
+            class_alias('Pro_search_filter', 'Low_search_filter');
         }
 
         // Load directory helper
@@ -101,22 +103,37 @@ class Pro_search_filters
                     continue;
                 }
 
-                // Compose file name
-                $file = $dir . "/lsf.{$item}.php";
-
-                // Skip if not a file
-                if (! file_exists($file)) {
+                // Skip if we're trying to load something from low search
+                if (strpos($path, 'low_search') !== false) {
                     continue;
                 }
 
-                // Compose class name
-                $class = 'Pro_search_filter_' . $item;
+                $possibleFiles = [
+                    $dir . "/lsf.{$item}.php",
+                    $dir . "/psf.{$item}.php",
+                ];
 
-                if (! class_exists($class)) {
+                $possibleClasses = [
+                    'Low_search_filter_' . $item,
+                    'Pro_search_filter_' . $item,
+                ];
+
+                // Check low search files and pro search files for available filters
+                foreach ($possibleFiles as $file) {
+                    // Skip if not a file
+                    if (! file_exists($file)) {
+                        continue;
+                    }
+
+                    // Load the class
                     require_once($file);
-                }
 
-                $this->_filters[$item] = new $class();
+                    foreach ($possibleClasses as $class) {
+                        if (class_exists($class)) {
+                            $this->_filters[$item] = new $class();
+                        }
+                    }
+                }
             }
         }
 

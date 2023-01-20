@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -87,7 +87,7 @@ abstract class FileSyncedModel extends Model
     public function onAfterLoad()
     {
         $path = $this->getFilePath();
-   
+
         if (! isset($path)) {
             return;
         }
@@ -164,7 +164,12 @@ abstract class FileSyncedModel extends Model
     {
         $path = $this->getFilePath();
 
-        if (isset($path) && ee('Filesystem')->exists(ee('Filesystem')->dirname($path))) {
+        if (!isset($path)) {
+            return;
+        }
+
+        $directory = ee('Filesystem')->dirname($path);
+        if (ee('Filesystem')->exists($directory) && ee('Filesystem')->isWritable($directory)) {
             ee('Filesystem')->write($path, $this->serializeFileData(), true);
         }
     }

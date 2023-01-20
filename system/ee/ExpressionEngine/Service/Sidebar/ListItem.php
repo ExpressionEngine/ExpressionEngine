@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -193,6 +193,36 @@ abstract class ListItem
     public function isDeselected()
     {
         return $this->removeClass('selected');
+    }
+
+    /**
+     * Gets the item's text
+     *
+     * @return string $text
+     */
+    public function getText()
+    {
+        return $this->text;
+    }
+
+    /**
+     * Gets the item's url
+     *
+     * @return string $url
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * Checks to see if the item's url matches the passed url
+     *
+     * @return bool
+     */
+    public function urlMatches($url)
+    {
+        return ((string) $this->getUrl() === (string) $url);
     }
 }
 
