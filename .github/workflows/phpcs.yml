@@ -1,0 +1,43 @@
+name: PSR-12
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - '*.dev'
+
+jobs:
+    check:
+
+        name: PSR-12 compatibility check
+
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v3
+            with:
+              ref: ${{ github.event.pull_request.head.sha }}
+
+          - name: Get changed files
+            id: changed_files
+            uses: tj-actions/changed-files@v35
+            with:
+              separator: " "
+
+          - name: Setup PHP
+            uses: shivammathur/setup-php@v2
+            with:
+                php-version: '8.1'
+                extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+                coverage: none
+                tools: phpcs, cs2pr
+                ini-values: error_log=/home/runner/php_errors.log, memory_limit=512M
+
+          - name: Install dependencies
+            working-directory: build-tools
+            run: composer install
+
+          - name: Check PHP code style
+            id: check
+            continue-on-error: true
+            run: phpcs --standard=phpcs.ruleset.xml --report=checkstyle ${{ steps.changed_files.outputs.all_changed_files }} | cs2pr

@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -219,7 +219,7 @@ class Structure_ext
         );
     }
 
-    public function entry_save_and_close_redirect($entry)
+    public function entry_save_and_close_redirect($entry, $orig_redirect_url = '')
     {
         $meta['channel_id'] = $entry->channel_id;
 
@@ -228,8 +228,13 @@ class Structure_ext
 
         // EE Does not pass the redirect url in this call nor does it check for null on the call return
         // so we have to create our own default redirect if we're not redirecting.
-        if (empty($redirect_url)) {
+        if (empty($redirect_url) && empty($orig_redirect_url)) {
             $redirect_url = ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id));
+        }
+
+        // fallback to passed value
+        if (empty($redirect_url)) {
+            $redirect_url = $orig_redirect_url;
         }
 
         return $redirect_url;
