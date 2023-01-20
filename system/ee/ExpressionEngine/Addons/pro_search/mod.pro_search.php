@@ -4,10 +4,9 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -1384,12 +1383,12 @@ class Pro_search
      */
     public function build_index()
     {
-        // License key must be given
-        $license_key = '';
+        // ACT key must be given
+        $build_index_act_key = $this->settings->get('build_index_act_key');
         $given_key = ee()->input->get_post('key');
 
         // Bail out if keys don't match
-        if (! ($given_key && $license_key == $given_key && REQ == 'ACTION')) {
+        if (! ($given_key && $build_index_act_key == $given_key && REQ == 'ACTION')) {
             show_error(ee()->lang->line('not_authorized'));
         }
 
@@ -1489,7 +1488,7 @@ class Pro_search
 
         // Make sure the IDs
         if (! is_array($ids)) {
-            $ids = preg_split('/\D+/', $ids, null, PREG_SPLIT_NO_EMPTY);
+            $ids = preg_split('/\D+/', $ids, 0, PREG_SPLIT_NO_EMPTY);
         }
 
         // Filter the ids, bail out if we end up empty

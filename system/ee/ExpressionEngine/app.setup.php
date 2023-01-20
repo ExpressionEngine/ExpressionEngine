@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -61,6 +61,7 @@ use ExpressionEngine\Service\Generator\CpRouteGenerator;
 use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
 use ExpressionEngine\Service\Generator\ExtensionGenerator;
 use ExpressionEngine\Service\Generator\FieldtypeGenerator;
+use ExpressionEngine\Service\Generator\JumpsGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\SidebarGenerator;
@@ -392,6 +393,13 @@ $setup = [
             $str = $ee->make('Str');
 
             return new FieldtypeGenerator($filesystem, $str, $data);
+        },
+
+        'JumpsGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new JumpsGenerator($filesystem, $str, $data);
         },
 
         'ModelGenerator' => function ($ee, $data) {

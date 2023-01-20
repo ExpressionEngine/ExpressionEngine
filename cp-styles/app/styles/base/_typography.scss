@@ -70,3 +70,66 @@
     font-size: 85%;
   }
 }
+
+dl dt {
+  font-weight: 500;
+  margin-left: 5px;
+  color: var(--ee-text-normal);
+  line-height: 1.6;
+}
+
+dl dd {
+  color: var(--ee-text-primary);
+  margin-left: 20px;
+  margin-bottom: 5px;
+}
+
+details {
+  padding: 10px;
+  margin-bottom: 10px;
+
+  summary {
+    font-weight: 500;
+    color: var(--ee-text-normal);
+    line-height: 1.6;
+    font-size: 1rem;
+    list-style: none;
+
+    &:before {
+      color: var(--ee-text-placeholder);
+      content: "\f054";
+      font-size: 10px;
+      line-height: 0;
+      margin-right: 5px;
+      position: relative;
+      top: -2px;
+      font-family: "Font Awesome 6 Pro";
+      font-weight: 600;
+      margin-right: 5px;
+      display: inline-block;
+    }
+  }
+}
+
+details summary::-webkit-details-marker { display: none;}
+
+details[open] summary:before {
+  content: "\f078";
+}
+
+menu {
+  padding-left: 20px;
+  margin: 10px 0;
+
+  menuitem {
+    display: block;
+    margin-bottom: 5px;
+  }
+}
+
+dialog {
+  padding: 20px 30px 20px 30px;
+  line-height: 1.6;
+  background: var(--ee-bg-blank);
+  border-color: var(--ee-border)
+}
