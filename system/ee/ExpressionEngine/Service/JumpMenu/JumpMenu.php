@@ -607,7 +607,7 @@ class JumpMenu extends AbstractJumpMenu
                             'settings',
                             // 'general_settings'
                         ],
-                        'command' => 'week_start',
+                        'command' => 'week_start week_start_desc',
                         'command_title' => 'week_start'
                     ),
                 )

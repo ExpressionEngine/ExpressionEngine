@@ -24,6 +24,7 @@ class Date extends Settings
      */
     public function index()
     {
+        ee()->lang->loadfile('calendar');
         $this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
         $fields = ee()->config->prep_view_vars('localization_cfg');
         $fields = $fields['fields'];
