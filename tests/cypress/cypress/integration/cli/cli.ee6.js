@@ -1,9 +1,12 @@
 /// <reference types="Cypress" />
 
+import AddonManager from '../../elements/pages/addons/AddonManager';
+const addonsPage = new AddonManager;
+
 context('CLI', () => {
 
     before(function(){
-        //cy.task('db:seed')
+        cy.task('db:seed')
 
         //copy templates
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
@@ -16,6 +19,7 @@ context('CLI', () => {
             expect(result.code).to.eq(0)
             expect(result.stderr).to.be.empty
             expect(result.stdout).to.not.contain('on line')
+            expect(result.stdout).to.not.contain('caught:')
         })
     })
 
@@ -24,6 +28,7 @@ context('CLI', () => {
             expect(result.code).to.eq(0)
             expect(result.stderr).to.be.empty
             expect(result.stdout).to.not.contain('on line')
+            expect(result.stdout).to.not.contain('caught:')
             expect(result.stdout).to.contain('SUMMARY')
             expect(result.stdout).to.contain('USAGE')
             expect(result.stdout).to.contain('DESCRIPTION')
@@ -51,6 +56,7 @@ context('CLI', () => {
                 expect(result.code).to.eq(0)
                 expect(result.stderr).to.be.empty
                 expect(result.stdout).to.not.contain('on line')
+                expect(result.stdout).to.not.contain('caught:')
                 expect(result.stdout).to.contain('Tag caches are cleared!')
                 cy.readFile('../../system/user/cache/default_site/tag_cache/index.html').should('not.exist')
             })
@@ -63,6 +69,43 @@ context('CLI', () => {
             cy.get('.js-tab-button.tab-bar__tab').contains('Settings').click()
             cy.get('[data-toggle-for="cache"]').click()
             cy.get('button').contains('Save').click()
+        })
+
+    })
+
+    describe('create add-on', function() {
+        it('create add-on', function() {
+            cy.exec('php ../../system/ee/eecli.php make:addon "Cypress Addon" -v 0.1.0 -d "Some good description" -a "ExpressionEngine" -u https://expressionengine.com').then((result) => {
+                expect(result.code).to.eq(0)
+                expect(result.stderr).to.be.empty
+                expect(result.stdout).to.not.contain('on line')
+                expect(result.stdout).to.not.contain('caught:')
+                expect(result.stdout).to.contain('Your add-on has been created successfully!')
+                cy.readFile('../../system/user/addons/default_site/tag_cache/index.html').should('not.exist')
+            })
+        })
+
+        after(function() {
+            // uninstall the add-on and remove the files
+            cy.authVisit('admin.php?/cp/addons')
+            cy.get('div[data-addon=cypress_addon]').first().then((addon_card) => {
+                const addon_name = addon_card.find('.add-on-card__title').contents().filter(function(){ return this.nodeType == 3; }).text().trim();
+                cy.log(addon_name);
+                let btn = addon_card.find('.js-dropdown-toggle')
+                cy.get(btn).trigger('click')
+                cy.get(btn).next('.dropdown').find('a:contains("Uninstall")').trigger('click')
+    
+                addonsPage.get('modal_submit_button').contains('Confirm, and Uninstall').click() // Submits a form
+                cy.hasNoErrors();
+    
+                // The filter should not change
+                addonsPage.hasAlert()
+    
+                addonsPage.get('alert').contains("Add-Ons Uninstalled")
+                addonsPage.get('alert').contains(addon_name);
+
+                cy.task('filesystem:delete', '../../system/user/addons/cypress_addon')
+            })
         })
 
     })
