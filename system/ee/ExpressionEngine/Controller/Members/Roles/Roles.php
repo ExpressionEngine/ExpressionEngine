@@ -322,11 +322,12 @@ class Roles extends AbstractRolesController
         $active_groups = $role_groups->pluck('group_id');
 
         if (defined('CLONING_MODE') && CLONING_MODE === true) {
+            $role->setId(null);
+            while (true !== $role->validateUnique('field_name', $_POST['short_name'])) {
+                $_POST['short_name'] = 'copy_' . $_POST['short_name'];
+            }
             if ($_POST['name'] == $role->name) {
                 $_POST['name'] = lang('copy_of') . ' ' . $_POST['name'];
-            }
-            if ($_POST['short_name'] == $role->short_name) {
-                $_POST['short_name'] = 'copy_' . $_POST['short_name'];
             }
             return $this->create(!empty($active_groups) ? $active_groups[0] : null);
         }

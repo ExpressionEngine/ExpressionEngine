@@ -453,12 +453,13 @@ class Categories extends AbstractCategoriesController
 
         if (! empty($_POST)) {
             if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
                 $category->setId(null);
+                while (true !== $category->validateUnique('cat_url_title', $_POST['cat_url_title'], ['group_id'])) {
+                    $_POST['cat_url_title'] = 'copy' . $word_separator . $_POST['cat_url_title'];
+                }
                 if ($_POST['cat_name'] == $category->cat_name) {
                     $_POST['cat_name'] = lang('copy_of') . ' ' . $_POST['cat_name'];
-                }
-                if ($_POST['cat_url_title'] == $category->cat_url_title) {
-                    $_POST['cat_url_title'] = 'copy_' . $_POST['cat_url_title'];
                 }
                 $category->group_id = $group_id;
                 $category->parent_id = ee('Security/XSS')->clean($_POST['parent_id']);

@@ -392,11 +392,12 @@ class Fields extends AbstractFieldsController
         $active_groups = $field_groups->pluck('group_id');
 
         if (defined('CLONING_MODE') && CLONING_MODE === true) {
+            $field->setId(null);
+            while (true !== $field->validateUnique('field_name', $_POST['field_name'])) {
+                $_POST['field_name'] = 'copy_' . $_POST['field_name'];
+            }
             if ($_POST['field_label'] == $field->field_label) {
                 $_POST['field_label'] = lang('copy_of') . ' ' . $_POST['field_label'];
-            }
-            if ($_POST['field_name'] == $field->field_name) {
-                $_POST['field_name'] = 'copy_' . $_POST['field_name'];
             }
             return $this->create(!empty($active_groups) ? $active_groups[0] : null);
         }
