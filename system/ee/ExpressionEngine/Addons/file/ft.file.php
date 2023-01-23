@@ -28,12 +28,14 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
 
     public $defaultEvaluationRule = 'isNotEmpty';
 
+    public $modifiersRequireArray = ['resize', 'crop', 'rotate', 'webp', 'resize_crop', 'length', 'raw_content', 'attr_safe', 'limit', 'form_prep', 'rot13', 'encrypt', 'url_slug', 'censor', 'json', 'replace', 'url_encode', 'url_decode'];
+
     public $_dirs = array();
 
     /**
      * Constructor
      *
-     * @access	public
+     * @access  public
      */
     public function __construct()
     {
@@ -44,21 +46,25 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     /**
      * Validate the upload
      *
-     * @access	public
+     * @access  public
      */
     public function validate($data)
     {
         // Is it required but empty?
-        if (($this->settings['field_required'] === true
+        if (
+            ($this->settings['field_required'] === true
             || $this->settings['field_required'] == 'y')
-                && empty($data)) {
+                && empty($data)
+        ) {
             return array('value' => '', 'error' => lang('required'));
         }
 
         // Is it optional and empty?
-        if (($this->settings['field_required'] === false
+        if (
+            ($this->settings['field_required'] === false
             || $this->settings['field_required'] == 'n')
-                && empty($data)) {
+                && empty($data)
+        ) {
             return array('value' => '');
         }
 
@@ -125,7 +131,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     /**
      * Save the correct value {fieldir_\d}filename.ext
      *
-     * @access	public
+     * @access  public
      */
     public function save($data)
     {
@@ -136,7 +142,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     /**
      * Show the publish field
      *
-     * @access	public
+     * @access  public
      */
     public function display_field($data)
     {
@@ -185,7 +191,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     /**
      * Basic javascript interaction on the frontend
      *
-     * @access	public
+     * @access  public
      */
     protected function _frontend_js()
     {
@@ -255,7 +261,7 @@ JSC;
     /**
      * Prep the publish data
      *
-     * @access	public
+     * @access  public
      */
     public function pre_process($data)
     {
@@ -265,7 +271,7 @@ JSC;
     /**
      * Runs before the channel entries loop on the front end
      *
-     * @param array $data	All custom field data about to be processed for the front end
+     * @param array $data   All custom field data about to be processed for the front end
      * @return void
      */
     public function pre_loop($data)
@@ -276,7 +282,7 @@ JSC;
     /**
      * Replace frontend tag
      *
-     * @access	public
+     * @access  public
      */
     public function replace_tag($data, $params = array(), $tagdata = false)
     {
@@ -348,11 +354,11 @@ JSC;
         if (empty($data) || !isset($data['model_object'])) {
             return $this->replace_tag($data, $params, $tagdata);
         }
-        $data['filename'] = $data['model_object']->file_name;
-        $data['filesystem'] = $data['model_object']->UploadDestination->getFilesystem();
-        $data['directory_path'] = $data['model_object']->UploadDestination->server_path;
-        $data['directory_url'] = $data['model_object']->UploadDestination->url;
-        $data['source_image'] = $data['model_object']->getAbsolutePath();
+        $data['filename'] = $data['filename'] ?? $data['model_object']->file_name;
+        $data['filesystem'] = $data['filesystem'] ?? $data['model_object']->UploadDestination->getFilesystem();
+        $data['directory_path'] = $data['directory_path'] ?? $data['model_object']->UploadDestination->server_path;
+        $data['directory_url'] = $data['directory_url'] ?? $data['model_object']->UploadDestination->url;
+        $data['source_image'] = $data['source_image'] ?? $data['model_object']->getAbsolutePath();
 
         return $this->process_image('resize', $data, $params, $tagdata);
     }
@@ -378,11 +384,11 @@ JSC;
         if (empty($data) || !isset($data['model_object'])) {
             return $this->replace_tag($data, $params, $tagdata);
         }
-        $data['filename'] = $data['model_object']->file_name;
-        $data['filesystem'] = $data['model_object']->UploadDestination->getFilesystem();
-        $data['directory_path'] = $data['model_object']->UploadDestination->server_path;
-        $data['directory_url'] = $data['model_object']->UploadDestination->url;
-        $data['source_image'] = $data['model_object']->getAbsolutePath();
+        $data['filename'] = $data['filename'] ?? $data['model_object']->file_name;
+        $data['filesystem'] = $data['filesystem'] ?? $data['model_object']->UploadDestination->getFilesystem();
+        $data['directory_path'] = $data['directory_path'] ?? $data['model_object']->UploadDestination->server_path;
+        $data['directory_url'] = $data['directory_url'] ?? $data['model_object']->UploadDestination->url;
+        $data['source_image'] = $data['source_image'] ?? $data['model_object']->getAbsolutePath();
 
         return $this->process_image('crop', $data, $params, $tagdata);
     }
@@ -410,11 +416,11 @@ JSC;
         }
         $params['function'] = 'resize_crop';
 
-        $data['filename'] = $data['model_object']->file_name;
-        $data['filesystem'] = $data['model_object']->UploadDestination->getFilesystem();
-        $data['directory_path'] = $data['model_object']->UploadDestination->server_path;
-        $data['directory_url'] = $data['model_object']->UploadDestination->url;
-        $data['source_image'] = $data['model_object']->getAbsolutePath();
+        $data['filename'] = $data['filename'] ?? $data['model_object']->file_name;
+        $data['filesystem'] = $data['filesystem'] ?? $data['model_object']->UploadDestination->getFilesystem();
+        $data['directory_path'] = $data['directory_path'] ?? $data['model_object']->UploadDestination->server_path;
+        $data['directory_url'] = $data['directory_url'] ?? $data['model_object']->UploadDestination->url;
+        $data['source_image'] = $data['source_image'] ?? $data['model_object']->getAbsolutePath();
 
         $params_copy = $params;
         foreach ($params as $key => $val) {
@@ -454,11 +460,11 @@ JSC;
         if (empty($data) || !isset($data['model_object'])) {
             return $this->replace_tag($data, $params, $tagdata);
         }
-        $data['filename'] = $data['model_object']->file_name;
-        $data['filesystem'] = $data['model_object']->UploadDestination->getFilesystem();
-        $data['directory_path'] = $data['model_object']->UploadDestination->server_path;
-        $data['directory_url'] = $data['model_object']->UploadDestination->url;
-        $data['source_image'] = $data['model_object']->getAbsolutePath();
+        $data['filename'] = $data['filename'] ?? $data['model_object']->file_name;
+        $data['filesystem'] = $data['filesystem'] ?? $data['model_object']->UploadDestination->getFilesystem();
+        $data['directory_path'] = $data['directory_path'] ?? $data['model_object']->UploadDestination->server_path;
+        $data['directory_url'] = $data['directory_url'] ?? $data['model_object']->UploadDestination->url;
+        $data['source_image'] = $data['source_image'] ?? $data['model_object']->getAbsolutePath();
 
         return $this->process_image('rotate', $data, $params, $tagdata);
     }
@@ -473,11 +479,11 @@ JSC;
         if (empty($data) || !isset($data['model_object'])) {
             return $this->replace_tag($data, $params, $tagdata);
         }
-        $data['filename'] = $data['model_object']->file_name;
-        $data['filesystem'] = $data['model_object']->UploadDestination->getFilesystem();
-        $data['directory_path'] = $data['model_object']->UploadDestination->server_path;
-        $data['directory_url'] = $data['model_object']->UploadDestination->url;
-        $data['source_image'] = $data['model_object']->getAbsolutePath();
+        $data['filename'] = $data['filename'] ?? $data['model_object']->file_name;
+        $data['filesystem'] = $data['filesystem'] ?? $data['model_object']->UploadDestination->getFilesystem();
+        $data['directory_path'] = $data['directory_path'] ?? $data['model_object']->UploadDestination->server_path;
+        $data['directory_url'] = $data['directory_url'] ?? $data['model_object']->UploadDestination->url;
+        $data['source_image'] = $data['source_image'] ?? $data['model_object']->getAbsolutePath();
 
         return $this->process_image('webp', $data, $params, $tagdata);
     }
@@ -581,14 +587,24 @@ JSC;
             fclose($source['file']);
         }
 
-        if (!$tagdata) {
+        if ($tagdata === null) {
+            // called when chaining modifiers
+            $vars = array_merge($data, [
+                'url' => $destination_url,
+                'source_image' => $destination_path
+            ]);
+
+            return $vars;
+        } elseif ($tagdata === false) {
+            // single tag or call from resize_crop
             if (isset($params['wrap'])) {
                 return $this->_wrap_it($data, $params['wrap'], $destination_url);
             }
 
             return ($return_as_path ? $destination_path : $destination_url);
         } else {
-            if(!$props) {
+            // tag pair
+            if (!$props) {
                 $tmp = $data['filesystem']->copyToTempFile($destination_path);
                 $props = ee()->image_lib->get_image_properties($tmp['path'], true);
                 fclose($tmp['file']);
@@ -688,7 +704,11 @@ JSC;
      */
     public function replace_replace($data, $params = array(), $tagdata = false)
     {
-        return parent::replace_replace($data['url'], $params, $tagdata);
+        $url = parent::replace_replace($data['url'], $params, $tagdata);
+        if (isset($params['wrap'])) {
+            return $this->_wrap_it($data, $params['wrap'], $url);
+        }
+        return $url;
     }
 
     /**
@@ -713,7 +733,7 @@ JSC;
      * Here, the modifier is the short name of the image manipulation,
      * e.g. "small" in {about_image:small}
      *
-     * @access	public
+     * @access  public
      */
     public function replace_tag_catchall($data = [], $params = array(), $tagdata = false, $modifier = '')
     {
@@ -749,7 +769,7 @@ JSC;
     /**
      * Wrap it helper function
      *
-     * @access	private
+     * @access  private
      */
     public function _wrap_it($data, $type, $full_path)
     {
@@ -773,7 +793,8 @@ JSC;
     /**
      * Display settings screen
      *
-     * @access	public
+     * @return array
+     * @access  public
      */
     public function display_settings($data)
     {
@@ -910,11 +931,11 @@ JSC;
      * Help simplify the form building and enforces a strict layout. If
      * you think this table needs to look different, go bug James.
      *
-     * @param	left cell content
-     * @param	right cell content
-     * @param	vertical alignment of left column
+     * @param   left cell content
+     * @param   right cell content
+     * @param   vertical alignment of left column
      *
-     * @return	void - adds a row to the EE table class
+     * @return  void - adds a row to the EE table class
      */
     protected function _row($cell1, $cell2 = '', $valign = 'center')
     {
@@ -959,7 +980,7 @@ JSC;
     /**
      * Form Validation callback
      *
-     * @return	boolean	Whether or not to pass validation
+     * @return  boolean Whether or not to pass validation
      */
     public function _validate_file_settings($key, $value, $params, $rule)
     {

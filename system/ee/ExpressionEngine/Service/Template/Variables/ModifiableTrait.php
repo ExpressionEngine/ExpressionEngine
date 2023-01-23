@@ -14,9 +14,9 @@ namespace ExpressionEngine\Service\Template\Variables;
  * :modifier variable replacement methods
  *
  * All methods receive:
- * 		mixed ($data) - whatever content is returned by the field
- * 		array ($params) - an array of optional options!
- * 		string ($tagdata) - optional tagdata, used by pair variables
+ *  mixed ($data) - whatever content is returned by the field
+ *  array ($params) - an array of optional options!
+ *  іtring ($tagdata) - optional tagdata, used by pair variables
  */
 trait ModifiableTrait
 {
@@ -42,7 +42,7 @@ trait ModifiableTrait
             $tagdata = $arguments[2];
         }
 
-        // the name should start 'replace_' because that's how modifiers get called
+        // the name should start with 'replace_' because that's how modifiers get called
         if (strpos($name, 'replace_') !== 0) {
             return $data;
         }
@@ -57,11 +57,11 @@ trait ModifiableTrait
 
         // run the processor
         $class = $modifiers[$name];
-        $object = new $class;
+        $object = new $class();
 
         return (string) $object->modify($data, $params, $tagdata);
     }
-    
+
     /**
      * :attr_safe modifier
      */

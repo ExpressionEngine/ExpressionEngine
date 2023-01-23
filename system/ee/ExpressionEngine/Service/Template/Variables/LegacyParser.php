@@ -23,14 +23,14 @@ class LegacyParser
      * Given a template variable string, this parses out parameters and modifiers
      * e.g. {variable:modifier param1='foo' param2='bar'} returns:
      *
-     * 		array(
-     * 			'field_name' => 'variable',
-     * 			'params' => array(
-     * 				'param1' => 'foo',
-     * 				'param2' => 'bar',
-     * 			),
-     * 			'modifier' => 'modifier'
-     * 		)
+     * array(
+     *  'field_name' => 'variable',
+     *  'params' => array(
+     *      'param1' => 'foo',
+     *      'param2' => 'bar',
+     *  ),
+     *  'modifier' => 'modifier'
+     * )
      *
      * Note: 'field_name' is used instead of just 'name' or 'variable_name' as this was
      * originally a method of the legacy Channel Fields API, and the LegacyParser
@@ -157,8 +157,10 @@ class LegacyParser
             }
 
             foreach ($defaults as $name => $default_value) {
-                if (! isset($result[$name])
-                    or (is_numeric($default_value) && ! is_numeric($result[$name]))) {
+                if (
+                    ! isset($result[$name])
+                    or (is_numeric($default_value) && ! is_numeric($result[$name]))
+                ) {
                     $result[$name] = $default_value;
                 }
             }
@@ -185,9 +187,9 @@ class LegacyParser
      *
      * This legacy method was originally Functions::assign_variables()
      *
-     * @param	string $tagdata The Tagdata to extract variables from
-     * @param	string $target A specific variable to target for extraction. Default NULL (all variables)
-     * @return	array array('var_single' => ..., 'var_pair' => ..., )
+     * @param   string $tagdata The Tagdata to extract variables from
+     * @param   string $target A specific variable to target for extraction. Default NULL (all variables)
+     * @return  array array('var_single' => ..., 'var_pair' => ..., )
      */
     public function extractVariables($tagdata, $target = null)
     {
@@ -213,10 +215,12 @@ class LegacyParser
         $temp_misc = [];
 
         foreach ($matches[1] as $key => $val) {
-            if (!is_numeric($val) &&
+            if (
+                !is_numeric($val) &&
                 strncmp($val, 'if ', 3) !== 0 &&
                 strncmp($val, 'if:', 3) !== 0 &&
-                substr($val, 0, 3) != '/if') {
+                substr($val, 0, 3) != '/if'
+            ) {
                 if (strpos($val, '{') !== false) {
                     if (preg_match("/(.+?)" . LD . "(.*)/s", $val, $matches2)) {
                         $temp_misc[$key] = $matches2[2];
@@ -330,7 +334,7 @@ class LegacyParser
      *
      * This function looks within a variable for this prototype:
      *
-     * 		{date format="%Y %m %d"}
+     *  {date format="%Y %m %d"}
      *
      * If found, returns only the date format codes: %Y %m %d
      *
@@ -357,11 +361,11 @@ class LegacyParser
      * Useful when tags are nested or split, to make sure you've got the full chunk that you want.
      * Example:
      *
-     * 	[quote]This is a BBCode style quote. [quote]What kind of quote is this?[/quote] It's still pretty common online.[/quote]
+     *  [quote]This is a BBCode style quote. [quote]What kind of quote is this?[/quote] It's still pretty common online.[/quote]
      *
      * A simpler regex may have grabbed only to the first closing tag, resulting in a partially matched tag:
      *
-     * 	[quote]This is a BBCode style quote. [quote]What kind of quote is this?[/quote]
+     *  [quote]This is a BBCode style quote. [quote]What kind of quote is this?[/quote]
      *
      * This method will start with your partial match, and expand it to make sure that any matching nested tags that were opened inside
      * of this one are fully closed, so you are left with the complete outer tag's contents.
@@ -458,13 +462,13 @@ class LegacyParser
      * Provides a consistent method to handle 'not foo|bar|bat' type parameters.
      * Returns an array of options, and whether or not the options are negated (not true/false):
      *
-     *		array (size=2)
-     *			'options' =>
-     *				array (size=4)
-     *					0 => string 'foo' (length=3)
-     *					1 => string 'bar' (length=3)
-     *					2 => string 'bat' (length=3)
-     *			'not' => boolean true
+     *  array (size=2)
+     *      'options' =>
+     *      array (size=4)
+     *          0 => string 'foo' (length=3)
+     *          1 => string 'bar' (length=3)
+     *          2 => string 'bat' (length=3)
+     *          'not' => boolean true
      *
      * @param  string $param The parameter string
      * @return array Array of options and whether the options are negated (not)
