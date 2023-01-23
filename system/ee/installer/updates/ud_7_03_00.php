@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -27,6 +27,8 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
+                'addWeekStartColForMembers',
+                'setWeekStartPreference',
                 'addFluidFieldGroups',
                 'addFieldGroupDescription'
             ]
@@ -37,6 +39,23 @@ class Updater
         }
 
         return true;
+    }
+
+    private function addWeekStartColForMembers()
+    {
+        if (! ee()->db->field_exists('week_start', 'members')) {
+            ee()->smartforge->add_column(
+                'members',
+                [
+                    'week_start' => [
+                        'type' => 'varchar',
+                        'constraint' => 8,
+                        'null' => true
+                    ]
+                ],
+                'date_format'
+            );
+        }
     }
 
     private function addFluidFieldGroups()
@@ -60,6 +79,15 @@ class Updater
                 )
             );
         }
+    }
+
+    private function setWeekStartPreference()
+    {
+        ee('Model')->make('Config', [
+            'site_id' => 0,
+            'key' => 'week_start',
+            'value' => 'sunday'
+        ])->save();
     }
 
     private function addFieldGroupDescription()

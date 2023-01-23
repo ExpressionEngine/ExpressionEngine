@@ -344,6 +344,16 @@ $lang = array(
     /* Notes */
     'notes_note_content' => 'Note Content',
     'notes_note_content_desc' => 'This content will appear as a note on the publish form. Markdown formatting is supported.',
+
+    /* Date */
+
+    'date_localization' => 'Date Localization',
+    'date_localization_desc' => 'Choose how the field data should be localized. <a href="' . DOC_URL . 'fieldtypes/date.html">More info</a>',
+    'always_localized' => 'Always localized',
+    'always_fixed' => 'Alway fixed',
+    'ask_each_time' => 'Ask each time',
+    'show_time' => 'Include time?',
+    'show_time_desc' => 'When turned off, only date will be displayed',
 );
 
 // EOF
