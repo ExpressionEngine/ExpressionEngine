@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -29,6 +29,8 @@ class Updater
             [
                 'addWeekStartColForMembers',
                 'setWeekStartPreference',
+                'addFluidFieldGroups',
+                'addFieldGroupDescription'
             ]
         );
 
@@ -56,6 +58,29 @@ class Updater
         }
     }
 
+    private function addFluidFieldGroups()
+    {
+        if (!ee()->db->field_exists('field_group_id', 'fluid_field_data')) {
+            ee()->smartforge->add_column(
+                'fluid_field_data',
+                array(
+                    'field_group_id' => [
+                        'type' => 'int',
+                        'unsigned' => true,
+                        'null' => true,
+                        'default' => null
+                    ],
+                    'group' => [
+                        'type' => 'int',
+                        'unsigned' => true,
+                        'null' => true,
+                        'default' => null
+                    ]
+                )
+            );
+        }
+    }
+
     private function setWeekStartPreference()
     {
         ee('Model')->make('Config', [
@@ -63,6 +88,22 @@ class Updater
             'key' => 'week_start',
             'value' => 'sunday'
         ])->save();
+    }
+
+    private function addFieldGroupDescription()
+    {
+        if (!ee()->db->field_exists('group_description', 'field_groups')) {
+            ee()->smartforge->add_column(
+                'field_groups',
+                [
+                    'group_description' => [
+                        'type' => 'text',
+                        'null' => true,
+                        'default' => null
+                    ]
+                ]
+            );
+        }
     }
 }
 

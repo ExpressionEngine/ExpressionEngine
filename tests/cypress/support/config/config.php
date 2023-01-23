@@ -18,16 +18,16 @@ $config['base_path'] = $_SERVER['DOCUMENT_ROOT'];
 $config['base_url'] = 'http://localhost:8888/';
 $config['site_url'] = $config['base_url'];
 $config['database'] = array(
-    'expressionengine' => array(
-        'hostname' => '127.0.0.1',
-        'database' => 'ee-test',
-        'username' => 'root',
-        'password' => 'root',
-        'dbprefix' => 'exp_',
-        'char_set' => 'utf8mb4',
-        'dbcollat' => 'utf8mb4_unicode_ci',
-        'port'     => ''
-    ),
+	'expressionengine' => array(
+		'hostname' => '127.0.0.1',
+		'database' => 'ee-test',
+		'username' => 'root',
+		'password' => 'root',
+		'dbprefix' => 'exp_',
+		'char_set' => 'utf8mb4',
+		'dbcollat' => 'utf8mb4_unicode_ci',
+		'port'     => ''
+	),
 );
 
 // EOF

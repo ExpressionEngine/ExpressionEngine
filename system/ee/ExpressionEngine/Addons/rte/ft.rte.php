@@ -183,7 +183,7 @@ class Rte_ft extends EE_Fieldtype
                     ? true
                     : false;
 
-        if (strpos($id, '_new_') === false) {
+        if (strpos($id, '_new_field_0') === false && strpos($id, '_new_row_0') === false) {
             ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . ($defer ? 'true' : 'false') . ');</script>');
         }
 
