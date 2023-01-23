@@ -487,7 +487,7 @@ class Roles extends AbstractRolesController
         $assignedUploadDestinations = $role->AssignedUploadDestinations->getDictionary('id', 'site_id');
         if (!empty($assignedUploadDestinations)) {
             foreach ($assignedUploadDestinations as $dest_id => $dest_site_id) {
-                if ($dest_site_id != $site_id) {
+                if ($dest_site_id != 0 && $dest_site_id != $site_id) {
                     $uploadDestinationIds[] = $dest_id;
                 }
             }
@@ -974,7 +974,7 @@ class Roles extends AbstractRolesController
             ->getDictionary('module_id', 'module_name');
 
         $allowed_upload_destinations = ee('Model')->get('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->all()
             ->getDictionary('id', 'name');

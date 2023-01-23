@@ -43,7 +43,7 @@ if (! AJAX_REQUEST) {
             <?php $i = 0; ?>
             <div class="f_manager-table-breadcrumbs">
                 <ul class="breadcrumb">
-                    <?php foreach($breadcrumbs as $url => $name) : ?>
+                    <?php foreach ($breadcrumbs as $url => $name) : ?>
                         <?php $i++; ?>
                         <?php if ($i < count($breadcrumbs)) : ?>
                         <li><a href="<?=$url?>" data-filter-url="<?=$url?>"><i class="fal fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
