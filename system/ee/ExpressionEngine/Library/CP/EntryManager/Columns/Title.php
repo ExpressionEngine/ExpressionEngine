@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -29,12 +29,12 @@ class Title extends Column
         ];
     }
 
-    public function renderTableCell($data, $field_id, $entry)
+    public function renderTableCell($data, $field_id, $entry, $viewtype = 'list', $pickerMode = false, $addQueryString = [])
     {
         $title = ee('Format')->make('Text', $entry->title)->convertToEntities();
 
         if ($this->canEdit($entry)) {
-            $edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
+            $edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, $addQueryString);
             $title = '<a href="' . $edit_link . '">' . $title . '</a>';
         }
 

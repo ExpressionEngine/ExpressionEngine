@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -60,10 +60,11 @@ class Cli
         'make:action' => Commands\CommandMakeAction::class,
         'make:addon' => Commands\CommandMakeAddon::class,
         'make:command' => Commands\CommandMakeCommand::class,
+        'make:cp-route' => Commands\CommandMakeCpRoute::class,
         'make:extension-hook' => Commands\CommandMakeExtensionHook::class,
         'make:fieldtype' => Commands\CommandMakeFieldtype::class,
+        'make:jump' => Commands\CommandMakeJump::class,
         'make:migration' => Commands\CommandMakeMigration::class,
-        'make:cp-route' => Commands\CommandMakeCpRoute::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
         'make:sidebar' => Commands\CommandMakeSidebar::class,
@@ -486,7 +487,7 @@ class Cli
         if (isset($this->signature)) {
             $simplifiedSignature = str_replace([':', '-'], '_', $this->signature);
             $this->description = isset($this->description) ? lang($this->description) : lang('command_' . $simplifiedSignature . '_description');
-            $this->summary = isset($this->summary) ? lang($this->summary) : lang('command_' . $simplifiedSignature . '_description');
+            $this->summary = isset($this->summary) ? lang($this->summary) : lang('command_' . $simplifiedSignature . '_summary');
         }
     }
 

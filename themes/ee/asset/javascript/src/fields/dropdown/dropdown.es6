@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -147,8 +147,8 @@ class Dropdown extends React.Component {
       <div className={"select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
         <div className={"select__button js-dropdown-toggle"} onClick={this.toggleOpen} tabIndex="0">
           <label className={'select__button-label' + (this.state.selected ? ' act' : '')}>
-            {selected &&
-              <span>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}
+            {selected && 
+              <span>{(selected.sectionLabel && !this.props.ignoreSectionLabel) ? selected.sectionLabel + ' / ' : ''}
                 <span dangerouslySetInnerHTML={{__html: selected.label}}></span>
                 {this.props.name == 'condition-rule-field' && <span className="short-name">{`{${selected.value}}`}</span>}
               </span>

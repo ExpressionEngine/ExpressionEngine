@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -51,7 +51,7 @@ class TemplateTagGenerator
         if (! ee('Addon')->get($this->addon)) {
             throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
         } elseif (! file_exists($this->addonPath . 'mod.' . $this->addon . '.php')) {
-            throw new \Exception(lang('command_make_tag_error_addon_must_have_module'), 1);
+            throw new \Exception(lang('command_make_template_tag_error_addon_must_have_module'), 1);
         }
 
         // Get stub path

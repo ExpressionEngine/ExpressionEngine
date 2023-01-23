@@ -34,7 +34,9 @@ input[type='text'],
 input[type='email'],
 input[type='number'],
 input[type='password'],
-input[type='url'] {
+input[type='url'],
+input[type='search'],
+input[type='date'] {
 
   display: block;
   width: 100%;

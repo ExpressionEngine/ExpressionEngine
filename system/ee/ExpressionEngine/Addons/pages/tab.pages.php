@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -46,6 +46,7 @@ class Pages_tab
             if (isset($pages[$site_id]['templates'][$entry_id])) {
                 $pages_template_id = $pages[$site_id]['templates'][$entry_id];
             }
+
         } else {
             $qry = ee()->db->select('configuration_value')
                 ->where('configuration_name', 'template_channel_' . $channel_id)
@@ -72,7 +73,7 @@ class Pages_tab
         $templates = ee()->template_model->get_templates($site_id);
 
         foreach ($templates->result() as $template) {
-            $pages_dropdown[$template->group_name][$template->template_id] = $template->template_name;
+            $pages_dropdown[$template->group_name][$template->template_id] = "{$template->group_name}/{$template->template_name}";
         }
 
         if ($templates->num_rows() === 0) {
@@ -110,6 +111,7 @@ class Pages_tab
                 'field_maxl' => 100,
                 'field_instructions' => '',
                 'string_override' => $no_templates,
+                'ignore_section_label' => true
             ),
         );
 
