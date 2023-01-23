@@ -320,6 +320,18 @@ class Roles extends AbstractRolesController
 
         $role_groups = $role->RoleGroups;
         $active_groups = $role_groups->pluck('group_id');
+
+        if (defined('CLONING_MODE') && CLONING_MODE === true) {
+            $role->setId(null);
+            while (true !== $role->validateUnique('field_name', $_POST['short_name'])) {
+                $_POST['short_name'] = 'copy_' . $_POST['short_name'];
+            }
+            if ($_POST['name'] == $role->name) {
+                $_POST['name'] = lang('copy_of') . ' ' . $_POST['name'];
+            }
+            return $this->create(!empty($active_groups) ? $active_groups[0] : null);
+        }
+
         $this->generateSidebar($active_groups);
 
         $errors = null;
@@ -402,6 +414,16 @@ class Roles extends AbstractRolesController
             ),
         );
 
+        if ($role->getId() != 1) {
+            $vars['buttons'][] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_as_new_entry',
+                'text' => sprintf(lang('clone_to_new'), lang('role')),
+                'working' => 'btn_saving'
+            ];
+        }
+
         ee()->view->cp_page_title = lang('edit_role');
         ee()->view->extra_alerts = array('search-reindex');
 
@@ -420,8 +442,8 @@ class Roles extends AbstractRolesController
 
         $role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
 
-        $role->name = ee('Request')->post('name');
-        $role->short_name = ee('Request')->post('short_name');
+        $role->name = ee('Security/XSS')->clean($_POST['name']);
+        $role->short_name = ee('Security/XSS')->clean($_POST['short_name']);
         $role->description = ee('Request')->post('description');
 
         // Settings
