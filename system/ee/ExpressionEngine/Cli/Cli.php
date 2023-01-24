@@ -43,10 +43,30 @@ class Cli
     public $argv;
 
     /**
-     * [$arguments description]
+     * Command arguments
      * @var [type]
      */
     public $arguments;
+
+    /**
+     * Summary of the command
+     * @var string
+     */
+    public $summary;
+
+    /**
+     * Description of the command
+     * @var string
+     */
+    public $description;
+
+    /**
+     * Command options
+     * @var array
+     */
+    public $options;
+
+    public $filesystem;
 
     /**
      * list of commands available from EE
