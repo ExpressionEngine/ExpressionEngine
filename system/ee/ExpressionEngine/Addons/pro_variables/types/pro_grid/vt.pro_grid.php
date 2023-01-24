@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -54,9 +53,17 @@ class Pro_grid extends Pro_variables_type
 
         $this->setup_ft();
         $result = $this->call_ft('validate_settings', $data);
-        // Crude
+
+        // If the result is not valid, we loop through all the errors and show them
         if ($result->isNotValid()) {
-            show_error(current($result->getErrors('grid')));
+            $errors = [];
+            foreach ($result->getAllErrors() as $field => $resultErrors) {
+                if (substr($field, 0, strlen('grid[')) === 'grid[') {
+                    $errors[] = $field . ': ' . current($result->getErrors($field));
+                }
+            }
+
+            ee()->output->show_user_error('submission', $errors);
         }
 
         return $this->call_ft(__FUNCTION__, $data);
