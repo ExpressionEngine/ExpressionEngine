@@ -28,6 +28,14 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
 
     public $defaultEvaluationRule = 'isNotEmpty';
 
+    /**
+     * Some modifiers that are set on the field, require array of data on input,
+     * while the modifiers in ModifiableTrait require string
+     * The modifiers always return string, so this created problems when chaining modifiers
+     * By adding this param we ask the code to return array (not string) from previous modifier when chaining
+     *
+     * @var array
+     */
     public $modifiersRequireArray = ['resize', 'crop', 'rotate', 'webp', 'resize_crop', 'length', 'raw_content', 'attr_safe', 'limit', 'form_prep', 'rot13', 'encrypt', 'url_slug', 'censor', 'json', 'replace', 'url_encode', 'url_decode'];
 
     public $_dirs = array();
@@ -502,7 +510,7 @@ JSC;
         }
 
         ee()->load->library('image_lib');
-        $filename = ee()->image_lib->explode_name($data['filename']);
+        $filename = ee()->image_lib->explode_name($data['file_name']);
         if ($function == 'webp') {
             $filename['ext'] = '.webp';
         }

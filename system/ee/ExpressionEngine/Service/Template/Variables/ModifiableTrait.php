@@ -16,7 +16,7 @@ namespace ExpressionEngine\Service\Template\Variables;
  * All methods receive:
  *  mixed ($data) - whatever content is returned by the field
  *  array ($params) - an array of optional options!
- *  іtring ($tagdata) - optional tagdata, used by pair variables
+ *  string ($tagdata) - optional tagdata, used by pair variables
  */
 trait ModifiableTrait
 {
