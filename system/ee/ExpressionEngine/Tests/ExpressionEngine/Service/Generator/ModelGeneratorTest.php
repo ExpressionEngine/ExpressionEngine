@@ -16,6 +16,9 @@ use PHPUnit\Framework\TestCase;
 
 class ModelGeneratorTest extends TestCase
 {
+    public $filesystem;
+    public $modelGenerator;
+
     public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');

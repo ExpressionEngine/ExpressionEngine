@@ -17,6 +17,9 @@ use PHPUnit\Framework\TestCase;
 
 class AddonGeneratorTest extends TestCase
 {
+    public $filesystem;
+    public $addonGenerator;
+
     public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');

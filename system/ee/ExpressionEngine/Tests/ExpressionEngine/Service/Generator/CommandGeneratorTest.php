@@ -16,6 +16,9 @@ use PHPUnit\Framework\TestCase;
 
 class CommandGeneratorTest extends TestCase
 {
+    public $filesystem;
+    public $commandGenerator;
+
     public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');

@@ -7,6 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 class LegacyParserTest extends TestCase
 {
+    public $parser;
+
     public function setUp(): void
     {
         $this->parser = new LegacyParser();
