@@ -27,6 +27,8 @@ class Grid_ft extends EE_Fieldtype
 
     public $settings_form_field_name = 'grid';
 
+    public $can_be_cloned = true;
+
     private $errors;
 
     /**

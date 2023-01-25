@@ -810,7 +810,7 @@ class File_field
             return '';
         }
 
-        if (strpos((string) $data, 'file:') !== false ) {
+        if (strpos((string) $data, 'file:') !== false) {
             if (preg_match_all('/{file\:(\d+)\:url}/', (string) $data, $matches, PREG_SET_ORDER)) {
                 $file_ids = [];
                 foreach ($matches as $match) {
@@ -960,7 +960,7 @@ class File_field
         $upload_destinations = [];
         foreach ($upload_prefs as $upload_pref) {
             if (
-                $upload_pref->site_id == ee()->config->item('site_id') &&
+                ($upload_pref->site_id == 0 || $upload_pref->site_id == ee()->config->item('site_id')) &&
                 $upload_pref->module_id == 0
             ) {
                 $upload_destinations[$upload_pref->id] = [

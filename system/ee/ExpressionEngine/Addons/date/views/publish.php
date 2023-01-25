@@ -1,4 +1,10 @@
 <?php if ($has_localize_option): ?>
+	<?php if ($show_localize_options == 'localized') :
+		echo form_hidden($localize_option_name, '');
+	elseif ($show_localize_options == 'fixed') :
+		echo form_hidden($localize_option_name, ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')));
+	?>
+	<?php else : ?>
 	<?php $extra = ($disabled) ? 'disabled' : '' ?>
 	<div class="field-option">
 		<label class="checkbox-label">
@@ -10,6 +16,7 @@
 			<div class="checkbox-label__text"><?=lang('fixed_date')?></div>
 		</label>
 	</div>
+	<?php endif;?>
 <?php endif; ?>
 <?php
 $params = [

@@ -24,11 +24,11 @@ class Filesystem
     {
         if (is_null($adapter)) {
             $syspathRoot = null;
-            // Normalize the System Path and then find the root 
+            // Normalize the System Path and then find the root
             $syspath = str_replace('\\', '/', SYSPATH);
             $openBaseDir = ini_get('open_basedir');
             // Check if open_basedir restrictions are in effect
-            if(!empty($openBaseDir)) {
+            if (!empty($openBaseDir)) {
                 // Find the open_basedir root that our $syspath lives under
                 foreach (explode(':', ini_get('open_basedir')) as $path) {
                     $normalizedPath = str_replace('\\', '/', $path);
@@ -36,14 +36,14 @@ class Filesystem
                         $syspathRoot = $normalizedPath;
                     }
                 }
-            }else{
+            } else {
                 // If open_basedir is not enabled set our root to the top directory in the syspath
                 $syspathRoot = realpath($syspath . str_repeat('../', substr_count($syspath, '/') - 1));
             }
             $adapter = new Adapter\Local([
                 'path' => $this->normalizeAbsolutePath($syspathRoot ?: $syspath)
             ]);
-        }else{
+        } else {
             // Fix prefixes
             $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
         }
@@ -756,7 +756,7 @@ class Filesystem
      */
     public function isWritable($path = '/')
     {
-        if(! $this->isLocal()) {
+        if (! $this->isLocal()) {
             return true;
         }
 
@@ -1035,7 +1035,7 @@ class Filesystem
      */
     protected function normalizeAbsolutePath($path)
     {
-        if(empty($path)) {
+        if (empty($path)) {
             return '';
         }
 

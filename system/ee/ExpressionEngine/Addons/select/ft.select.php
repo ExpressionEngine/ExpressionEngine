@@ -23,6 +23,8 @@ class Select_ft extends OptionFieldtype
 
     public $has_array_data = true;
 
+    public $can_be_cloned = true;
+
     public $entry_manager_compatible = true;
 
     public $size = 'small';
