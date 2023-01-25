@@ -52,7 +52,7 @@ class Text extends Formatter
 
         $this->content = '';
         foreach ($chars as $index => $char) {
-            $decoded = utf8_decode($char);
+            $decoded = mb_convert_encoding($char, 'ISO-8859-1', 'UTF-8');
 
             if ($decoded != '?') {
                 $char = $decoded;
