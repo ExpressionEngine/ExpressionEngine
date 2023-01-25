@@ -87,7 +87,7 @@ abstract class FileSyncedModel extends Model
     public function onAfterLoad()
     {
         $path = $this->getFilePath();
-   
+
         if (! isset($path)) {
             return;
         }
@@ -164,7 +164,12 @@ abstract class FileSyncedModel extends Model
     {
         $path = $this->getFilePath();
 
-        if (isset($path) && ee('Filesystem')->exists(ee('Filesystem')->dirname($path))) {
+        if (!isset($path)) {
+            return;
+        }
+
+        $directory = ee('Filesystem')->dirname($path);
+        if (ee('Filesystem')->exists($directory) && ee('Filesystem')->isWritable($directory)) {
             ee('Filesystem')->write($path, $this->serializeFileData(), true);
         }
     }
