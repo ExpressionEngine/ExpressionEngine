@@ -106,35 +106,37 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                         $data['field_id_' . $field_id]
                     ));
 
-                    $checkNextModifier = property_exists($obj, 'modifiersRequireArray');
+                    $checkNextModifier = method_exists($obj, 'getChainableModifiersThatRequireArray');
+                    if ($checkNextModifier) {
+                        $modifiersRequireArray = $obj->getChainableModifiersThatRequireArray($data);
+                    }
 
                     if (isset($field['all_modifiers']) && !empty($field['all_modifiers'])) {
+                        $modifiers = array_keys($field['all_modifiers']);
+                        $modifiersCounter = 0;
                         foreach ($field['all_modifiers'] as $modifier => $params) {
+                            unset($modifiers[$modifiersCounter]);
+                            $modifiersCounter++;
                             $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
 
+                            // if there is next modifier, make sure to return array
+                            $content_param = ($checkNextModifier && isset($modifiers[$modifiersCounter]) && in_array($modifiers[$modifiersCounter], $modifiersRequireArray)) ? null : false;
                             if (method_exists($obj, $parse_fnc)) {
-                                if ($checkNextModifier && next($field['all_modifiers']) !== false) {
-                                    // there is next modifier, make sure to return array
-                                    $entry = (array) $ft_api->apply($parse_fnc, array(
-                                        $data,
-                                        $params,
-                                        null
-                                    ));
-                                } else {
-                                    // return modified string
-                                    $entry = (string) $ft_api->apply($parse_fnc, array(
-                                        $data,
-                                        $params,
-                                        false
-                                    ));
-                                }
-                            } elseif (method_exists($obj, 'replace_tag_catchall')) {
-                                $entry = (string) $ft_api->apply('replace_tag_catchall', array(
+                                $entry = $ft_api->apply($parse_fnc, array(
                                     $data,
                                     $params,
-                                    false,
-                                    $field['full_modifier']
+                                    $content_param
                                 ));
+                            } elseif (method_exists($obj, 'replace_tag_catchall')) {
+                                $entry = $ft_api->apply('replace_tag_catchall', array(
+                                    $data,
+                                    $params,
+                                    $content_param,
+                                    is_null($content_param) ? $modifier : $field['full_modifier']
+                                ));
+                            }
+                            if (!is_null($content_param)) {
+                                $entry = (string) $entry;
                             }
                             // set the data to parsed variable for next cycle
                             $data = $entry;

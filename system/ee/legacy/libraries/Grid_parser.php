@@ -715,16 +715,23 @@ class Grid_parser
 
         $data = $this->call('pre_process', $data['col_id_' . $column['col_id']]);
 
-        $checkNextModifier = property_exists($fieldtype, 'modifiersRequireArray');
+        $checkNextModifier = method_exists($fieldtype, 'getChainableModifiersThatRequireArray');
+        if ($checkNextModifier) {
+            $modifiersRequireArray = $fieldtype->getChainableModifiersThatRequireArray($data);
+        }
 
         if (isset($field['all_modifiers']) && !empty($field['all_modifiers'])) {
+            $modifiers = array_keys($field['all_modifiers']);
+            $modifiersCounter = 0;
             foreach ($field['all_modifiers'] as $modifier => $params) {
+                unset($modifiers[$modifiersCounter]);
+                $modifiersCounter++;
                 $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
 
                 $content_param = $content;
 
                 // when chaining modifiers, return correct data type
-                if ($checkNextModifier && next($field['all_modifiers']) !== false) {
+                if ($checkNextModifier && isset($modifiers[$modifiersCounter]) && in_array($modifiers[$modifiersCounter], $modifiersRequireArray)) {
                     $content_param = null;
                 }
 
@@ -734,9 +741,9 @@ class Grid_parser
                 // Sent to catchall if modifier function doesn't exist
                 if ($field['full_modifier'] && ! method_exists($fieldtype, $parse_fnc)) {
                     $parse_fnc = 'replace_tag_catchall';
-                    $parse_params[] = $field['full_modifier'];
+                    $parse_params[] = !is_null($content_param) ? $field['full_modifier'] : $modifier;
                 }
-                
+
                 $data = $this->call($parse_fnc, $parse_params, true);
             }
         } else {
