@@ -8,6 +8,10 @@ use PHPUnit\Framework\TestCase;
 
 class QueryTest extends TestCase
 {
+    public $query;
+    public $db_query;
+    public $db_query2;
+
     public function setUp(): void
     {
         $this->db_query = Mockery::mock('ExpressionEngine\Service\Database\Query');

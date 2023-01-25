@@ -18,6 +18,10 @@ require_once __DIR__ . '/../../../../../ExpressionEngine/Boot/boot.common.php';
 
 class NumberFormatterTest extends TestCase
 {
+    public $lang;
+    public $sess;
+    public $factory;
+
     public function setUp(): void
     {
         $this->lang = m::mock('EE_Lang');

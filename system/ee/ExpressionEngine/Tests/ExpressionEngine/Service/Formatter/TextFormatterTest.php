@@ -19,6 +19,10 @@ require_once APPPATH . 'helpers/multibyte_helper.php';
 
 class TextFormatterTest extends TestCase
 {
+    public $lang;
+    public $sess;
+    public $factory;
+
     public function setUp(): void
     {
         $this->lang = m::mock('EE_Lang');

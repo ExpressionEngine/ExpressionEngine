@@ -17,6 +17,8 @@ require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
 
 class XSSTest extends TestCase
 {
+    public $xss;
+
     public function setUp(): void
     {
         $this->xss = new XSS();
