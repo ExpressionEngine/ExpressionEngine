@@ -224,7 +224,11 @@ class Template extends FileSyncedModel
 
         $path = $group->getFolderPath();
         $file = $parts['template_name'];
-        $ext = $this->getFileExtension($parts['template_type']);
+
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('template_structure');
+
+        $ext = ee()->api_template_structure->file_extensions($parts['template_type'], $parts['template_engine'] ?? null);
 
         if ($path == '' || $file == '' || $ext == '') {
             return null;
@@ -235,8 +239,6 @@ class Template extends FileSyncedModel
 
     /**
      * Saves a new template revision and rotates revisions based on 'max_tmpl_revisions' config item
-     *
-     * @param	Template	$template	Saved template model object
      */
     public function saveNewTemplateRevision()
     {

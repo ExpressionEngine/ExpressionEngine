@@ -266,6 +266,8 @@ $lang = array(
 
     'template_type' => 'Type',
 
+    'template_engine' => 'Engine',
+
     'template_variable' => 'Template Variable',
 
     'template_variables' => 'Template Variables',

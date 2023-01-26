@@ -464,7 +464,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     /**
      * Validate the model
      *
-     * @return validation result
+     * @return \ExpressionEngine\Service\Validation\Result validation result
      */
     public function validate()
     {
