@@ -540,7 +540,7 @@ class Fluid_field_ft extends EE_Fieldtype
         }
 
         if (isset($this->settings['field_channel_fields'])) {
-            $this->settings['field_channel_fields'] = array_filter($this->settings['field_channel_fields'], function ($value) {
+            $this->settings['field_channel_fields'] = array_filter((array) $this->settings['field_channel_fields'], function ($value) {
                 return is_numeric($value);
             });
 
