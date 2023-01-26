@@ -175,6 +175,8 @@ class TextFormatterTest extends TestCase
      */
     public function testEmojiShorthand($content, $expected)
     {
+        ee()->setMock('Emoji', new \ExpressionEngine\Library\Emoji\Emoji());
+
         $config['emoji_map'] = include SYSPATH . 'ee/ExpressionEngine/Config/emoji.php';
         $text = (string) $this->format($content, $config)->emojiShorthand();
         $this->assertEquals($expected, $text);
@@ -187,7 +189,7 @@ class TextFormatterTest extends TestCase
             ['Emoji aliases like :moon: and :waxing_gibbous_moon: work', 'Emoji aliases like &#x1F314; and &#x1F314; work'],
             ['Handle multi-character emoji like :man-woman-girl-boy:', 'Handle multi-character emoji like &#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467;&#x200D;&#x1F466;'],
             ['Emoji 5 shortcodes like :hedgehog: and :merman: are supported', 'Emoji 5 shortcodes like &#x1F994; and &#x1F9DC;&#x200D;&#x2642;&#xFE0F; are supported'],
-            ['Emoji 11 (there is no 6) shortcodes like :supervillain: and :lobster: are not yet supported', 'Emoji 11 (there is no 6) shortcodes like :supervillain: and :lobster: are not yet supported'],
+            ['Emoji 11 shortcodes like :supervillain: and :lobster: are supported', 'Emoji 11 shortcodes like &#x1F9B9; and &#x1F99E; are supported'],
             [
                 // larger sample with multi-line code samples
                 'Unlike :lock:, emoji in [code]code samples :lock:[/code] should be left alone.
