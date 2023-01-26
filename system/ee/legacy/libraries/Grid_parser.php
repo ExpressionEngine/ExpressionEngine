@@ -35,9 +35,9 @@ class Grid_parser
      * Called before each channel entries loop to gather the information
      * needed to efficiently query the Grid data we need
      *
-     * @param	string	Tag data for entire channel entries loop
-     * @param	object	Channel preparser object
-     * @param	array	Array of known Grid fields in this channel
+     * @param    string    Tag data for entire channel entries loop
+     * @param    object Channel preparser object
+     * @param    array  Array of known Grid fields in this channel
      */
     public function pre_process($tagdata, $pre_parser, $grid_fields, $content_type = 'channel')
     {
@@ -48,13 +48,14 @@ class Grid_parser
         // Sort so any names with a dash come before their roots
         rsort($sorted_grid_fields);
 
-        if (! preg_match_all(
-            "/" . LD . '\/?(' . preg_quote($pre_parser->prefix()) . '(?:(?:' . implode('|', $sorted_grid_fields) . '):?))\b([^}{]*)?' . RD . "/",
-            $tagdata,
-            $matches,
-            PREG_SET_ORDER
-        )
-            ) {
+        if (
+            ! preg_match_all(
+                "/" . LD . '\/?(' . preg_quote($pre_parser->prefix()) . '(?:(?:' . implode('|', $sorted_grid_fields) . '):?))\b([^}{]*)?' . RD . "/",
+                $tagdata,
+                $matches,
+                PREG_SET_ORDER
+            )
+        ) {
             return false;
         }
 
@@ -70,8 +71,10 @@ class Grid_parser
 
             // Throw out variables and closing tags, we'll deal with them
             // in the parsing stage
-            if ((! in_array($field['field_name'], $this->modifiers) && substr($match[1], -1) == ':')
-                || substr($match[0], 0, 2) == LD . '/') {
+            if (
+                (! in_array($field['field_name'], $this->modifiers) && substr($match[1], -1) == ':')
+                || substr($match[0], 0, 2) == LD . '/'
+            ) {
                 unset($matches[$key]);
 
                 continue;
@@ -114,11 +117,11 @@ class Grid_parser
      * Handles ft.grid.php's replace_tag(), called with each loop of the
      * channel entries parser
      *
-     * @param	array	Channel entry row data typically sent to fieldtypes
-     * @param	int		Field ID of field being parsed so we can make sure
-     * @param	array	Parameters array, unvalidated
-     * @param	string	Tag data of our field pair
-     * @return	string	Parsed field data
+     * @param    array  Channel entry row data typically sent to fieldtypes
+     * @param    int    Field ID of field being parsed so we can make sure
+     * @param    array  Parameters array, unvalidated
+     * @param    string    Tag data of our field pair
+     * @return    string    Parsed field data
      */
     public function parse($channel_row, $field_id, $params, $tagdata, $content_type = 'channel', $fluid_field_data_id = 0)
     {
@@ -190,11 +193,10 @@ class Grid_parser
                     foreach (array_diff(array_keys($entry_data), $row_ids) as $row_id) {
                         unset($entry_data[$row_id]);
                     }
-                }
-                // Otherwise, if there is just one row_id, we're likely inside
-                // a next_row or prev_row tag, don't modify the entry_data
-                // so we still have access to next and previous rows
-                elseif (count($row_ids) == 1) {
+                } elseif (count($row_ids) == 1) {
+                    // Otherwise, if there is just one row_id, we're likely inside
+                    // a next_row or prev_row tag, don't modify the entry_data
+                    // so we still have access to next and previous rows
                     $row_index = array_search(current($row_ids), array_keys($entry_data));
 
                     // Non-existent row ID passed, return nothing
@@ -279,7 +281,7 @@ class Grid_parser
         } catch (EE_Relationship_exception $e) {
             $relationship_parser = null;
         }
-        
+
         if (empty($display_entry_data)) {
             if (strpos($tagdata, 'if no_results') !== false && preg_match("/" . LD . "if no_results" . RD . "(.*?)" . LD . '\/' . "if" . RD . "/s", $tagdata, $match)) {
                 if (stristr($match[1], LD . 'if')) {
@@ -379,11 +381,11 @@ class Grid_parser
     /**
      * Parses individual row in Grid field
      *
-     * @param	array	Channel entry row data typically sent to fieldtypes
-     * @param	int		Field ID of field being parsed so we can make sure
-     * @param	string	Tagdata with variables to replace
-     * @param	array	Grid single row data
-     * @return	string	Parsed field data
+     * @param    array  Channel entry row data typically sent to fieldtypes
+     * @param    int    Field ID of field being parsed so we can make sure
+     * @param    string    Tagdata with variables to replace
+     * @param    array  Grid single row data
+     * @return    string    Parsed field data
      */
     private function _parse_row($channel_row, $field_id, $tagdata, $row, $content_type = 'channel', $fluid_field_data_id = 0)
     {
@@ -392,13 +394,15 @@ class Grid_parser
         $entry_id = $channel_row['entry_id'];
 
         // Gather the variables to parse
-        if (! preg_match_all(
-            "/" . LD . '?[^\/]((?:(?:' . preg_quote($field_name) . '):?))\b([^}{]*)?' . RD . "/",
-            $tagdata,
-            $matches,
-            PREG_SET_ORDER
-        ) || empty($row)
-            ) {
+        if (
+            ! preg_match_all(
+                "/" . LD . '?[^\/]((?:(?:' . preg_quote($field_name) . '):?))\b([^}{]*)?' . RD . "/",
+                $tagdata,
+                $matches,
+                PREG_SET_ORDER
+            ) ||
+            empty($row)
+        ) {
             return $tagdata;
         }
 
@@ -418,7 +422,6 @@ class Grid_parser
         }
 
         foreach ($matches as $match) {
-
             // Get tag name, modifier and params for this tag
             $field = ee('Variables/Parser')->parseVariableProperties($match[2], $field_name . ':');
 
@@ -464,8 +467,10 @@ class Grid_parser
             }
 
             // Now handle any single variables
-            if (isset($column_names[$field['field_name']]) &&
-                strpos($grid_row, $match[0]) !== false) {
+            if (
+                isset($column_names[$field['field_name']]) &&
+                strpos($grid_row, $match[0]) !== false
+            ) {
                 $column = $column_names[$field['field_name']];
                 $channel_row['col_id_' . $column['col_id']] = $row['col_id_' . $column['col_id']];
                 $replace_data = $this->_replace_tag(
@@ -480,10 +485,9 @@ class Grid_parser
                     !empty($row['orig_row_id']) ? $row['orig_row_id'] : $row['row_id'],
                     !empty($row['fluid_field_data_id']) ? $row['fluid_field_data_id'] : 0
                 );
-            }
-            // Check to see if this is a field in the table for
-            // this field, e.g. row_id
-            elseif (isset($row[$match[2]])) {
+            } elseif (isset($row[$match[2]])) {
+                // Check to see if this is a field in the table for
+                // this field, e.g. row_id
                 $replace_data = $row[$match[2]];
             } else {
                 $replace_data = $match[0];
@@ -517,7 +521,7 @@ class Grid_parser
         $grid_data = ee()->grid_model->get_grid_data();
 
         // $grid_data always has a type first array element.
-        if(isset($grid_data['channel'])) {
+        if (isset($grid_data['channel'])) {
             $grid_data = $grid_data['channel'];
         }
 
@@ -544,17 +548,15 @@ class Grid_parser
             foreach ($grid_data[$column['field_id']] as $marker) {
 
                 foreach ($marker as $row) {
-
                     // fluid fields will just give an int...
                     // If it's not an array or object
                     // something we can foreach on
                     // skip it
-                    if( is_scalar($row)) {
+                    if (is_scalar($row)) {
                         continue;
                     }
 
                     foreach ($row as $row_id => $data) {
-
                         if (! is_array($data) || ! isset($data['col_id_' . $column['col_id']])) {
                             continue;
                         }
@@ -582,14 +584,14 @@ class Grid_parser
     /**
      * Instantiates fieldtype handler and assigns information to the object
      *
-     * @param	array	Column information
-     * @param	string	Unique row identifier
-     * @param	int		Field ID of Grid field
-     * @param	int		Entry ID being processed or parsed
-     * @param	string	Parent content type
-     * @param	int		Parent Fluid field ID
-     * @param	boolean	Whether or not this field is being shown in a modal
-     * @return	object	Fieldtype object
+     * @param    array  Column information
+     * @param    string    Unique row identifier
+     * @param    int    Field ID of Grid field
+     * @param    int    Entry ID being processed or parsed
+     * @param    string    Parent content type
+     * @param    int    Parent Fluid field ID
+     * @param    boolean    Whether or not this field is being shown in a modal
+     * @return   object    Fieldtype object
      */
     public function instantiate_fieldtype($column, $row_name = null, $field_id = 0, $entry_id = 0, $content_type = 'channel', $fluid_field_data_id = 0, $in_modal_context = false)
     {
@@ -643,10 +645,10 @@ class Grid_parser
      * Calls a method on a fieldtype and returns the result. If the method
      * exists with a prefix of grid_, that will be called in place of it.
      *
-     * @param	string	Method name to call
-     * @param	string	Data to send to method
-     * @param	bool	Whether or not to expect multiple parameters
-     * @return	string	Returned data from fieldtype method
+     * @param    string    Method name to call
+     * @param    string    Data to send to method
+     * @param    bool    Whether or not to expect multiple parameters
+     * @return    string    Returned data from fieldtype method
      */
     public function call($method, $data, $multi_param = false)
     {
@@ -677,18 +679,16 @@ class Grid_parser
      * Calls fieldtype's grid_replace_tag/replace_tag given tag properties
      * (modifier, params) and returns the result
      *
-     * @param	array	Column array from database
-     * @param	int		Field ID of Grid field being parsed
-     * @param	int		Entry ID of entry being parsed
-     * @param	int		Grid row ID of row being parsed
-     * @param	array	Array containing modifier and params for field
-     * 					being parsed
-     * @param	string	Field data to send to fieldtype for processing and
-     * 					parsing
-     * @param	string	Tag data for tag pairs being parsed
-     * @param	string	Original row ID ('new_row_X' for new rows)
-     * @param	string	ID of Fluid wield, if Grid is in Fluid
-     * @return	string	Tag data with all Grid fields parsed
+     * @param    array  Column array from database
+     * @param    int    Field ID of Grid field being parsed
+     * @param    int    Entry ID of entry being parsed
+     * @param    int    Grid row ID of row being parsed
+     * @param    array  Array containing modifier and params for field being parsed
+     * @param    string    Field data to send to fieldtype for processing and parsing
+     * @param    string    Tag data for tag pairs being parsed
+     * @param    string    Original row ID ('new_row_X' for new rows)
+     * @param    string    ID of Fluid wield, if Grid is in Fluid
+     * @return    string    Tag data with all Grid fields parsed
      */
     protected function _replace_tag($column, $field_id, $entry_id, $row_id, $field, $data, $content = false, $content_type = 'channel', $orig_row_id = null, $fluid_field_data_id = 0)
     {
@@ -700,10 +700,6 @@ class Grid_parser
                 ee()->functions->encode_ee_tags($data['col_id_' . $column['col_id']])
             );
         }
-
-        // Determine the replace function to call based on presence of modifier
-        $modifier = $field['modifier'];
-        $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
 
         $fieldtype->_init(array(
             'row' => $data,
@@ -719,16 +715,55 @@ class Grid_parser
 
         $data = $this->call('pre_process', $data['col_id_' . $column['col_id']]);
 
-        // Params sent to parse function
-        $params = array($data, $field['params'], $content);
-
-        // Sent to catchall if modifier function doesn't exist
-        if ($field['full_modifier'] && ! method_exists($fieldtype, $parse_fnc)) {
-            $parse_fnc = 'replace_tag_catchall';
-            $params[] = $field['full_modifier'];
+        $checkNextModifier = method_exists($fieldtype, 'getChainableModifiersThatRequireArray');
+        if ($checkNextModifier) {
+            $modifiersRequireArray = $fieldtype->getChainableModifiersThatRequireArray($data);
         }
 
-        return $this->call($parse_fnc, $params, true);
+        if (isset($field['all_modifiers']) && !empty($field['all_modifiers'])) {
+            $modifiers = array_keys($field['all_modifiers']);
+            $modifiersCounter = 0;
+            foreach ($field['all_modifiers'] as $modifier => $params) {
+                unset($modifiers[$modifiersCounter]);
+                $modifiersCounter++;
+                $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
+
+                $content_param = $content;
+
+                // when chaining modifiers, return correct data type
+                if ($checkNextModifier && isset($modifiers[$modifiersCounter]) && in_array($modifiers[$modifiersCounter], $modifiersRequireArray)) {
+                    $content_param = null;
+                }
+
+                // Params sent to parse function
+                $parse_params = array($data, $params, $content_param);
+
+                // Sent to catchall if modifier function doesn't exist
+                if ($field['full_modifier'] && ! method_exists($fieldtype, $parse_fnc)) {
+                    $parse_fnc = 'replace_tag_catchall';
+                    $parse_params[] = !is_null($content_param) ? $field['full_modifier'] : $modifier;
+                }
+
+                $data = $this->call($parse_fnc, $parse_params, true);
+            }
+        } else {
+            // Determine the replace function to call based on presence of modifier
+            $modifier = $field['modifier'];
+            $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
+
+            // Params sent to parse function
+            $parse_params = array($data, $field['params'], $content);
+
+            // Sent to catchall if modifier function doesn't exist
+            if ($field['full_modifier'] && ! method_exists($fieldtype, $parse_fnc)) {
+                $parse_fnc = 'replace_tag_catchall';
+                $parse_params[] = $field['full_modifier'];
+            }
+
+            $data = $this->call($parse_fnc, $parse_params, true);
+        }
+
+        return $data;
     }
 }
 

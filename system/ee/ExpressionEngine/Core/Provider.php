@@ -430,6 +430,22 @@ class Provider extends InjectionBindingDecorator
     }
 
     /**
+     * Register variable modifiers
+     * 
+     * @return void
+     */
+    public function registerVariableModifiers()
+    {
+        $modifiers = $this->get('modifiers', array());
+        if (!empty($modifiers)) {
+            foreach ($modifiers as $modifier) {
+                ee('Variables/Modifiers')->register($modifier, $this);
+            }
+        }
+        unset($modifiers);
+    }
+
+    /**
      * Forcably override the first parameter on a given closure
      *
      * @param Closure $closure Function to partially apply
