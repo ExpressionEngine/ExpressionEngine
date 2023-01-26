@@ -834,7 +834,7 @@ class Fields extends AbstractFieldsController
         $fieldFluidFields = ee('Model')->get('ChannelField')->filter('field_type', 'fluid_field')->all();
         if (!is_null($fieldFluidFields)) {
             foreach ($fieldFluidFields as $fieldFluidField) {
-                if (!empty($fieldFluidField->field_settings) && in_array($field->getId(), $fieldFluidField->field_settings['field_channel_fields'])) {
+                if (!empty($fieldFluidField->field_settings) && in_array($field->getId(), (array) $fieldFluidField->field_settings['field_channel_fields'])) {
                     $this->_getFieldChannels($fieldFluidField, lang('via') . ' ' . $fieldFluidField->field_name . ' (' . lang('fluid_field') . ')');
                 }
             }
