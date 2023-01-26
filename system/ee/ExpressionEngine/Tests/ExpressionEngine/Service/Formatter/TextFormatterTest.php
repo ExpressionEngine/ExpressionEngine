@@ -194,7 +194,7 @@ class TextFormatterTest extends TestCase
                 // larger sample with multi-line code samples
                 'Unlike :lock:, emoji in [code]code samples :lock:[/code] should be left alone.
 
-:rabbit: starts as sentence. :+1:
+:rabbit: starts as sentence. :thumbsup:
 
 [code=markdown]
 Another code block with a :rabbit::hole:.
