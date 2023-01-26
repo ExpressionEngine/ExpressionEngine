@@ -23,18 +23,6 @@ class AddonGeneratorTest extends TestCase
     public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
-
-        // Populate with sample data
-        $str = new Str();
-        $data = [
-            'name' => 'test',
-            'description' => 'test desc',
-            'version' => '1.0.0',
-            'author' => 'PacketTide',
-            'author_url' => 'https://packettide.com'
-        ];
-
-        $this->addonGenerator = new AddonGenerator($this->filesystem, $str, $data);
     }
 
     public function tearDown(): void
@@ -48,5 +36,19 @@ class AddonGeneratorTest extends TestCase
     /** @test */
     public function it_generates_an_addon()
     {
+        // Populate with sample data
+        $str = new Str();
+        $data = [
+            'name' => 'My Addon',
+            'description' => 'This is my test addon',
+            'version' => '1.0.0',
+            'author' => 'PacketTide',
+            'author_url' => 'https://packettide.com'
+        ];
+
+        // Addon generator
+        $this->filesystem->shouldReceive('isDir');
+        $this->filesystem->shouldReceive('mkDir');
+        $this->addonGenerator = new AddonGenerator($this->filesystem, $str, $data);
     }
 }
