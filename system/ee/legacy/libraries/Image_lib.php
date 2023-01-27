@@ -17,6 +17,7 @@ class EE_Image_lib
     public $library_path = '';
     public $dynamic_output = false; // Whether to send to browser or write to disk
     public $source_image = '';
+    public $dest_image;
     public $new_image = '';
     public $width = '';
     public $height = '';
