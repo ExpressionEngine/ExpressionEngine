@@ -11,6 +11,7 @@ class QueryTest extends TestCase
     public $query;
     public $db_query;
     public $db_query2;
+    private $newline = "\r\n";
 
     public function setUp(): void
     {
@@ -18,6 +19,9 @@ class QueryTest extends TestCase
         $this->db_query2 = Mockery::mock('ExpressionEngine\Service\Database\Query');
 
         $this->query = new Query($this->db_query);
+        if (PHP_OS == "WINNT") {
+            $this->newline = "\n";
+        }
     }
 
     public function tearDown(): void
@@ -75,10 +79,7 @@ class QueryTest extends TestCase
         $inserts = $this->query->getInsertsForTable('table', 0, 50);
 
         $this->assertEquals([
-            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20
-	(123, 'testing', x'30'),
-	(0, 'testing2', x'31'),
-	(321, 'testing3', x'3137');",
+            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20{$this->newline}	(123, 'testing', x'30'),{$this->newline}	(0, 'testing2', x'31'),{$this->newline}	(321, 'testing3', x'3137');",
             'rows_exported' => 3
         ], $inserts);
 
@@ -96,11 +97,7 @@ class QueryTest extends TestCase
         $inserts = $this->query->getInsertsForTable('table', 0, 50);
 
         $this->assertEquals([
-            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20
-	(123, 'testing', x'30'),
-	(0, 'testing2', x'31');
-INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20
-	(321, 'testing3', x'3137');",
+            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20{$this->newline}	(123, 'testing', x'30'),{$this->newline}	(0, 'testing2', x'31');{$this->newline}INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20{$this->newline}	(321, 'testing3', x'3137');",
             'rows_exported' => 3
         ], $inserts);
 
@@ -108,8 +105,7 @@ INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20
         $inserts = $this->query->getInsertsForTable('table', 0, 50);
 
         $this->assertEquals([
-            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES (123, 'testing', x'30'), (0, 'testing2', x'31');
-INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES (321, 'testing3', x'3137');",
+            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES (123, 'testing', x'30'), (0, 'testing2', x'31');{$this->newline}INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES (321, 'testing3', x'3137');",
             'rows_exported' => 3
         ], $inserts);
     }
