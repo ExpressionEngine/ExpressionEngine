@@ -21,6 +21,8 @@ use ExpressionEngine\Service\Member\Member;
  */
 class Members extends CP_Controller
 {
+    public $base_url;
+
     public function __construct()
     {
         parent::__construct();

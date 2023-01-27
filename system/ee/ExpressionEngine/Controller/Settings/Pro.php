@@ -17,6 +17,8 @@ use CP_Controller;
  */
 class Pro extends Settings
 {
+    public $base_url;
+
     /**
      * Constructor
      */

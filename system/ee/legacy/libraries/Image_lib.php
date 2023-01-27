@@ -13,39 +13,40 @@
  */
 class EE_Image_lib
 {
-    public $image_library = 'gd2';	// Can be:  imagemagick, netpbm, gd, gd2
+    public $image_library = 'gd2';  // Can be:  imagemagick, netpbm, gd, gd2
     public $library_path = '';
-    public $dynamic_output = false;	// Whether to send to browser or write to disk
+    public $dynamic_output = false; // Whether to send to browser or write to disk
     public $source_image = '';
+    public $dest_image;
     public $new_image = '';
     public $width = '';
     public $height = '';
     public $quality = '90';
     public $create_thumb = false;
     public $thumb_marker = '_thumb';
-    public $maintain_ratio = true;		// Whether to maintain aspect ratio when resizing or use hard values
-    public $master_dim = 'auto';	// auto, height, or width.  Determines what to use as the master dimension
+    public $maintain_ratio = true;      // Whether to maintain aspect ratio when resizing or use hard values
+    public $master_dim = 'auto';    // auto, height, or width.  Determines what to use as the master dimension
     public $rotation_angle = '';
     public $x_axis = '';
     public $y_axis = '';
 
     // Watermark Vars
-    public $wm_text = '';			// Watermark text if graphic is not used
-    public $wm_type = 'text';		// Type of watermarking.  Options:  text/overlay
+    public $wm_text = '';           // Watermark text if graphic is not used
+    public $wm_type = 'text';       // Type of watermarking.  Options:  text/overlay
     public $wm_x_transp = 4;
     public $wm_y_transp = 4;
-    public $wm_overlay_path = '';			// Watermark image path
-    public $wm_font_path = '';			// TT font
-    public $wm_font_size = 17;			// Font size (different versions of GD will either use points or pixels)
-    public $wm_vrt_alignment = 'B';			// Vertical alignment:   T M B
-    public $wm_hor_alignment = 'C';			// Horizontal alignment: L R C
-    public $wm_padding = 0;			// Padding around text
-    public $wm_hor_offset = 0;			// Lets you push text to the right
-    public $wm_vrt_offset = 0;			// Lets you push  text down
-    public $wm_font_color = '#ffffff';	// Text color
-    public $wm_shadow_color = '';			// Dropshadow color
-    public $wm_shadow_distance = 2;			// Dropshadow distance
-    public $wm_opacity = 50;			// Image opacity: 1 - 100  Only works with image
+    public $wm_overlay_path = '';           // Watermark image path
+    public $wm_font_path = '';          // TT font
+    public $wm_font_size = 17;          // Font size (different versions of GD will either use points or pixels)
+    public $wm_vrt_alignment = 'B';         // Vertical alignment:   T M B
+    public $wm_hor_alignment = 'C';         // Horizontal alignment: L R C
+    public $wm_padding = 0;         // Padding around text
+    public $wm_hor_offset = 0;          // Lets you push text to the right
+    public $wm_vrt_offset = 0;          // Lets you push  text down
+    public $wm_font_color = '#ffffff';  // Text color
+    public $wm_shadow_color = '';           // Dropshadow color
+    public $wm_shadow_distance = 2;         // Dropshadow distance
+    public $wm_opacity = 50;            // Image opacity: 1 - 100  Only works with image
 
     // Private Vars
     public $source_folder = '';
@@ -67,8 +68,8 @@ class EE_Image_lib
     /**
      * Constructor
      *
-     * @param	string
-     * @return	void
+     * @param   string
+     * @return  void
      */
     public function __construct($props = array())
     {
@@ -84,8 +85,8 @@ class EE_Image_lib
      *
      * Resets values in case this class is used in a loop
      *
-     * @access	public
-     * @return	void
+     * @access  public
+     * @return  void
      */
     public function clear()
     {
@@ -102,9 +103,9 @@ class EE_Image_lib
     /**
      * initialize image preferences
      *
-     * @access	public
-     * @param	array
-     * @return	bool
+     * @access  public
+     * @param   array
+     * @return  bool
      */
     public function initialize($props = array())
     {
@@ -114,7 +115,7 @@ class EE_Image_lib
         if (count($props) > 0) {
             $intProps = ['width', 'height', 'quality', 'orig_width', 'orig_height'];
             foreach ($props as $key => $val) {
-                if(in_array($key, $intProps) && $val > 0) {
+                if (in_array($key, $intProps) && $val > 0) {
                     $this->$key = (int) $val;
                 } else {
                     $this->$key = $val;
@@ -203,7 +204,7 @@ class EE_Image_lib
                     $this->dest_folder = dirname($full_dest_path) . '/';
                     $this->dest_image = basename($full_dest_path);
                 // Is there a file name?
-                } else if (! preg_match("#\.(jpg|jpeg|gif|png|webp)$#i", $full_dest_path)) {
+                } elseif (! preg_match("#\.(jpg|jpeg|gif|png|webp)$#i", $full_dest_path)) {
                     $filenameInPathPosition = strrpos($full_dest_path, $this->source_image);
                     if ($filenameInPathPosition == (strlen($full_dest_path) - strlen($this->source_image))) {
                         $this->dest_folder = substr($full_dest_path, 0, $filenameInPathPosition);
@@ -318,8 +319,8 @@ class EE_Image_lib
      * This is a wrapper function that chooses the proper
      * resize function based on the protocol specified
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function resize()
     {
@@ -349,8 +350,8 @@ class EE_Image_lib
      * This is a wrapper function that chooses the proper
      * cropping function based on the protocol specified
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function crop()
     {
@@ -369,8 +370,8 @@ class EE_Image_lib
      * This is a wrapper function that chooses the proper
      * rotation function based on the protocol specified
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function rotate()
     {
@@ -411,9 +412,9 @@ class EE_Image_lib
      *
      * This function will resize or crop
      *
-     * @access	public
-     * @param	string
-     * @return	bool
+     * @access  public
+     * @param   string
+     * @return  bool
      */
     public function image_process_gd($action = 'resize')
     {
@@ -507,9 +508,9 @@ class EE_Image_lib
      *
      * This function will resize, crop or rotate
      *
-     * @access	public
-     * @param	string
-     * @return	bool
+     * @access  public
+     * @param   string
+     * @return  bool
      */
     public function image_process_imagemagick($action = 'resize')
     {
@@ -557,7 +558,7 @@ class EE_Image_lib
 
         @exec($cmd, $output, $retval);
 
-        //	Did it work?
+        //  Did it work?
         if ($retval > 0) {
             $this->set_error('imglib_image_process_failed');
 
@@ -575,9 +576,9 @@ class EE_Image_lib
      *
      * This function will resize, crop or rotate
      *
-     * @access	public
-     * @param	string
-     * @return	bool
+     * @access  public
+     * @param   string
+     * @return  bool
      */
     public function image_process_netpbm($action = 'resize')
     {
@@ -594,18 +595,18 @@ class EE_Image_lib
         //  Build the resizing command
         switch ($this->image_type) {
             case IMAGETYPE_GIF:
-                        $cmd_in = 'giftopnm';
-                        $cmd_out = 'ppmtogif';
+                $cmd_in = 'giftopnm';
+                $cmd_out = 'ppmtogif';
 
                 break;
             case IMAGETYPE_JPEG:
-                        $cmd_in = 'jpegtopnm';
-                        $cmd_out = 'ppmtojpeg';
+                $cmd_in = 'jpegtopnm';
+                $cmd_out = 'ppmtojpeg';
 
                 break;
             case IMAGETYPE_PNG:
-                        $cmd_in = 'pngtopnm';
-                        $cmd_out = 'ppmtopng';
+                $cmd_in = 'pngtopnm';
+                $cmd_out = 'ppmtopng';
 
                 break;
         }
@@ -614,19 +615,19 @@ class EE_Image_lib
             $cmd_inner = 'pnmcut -left ' . $this->x_axis . ' -top ' . $this->y_axis . ' -width ' . $this->width . ' -height ' . $this->height;
         } elseif ($action == 'rotate') {
             switch ($this->rotation_angle) {
-                case 90:	$angle = 'r270';
+                case 90:    $angle = 'r270';
 
                     break;
-                case 180:	$angle = 'r180';
+                case 180:   $angle = 'r180';
 
                     break;
-                case 270:	$angle = 'r90';
+                case 270:   $angle = 'r90';
 
                     break;
-                case 'vrt':	$angle = 'tb';
+                case 'vrt': $angle = 'tb';
 
                     break;
-                case 'hor':	$angle = 'lr';
+                case 'hor': $angle = 'lr';
 
                     break;
             }
@@ -663,7 +664,7 @@ class EE_Image_lib
      * Checks path instance variables to make sure they have been properly
      * sanitized before passing to shell functions
      *
-     * @return	bool
+     * @return  bool
      */
     private function arePathsSafe()
     {
@@ -685,8 +686,8 @@ class EE_Image_lib
     /**
      * Image Rotate Using GD
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function image_rotate_gd()
     {
@@ -733,8 +734,8 @@ class EE_Image_lib
      *
      * This function will flip horizontal or vertical
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function image_mirror_gd()
     {
@@ -790,9 +791,9 @@ class EE_Image_lib
      * Provided a new image and source image resource, it works with those
      * already-allocated resources, so it returns void
      *
-     * @access	public
-     * @param	resource $new_img Destination image resource, will have alpha applied to this
-     * @param	resource $src_img Source image resource for reference
+     * @access  public
+     * @param   resource $new_img Destination image resource, will have alpha applied to this
+     * @param   resource $src_img Source image resource for reference
      */
     public function image_preserve_alpha($new_img, $src_img)
     {
@@ -835,9 +836,9 @@ class EE_Image_lib
      * This is a wrapper function that chooses the type
      * of watermarking based on the specified preference.
      *
-     * @access	public
-     * @param	string
-     * @return	bool
+     * @access  public
+     * @param   string
+     * @return  bool
      */
     public function watermark()
     {
@@ -851,8 +852,8 @@ class EE_Image_lib
     /**
      * Watermark - Graphic Version
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function overlay_watermark()
     {
@@ -972,8 +973,8 @@ class EE_Image_lib
     /**
      * Watermark - Text Version
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function text_watermark()
     {
@@ -1125,9 +1126,9 @@ class EE_Image_lib
      * This simply creates an image resource handle
      * based on the type of image being processed
      *
-     * @access	public
-     * @param	string
-     * @return	resource
+     * @access  public
+     * @param   string
+     * @return  resource
      */
     public function image_create_gd($path = '', $image_type = '')
     {
@@ -1193,9 +1194,9 @@ class EE_Image_lib
      * Takes an image resource as input and writes the file
      * to the specified destination
      *
-     * @access	public
-     * @param	resource
-     * @return	bool
+     * @access  public
+     * @param   resource
+     * @return  bool
      */
     public function image_save_gd($resource)
     {
@@ -1278,9 +1279,9 @@ class EE_Image_lib
     /**
      * Dynamically outputs an image
      *
-     * @access	public
-     * @param	resource
-     * @return	void
+     * @access  public
+     * @param   resource
+     * @return  void
      */
     public function image_display_gd($resource)
     {
@@ -1323,8 +1324,8 @@ class EE_Image_lib
      * This function lets us re-proportion the width/height
      * if users choose to maintain the aspect ratio when resizing.
      *
-     * @access	public
-     * @return	void
+     * @access  public
+     * @return  void
      */
     public function image_reproportion()
     {
@@ -1359,9 +1360,9 @@ class EE_Image_lib
      *
      * A helper function that gets info about the file
      *
-     * @access	public
-     * @param	string
-     * @return	mixed
+     * @access  public
+     * @param   string
+     * @return  mixed
      */
     public function get_image_properties($path = '', $return = false)
     {
@@ -1410,16 +1411,16 @@ class EE_Image_lib
      * recalculates it to a new size.  Only one
      * new variable needs to be known
      *
-     *	$props = array(
-     *					'width'			=> $width,
-     *					'height'		=> $height,
-     *					'new_width'		=> 40,
-     *					'new_height'	=> ''
-     *				  );
+     *  $props = array(
+     *                  'width'         => $width,
+     *                  'height'        => $height,
+     *                  'new_width'     => 40,
+     *                  'new_height'    => ''
+     *                );
      *
-     * @access	public
-     * @param	array
-     * @return	array
+     * @access  public
+     * @param   array
+     * @return  array
      */
     public function size_calculator($vals)
     {
@@ -1458,9 +1459,9 @@ class EE_Image_lib
      * $array['ext']  = '.jpg';
      * $array['name'] = 'my.cool';
      *
-     * @access	public
-     * @param	array
-     * @return	array
+     * @access  public
+     * @param   array
+     * @return  array
      */
     public function explode_name($source_image)
     {
@@ -1473,8 +1474,8 @@ class EE_Image_lib
     /**
      * Is GD Installed?
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function gd_loaded()
     {
@@ -1484,8 +1485,8 @@ class EE_Image_lib
     /**
      * Get GD version
      *
-     * @access	public
-     * @return	mixed
+     * @access  public
+     * @return  mixed
      */
     public function gd_version()
     {
@@ -1502,9 +1503,9 @@ class EE_Image_lib
     /**
      * Set error message
      *
-     * @access	public
-     * @param	string
-     * @return	void
+     * @access  public
+     * @param   string
+     * @return  void
      */
     public function set_error($msg)
     {
@@ -1526,9 +1527,9 @@ class EE_Image_lib
     /**
      * Show error messages
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access  public
+     * @param   string
+     * @return  string
      */
     public function display_errors($open = '<p>', $close = '</p>')
     {

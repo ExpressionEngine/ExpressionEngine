@@ -108,12 +108,12 @@ class EE_Template
 
     private $layout_contents = '';
     private $user_vars = array();
-    private $globals_regex;
-
+    private $globals_regex = array();
     protected $process_data = true;
     protected $raw_data = null;
 
     protected $modified_vars = false;
+    protected $mb_available;
 
     protected $ignore_fetch = ['url_title'];
 
@@ -121,6 +121,8 @@ class EE_Template
         'low_search' => 'pro_search',
         'low_variables' => 'pro_variables',
     ];
+
+    protected $annotations;
 
     /**
      * Constructor
@@ -323,16 +325,18 @@ class EE_Template
         $this->log_item("Parsing Site Variables");
 
         // load site variables into the global_vars array
-        foreach (array(
-            'site_id',
-            'site_label',
-            'site_short_name',
-            'site_name',
-            'site_url',
-            'site_description',
-            'site_index',
-            'webmaster_email'
-        ) as $site_var) {
+        foreach (
+                array(
+                'site_id',
+                'site_label',
+                'site_short_name',
+                'site_name',
+                'site_url',
+                'site_description',
+                'site_index',
+                'webmaster_email'
+            ) as $site_var
+        ) {
             ee()->config->_global_vars[$site_var] = stripslashes(ee()->config->item($site_var));
         }
 
@@ -722,9 +726,8 @@ class EE_Template
                 if (isset($layout_vars[$match[1]])) {
                     $value = (isset($layout_vars[$match[1]][$match[3]])) ? $layout_vars[$match[1]][$match[3]] : '';
                     $str = str_replace($match[0], $value, $str);
-                }
-                // check for :modifers
-                elseif (($prefix_pos = strpos($match[1], ':')) !== false) {
+                } elseif (($prefix_pos = strpos($match[1], ':')) !== false) {
+                    // check for :modifers
                     $var = substr($match[1], 0, $prefix_pos);
 
                     if (isset($layout_vars[$var])) {
@@ -753,7 +756,7 @@ class EE_Template
      * Generates the regex needed to grab all global template
      * partials/variables present on the page
      *
-     * @return  string  Regex to grab globals
+     * @return  array  Regexes to grab globals
      */
     private function getGlobalsRegex()
     {
@@ -837,9 +840,8 @@ class EE_Template
                 }
 
                 exit;
-            }
-            // Is there another? We can't have that.
-            elseif (preg_match('/(' . LD . 'layout\s*=)(.*?)' . RD . '/s', $this->template, $bad_layout, 0, $tag_pos + 1)) {
+            } elseif (preg_match('/(' . LD . 'layout\s*=)(.*?)' . RD . '/s', $this->template, $bad_layout, 0, $tag_pos + 1)) {
+                // Is there another? We can't have that.
                 if (ee()->config->item('debug') >= 1) {
                     $error = ee()->lang->line('error_multiple_layouts');
 
@@ -1748,7 +1750,8 @@ class EE_Template
                 }
 
                 // Does method exist?  Is This A Module and Is It Installed?
-                if ((in_array($this->tag_data[$i]['class'], $this->modules) &&
+                if (
+                    (in_array($this->tag_data[$i]['class'], $this->modules) &&
                         !isset($this->module_data[$class_name])) or
                     !is_callable(array($EE, $meth_name))
                 ) {
@@ -2178,14 +2181,12 @@ class EE_Template
             }
 
             return $default_template;
-        }
-
-        // Is only the pagination showing in the URI?
-        elseif (
+        } elseif (
             count(ee()->uri->segments) == 1 &&
             strpos(ee()->uri->segment(1), 'P') === 0 &&
             preg_match("#^(P\d+)$#", ee()->uri->segment(1), $match)
         ) {
+            // Is only the pagination showing in the URI?
             ee()->uri->query_string = $match['1'];
 
             return $this->fetch_template('', 'index', true);
@@ -2261,15 +2262,13 @@ class EE_Template
                     // Re-assign the query string variable in the Input class so the various tags can show the correct data
                     ee()->uri->query_string = (!ee()->uri->segment(3)) ? ee()->uri->segment(2) : trim_slashes(substr(ee()->uri->uri_string, strlen('/' . ee()->uri->segment(1))));
                 }
-            }
-            // The second segment of the URL does not exist
-            else {
+            } else {
+                // The second segment of the URL does not exist
                 // Set the template as "index"
                 $template = 'index';
             }
-        }
-        // The first segment in the URL does NOT correlate to a valid template group.  Oh my!
-        else {
+        } else {
+            // The first segment in the URL does NOT correlate to a valid template group.  Oh my!
             if ($query->num_rows() > 1) {
                 $duplicate = true;
                 $log_message = "Duplicate Template Group: " . ee()->uri->segment(1);
@@ -2337,10 +2336,10 @@ class EE_Template
                         strlen('/' . ee()->uri->segment(1))
                     ));
                 }
-            }
-            // A valid template was not found. At this point we do not have
-            // either a valid template group or a valid template name in the URL
-            else {
+            } else {
+                // A valid template was not found. At this point we do not have
+                // either a valid template group or a valid template name in the URL
+
                 // is there a file we can automatically create this template from?
                 if (ee()->config->item('save_tmpl_files') == 'y') {
                     if ($this->_create_from_file(ee()->uri->segment(1), ee()->uri->segment(2))) {
@@ -2634,7 +2633,8 @@ class EE_Template
         }
 
         // Increment hit counter
-        if (($this->hit_lock == false or $this->hit_lock_override == true) &&
+        if (
+            ($this->hit_lock == false or $this->hit_lock_override == true) &&
             bool_config_item('enable_hit_tracking')
         ) {
             $this->template_hits = $row['hits'] + 1;
@@ -2849,6 +2849,9 @@ class EE_Template
 
         // Note- we should add the extension before checking.
 
+        // initial settings, will be set to correct values in the loop below
+        $template_type = 'webpage';
+        $template_engine = null;
         foreach (ee()->api_template_structure->all_file_extensions() as $temp_ext => $ext_info) {
             if (file_exists($basepath . '/' . $template . $temp_ext)) {
                 // found it with an extension
@@ -3249,12 +3252,12 @@ class EE_Template
 
         // Path variable: {path=group/template}
         if (strpos($str, 'path=') !== false) {
-            $str = preg_replace_callback("/" . LD . "\s*path=(.*?)" . RD . "/", array(&ee()->functions, 'create_url'), $str);
+            $str = preg_replace_callback("/" . LD . "\s*path=(.*?)" . RD . "/", array( & ee()->functions, 'create_url'), $str);
         }
 
         // Route variable: {route=group/template foo='bar'}
         if (strpos($str, 'route=') !== false) {
-            $str = preg_replace_callback("/" . LD . "\s*route=(.*?)" . RD . "/", array(&ee()->functions, 'create_route'), $str);
+            $str = preg_replace_callback("/" . LD . "\s*route=(.*?)" . RD . "/", array( & ee()->functions, 'create_route'), $str);
         }
 
         // Add security hashes to forms
@@ -4034,12 +4037,14 @@ class EE_Template
      */
     public function parse_switch($tagdata, $count, $prefix = '')
     {
-        if (preg_match_all(
-            '/' . LD . $prefix . 'switch\s*=([\'"])([^\1].+)\1' . RD . '/iU',
-            $tagdata,
-            $matches,
-            PREG_SET_ORDER
-        )) {
+        if (
+            preg_match_all(
+                '/' . LD . $prefix . 'switch\s*=([\'"])([^\1].+)\1' . RD . '/iU',
+                $tagdata,
+                $matches,
+                PREG_SET_ORDER
+            )
+        ) {
             foreach ($matches as $match) {
                 // Captured parameter
                 $options = explode("|", $match[2]);
@@ -4269,7 +4274,7 @@ class EE_Template
      */
     protected function createAnnotation($data)
     {
-        if (!isset($this->annotations)) {
+        if (empty($this->annotations)) {
             $this->annotations = new \ExpressionEngine\Library\Template\Annotation\Runtime();
             $this->annotations->useSharedStore();
         }

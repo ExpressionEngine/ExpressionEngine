@@ -49,7 +49,7 @@ class ModuleTest extends TestCase
     {
         $controller = new __stub_mod;
         $controller->setAddonName('test-addon');
-        $this->assertEquals('\\Test\\Namespace\\Module\\Actions\\Foo', $controller->forceBuildObject('foo', true));
-        $this->assertEquals('\\Test\\Namespace\\Module\\Tags\\Foo', $controller->forceBuildObject('foo', false));
+        $this->assertEquals('\\Test\\Namespace\\Actions\\Foo', $controller->forceBuildObject('foo', true));
+        $this->assertEquals('\\Test\\Namespace\\Tags\\Foo', $controller->forceBuildObject('foo', false));
     }
 }

@@ -37,6 +37,9 @@ abstract class AbstractSidebar
      */
     protected $sidebar;
 
+    protected $addon;
+    protected $namespace;
+
     public function __construct($addon, $namespace)
     {
         $this->addon = $addon;

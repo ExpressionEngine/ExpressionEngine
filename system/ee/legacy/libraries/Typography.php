@@ -1065,7 +1065,7 @@ class EE_Typography
     private function matchFullTags($name, $string, $bracket_style = self::HTML_BRACKETS)
     {
         list($ob, $cb) = $this->getBracketsByStyle($bracket_style, true);
-        preg_match_all("/(${ob}${name}.*?${cb})(.*?)${ob}\/${name}${cb}/is", $string, $matches, PREG_SET_ORDER);
+        preg_match_all("/({$ob}{$name}.*?{$cb})(.*?){$ob}\/{$name}{$cb}/is", $string, $matches, PREG_SET_ORDER);
 
         return $matches;
     }
@@ -1847,7 +1847,7 @@ class EE_Typography
         $author = htmlentities($matches[1], ENT_QUOTES, 'UTF-8');
         $date = filter_var($matches[2], FILTER_SANITIZE_NUMBER_INT);
 
-        return "<blockquote author=\"${author}\" date=\"${date}\">";
+        return "<blockquote author=\"{$author}\" date=\"{$date}\">";
     }
 
     /**
@@ -1954,7 +1954,7 @@ class EE_Typography
 
         foreach (array('width', 'height', 'alt') as $attr) {
             if (preg_match("/\s+{$attr}=(\"|\')([^\\1]*?)\\1/", $extra, $attr_match)) {
-                ${$attr} = $attr_match[0];
+                $$attr = $attr_match[0];
             } elseif ($attr == 'alt') {	// always make sure there's some alt text
                 $alt = 'alt="" ';
             }

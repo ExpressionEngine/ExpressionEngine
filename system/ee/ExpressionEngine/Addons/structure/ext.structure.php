@@ -21,6 +21,14 @@ class Structure_ext
     public $settings = array();
     public $settings_exist = 'n';
 
+    public $sql;
+    public $version;
+    public $site_pages;
+    public $entry_id;
+    public $parent_id;
+    public $page_title;
+    public $uri;
+
     public function __construct($settings = '')
     {
         $this->version = STRUCTURE_VERSION;
