@@ -215,6 +215,9 @@ context('CLI', () => {
             btn.next('.dropdown').find('a:contains("Uninstall")').click()
             addonsPage.get('modal_submit_button').should('be.visible')
 
+            cy.get('div.modal:visible #fieldset-confirm button').should('be.visible')
+            cy.get('div.modal:visible #fieldset-confirm button').trigger('click')
+
             addonsPage.get('modal_submit_button').contains('Confirm, and Uninstall').click() // Submits a form
             cy.hasNoErrors();
 
