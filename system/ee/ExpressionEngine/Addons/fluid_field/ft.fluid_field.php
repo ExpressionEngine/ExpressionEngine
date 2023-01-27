@@ -218,7 +218,6 @@ class Fluid_field_ft extends EE_Fieldtype
                     $fluid_field_data_id = $fluid_field_data[$fluid_field_id]->getId();
                 }
 
-<<<<<<< HEAD
             $field->setItem('fluid_field_data_id', $fluid_field_data_id);
 
             foreach ($value as $field_data) {
@@ -228,14 +227,6 @@ class Fluid_field_ft extends EE_Fieldtype
                 if ($field->getItem('field_search')) {
                     $compiled_data_for_search[] = $subfield;
                 }
-=======
-                $field->setItem('field_search', true);
-                $field->setItem('fluid_field_data_id', $fluid_field_data_id);
-
-                $field->setData($fieldValue);
-                $field->validate($fieldValue);
-                $compiled_data_for_search[] = $field->save($fieldValue);
->>>>>>> origin/release/7.3.0
             }
         }
 
