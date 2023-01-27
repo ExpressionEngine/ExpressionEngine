@@ -19,9 +19,6 @@ class QueryTest extends TestCase
         $this->db_query2 = Mockery::mock('ExpressionEngine\Service\Database\Query');
 
         $this->query = new Query($this->db_query);
-        if (PHP_OS == "WINNT") {
-            $this->newline = "\r\n";
-        }
     }
 
     public function tearDown(): void
