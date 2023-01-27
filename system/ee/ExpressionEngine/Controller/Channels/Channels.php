@@ -759,11 +759,14 @@ class Channels extends AbstractChannelsController
             array(
                 'title' => 'statuses',
                 'desc' => 'statuses_desc',
+                'attrs' => array(
+                    'class' => 'channel-statuses'
+                ),
                 'button' => $add_status_button,
                 'fields' => array(
                     'statuses' => array(
                         'type' => 'html',
-                        'content' => $this->renderStatusesField($channel)
+                        'content' => $this->renderStatusesField($channel),
                     )
                 )
             )

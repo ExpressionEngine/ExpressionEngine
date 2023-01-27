@@ -30464,7 +30464,7 @@ ul.field-nested ul li ul::before {
   border-radius: 0;
 }
 
-#fieldset-statuses div[data-select-react] .checkbox-label {
+#fieldset-statuses.channel-statuses .checkbox-label {
   background-color: var(--ee-bg-0);
   border: 1px solid var(--ee-border);
   box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
@@ -30472,43 +30472,43 @@ ul.field-nested ul li ul::before {
   position: relative;
   margin-bottom: 8px;
 }
-#fieldset-statuses div[data-select-react] .checkbox-label .checkbox-label__text {
+#fieldset-statuses.channel-statuses .checkbox-label .checkbox-label__text {
   height: 45px;
   position: relative;
 }
-#fieldset-statuses div[data-select-react] .checkbox-label input[type=checkbox] {
+#fieldset-statuses.channel-statuses .checkbox-label input[type=checkbox] {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   left: 40px;
 }
-#fieldset-statuses div[data-select-react] .checkbox-label .icon-reorder {
+#fieldset-statuses.channel-statuses .checkbox-label .icon-reorder {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   left: 15px;
 }
-#fieldset-statuses div[data-select-react] .checkbox-label .status-tag, #fieldset-statuses div[data-select-react] .checkbox-label .st-spam,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-error,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-closed,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-banned,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-open,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-draft,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-pending,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-info,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-note,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-warning,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-locked,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-unlocked,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-enable,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-disable,
-#fieldset-statuses div[data-select-react] .checkbox-label .st-status {
+#fieldset-statuses.channel-statuses .checkbox-label .status-tag, #fieldset-statuses.channel-statuses .checkbox-label .st-spam,
+#fieldset-statuses.channel-statuses .checkbox-label .st-error,
+#fieldset-statuses.channel-statuses .checkbox-label .st-closed,
+#fieldset-statuses.channel-statuses .checkbox-label .st-banned,
+#fieldset-statuses.channel-statuses .checkbox-label .st-open,
+#fieldset-statuses.channel-statuses .checkbox-label .st-draft,
+#fieldset-statuses.channel-statuses .checkbox-label .st-pending,
+#fieldset-statuses.channel-statuses .checkbox-label .st-info,
+#fieldset-statuses.channel-statuses .checkbox-label .st-note,
+#fieldset-statuses.channel-statuses .checkbox-label .st-warning,
+#fieldset-statuses.channel-statuses .checkbox-label .st-locked,
+#fieldset-statuses.channel-statuses .checkbox-label .st-unlocked,
+#fieldset-statuses.channel-statuses .checkbox-label .st-enable,
+#fieldset-statuses.channel-statuses .checkbox-label .st-disable,
+#fieldset-statuses.channel-statuses .checkbox-label .st-status {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   left: 67px;
 }
-#fieldset-statuses div[data-select-react] .checkbox-label .button-group.button-group-flyout-right {
+#fieldset-statuses.channel-statuses .checkbox-label .button-group.button-group-flyout-right {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
