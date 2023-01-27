@@ -11,7 +11,7 @@ class QueryTest extends TestCase
     public $query;
     public $db_query;
     public $db_query2;
-    private $newline = "\r\n";
+    private $newline = "\n";
 
     public function setUp(): void
     {
@@ -20,7 +20,7 @@ class QueryTest extends TestCase
 
         $this->query = new Query($this->db_query);
         if (PHP_OS == "WINNT") {
-            $this->newline = "\n";
+            $this->newline = "\r\n";
         }
     }
 
