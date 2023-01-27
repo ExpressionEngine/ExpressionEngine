@@ -22,11 +22,16 @@ class TextFormatterTest extends TestCase
     public $lang;
     public $sess;
     public $factory;
+    private $newline = "\\n";
 
     public function setUp(): void
     {
         $this->lang = m::mock('EE_Lang');
         $this->sess = m::mock('EE_Session');
+
+        if (PHP_OS == "WINNT") {
+            $this->newline = "\\r\\n";
+        }
 
         $this->lang->shouldReceive('load');
     }
@@ -291,16 +296,16 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
         $sample = '"Hello"	<b>World</b>		&quot;period&quot;.
 ';
         $text = (string) $this->format($sample)->json();
-        $this->assertEquals('"&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&amp;quot;period&amp;quot;.\n"', $text);
+        $this->assertEquals('"&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&amp;quot;period&amp;quot;.' . $this->newline . '"', $text);
 
         $text = (string) $this->format($sample)->json(['double_encode' => false]);
-        $this->assertEquals('"&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&quot;period&quot;.\n"', $text);
+        $this->assertEquals('"&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&quot;period&quot;.' . $this->newline . '"', $text);
 
         $text = (string) $this->format($sample)->json(['enclose_with_quotes' => false]);
-        $this->assertEquals('&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&amp;quot;period&amp;quot;.\n', $text);
+        $this->assertEquals('&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&amp;quot;period&amp;quot;.' . $this->newline, $text);
 
         $text = (string) $this->format($sample)->json(['options' => 'JSON_HEX_AMP|JSON_HEX_TAG']);
-        $this->assertEquals('"\u0026quot;Hello\u0026quot;\t\u0026lt;b\u0026gt;World\u0026lt;\/b\u0026gt;\t\t\u0026amp;quot;period\u0026amp;quot;.\n"', $text);
+        $this->assertEquals('"\u0026quot;Hello\u0026quot;\t\u0026lt;b\u0026gt;World\u0026lt;\/b\u0026gt;\t\t\u0026amp;quot;period\u0026amp;quot;.' . $this->newline .'"', $text);
     }
 
     public function testLength()
