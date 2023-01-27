@@ -10,7 +10,10 @@ context('CLI', () => {
 
         //copy templates
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
-            cy.authVisit('admin.php?/cp/design')
+            cy.authVisit('admin.php?/cp/design');
+            cy.wait(1000);
+            cy.authVisit('admin.php?/cp/design/manager/');
+            cy.wait(1000);
         })
         cy.task('filesystem:delete', '../../system/user/addons/cypress_addon')
     })
