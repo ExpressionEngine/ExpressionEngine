@@ -17,6 +17,16 @@ context('CLI', () => {
         cy.task('filesystem:delete', '../../system/user/addons/cypress_addon')
     })
 
+    beforeEach(function() {
+        cy.authVisit('admin.php?/cp/design/manager/cli');
+        cy.dismissLicenseAlert()
+        cy.hasNoErrors()
+    })
+
+    afterEach(function() {
+        cy.hasNoErrors()
+    })
+
     it('list all commands', function() {
         cy.exec('php ../../system/ee/eecli.php list').then((result) => {
             expect(result.code).to.eq(0)
@@ -42,6 +52,8 @@ context('CLI', () => {
     describe('clear caches', function() {
         before(function() {
             // turn the caching on
+            cy.authVisit('admin.php')
+            cy.wait(1000)
             cy.authVisit('admin.php?/cp/design/manager/cli', {failOnStatusCode: false})
             cy.get('.app-listing__row a').contains('index').click()
             cy.get('.js-tab-button.tab-bar__tab').contains('Settings').click()
