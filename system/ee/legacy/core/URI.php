@@ -14,6 +14,7 @@
 class EE_URI
 {
     public $uri_string;
+    public $config;
 
     public $keyval = array();
     public $segments = array();

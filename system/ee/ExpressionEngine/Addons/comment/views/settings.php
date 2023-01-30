@@ -13,7 +13,7 @@ foreach (array('comment_word_censoring', 'comment_moderation_override') as $sett
         array(
             lang($setting, $setting),
             '<span class="checks">' .
-                form_checkbox($setting, 'y', ${$setting}) . NBS . lang('yes') .
+                form_checkbox($setting, 'y', $$setting) . NBS . lang('yes') .
             '</span>'
         )
     );

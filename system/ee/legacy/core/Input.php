@@ -15,6 +15,8 @@ class EE_Input
 {
     public $SID = ''; // Session ID extracted from the URI segments
 
+    public $security;
+    public $uni;
     public $ip_address = false;
     public $user_agent = false;
     public $_allow_get_array = true;
@@ -836,14 +838,14 @@ class EE_Input
         foreach (array($_GET, $_POST, $_COOKIE) as $global) {
             if (! is_array($global)) {
                 if (! in_array($global, $protected)) {
-                    global ${$global};
+                    global $$global;
 
                     $$global = null;
                 }
             } else {
                 foreach ($global as $key => $val) {
                     if (! in_array($key, $protected)) {
-                        global ${$key};
+                        global $$key;
 
                         $$key = null;
                     }

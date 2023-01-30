@@ -1,8 +1,8 @@
 <?php
 
- if (! defined('BASEPATH')) {
-     exit('No direct script access allowed');
- }
+if (! defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 /**
  * This source file is part of the open source project
@@ -22,9 +22,10 @@ use ExpressionEngine\Service\Model\Collection;
 class Fluid_field_parser
 {
     public $modifiers = [];
-    protected $data = [];
+    protected $data;
     protected $possible_fields = [];
     protected $fluid_fields = [];
+    protected $_prefix;
 
     public function __construct()
     {
@@ -57,13 +58,14 @@ class Fluid_field_parser
     public function pre_process($tagdata, $pre_parser, array $fluid_field_fields, $content_type = 'channel')
     {
         // Bail out if there are no fluid field fields present to parse
-        if (! preg_match_all(
-            "/" . LD . '\/?(' . preg_quote($pre_parser->prefix()) . '(?:(?:' . implode('|', array_flip($fluid_field_fields)) . '):?))\b([^}{]*)?' . RD . "/",
-            $tagdata,
-            $matches,
-            PREG_SET_ORDER
-        )
-            ) {
+        if (
+            ! preg_match_all(
+                "/" . LD . '\/?(' . preg_quote($pre_parser->prefix()) . '(?:(?:' . implode('|', array_flip($fluid_field_fields)) . '):?))\b([^}{]*)?' . RD . "/",
+                $tagdata,
+                $matches,
+                PREG_SET_ORDER
+            )
+        ) {
             return false;
         }
 
@@ -83,8 +85,10 @@ class Fluid_field_parser
 
             // Throw out variables and closing tags, we'll deal with them
             // in the parsing stage
-            if ((! in_array($field['field_name'], $this->modifiers) && substr($match[1], -1) == ':')
-                || substr($match[0], 0, 2) == LD . '/') {
+            if (
+                (! in_array($field['field_name'], $this->modifiers) && substr($match[1], -1) == ':')
+                || substr($match[0], 0, 2) == LD . '/'
+            ) {
                 unset($matches[$key]);
 
                 continue;
@@ -134,7 +138,7 @@ class Fluid_field_parser
      *
      * @param array $entry_id A list of entry ids
      * @param array $fluid_field_ids A list of fluid field ids
-     * @return obj A Colletion of FluidField model entities
+     * @return Collection A Colletion of FluidField model entities
      */
     private function fetchFluidFields(array $entry_ids, array $fluid_field_ids)
     {
@@ -196,7 +200,7 @@ class Fluid_field_parser
      *
      * @param obj Fluid field Collection
      * @param array An array of fluid field ids
-     * @return obj A Colletion of FluidField model entities
+     * @return Collection A Colletion of FluidField model entities
      */
     public function overrideWithPreviewData(Collection $fluid_field_data, array $fluid_field_ids)
     {
@@ -214,8 +218,10 @@ class Fluid_field_parser
 
             foreach ($fluid_field_ids as $fluid_field_id) {
                 $i = 1;
-                if (! isset($data["field_id_{$fluid_field_id}"])
-                    || ! isset($data["field_id_{$fluid_field_id}"]['fields'])) {
+                if (
+                    ! isset($data["field_id_{$fluid_field_id}"])
+                    || ! isset($data["field_id_{$fluid_field_id}"]['fields'])
+                ) {
                     continue;
                 }
 

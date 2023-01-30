@@ -213,7 +213,7 @@ class TemplateGroup extends Model
         $return = parent::validateUnique($key, $value, $params);
         if (is_bool($return)) {
             // Don't allow case insensitive matches on template group names
-            if (strcasecmp($value, (string) $this->getBackup($key)) == 0) {
+            if (strcasecmp((string) $value, (string) $this->getBackup($key)) == 0) {
                 return 'template_group_taken';
             }
 

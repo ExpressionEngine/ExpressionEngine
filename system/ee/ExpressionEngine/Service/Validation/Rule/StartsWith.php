@@ -21,7 +21,7 @@ class StartsWith extends ValidationRule
     {
         list($startsWith) = $this->assertParameters('startsWith');
 
-        return (strpos($value, $startsWith) === 0);
+        return (strpos((string) $value, $startsWith) === 0);
     }
 
     public function getLanguageKey()

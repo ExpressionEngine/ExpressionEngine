@@ -25,6 +25,8 @@ class Pro_variables_ext
     // Use the base trait
     use Pro_variables_base;
 
+    public $settings;
+
     // --------------------------------------------------------------------
     // METHODS
     // --------------------------------------------------------------------
