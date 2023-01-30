@@ -42,7 +42,7 @@ context('CLI', () => {
     describe('clear caches', function() {
         before(function() {
             // turn the caching on
-            cy.visit('admin.php?/cp/design/manager/cli', {failOnStatusCode: false})
+            cy.authVisit('admin.php?/cp/design/manager/cli', {failOnStatusCode: false})
             cy.get('.app-listing__row a').contains('index').click()
             cy.get('.js-tab-button.tab-bar__tab').contains('Settings').click()
             cy.get('[data-toggle-for="cache"]').click()
