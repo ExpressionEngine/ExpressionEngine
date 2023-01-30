@@ -389,7 +389,12 @@ context('Updater', () => {
 
       const mailing_list_zip = '../../system/user/cache/mailing_list.zip'
       cy.task('filesystem:delete', mailing_list_zip).then(() => {
-        cy.exec('php ../../system/ee/eecli.php update -v -y --skip-cleanup')
+        cy.exec('php ../../system/ee/eecli.php update -v -y --skip-cleanup').then((result) => {
+            expect(result.code).to.eq(0)
+            expect(result.stderr).to.be.empty
+            expect(result.stdout).to.not.contain('on line')
+            expect(result.stdout).to.not.contain('caught:')
+        })
       })
 
       test_version()
