@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '7.2.7'; // The version being installed
+    public $version = '7.2.8'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -1910,7 +1910,6 @@ class Wizard extends CI_Controller
                 }
 
                 $UPD = new $class();
-                $UPD->_ee_path = EE_APPPATH;
 
                 if ($UPD->version > $row->module_version && method_exists($UPD, 'update') && $UPD->update($row->module_version) !== false) {
                     ee()->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));

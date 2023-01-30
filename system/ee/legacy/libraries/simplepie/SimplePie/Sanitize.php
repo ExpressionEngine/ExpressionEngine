@@ -71,6 +71,7 @@ class SimplePie_Sanitize
     public $useragent = '';
     public $force_fsockopen = false;
     public $replace_url_attributes = null;
+    protected $registry;
 
     public function __construct()
     {

@@ -21,6 +21,7 @@ class ValidUsername extends ValidationRule
 
     public function validate($key, $username)
     {
+        $username = (string) $username;
         if (preg_match("/[\|'\"!<>\{\}]/", $username)) {
             $this->last_error = 'invalid_characters_in_username';
             return false;

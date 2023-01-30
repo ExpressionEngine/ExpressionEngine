@@ -10,6 +10,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
     use AdapterTrait;
 
     protected $rootExists = true;
+    protected $linkHandling;
 
     protected $_validation_rules = [
         'server_path' => 'required',

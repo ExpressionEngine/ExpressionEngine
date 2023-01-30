@@ -1581,7 +1581,7 @@ class EE_Email
     protected function isShellSafe($string)
     {
         // Future-proof
-        if (escapeshellcmd($string) !== $string or ! in_array(escapeshellarg($string), array("'${string}'", "\"${string}\""))) {
+        if (escapeshellcmd($string) !== $string or ! in_array(escapeshellarg($string), array("'{$string}'", "\"{$string}\""))) {
             return false;
         }
 

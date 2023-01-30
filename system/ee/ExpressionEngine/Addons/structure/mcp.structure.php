@@ -24,6 +24,12 @@ class Structure_mcp
     public $logging = false;
     public $structure;
     public $sql;
+    public $version;
+    public $nav;
+    public $site_id;
+    public $base_url;
+    public $data;
+
     public $perms = array(
         'perm_admin_structure'         => 'Manage module settings',
         'perm_admin_channels'          => 'Manage channel settings',

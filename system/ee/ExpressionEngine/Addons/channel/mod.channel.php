@@ -32,6 +32,7 @@ class Channel
     public $mfields = array();
     public $pfields = array();
     public $ffields = array();
+    public $tfields = array();
     public $categories = array();
     public $catfields = array();
     public $channel_name = array();
@@ -43,6 +44,7 @@ class Channel
     public $absolute_results = null;        // absolute total results returned by the tag, useful when paginating
     public $display_by = '';
     public $hidden_fields = []; //conditionally hidden fields for given entries
+    protected $cat_field_models = array();
 
     // These are used with the nested category trees
 
@@ -67,6 +69,8 @@ class Channel
 
     // Array of parameters allowed to be set dynamically
     private $_dynamic_parameters = array();
+
+    protected $query_string = '';
 
     /**
       * Constructor
@@ -299,13 +303,15 @@ class Channel
       */
     public function fetch_custom_channel_fields()
     {
-        if (isset(ee()->session->cache['channel']['custom_channel_fields']) &&
+        if (
+            isset(ee()->session->cache['channel']['custom_channel_fields']) &&
             isset(ee()->session->cache['channel']['date_fields']) &&
             isset(ee()->session->cache['channel']['relationship_fields']) &&
             isset(ee()->session->cache['channel']['grid_fields']) &&
             isset(ee()->session->cache['channel']['pair_custom_fields']) &&
             isset(ee()->session->cache['channel']['fluid_field_fields']) &&
-            isset(ee()->session->cache['channel']['toggle_fields'])) {
+            isset(ee()->session->cache['channel']['toggle_fields'])
+        ) {
             $this->cfields = ee()->session->cache['channel']['custom_channel_fields'];
             $this->dfields = ee()->session->cache['channel']['date_fields'];
             $this->rfields = ee()->session->cache['channel']['relationship_fields'];
@@ -337,8 +343,7 @@ class Channel
                 ->all(true);
             $site_ids = $sites->getIds();
 
-            foreach (['cfields', 'dfields', 'rfields', 'gfields',
-                'pfields', 'ffields', 'tfields'] as $custom_fields) {
+            foreach (['cfields', 'dfields', 'rfields', 'gfields', 'pfields', 'ffields', 'tfields'] as $custom_fields) {
                 $tmp = $this->$custom_fields;
 
                 if (! isset($tmp[0])) {
@@ -857,9 +862,8 @@ class Channel
                 // If we were able to get a numeric category ID
                 if (is_numeric($cat_id) and $cat_id !== false) {
                     $this->cat_request = true;
-                }
-                // parse_category did not return a numberic ID, blow away $cat_id
-                else {
+                } else {
+                    // parse_category did not return a numberic ID, blow away $cat_id
                     $cat_id = false;
                 }
 
@@ -1366,13 +1370,11 @@ class Channel
                             $sql = substr($sql, 0, -2) . ')';
                         }
                     }
-                }
+                } elseif ($this->display_by == 'day') {
+                    /**---
+                    /**  If display_by = "day"
+                    /**---*/
 
-                /**---
-                /**  If display_by = "day"
-                /**---*/
-
-                elseif ($this->display_by == 'day') {
                     // We need to run a query and fetch the distinct days in which there are entries
 
                     $dql = "SELECT t.year, t.month, t.day " . $sql;
@@ -1428,13 +1430,11 @@ class Channel
                             $sql = substr($sql, 0, -2) . ')';
                         }
                     }
-                }
+                } elseif ($this->display_by == 'week') {
+                    /**---
+                    /**  If display_by = "week"
+                    /**---*/
 
-                /**---
-                /**  If display_by = "week"
-                /**---*/
-
-                elseif ($this->display_by == 'week') {
                     /** ---------------------------------
                     /*   Run a Query to get a combined Year and Week value.  There is a downside
                     /*   to this approach and that is the lack of localization and use of DST for
@@ -1778,48 +1778,40 @@ class Channel
                     switch ($order) {
                         case 'entry_id':
                             $end .= "t.entry_id";
-
-                        break;
+                            break;
 
                         case 'date':
                             $end .= "t.entry_date";
                             $distinct_select .= ', t.entry_date ';
-
-                        break;
+                            break;
 
                         case 'edit_date':
                             $end .= "t.edit_date";
                             $distinct_select .= ', t.edit_date ';
-
-                        break;
+                            break;
 
                         case 'expiration_date':
                             $end .= "t.expiration_date";
                             $distinct_select .= ', t.expiration_date ';
-
-                        break;
+                            break;
 
                         case 'status':
                             $end .= "t.status";
                             $distinct_select .= ', t.status ';
-
-                        break;
+                            break;
 
                         case 'title':
                             $end .= "t.title";
                             $distinct_select .= ', t.title ';
-
-                        break;
+                            break;
 
                         case 'url_title':
                             $end .= "t.url_title";
                             $distinct_select .= ', t.url_title ';
-
-                        break;
+                            break;
 
                         case 'view_count':
                             $vc = $order . $view_ct;
-
                             $end .= " t.{$vc} " . $sort_array[$key];
                             $distinct_select .= ",  t.{$vc} ";
 
@@ -1827,53 +1819,42 @@ class Channel
                                 $end .= ", t.entry_date " . $sort_array[$key];
                                 $distinct_select .= ', t.entry_date ';
                             }
-
                             $sort_array[$key] = false;
-
-                        break;
+                            break;
 
                         case 'comment_total':
                             $end .= "t.comment_total " . $sort_array[$key];
                             $distinct_select .= ', t.comment_total ';
-
                             if (count($order_array) - 1 == $key) {
                                 $end .= ", t.entry_date " . $sort_array[$key];
                                 $distinct_select .= ', t.entry_date ';
                             }
-
                             $sort_array[$key] = false;
-
-                        break;
+                            break;
 
                         case 'most_recent_comment':
                             $end .= "t.recent_comment_date " . $sort_array[$key];
                             $distinct_select .= ', t.recent_comment_date ';
-
                             if (count($order_array) - 1 == $key) {
                                 $end .= ", t.entry_date " . $sort_array[$key];
                                 $distinct_select .= ', t.entry_date ';
                             }
-
                             $sort_array[$key] = false;
-
-                        break;
+                            break;
 
                         case 'username':
                             $join_member_table = true;
                             $end .= "m.username";
                             $distinct_select .= ', m.username ';
-
-                        break;
+                            break;
 
                         case 'screen_name':
                             $join_member_table = true;
                             $end .= "m.screen_name";
                             $distinct_select .= ', m.screen_name ';
-
-                        break;
+                            break;
 
                         case 'custom_field':
-
                             if (strpos($corder[$key], '|') !== false) {
                                 $field_list = [];
 
@@ -1914,21 +1895,18 @@ class Channel
                                     $distinct_select .= ", exp_channel_data_field_{$field_id}.field_id_{$field_id} ";
                                 }
                             }
-
-                        break;
+                            break;
 
                         case 'random':
-                                $random_seed = ($this->pagination->paginate === true) ? (int) ee()->session->userdata('last_visit') : '';
-                                $end = "ORDER BY rand({$random_seed})";
-                                $sort_array[$key] = false;
-
-                        break;
+                            $random_seed = ($this->pagination->paginate === true) ? (int) ee()->session->userdata('last_visit') : '';
+                            $end = "ORDER BY rand({$random_seed})";
+                            $sort_array[$key] = false;
+                            break;
 
                         default:
                             $end .= "t.entry_date";
                             $distinct_select .= ', t.entry_date ';
-
-                        break;
+                            break;
                     }
 
                     if ($sort_array[$key] == 'asc' or $sort_array[$key] == 'desc') {
@@ -2203,9 +2181,8 @@ class Channel
         // Check legacy timezone formats
         if (isset($timezones[$timezone])) {
             $offset = $timezones[$timezone] * 3600;
-        }
-        // Otherwise, get the offset from DateTime
-        else {
+        } else {
+            // Otherwise, get the offset from DateTime
             $dt = new DateTime('now', new DateTimeZone($timezone));
 
             if ($dt) {
@@ -2226,8 +2203,10 @@ class Channel
                 $return = true;
 
                 if ($channels = ee()->TMPL->fetch_param('channel')) {
-                    if (strpos($channels, $data['channel_name']) === false
-                        || strpos($channels, 'not ' . $data['channel_name']) !== false) {
+                    if (
+                        strpos($channels, $data['channel_name']) === false
+                        || strpos($channels, 'not ' . $data['channel_name']) !== false
+                    ) {
                         $return = false;
                     }
                 }
@@ -2261,8 +2240,10 @@ class Channel
 
             foreach ($result_array as $i => $row) {
                 if ($row['entry_id'] == $data['entry_id']) {
-                    if ((! $show_closed && $data['status'] == 'closed')
-                        || (! $show_expired && $data['expiration_date'] && $data['expiration_date'] < ee()->localize->now)) {
+                    if (
+                        (! $show_closed && $data['status'] == 'closed')
+                        || (! $show_expired && $data['expiration_date'] && $data['expiration_date'] < ee()->localize->now)
+                    ) {
                         unset($result_array[$i]);
                     } else {
                         $result_array[$i] = $data;
@@ -3976,9 +3957,8 @@ class Channel
                 }
 
                 $chunk = str_replace(LD . $tag . RD, $content, $chunk);
-            }
-            // Garbage collection
-            else {
+            } else {
+                // Garbage collection
                 if ($var_props['modifier']) {
                     $field_name = $field_name . ':' . $var_props['modifier'];
                 }
@@ -4009,8 +3989,10 @@ class Channel
         // Get field IDs for the category fields we need to fetch
         $field_ids = array();
         foreach ($this->catfields as $cat_field) {
-            if (in_array($cat_field['field_name'], $clean_field_names) &&
-                ! isset($this->cat_field_models[$cat_field['field_id']])) {
+            if (
+                in_array($cat_field['field_name'], $clean_field_names) &&
+                ! isset($this->cat_field_models[$cat_field['field_id']])
+            ) {
                 $field_ids[] = $cat_field['field_id'];
             }
         }
@@ -4314,9 +4296,8 @@ class Channel
                 // Found entry ID in query string
                 if (is_numeric($qstring)) {
                     ee()->db->where('t.entry_id', $qstring);
-                }
-                // Found URL title in query string
-                else {
+                } else {
+                    // Found URL title in query string
                     ee()->db->where('t.url_title', $qstring);
                 }
             }
@@ -4607,14 +4588,16 @@ class Channel
         }
 
         switch (ee()->TMPL->fetch_param('sort')) {
-            case 'asc': $sort = "asc";
-
+            case 'asc':
+                $sort = "asc";
                 break;
-            case 'desc': $sort = "desc";
 
+            case 'desc':
+                $sort = "desc";
                 break;
-            default: $sort = "desc";
 
+            default:
+                $sort = "desc";
                 break;
         }
 

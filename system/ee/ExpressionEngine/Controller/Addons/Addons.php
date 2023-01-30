@@ -382,7 +382,6 @@ class Addons extends CP_Controller
                 ee()->load->add_package_path($installed[$addon]['path']);
 
                 $UPD = new $class();
-                $UPD->_ee_path = APPPATH;
 
                 $name = $module['name'];
 
@@ -1560,7 +1559,6 @@ class Addons extends CP_Controller
         // instantiate the module cp class
         $class = $info->getControlPanelClass();
         $mod = new $class();
-        $mod->_ee_path = APPPATH;
 
         // add validation callback support to the mcp class (see EE_form_validation for more info)
         ee()->set('_mcp_reference', $mod);

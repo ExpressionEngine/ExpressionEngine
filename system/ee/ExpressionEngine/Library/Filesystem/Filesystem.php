@@ -24,11 +24,11 @@ class Filesystem
     {
         if (is_null($adapter)) {
             $syspathRoot = null;
-            // Normalize the System Path and then find the root 
+            // Normalize the System Path and then find the root
             $syspath = str_replace('\\', '/', SYSPATH);
             $openBaseDir = ini_get('open_basedir');
             // Check if open_basedir restrictions are in effect
-            if(!empty($openBaseDir)) {
+            if (!empty($openBaseDir)) {
                 // Find the open_basedir root that our $syspath lives under
                 foreach (explode(':', ini_get('open_basedir')) as $path) {
                     $normalizedPath = str_replace('\\', '/', $path);
@@ -36,14 +36,14 @@ class Filesystem
                         $syspathRoot = $normalizedPath;
                     }
                 }
-            }else{
+            } else {
                 // If open_basedir is not enabled set our root to the top directory in the syspath
                 $syspathRoot = realpath($syspath . str_repeat('../', substr_count($syspath, '/') - 1));
             }
             $adapter = new Adapter\Local([
                 'path' => $this->normalizeAbsolutePath($syspathRoot ?: $syspath)
             ]);
-        }else{
+        } else {
             // Fix prefixes
             $adapter->setPathPrefix($this->normalizeAbsolutePath($adapter->getPathPrefix()));
         }
@@ -100,6 +100,7 @@ class Filesystem
     public function readStream($path)
     {
         $path = $this->normalizeRelativePath($path);
+
         return $this->flysystem->readStream($path);
     }
 
@@ -171,6 +172,7 @@ class Filesystem
     public function writeStream($path, $resource, array $config = [])
     {
         $path = $this->normalizeRelativePath($path);
+
         return $this->flysystem->writeStream($path, $resource, $config);
     }
 
@@ -220,7 +222,7 @@ class Filesystem
     {
         $path = $this->normalizeRelativePath($path);
 
-        if($this->isDir($path)) {
+        if ($this->isDir($path)) {
             return $this->deleteDir($path);
         }
 
@@ -310,6 +312,7 @@ class Filesystem
     public function getWithMetadata($path, $metadata = [])
     {
         $path = $this->normalizeRelativePath($path);
+
         return $this->flysystem->getWithMetadata($this->normalize($path), $metadata);
     }
 
@@ -346,7 +349,7 @@ class Filesystem
         }
 
         // if renaming directory not on local driver...
-        if(!$this->isFile($source) && !$this->isLocal()) {
+        if (!$this->isFile($source) && !$this->isLocal()) {
             return $this->renameFolder($this->normalize($source), $this->normalize($dest));
         }
 
@@ -357,7 +360,6 @@ class Filesystem
 
         return $renamed;
     }
-
 
     /**
      * Rename a folder and all of the files and folders contained within
@@ -372,13 +374,13 @@ class Filesystem
         $this->mkDir($dest, false);
 
         $contents = $this->getDirectoryContents($source);
-        foreach($contents as $path) {
+        foreach ($contents as $path) {
             $toPath = str_replace($source, $dest, $path);
             $result = ($this->isFile($path)) ? $this->flysystem->rename($path, $toPath) : $this->renameFolder($path, $toPath);
             $success = $success && $result;
         }
 
-        if($success) {
+        if ($success) {
             $this->deleteDir($source);
         }
 
@@ -406,7 +408,7 @@ class Filesystem
 
         if ($this->isDir($source)) {
             $result = $this->recursiveCopy($source, $dest, $destinationFilesystem);
-        } else if($destinationFilesystem) {
+        } elseif ($destinationFilesystem) {
             $result = $destinationFilesystem->writeStream($dest, $this->readStream($source));
         } else {
             $result = $this->flysystem->copy($this->normalize($source), $this->normalize($dest));
@@ -422,36 +424,38 @@ class Filesystem
      *
      * @param String $source File or directory to copy
      * @param String $dest Path to the duplicate
+     * @param Filesystem|null $destinationFilesystem Filesystem for the destination
      */
-    public function forceCopy($source, $dest)
+    public function forceCopy($source, $dest, $destinationFilesystem = null)
     {
         $source = $this->normalizeRelativePath($source);
-        $dest = $this->normalizeRelativePath($dest);
-        $destBackup = rtrim($dest, '\\/').'.backup';
+        $that = ($destinationFilesystem) ?: $this;
+        $dest = $that->normalizeRelativePath($dest);
+        $destBackup = rtrim($dest, '\\/') . '.backup';
 
         if (!$this->exists($source)) {
             throw new FilesystemException("Cannot copy non-existent path: {$source}");
         }
 
-        if($this->exists($destBackup)) {
-            $this->delete($destBackup);
+        if ($that->exists($destBackup)) {
+            $that->delete($destBackup);
         }
 
-        if($this->exists($dest)) {
-            $this->rename($dest, $destBackup);
+        if ($that->exists($dest)) {
+            $that->rename($dest, $destBackup);
         }
 
         try {
-            $this->copy($source, $dest);
-        }catch(\Exception $e) {
-            $this->rename($destBackup, $dest);
+            $this->copy($source, $dest, (!is_null($destinationFilesystem)) ? $that : null);
+        } catch (\Exception $e) {
+            $that->rename($destBackup, $dest);
+
             throw $e;
         }
 
-        if ($this->exists($destBackup)) {
-            $this->delete($destBackup);
+        if ($that->exists($destBackup)) {
+            $that->delete($destBackup);
         }
-
     }
 
     /**
@@ -470,13 +474,13 @@ class Filesystem
         $that->flysystem->createDir($dest);
         $result = true;
 
-        foreach($dir as $file) {
+        foreach ($dir as $file) {
             $from = $source . '/' . $file['basename'];
             $to = $dest . '/' . $file['basename'];
 
             if ($this->isDir($from)) {
                 $result = $result && $this->recursiveCopy($from, $to, $destinationFilesystem);
-            } else if(!is_null($destinationFilesystem)) {
+            } elseif (!is_null($destinationFilesystem)) {
                 $result = $result && $destinationFilesystem->writeStream($to, $this->readStream($from));
             } else {
                 $result = $result && $this->flysystem->copy($from, $to);
@@ -497,13 +501,13 @@ class Filesystem
     public function move($source, $dest, $destinationFilesystem = null)
     {
         // Moving a file without a different destination filesystem is just rename
-        if(is_null($destinationFilesystem)) {
+        if (is_null($destinationFilesystem)) {
             return $this->rename($source, $dest);
         }
 
         $copied = $this->copy($source, $dest, $destinationFilesystem);
 
-        if($copied) {
+        if ($copied) {
             return $this->delete($source);
         }
 
@@ -662,7 +666,8 @@ class Filesystem
 
         try {
             $size = $this->flysystem->getSize($path);
-        }catch(\Exception $e){}
+        } catch (\Exception $e) {
+        }
 
         return $size;
     }
@@ -700,6 +705,7 @@ class Filesystem
             return is_dir($this->ensurePrefixedPath($path));
         }
         $path = $this->normalizeRelativePath($path);
+
         return empty($this->extension($path)) && $this->exists($path);
     }
 
@@ -756,7 +762,7 @@ class Filesystem
      */
     public function isWritable($path = '/')
     {
-        if(! $this->isLocal()) {
+        if (! $this->isLocal()) {
             return true;
         }
 
@@ -818,7 +824,7 @@ class Filesystem
      */
     public function getFreeDiskSpace($path = '/')
     {
-        if(!$this->isLocal()) {
+        if (!$this->isLocal()) {
             return null;
         }
 
@@ -853,23 +859,23 @@ class Filesystem
 
         $i = 0;
         $extension = $this->extension($path);
-        $dirname =  ($this->dirname($path) !== '.') ? $this->dirname($path) . '/' : '';
+        $dirname = ($this->dirname($path) !== '.') ? $this->dirname($path) . '/' : '';
         $filename = $this->filename($path);
 
         // Glob only works with local filesytem but is more performant than filtering directory results
         if ($this->isLocal()) {
-            $files = array_map(function($file) {
+            $files = array_map(function ($file) {
                 return $this->filename($file);
             }, glob($this->absolute($dirname . $filename) . '_*' . $extension));
-        }else{
+        } else {
             // Filter out any files that do not start with our filename
-            $files = array_filter($this->getDirectoryContents($dirname), function($file) use($filename) {
+            $files = array_filter($this->getDirectoryContents($dirname), function ($file) use ($filename) {
                 return strpos($file, "{$filename}_") === 0;
             });
         }
 
         // If we do not have any matching files at this point it gets the _1 suffix
-        if(empty($files)) {
+        if (empty($files)) {
             return $dirname . "{$filename}_1.{$extension}";
         }
 
@@ -883,6 +889,7 @@ class Filesystem
                 $number = str_replace('_', '', $number);
                 if (is_numeric($number)) {
                     $i = (int) $number;
+
                     break;
                 }
             }
@@ -958,7 +965,7 @@ class Filesystem
     public function ensureCorrectAccessMode($path)
     {
         // This function is only relevant to Local filesystems
-        if(!$this->isLocal()) {
+        if (!$this->isLocal()) {
             return;
         }
 
@@ -979,7 +986,7 @@ class Filesystem
     {
         $path = $this->normalizeRelativePath($path);
 
-        if(!$this->isFile($path)) {
+        if (!$this->isFile($path)) {
             throw new \Exception("Cannot create a temp file from path: $path");
         }
 
@@ -997,10 +1004,10 @@ class Filesystem
     public function createTempFile()
     {
         $file = tmpfile();
-        if($file === false) {
-            throw new \Exception('Cannot create temp file at "'.sys_get_temp_dir().'"');
+        if ($file === false) {
+            throw new \Exception('Cannot create temp file at "' . sys_get_temp_dir() . '"');
         }
-        
+
         $path = stream_get_meta_data($file)['uri'];
 
         return compact('file', 'path');
@@ -1035,7 +1042,7 @@ class Filesystem
      */
     protected function normalizeAbsolutePath($path)
     {
-        if(empty($path)) {
+        if (empty($path)) {
             return '';
         }
 
@@ -1084,6 +1091,7 @@ class Filesystem
     protected function removePathPrefix($path)
     {
         $prefix = $this->getPathPrefix();
+
         return (!empty($prefix) && strpos($path, $prefix) === 0) ? substr_replace($path, '', 0, strlen($prefix)) : $path;
     }
 
@@ -1096,6 +1104,7 @@ class Filesystem
     protected function normalizeRelativePath($path)
     {
         $path = $this->normalizeAbsolutePath($path);
+
         return ltrim($this->removePathPrefix($path), '\\/');
     }
 

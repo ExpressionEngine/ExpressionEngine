@@ -17,7 +17,9 @@ use ExpressionEngine\Service\Model\Relation\BelongsTo;
  */
 class Delete extends Query
 {
-    const DELETE_BATCH_SIZE = 100;
+    private const DELETE_BATCH_SIZE = 100;
+
+    private $delete_list = array();
 
     public function run()
     {
@@ -343,8 +345,10 @@ class Delete extends Query
 
         return function ($query) use ($relation, $withs) {
             // When delting data with a pivot table on/to Role, don’t just blindly delete everything.
-            if (($relation->getTargetModel() == 'Role' || $relation->getTargetModel() == 'ee:Role') &&
-                ($relation->getPivot() != array())) {
+            if (
+                ($relation->getTargetModel() == 'Role' || $relation->getTargetModel() == 'ee:Role') &&
+                ($relation->getPivot() != array())
+            ) {
                 return array();
             }
 
