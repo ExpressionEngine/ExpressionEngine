@@ -8,6 +8,8 @@ context('CLI', () => {
     before(function(){
         cy.task('db:seed')
 
+        cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
+
         //copy templates
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.authVisit('admin.php?/cp/design');
@@ -39,15 +41,12 @@ context('CLI', () => {
 
     describe('clear caches', function() {
         before(function() {
-            cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
-                cy.authVisit('admin.php?/cp/design');
-                // turn the caching on
-                cy.visit('admin.php?/cp/design/manager/cli', {failOnStatusCode: false})
-                cy.get('.app-listing__row a').contains('index').click()
-                cy.get('.js-tab-button.tab-bar__tab').contains('Settings').click()
-                cy.get('[data-toggle-for="cache"]').click()
-                cy.get('button').contains('Save').click()
-            })
+            // turn the caching on
+            cy.visit('admin.php?/cp/design/manager/cli', {failOnStatusCode: false})
+            cy.get('.app-listing__row a').contains('index').click()
+            cy.get('.js-tab-button.tab-bar__tab').contains('Settings').click()
+            cy.get('[data-toggle-for="cache"]').click()
+            cy.get('button').contains('Save').click()
         })
 
         it('clear caches', function() {
@@ -91,12 +90,6 @@ context('CLI', () => {
     })
 
     describe('create add-on', function() {
-
-        before(function() {
-            cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
-                cy.authVisit('admin.php?/cp/design');
-            })
-        })
 
         it('create add-on', function() {
             cy.exec('php ../../system/ee/eecli.php make:addon "Cypress Addon" -v 0.1.0 -d "Some good description" -a "ExpressionEngine" -u https://expressionengine.com').then((result) => {
@@ -231,6 +224,7 @@ context('CLI', () => {
             addonsPage.get('alert').contains("Cypress Addon");
 
             cy.task('filesystem:delete', '../../system/user/addons/cypress_addon')
+            cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
         })
 
     })
