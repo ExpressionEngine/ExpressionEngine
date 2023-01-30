@@ -40,7 +40,6 @@ class Radio_ft extends OptionFieldtype
      *
      * @var array
      */
-    
     public $supportedEvaluationRules = ['matches', 'notMatches', 'isEmpty', 'isNotEmpty'];
 
     public function validate($data)
@@ -223,6 +222,11 @@ class Radio_ft extends OptionFieldtype
     public function update($version)
     {
         return true;
+    }
+
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return $this->_parse_single([$data], []);
     }
 }
 
