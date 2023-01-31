@@ -776,6 +776,22 @@ class Member_settings extends Member
         // we need to reset this, because might have already been populated by channel:entries tag
         ee()->api_channel_fields->custom_fields = array();
 
+        $custom_profile_field_form = $profile_fields_template;
+        $custom_profile_field_form = strstr($custom_profile_field_form, "{form:custom_profile_field"); //gets all text from '{form:custom_profile_field' on
+        $custom_profile_field_form = strstr($custom_profile_field_form, "}", true) . "}"; //gets all text before '}', then adds the '}' back on for the preg_match
+
+        // match {form:custom_profile_field} or {form:custom_profile_field input_class="foo"}
+        // [0] => {form:custom_profile_field input_class="foo"}
+        // [1] => form:custom_profile_field input_class="foo"
+        // [2] =>  input_class="foo"
+        // [3] => "
+        // [4] => foo
+        preg_match(
+            "/" . LD . "(form:custom_profile_field" . "(\s+input_class\s*=\s*(\042|\047)([^\\3]*?)\\3)?)" . RD . "/s",
+            $custom_profile_field_form,
+            $match
+        );
+
         if ($query->num_rows() > 0) {
             foreach ($this->member->getDisplay()->getFields() as $field) {
                 if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
@@ -792,8 +808,39 @@ class Member_settings extends Member
                 $required = $field->isRequired() ? "<span class='alert'>*</span>&nbsp;" : '';
 
                 $temp = str_replace('{lang:profile_field}', $required . $field->getLabel(), $temp);
+                $temp = str_replace('{lang:profile_field_clean}', $field->getLabel(), $temp);
+                $temp = str_replace('{lang:profile_field_name}', $field->getName(), $temp);
+                $temp = str_replace('{lang:profile_field_shortname}', $field->getShortName(), $temp);
                 $temp = str_replace('{lang:profile_field_description}', $field->get('field_description'), $temp);
-                $temp = str_replace('{form:custom_profile_field}', $field->getForm(), $temp);
+                if ($match[4] != '') {
+                    switch($field->get('field_type')) {
+                        case "text":
+                            $temp = str_replace(
+                                $match[0],
+                                str_replace(
+                                    "<input ",
+                                    '<input class="' . $match[4] . '" ',
+                                    $field->getForm()
+                                ),
+                                $temp
+                            );
+                            break;
+                        case "select":
+                            $temp = str_replace(
+                                $match[0],
+                                str_replace(
+                                    "<select ",
+                                    '<select class="' . $match[4] . '" ',
+                                    $field->getForm()
+                                ),
+                                $temp
+                            );
+                            break;
+                        default:
+                    }
+                } else {
+                    $temp = str_replace('{form:custom_profile_field}', $field->getForm(), $temp);
+                }
 
                 /** ----------------------------------------
                 /**  Render textarea fields
