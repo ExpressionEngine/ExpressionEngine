@@ -638,7 +638,7 @@ abstract class AbstractPublish extends CP_Controller
 
     protected function createLivePreviewModal(ChannelEntry $entry)
     {
-        if ($entry->isLivePreviewable() || ee()->input->get('return') != '') {
+        if (($entry->livePreviewAllowed() && $entry->isLivePreviewable()) || ee()->input->get('return') != '') {
             $lp_domain_mismatch = false;
             if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
                 $lp_domain_mismatch = true;
