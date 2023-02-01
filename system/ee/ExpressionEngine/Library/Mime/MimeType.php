@@ -193,9 +193,9 @@ class MimeType
             return false;
         }
 
-        if ($mime == 'image/svg+xml') {
+        if (strpos($mime, 'image/svg') === 0) {
             $file = file_get_contents($path);
-            if ((strpos($file, '<?xml') !==0 && strpos($file, '<svg') !== 0) || strpos($file, '<svg') === false) {
+            if ((strpos($file, '<?xml') !== 0 && strpos($file, '<svg') !== 0) || strpos($file, '<svg') === false) {
                 return false;
             }
             return true;
