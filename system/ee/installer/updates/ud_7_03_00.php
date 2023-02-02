@@ -54,7 +54,7 @@ class Updater
                         'default' => 'n'
                     )
                 )
-            )
+            );
         }
     }
 
