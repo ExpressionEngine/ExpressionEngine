@@ -16,7 +16,7 @@
 
 	position: relative;
 	// display: inline-block;
-	// max-width: 100%;
+	max-width: 100%;
 	// margin: 0;
 	// border: 1px solid color(input-border);
   // background: color(input-bg);
@@ -73,6 +73,8 @@
 
 	option {
 		font-weight: normal;
+		white-space: normal;
+		max-width: 100%;
 	}
 }
 

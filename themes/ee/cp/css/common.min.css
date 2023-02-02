@@ -18678,6 +18678,7 @@ fieldset .field-control #eye {
   -moz-appearance: none;
   appearance: none;
   position: relative;
+  max-width: 100%;
   cursor: pointer;
   background-repeat: no-repeat;
   background-clip: border-box;
@@ -18714,6 +18715,8 @@ fieldset .field-control #eye {
 }
 .select-popup option, select option {
   font-weight: normal;
+  white-space: normal;
+  max-width: 100%;
 }
 
 select:not([multiple]),
