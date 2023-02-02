@@ -271,27 +271,27 @@ class Api_channel_structure extends Api
                             // if both channels are assigned to the same group of each
                             case 'cat_group':
                                 // allow to implicitly set category group to "None"
-                                if (! isset(${$key})) {
-                                    ${$key} = $val;
+                                if (! isset($$key)) {
+                                    $$key = $val;
                                 }
 
                                 break;
                             case 'field_group':
                             case 'deft_status':
-                                if (! isset(${$key}) or ${$key} == '') {
-                                    ${$key} = $val;
+                                if (! isset($$key) or $$key == '') {
+                                    $$key = $val;
                                 }
 
                                 break;
                             case 'search_excerpt':
                                 if (! isset($field_group) or $field_group == $query->row('field_group')) {
-                                    ${$key} = $val;
+                                    $$key = $val;
                                 }
 
                                 break;
                             case 'deft_category':
                                 if (! isset($cat_group) or count(array_diff(explode('|', $cat_group), explode('|', $query->row('cat_group')))) == 0) {
-                                    ${$key} = $val;
+                                    $$key = $val;
                                 }
 
                                 break;
@@ -306,14 +306,14 @@ class Api_channel_structure extends Api
                                         $old_group_name = $gquery->row('group_name');
                                     }
 
-                                    ${$key} = str_replace("/{$old_group_name}/", "/{$group_name}/", $val);
+                                    $$key = str_replace("/{$old_group_name}/", "/{$group_name}/", $val);
                                 } else {
-                                    ${$key} = $val;
+                                    $$key = $val;
                                 }
 
                                 break;
                             default:
-                                ${$key} = $val;
+                                $$key = $val;
 
                                 break;
                         }
@@ -349,8 +349,8 @@ class Api_channel_structure extends Api
         $data = array();
 
         foreach ($fields as $field) {
-            if (isset(${$field}) && ! in_array($field, $exceptions)) {
-                $data[$field] = ${$field};
+            if (isset($$field) && ! in_array($field, $exceptions)) {
+                $data[$field] = $$field;
             }
         }
 
@@ -496,8 +496,8 @@ class Api_channel_structure extends Api
         $data = array();
 
         foreach ($fields as $field) {
-            if (isset(${$field}) && ! in_array($field, $exceptions)) {
-                $data[$field] = ${$field};
+            if (isset($$field) && ! in_array($field, $exceptions)) {
+                $data[$field] = $$field;
             }
         }
 

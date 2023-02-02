@@ -37,6 +37,9 @@ class EE_Table
     public $empty_cells = "";
     public $function = false;
 
+    public $no_result;
+    public $temp;
+
     /**
      * Constructor
      *

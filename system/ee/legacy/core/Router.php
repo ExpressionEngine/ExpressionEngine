@@ -16,6 +16,7 @@
 class EE_Router
 {
     public $config;
+    public $uri;
     public $routes = array();
     public $class = '';
     public $method = 'index';

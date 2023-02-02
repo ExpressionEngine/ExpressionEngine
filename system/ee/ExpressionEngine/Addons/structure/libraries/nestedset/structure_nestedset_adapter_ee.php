@@ -7,6 +7,7 @@ class Structure_Nestedset_Adapter_Ee
     private $leftCol;
     private $rightCol;
     private $idCol;
+    private $site_id;
 
     public function __construct($table, $leftCol = 'lft', $rightCol = 'rgt', $id = 'id')
     {

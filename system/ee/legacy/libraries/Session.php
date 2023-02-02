@@ -79,6 +79,8 @@ class EE_Session
     public $cookies_exist = false;
     public $session_exists = false;
 
+    public $validation;
+
     // Garbage collection probability. Used to kill expired sessions.
     public $gc_probability = 5;
 

@@ -189,49 +189,28 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				appendElem = 'parent';
 			}
 
-		$('tbody').sortable({
-			axis: 'y',
-			forcePlaceholderSize: true,
-			appendTo: appendElem,
+		params = {
+			// Fire 'beforeSort' event on sort start
+			beforeSort: function(row) {
+				that._fireEvent('beforeSort', row);
+			},
+			// Fire 'afterSort' event on sort stop
+			afterSort: function(row) {
+				// Jquery sortable sets the display property to table-cell, which breaks the grid styles, so remove it
+				row.removeAttr("style");
+
+				that._fireEvent('afterSort', row);
+				$(document).trigger('entry:preview');
+			},
 			handle: '.js-grid-reorder-handle',
 			cancel: '',
-			items: '> tr',
-			tolerance: 'pointer',
-			sort: (event, ui) => {
-				try {
-					EE.sortable_sort_helper(event, ui)
-				} catch (error) {}
-			},
-			helper: function(event, row)	// Fix issue where cell widths collapse on drag
-			{
-				var $originals = row.children();
-				var $helper = row.clone();
+			containment: false,
+			appendTo: appendElem,
+		};
 
-				$helper.find('input[type=radio]:enabled').each(function() {
-					$(this).attr('name', Math.random() * 20);
-				});
+		params = $.extend(params, this.sortableParams);
 
-				$helper.children().each(function(index)
-				{
-					// Set helper cell sizes to match the original sizes
-					$(this).width($originals.eq(index).outerWidth())
-				});
-
-				return $helper;
-			},
-			// Before sort starts
-			start: function(event, ui)
-			{
-				that._fireEvent('beforeSort', ui.item);
-			},
-			// After sort finishes
-			stop: function(event, ui)
-			{
-				ui.item.removeAttr("style");
-				that._fireEvent('afterSort', ui.item);
-				$(document).trigger('entry:preview');
-			}
-		})
+		this.root.eeTableReorder(params);
 	},
 
 	/**

@@ -51,9 +51,11 @@ class Str
     public static function snakecase($value)
     {
         // handle the case of going from PascalCase to snake_case
-        $value = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $value));
+        $value = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', trim($value)));
+        // ensure single space
+        $value = preg_replace('/\s+/', '', $value);
 
-        return trim(str_replace(['-', ' ', '.'], '_', strtolower($value)));
+        return str_replace(['-', ' ', '__'], '_', strtolower($value));
     }
 
     /**

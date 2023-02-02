@@ -2,22 +2,19 @@
 
 What's in this pull request?
 
-The title of pull request should look like changelog line 
-(with reference to corresponging issue number, if available), e.g.
-- Resolved #1234 where <something> was causing template parsing error 
+The title of the pull request should look like the change log line, with reference to the corresponding issue number if available. For example:
+  - Resolved #1234 where <something> was causing template parsing error 
 (or)
-- Added ability to <do something new>; #1234
+  - Added ability to <do something new>; #1234
 
-In the pull request body,
-give a good description of what is the nature of change and reasoning behind it.
-Provide links to external references/discussions if appropriate.
+In the pull request body, give a good description of what the nature of the change is, and the reasoning behind it. Provide links to external references/discussions if appropriate.
 
-If this pull request resolves a project issue, provide a link with closing keyword, e.g.
-Resolves https://github.com/ExpressionEngine/ExpressionEngine/issues/1235
+If this pull request resolves a project issue, provide a link with a closing keyword. For example:
+  Resolves https://github.com/ExpressionEngine/ExpressionEngine/issues/1235
 
-Assign this PR appropriate label depending on what is does, e.g. 'Bug:Accepted', or 'enhancement'
+Assign this PR the appropriate label depending on what it does, e.g. 'Bug:Accepted', or 'enhancement'
 
-If documentation update is needed, provide link to corresponding pull request in ExpressionEngine-User-Guide, e.g.
-User Guide Pull Request: https://github.com/ExpressionEngine/ExpressionEngine-User-Guide/pull/1235
+If documentation update is needed, provide a link to the corresponding pull request in the ExpressionEngine-User-Guide repo. For example:
+  User Guide Pull Request: https://github.com/ExpressionEngine/ExpressionEngine-User-Guide/pull/1235
 
 -->

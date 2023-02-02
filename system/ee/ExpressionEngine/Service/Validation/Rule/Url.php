@@ -19,7 +19,7 @@ class Url extends ValidationRule
 {
     public function validate($key, $value)
     {
-        return (bool) filter_var($value, FILTER_VALIDATE_URL);
+        return (bool) filter_var((string) $value, FILTER_VALIDATE_URL);
     }
 
     public function getLanguageKey()

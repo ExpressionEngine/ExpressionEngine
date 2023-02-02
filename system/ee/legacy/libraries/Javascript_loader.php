@@ -67,6 +67,7 @@ class Javascript_loader
                         }
                     }
                 }
+
                 continue;
             }
 
@@ -111,7 +112,7 @@ class Javascript_loader
 
                 if (file_exists($fullFilePath)) {
                     $contents .= file_get_contents($fullFilePath) . "\n\n";
-                } else if ($type == 'package') {
+                } elseif ($type == 'package') {
                     //fallback to first-party addon package
                     $fullFilePath = PATH_ADDONS . $file . '.js';
                     if (file_exists($fullFilePath)) {
@@ -131,9 +132,9 @@ class Javascript_loader
     /**
      * Set Headers
      *
-     * @access	private
-     * @param	string
-     * @return	string
+     * @access  private
+     * @param   string
+     * @return  string
      */
     public function set_headers($file, $mtime = false)
     {
@@ -169,7 +170,7 @@ class Javascript_loader
         ee()->output->set_header("ETag: " . md5($modified . $file));
 
         // All times GMT
-        $modified = gmdate('D, d M Y H:i:s', $modified) . ' GMT';
+        $modified = gmdate('D, d M Y H:i:s', (int) $modified) . ' GMT';
         $expires = gmdate('D, d M Y H:i:s', time() + $max_age) . ' GMT';
 
         ee()->output->set_status_header(200);

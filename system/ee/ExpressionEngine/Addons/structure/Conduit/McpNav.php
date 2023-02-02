@@ -6,6 +6,8 @@ use ExpressionEngine\Structure\Conduit\FluxNav;
 
 class McpNav extends FluxNav
 {
+    public $sql;
+
     protected function defaultItems()
     {
         $default_items = array();

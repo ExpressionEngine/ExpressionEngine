@@ -21,6 +21,7 @@ class Builder
     protected $from;
     protected $facade;
     protected $datastore;
+    protected $model;
 
     protected $set = array();
     protected $withs = array();

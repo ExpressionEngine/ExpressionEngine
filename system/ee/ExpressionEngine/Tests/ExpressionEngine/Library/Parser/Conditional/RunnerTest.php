@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
 
 class RunnerTest extends TestCase
 {
+    public $runner;
+
     public function setUp(): void
     {
         $this->runner = new Runner();

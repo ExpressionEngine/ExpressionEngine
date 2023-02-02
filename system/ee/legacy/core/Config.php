@@ -717,7 +717,7 @@ class EE_Config
 
         $name = $which . '_default';
 
-        return ${$name};
+        return $$name;
     }
 
     public function divineAll()

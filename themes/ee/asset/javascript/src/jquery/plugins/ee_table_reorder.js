@@ -53,20 +53,21 @@ $.fn.eeTableReorder = function(params) {
 				sortableContainer: 'tbody',
 				handle: 'td.reorder-col',
 				cancel: 'td.sort-cancel',
-				item: '> tr'
+				item: '> tr',
+				containment: 'parent',
 			},
 			config = {};
 
 		config = $.extend(config, defaults, params);
 
 		$(config.sortableContainer, this).sortable({
-			axis: 'y',						// Only allow vertical dragging
-			containment: 'parent',			// Contain to parent
-			handle: config.handle,			// Set drag handle
-			cancel: config.cancel,			// Do not allow sort on this handle
-			items: config.item,				// Only allow these to be sortable
-			sort: EE.sortable_sort_helper,	// Custom sort handler
-			forcePlaceholderSize: true,		// Set an explict size on the placeholder
+			axis: 'y',							// Only allow vertical dragging
+			containment: config.containment,	// Contain to parent
+			handle: config.handle,				// Set drag handle
+			cancel: config.cancel,				// Do not allow sort on this handle
+			items: config.item,					// Only allow these to be sortable
+			// sort: EE.sortable_sort_helper,		// Custom sort handler
+			forcePlaceholderSize: true,			// Set an explict size on the placeholder
 			appendTo: config.appendTo,
 			cursor: "move",
 			tolerance: 'pointer',
@@ -102,6 +103,7 @@ $.fn.eeTableReorder = function(params) {
 				{
 					params.beforeSort(ui.item);
 				}
+				ui.placeholder.height(ui.helper.height());
 			},
 			// After sort finishes
 			stop: function(event, ui)

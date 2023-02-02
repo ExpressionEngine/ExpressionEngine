@@ -31,8 +31,8 @@ class Date_ft extends EE_Fieldtype
      * by the datepicker). If that fails it will try again with a fuzzier
      * conversion, which allows things like "2 weeks".
      *
-     * @param   string  $date   A date string for parsing
-     * @return  mixed   Will return a UNIX timestamp or FALSE
+     * @param string $date A date string for parsing
+     * @return mixed Will return a UNIX timestamp or FALSE
      */
     private function _parse_date($date)
     {
@@ -77,12 +77,12 @@ class Date_ft extends EE_Fieldtype
     /**
      * Validate Field
      *
-     * @param   string
-     * @return  mixed
+     * @param  string
+     * @return mixed
      */
     public function validate($data)
     {
-        if (! is_numeric($data) && trim($data) && ! empty($data)) {
+        if (! is_numeric($data) && ! empty($data) && trim($data)) {
             $data = $this->_parse_date($data);
         }
 
@@ -99,7 +99,7 @@ class Date_ft extends EE_Fieldtype
     /**
      * Display Field
      *
-     * @param   array
+     * @param  array
      */
     public function display_field($data)
     {
