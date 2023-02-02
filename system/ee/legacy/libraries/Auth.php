@@ -44,6 +44,9 @@
  * should always be as long as the best available hash.
  *
  */
+
+use ExpressionEngine\Service\Member\Member;
+
 class Auth
 {
     public $errors = array();
@@ -411,10 +414,10 @@ class Auth
      */
     private function _authenticate(CI_DB_result $member, $password)
     {
-        $always_disallowed = array(4);
+        $always_disallowed = array(Member::GUESTS, Member::PENDING);
 
         if (bool_config_item('allow_pending_login')) {
-            $always_disallowed = array_diff($always_disallowed, array(4));
+            $always_disallowed = array_diff($always_disallowed, array(Member::PENDING));
         }
 
         if ($member->num_rows() !== 1) {
