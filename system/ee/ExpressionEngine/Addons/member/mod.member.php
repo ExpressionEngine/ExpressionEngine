@@ -2690,7 +2690,9 @@ class Member
 
         $roles = $member->getAllRoles()->pluck('role_id');
 
-        if (in_array(ee()->TMPL->fetch_param('role_id'), $roles)) {
+        $rolesToCheck = explode('|', ee()->TMPL->fetch_param('role_id'));
+
+        if (array_intersect($rolesToCheck, $roles)) {
             return ee()->TMPL->tagdata;
         }
 
