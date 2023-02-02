@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -341,13 +341,15 @@ class Addons extends CP_Controller
     /**
      * Updates an add-on
      *
-     * @param str $addon The name of the add-on to update
+     * @param string $addon The name of the add-on to update
      * @return void
      */
     public function update($addons)
     {
-        if (! ee('Permission')->can('admin_addons') or
-            ee('Request')->method() !== 'POST') {
+        if (
+            ! ee('Permission')->can('admin_addons') or
+            ee('Request')->method() !== 'POST'
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -367,9 +369,11 @@ class Addons extends CP_Controller
             $addon_info->updateConsentRequests();
 
             $module = $this->getModule($addon);
-            if (! empty($module)
+            if (
+                ! empty($module)
                 && $module['installed'] === true
-                && array_key_exists('update', $module)) {
+                && array_key_exists('update', $module)
+            ) {
                 $installed = ee()->addons->get_installed('modules', true);
 
                 $class = $addon_info->getInstallerClass();
@@ -396,9 +400,11 @@ class Addons extends CP_Controller
             }
 
             $fieldtype = $this->getFieldtype($addon);
-            if (! empty($fieldtype)
+            if (
+                ! empty($fieldtype)
                 && $fieldtype['installed'] === true
-                && array_key_exists('update', $fieldtype)) {
+                && array_key_exists('update', $fieldtype)
+            ) {
                 ee()->api_channel_fields->include_handler($addon);
                 $FT = ee()->api_channel_fields->setup_handler($addon, true);
                 $update_ft = false;
@@ -426,9 +432,11 @@ class Addons extends CP_Controller
             }
 
             $extension = $this->getExtension($addon);
-            if (! empty($extension)
+            if (
+                ! empty($extension)
                 && $extension['installed'] === true
-                && array_key_exists('update', $extension)) {
+                && array_key_exists('update', $extension)
+            ) {
                 $class = $addon_info->getExtensionClass();
 
                 $class_name = $extension['class'];
@@ -449,9 +457,11 @@ class Addons extends CP_Controller
             }
 
             $plugin = $this->getPlugin($addon);
-            if (! empty($plugin)
+            if (
+                ! empty($plugin)
                 && $plugin['installed'] === true
-                && array_key_exists('update', $plugin)) {
+                && array_key_exists('update', $plugin)
+            ) {
                 $typography = 'n';
 
                 if ($addon_info->get('plugin.typography')) {
@@ -775,7 +785,7 @@ class Addons extends CP_Controller
     /**
      * Display add-on settings
      *
-     * @param   str $addon  The name of add-on whose settings to display
+     * @param   string $addon  The name of add-on whose settings to display
      * @return  void
      */
     public function settings($addon, $method = null)
@@ -928,7 +938,7 @@ class Addons extends CP_Controller
     /**
      * Display plugin manual/documentation
      *
-     * @param   str $addon  The name of plugin whose manual to display
+     * @param   string $addon  The name of plugin whose manual to display
      * @return  void
      */
     public function manual($addon = null)
@@ -957,8 +967,8 @@ class Addons extends CP_Controller
             'name' => $info->getName(),
             'version' => $this->formatVersionNumber($info->getVersion()),
             'author' => $info->getAuthor(),
-            'author_url' => ee()->cp->masked_url($info->get('author_url')),
-            'docs_url' => ee()->cp->masked_url($info->get('docs_url')),
+            'author_url' => $info->get('author_url') ? ee()->cp->masked_url($info->get('author_url')) : '#',
+            'docs_url' => $info->get('docs_url') ? ee()->cp->masked_url($info->get('docs_url')) : '#',
             'description' => $info->get('description')
         );
 
@@ -1057,7 +1067,7 @@ class Addons extends CP_Controller
     /**
      * Get data on a module
      *
-     * @param   str $name   The add-on name
+     * @param   string $name   The add-on name
      * @return  array       Add-on data in the following format:
      *   e.g. 'developer'    => 'native',
      *        'version'      => '--',
@@ -1119,8 +1129,10 @@ class Addons extends CP_Controller
 
                 $UPD = new $class();
 
-                if (version_compare($info->getVersion(), $module->module_version, '>')
-                    && method_exists($UPD, 'update')) {
+                if (
+                    version_compare($info->getVersion(), $module->module_version, '>')
+                    && method_exists($UPD, 'update')
+                ) {
                     $data['update'] = $info->getVersion();
                 }
             }
@@ -1132,7 +1144,7 @@ class Addons extends CP_Controller
     /**
      * Get data on a plugin
      *
-     * @param   str $name   The add-on name
+     * @param   string $name   The add-on name
      * @return  array       Add-on data in the following format:
      *   e.g. 'developer'    => 'native',
      *        'version'      => '--',
@@ -1186,7 +1198,7 @@ class Addons extends CP_Controller
     /**
      * Get data on a fieldtype
      *
-     * @param   str $name   The add-on name
+     * @param   string $name   The add-on name
      * @return  array       Add-on data in the following format:
      *   e.g. 'developer'    => 'native',
      *        'version'      => '--',
@@ -1249,7 +1261,7 @@ class Addons extends CP_Controller
     /**
      * Get data on a jump menu
      *
-     * @param   str $name   The add-on name
+     * @param   string $name   The add-on name
      * @return  array       Jump data in the following format:
      *   e.g. 'icon'             => 'fa-plus',
      *        'command'          => 'create new entry',
@@ -1282,7 +1294,7 @@ class Addons extends CP_Controller
     /**
      * Get data on an extension
      *
-     * @param   str $name   The add-on name
+     * @param   string $name   The add-on name
      * @return  array       Add-on data in the following format:
      *   e.g. 'developer'    => 'native',
      *        'version'      => '--',
@@ -1340,9 +1352,10 @@ class Addons extends CP_Controller
 
             if (! class_exists($class_name)) {
                 $file = $info->getPath() . '/ext.' . $name . '.php';
-                if (ee()->config->item('debug') == 2
-                    or (ee()->config->item('debug') == 1
-                        and ee('Permission')->isSuperAdmin())) {
+                if (
+                    ee()->config->item('debug') == 2
+                    or (ee()->config->item('debug') == 1 and ee('Permission')->isSuperAdmin())
+                ) {
                     include($file);
                 } else {
                     @include($file);
@@ -1357,8 +1370,10 @@ class Addons extends CP_Controller
 
             // Get some details on the extension
             $ext_obj = new $class_name($extension->settings);
-            if (version_compare($info->getVersion(), $extension->version, '>')
-                && method_exists($ext_obj, 'update_extension') === true) {
+            if (
+                version_compare($info->getVersion(), $extension->version, '>')
+                && method_exists($ext_obj, 'update_extension') === true
+            ) {
                 $data['update'] = $info->getVersion();
             }
 
@@ -1373,8 +1388,8 @@ class Addons extends CP_Controller
     /**
      * Installs an extension
      *
-     * @param  str  $addon  The add-on to install
-     * @return str          The name of the add-on just installed
+     * @param  string  $addon  The add-on to install
+     * @return string          The name of the add-on just installed
      */
     private function installExtension($addon)
     {
@@ -1392,8 +1407,8 @@ class Addons extends CP_Controller
     /**
      * Uninstalls a an extension
      *
-     * @param  str  $addon  The add-on to uninstall
-     * @return str          The name of the add-on just uninstalled
+     * @param  string  $addon  The add-on to uninstall
+     * @return string          The name of the add-on just uninstalled
      */
     private function uninstallExtension($addon)
     {
@@ -1411,8 +1426,8 @@ class Addons extends CP_Controller
     /**
      * Installs a module
      *
-     * @param  str  $module The add-on to install
-     * @return str          The name of the add-on just installed
+     * @param  string  $module The add-on to install
+     * @return string          The name of the add-on just installed
      */
     private function installModule($module)
     {
@@ -1437,8 +1452,8 @@ class Addons extends CP_Controller
     /**
      * Uninstalls a module
      *
-     * @param  str  $module The add-on to uninstall
-     * @return str          The name of the add-on just uninstalled
+     * @param  string  $module The add-on to uninstall
+     * @return string          The name of the add-on just uninstalled
      */
     private function uninstallModule($module)
     {
@@ -1463,8 +1478,8 @@ class Addons extends CP_Controller
     /**
      * Installs a fieldtype
      *
-     * @param  str  $fieldtype  The add-on to install
-     * @return str              The name of the add-on just installed
+     * @param  string  $fieldtype  The add-on to install
+     * @return string              The name of the add-on just installed
      */
     private function installFieldtype($fieldtype)
     {
@@ -1483,8 +1498,8 @@ class Addons extends CP_Controller
     /**
      * Uninstalls a fieldtype
      *
-     * @param  str  $$fieldtype The add-on to uninstall
-     * @return str              The name of the add-on just uninstalled
+     * @param  string  $$fieldtype The add-on to uninstall
+     * @return string              The name of the add-on just uninstalled
      */
     private function uninstallFieldtype($fieldtype)
     {
@@ -1503,8 +1518,8 @@ class Addons extends CP_Controller
     /**
      * Render module-specific settings
      *
-     * @param   str $name   The name of module whose settings to display
-     * @return  str         The rendered settings (with HTML)
+     * @param   string $name   The name of module whose settings to display
+     * @return  string         The rendered settings (with HTML)
      */
     private function getModuleSettings($name, $method, $parameters)
     {
@@ -1869,8 +1884,8 @@ class Addons extends CP_Controller
     /**
      * Wraps the major version number in a <b> tag
      *
-     * @param  str  $version    The version number
-     * @return str              The formatted version number
+     * @param  string  $version    The version number
+     * @return string              The formatted version number
      */
     private function formatVersionNumber($version)
     {
@@ -1892,8 +1907,10 @@ class Addons extends CP_Controller
 
         $module = $this->getModule($addon);
 
-        if (! isset($module['module_id'])
-            || ! in_array($module['module_id'], $this->assigned_modules)) {
+        if (
+            ! isset($module['module_id'])
+            || ! in_array($module['module_id'], $this->assigned_modules)
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
     }

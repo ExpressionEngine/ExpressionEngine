@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -757,7 +757,7 @@ class Member_settings extends Member
 
         $query = ee()->db->query($sql);
 
-        //		$result_row = $result->row_array()
+        // $result_row = $result->row_array()
 
         $this->member = ee()->session->getMember();
 
@@ -844,13 +844,20 @@ class Member_settings extends Member
             ee()->channel_form_lib->datepicker = get_bool_from_string(ee()->TMPL->fetch_param('datepicker', 'y'));
             ee()->channel_form_lib->compile_js();
 
-            $return = ee()->functions->form_declaration(array(
-                'id' => 'cform',
-                'hidden_fields' => array(
-                    'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
-                    'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
-                )
-            )) . $template . '</form>';
+            $data = [];
+            if (ee()->TMPL->fetch_param('form_name', '') != "") {
+                $data['name'] = ee()->TMPL->fetch_param('form_name');
+            }
+
+            $data['id'] = 'cform';
+            $data['class'] = ee()->TMPL->form_class;
+
+            $data['hidden_fields'] = array(
+                'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
+                'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
+            );
+
+            $return = ee()->functions->form_declaration($data) . $template . '</form>';
             //make head appear by default
             if (preg_match('/' . LD . 'form_assets' . RD . '/', $return)) {
                 $return = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $return);
@@ -977,7 +984,7 @@ class Member_settings extends Member
                     $member->language = ee()->security->sanitize_filename($_POST['language']);
                 }
                 if (!empty($_POST['timezone'])) {
-                    foreach (array('timezone', 'date_format', 'time_format', 'include_seconds') as $key) {
+                    foreach (array('timezone', 'date_format', 'time_format', 'week_start', 'include_seconds') as $key) {
                         if (ee()->input->post('site_default') == 'y') {
                             $member->{$key} = null;
                         } else {
@@ -1461,7 +1468,7 @@ class Member_settings extends Member
 
         $data['language'] = ee()->security->sanitize_filename($_POST['language']);
 
-        foreach (array('timezone', 'date_format', 'time_format', 'include_seconds') as $key) {
+        foreach (array('timezone', 'date_format', 'time_format', 'week_start', 'include_seconds') as $key) {
             if (ee()->input->post('site_default') == 'y') {
                 $data[$key] = null;
             } else {
@@ -1685,7 +1692,7 @@ class Member_settings extends Member
                 if ($val != 'any') {
                     $search_query[] = " role_id ='" . ee()->db->escape_str((int) $_POST['group_id']) . "'";
                 }
-            } else if (in_array($key, ['screen_name', 'email'])) {
+            } elseif (in_array($key, ['screen_name', 'email'])) {
                 if ($val != '') {
                     $search_query[] = ee()->db->escape_str($key) . " LIKE '%" . ee()->db->escape_like_str(ee('Security/XSS')->clean($val)) . "%'";
                 }
@@ -1700,8 +1707,8 @@ class Member_settings extends Member
         $Q = implode(" AND ", $search_query);
 
         $sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_roles
-				WHERE exp_members.role_id = exp_roles.role_id
-				AND " . $Q;
+                WHERE exp_members.role_id = exp_roles.role_id
+                AND " . $Q;
 
         $query = ee()->db->query($sql);
 
@@ -1726,7 +1733,7 @@ class Member_settings extends Member
             array(
                 'include:search_results' => $r,
                 'path:new_search_url' => $redirect_url,
-                'which_field' => 'name'		// not used in this instance; probably will log a minor js error
+                'which_field' => 'name'     // not used in this instance; probably will log a minor js error
             )
         );
     }
@@ -1738,51 +1745,51 @@ class Member_settings extends Member
     {
         $str = <<<EOT
 
-	<script type="text/javascript">
-	//<![CDATA[
+    <script type="text/javascript">
+    //<![CDATA[
 
-	function toggle(thebutton)
-	{
-		if (thebutton.checked)
-		{
-			val = true;
-		}
-		else
-		{
-			val = false;
-		}
+    function toggle(thebutton)
+    {
+        if (thebutton.checked)
+        {
+            val = true;
+        }
+        else
+        {
+            val = false;
+        }
 
-		if (document.target)
-		{
-			var theForm = document.target;
-		}
-		else if (document.getElementById('target'))
-		{
-			var theForm = document.getElementById('target');
-		}
-		else
-		{
-			return false;
-		}
+        if (document.target)
+        {
+            var theForm = document.target;
+        }
+        else if (document.getElementById('target'))
+        {
+            var theForm = document.getElementById('target');
+        }
+        else
+        {
+            return false;
+        }
 
-		var len = theForm.elements.length;
+        var len = theForm.elements.length;
 
-		for (var i = 0; i < len; i++)
-		{
-			var button = theForm.elements[i];
+        for (var i = 0; i < len; i++)
+        {
+            var button = theForm.elements[i];
 
-			var name_array = button.name.split("[");
+            var name_array = button.name.split("[");
 
-			if (name_array[0] == "toggle")
-			{
-				button.checked = val;
-			}
-		}
+            if (name_array[0] == "toggle")
+            {
+                button.checked = val;
+            }
+        }
 
-		theForm.toggleflag.checked = val;
-	}
-	//]]>
-	</script>
+        theForm.toggleflag.checked = val;
+    }
+    //]]>
+    </script>
 
 EOT;
 
@@ -1796,44 +1803,44 @@ EOT;
     {
         return <<<EWOK
 
-	<script type="text/javascript">
-	//<![CDATA[
+    <script type="text/javascript">
+    //<![CDATA[
 
-	function list_addition(member, el)
-	{
-		var member_text = '{lang:member_usernames}';
+    function list_addition(member, el)
+    {
+        var member_text = '{lang:member_usernames}';
 
-		var Name = (member == null) ? prompt(member_text, '') : member;
-		var el = (el == null) ? 'name' : el;
+        var Name = (member == null) ? prompt(member_text, '') : member;
+        var el = (el == null) ? 'name' : el;
 
-		 if ( ! Name || Name == null)
-		 {
-		 	return;
-		 }
+         if ( ! Name || Name == null)
+         {
+            return;
+         }
 
-		var frm = document.getElementById('target');
-		var x;
+        var frm = document.getElementById('target');
+        var x;
 
-		for (i = 0; i < frm.length; i++)
-		{
-			if (frm.elements[i].name == el)
-			{
-				frm.elements[i].value = Name;
-			}
-		}
+        for (i = 0; i < frm.length; i++)
+        {
+            if (frm.elements[i].name == el)
+            {
+                frm.elements[i].value = Name;
+            }
+        }
 
-		 document.getElementById('target').submit();
-	}
+         document.getElementById('target').submit();
+    }
 
-	function dynamic_action(which)
-	{
-		if (document.getElementById('target').daction)
-		{
-			document.getElementById('target').daction.value = which;
-		}
-	}
-	//]]>
-	</script>
+    function dynamic_action(which)
+    {
+        if (document.getElementById('target').daction)
+        {
+            document.getElementById('target').daction.value = which;
+        }
+    }
+    //]]>
+    </script>
 EWOK;
     }
 
@@ -1850,7 +1857,7 @@ EWOK;
 //<![CDATA[
 function member_search()
 {
-	var popWin = window.open('{$url}', '_blank', 'width=450,height=480,scrollbars=yes,status=yes,screenx=0,screeny=0,resizable=yes');
+    var popWin = window.open('{$url}', '_blank', 'width=450,height=480,scrollbars=yes,status=yes,screenx=0,screeny=0,resizable=yes');
 }
 
 //]]>
@@ -1987,7 +1994,6 @@ UNGA;
         /** -------------------------------------
         /**  Instantiate validation class
         /** -------------------------------------*/
-
         $new_un = (string) ee()->input->post('new_username');
         $new_pw = (string) ee()->input->post('new_password');
         $new_pwc = (string) ee()->input->post('new_password_confirm');
@@ -2021,7 +2027,12 @@ UNGA;
         /**  Display errors if there are any
         /** -------------------------------------*/
         if ($validationResult->isNotValid()) {
-            return ee()->output->show_user_error('submission', $validationResult->getAllErrors());
+            $errors = [];
+            foreach ($validationResult->getAllErrors() as $error) {
+                $errors = array_merge($errors, array_values($error));
+            }
+
+            return ee()->output->show_user_error('submission', $errors);
         }
 
         if ($un_exists) {

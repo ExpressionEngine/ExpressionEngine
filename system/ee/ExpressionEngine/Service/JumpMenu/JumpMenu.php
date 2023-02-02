@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -600,6 +600,15 @@ class JumpMenu extends AbstractJumpMenu
                         ],
                         'command' => 'include_seconds',
                         'command_title' => 'include_seconds'
+                    ),
+                    // Week start
+                    'fieldset-fieldset-week_start' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'week_start week_start_desc',
+                        'command_title' => 'week_start'
                     ),
                 )
             ),

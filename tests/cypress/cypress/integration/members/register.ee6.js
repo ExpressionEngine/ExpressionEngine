@@ -39,6 +39,51 @@ context('Member Registration', () => {
         //cy.clearCookies()
     })
 
+    context('checks', function() {
+
+        before(function(){
+            cy.eeConfig({ item: 'password_security_policy', value: 'basic' })
+        })
+
+        it('password rank shown', function() {
+            cy.clearCookies()
+            cy.visit('index.php/mbr/register');
+            cy.logFrontendPerformance()
+            cy.intercept("**?ACT=**").as('ajax')
+            cy.get('#username').clear().type('user' + userCount);
+            cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
+            cy.get('#password').clear().type('eee').blur();
+            cy.wait('@ajax')
+            cy.get('.rank-wrap').should('be.visible').should('contain', 'weak')
+            cy.get('#password').clear().type('1Password').blur();
+            cy.wait('@ajax')
+            cy.get('.rank-wrap').should('be.visible').should('contain', 'good')
+        })
+
+        it('validates username', function() {
+            cy.clearCookies()
+            cy.visit('index.php/mbr/register');
+            cy.logFrontendPerformance()
+            cy.intercept("**?ACT=**").as('ajax')
+            cy.get('#username').clear().type('user' + userCount);
+            cy.get('a').contains('validate username').click()
+            cy.wait('@ajax').its('response').then((res) => {
+                // it is a good practice to add message argument to the
+                // assertion "expect(value, message)..." that will be shown
+                // in the test runner's command log
+                expect(res.body.success, 'response body').to.equal(true)
+            })
+
+            cy.get('#username').clear().type('admin');
+            cy.get('a').contains('validate username').click()
+            cy.wait('@ajax').its('response').then((res) => {
+                expect(res.body.success, 'response body').to.equal(false)
+                expect(res.body.errors.username).to.contain('The username you chose is not available')
+            })
+        })
+
+    })
+
     context('regular signup', function() {
 
         before(function(){

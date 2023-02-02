@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -700,6 +700,9 @@ class Grid_lib
         foreach ($settings['grid']['cols'] as $col_field => $column) {
             // Attempt to get the column ID; if the field name contains 'new_',
             // it's a new field, otherwise extract column ID
+            if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                $col_field = 'new_' . str_replace('col_id_', '', $col_field);
+            }
             $column['col_id'] = (strpos($col_field, 'new_') === false)
                 ? str_replace('col_id_', '', $col_field) : false;
 

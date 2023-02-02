@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -72,6 +72,7 @@ class MemberGateway extends Gateway
     protected $timezone;
     protected $time_format;
     protected $date_format;
+    protected $week_start;
     protected $include_seconds;
     protected $profile_theme;
     protected $forum_theme;

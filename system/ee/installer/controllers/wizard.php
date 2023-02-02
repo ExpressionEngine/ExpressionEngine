@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -164,8 +164,10 @@ class Wizard extends CI_Controller
         // Third party constants
         define('PATH_THIRD', SYSPATH . 'user/addons/');
         // Set the path to the "themes" folder
-        if (ee()->config->item('theme_folder_path') !== false &&
-            ee()->config->item('theme_folder_path') != '') {
+        if (
+            ee()->config->item('theme_folder_path') !== false &&
+            ee()->config->item('theme_folder_path') != ''
+        ) {
             $theme_path = preg_replace("#/+#", "/", ee()->config->item('theme_folder_path') . '/');
         } else {
             $theme_path = substr(APPPATH, 0, - strlen(SYSDIR . '/expressionengine/')) . 'themes/';
@@ -961,8 +963,10 @@ class Wizard extends CI_Controller
         // This goes last because a custom installer might create Member Groups
         // besides the default five, which might affect the Template Access
         // permissions.
-        if ($this->userdata['install_default_theme'] == 'y'
-            && ! $this->install_site_theme()) {
+        if (
+            $this->userdata['install_default_theme'] == 'y'
+            && ! $this->install_site_theme()
+        ) {
             $this->set_output('error', array('error' => lang('improper_grants')));
 
             return false;
@@ -1631,6 +1635,7 @@ class Wizard extends CI_Controller
             'allow_extensions' => 'y',
             'date_format' => '%n/%j/%Y',
             'time_format' => '12',
+            'week_start' => 'sunday',
             'include_seconds' => 'n',
             'server_offset' => '',
             'default_site_timezone' => date_default_timezone_get(),
@@ -1933,15 +1938,19 @@ class Wizard extends CI_Controller
      */
     public function canRenameAutomatically($template_variables)
     {
-        if (version_compare($this->version, '3.0.0', '=')
-            && file_exists(SYSPATH . 'user/cache/mailing_list.zip')) {
+        if (
+            version_compare($this->version, '3.0.0', '=')
+            && file_exists(SYSPATH . 'user/cache/mailing_list.zip')
+        ) {
             return false;
         }
 
-        if (!empty($template_variables['mailing_list'])
+        if (
+            !empty($template_variables['mailing_list'])
             || !empty($template_variables['update_notices'])
             || !empty($template_variables['errors'])
-            || !empty($template_variables['error_messages'])) {
+            || !empty($template_variables['error_messages'])
+        ) {
             return false;
         }
 

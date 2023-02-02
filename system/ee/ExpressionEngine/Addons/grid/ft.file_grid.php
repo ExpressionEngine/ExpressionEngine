@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
  require_once PATH_ADDONS . 'grid/ft.grid.php';
@@ -54,7 +54,7 @@ class file_grid_ft extends Grid_ft
     {
         $directory_choices = ['all' => lang('all')] + ee('Model')->get('UploadDestination')
             ->fields('id', 'name')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->order('name', 'asc')
             ->all(true)

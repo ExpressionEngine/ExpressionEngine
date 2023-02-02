@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -144,7 +144,7 @@ class Filemanager
         $dir = ee('Model')->get('UploadDestination', $dir_id);
 
         if (! $ignore_site_id) {
-            $dir->filter('site_id', ee()->config->item('site_id'));
+            $dir->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         }
 
         if ($dir->count() < 1) {
@@ -1605,7 +1605,7 @@ class Filemanager
         $directories = ee('Model')->get('UploadDestination');
 
         if (!$ignore_site_id) {
-            $directories->filter('site_id', ee()->config->item('site_id'));
+            $directories->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         }
 
         $dirs = $directories->all()->indexBy('id');

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -14,12 +14,54 @@ namespace ExpressionEngine\Service\Template\Variables;
  * :modifier variable replacement methods
  *
  * All methods receive:
- * 		mixed ($data) - whatever content is returned by the field
- * 		array ($params) - an array of optional options!
- * 		string ($tagdata) - optional tagdata, used by pair variables
+ *  mixed ($data) - whatever content is returned by the field
+ *  array ($params) - an array of optional options!
+ *  string ($tagdata) - optional tagdata, used by pair variables
  */
 trait ModifiableTrait
 {
+    /**
+     * Call add-on provided modifier
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return string
+     */
+    public function __call($name, $arguments)
+    {
+        if (count($arguments) == 0) {
+            throw new \InvalidArgumentException('No data provided to modifier');
+        }
+        $data = $arguments[0];
+        $params = array();
+        if (isset($arguments[1])) {
+            $params = $arguments[1];
+        }
+        $tagdata = false;
+        if (isset($arguments[2])) {
+            $tagdata = $arguments[2];
+        }
+
+        // the name should start with 'replace_' because that's how modifiers get called
+        if (strpos($name, 'replace_') !== 0) {
+            return $data;
+        }
+        // get the clean modifier name now
+        $name = substr($name, 8);
+
+        // if modifier not registered, just return data
+        $modifiers = ee('Variables/Modifiers')->all();
+        if (! array_key_exists($name, $modifiers)) {
+            return $data;
+        }
+
+        // run the processor
+        $class = $modifiers[$name];
+        $object = new $class();
+
+        return (string) $object->modify($data, $params, $tagdata);
+    }
+
     /**
      * :attr_safe modifier
      */

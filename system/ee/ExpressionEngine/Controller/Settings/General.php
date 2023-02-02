@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,6 +23,7 @@ class General extends Settings
     public function index()
     {
         ee()->load->model('admin_model');
+        ee()->lang->loadfile('calendar');
 
         $site = ee('Model')->get('Site')
             ->filter('site_id', ee()->config->item('site_id'))
@@ -146,6 +147,21 @@ class General extends Settings
                             'choices' => array(
                                 '24' => lang('24_hour'),
                                 '12' => lang('12_hour')
+                            )
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'week_start',
+                    'desc' => 'week_start_desc',
+                    'fields' => array(
+                        'week_start' => array(
+                            'type' => 'radio',
+                            'choices' => array(
+                                'friday' => lang('cal_friday'),
+                                'saturday' => lang('cal_saturday'),
+                                'sunday' => lang('cal_sunday'),
+                                'monday' => lang('cal_monday')
                             )
                         )
                     )
@@ -303,7 +319,7 @@ class General extends Settings
                     ->withTitle(sprintf(lang('version_update_available'), $version_info['version']));
                 if ($isMajorUpdate) {
                     $banner->addToBody(lang('version_update_is_major') . '<br><br>');
-                } else if ($isVitalUpdate) {
+                } elseif ($isVitalUpdate) {
                     $banner->addToBody(lang('version_update_is_vital') . '<br><br>');
                 }
                 if ($version_major < 7) {

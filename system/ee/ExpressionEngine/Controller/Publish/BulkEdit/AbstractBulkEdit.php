@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -73,7 +73,14 @@ abstract class AbstractBulkEdit extends CP_Controller
     {
         $filters = '';
         if (! empty($filter_fields)) {
-            $filters = ee('View')->make('fluid_field:filters')->render(['fields' => $filter_fields]);
+            $filter_options = array_map(function ($field) {
+                return \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
+                    'name' => $field->getShortName(),
+                    'label' => $field->getItem('field_label'),
+                    'icon' => $field->getIcon()
+                ]);
+            }, $filter_fields);
+            $filters = ee('View')->make('fluid_field:filters')->render(['filters' => $filter_options]);
         }
 
         $displayed_fields_markup = '';
