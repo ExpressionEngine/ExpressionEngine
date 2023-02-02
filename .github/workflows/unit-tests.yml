@@ -91,10 +91,10 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.3, 7.4, 8.0, 8.1]
+                php: [7.3, 7.4, 8.0, 8.1, 8.2]
                 os: [ubuntu-latest]
                 include:
-                  - php: 8.0
+                  - php: 8.1
                     os: windows-latest
 
         name: PHPUnit, php${{ matrix.php }} - ${{ matrix.os }}
@@ -142,7 +142,7 @@ jobs:
                   coverage: none
 
             - name: Copy config.php
-              run: php -r "file_exists('system/user/config/config.php') || copy('tests/docker/config.php', 'system/user/config/config.php');"
+              run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
 
             - name: Install PHP Unit Test dependencies
               working-directory: system/ee/ExpressionEngine/Tests/

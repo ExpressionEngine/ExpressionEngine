@@ -88,8 +88,9 @@ class AddonGenerator
     {
         // Copy the default icon into our addon
         $defaultIcon = PATH_THEMES . 'asset/img/default-addon-icon.svg';
-
-        $this->filesystem->copy($defaultIcon, $this->addonPath . 'icon.svg');
+        if ($this->filesystem->exists($defaultIcon)) {
+            $this->filesystem->copy($defaultIcon, $this->addonPath . 'icon.svg');
+        }
     }
 
     protected function buildModule()

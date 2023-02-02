@@ -84,6 +84,9 @@ class idna_convert
     public $_ncount = 588;   // _vcount * _tcount
     public $_scount = 11172; // _lcount * _tcount * _vcount
     public $_error = false;
+    public $IC;
+
+    protected $slast;
 
     // See {@link set_paramter()} for details of how to change the following
     // settings from within your script / application
@@ -131,33 +134,30 @@ class idna_convert
         }
         foreach ($option as $k => $v) {
             switch ($k) {
-            case 'encoding':
-                switch ($v) {
-                case 'utf8':
-                case 'ucs4_string':
-                case 'ucs4_array':
-                    $this->_api_encoding = $v;
-
+                case 'encoding':
+                    switch ($v) {
+                        case 'utf8':
+                        case 'ucs4_string':
+                        case 'ucs4_array':
+                            $this->_api_encoding = $v;
+                            break;
+                        default:
+                            $this->_error('Set Parameter: Unknown parameter ' . $v . ' for option ' . $k);
+                            return false;
+                    }
                     break;
+
+                case 'overlong':
+                    $this->_allow_overlong = ($v) ? true : false;
+                    break;
+
+                case 'strict':
+                    $this->_strict_mode = ($v) ? true : false;
+                    break;
+
                 default:
-                    $this->_error('Set Parameter: Unknown parameter ' . $v . ' for option ' . $k);
-
+                    $this->_error('Set Parameter: Unknown option ' . $k);
                     return false;
-                }
-
-                break;
-            case 'overlong':
-                $this->_allow_overlong = ($v) ? true : false;
-
-                break;
-            case 'strict':
-                $this->_strict_mode = ($v) ? true : false;
-
-                break;
-            default:
-                $this->_error('Set Parameter: Unknown option ' . $k);
-
-                return false;
             }
         }
 
@@ -176,14 +176,13 @@ class idna_convert
         // Optionally set
         if ($one_time_encoding) {
             switch ($one_time_encoding) {
-            case 'utf8':
-            case 'ucs4_string':
-            case 'ucs4_array':
-                break;
-            default:
-                $this->_error('Unknown encoding ' . $one_time_encoding);
-
-                return false;
+                case 'utf8':
+                case 'ucs4_string':
+                case 'ucs4_array':
+                    break;
+                default:
+                    $this->_error('Unknown encoding ' . $one_time_encoding);
+                    return false;
             }
         }
         // Make sure to drop any newline characters around
@@ -262,22 +261,18 @@ class idna_convert
         // The output is UTF-8 by default, other output formats need conversion here
         // If one time encoding is given, use this, else the objects property
         switch (($one_time_encoding) ? $one_time_encoding : $this->_api_encoding) {
-        case 'utf8':
-            return $return;
-
-            break;
-        case 'ucs4_string':
-           return $this->_ucs4_to_ucs4_string($this->_utf8_to_ucs4($return));
-
-           break;
-        case 'ucs4_array':
-            return $this->_utf8_to_ucs4($return);
-
-            break;
-        default:
-            $this->_error('Unsupported output format');
-
-            return false;
+            case 'utf8':
+                return $return;
+                break;
+            case 'ucs4_string':
+                return $this->_ucs4_to_ucs4_string($this->_utf8_to_ucs4($return));
+                break;
+            case 'ucs4_array':
+                return $this->_utf8_to_ucs4($return);
+                break;
+            default:
+                $this->_error('Unsupported output format');
+                return false;
         }
     }
 
@@ -293,19 +288,19 @@ class idna_convert
         // Forcing conversion of input to UCS4 array
         // If one time encoding is given, use this, else the objects property
         switch ($one_time_encoding ? $one_time_encoding : $this->_api_encoding) {
-        case 'utf8':
-            $decoded = $this->_utf8_to_ucs4($decoded);
+            case 'utf8':
+                $decoded = $this->_utf8_to_ucs4($decoded);
 
-            break;
-        case 'ucs4_string':
-           $decoded = $this->_ucs4_string_to_ucs4($decoded);
-           // no break
-        case 'ucs4_array':
-           break;
-        default:
-            $this->_error('Unsupported input format: ' . ($one_time_encoding ? $one_time_encoding : $this->_api_encoding));
+                break;
+            case 'ucs4_string':
+                $decoded = $this->_ucs4_string_to_ucs4($decoded);
+                // no break
+            case 'ucs4_array':
+                break;
+            default:
+                $this->_error('Unsupported input format: ' . ($one_time_encoding ? $one_time_encoding : $this->_api_encoding));
 
-            return false;
+                return false;
         }
 
         // No input, no output, what else did you expect?
@@ -320,38 +315,38 @@ class idna_convert
         foreach ($decoded as $k => $v) {
             // Make sure to use just the plain dot
             switch ($v) {
-            case 0x3002:
-            case 0xFF0E:
-            case 0xFF61:
-                $decoded[$k] = 0x2E;
-                // Right, no break here, the above are converted to dots anyway
-            // Stumbling across an anchoring character
-            // no break
-            case 0x2E:
-            case 0x2F:
-            case 0x3A:
-            case 0x3F:
-            case 0x40:
-                // Neither email addresses nor URLs allowed in strict mode
-                if ($this->_strict_mode) {
-                    $this->_error('Neither email addresses nor URLs are allowed in strict mode.');
+                case 0x3002:
+                case 0xFF0E:
+                case 0xFF61:
+                    $decoded[$k] = 0x2E;
+                    // Right, no break here, the above are converted to dots anyway
+                // Stumbling across an anchoring character
+                // no break
+                case 0x2E:
+                case 0x2F:
+                case 0x3A:
+                case 0x3F:
+                case 0x40:
+                    // Neither email addresses nor URLs allowed in strict mode
+                    if ($this->_strict_mode) {
+                        $this->_error('Neither email addresses nor URLs are allowed in strict mode.');
 
-                    return false;
-                } else {
-                    // Skip first char
-                    if ($k) {
-                        $encoded = '';
-                        $encoded = $this->_encode(array_slice($decoded, $last_begin, (($k) - $last_begin)));
-                        if ($encoded) {
-                            $output .= $encoded;
-                        } else {
-                            $output .= $this->_ucs4_to_utf8(array_slice($decoded, $last_begin, (($k) - $last_begin)));
+                        return false;
+                    } else {
+                        // Skip first char
+                        if ($k) {
+                            $encoded = '';
+                            $encoded = $this->_encode(array_slice($decoded, $last_begin, (($k) - $last_begin)));
+                            if ($encoded) {
+                                $output .= $encoded;
+                            } else {
+                                $output .= $this->_ucs4_to_utf8(array_slice($decoded, $last_begin, (($k) - $last_begin)));
+                            }
+                            $output .= chr($decoded[$k]);
                         }
-                        $output .= chr($decoded[$k]);
+                        $last_begin = $k + 1;
                     }
-                    $last_begin = $k + 1;
                 }
-            }
         }
         // Catch the rest of the string
         if ($last_begin) {
@@ -499,8 +494,10 @@ class idna_convert
         for ($i = 0; $i < $deco_len; ++$i) {
             $test = $decoded[$i];
             // Will match [-0-9a-zA-Z]
-            if ((0x2F < $test && $test < 0x40) || (0x40 < $test && $test < 0x5B)
-                    || (0x60 < $test && $test <= 0x7B) || (0x2D == $test)) {
+            if (
+                (0x2F < $test && $test < 0x40) || (0x40 < $test && $test < 0x5B)
+                || (0x60 < $test && $test <= 0x7B) || (0x2D == $test)
+            ) {
                 $encoded .= chr($decoded[$i]);
                 $codecount++;
             }
@@ -744,8 +741,10 @@ class idna_convert
             $vindex = $char - $this->_vbase;
             $tindex = $char - $this->_tbase;
             // Find out, whether two current characters are LV and T
-            if (0 <= $sindex && $sindex < $this->_scount && ($sindex % $this->_tcount == 0)
-                    && 0 <= $tindex && $tindex <= $this->_tcount) {
+            if (
+                0 <= $sindex && $sindex < $this->_scount && ($sindex % $this->_tcount == 0)
+                && 0 <= $tindex && $tindex <= $this->_tcount
+            ) {
                 // create syllable of form LVT
                 $last += $tindex;
                 $result[(count($result) - 1)] = $last; // reset last

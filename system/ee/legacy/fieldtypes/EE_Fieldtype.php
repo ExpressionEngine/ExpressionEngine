@@ -21,12 +21,17 @@ abstract class EE_Fieldtype
     public $field_id;
     public $field_name;
 
+    public $row;
+    public $var_id;
+
     // EE super object
     // @deprecated - use ee()
     protected $EE;
 
     // Field settings as decided by the user.
     public $settings = array();
+
+    public $field_fmt;
 
     // Field identifiers, new names to differentiate. Also sometimes the field
     // can actually act as an independent content container with no distinct parent.

@@ -52,6 +52,11 @@ class Query
     protected $query_size_limit = 3e+6;
 
     /**
+     * @var array array of columns
+     */
+    public $columns;
+
+    /**
      * Constructor
      *
      * @param	Database\Query	$query	Database query object

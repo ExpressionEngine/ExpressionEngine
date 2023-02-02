@@ -15,6 +15,8 @@ class Structure_ft extends \EE_Fieldtype
 {
     public $structure;
     public $sql;
+    public $site_pages;
+    public $site_id;
 
     public $info = array(
         'name'    => 'Structure',

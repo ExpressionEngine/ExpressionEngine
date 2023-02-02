@@ -30,6 +30,9 @@ class FilterFactory
      */
     protected $filters = array();
 
+
+    protected $view;
+
     /**
      * Constructs the FilterFactory. It requires a ViewFactory instance since
      * Filters will need a View in order to render (see: render()).

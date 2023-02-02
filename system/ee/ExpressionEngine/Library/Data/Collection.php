@@ -25,7 +25,7 @@ use IteratorAggregate;
 class Collection implements ArrayAccess, Countable, IteratorAggregate
 {
     /**
-     * @var Elements in the collection
+     * @var array Elements in the collection
      */
     protected $elements = array();
 
@@ -88,6 +88,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
 
     /**
      * Compare to toArray() which exists on models and converts them.
+     *
+     * @return array
      */
     public function asArray()
     {

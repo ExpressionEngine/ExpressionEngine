@@ -2594,7 +2594,7 @@ GRID_FALLBACK;
 
             if (! $show_expired) {
                 $t = ee()->db->dbprefix('channel_titles');
-                ee()->db->where("(${t}.expiration_date = 0 OR ${t}.expiration_date > ${now})", null, false);
+                ee()->db->where("({$t}.expiration_date = 0 OR {$t}.expiration_date > {$now})", null, false);
             }
 
             if ($this->entry('entry_id')) {

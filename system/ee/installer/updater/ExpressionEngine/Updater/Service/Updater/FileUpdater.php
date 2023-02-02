@@ -250,7 +250,7 @@ class FileUpdater
 
             // Try to catch permissions errors before PHP's file I/O functions do
             if (! $this->filesystem->isWritable($path)) {
-                throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${path}", 19);
+                throw new UpdaterException("Cannot move {$path} to {$new_path}, path is not writable: {$path}", 19);
             }
 
             $this->logger->log('Moving ' . $path . ' to ' . $new_path);
@@ -289,7 +289,7 @@ class FileUpdater
             }
 
             if (! $this->filesystem->isWritable($path)) {
-                throw new UpdaterException("Cannot delete path ${path}, it is not writable", 20);
+                throw new UpdaterException("Cannot delete path {$path}, it is not writable", 20);
             }
 
             $this->logger->log('Deleting ' . $path);

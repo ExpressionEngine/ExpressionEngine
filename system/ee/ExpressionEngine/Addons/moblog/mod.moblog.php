@@ -1117,7 +1117,8 @@ class Moblog
         foreach ($sizes_q->result() as $row) {
             foreach (array('thumb', 'image') as $which) {
                 if ($row->id == $this->moblog_array['moblog_' . $which . '_size']) {
-                    ${$which . '_data'} = array(
+                    $var = $which . '_data';
+                    $$var= array(
                         'dir' => '_' . $row->short_name . '/',
                         'height' => $row->height,
                         'width' => $row->width

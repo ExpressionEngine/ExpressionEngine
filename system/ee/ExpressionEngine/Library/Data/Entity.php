@@ -395,6 +395,9 @@ abstract class Entity extends MixableImpl implements Publisher
      */
     public function hasProperty($name)
     {
+        if (! is_string($name)) {
+            return false;
+        }
         return (property_exists($this, $name) && $name[0] !== '_');
     }
 

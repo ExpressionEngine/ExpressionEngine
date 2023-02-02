@@ -52,7 +52,7 @@ class Text extends Formatter
 
         $this->content = '';
         foreach ($chars as $index => $char) {
-            $decoded = utf8_decode($char);
+            $decoded = mb_convert_encoding($char, 'ISO-8859-1', 'UTF-8');
 
             if ($decoded != '?') {
                 $char = $decoded;
@@ -256,7 +256,7 @@ class Text extends Formatter
                 $emoji_map = ee('Emoji')->emojiMap;
                 $short_names = array_keys($emoji_map);
             }
-                $short_names = array_keys($emoji_map);
+            $short_names = array_keys($emoji_map);
 
             $shorthand_regex = '/:(' . str_replace('+', '\+', implode('|', $short_names)) . '):/';
         }

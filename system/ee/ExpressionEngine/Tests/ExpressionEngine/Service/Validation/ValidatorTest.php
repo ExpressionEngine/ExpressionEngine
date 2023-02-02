@@ -17,6 +17,8 @@ require_once APPPATH . 'helpers/multibyte_helper.php';
 
 class ValidatorTest extends TestCase
 {
+    public $validator;
+
     public function setUp(): void
     {
         $this->validator = new Validator();
