@@ -237,8 +237,10 @@ class Member
         // There are a few exceptions like the memberlist page and the
         // subscriptions page
 
-        if (! in_array($this->request, $this->id_override) &&
-            $this->cur_id != '' && ! is_numeric($this->cur_id)) {
+        if (
+            ! in_array($this->request, $this->id_override) &&
+            $this->cur_id != '' && ! is_numeric($this->cur_id)
+        ) {
             return false;
         }
 
@@ -270,9 +272,11 @@ class Member
         // -------------------------------------------
 
         // Is the user logged in?
-        if ($this->request != 'login' &&
+        if (
+            $this->request != 'login' &&
             ! in_array($this->request, $this->no_login) &&
-            ee()->session->userdata('member_id') == 0) {
+            ee()->session->userdata('member_id') == 0
+        ) {
             return $this->_final_prep($this->profile_login_form('self'));
         }
 
@@ -1441,8 +1445,10 @@ class Member
         // trying to delete their account from an off-site form or
         // after logging out.
 
-        if (ee()->session->userdata('member_id') == 0 or
-             ! ee('Permission')->can('delete_self')) {
+        if (
+            ee()->session->userdata('member_id') == 0 or
+            ! ee('Permission')->can('delete_self')
+        ) {
             return ee()->output->show_user_error('general', ee()->lang->line('not_authorized'));
         }
 
@@ -1473,10 +1479,12 @@ class Member
         // else's computer being mean?!
         ee()->load->library('auth');
 
-        if (! ee()->auth->authenticate_id(
-            ee()->session->userdata('member_id'),
-            ee()->input->post('password')
-        )) {
+        if (
+            ! ee()->auth->authenticate_id(
+                ee()->session->userdata('member_id'),
+                ee()->input->post('password')
+            )
+        ) {
             ee()->session->save_password_lockout(ee()->session->userdata('username'));
 
             return ee()->output->show_user_error('general', ee()->lang->line('invalid_pw'));
@@ -1575,16 +1583,20 @@ class Member
             'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-2'
         );
 
-        if (ee()->TMPL->fetch_param('name') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'), $match)) {
+        if (
+            ee()->TMPL->fetch_param('name') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'), $match)
+        ) {
             $data['name'] = ee()->TMPL->fetch_param('name');
             ee()->TMPL->log_item('Member Login Form:  The \'name\' parameter has been deprecated.  Please use form_name');
         } elseif (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "") {
             $data['name'] = ee()->TMPL->fetch_param('form_name');
         }
 
-        if (ee()->TMPL->fetch_param('id') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))) {
+        if (
+            ee()->TMPL->fetch_param('id') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))
+        ) {
             $data['id'] = ee()->TMPL->fetch_param('id');
             ee()->TMPL->log_item('Member Login Form:  The \'id\' parameter has been deprecated.  Please use form_id');
         } else {
@@ -2128,8 +2140,10 @@ class Member
         }
 
         // Parse the self deletion conditional
-        if (ee('Permission')->can('delete_self') &&
-            ! ee('Permission')->isSuperAdmin()) {
+        if (
+            ee('Permission')->can('delete_self') &&
+            ! ee('Permission')->isSuperAdmin()
+        ) {
             $str = $this->_allow_if('can_delete', $str);
         } else {
             $str = $this->_deny_if('can_delete', $str);
@@ -2170,7 +2184,7 @@ class Member
 
         // Parse old style path variables
         // This is here for backward compatibility for people with older templates
-        $str = preg_replace_callback("/" . LD . "\s*path=(.*?)" . RD . "/", array(&ee()->functions, 'create_url'), $str);
+        $str = preg_replace_callback("/" . LD . "\s*path=(.*?)" . RD . "/", array( & ee()->functions, 'create_url'), $str);
 
         if (preg_match_all("#" . LD . "\s*(profile_path\s*=.*?)" . RD . "#", $str, $matches)) {
             $i = 0;
