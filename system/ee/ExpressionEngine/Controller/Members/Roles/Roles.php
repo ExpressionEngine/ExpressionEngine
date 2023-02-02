@@ -591,17 +591,16 @@ class Roles extends AbstractRolesController
             'file' => array('cp/form_group'),
         ));
 
-        if ($role->getId() != 1) {
-            $tabs = [
-                'role' => $this->renderRoleTab($role, $errors),
-                'site_access' => $this->renderSiteAccessTab($role, $errors),
-                'cp_access' => $this->renderCPAccessTab($role, $errors),
-                'template_access' => $this->renderTemplateAccessTab($role, $errors),
-            ];
-        } else {
-            $tabs = [
-                'role' => $this->renderRoleTab($role, $errors)
-            ];
+        $tabs = [
+            'role' => $this->renderRoleTab($role, $errors)
+        ];
+
+        if ($role->getId() != Member::SUPERADMIN) {
+            $tabs['site_access'] = $this->renderSiteAccessTab($role, $errors);
+            if ($role->getId() != Member::GUESTS) {
+                $tabs['cp_access'] = $this->renderCPAccessTab($role, $errors);
+            }
+            $tabs['template_access'] = $this->renderTemplateAccessTab($role, $errors);
         }
 
         return $tabs;
@@ -653,51 +652,58 @@ class Roles extends AbstractRolesController
             ]
         ];
 
-        ee()->lang->load('pro');
-        $section = array_merge($section, [
-            [
-                'title' => 'require_mfa',
-                'desc' => 'require_mfa_desc',
-                'caution' => true,
-                'fields' => [
-                    'require_mfa' => [
-                        'type' => 'yes_no',
-                        'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
-                    ]
-                ]
-            ],
-        ]);
-
-        if ($role->getId() != Member::SUPERADMIN) {
+        if (!in_array($role->getId(), [Member::BANNED, Member::GUESTS, Member::PENDING])) {
+            ee()->lang->load('pro');
             $section = array_merge($section, [
                 [
-                    'title' => 'security_lock',
-                    'desc' => 'lock_description',
+                    'title' => 'require_mfa',
+                    'desc' => 'require_mfa_desc',
+                    'caution' => true,
                     'fields' => [
-                        'is_locked' => [
+                        'require_mfa' => [
                             'type' => 'yes_no',
-                            'value' => $role->is_locked,
+                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
                         ]
                     ]
                 ],
-                [
-                    'title' => 'role_groups',
-                    'desc' => 'role_groups_desc',
-                    'fields' => [
-                        'role_groups' => [
-                            'type' => 'checkbox',
-                            'choices' => $role_groups,
-                            'value' => $role->RoleGroups->pluck('group_id'),
-                            'no_results' => [
-                                'text' => sprintf(lang('no_found'), lang('role_groups')),
-                                'link_text' => lang('add_new'),
-                                'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+            ]);
+        }
+
+        if (!in_array($role->getId(), [Member::SUPERADMIN, Member::BANNED, Member::GUESTS, Member::PENDING])) {
+            if ($role->getId() != Member::SUPERADMIN) {
+                $section = array_merge($section, [
+                    [
+                        'title' => 'security_lock',
+                        'desc' => 'lock_description',
+                        'fields' => [
+                            'is_locked' => [
+                                'type' => 'yes_no',
+                                'value' => $role->is_locked,
+                            ]
+                        ]
+                    ],
+                    [
+                        'title' => 'role_groups',
+                        'desc' => 'role_groups_desc',
+                        'fields' => [
+                            'role_groups' => [
+                                'type' => 'checkbox',
+                                'choices' => $role_groups,
+                                'value' => $role->RoleGroups->pluck('group_id'),
+                                'no_results' => [
+                                    'text' => sprintf(lang('no_found'), lang('role_groups')),
+                                    'link_text' => lang('add_new'),
+                                    'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+                                ]
                             ]
                         ]
                     ]
-                ]
-            ]);
-        } else {
+                ]);
+            }
+        }
+
+        if ($role->getId() == Member::SUPERADMIN) {
+            // superadmins don't have other tabs, so including checkboxes here
             $section = array_merge($section, [
                 [
                     'title' => 'include_members_in',
@@ -755,6 +761,10 @@ class Roles extends AbstractRolesController
                         'can_view_profiles' => $permissions['fields']['can_view_profiles']
                     ]
                 ],
+            ]
+        ];
+        if ($role->getId() != Member::GUESTS) {
+            $sections[0] = array_merge($sections[0], [
                 [
                     'title' => 'can_delete_self',
                     'desc' => 'can_delete_self_desc',
@@ -772,79 +782,83 @@ class Roles extends AbstractRolesController
                         ]
                     ]
                 ],
-                [
-                    'title' => 'include_members_in',
-                    'desc' => 'include_members_in_desc',
-                    'fields' => [
-                        'include_in_authorlist' => [
-                            'type' => 'checkbox',
-                            'choices' => ['y' => lang('include_in_authorlist')],
-                            'scalar' => true,
-                            'value' => $settings->include_in_authorlist
-                        ],
-                        'include_in_memberlist' => [
-                            'type' => 'checkbox',
-                            'margin_top' => false,
-                            'scalar' => true,
-                            'choices' => ['y' => lang('include_in_memberlist')],
-                            'value' => $settings->include_in_memberlist
-                        ]
+            ]);
+        }
+        $sections[0][] = [
+            'title' => 'include_members_in',
+            'desc' => 'include_members_in_desc',
+            'fields' => [
+                'include_in_authorlist' => [
+                    'type' => 'checkbox',
+                    'choices' => ['y' => lang('include_in_authorlist')],
+                    'scalar' => true,
+                    'value' => $settings->include_in_authorlist
+                ],
+                'include_in_memberlist' => [
+                    'type' => 'checkbox',
+                    'margin_top' => false,
+                    'scalar' => true,
+                    'choices' => ['y' => lang('include_in_memberlist')],
+                    'value' => $settings->include_in_memberlist
+                ]
+            ]
+        ];
+        $sections['commenting'] = [
+            [
+                'title' => 'can_post_comments',
+                'desc' => 'can_post_comments_desc',
+                'fields' => [
+                    'can_post_comments' => $permissions['fields']['can_post_comments']
+                ]
+            ],
+            [
+                'title' => 'exclude_from_moderation',
+                'desc' => sprintf(lang('exclude_from_moderation_desc'), ee('CP/URL', 'settings/comments')),
+                'group' => 'can_post_comments',
+                'fields' => [
+                    'exclude_from_moderation' => [
+                        'type' => 'yes_no',
+                        'value' => $settings->exclude_from_moderation,
                     ]
                 ]
             ],
-            'commenting' => [
-                [
-                    'title' => 'can_post_comments',
-                    'desc' => 'can_post_comments_desc',
-                    'fields' => [
-                        'can_post_comments' => $permissions['fields']['can_post_comments']
+        ];
+        if ($role->getId() != Member::GUESTS) {
+            $sections['commenting'][] = [
+                'title' => 'comment_actions',
+                'desc' => 'comment_actions_desc',
+                'caution' => true,
+                'fields' => [
+                    'comment_actions' => [
+                        'type' => 'checkbox',
+                        'choices' => $permissions['choices']['comment_actions'],
+                        'value' => $permissions['values']['comment_actions'],
                     ]
-                ],
-                [
-                    'title' => 'exclude_from_moderation',
-                    'desc' => sprintf(lang('exclude_from_moderation_desc'), ee('CP/URL', 'settings/comments')),
-                    'group' => 'can_post_comments',
-                    'fields' => [
-                        'exclude_from_moderation' => [
-                            'type' => 'yes_no',
-                            'value' => $settings->exclude_from_moderation,
-                        ]
-                    ]
-                ],
-                [
-                    'title' => 'comment_actions',
-                    'desc' => 'comment_actions_desc',
-                    'caution' => true,
-                    'fields' => [
-                        'comment_actions' => [
-                            'type' => 'checkbox',
-                            'choices' => $permissions['choices']['comment_actions'],
-                            'value' => $permissions['values']['comment_actions'],
-                        ]
-                    ]
-                ],
+                ]
+            ];
+        }
+        $sections['search'] = [
+            [
+                'title' => 'can_search',
+                'desc' => 'can_search_desc',
+                'fields' => [
+                    'can_search' => $permissions['fields']['can_search']
+                ]
             ],
-            'search' => [
-                [
-                    'title' => 'can_search',
-                    'desc' => 'can_search_desc',
-                    'fields' => [
-                        'can_search' => $permissions['fields']['can_search']
+            [
+                'title' => 'search_flood_control',
+                'desc' => 'search_flood_control_desc',
+                'group' => 'can_search',
+                'fields' => [
+                    'search_flood_control' => [
+                        'type' => 'text',
+                        'value' => $settings->search_flood_control,
                     ]
-                ],
-                [
-                    'title' => 'search_flood_control',
-                    'desc' => 'search_flood_control_desc',
-                    'group' => 'can_search',
-                    'fields' => [
-                        'search_flood_control' => [
-                            'type' => 'text',
-                            'value' => $settings->search_flood_control,
-                        ]
-                    ]
-                ],
+                ]
             ],
-            'personal_messaging' => [
+        ];
+        if ($role->getId() != Member::GUESTS) {
+            $sections['personal_messaging'] = [
                 [
                     'title' => 'can_send_private_messages',
                     'desc' => 'can_send_private_messages_desc',
@@ -890,8 +904,8 @@ class Roles extends AbstractRolesController
                         'can_send_bulletins' => $permissions['fields']['can_send_bulletins']
                     ]
                 ],
-            ]
-        ];
+            ];
+        }
 
         $html = '';
 
