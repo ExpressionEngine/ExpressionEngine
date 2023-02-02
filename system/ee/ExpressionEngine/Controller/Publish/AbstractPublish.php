@@ -11,8 +11,6 @@
 namespace ExpressionEngine\Controller\Publish;
 
 use CP_Controller;
-use ExpressionEngine\Library\CP\Table;
-
 use ExpressionEngine\Model\Channel\ChannelEntry;
 
 /**
@@ -570,7 +568,7 @@ abstract class AbstractPublish extends CP_Controller
             ]
         ];
 
-        if (ee('Permission')->has('can_create_entries')) {
+        if (ee('Permission')->has('can_create_entries') && !$entry->Channel->maxEntriesLimitReached()) {
             $buttons[] = [
                 'name' => 'submit',
                 'type' => 'submit',
@@ -590,7 +588,7 @@ abstract class AbstractPublish extends CP_Controller
             'attrs' => 'disabled="disabled"'
         ];
 
-        if (!$entry->isNew() && $this->entryCloningEnabled($entry)) {
+        if (!$entry->isNew() && $this->entryCloningEnabled($entry) && !$entry->Channel->maxEntriesLimitReached()) {
             $buttons[] = [
                 'name' => 'submit',
                 'type' => 'submit',
@@ -599,11 +597,6 @@ abstract class AbstractPublish extends CP_Controller
                 'working' => 'btn_saving',
                 'attrs' => 'disabled="disabled"'
             ];
-        }
-
-        // get rid of Save & New button if we've reached the max entries for this channel
-        if ($entry->Channel->maxEntriesLimitReached()) {
-            unset($buttons[1]);
         }
 
         if ($livePreviewSetup === true) {
@@ -645,7 +638,7 @@ abstract class AbstractPublish extends CP_Controller
 
     protected function createLivePreviewModal(ChannelEntry $entry)
     {
-        if ($entry->isLivePreviewable() || ee()->input->get('return') != '') {
+        if (($entry->livePreviewAllowed() && $entry->isLivePreviewable()) || ee()->input->get('return') != '') {
             $lp_domain_mismatch = false;
             if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
                 $lp_domain_mismatch = true;
@@ -706,6 +699,9 @@ abstract class AbstractPublish extends CP_Controller
 
                 return true;
             }
+        } elseif (!$entry->livePreviewAllowed()) {
+            // if preview is disabled on channel, we do not show banner
+            return null;
         } elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
             $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
                 ->asIssue()
@@ -713,16 +709,6 @@ abstract class AbstractPublish extends CP_Controller
                 ->withTitle(lang('preview_url_not_set'))
                 ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
             ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-
-            if (!$entry->livePreviewAllowed()) {
-                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-                    ->asIssue()
-                    ->canClose()
-                    ->withTitle(lang('preview_not_allowed'))
-                    ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-allow_preview'));
-                ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-            }
-
             return false;
         }
 
