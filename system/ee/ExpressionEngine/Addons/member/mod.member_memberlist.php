@@ -128,7 +128,7 @@ class Member_memberlist extends Member
         /** ---------------------------------
         /**  Does the recipient accept email?
         /** ---------------------------------*/
-        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '". ee()->db->escape_str($member_id) . "'");
+        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '" .  ee()->db->escape_str($member_id) . "'");
 
         if ($query->num_rows() == 0) {
             return false;
@@ -159,7 +159,7 @@ class Member_memberlist extends Member
         ee()->email->message($message);
 
         if (isset($_POST['self_copy'])) {
-            /*	If CC'ing the send, they get the email and the recipient is BCC'ed
+            /*  If CC'ing the send, they get the email and the recipient is BCC'ed
                 Because Rick says his filter blocks emails without a To: field
             */
 
@@ -249,7 +249,7 @@ class Member_memberlist extends Member
             $template = ee()->TMPL->tagdata;
             // Find out where our memberlist page actually is (for doing search results).
             $result_page = ee()->functions->fetch_current_uri();
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $template = $this->_load_element('memberlist');
         }
 
@@ -338,7 +338,7 @@ class Member_memberlist extends Member
 
         /* ----------------------------------------
         /*  Check for Search URL
-        /*		- In an attempt to be clever, I decided to first check for
+        /*      - In an attempt to be clever, I decided to first check for
                 the Search ID and if found, use an explode to set it and
                 find a new $this->cur_id.  This solves the problem easily
                 and saves me from using substr() and strpos() far too many times
@@ -893,7 +893,7 @@ class Member_memberlist extends Member
             $template = str_replace(LD . "member_rows" . RD, $str, $template);
         }
 
-        return	$template;
+        return $template;
     }
 
     /** ------------------------------------------

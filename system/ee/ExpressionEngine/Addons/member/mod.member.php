@@ -44,6 +44,8 @@ class Member
         'email_console', 'send_email', 'smileys', 'member_mini_search', 'do_member_mini_search'
     );
 
+    public $member_fields = [];
+
     public $page_title = '';
     public $basepath = '';
     public $forum_path = '';
