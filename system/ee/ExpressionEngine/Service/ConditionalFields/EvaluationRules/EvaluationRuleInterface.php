@@ -22,6 +22,7 @@ interface EvaluationRuleInterface
      *
      * @param mixed $fieldValue
      * @param mixed $expectedValue
+     * @param array $fieldSettings
      * @return bool whether the condition is met
      */
     public function evaluate($fieldValue, $expectedValue, $fieldSettings);
@@ -32,7 +33,7 @@ interface EvaluationRuleInterface
      * @return string
      */
     public function getLanguageKey();
-    
+
     /**
      * The input type for the expected value (text, select, etc)
      * If returning NULL, the field is not displayed
