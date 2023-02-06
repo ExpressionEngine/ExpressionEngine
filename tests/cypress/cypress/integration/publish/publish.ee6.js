@@ -537,7 +537,10 @@ context('Publish Page - Create', () => {
         cy.get('[name="grid[cols][new_2][col_settings][field_pre_populate]"][value="n"]:visible').check()
         cy.get('[name="grid[cols][new_2][col_settings][field_list_items]"]:visible').type('quatro{enter}cinco{enter}seis')
 
+        cy.wait(1000)
+
         cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.screenshot({capture: 'fullPage'})
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
