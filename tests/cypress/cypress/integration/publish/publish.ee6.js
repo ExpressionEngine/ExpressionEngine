@@ -537,15 +537,12 @@ context('Publish Page - Create', () => {
         cy.get('[name="grid[cols][new_2][col_settings][field_pre_populate]"][value="n"]:visible').check()
         cy.get('[name="grid[cols][new_2][col_settings][field_list_items]"]:visible').type('quatro{enter}cinco{enter}seis')
 
-        cy.wait(1000)
-
         cy.get('body').type('{ctrl}', {release: false}).type('s')
-        cy.screenshot({capture: 'fullPage'})
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
-        cy.get('.grid-field [rel=add_row]:visible').click();
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').should('be.visible')
+        cy.screenshot({capture: 'fullPage'})
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').click()
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').click()
