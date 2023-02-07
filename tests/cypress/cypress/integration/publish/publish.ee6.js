@@ -541,17 +541,18 @@ context('Publish Page - Create', () => {
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
+        cy.get('.grid-field [rel=add_row]:visible').click();
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').should('be.visible')
         cy.screenshot({capture: 'fullPage'})
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').should('have.class', 'active')
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').should('have.class', 'active')
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(0).find('input').type('row 1');
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(1).find('.button:contains("dos")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(1).find('.button:contains("tres")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(1).find('.button:contains("dos")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(1).find('.button:contains("tres")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(2).find('.button:contains("quatro")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(2).find('.button:contains("cinco")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('p').contains('has been updated')
