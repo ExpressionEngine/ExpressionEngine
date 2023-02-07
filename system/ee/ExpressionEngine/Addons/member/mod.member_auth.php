@@ -966,10 +966,15 @@ class Member_auth extends Member
         $expired = $this->getTokenExpiration();
 
         // Make sure the token is valid and belongs to a member.
-        $member_id_query = ee()->db->select('member_id')
-            ->where('resetcode', $resetcode)
-            ->where('date >', $expired)
-            ->get('reset_password');
+        $member_id_query = ee()->db->select('r.member_id, m.username')
+            ->from('reset_password r')
+            ->join('members m', 'r.member_id = m.member_id')
+            ->where([
+                'r.resetcode' => $resetcode,
+                'r.date >' => $expired
+            ])
+            ->limit(1)
+            ->get();
 
         if ($member_id_query->num_rows() === 0) {
             return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')), '', $return_error_link);
@@ -995,8 +1000,9 @@ class Member_auth extends Member
         // match.
 
         $pw_data = array(
+            'username' => $member_id_query->row('username'),
             'password' => $password,
-            'password_confirm' => $password_confirm,
+            'password_confirm' => $password_confirm
         );
 
         $validationRules = [

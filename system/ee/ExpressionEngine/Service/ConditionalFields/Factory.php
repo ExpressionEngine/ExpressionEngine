@@ -17,22 +17,19 @@ class Factory
 {
     protected static $evaluationRules;
     protected static $installedFieldtypes;
-    
+
     /**
      * Make new or use existing evaluation rule
-     * 
+     *
      * @param string $ruleName
      * @param string $fieldTypeName
      * @return EvaluationRules\EvaluationRuleInterface
      */
     public function make($ruleName, $fieldTypeName = '')
     {
-        $ruleClass = "\\ExpressionEngine\\Service\\ConditionalFields\\EvaluationRules\\" . ucfirst($ruleName);
-        if (isset($evaluationRules[$ruleClass])) {
-            return $evaluationRules[$ruleClass];
-        }
-
-        if (!class_exists($ruleClass) && $fieldTypeName != '') {
+        $ruleClass = '';
+        // addons can overwrite the rules, so we check those first
+        if ($fieldTypeName != '') {
             if (empty(self::$installedFieldtypes)) {
                 ee()->load->library('api');
                 ee()->legacy_api->instantiate('channel_fields');
@@ -42,6 +39,13 @@ class Factory
             if (!empty($addon)) {
                 $ruleClass = $addon->getEvaluationRuleClass($ruleName);
             }
+            if (isset($evaluationRules[$ruleClass])) {
+                return $evaluationRules[$ruleClass];
+            }
+        }
+
+        if (empty($ruleClass) || !class_exists($ruleClass)) {
+            $ruleClass = "\\ExpressionEngine\\Service\\ConditionalFields\\EvaluationRules\\" . ucfirst($ruleName);
             if (isset($evaluationRules[$ruleClass])) {
                 return $evaluationRules[$ruleClass];
             }
@@ -59,7 +63,7 @@ class Factory
             );
         }
 
-        $evaluationRules[$ruleClass] = new $ruleClass;
+        $evaluationRules[$ruleClass] = new $ruleClass();
 
         return $evaluationRules[$ruleClass];
     }
@@ -76,7 +80,6 @@ class Factory
 
         return isset($interfaces[EvaluationRules\EvaluationRuleInterface::class]);
     }
-
 }
 
 // EOF
