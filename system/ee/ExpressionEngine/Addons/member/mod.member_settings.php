@@ -771,6 +771,11 @@ class Member_settings extends Member
 
         $result_row = $this->member->getValues();
 
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('channel_fields');
+        // we need to reset this, because might have already been populated by channel:entries tag
+        ee()->api_channel_fields->custom_fields = array();
+
         if ($query->num_rows() > 0) {
             foreach ($this->member->getDisplay()->getFields() as $field) {
                 if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
@@ -2022,7 +2027,11 @@ UNGA;
         /**  Display errors if there are any
         /** -------------------------------------*/
         if ($validationResult->isNotValid()) {
-            return ee()->output->show_user_error('submission', $validationResult->getAllErrors());
+            $errors = [];
+            foreach ($validationResult->getAllErrors() as $error) {
+                $errors = array_merge($errors, array_values($error));
+            }
+            return ee()->output->show_user_error('submission', $errors);
         }
 
         if ($un_exists) {

@@ -537,30 +537,34 @@ context('Publish Page - Create', () => {
         cy.get('[name="grid[cols][new_2][col_settings][field_pre_populate]"][value="n"]:visible').check()
         cy.get('[name="grid[cols][new_2][col_settings][field_list_items]"]:visible').type('quatro{enter}cinco{enter}seis')
 
+        cy.screenshot({capture: 'fullPage'})
+
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
         cy.get('.grid-field [rel=add_row]:visible').click();
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').should('have.class', 'active')
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').should('have.class', 'active')
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').should('be.visible')
+        cy.screenshot({capture: 'fullPage'})
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(0).find('input').type('row 1');
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(1).find('.button:contains("dos")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(1).find('.button:contains("tres")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(1).find('.button:contains("dos")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(1).find('.button:contains("tres")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(2).find('.button:contains("quatro")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(2).find('.button:contains("cinco")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]:not(".grid-field__item-fieldset")').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('p').contains('has been updated')
-        cy.get('.grid-field tbody tr:visible td:visible').eq(0).find('input').invoke('attr', 'value').then((val) => {
+        cy.get('.grid-field tbody tr:visible td:visible:not(".grid-field__item-fieldset")').eq(0).find('input').invoke('attr', 'value').then((val) => {
           expect(val).to.eq('row 1');
         })
-        cy.get('.grid-field tbody tr:visible td:visible').eq(1).find('.button:contains("dos")').should('have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td:visible').eq(1).find('.button:contains("tres")').should('have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible:not(".grid-field__item-fieldset")').eq(1).find('.button:contains("dos")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible:not(".grid-field__item-fieldset")').eq(1).find('.button:contains("tres")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible:not(".grid-field__item-fieldset")').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible:not(".grid-field__item-fieldset")').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.visit('index.php/entries/grid')
         cy.logFrontendPerformance()
