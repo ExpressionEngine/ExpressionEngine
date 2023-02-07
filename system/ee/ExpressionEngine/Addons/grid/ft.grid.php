@@ -183,7 +183,7 @@ class Grid_ft extends EE_Fieldtype
                 ? get_bool_from_string($this->settings['allow_reorder'])
                 : true,
             'vertical_layout' => isset($this->settings['vertical_layout'])
-                ? $this->settings['vertical_layout']
+                ? ($this->settings['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $this->settings['vertical_layout'])
                 : 'n',
         ));
         $grid->loadAssets();
@@ -614,9 +614,9 @@ class Grid_ft extends EE_Fieldtype
                                 'choices' => array(
                                     'n' => lang('grid_auto'),
                                     'y' => lang('grid_vertical_layout'),
-                                    'horizontal_layout' => lang('grid_horizontal_layout'),
+                                    'horizontal' => lang('grid_horizontal_layout'),
                                 ),
-                                'value' => isset($data['vertical_layout']) ? $data['vertical_layout'] : 'n'
+                                'value' => isset($data['vertical_layout']) ? ($data['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $data['vertical_layout']) : 'n'
                             )
                         )
                     )
