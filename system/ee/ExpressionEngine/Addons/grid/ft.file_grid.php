@@ -48,7 +48,7 @@ class file_grid_ft extends Grid_ft
             'content_type' => $this->get_setting('field_content_type', 'all'),
             'grid_max_rows' => $this->get_setting('grid_max_rows'),
             'vertical_layout' => isset($this->settings['vertical_layout'])
-                ? $this->settings['vertical_layout']
+                ? ($this->settings['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $this->settings['vertical_layout'])
                 : 'n',
         ]);
     }
@@ -139,9 +139,9 @@ class file_grid_ft extends Grid_ft
                                 'choices' => [
                                     'n' => lang('grid_auto'),
                                     'y' => lang('grid_vertical_layout'),
-                                    'horizontal_layout' => lang('grid_horizontal_layout'),
+                                    'horizontal' => lang('grid_horizontal_layout'),
                                 ],
-                                'value' => isset($data['vertical_layout']) ? $data['vertical_layout'] : 'n'
+                                'value' => isset($data['vertical_layout']) ? ($data['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $data['vertical_layout']) : 'n'
                             ]
                         ]
                     ]
