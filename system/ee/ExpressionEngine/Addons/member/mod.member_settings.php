@@ -771,6 +771,11 @@ class Member_settings extends Member
 
         $result_row = $this->member->getValues();
 
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('channel_fields');
+        // we need to reset this, because might have already been populated by channel:entries tag
+        ee()->api_channel_fields->custom_fields = array();
+
         if ($query->num_rows() > 0) {
             foreach ($this->member->getDisplay()->getFields() as $field) {
                 if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
