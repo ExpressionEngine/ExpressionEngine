@@ -8,5 +8,10 @@ return array(
     'version' => '2.3.0',
     'namespace' => 'ExpressionEngine\Addons\Member',
     'settings_exist' => false,
-    'built_in' => true
+    'built_in' => true,
+    'fieldtypes' => array(
+        'member' => array(
+            'compatibility' => 'member'
+        )
+    )
 );

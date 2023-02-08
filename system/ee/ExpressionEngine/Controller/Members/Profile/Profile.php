@@ -48,6 +48,9 @@ class Profile extends CP_Controller
         }
 
         $qs = array('id' => $id);
+        if (ee('Request')->get('modal_form') == 'y') {
+            $qs['modal_form'] = 'y';
+        }
         $this->query_string = $qs;
         $this->base_url = ee('CP/URL')->make('members/profile/settings');
         $this->base_url->setQueryStringVariable('id', $id);
