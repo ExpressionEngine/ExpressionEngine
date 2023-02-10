@@ -27,6 +27,8 @@ class Updater
     {
         // Add key for roles_role_groups.group_id
         ee()->smartforge->add_key('roles_role_groups', 'group_id', 'group_id_idx');
+
+        return true;
     }
 }
 
