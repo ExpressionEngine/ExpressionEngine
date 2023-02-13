@@ -3,7 +3,8 @@
         "php": ">=7.3.0",
         "phpunit/phpunit": "^9.5",
         "mockery/mockery": "^1.4.2",
-        "hamcrest/hamcrest-php": "^2.0.1"
+        "hamcrest/hamcrest-php": "^2.0.1",
+        "overtrue/phplint": "^6"
     },
     "license": "proprietary",
     "authors": [
