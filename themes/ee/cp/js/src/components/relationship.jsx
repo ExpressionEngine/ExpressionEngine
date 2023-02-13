@@ -93,7 +93,7 @@ class Relationship extends React.Component {
             iframe: true,
             success: this.entryWasCreated,
             load: (modal) => {
-                const entryTitle = this.field.closest('[data-publish]').find('input[name=title]').val()
+                const entryTitle = $(this.field.closest('[data-publish]')).find('input[name=title]').val()
 
                 let title = EE.relationship.lang.creatingNew
                     .replace('#to_channel#', channelTitle)
