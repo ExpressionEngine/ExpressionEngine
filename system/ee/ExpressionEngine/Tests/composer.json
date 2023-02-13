@@ -4,7 +4,7 @@
         "phpunit/phpunit": "^9.5",
         "mockery/mockery": "^1.4.2",
         "hamcrest/hamcrest-php": "^2.0.1",
-        "overtrue/phplint": "^6"
+        "overtrue/phplint": "^9"
     },
     "license": "proprietary",
     "authors": [
