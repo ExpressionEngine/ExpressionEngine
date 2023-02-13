@@ -857,6 +857,11 @@ class Member_settings extends Member
                 'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
             );
 
+            // check the template for file fields
+            if (strpos($template, '_hidden_file') !== false) {
+                $data['enctype'] = 'multi';
+            }
+
             $return = ee()->functions->form_declaration($data) . $template . '</form>';
             //make head appear by default
             if (preg_match('/' . LD . 'form_assets' . RD . '/', $return)) {
@@ -928,27 +933,45 @@ class Member_settings extends Member
         $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 
         if ($query->num_rows() > 0) {
+            ee()->load->library(array('api', 'file_field'));
             foreach ($query->result_array() as $row) {
                 $fname = 'm_field_id_' . $row['m_field_id'];
                 $post = ee()->input->post($fname);
 
-                // Handle arrays of checkboxes as a special case;
-                if ($row['m_field_type'] == 'checkbox') {
+                // file field is a special case
+                if ($row['m_field_type'] == 'file') {
+                    if (ee()->input->post($fname . '_hidden_file') === '') {
+                        $member->$fname = '';
+                    }
+                    // trick validation into calling the file fieldtype
+                    if (isset($_FILES[$fname]['name'])) {
+                        $img = ee()->file_field->validate($_FILES[$fname]['name'], $fname);
+
+                        if (isset($img['value'])) {
+                            $member->$fname = $img['value'];
+                        } else {
+                            $member->$fname = '';
+                        }
+                    }
+                } elseif ($row['m_field_type'] == 'checkbox') {
+                    // Handle arrays of checkboxes as a special case;
                     foreach ($row['choices']  as $property => $label) {
                         $member->$fname = in_array($property, $post) ? 'y' : 'n';
                     }
                 } else {
                     if ($post !== false) {
-                        // Check with Seth
                         $member->$fname = ee('Security/XSS')->clean($post);
-                        //$member->$fname = $post;
                     }
                 }
 
                 // Set custom field format override if available, too
                 $ft_name = 'm_field_ft_' . $row['m_field_id'];
                 if (ee()->input->post($ft_name)) {
-                    $member->{$ft_name} = ee()->input->post($ft_name);
+                    $member->{$ft_name} = ee('Security/XSS')->clean(ee('Request')->post($ft_name));
+                }
+                $dt_name = 'm_field_dt_' . $row['m_field_id'];
+                if (ee()->input->post($dt_name)) {
+                    $member->{$dt_name} = ee('Security/XSS')->clean(ee('Request')->post($dt_name));
                 }
             }
         }

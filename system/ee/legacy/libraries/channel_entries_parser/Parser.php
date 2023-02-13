@@ -502,7 +502,7 @@ class EE_Channel_data_parser
         $cond['signature_image_url'] = ee()->config->slash_item('sig_img_url') . $row['sig_img_filename'];
         $cond['signature_image_width'] = $row['sig_img_width'];
         $cond['signature_image_height'] = $row['sig_img_height'];
-        $cond['relative_date'] = timespan($row['entry_date']);
+        $cond['relative_date'] = !is_null($row['entry_date']) ? timespan($row['entry_date']) : '';
 
         //-- we need to prep the default dates
 

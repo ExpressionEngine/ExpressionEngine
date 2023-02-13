@@ -335,6 +335,13 @@ class Profile extends CP_Controller
                         if (strpos($name, 'field_ft_') !== false && ee()->input->post($name)) {
                             $this->member->$name = ee()->input->post($name);
                         }
+
+                        $name = str_replace('m_field_id_', 'm_field_dt_', $field_name);
+
+                        // Set custom field format override if available, too
+                        if (strpos($name, 'field_dt_') !== false && ee()->input->post($name)) {
+                            $this->member->$name = ee()->input->post($name);
+                        }
                     }
                 }
             }

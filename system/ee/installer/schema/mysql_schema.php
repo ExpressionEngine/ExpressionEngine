@@ -455,7 +455,7 @@ class EE_Schema
 			m_field_name varchar(32) NOT NULL,
 			m_field_label varchar(50) NOT NULL,
 			m_field_description text NOT NULL,
-			m_field_type varchar(12) NOT NULL default 'text',
+			m_field_type varchar(50) NOT NULL default 'text',
 			m_field_list_items text NOT NULL,
 			m_field_ta_rows tinyint(2) default '8',
 			m_field_maxl smallint(3) NULL DEFAULT NULL,

@@ -93,6 +93,14 @@ class Colorpicker_ft extends EE_Fieldtype
      */
     public function display_field($data)
     {
+        if (REQ != 'CP') {
+            $field = array(
+                'name' => $this->field_name,
+                'value' => $data
+            );
+            return form_input($field);
+        }
+
         ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
         return $this->createColorPicker([

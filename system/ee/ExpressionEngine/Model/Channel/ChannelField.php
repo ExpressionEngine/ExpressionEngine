@@ -301,41 +301,28 @@ class ChannelField extends FieldModel
     }
 
     /**
-     * Validate the field name to avoid variable name collisions
+     * The field name must be also unique across Member Fields
      */
-    public function validateNameIsNotReserved($key, $value, $params, $rule)
+    public function validateUnique($key, $value, array $params = array())
     {
-        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
-            return lang('reserved_word');
-        }
+        $valid = parent::validateUnique($key, $value, $params);
+        if ($valid === true) {
+            $unique = $this->getModelFacade()
+                ->get('MemberField')
+                ->filter('m_' . $key, $value);
 
-        return true;
-    }
-
-    /**
-     * If this entity is not new (an edit) then we cannot change this entity's
-     * type to something incompatible with its initial type.
-     */
-    public function validateIsCompatibleWithPreviousValue($key, $value, $params, $rule)
-    {
-        if (! $this->isNew()) {
-            $previous_value = $this->getBackup('field_type');
-
-            if ($previous_value) {
-                $compatibility = $this->getCompatibleFieldtypes();
-
-                // If what we are set to now is not compatible to what we were
-                // set to before the change, then we are invalid.
-                if (! isset($compatibility[$previous_value])) {
-                    // Reset it and return an error.
-                    $this->field_type = $previous_value;
-
-                    return lang('invalid_field_type');
-                }
+            foreach ($params as $field) {
+                $unique->filter('m_' . $field, $this->getProperty($field));
             }
+
+            if ($unique->count() > 0) {
+                return 'unique'; // lang key
+            }
+
+            return true;
         }
 
-        return true;
+        return $valid;
     }
 }
 

@@ -27,7 +27,7 @@ class MemberField extends FieldModel
     );
 
     protected static $_validation_rules = array(
-        'm_field_type' => 'required|enum[text,textarea,select,date,url]',
+        'm_field_type' => 'required|validateIsCompatibleWithPreviousValue',
         'm_field_label' => 'required|xss|noHtml|maxLength[50]',
         'm_field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]',
         'm_legacy_field_data' => 'enum[y,n]'
@@ -186,15 +186,32 @@ class MemberField extends FieldModel
     }
 
     /**
-     * Validate the field name to avoid variable name collisions
+     * The field name must be also unique across Channel Fields
      */
-    public function validateNameIsNotReserved($key, $value, $params, $rule)
+    public function validateUnique($key, $value, array $params = array())
     {
-        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
-            return lang('reserved_word');
+        $valid = parent::validateUnique($key, $value, $params);
+        if ($valid === true) {
+            $key = (strpos($key, 'm_') === 0) ? substr($key, 2) : $key;
+            $unique = $this->getModelFacade()
+                ->get('ChannelField')
+                ->filter($key, $value);
+
+            foreach ($params as $field) {
+                $unique->filter(
+                    ((strpos($field, 'm_') === 0) ? substr($field, 2) : $field),
+                    $this->getProperty($field)
+                );
+            }
+
+            if ($unique->count() > 0) {
+                return 'unique'; // lang key
+            }
+
+            return true;
         }
 
-        return true;
+        return $valid;
     }
 }
 

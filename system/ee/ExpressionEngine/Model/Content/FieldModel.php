@@ -503,6 +503,9 @@ abstract class FieldModel extends Model
                 false
             ));
         }
+        if (is_null($data)) {
+            $data = '';
+        }
         if ($tag) {
             return str_replace(LD . $tag . RD, $data, $tagdata);
         }
@@ -514,6 +517,49 @@ abstract class FieldModel extends Model
         return str_replace(LD . $tag . RD, $data, $tagdata);
     }
 
+    /**
+     * If this entity is not new (an edit) then we cannot change this entity's
+     * type to something incompatible with its initial type.
+     */
+    public function validateIsCompatibleWithPreviousValue($key, $value, $params, $rule)
+    {
+        if (! $this->isNew()) {
+            $previous_value = $this->getBackup('field_type');
+
+            if ($previous_value) {
+                $compatibility = $this->getCompatibleFieldtypes();
+
+                // If what we are set to now is not compatible to what we were
+                // set to before the change, then we are invalid.
+                if (! isset($compatibility[$previous_value])) {
+                    // Reset it and return an error.
+                    $this->field_type = $previous_value;
+
+                    return lang('invalid_field_type');
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Validate the field name to avoid variable name collisions
+     */
+    public function validateNameIsNotReserved($key, $value, $params, $rule)
+    {
+        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
+            return lang('reserved_word');
+        }
+
+        return true;
+    }
+
+    /**
+     * Fieldtypes that are compatible
+     *
+     * @return array
+     */
     public function getCompatibleFieldtypes()
     {
         $fieldtypes = array();
@@ -548,6 +594,31 @@ abstract class FieldModel extends Model
         asort($fieldtypes);
 
         return $fieldtypes;
+    }
+
+    /**
+     * Fieldtypes that can be used by given model
+     *
+     * @return array
+     */
+    public function getUsableFieldtypes($modelName = 'ChannelField')
+    {
+        $use = array();
+
+        foreach (ee('Addon')->installed() as $addon) {
+            if ($addon->hasFieldtype()) {
+                $fieldtypeNames = $addon->getFieldtypeNames();
+                foreach ($addon->get('fieldtypes', array()) as $fieldtype => $metadata) {
+                    if ($modelName == 'ChannelField' || (isset($metadata['use']) && in_array($modelName, $metadata['use']))) {
+                        $use[$fieldtype] = $fieldtypeNames[$fieldtype];
+                    }
+                }
+            }
+        }
+
+        asort($use);
+
+        return $use;
     }
 }
 // EOF
