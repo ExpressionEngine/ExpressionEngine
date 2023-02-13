@@ -372,7 +372,7 @@ class EntryListing
     private function createAuthorFilter($channel_id = null)
     {
         $db = ee('db')->distinct()
-            ->select('t.author_id, m.screen_name')
+            ->select('t.author_id, m.screen_name, m.username')
             ->from('channel_titles t')
             ->join('members m', 'm.member_id = t.author_id', 'LEFT')
             ->order_by('screen_name', 'asc');
