@@ -25,6 +25,19 @@ class Updater
      */
     public function do_update()
     {
+        $steps = new \ProgressIterator([
+            'addRolesRoleGroupIndex',
+        ]);
+
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+
+        return true;
+    }
+
+    public function addRolesRoleGroupIndex()
+    {
         // Add key for roles_role_groups.group_id
         ee()->smartforge->add_key('roles_role_groups', 'group_id', 'group_id_idx');
 
