@@ -385,7 +385,7 @@ class EntryListing
 
         $author_filter_options = [];
         foreach ($authors_query->result() as $row) {
-            $author_filter_options[$row->author_id] = $row->screen_name;
+            $author_filter_options[$row->author_id] = (!empty($row->screen_name)) ? $row->screen_name : $row->username;
         }
 
         // Put the current user at the top of the author list
