@@ -31,6 +31,8 @@ if (COMMAND_DELAY > 0) {
 }
 
 Cypress.on('uncaught:exception', (err, runnable) => {
+    cy.log(err);
+    cy.screenshot();
     cy.writeFile('cypress/downloads/js.log.txt', err.serialize(), { flag: 'a+' })
 })
 
