@@ -38,16 +38,11 @@ context('Create combinations of field', () => {
 			addField(options[i])
 		}
 
-		cy.log('have a rest...');
-		cy.wait(5000);
-
-		cy.on('uncaught:exception', (err, runnable) => {
-			cy.log(err);
-			cy.screenshot();
-			cy.writeFile('cypress/downloads/js.log.txt', err.serialize(), { flag: 'a+' })
-		})
-
 		cy.log('Creates a bunch of Template Groups')
+		cy.window().then((win) => { 
+			win.parent.document.getElementsByClassName('reporter-wrap')[0].style.width = '70%';
+		});
+		
 		for(let j = 0 ; j < GroupName.length; j++){
 			cy.visit('admin.php?/cp/design/group/create')
 			let title = 'aa' + GroupName[j];
@@ -56,6 +51,10 @@ context('Create combinations of field', () => {
 			cy.get('[value="Save Template Group"]').eq(0).click()
 			cy.get('p').contains('has been created')
 		}
+
+		cy.window().then((win) => { 
+			win.parent.document.getElementsByClassName('reporter-wrap')[0].style.width = '30%';
+		});
 
 		cy.log('Creates a Channel to work in')
 		cy.visit('admin.php?/cp/channels/create')
