@@ -30,6 +30,10 @@ if (COMMAND_DELAY > 0) {
     }
 }
 
+Cypress.on('uncaught:exception', (err, runnable) => {
+    cy.writeFile('cypress/downloads/js.log.txt', err.serialize(), { flag: 'a+' })
+})
+
 // -- This is a parent command --
 Cypress.Commands.add("login", (user) => {
     if (Cypress.$('input[name=username]:visible').length == 0) {
