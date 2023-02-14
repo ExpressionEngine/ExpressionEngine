@@ -38,6 +38,15 @@ context('Create combinations of field', () => {
 			addField(options[i])
 		}
 
+		cy.log('have a rest...');
+		cy.wait(5000);
+
+		cy.on('uncaught:exception', (err, runnable) => {
+			cy.log(err);
+			cy.screenshot();
+			cy.writeFile('cypress/downloads/js.log.txt', err.serialize(), { flag: 'a+' })
+		})
+
 		cy.log('Creates a bunch of Template Groups')
 		for(let j = 0 ; j < GroupName.length; j++){
 			addGroup(GroupName[j])
