@@ -43,12 +43,11 @@ context('Create combinations of field', () => {
 		}
 
 		cy.log('Creates a bunch of Template Groups')
-		for(let j = 0 ; j < GroupName.length; j++){
+		for(let j = 0; j < GroupName.length; j++){
 			cy.visit('admin.php?/cp/design/group/create', {
 				onBeforeLoad(win) {
 					cy.spy(win.console, 'log').as('spyWinConsoleLog');
 					cy.spy(win.console, 'error').as('spyWinConsoleError');
-					cy.spy(win.console, 'exception').as('spyWinConsoleException');
 				}
 			})
 			let title = 'aa' + GroupName[j];
