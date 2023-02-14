@@ -26,6 +26,10 @@ context('Create combinations of field', () => {
 
 		cy.auth()
 
+		cy.window().then((win) => { 
+			win.parent.document.getElementsByClassName('reporter-wrap')[0].style.width = '70%';
+		});
+
 		cy.log('verifies fields page exists')
 		cy.visit('admin.php?/cp/fields')
 		cy.get('.main-nav__title > h1').contains('Field')
@@ -39,10 +43,6 @@ context('Create combinations of field', () => {
 		}
 
 		cy.log('Creates a bunch of Template Groups')
-		cy.window().then((win) => { 
-			win.parent.document.getElementsByClassName('reporter-wrap')[0].style.width = '70%';
-		});
-		
 		for(let j = 0 ; j < GroupName.length; j++){
 			cy.visit('admin.php?/cp/design/group/create')
 			let title = 'aa' + GroupName[j];
@@ -51,10 +51,6 @@ context('Create combinations of field', () => {
 			cy.get('[value="Save Template Group"]').eq(0).click()
 			cy.get('p').contains('has been created')
 		}
-
-		cy.window().then((win) => { 
-			win.parent.document.getElementsByClassName('reporter-wrap')[0].style.width = '30%';
-		});
 
 		cy.log('Creates a Channel to work in')
 		cy.visit('admin.php?/cp/channels/create')
