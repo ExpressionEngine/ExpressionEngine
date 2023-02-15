@@ -163,9 +163,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         if (isset($this->settings['grid_field_id'])) {
             // grid takes the parent grid's field id and sticks it into "grid_field_id"
-            $all_rows_where['grid_col_id'] = $this->settings['col_id'];
-            $all_rows_where['grid_field_id'] = $this->settings['grid_field_id'];
-            $all_rows_where['grid_row_id'] = $this->settings['grid_row_id'];
+            $all_rows_where['grid_col_id'] = $this->settings['col_id'] ?? 0;
+            $all_rows_where['grid_field_id'] = $this->settings['grid_field_id'] ?? 0;
+            $all_rows_where['grid_row_id'] = $this->settings['grid_row_id'] ?? 0;
         }
 
         // clear old stuff
