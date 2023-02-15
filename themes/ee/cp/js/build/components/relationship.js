@@ -236,8 +236,7 @@ function (_React$Component) {
         iframe: true,
         success: this.entryWasCreated,
         load: function load(modal) {
-          var entryTitle = _this2.field.closest('[data-publish]').find('input[name=title]').val();
-
+          var entryTitle = $(_this2.field.closest('[data-publish]')).find('input[name=title]').val();
           var title = EE.relationship.lang.creatingNew.replace('#to_channel#', channelTitle).replace('#from_channel#', EE.publish.channel_title);
 
           if (entryTitle) {
