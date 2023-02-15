@@ -381,8 +381,7 @@ class EE_Schema
 			`role_id` int(10) unsigned NOT NULL,
 			`group_id` int(10) unsigned NOT NULL,
 			PRIMARY KEY (`role_id`,`group_id`),
-			KEY `role_id` (`role_id`),
-			KEY `group_id` (`group_id`)
+			KEY `group_id_idx` (`group_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_members_role_groups` (
