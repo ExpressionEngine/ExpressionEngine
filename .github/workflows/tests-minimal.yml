@@ -260,6 +260,13 @@ jobs:
                 name: error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
                 path: /home/runner/php_errors.log
 
+            - name: Archive JS errors
+              uses: actions/upload-artifact@v3
+              if: failure()
+              with:
+                name: js-error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
+                path: tests/cypress/cypress/downloads/js.log.txt
+
             - name: Archive performance logs
               uses: actions/upload-artifact@v3
               with:
