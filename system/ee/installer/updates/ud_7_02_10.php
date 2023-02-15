@@ -38,8 +38,9 @@ class Updater
 
     public function addRolesRoleGroupIndex()
     {
-        // Add key for roles_role_groups.group_id
-        ee()->smartforge->add_key('roles_role_groups', 'group_id', 'group_id_idx');
+        // Add keys for roles_role_group
+        ee()->smartforge->add_key('roles_role_groups', 'role_id', 'role_id');
+        ee()->smartforge->add_key('roles_role_groups', 'group_id', 'group_id');
 
         return true;
     }
