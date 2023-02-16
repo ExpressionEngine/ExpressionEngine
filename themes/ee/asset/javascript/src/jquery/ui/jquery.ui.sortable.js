@@ -1287,6 +1287,7 @@ return $.widget("ui.sortable", $.ui.mouse, {
 	},
 
 	_trigger: function() {
+		console.log('sortable');
 		if ($.Widget.prototype._trigger.apply(this, arguments) === false) {
 			this.cancel();
 		}

@@ -750,7 +750,7 @@ EE.cp.broadcastEvents = (function() {
 		modal: function() {
 			if ( ! State.modalActive && logoutModal) {
 
-				console.log('logoutModal.trigger(modal:open'));
+				console.log('logoutModal.trigger(modal:open');
 				logoutModal.trigger('modal:open');
 
 				logoutModal.on('modal:close', function(e) {
