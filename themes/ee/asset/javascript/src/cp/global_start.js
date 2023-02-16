@@ -750,7 +750,6 @@ EE.cp.broadcastEvents = (function() {
 		modal: function() {
 			if ( ! State.modalActive && logoutModal) {
 
-				console.log('logoutModal.trigger(modal:open');
 				logoutModal.trigger('modal:open');
 
 				logoutModal.on('modal:close', function(e) {
@@ -771,7 +770,6 @@ EE.cp.broadcastEvents = (function() {
 		login: function() {
 			State.modalActive = false;
 
-			console.log('logoutModal.trigger(modal:close');
 			if (logoutModal) {
 				logoutModal.trigger('modal:close');
 
@@ -796,7 +794,6 @@ EE.cp.broadcastEvents = (function() {
 		_t: null,
 
 		init: function() {
-			console.log('broadcast.setBasePath');
 			$(window).trigger('broadcast.setBasePath', EE.BASE);
 			$(window).trigger('broadcast.setCsrfToken', EE.CSRF_TOKEN);
 			$(window).trigger('broadcast.setRememberMe', EE.hasRememberMe);

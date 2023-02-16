@@ -681,7 +681,6 @@ $.widget("ui.draggable", $.ui.mouse, {
 	// From now on bulk stuff - mainly helpers
 
 	_trigger: function( type, event, ui ) {
-		console.log('draggable');
 		ui = ui || this._uiHash();
 		$.ui.plugin.call( this, type, [ event, ui, this ], true );
 

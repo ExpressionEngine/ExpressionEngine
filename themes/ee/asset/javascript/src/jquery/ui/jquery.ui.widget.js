@@ -487,7 +487,6 @@ $.Widget.prototype = {
 	},
 
 	_trigger: function( type, event, data ) {
-		console.log('widget');
 		var prop, orig,
 			callback = this.options[ type ];
 
