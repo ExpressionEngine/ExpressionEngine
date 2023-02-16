@@ -186,6 +186,7 @@ jobs:
                 sudo chmod -R 777 images
                 sudo chmod -R 777 themes/user
                 sudo chmod -R 777 tests/cypress/cypress/screenshots
+                sudo chmod -R 777 tests/cypress/cypress/videos
 
             - name: Configure MySQL
               run: |
@@ -252,6 +253,13 @@ jobs:
               with:
                 name: cypress-tests-PHP${{ matrix.php }}-${{ matrix.containers }}
                 path: tests/cypress/cypress/screenshots/
+
+            - name: Archive videos
+              uses: actions/upload-artifact@v3
+              if: failure()
+              with:
+                name: cypress-videos-PHP${{ matrix.php }}-${{ matrix.containers }}
+                path: tests/cypress/cypress/videos/
 
             - name: Archive server errors
               uses: actions/upload-artifact@v3
