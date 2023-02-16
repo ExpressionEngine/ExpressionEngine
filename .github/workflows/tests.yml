@@ -74,6 +74,7 @@ jobs:
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
+              enableCrossOsArchive: true
 
           - name: Directory Listing on Failure
             if: failure()
@@ -139,6 +140,8 @@ jobs:
               with:
                 path: build-tools/builds/ExpressionEngine
                 key: cache-ee-build-${{ github.sha }}
+                fail-on-cache-miss: true
+                enableCrossOsArchive: true
 
             - name: Move files to webroot
               run: |
