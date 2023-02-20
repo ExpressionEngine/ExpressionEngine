@@ -111,6 +111,7 @@ class Publish extends Jumps
         }
 
         $channels = ee('Model')->get('Channel')
+            ->filter('site_id', ee()->config->item('site_id'))
             ->filter('channel_id', 'IN', ee()->functions->fetch_assigned_channels());
 
         if (!empty($searchString)) {
