@@ -2385,6 +2385,7 @@ class Member
         unset($results['crypt_key']);
         unset($results['authcode']);
         unset($results['salt']);
+        unset($results['backup_mfa_code']);
 
         $default_fields = $results;
 
@@ -2537,66 +2538,6 @@ class Member
         ];
 
         ee()->TMPL->tagdata = $parser->parse($channel, $data);
-
-        return ee()->TMPL->tagdata;
-
-        foreach (array($results) as $row) {
-            $cond['avatar'] = $avatar;
-            $cond['photo'] = $photo;
-
-            foreach ($fields as $key => $value) {
-                $cond[$key] = ee()->typography->parse_type(
-                    $row['m_field_id_' . $value['0']],
-                    array(
-                        'text_format' => $value['1'],
-                        'html_format' => 'safe',
-                        'auto_links' => 'y',
-                        'allow_img_url' => 'n'
-                    )
-                );
-            }
-
-            ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cond);
-
-
-
-            // Swap Variables
-            foreach (ee()->TMPL->var_single as $key => $val) {
-                // parse default member data
-
-                
-
-                // parse basic fields (username, screen_name, etc.)
-                if (array_key_exists($key, $default_fields)) {
-                    ee()->TMPL->tagdata = $this->_var_swap_single($val, $default_fields[$val], ee()->TMPL->tagdata);
-                }
-
-                // Custom member fields
-                $field = ee('Variables/Parser')->parseVariableProperties($key);
-                $val = $field['field_name'];
-
-                // parse custom member fields
-                if (isset($fields[$val])) {
-                    if (array_key_exists('m_field_id_' . $fields[$val]['0'], $row)) {
-                        ee()->TMPL->tagdata = $this->parseField(
-                            $fields[$val]['0'],
-                            $field,
-                            $row['m_field_id_' . $fields[$val]['0']],
-                            ee()->TMPL->tagdata,
-                            $member_id,
-                            array(),
-                            $key
-                        );
-                    } else {
-                        ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-                            $key,
-                            '',
-                            ee()->TMPL->tagdata
-                        );
-                    }
-                }
-            }
-        }
 
         return ee()->TMPL->tagdata;
     }
