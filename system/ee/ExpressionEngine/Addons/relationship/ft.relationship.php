@@ -452,7 +452,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         if (! empty($new_children_ids)) {
             $new_children = ee('Model')->get('ChannelEntry', $new_children_ids)
                 ->with('Channel')
-                ->fields('Channel.*', 'entry_id', 'title', 'channel_id')
+                ->fields('Channel.*', 'entry_id', 'title', 'channel_id', 'author_id')
                 ->all()
                 ->indexBy('entry_id');
         }
@@ -504,15 +504,21 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             ];
         }
 
-        $channels = $channels->filter(function ($channel) {
+        $channel_choices = [];
+        foreach ($channels as $channel) {
+            $channel_choices[] = [
+                'title' => $channel->channel_title,
+                'id' => $channel->getId()
+            ];
+        }
+
+        $channelsForNewEntriesChoices = [];
+        $channelsForNewEntries = $channels->filter(function ($channel) {
             return ! $channel->maxEntriesLimitReached()
                 && (ee('Permission')->isSuperAdmin() || in_array($channel->getId(), array_keys(ee()->session->userdata('assigned_channels'))));
         });
-
-        $channel_choices = [];
-
-        foreach ($channels as $channel) {
-            $channel_choices[] = [
+        foreach ($channelsForNewEntries as $channel) {
+            $channelsForNewEntriesChoices[] = [
                 'title' => $channel->channel_title,
                 'id' => $channel->getId()
             ];
@@ -532,10 +538,15 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'no_related' => ['text' => lang('no_entries_related')],
             'select_filters' => $select_filters,
             'channels' => $channel_choices,
+            'channelsForNewEntries' => $channelsForNewEntriesChoices,
             'in_modal' => ($this->get_setting('in_modal_context') || ee('Request')->get('modal_form') == 'y'),
             'display_entry_id' => isset($this->settings['display_entry_id']) ? (bool) $this->settings['display_entry_id'] : false,
-            'rel_min' =>  isset($this->settings['rel_min']) ? (int) $this->settings['rel_min'] : 0,
-            'rel_max' =>  isset($this->settings['rel_max']) ? (int) $this->settings['rel_max'] : '',
+            'rel_min' => isset($this->settings['rel_min']) ? (int) $this->settings['rel_min'] : 0,
+            'rel_max' => isset($this->settings['rel_max']) ? (int) $this->settings['rel_max'] : '',
+            'canCreateNew' => ee('Permission')->has('can_create_entries') && (
+                empty($this->settings['channels']) ||
+                !empty($channelsForNewEntriesChoices)
+            )
         ]);
     }
 
@@ -544,7 +555,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'value' => $entry->getId(),
             'label' => $entry->title,
             'instructions' => $entry->Channel->channel_title,
-            'channel_id' => $entry->Channel->getId()
+            'channel_id' => $entry->Channel->getId(),
+            'can_edit' => ($entry->author_id == ee()->session->userdata('member_id')) ? ee('Permission')->has('can_edit_self_entries_channel_id_' . $entry->channel_id) : ee('Permission')->has('can_edit_other_entries_channel_id_' . $entry->channel_id)
         ];
     }
 
@@ -680,8 +692,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 )
             ),
             array(
-                'title' => 'rel_ft_limit',
-                'desc' => 'rel_ft_limit_desc',
+                'title' => sprintf(lang('rel_ft_limit'), strtolower(lang('entries'))),
+                'desc' => sprintf(lang('rel_ft_limit'), strtolower(lang('entries')), strtolower(lang('entries'))),
                 'fields' => array(
                     'limit' => array(
                         'type' => 'text',
@@ -691,7 +703,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             ),
             array(
                 'title' => 'rel_ft_order',
-                'desc' => 'rel_ft_order_desc',
+                'desc' => sprintf(lang('rel_ft_order_desc'), strtolower(lang('entries'))),
                 'fields' => array(
                     'relationship_order_field' => array(
                         'type' => 'radio',
@@ -725,8 +737,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 )
             ),
             array(
-                'title' => 'rel_ft_min',
-                'desc' => 'rel_ft_min_desc',
+                'title' => sprintf(lang('rel_ft_min'), strtolower(lang('members'))),
+                'desc' => sprintf(lang('rel_ft_min_desc'), strtolower(lang('members'))),
                 'group' => 'rel_min_max',
                 'fields' => array(
                     'rel_min' => array(
@@ -736,9 +748,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 )
             ),
             array(
-                'title' => 'rel_ft_max',
+                'title' => sprintf(lang('rel_ft_max'), strtolower(lang('members'))),
+                'desc' => sprintf(lang('rel_ft_max_desc'), strtolower(lang('members'))),
                 'group' => 'rel_min_max',
-                'desc' => 'rel_ft_max_desc',
                 'fields' => array(
                     'rel_max' => array(
                         'type' => 'text',

@@ -209,6 +209,18 @@ class Settings extends Profile
 
         $saved = parent::saveSettings($settings);
 
+        if ($saved === true && ee('Request')->get('modal_form') == 'y') {
+            $result = [
+                'saveId' => $this->member->getId(),
+                'item' => [
+                    'value' => $this->member->getId(),
+                    'label' => $this->member->screen_name,
+                    'instructions' => $this->member->username
+                ]
+            ];
+            return $result;
+        }
+
         return $saved;
     }
 

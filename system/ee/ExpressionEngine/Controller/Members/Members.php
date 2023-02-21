@@ -1391,7 +1391,14 @@ class Members extends CP_Controller
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $this->base_url = ee('CP/URL')->make('members/create');
+        $qs = [];
+        if (ee('Request')->get('modal_form') == 'y') {
+            $qs = [
+                'modal_form' => 'y'
+            ];
+        }
+
+        $this->base_url = ee('CP/URL')->make('members/create', $qs);
 
         $vars['errors'] = null;
 
@@ -1477,6 +1484,18 @@ class Members extends CP_Controller
                 ee()->logger->log_action(lang('new_member_added') . NBS . $member->username);
                 ee()->stats->update_member_stats();
 
+                if (ee('Request')->get('modal_form') == 'y') {
+                    $result = [
+                        'saveId' => $member->getId(),
+                        'item' => [
+                            'value' => $member->getId(),
+                            'label' => $member->screen_name,
+                            'instructions' => $member->username
+                        ]
+                    ];
+                    return $result;
+                }
+
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
                     ->withTitle(lang('member_created'))
@@ -1526,10 +1545,10 @@ class Members extends CP_Controller
             );
         }
 
-        ee()->view->base_url = $this->base_url;
-        ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = lang('register_member');
-        ee()->view->buttons = [
+        $vars['base_url'] = $this->base_url;
+        $vars['ajax_validate'] = true;
+        $vars['cp_page_title'] = lang('register_member');
+        $vars['buttons'] = [
             [
                 'name' => 'submit',
                 'type' => 'submit',
@@ -1553,10 +1572,21 @@ class Members extends CP_Controller
             ]
         ];
 
-        ee()->view->cp_breadcrumbs = array(
+        $vars['cp_breadcrumbs'] = array(
             ee('CP/URL')->make('members')->compile() => lang('members'),
             '' => lang('create')
         );
+
+        if (ee('Request')->get('modal_form') == 'y') {
+            $vars['buttons'] = [[
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_and_close',
+                'text' => 'save_and_close',
+                'working' => 'btn_saving'
+            ]];
+            return ee('View')->make('settings/modal-form')->render($vars);
+        }
 
         ee()->cp->render('settings/form', $vars);
     }

@@ -22,7 +22,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
         'version' => '1.0.0'
     );
 
-    public $has_array_data = false;
+    public $has_array_data = true;
 
     private $_table = 'member_relationships';
 
@@ -78,10 +78,10 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
         if ((bool) $this->settings['allow_multiple']) {
             ee()->lang->load('fieldtypes');
             if (isset($this->settings['rel_min']) && (count($set) < (int) $this->settings['rel_min'])) {
-                return sprintf(lang('rel_ft_min_error'), (int) $this->settings['rel_min']);
+                return sprintf(lang('rel_ft_min_error'), (int) $this->settings['rel_min'], strtolower(lang('members')));
             }
             if (isset($this->settings['rel_max']) && $this->settings['rel_max'] !== '' && (count($set) > (int) $this->settings['rel_max'])) {
-                return sprintf(lang('rel_ft_max_error'), (int) $this->settings['rel_max']);
+                return sprintf(lang('rel_ft_max_error'), (int) $this->settings['rel_max'], strtolower(lang('members')));
             }
         }
 
@@ -116,7 +116,6 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
      */
     public function save($data, $model = null)
     {
-        dd($data);
         $data = isset($data['data']) ? array_filter($data['data'], 'is_numeric') : array();
 
         $cache_name = $this->field_name;
@@ -248,6 +247,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
      */
     public function display_field($data)
     {
+        ee()->lang->loadfile('members');
         ee()->lang->loadfile('fieldtypes');
         $field_name = $this->field_name;
 
@@ -317,11 +317,25 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             'order_field' => $this->settings['order_field'],
             'order_dir' => $this->settings['order_dir'],
             'entry_id' => $entry_id,
-            'field_id' => $this->field_id
+            'field_id' => $this->field_id,
+            'selected' => $selectedIds
         );
 
-        //$entries = ee()->entrylist->query($settings, $selected);
-        $members = ee('Model')->get('Member');
+        $members = ee('Model')->get('Member')->with('PrimaryRole');
+        if (!empty($this->settings['limit'])) {
+            $limit = (int) $this->settings['limit'];
+            if (!empty($selectedIds)) {
+                // slightly greater limit to ensure everything is included
+                $limit += count($selectedIds);
+            }
+            $members->limit($limit);
+        }
+        if (!empty($selectedIds)) {
+            $members->order('FIELD( Member_members.member_id, ' . implode(', ', array_reverse($selectedIds)) . ' )', 'DESC', false);
+        }
+        if (!empty($this->settings['order_field'])) {
+            $members->order($this->settings['order_field'], $this->settings['order_dir'] == 'asc' ? 'asc' : 'desc');
+        }
         $members = $members->all();
 
         // These settings will be sent to the AJAX endpoint for filtering the
@@ -331,22 +345,6 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             $settings,
             ee()->config->item('session_crypt_key')
         );
-
-        // Create a cache of roles
-        if (! $roles = ee()->session->cache(__CLASS__, 'roles')) {
-            $roles = ee('Model')->get('Role')
-                ->fields('name')
-                ->all();
-
-            ee()->session->set_cache(__CLASS__, 'roles', $roles);
-        }
-
-        $limit_roles = $this->settings['roles'];
-        if (count($this->settings['roles'])) {
-            $roles = $roles->filter(function ($role) use ($limit_roles) {
-                return in_array($role->getId(), $limit_roles);
-            });
-        }
 
         if (REQ != 'CP' && REQ != 'ACTION') {
             $options[''] = '--';
@@ -362,15 +360,16 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             }
         }
 
-        ee()->javascript->set_global([
-            'relationship.publishCreateUrl' => ee('CP/URL')->make('members/create/###')->compile(),
-            'relationship.lang.creatingNew' => lang('creating_new_in_rel'),
-            'relationship.lang.relateEntry' => lang('relate_member'),
-            'relationship.lang.search' => lang('search'),
-            'relationship.lang.channel' => lang('role'),
-            'relationship.lang.remove' => lang('remove'),
-            'relationship.lang.edit' => lang('edit_member'),
-        ]);
+        $roles = ee('Model')->get('Role')
+            ->fields('name')
+            ->all(true);
+
+        $limit_roles = $this->settings['roles'];
+        if (count($this->settings['roles'])) {
+            $roles = $roles->filter(function ($role) use ($limit_roles) {
+                return in_array($role->getId(), $limit_roles);
+            });
+        }
 
         ee()->cp->add_js_script([
             'plugin' => ['ui.touch.punch', 'ee_interact.event'],
@@ -384,71 +383,18 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             'ui' => 'sortable'
         ]);
 
-        /*$children_cache = ee()->session->cache(__CLASS__, 'children');
-
-        if ($entry_id) {
-            if (! is_array($children_cache)) {
-                $children_cache = [];
-            }
-
-            if (! isset($children_cache[$entry_id])) {
-                // Cache children for this entry
-                $children_cache[$entry_id] = ee('Model')->get('ChannelEntry', $entry_id)
-                    ->with('Children', 'Channel')
-                    ->fields('Channel.channel_title', 'Children.entry_id', 'Children.title', 'Children.channel_id')
-                    ->first()
-                    ->Children;
-
-                ee()->session->set_cache(__CLASS__, 'children', $children_cache);
-            }
-
-            $children = $children_cache[$entry_id]->indexBy('entry_id');
-        } else {
-            $children = array();
-        }
-
-        $entries = $entries->indexBy('entry_id');
-        $children_ids = array_keys($children);
-        $entry_ids = array_keys($entries);
-
-        foreach ($selected as $chosen) {
-            if (! in_array($chosen, $children_ids)
-                && in_array($chosen, $entry_ids)) {
-                $children[$chosen] = $entries[$chosen];
-            }
-        }*/
-
         asort($order);
-
-        /*$related = array();
-
-        $new_children_ids = array_diff(array_keys($order), $children_ids);
-        $new_children = array();
-
-        if (! empty($new_children_ids)) {
-            $new_children = ee('Model')->get('ChannelEntry', $new_children_ids)
-                ->with('Channel')
-                ->fields('Channel.*', 'entry_id', 'title', 'channel_id')
-                ->all()
-                ->indexBy('entry_id');
-        }
-
-        foreach ($order as $key => $index) {
-            if (in_array($key, $children_ids)) {
-                $related[] = $children[$key];
-            } elseif (isset($new_children[$key])) {
-                $related[] = $new_children[$key];
-            }
-        }*/
 
         $multiple = (bool) $this->settings['allow_multiple'];
 
         $choices = [];
         $selected = [];
+        $can_edit = ee('Permission')->hasAll('can_access_members', 'can_edit_members');
         foreach ($members as $member) {
-            $choices[] = $this->_buildOption($member);
+            $option = array_merge($this->_buildOption($member), ['can_edit' => $can_edit]);
+            $choices[] = $option;
             if (in_array($member->getId(), $selectedIds)) {
-                $selected[] = $this->_buildOption($member);
+                $selected[] = $option;
             }
         }
 
@@ -460,30 +406,6 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
         }
 
         $select_filters = [];
-        /*if ($channels->count() > 1) {
-            $select_filters[] = [
-                'name' => 'channel_id',
-                'title' => lang('channel'),
-                'placeholder' => lang('filter_channels'),
-                'items' => $channels->getDictionary('channel_id', 'channel_title')
-            ];
-        }
-
-        if ($multiple) {
-            $select_filters[] = [
-                'name' => 'related',
-                'title' => lang('show'),
-                'items' => [
-                    'related' => lang('rel_ft_related_only'),
-                    'unrelated' => lang('rel_ft_unrelated_only')
-                ]
-            ];
-        }
-
-        $channels = $channels->filter(function ($channel) {
-            return ! $channel->maxEntriesLimitReached()
-                && (ee('Permission')->isSuperAdmin() || in_array($channel->getId(), array_keys(ee()->session->userdata('assigned_channels'))));
-        });*/
 
         $role_choices = [];
         foreach ($roles as $role) {
@@ -499,45 +421,154 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             'choices' => $choices,
             'selected' => $selected,
             'multi' => $multiple,
-            'filter_url' => ee('CP/URL')->make('publish/relationship-filter', [
+            'filter_url' => ee('CP/URL')->make('publish/member-relationship-filter', [
                 'settings' => $settings
             ])->compile(),
             'limit' => $this->settings['limit'] ?: 100,
-            'no_results' => ['text' => lang('no_entries_found')],
+            'no_results' => ['text' => lang('no_members_found')],
             'no_related' => ['text' => lang('no_entries_related')],
             'select_filters' => $select_filters,
             'channels' => $role_choices,
+            'showCreateDropdown' => false,
             'in_modal' => ($this->get_setting('in_modal_context') || ee('Request')->get('modal_form') == 'y'),
-            'display_entry_id' => isset($this->settings['display_entry_id']) ? (bool) $this->settings['display_entry_id'] : false,
+            'display_entry_id' => isset($this->settings['display_member_id']) ? (bool) $this->settings['display_member_id'] : false,
             'rel_min' =>  isset($this->settings['rel_min']) ? (int) $this->settings['rel_min'] : 0,
             'rel_max' =>  isset($this->settings['rel_max']) ? (int) $this->settings['rel_max'] : '',
+            'publishCreateUrl' => ee('CP/URL')->make('members/create')->compile(),
+            'publishEditUrl' => ee('CP/URL')->make('members/profile/settings&id=###')->compile(),
+            'lang' => [
+                'creatingNew' => lang('creating_member_in_rel'),
+                'relateEntry' => lang('relate_member'),
+                'search' => lang('search'),
+                'channel' => lang('role'),
+                'remove' => lang('remove'),
+                'edit' => lang('edit_member'),
+                'new_entry' => lang('new_member')
+            ],
+            'canCreateNew' => ee('Permission')->can('create_members'),
         ]);
     }
 
-    private function _buildOption($member) {
+    private function _buildOption($member)
+    {
         return [
             'value' => $member->getId(),
-            'label' => $member->screen_name,
-            'instructions' => $member->username,
+            'label' => !empty($member->screen_name) ? $member->screen_name : $member->username,
+            'instructions' => $member->PrimaryRole->name,
             'channel_id' => $member->role_id
         ];
     }
 
+    public function pre_process($data)
+    {
+        if (! ee('LivePreview')->hasEntryData()) {
+            $data = [];
+            $wheres = array(
+                'parent_id' => $this->row['entry_id'],
+                'field_id' => $this->field_id,
+                'grid_col_id' => 0,
+                'grid_field_id' => 0,
+                'grid_row_id' => 0,
+                'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
+            );
+
+            if (isset($this->settings['grid_row_id'])) {
+                $wheres['grid_col_id'] = $this->settings['col_id'];
+                $wheres['grid_field_id'] = $this->settings['grid_field_id'];
+                $wheres['grid_row_id'] = $this->settings['grid_row_id'];
+            }
+
+            ee()->db
+                ->select('child_id, order')
+                ->from($this->_table)
+                ->where($wheres)
+                ->order_by('order', 'asc');
+
+            $related = ee()->db->get()->result_array();
+
+            foreach ($related as $row) {
+                $data[$row['child_id']] = $row['order'];
+            }
+        }
+        return $data;
+    }
+
     /**
-     * Show the tag on the frontend
-     *
-     * @param   column data
-     * @param   tag parameters
-     * @param   tag pair contents
-     * @return  parsed output
+     * Replace template tags
      */
     public function replace_tag($data, $params = '', $tagdata = '')
     {
-        if ($tagdata) {
-            return $tagdata;
+        $vars = [
+            'entries' => []
+        ];
+        foreach ($data as $member_id => $order) {
+            $memberQuery = ee('Model')->get('Member', $member_id)->first();
+            if (!empty($memberQuery)) {
+                $memberData = $memberQuery->toArray();
+                unset($memberData['password']);
+                unset($memberData['unique_id']);
+                unset($memberData['crypt_key']);
+                unset($memberData['authcode']);
+                unset($memberData['salt']);
+                unset($memberData['backup_mfa_code']);
+                $vars['entries'][] = array_merge(
+                    [
+                        'site_id' => $this->row['site_id'],
+                        'entry_id' => $this->row['entry_id'],
+                        'entry_date' => $this->row['entry_date'],
+                        'edit_date' => $this->row['edit_date'],
+                        'recent_comment_date' => $this->row['recent_comment_date'],
+                        'expiration_date' => $this->row['expiration_date'],
+                        'comment_expiration_date' => $this->row['comment_expiration_date'],
+                        'allow_comments' => $this->row['allow_comments'],
+                        'channel_title' => $this->row['channel_title'],
+                        'channel_name' => $this->row['channel_name'],
+                        'entry_site_id' => $this->row['entry_site_id'],
+                        'channel_url' => $this->row['channel_url'],
+                        'comment_url' => $this->row['comment_url']
+                    ],
+                    $memberData
+                );
+            }
         }
 
-        return $data;
+        if ($this->content_type() == 'grid') {
+            ee()->load->library('grid_parser');
+            $fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
+            $prefix = ee()->grid_parser->grid_field_names[$this->settings['grid_field_id']][$fluid_field_data_id] . ':' . $this->settings['col_name'] . ':';
+        } else {
+            $prefix = $this->field_name . ':';
+        }
+
+        if (! class_exists('Channel')) {
+            require PATH_ADDONS . 'channel/mod.channel.php';
+        }
+        $channel = new Channel();
+        $channel->fetch_custom_member_fields();
+
+        // Load the parser
+        ee()->load->library('channel_entries_parser');
+        $parser = ee()->channel_entries_parser->create($tagdata, $prefix);
+
+        $tagdata = $parser->parse($channel, $vars);
+
+        return $tagdata;
+    }
+
+    /**
+     * :length modifier
+     */
+    public function replace_length($data, $params = array(), $tagdata = false)
+    {
+        return $this->replace_total_rows($data, $params, $tagdata);
+    }
+
+    /**
+     * :total_rows modifier
+     */
+    public function replace_total_rows($data, $params = '', $tagdata = '')
+    {
+        return count($data);
     }
 
     /**
@@ -550,6 +581,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
      */
     public function display_settings($data)
     {
+        ee()->lang->loadfile('members');
         ee()->lang->loadfile('fieldtypes');
 
         ee()->cp->add_js_script(array(
@@ -570,10 +602,10 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
                         'choices' => array(
                             '--' => array(
                                 'name' => lang('any_role'),
-                                'children' => ee('Model')->get('Role')->all()->getDictionary('role_id', 'name')
+                                'children' => ee('Model')->get('Role')->all(true)->getDictionary('role_id', 'name')
                             )
                         ),
-                        'value' => $data['roles'],
+                        'value' => ($data['roles']) ?: '--',
                         'toggle_all' => false,
                         'no_results' => [
                             'text' => sprintf(lang('no_found'), lang('roles'))
@@ -582,8 +614,8 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
                 )
             ),
             array(
-                'title' => 'rel_ft_limit',
-                'desc' => 'rel_ft_limit_desc',
+                'title' => sprintf(lang('rel_ft_limit'), strtolower(lang('members'))),
+                'desc' => sprintf(lang('rel_ft_limit_desc'), strtolower(lang('members')), strtolower(lang('members'))),
                 'fields' => array(
                     'limit' => array(
                         'type' => 'text',
@@ -593,7 +625,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             ),
             array(
                 'title' => 'rel_ft_order',
-                'desc' => 'rel_ft_order_desc',
+                'desc' => sprintf(lang('rel_ft_order_desc'), strtolower(lang('members'))),
                 'fields' => array(
                     'order_field' => array(
                         'type' => 'radio',
@@ -627,8 +659,8 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
                 )
             ),
             array(
-                'title' => 'rel_ft_min',
-                'desc' => 'rel_ft_min_desc',
+                'title' => sprintf(lang('rel_ft_min'), strtolower(lang('members'))),
+                'desc' => sprintf(lang('rel_ft_min_desc'), strtolower(lang('members'))),
                 'group' => 'rel_min_max',
                 'fields' => array(
                     'rel_min' => array(
@@ -638,8 +670,8 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
                 )
             ),
             array(
-                'title' => 'rel_ft_max',
-                'group' => 'rel_min_max',
+                'title' => sprintf(lang('rel_ft_max'), strtolower(lang('members'))),
+                'desc' => sprintf(lang('rel_ft_max_desc'), strtolower(lang('members'))),
                 'desc' => 'rel_ft_max_desc',
                 'fields' => array(
                     'rel_max' => array(
@@ -716,78 +748,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
      */
     public function install()
     {
-        if (ee()->db->table_exists($this->_table)) {
-            return;
-        }
-
-        ee()->load->dbforge();
-
-        $fields = array(
-            'relationship_id' => array(
-                'type' => 'int',
-                'constraint' => 6,
-                'unsigned' => true,
-                'auto_increment' => true
-            ),
-            'parent_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0
-            ),
-            'child_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0
-            ),
-            'field_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0
-            ),
-            'order' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0
-            ),
-            'grid_field_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0,
-                'null' => false
-            ),
-            'grid_col_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0,
-                'null' => false
-            ),
-            'grid_row_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0,
-                'null' => false
-            )
-        );
-
-        ee()->dbforge->add_field($fields);
-
-        // Worthless primary key
-        ee()->dbforge->add_key('relationship_id', true);
-
-        // Keyed table is keyed
-        ee()->dbforge->add_key('parent_id');
-        ee()->dbforge->add_key('child_id');
-        ee()->dbforge->add_key('field_id');
-        ee()->dbforge->add_key('grid_row_id');
-
-        ee()->dbforge->create_table($this->_table);
+        return true;
     }
 
     /**
@@ -925,20 +886,17 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
                 'fluid_field_data_id' => 0
             );
             $related = ee()->db
-                ->select('entry_id, title, channel_id, author_id, order')
+                ->select('member_id, screen_name, username, order')
                 ->from($this->_table)
-                ->join('channel_titles', 'channel_titles.entry_id=' . $this->_table . '.child_id', 'left')
+                ->join('members', 'members.member_id=' . $this->_table . '.child_id', 'left')
                 ->where($wheres)
                 ->order_by('order')
                 ->get();
 
             foreach ($related->result() as $row) {
-                $title = ee('Format')->make('Text', $row->title)->convertToEntities();
-
-                if ((ee('Permission')->can('edit_other_entries_channel_id_' . $row->channel_id)
-                    || (ee('Permission')->can('edit_self_entries_channel_id_' . $row->channel_id) &&
-                    $row->author_id == ee()->session->userdata('member_id')))) {
-                    $edit_link = ee('CP/URL')->make('publish/edit/entry/' . $row->entry_id);
+                $title = !empty($row->screen_name) ? $row->screen_name : $row->username;
+                if (ee('Permission')->can('edit_members')) {
+                    $edit_link = ee('CP/URL')->make('members/profile/settings&id=' . $row->member_id);
                     $title = '<a href="' . $edit_link . '">' . $title . '</a>';
                 }
                 $links[] = $title;
