@@ -59,9 +59,7 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
         $data = $obj->row();
         $prefix = $obj->prefix();
 
-        $tag = preg_replace('/^' . $prefix . '/', '', $tag);
-
-        $field = ee('Variables/Parser')->parseVariableProperties($tag);
+        $field = ee('Variables/Parser')->parseVariableProperties($tag, $prefix);
 
         if (! isset($mfields[$field['field_name']])) {
             return $tagdata;
