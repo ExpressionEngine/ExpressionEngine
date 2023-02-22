@@ -37,8 +37,7 @@ class LegacyParserTest extends TestCase
                     'field_name' => 'hello',
                     'params' => [],
                     'modifier' => '',
-                    'full_modifier' => '',
-                    'invalid_modifier' => false,
+                    'full_modifier' => ''
                 ]
             ],
             [
@@ -47,8 +46,7 @@ class LegacyParserTest extends TestCase
                     'field_name' => 'var',
                     'params' => [],
                     'modifier' => '',
-                    'full_modifier' => '',
-                    'invalid_modifier' => false,
+                    'full_modifier' => ''
                 ],
                 'prefixed:'
             ],
@@ -60,8 +58,7 @@ class LegacyParserTest extends TestCase
                         'param' => 'hey'
                     ],
                     'modifier' => '',
-                    'full_modifier' => '',
-                    'invalid_modifier' => false,
+                    'full_modifier' => ''
                 ]
             ],
             [
@@ -72,8 +69,7 @@ class LegacyParserTest extends TestCase
                         'param' => 'hey'
                     ],
                     'modifier' => 'some_mod',
-                    'full_modifier' => 'some_mod',
-                    'invalid_modifier' => false,
+                    'full_modifier' => 'some_mod'
                 ]
             ],
             [
@@ -82,8 +78,7 @@ class LegacyParserTest extends TestCase
                     'field_name' => 'var',
                     'params' => [],
                     'modifier' => '',
-                    'full_modifier' => '',
-                    'invalid_modifier' => false,
+                    'full_modifier' => ''
                 ],
                 'prefixed:'
             ],
@@ -95,8 +90,7 @@ class LegacyParserTest extends TestCase
                         'param' => 'hey'
                     ],
                     'modifier' => '',
-                    'full_modifier' => '',
-                    'invalid_modifier' => false,
+                    'full_modifier' => ''
                 ],
                 'prefixed:'
             ],
@@ -108,8 +102,7 @@ class LegacyParserTest extends TestCase
                         'param' => 'hey'
                     ],
                     'modifier' => 'some_mod',
-                    'full_modifier' => 'some_mod',
-                    'invalid_modifier' => false,
+                    'full_modifier' => 'some_mod'
                 ],
                 'prefixed:'
             ],
@@ -121,8 +114,7 @@ class LegacyParserTest extends TestCase
                         'param' => 'hey'
                     ],
                     'modifier' => 'modifiers',
-                    'full_modifier' => 'multiple:modifiers',
-                    'invalid_modifier' => false,
+                    'full_modifier' => 'multiple:modifiers'
                 ],
                 'prefixed:'
             ],
@@ -136,7 +128,6 @@ class LegacyParserTest extends TestCase
                     ],
                     'modifier' => 'modifier',
                     'full_modifier' => 'modifier',
-                    'invalid_modifier' => false,
                 ]
             ],
             [
@@ -149,7 +140,6 @@ class LegacyParserTest extends TestCase
                     ],
                     'modifier' => 'hello',
                     'full_modifier' => 'modifier:hello',
-                    'invalid_modifier' => false,
                 ]
             ],
             [
@@ -162,7 +152,6 @@ class LegacyParserTest extends TestCase
                     ],
                     'modifier' => 'lakeman',
                     'full_modifier' => 'is:john:lakeman',
-                    'invalid_modifier' => false,
                 ]
             ]
         ];
