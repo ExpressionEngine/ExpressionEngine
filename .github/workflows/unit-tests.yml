@@ -120,16 +120,6 @@ jobs:
                 fail-on-cache-miss: true
                 enableCrossOsArchive: true
 
-            - name: Move vendor files (Linux)
-              if: runner.os != 'Windows'
-              run: |
-                cp -R build-tools/builds/ExpressionEngine/system/ee/vendor-build ./system/ee/
-
-            - name: Move vendor files (Windows)
-              if: runner.os == 'Windows'
-              run: |
-                xcopy build-tools\builds\ExpressionEngine\system\ee\vendor-build\ system\ee\vendor-build\ /s /e /f
-
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
