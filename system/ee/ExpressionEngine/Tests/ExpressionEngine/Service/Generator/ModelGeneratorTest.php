@@ -21,7 +21,10 @@ class ModelGeneratorTest extends TestCase
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
 
         // Populate with sample data
-        $data = [];
+        $data = [
+            'name' => 'MyModel',
+            'addon' => 'addon_that_doesnt_exist',
+        ];
 
         $this->modelGenerator = new ModelGenerator($this->filesystem, $data);
     }

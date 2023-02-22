@@ -36,6 +36,7 @@ class eeSingletonMock
     public $session;
     public $logger;
     public $dbforge;
+    public $input;
 
     protected $mock;
     protected static $mocks = [];
@@ -47,6 +48,8 @@ class eeSingletonMock
         $this->session = new eeSingletonSessionMock();
         $this->logger = new eeSingletonLoggerMock();
         $this->dbforge = new eeSingletonDBForgeMock();
+        $this->input = new eeSingletonInputMock();
+        $this->mock = $mock;
     }
 
     public function setMock($name, $return)
@@ -58,6 +61,13 @@ class eeSingletonMock
     {
         self::$mocks = [];
         $this->mock = '';
+    }
+
+    public function __get($name)
+    {
+        if (array_key_exists($this->mock, self::$mocks) && !is_null(self::$mocks[$this->mock]->$name)) {
+            return self::$mocks[$this->mock]->$name;
+        }
     }
 
     public function __call($name, $args)
@@ -143,6 +153,13 @@ class eeSingletonDBForgeMock
     {
     }
     public function create_table()
+    {
+    }
+}
+
+class eeSingletonInputMock
+{
+    public function get_post($item)
     {
     }
 }
