@@ -102,9 +102,6 @@ class FrontEdit
             $relFields = [];
             $gridFields = [];
             $gridLikeFieldtypes = static::getComplexFieldtypes();
-            if (empty($gridLikeFieldtypes)) {
-                //$gridLikeFieldtypes = ['grid', 'file_grid', 'fluid_field', 'bloqs']; //fallback, should be removed in v2.0
-            }
             foreach ($allFields as $field) {
                 if ($field->field_type == 'relationship') {
                     $relFields[$prefix . $field->field_name] = $field->field_id;
@@ -184,7 +181,7 @@ class FrontEdit
             do {
                 $allClean = true;
                 foreach ($stripFromTags as $tag => $preserve) {
-                    $tagPresent = preg_match_all($tag, $tagdata, $matches, PREG_SET_ORDER|PREG_OFFSET_CAPTURE);
+                    $tagPresent = preg_match_all($tag, $tagdata, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
                     if ($tagPresent) {
                         $cleanupReplacements = [];
                         $allClean = false;
@@ -214,7 +211,7 @@ class FrontEdit
 
 
             // avoid duplicates.
-            if (preg_match_all('/\{[\w:]+\:frontedit\}/si', $tagdata, $matches, PREG_SET_ORDER|PREG_OFFSET_CAPTURE)) {
+            if (preg_match_all('/\{[\w:]+\:frontedit\}/si', $tagdata, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
                 $orig_tagdata = $tagdata;
                 foreach ($matches as $i => $match) {
                     $tag = $match[0][0];
@@ -225,14 +222,14 @@ class FrontEdit
                     // if the link follows itself divided by opening tag, strip the first one
                     // (might be caused by if conditionals)
 
-                    if (isset($matches[$i+1]) && $matches[$i+1][0][0] == $tag) {
-                        $substr = substr($orig_tagdata, $match[0][1], $matches[$i+1][0][1] - $match[0][1] + strlen($tag));
+                    if (isset($matches[$i + 1]) && $matches[$i + 1][0][0] == $tag) {
+                        $substr = substr($orig_tagdata, $match[0][1] + strlen($tag), $matches[$i + 1][0][1] - $match[0][1]);
                         //there is some tag between, but no closing tag
                         if (
                             (strpos($substr, '<') === false && strpos($substr, '>') === false) ||
                             (strpos($substr, '<') !== false && strpos($substr, '>') !== false && strpos($substr, '</') === false)
-                            ) {
-                            $tagdata = str_replace($substr, $tag . str_replace($tag, '', $substr), $tagdata);
+                        ) {
+                            $tagdata = str_replace($substr, str_replace($tag, '', $substr), $tagdata);
                         }
                     }
                 }
