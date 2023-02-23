@@ -34,7 +34,7 @@ class FrontEdit
         if (!is_numeric($site_id) || !is_numeric($channel_id) || !is_numeric($entry_id)) {
             return '';
         }
-        return '{frontedit_link site_id=@' . $site_id . '@ channel_id=@' . $channel_id . '@ entry_id=@' . $entry_id . '@ field_id=@' . $field_id_or_name .'@}';
+        return '{frontedit_link site_id=@' . $site_id . '@ channel_id=@' . $channel_id . '@ entry_id=@' . $entry_id . '@ field_id=@' . $field_id_or_name . '@}';
     }
 
     /**
@@ -143,7 +143,7 @@ class FrontEdit
 
             $injectPositions = []; //remember where we already injected the link so we don't do
             foreach ($field_regexps as $field_regexp) {
-                if (preg_match_all($field_regexp, $tagdata, $matches, PREG_SET_ORDER|PREG_OFFSET_CAPTURE)) {
+                if (preg_match_all($field_regexp, $tagdata, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
                     $matches = array_reverse($matches);
                     foreach ($matches as $match) {
                         if (strpos($match[2][0], 'disable') !== false && strpos($match[2][0], 'frontedit') !== false) {
@@ -188,13 +188,13 @@ class FrontEdit
                         $matches = array_reverse($matches);
                         //inject the links that need to be preserved
                         foreach ($matches as $match) {
-                            if ($preserve && strpos($match['link'][0], ':frontedit')!==false) {
+                            if ($preserve && strpos($match['link'][0], ':frontedit') !== false) {
                                 $tagdata = substr_replace($tagdata, $match['link'][0], $match[0][1], 0);
                             }
                         }
                         //now prepare to strip the links that are not in proper context
                         foreach ($matches as $match) {
-                            if (strpos($match['link'][0], ':frontedit')!==false) {
+                            if (strpos($match['link'][0], ':frontedit') !== false) {
                                 $clean_match = str_replace($match['link'][0], '', $match[0][0]);
                                 $cleanupReplacements[$match[0][0]] = $clean_match;
                             }
@@ -502,7 +502,7 @@ class FrontEdit
                 }
             }
         }
-        if (preg_match_all('/\{frontedit_link\s+(.*)\}/sUi', $output, $matches, PREG_SET_ORDER|PREG_OFFSET_CAPTURE)) {
+        if (preg_match_all('/\{frontedit_link\s+(.*)\}/sUi', $output, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
             foreach ($matches as $i => $match) {
                 $tag = $match[0][0];
                 // Find and strip the edit links that are right after themselves
