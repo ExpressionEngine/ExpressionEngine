@@ -158,7 +158,7 @@ class LivePreview
                 if (! $template_id) {
                     $template_id = $entry->getPageTemplateID();
                 }
-            } else {
+            } elseif (!empty($channel->preview_url)) {
                 //channel settings
                 // We want to avoid replacing `{url_title}` with an empty string since that
                 // can cause the wrong thing to render (like 404s).

@@ -36,9 +36,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-var Relationship =
-/*#__PURE__*/
-function (_React$Component) {
+var Relationship = /*#__PURE__*/function (_React$Component) {
   _inherits(Relationship, _React$Component);
 
   function Relationship(props) {
@@ -257,8 +255,7 @@ function (_React$Component) {
         iframe: true,
         success: this.entryWasCreated,
         load: function load(modal) {
-          var entryTitle = _this2.field.closest('[data-publish]').find('input[name=title]').val();
-
+          var entryTitle = $(_this2.field.closest('[data-publish]')).find('input[name=title]').val();
           var title = EE.relationship.lang.creatingNew.replace('#to_channel#', channelTitle).replace('#from_channel#', EE.publish.channel_title);
 
           if (entryTitle) {
