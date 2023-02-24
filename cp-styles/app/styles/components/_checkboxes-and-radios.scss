@@ -158,7 +158,7 @@ $radio-size: 15px;
 	margin-bottom: 0;
 	position: relative;
   font-weight: normal;
-  pointer-events: none;
+  // pointer-events: none;
 
 	.checkbox-label__text {
 		display: inline-block;
@@ -171,7 +171,7 @@ $radio-size: 15px;
 		transition: background 100ms ease;
 		color: color(text-primary);
 		border-radius: 5px;
-		pointer-events: auto;
+		// pointer-events: auto;
 
 		&:hover {
 			// background: color(bg-10);
@@ -187,7 +187,7 @@ $radio-size: 15px;
 		position: absolute;
 		top: $label-padding;
 		left: 0px;
-		pointer-events: auto;
+		// pointer-events: auto;
 
     &.checkbox--large {
       z-index: 1;
@@ -466,3 +466,17 @@ div[data-input-value="category_fields"] {
 		}
 	}
 }
+
+// div:not('[data-input-value^="categories"]') {
+// 	.checkbox-label {
+// 		pointer-events: none;
+
+// 		input {
+// 			pointer-events: auto;
+// 		}
+
+// 		.checkbox-label__text {
+// 			pointer-events: auto;
+// 		}
+// 	}
+// }
