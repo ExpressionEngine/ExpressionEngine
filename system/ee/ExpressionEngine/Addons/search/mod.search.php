@@ -1323,7 +1323,7 @@ class Search
             if (strpos($excerpt, "\r") !== false or strpos($excerpt, "\n") !== false) {
                 $excerpt = str_replace(array("\r\n", "\r", "\n"), " ", $excerpt);
             }
-            // pipes are used in Checbockes and also in Grid, where those could be backslashed
+            // pipes are used in checkboxes and also in Grid, where those could be backslashed
             // strip them all
             if (strpos($excerpt, "|") !== false) {
                 $excerpt = str_replace(array("\|", "|"), " ", $excerpt);
