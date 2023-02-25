@@ -583,7 +583,6 @@ class Member_settings extends Member
             /**  Parse single variables
             /** ----------------------------------------*/
             foreach ($this->var_single as $key => $val) {
-
                 // Custom member fields
                 $field = ee('Variables/Parser')->parseVariableProperties($key);
                 $fval = $field['field_name'];
@@ -813,7 +812,7 @@ class Member_settings extends Member
                 $temp = str_replace('{lang:profile_field_shortname}', $field->getShortName(), $temp);
                 $temp = str_replace('{lang:profile_field_description}', $field->get('field_description'), $temp);
                 if ($match[4] != '') {
-                    switch($field->get('field_type')) {
+                    switch ($field->get('field_type')) {
                         case "text":
                             $temp = str_replace(
                                 $match[0],
@@ -981,7 +980,7 @@ class Member_settings extends Member
 
                 // Handle arrays of checkboxes as a special case;
                 if ($row['m_field_type'] == 'checkbox') {
-                    foreach ($row['choices']  as $property => $label) {
+                    foreach ($row['choices'] as $property => $label) {
                         $member->$fname = in_array($property, $post) ? 'y' : 'n';
                     }
                 } else {
@@ -1004,7 +1003,6 @@ class Member_settings extends Member
 
         //if this request initiated from regular EE template, we'll process some additional stuff here
         if (REQ === 'ACTION') {
-
             //email update
             if (ee()->input->post('email') != '' && ee()->input->post('email') != $member->email) {
                 $validator = ee('Validation')->make();
@@ -1720,9 +1718,7 @@ class Member_settings extends Member
         /** -------------------------------------
         /**  Parse the $_POST data
         /** -------------------------------------*/
-        if (ee('Request')->post('screen_name') == '' &&
-            ee('Request')->post('email') == ''
-            ) {
+        if (ee('Request')->post('screen_name') == '' && ee('Request')->post('email') == '') {
             ee()->functions->redirect($redirect_url);
             exit;
         }
