@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
 
 class LexerTest extends TestCase
 {
+    public $lexer;
+
     protected $valueTypes = array(
         'bool' => array('token' => array('BOOL', 'TRUE'),									'value' => 'TRUE'),
         'int' => array('token' => array('NUMBER', '5'),									'value' => '5'),

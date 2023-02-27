@@ -13,6 +13,9 @@ namespace ExpressionEngine\Tests\Service\Model {
 
     class MetaDataReaderTest extends TestCase
     {
+        public $model_class;
+        public $reader;
+
         public function setUp(): void
         {
             $this->model_class = __NAMESPACE__ . '\\MetaDataModelStub';

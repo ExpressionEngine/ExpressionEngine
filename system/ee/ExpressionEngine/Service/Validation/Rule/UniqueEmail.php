@@ -25,6 +25,7 @@ class UniqueEmail extends ValidationRule
      */
     public function validate($key, $value)
     {
+        $value = (string) $value;
         // Check for config, otherwise default
         $prevent = ee()->config->item('gmail_duplication_prevention') ?: 'y';
 
