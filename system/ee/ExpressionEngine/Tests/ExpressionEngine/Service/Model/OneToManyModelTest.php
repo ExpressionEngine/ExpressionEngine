@@ -18,6 +18,11 @@ use PHPUnit\Framework\TestCase;
 
 class OneToManyModelTest extends TestCase
 {
+    public $parentClass;
+    public $childClass;
+    public $has_many_relation;
+    public $belongs_to_relation;
+
     public function setUp(): void
     {
         $this->parentClass = __NAMESPACE__ . '\OneToManyParent';

@@ -770,9 +770,11 @@ EE.cp.broadcastEvents = (function() {
 		login: function() {
 			State.modalActive = false;
 
-			logoutModal.trigger('modal:close');
+			if (logoutModal) {
+				logoutModal.trigger('modal:close');
 
-			logoutModal.find(':password').val('');
+				logoutModal.find(':password').val('');
+			}
 
 			State.setActiveTime();
 		},

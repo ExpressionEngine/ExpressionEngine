@@ -13,17 +13,21 @@ namespace ExpressionEngine\Service\Validation\Rule;
 use ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
- * URL Validation Rule
+ * Starts With Validation Rule
  */
-class Url extends ValidationRule
+class StartsWith extends ValidationRule
 {
     public function validate($key, $value)
     {
-        return (bool) filter_var((string) $value, FILTER_VALIDATE_URL);
+        list($startsWith) = $this->assertParameters('startsWith');
+
+        return (strpos((string) $value, $startsWith) === 0);
     }
 
     public function getLanguageKey()
     {
-        return 'valid_url';
+        return 'starts_with';
     }
 }
+
+// EOF

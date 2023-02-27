@@ -70,7 +70,7 @@ class URL implements \Serializable
 
         if (is_array($qs)) {
             $this->qs = $qs;
-        } else {
+        } elseif (! empty($qs)) {
             parse_str(str_replace(AMP, '&', $qs), $this->qs);
         }
 

@@ -11,27 +11,43 @@
 namespace ExpressionEngine\Service\Generator;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Library\String\Str;
 
 class ModelGenerator
 {
     public $name;
     public $addon;
     protected $filesystem;
+    protected $str;
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
+    protected $className;
+    protected $namespace;
 
-    public function __construct(Filesystem $filesystem, array $data)
+    public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
-        $this->name = $data['name'];
+        // Set FS and String library
         $this->filesystem = $filesystem;
-        $this->className = $this->studly($data['name']);
+        $this->str = $str;
+
+        $this->name = $data['name'];
+        $this->className = $this->str->studly($data['name']);
         $this->addon = $data['addon'];
+
+        $this->verifyAddonExists();
 
         $this->init();
 
         $addonSetupArray = require $this->addonPath . 'addon.setup.php';
         $this->namespace = $addonSetupArray['namespace'];
+    }
+
+    private function verifyAddonExists()
+    {
+        if (is_null(ee('Addon')->get($this->addon))) {
+            throw new \Exception("Add-on does not exists: " . $this->addon, 1);
+        }
     }
 
     private function init()
@@ -110,24 +126,5 @@ class ModelGenerator
         if (!$this->filesystem->exists($this->modelPath . $path . $name)) {
             $this->filesystem->write($this->modelPath . $path . $name, $contents);
         }
-    }
-
-    public function slug($word)
-    {
-        $word = strtolower($word);
-
-        return str_replace(['-', ' ', '.'], '_', $word);
-    }
-
-    public function studly($word)
-    {
-        $word = mb_convert_case($word, MB_CASE_TITLE);
-
-        return  str_replace(['-', '_', ' ', '.'], '', $word);
-    }
-
-    public function string_contains($textToSearch, $word)
-    {
-        return (strpos($textToSearch, $word) !== false);
     }
 }

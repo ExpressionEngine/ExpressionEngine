@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 
 class SteppableTest extends TestCase
 {
+    public $stepper;
+
     public function setUp(): void
     {
         $this->stepper = new Stepper();
