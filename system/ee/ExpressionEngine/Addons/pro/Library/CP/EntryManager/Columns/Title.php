@@ -15,7 +15,7 @@ use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
  */
 class Title extends Core\Columns\Title
 {
-    public function renderTableCell($data, $field_id, $entry)
+    public function renderTableCell($data, $field_id, $entry, $viewtype = 'list', $pickerMode = false, $addQueryString = [])
     {
         $title = ee('Format')->make('Text', $entry->title)->convertToEntities();
 

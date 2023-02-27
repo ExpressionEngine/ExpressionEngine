@@ -57,7 +57,7 @@ class Fields extends AbstractFieldsController
             ->all()
             ->getDictionary('group_id', 'group_name');
         if ($this->hasUngroupedFields === true) {
-            $group_ids = array_merge(['0' => lang('ungrouped')], $group_ids);
+            $group_ids = ['0' => lang('ungrouped')] + $group_ids;
         }
 
         $filters = ee('CP/Filter');
