@@ -296,20 +296,48 @@ context('Create combinations of field', () => {
 	})
 
 	it.skip('Tests Rich Text Editor', ()=> {
+		// Edit the template
+		cy.visit('admin.php?/cp/design')
+		cy.get('a').contains('aaRichTextEditor').eq(0).click()
+		cy.get('a').contains('index').click()
+
+		// Type in the RTE tag
+		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{title}{aa_rich_text_editor_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
+		cy.wait(500)
+		cy.dismissLicenseAlert()
+		cy.get('button').contains('Save').eq(0).click()
+
+		// Edit the entry and add the text stuff
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('.ck-content').type('This is paragraph{enter}')
-		cy.get('select').select('heading 1')
-		cy.get('.ck-content').type('This is heading 1{enter}')
 
-		cy.get('select').select('heading 2')
-		cy.get('.ck-content').type('This is heading 2{enter}')
+		// Type something in BOLD
+		cy.get('button.ck-button').contains('Bold').click()
+		cy.get('.ck-content').type('This is bold!')
+		cy.get('button.ck-button').contains('Bold').click()
+		cy.get('.ck-content').type('{enter}')
 
-		cy.get('select').select('heading 3')
-		cy.get('.WysiHat-editor').type('This is heading 3{enter}')
+		// Type something in italics
+		cy.get('button.ck-button').contains('Italic').click()
+		cy.get('.ck-content').type('This is italic!')
+		cy.get('button.ck-button').contains('Italic').click()
+		cy.get('.ck-content').type('{enter}')
+
+		// cy.get('select').select('heading 1')
+		// cy.get('.ck-content').type('This is heading 1{enter}')
+
+		// cy.get('select').select('heading 2')
+		// cy.get('.ck-content').type('This is heading 2{enter}')
+
+		// cy.get('select').select('heading 3')
+		// cy.get('.WysiHat-editor').type('This is heading 3{enter}')
 
 		cy.dismissLicenseAlert()
 		cy.get('button').contains('Save').eq(0).click()
+
+		cy.visit('index.php/aaRichTextEditor')
+		cy.get('body').contains('p', 'This is paragraph');
 	})
 
 	it('Tests Select', () => {
@@ -627,6 +655,7 @@ context('Create combinations of field', () => {
 			cy.get('.range-slider').not('.flat').find('input[type=range]').eq(0).as('range').invoke('val').should('eq', '25')
 			cy.get('@range').invoke('val', 23).trigger('change')
 			cy.get('@range').invoke('val').should('eq', '25')
+			cy.get('button').contains('Save').eq(0).click()
 	
 			cy.visit('admin.php?/cp/design')
 			cy.get('a').contains('aaValueSlider').eq(0).click()
@@ -657,6 +686,7 @@ context('Create combinations of field', () => {
 			cy.get('.range-slider.flat').find('input[type=range]').eq(1).as('range2').invoke('val').should('eq', '35')
 			cy.get('@range1').invoke('val', 23).trigger('change', {force: true})
 			cy.get('@range1').invoke('val').should('eq', '25')
+			cy.get('button').contains('Save').eq(0).click()
 	
 			cy.visit('admin.php?/cp/design')
 			cy.get('a').contains('aaRangeSlider').eq(0).click()
@@ -671,6 +701,8 @@ context('Create combinations of field', () => {
 		it('Switch between slider types', () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Value Slider').click()
+			cy.wait(1000);
+
 			cy.get('[data-input-value=field_type] .js-dropdown-toggle').should('exist')
 			cy.get('[data-input-value=field_type] .select__button').click()
 			page.get('Type_Options').contains('Range Slider').click()

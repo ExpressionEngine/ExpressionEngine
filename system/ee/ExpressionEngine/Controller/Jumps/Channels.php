@@ -102,7 +102,7 @@ class Channels extends Jumps
 
     private function loadChannels($searchString = false)
     {
-        $channels = ee('Model')->get('Channel');
+        $channels = ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'));
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
