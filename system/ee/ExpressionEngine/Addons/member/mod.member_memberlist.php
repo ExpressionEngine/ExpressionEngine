@@ -128,7 +128,7 @@ class Member_memberlist extends Member
         /** ---------------------------------
         /**  Does the recipient accept email?
         /** ---------------------------------*/
-        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '". ee()->db->escape_str($member_id) . "'");
+        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '" . ee()->db->escape_str($member_id) . "'");
 
         if ($query->num_rows() == 0) {
             return false;
@@ -338,11 +338,11 @@ class Member_memberlist extends Member
 
         /* ----------------------------------------
         /*  Check for Search URL
-        /*		- In an attempt to be clever, I decided to first check for
-                the Search ID and if found, use an explode to set it and
-                find a new $this->cur_id.  This solves the problem easily
-                and saves me from using substr() and strpos() far too many times
-                for a sane man to consider reasonable. -Paul
+        /*	In an attempt to be clever, I decided to first check for
+            the Search ID and if found, use an explode to set it and
+            find a new $this->cur_id.  This solves the problem easily
+            and saves me from using substr() and strpos() far too many times
+            for a sane man to consider reasonable. -Paul
         /* ----------------------------------------*/
 
         $search_path = '';
@@ -444,7 +444,7 @@ class Member_memberlist extends Member
         // Pagination or No Pagination & Forum
         // Pagination & Forum
 
-        for ($i = 3; $i <= 5; ++ $i) {
+        for ($i = 3; $i <= 5; ++$i) {
             if (isset(ee()->uri->segments[$i]) && strlen(ee()->uri->segments[$i]) == 1 && preg_match("/[A-Z]{1}/", ee()->uri->segments[$i])) {
                 $first_letter = ee()->uri->segments[$i];
                 $sql .= " AND m.screen_name LIKE '{$first_letter}%' ";
@@ -868,7 +868,7 @@ class Member_memberlist extends Member
             $data['class'] = ee()->TMPL->form_class;
 
             $data['hidden_fields'] = array(
-                'ACT' => ee()->functions->fetch_action_id('Member', 'member_search'),
+                'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
                 'RET' => ee()->TMPL->fetch_param('return') != '' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
                 'no_result_page' => ee()->TMPL->fetch_param('no_result_page'));
 
@@ -883,7 +883,7 @@ class Member_memberlist extends Member
             $data['class'] = ee()->TMPL->form_class;
 
             $data['hidden_fields'] = array(
-                'ACT' => ee()->functions->fetch_action_id('Member', 'member_search'),
+                'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
                 'RET' => ee()->TMPL->fetch_param('return') != '' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page));
 
             $template = str_replace(LD . 'form_declaration' . RD, ee()->functions->form_declaration($data), $template);
