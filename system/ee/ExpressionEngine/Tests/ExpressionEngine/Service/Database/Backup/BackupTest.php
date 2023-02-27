@@ -8,6 +8,10 @@ use PHPUnit\Framework\TestCase;
 
 class BackupTest extends TestCase
 {
+    public $filesystem;
+    public $query;
+    public $backup;
+
     public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');

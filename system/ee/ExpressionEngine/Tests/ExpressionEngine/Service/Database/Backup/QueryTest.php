@@ -8,6 +8,11 @@ use PHPUnit\Framework\TestCase;
 
 class QueryTest extends TestCase
 {
+    public $query;
+    public $db_query;
+    public $db_query2;
+    private $newline = "\n";
+
     public function setUp(): void
     {
         $this->db_query = Mockery::mock('ExpressionEngine\Service\Database\Query');
@@ -71,10 +76,7 @@ class QueryTest extends TestCase
         $inserts = $this->query->getInsertsForTable('table', 0, 50);
 
         $this->assertEquals([
-            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20
-	(123, 'testing', x'30'),
-	(0, 'testing2', x'31'),
-	(321, 'testing3', x'3137');",
+            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20{$this->newline}	(123, 'testing', x'30'),{$this->newline}	(0, 'testing2', x'31'),{$this->newline}	(321, 'testing3', x'3137');",
             'rows_exported' => 3
         ], $inserts);
 
@@ -92,11 +94,7 @@ class QueryTest extends TestCase
         $inserts = $this->query->getInsertsForTable('table', 0, 50);
 
         $this->assertEquals([
-            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20
-	(123, 'testing', x'30'),
-	(0, 'testing2', x'31');
-INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20
-	(321, 'testing3', x'3137');",
+            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20{$this->newline}	(123, 'testing', x'30'),{$this->newline}	(0, 'testing2', x'31');{$this->newline}INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20{$this->newline}	(321, 'testing3', x'3137');",
             'rows_exported' => 3
         ], $inserts);
 
@@ -104,8 +102,7 @@ INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES\x20
         $inserts = $this->query->getInsertsForTable('table', 0, 50);
 
         $this->assertEquals([
-            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES (123, 'testing', x'30'), (0, 'testing2', x'31');
-INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES (321, 'testing3', x'3137');",
+            'insert_string' => "INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES (123, 'testing', x'30'), (0, 'testing2', x'31');{$this->newline}INSERT INTO `table` (`column1`, `column2`, `column3`) VALUES (321, 'testing3', x'3137');",
             'rows_exported' => 3
         ], $inserts);
     }

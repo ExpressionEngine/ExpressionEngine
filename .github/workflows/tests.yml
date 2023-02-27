@@ -35,6 +35,7 @@ jobs:
             with:
               path: .git
               key: cache-ee-git-${{ github.sha }}
+              enableCrossOsArchive: true
 
           - name: Checkout Pro
             uses: actions/checkout@v3
@@ -78,6 +79,7 @@ jobs:
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
+              enableCrossOsArchive: true
 
           - name: Directory Listing on Failure
             if: failure()
@@ -125,6 +127,8 @@ jobs:
               with:
                 path: build-tools/builds/ExpressionEngine
                 key: cache-ee-build-${{ github.sha }}
+                fail-on-cache-miss: true
+                enableCrossOsArchive: true
 
             - name: Move files to webroot
               run: |
@@ -135,6 +139,7 @@ jobs:
               with:
                 path: .git
                 key: cache-ee-git-${{ github.sha }}
+                enableCrossOsArchive: true
 
             - name: Copy config.php
               run: |
@@ -162,6 +167,7 @@ jobs:
                   sudo chmod -R 777 images
                   sudo chmod -R 777 themes/user
                   sudo chmod -R 777 tests/cypress/cypress/screenshots
+                  sudo chmod -R 777 tests/cypress/cypress/videos
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -236,6 +242,13 @@ jobs:
               with:
                 name: cypress-tests-PHP${{ matrix.php }}-${{ matrix.containers }}
                 path: tests/cypress/cypress/screenshots/
+
+            - name: Archive videos
+              uses: actions/upload-artifact@v3
+              if: failure()
+              with:
+                name: cypress-videos-PHP${{ matrix.php }}-${{ matrix.containers }}
+                path: tests/cypress/cypress/videos/
 
             - name: Archive server errors
               uses: actions/upload-artifact@v3

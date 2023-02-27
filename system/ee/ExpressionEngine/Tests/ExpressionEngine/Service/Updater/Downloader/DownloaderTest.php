@@ -11,6 +11,13 @@ class DownloaderTest extends TestCase
 {
     use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
+    public $license;
+    public $curl;
+    public $filesystem;
+    public $logger;
+    public $config;
+    public $downloader;
+
     public function setUp(): void
     {
         $this->license = Mockery::mock('ExpressionEngine\Service\License\ExpressionEngineLicense');

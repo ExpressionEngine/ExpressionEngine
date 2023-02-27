@@ -17,6 +17,8 @@ require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
 
 class XSSTest extends TestCase
 {
+    public $xss;
+
     public function setUp(): void
     {
         $this->xss = new XSS();
@@ -30,7 +32,7 @@ class XSSTest extends TestCase
     public function testXssClean()
     {
         $testArray = array(
-            '"><script>alert(\'stored xss\')</script>' => '">[removed]alert&#40;\'stored xss\'&#41;[removed]',
+            '"><script>alert(\'stored xss\')</script>' => '">[removed]alert&#9001;\'stored xss\'&#9002;[removed]',
             '"><a onload=alert(1);>' => '"><a >',
             '"><a/onload=alert(1);>' => '"><a/>',
             '"><img onload=alert(1);>' => '"><img >',
