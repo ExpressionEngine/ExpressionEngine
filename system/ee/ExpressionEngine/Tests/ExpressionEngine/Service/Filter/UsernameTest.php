@@ -17,6 +17,9 @@ use PHPUnit\Framework\TestCase;
 
 class UsernameTest extends TestCase
 {
+    public $query;
+    public $usernames;
+
     public function setUp(): void
     {
         $this->query = m::mock('ExpressionEngine\Service\Model\Query\Builder');
