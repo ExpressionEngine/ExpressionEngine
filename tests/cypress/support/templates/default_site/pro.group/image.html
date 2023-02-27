@@ -50,6 +50,14 @@
     <p>Image tag as pair with modifier used twice, with other attributes</p>
     <div>{news_image}<IMG alt="{description}" data-something="{news_image:thumb}" src="{url}" data-src="{news_image:thumb}" />{/news_image}</div>
 </div>
+<div id="img-modifiers-pair-3">
+    <p>Image tag as pair with modifier used twice, with other attributes, multi line</p>
+    <div>{news_image}
+        <IMG alt="{description}" data-something="{news_image:thumb}" 
+        src="{url}" data-src="{news_image:thumb}" />
+        {/news_image}
+    </div>
+</div>
 <div id="attr-tag-bg">
     <p>CSS background, single tag</p>
     <div id="top" class="hero-container valign-middle" style="height: 100px; background-image:url('{news_image}')"></div>

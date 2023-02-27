@@ -165,6 +165,7 @@ context('Pro', () => {
         cy.get('#img-modifiers-pair-1 .eeFrontEdit').should('have.length', 1);
         cy.get('#img-modifiers-pair-2 .eeFrontEdit').should('have.length', 1);
         cy.get('#img-modifiers-pair-3 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-4 .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-bg .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-pair-bg .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-pair-bg-2 .eeFrontEdit').should('have.length', 1);

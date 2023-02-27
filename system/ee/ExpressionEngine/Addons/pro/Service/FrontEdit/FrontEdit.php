@@ -234,9 +234,9 @@ class FrontEdit
                     }
                 }
 
-                // :frontedit tag cannot be inside of tag pair 
+                // :frontedit tag cannot be inside of tag pair
                 // (case when jusing image modifiers)
-                $tagdata = preg_replace_callback('/{([a-zA-Z0-9_-]*)}(.*?){\/\1}/', function ($matches) {
+                $tagdata = preg_replace_callback('/{([a-zA-Z0-9_-]*)}(.*?){\/\1}/s', function ($matches) {
                     return preg_replace('/{' . $matches[1] . ':frontedit}/', '', $matches[0]);
                 }, $tagdata);
             }
