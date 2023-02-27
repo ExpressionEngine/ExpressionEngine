@@ -166,6 +166,10 @@ context('Pro', () => {
         cy.get('#img-modifiers-pair-2 .eeFrontEdit').should('have.length', 1);
         cy.get('#img-modifiers-pair-3 .eeFrontEdit').should('have.length', 1);
         cy.get('#img-modifiers-pair-4 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-11 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-12 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-13 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-14 .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-bg .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-pair-bg .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-pair-bg-2 .eeFrontEdit').should('have.length', 1);

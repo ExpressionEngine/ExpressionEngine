@@ -95,7 +95,7 @@ class FrontEdit
             }
             //get all field names
             $field_regexps = [];
-            $allFields = ee('Model')->get('ChannelField')->fields('field_id', 'field_type', 'field_name')->filter('enable_frontedit', 'y')->order('field_name', 'desc')->all();
+            $allFields = ee('Model')->get('ChannelField')->fields('field_id', 'field_type', 'field_name')->filter('enable_frontedit', 'y')->order('field_name', 'desc')->all(true);
             $fields = [
                 'title' => 'title'
             ];
@@ -223,7 +223,16 @@ class FrontEdit
                     // (might be caused by if conditionals)
 
                     if (isset($matches[$i + 1]) && $matches[$i + 1][0][0] == $tag) {
-                        $substr = substr($orig_tagdata, $match[0][1], $matches[$i + 1][0][1] - $match[0][1] + strlen($tag));
+                        $substrOrig = substr($orig_tagdata, $match[0][1], $matches[$i + 1][0][1] - $match[0][1] + strlen($tag));
+                        // :frontedit tag cannot be inside of tag pair
+                        // (case when jusing image modifiers)
+                        $substr = preg_replace_callback('/{([a-zA-Z0-9_-]*):frontedit}(?!(\{\1[\}\s]))(.*?){\/\1}/s', function ($substrMatches) {
+                            if (preg_match('/{' . $substrMatches[1] . '[\}\s]/s', $substrMatches[0], $check)) {
+                                return $substrMatches[0];
+                            }
+                            return preg_replace('/{' . $substrMatches[1] . ':frontedit}/', '', $substrMatches[0]);
+                        }, $substrOrig);
+                        $tagdata = str_replace($substrOrig, $substr, $tagdata);
                         //there is some tag between, but no closing tag
                         if (
                             (strpos($substr, '<') === false && strpos($substr, '>') === false) ||
@@ -233,12 +242,6 @@ class FrontEdit
                         }
                     }
                 }
-
-                // :frontedit tag cannot be inside of tag pair
-                // (case when jusing image modifiers)
-                $tagdata = preg_replace_callback('/{([a-zA-Z0-9_-]*)}(.*?){\/\1}/s', function ($matches) {
-                    return preg_replace('/{' . $matches[1] . ':frontedit}/', '', $matches[0]);
-                }, $tagdata);
             }
 
             // inject manual links back
