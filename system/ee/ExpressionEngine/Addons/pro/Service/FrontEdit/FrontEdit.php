@@ -223,18 +223,25 @@ class FrontEdit
                     // (might be caused by if conditionals)
 
                     if (isset($matches[$i + 1]) && $matches[$i + 1][0][0] == $tag) {
-                        $substr = substr($orig_tagdata, $match[0][1] + strlen($tag), $matches[$i + 1][0][1] - $match[0][1]);
+                        $substr = substr($orig_tagdata, $match[0][1], $matches[$i + 1][0][1] - $match[0][1] + strlen($tag));
                         //there is some tag between, but no closing tag
                         if (
                             (strpos($substr, '<') === false && strpos($substr, '>') === false) ||
                             (strpos($substr, '<') !== false && strpos($substr, '>') !== false && strpos($substr, '</') === false)
                         ) {
-                            $tagdata = str_replace($substr, str_replace($tag, '', $substr), $tagdata);
+                            $tagdata = str_replace($substr, $tag . str_replace($tag, '', $substr), $tagdata);
                         }
                     }
                 }
+
+                // :frontedit tag cannot be inside of tag pair 
+                // (case when jusing image modifiers)
+                $tagdata = preg_replace_callback('/{([a-zA-Z0-9_-]*)}(.*?){\/\1}/', function ($matches) {
+                    return preg_replace('/{' . $matches[1] . ':frontedit}/', '', $matches[0]);
+                }, $tagdata);
             }
 
+            // inject manual links back
             $tagdata = str_replace(':MAGIC_frontedit_HAPPENING', ':frontedit', $tagdata);
         }
 
