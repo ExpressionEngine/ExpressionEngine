@@ -11,19 +11,18 @@
 namespace ExpressionEngine\Tests\Service\Generator;
 
 use ExpressionEngine\Service\Generator\ModelGenerator;
+use ExpressionEngine\Library\String\Str;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class ModelGeneratorTest extends TestCase
 {
+    public $filesystem;
+    public $modelGenerator;
+
     public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
-
-        // Populate with sample data
-        $data = [];
-
-        $this->modelGenerator = new ModelGenerator($this->filesystem, $data);
     }
 
     public function tearDown(): void
@@ -35,7 +34,18 @@ class ModelGeneratorTest extends TestCase
     }
 
     /** @test */
-    public function it_generates_a_model()
+    public function it_fails_when_addon_doesnt_exist()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Add-on does not exists: addon_that_doesnt_exist');
+
+        // Populate with sample data
+        $str = new Str();
+        $data = [
+            'name' => 'MyModel',
+            'addon' => 'addon_that_doesnt_exist',
+        ];
+
+        $this->modelGenerator = new ModelGenerator($this->filesystem, $str, $data);
     }
 }
