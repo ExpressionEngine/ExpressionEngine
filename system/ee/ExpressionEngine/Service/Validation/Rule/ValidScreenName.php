@@ -21,6 +21,7 @@ class ValidScreenName extends ValidationRule
 
     public function validate($key, $screen_name)
     {
+        $screen_name = (string) $screen_name;
         if (preg_match('/[\{\}<>]/', $screen_name)) {
             $this->last_error = 'disallowed_screen_chars';
             return false;

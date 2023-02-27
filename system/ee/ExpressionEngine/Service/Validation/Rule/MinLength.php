@@ -19,6 +19,7 @@ class MinLength extends ValidationRule
 {
     public function validate($key, $value)
     {
+        $value = (string) $value;
         ee()->load->helper('multibyte');
 
         list($length) = $this->assertParameters('length');

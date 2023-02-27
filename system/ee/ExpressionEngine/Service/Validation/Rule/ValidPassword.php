@@ -22,6 +22,7 @@ class ValidPassword extends ValidationRule
 
     public function validate($key, $password)
     {
+        $password = (string) $password;
         ee()->lang->loadfile('myaccount');
 
         $pw_length = ee()->config->item('pw_min_len');
