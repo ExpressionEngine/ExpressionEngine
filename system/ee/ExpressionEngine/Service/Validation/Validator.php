@@ -180,9 +180,6 @@ class Validator
 
                 $rule->setAllValues($values);
 
-                if (is_null($value)) {
-                    $value = (string) $value;
-                }
                 $rule_return = $rule->validate($key, $value);
 
                 // Skip the rest of the rules?
