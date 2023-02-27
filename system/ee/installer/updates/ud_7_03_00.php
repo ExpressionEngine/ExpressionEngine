@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
+                'addEnforceAutoUrlTitle',
                 'addWeekStartColForMembers',
                 'setWeekStartPreference',
                 'addFluidFieldGroups',
@@ -39,6 +40,22 @@ class Updater
         }
 
         return true;
+    }
+
+    private function addEnforceAutoUrlTitle()
+    {
+        if (!ee()->db->field_exists('enforce_auto_url_title', 'channels')) {
+            ee()->smartforge->add_column(
+                'channels',
+                array(
+                    'enforce_auto_url_title' => array(
+                        'type' => 'CHAR(1)',
+                        'null' => false,
+                        'default' => 'n'
+                    )
+                )
+            );
+        }
     }
 
     private function addWeekStartColForMembers()

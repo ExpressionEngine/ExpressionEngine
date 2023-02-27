@@ -408,6 +408,10 @@ $lang = array(
 
     'url_title_prefix_desc' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix assigned to all <b>new</b> entries in this channel.',
 
+    'enforce_auto_url_title' => 'Enforce automatic URL title',
+
+    'enforce_auto_url_title_desc' => 'Make the URL title field read-only and generate unique value for it automatically.',
+
     'versioning' => 'Versioning',
 
     'xml_language' => '<abbr title="Extensible Markup Language">XML</abbr> language',
