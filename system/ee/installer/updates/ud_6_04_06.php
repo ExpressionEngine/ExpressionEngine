@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -8,22 +9,24 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Service\Validation\Rule;
-
-use ExpressionEngine\Service\Validation\ValidationRule;
+namespace ExpressionEngine\Updater\Version_6_4_6;
 
 /**
- * URL Validation Rule
+ * Update
  */
-class Url extends ValidationRule
+class Updater
 {
-    public function validate($key, $value)
-    {
-        return (bool) filter_var((string) $value, FILTER_VALIDATE_URL);
-    }
+    public $version_suffix = '';
 
-    public function getLanguageKey()
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
     {
-        return 'valid_url';
+        return true;
     }
 }
+
+// EOF

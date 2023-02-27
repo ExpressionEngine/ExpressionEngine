@@ -64,7 +64,7 @@ class ChannelFieldGroup extends Model
 
     public function validateName($key, $value, $params, $rule)
     {
-        if (! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", $value)) {
+        if (! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", (string) $value)) {
             return 'illegal_characters';
         }
 

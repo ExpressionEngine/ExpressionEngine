@@ -19,6 +19,10 @@ class MaxLength extends ValidationRule
 {
     public function validate($key, $value)
     {
+        if (empty($value)) {
+            return true;
+        }
+
         ee()->load->helper('multibyte');
 
         list($length) = $this->assertParameters('length');

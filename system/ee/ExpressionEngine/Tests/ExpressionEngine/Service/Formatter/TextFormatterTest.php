@@ -19,10 +19,19 @@ require_once APPPATH . 'helpers/multibyte_helper.php';
 
 class TextFormatterTest extends TestCase
 {
+    public $lang;
+    public $sess;
+    public $factory;
+    private $newline = "\\n";
+
     public function setUp(): void
     {
         $this->lang = m::mock('EE_Lang');
         $this->sess = m::mock('EE_Session');
+
+        if (PHP_OS == "WINNT") {
+            $this->newline = "\\r\\n";
+        }
 
         $this->lang->shouldReceive('load');
     }
@@ -171,6 +180,8 @@ class TextFormatterTest extends TestCase
      */
     public function testEmojiShorthand($content, $expected)
     {
+        ee()->setMock('Emoji', new \ExpressionEngine\Library\Emoji\Emoji());
+
         $config['emoji_map'] = include SYSPATH . 'ee/ExpressionEngine/Config/emoji.php';
         $text = (string) $this->format($content, $config)->emojiShorthand();
         $this->assertEquals($expected, $text);
@@ -183,12 +194,12 @@ class TextFormatterTest extends TestCase
             ['Emoji aliases like :moon: and :waxing_gibbous_moon: work', 'Emoji aliases like &#x1F314; and &#x1F314; work'],
             ['Handle multi-character emoji like :man-woman-girl-boy:', 'Handle multi-character emoji like &#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467;&#x200D;&#x1F466;'],
             ['Emoji 5 shortcodes like :hedgehog: and :merman: are supported', 'Emoji 5 shortcodes like &#x1F994; and &#x1F9DC;&#x200D;&#x2642;&#xFE0F; are supported'],
-            ['Emoji 11 (there is no 6) shortcodes like :supervillain: and :lobster: are not yet supported', 'Emoji 11 (there is no 6) shortcodes like :supervillain: and :lobster: are not yet supported'],
+            ['Emoji 11 shortcodes like :supervillain: and :lobster: are supported', 'Emoji 11 shortcodes like &#x1F9B9; and &#x1F99E; are supported'],
             [
                 // larger sample with multi-line code samples
                 'Unlike :lock:, emoji in [code]code samples :lock:[/code] should be left alone.
 
-:rabbit: starts as sentence. :+1:
+:rabbit: starts as sentence. :thumbsup:
 
 [code=markdown]
 Another code block with a :rabbit::hole:.
@@ -285,16 +296,16 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
         $sample = '"Hello"	<b>World</b>		&quot;period&quot;.
 ';
         $text = (string) $this->format($sample)->json();
-        $this->assertEquals('"&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&amp;quot;period&amp;quot;.\n"', $text);
+        $this->assertEquals('"&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&amp;quot;period&amp;quot;.' . $this->newline . '"', $text);
 
         $text = (string) $this->format($sample)->json(['double_encode' => false]);
-        $this->assertEquals('"&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&quot;period&quot;.\n"', $text);
+        $this->assertEquals('"&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&quot;period&quot;.' . $this->newline . '"', $text);
 
         $text = (string) $this->format($sample)->json(['enclose_with_quotes' => false]);
-        $this->assertEquals('&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&amp;quot;period&amp;quot;.\n', $text);
+        $this->assertEquals('&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&amp;quot;period&amp;quot;.' . $this->newline, $text);
 
         $text = (string) $this->format($sample)->json(['options' => 'JSON_HEX_AMP|JSON_HEX_TAG']);
-        $this->assertEquals('"\u0026quot;Hello\u0026quot;\t\u0026lt;b\u0026gt;World\u0026lt;\/b\u0026gt;\t\t\u0026amp;quot;period\u0026amp;quot;.\n"', $text);
+        $this->assertEquals('"\u0026quot;Hello\u0026quot;\t\u0026lt;b\u0026gt;World\u0026lt;\/b\u0026gt;\t\t\u0026amp;quot;period\u0026amp;quot;.' . $this->newline .'"', $text);
     }
 
     public function testLength()
