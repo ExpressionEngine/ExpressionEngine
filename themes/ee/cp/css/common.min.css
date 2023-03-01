@@ -34971,8 +34971,8 @@ table .field-no-results {
   }
 
   .live-preview__form, .live-preview__preview {
-    flex-basis: 50%;
-    width: 50%;
+    flex-basis: 100%;
+    width: 100%;
     max-height: 50vh;
   }
 
