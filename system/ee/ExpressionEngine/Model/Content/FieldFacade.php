@@ -36,6 +36,7 @@ class FieldFacade
 
     public function __construct($field_id, array $metadata)
     {
+        ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
         $this->api = clone ee()->api_channel_fields;
 
