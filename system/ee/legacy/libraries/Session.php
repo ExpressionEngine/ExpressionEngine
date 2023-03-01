@@ -1208,9 +1208,6 @@ class EE_Session
      */
     private function _setupMemberModel($memberId)
     {
-        if (empty($memberId)) {
-            return null;
-        }
         $memberQuery = ee('Model')->get('Member', $memberId)
             ->with(['PrimaryRole' => 'RoleSettings'])
             ->with('Roles')
