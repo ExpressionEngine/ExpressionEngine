@@ -18263,14 +18263,14 @@ fieldset .field-control #eye {
 .grid-field.vertical-layout .grid-field__table {
   display: block;
 }
-.grid-field.vertical-layout .grid-field__table thead {
+.grid-field.vertical-layout .grid-field__table > thead {
   display: none;
 }
-.grid-field.vertical-layout .grid-field__table tbody {
+.grid-field.vertical-layout .grid-field__table > tbody {
   display: block;
   border: none;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) {
+.grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) {
   display: flex;
   flex-direction: column;
   position: relative;
@@ -18279,7 +18279,7 @@ fieldset .field-control #eye {
   padding-bottom: 15px;
   background-color: var(--ee-bg-blank);
 }
-.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td {
+.grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td {
   border-right: none;
   min-width: 0;
   width: 100%;
@@ -18290,32 +18290,32 @@ fieldset .field-control #eye {
   padding-bottom: 0;
   font-size: 1rem;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools {
+.grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools {
   text-align: left;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .pagination__link, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .no-results a, .no-results .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a,
-.grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .field-no-results a,
-.field-no-results .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .select-popup, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools select, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .select__button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools a, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .filter-bar__button, .grid-field.vertical-layout .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools .license-status-badge {
+.grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools .button, .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools .pagination__link, .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools .no-results a, .no-results .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools a,
+.grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools .field-no-results a,
+.field-no-results .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools a, .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools .select-popup, .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools select, .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools .select__button, .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools .markItUpHeader ul a, .markItUpHeader ul .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools a, .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools .filter-bar__button, .grid-field.vertical-layout .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools .license-status-badge {
   margin-bottom: 0;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr.no-results {
+.grid-field.vertical-layout .grid-field__table > tbody tr.no-results {
   padding: 0px;
   background-color: transparent;
   border: none;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr.no-results td {
+.grid-field.vertical-layout .grid-field__table > tbody tr.no-results td {
   padding-top: 0;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed {
+.grid-field.vertical-layout .grid-field__table > tbody tr.grid__item--collapsed {
   padding-bottom: 0 !important;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
+.grid-field.vertical-layout .grid-field__table > tbody tr.grid__item--collapsed td:not(.grid-field__item-fieldset) {
   display: none !important;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
+.grid-field.vertical-layout .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
   border-bottom: none !important;
 }
-.grid-field.vertical-layout .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+.grid-field.vertical-layout .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
   transform: rotate(180deg);
 }
 .grid-field.vertical-layout .grid-field__item-fieldset {
@@ -18364,31 +18364,31 @@ fieldset .field-control #eye {
     overflow: inherit;
   }
 
-  .grid-field:not(.horizontal-layout) .grid-field__table, .grid-field:not(.horizontal-layout) .grid-field__table tbody, .grid-field:not(.horizontal-layout) .grid-field__table th, .grid-field:not(.horizontal-layout) .grid-field__table td, .grid-field:not(.horizontal-layout) .grid-field__table tr {
+  .grid-field:not(.horizontal-layout) .grid-field__table, .grid-field:not(.horizontal-layout) .grid-field__table > tbody {
     display: block;
     border: none;
   }
-  .grid-field:not(.horizontal-layout) .grid-field__table thead {
+  .grid-field:not(.horizontal-layout) .grid-field__table > thead {
     display: none;
   }
-  .grid-field:not(.horizontal-layout) .grid-field__table tr {
+  .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr {
     display: flex;
     flex-direction: column;
   }
-  .grid-field:not(.horizontal-layout) .grid-field__table tr.hidden {
+  .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr.hidden {
     display: none;
   }
-  .grid-field:not(.horizontal-layout) .grid-field__table tr {
+  .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr {
     position: relative;
     border: 1px solid var(--ee-border);
     margin-bottom: 10px;
     padding-bottom: 15px;
     background-color: var(--ee-bg-blank);
   }
-  .grid-field:not(.horizontal-layout) .grid-field__table tr.no-results {
+  .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr.no-results {
     padding: 0px;
   }
-  .grid-field:not(.horizontal-layout) .grid-field__table td {
+  .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr > td {
     display: block !important;
     border-bottom: none;
     padding: 10px 15px 10px 15px;
@@ -18444,17 +18444,17 @@ fieldset .field-control #eye {
 .grid-field.overwidth .grid-field__table {
   display: flex;
 }
-.live-preview__form-content .grid-field .grid-field__table thead,
-.grid-field.overwidth .grid-field__table thead {
+.live-preview__form-content .grid-field .grid-field__table > thead,
+.grid-field.overwidth .grid-field__table > thead {
   display: none;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody,
-.grid-field.overwidth .grid-field__table tbody {
+.live-preview__form-content .grid-field .grid-field__table > tbody,
+.grid-field.overwidth .grid-field__table > tbody {
   width: 100%;
   border: none;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden),
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden),
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) {
   display: flex;
   flex-direction: column;
   position: relative;
@@ -18463,8 +18463,8 @@ fieldset .field-control #eye {
   padding-bottom: 15px;
   background-color: var(--ee-bg-blank);
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden),
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden),
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) {
   border-right: none;
   min-width: 0;
   width: 100%;
@@ -18475,25 +18475,25 @@ fieldset .field-control #eye {
   font-size: 1rem;
 }
 @media (min-width: 768px) {
-  .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden),
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) {
+  .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden),
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) {
     border-bottom: 1px solid var(--ee-table-border);
   }
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden):last-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden):last-child {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden):last-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden):last-child {
   border-bottom: none;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label),
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) > *:not(.grid-field__column-label) {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) > *:not(.grid-field__column-label),
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) > *:not(.grid-field__column-label) {
   width: 100%;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .ee-form-error-message,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .ee-form-error-message {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .ee-form-error-message,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .ee-form-error-message {
   margin-left: auto;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-label,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-label {
   display: block;
   color: var(--ee-text-secondary);
   font-weight: 500;
@@ -18501,74 +18501,74 @@ fieldset .field-control #eye {
   margin-bottom: 10px;
   flex: 0 0 100%;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label label,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label label {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-label label,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-label label {
   color: var(--ee-text-secondary);
   margin: 0;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label em,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-label em {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-label em,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-label em {
   font-style: normal;
   color: var(--ee-text-secondary);
   margin: 0;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools {
   width: 100%;
   display: flex;
   align-items: center;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .pagination__link, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .no-results a, .no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a,
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .field-no-results a,
-.field-no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select-popup, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools select, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select__button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a, .markItUpHeader ul .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .filter-bar__button, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .license-status-badge,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .button,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .pagination__link,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .no-results a,
-.no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .field-no-results a,
-.field-no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select-popup,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools select,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select__button,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a,
-.markItUpHeader ul .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .filter-bar__button,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .license-status-badge {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .button, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .pagination__link, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .no-results a, .no-results .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a,
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .field-no-results a,
+.field-no-results .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .select-popup, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools select, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .select__button, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a, .markItUpHeader ul .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .filter-bar__button, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .license-status-badge,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .button,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .pagination__link,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .no-results a,
+.no-results .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .field-no-results a,
+.field-no-results .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .select-popup,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools select,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .select__button,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a,
+.markItUpHeader ul .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .filter-bar__button,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .license-status-badge {
   margin-bottom: 0;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .pagination__link:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .no-results a:first-child, .no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child,
-.live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .field-no-results a:first-child,
-.field-no-results .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select-popup:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools select:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select__button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a:first-child, .markItUpHeader ul .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .filter-bar__button:first-child, .live-preview__form-content .grid-field .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .license-status-badge:first-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .button:first-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .pagination__link:first-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .no-results a:first-child,
-.no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .field-no-results a:first-child,
-.field-no-results .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select-popup:first-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools select:first-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .select__button:first-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a:first-child,
-.markItUpHeader ul .grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools a:first-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .filter-bar__button:first-child,
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td:not(.hidden) .grid-field__column-tools .license-status-badge:first-child {
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .button:first-child, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .pagination__link:first-child, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .no-results a:first-child, .no-results .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a:first-child,
+.live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .field-no-results a:first-child,
+.field-no-results .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a:first-child, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .select-popup:first-child, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools select:first-child, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .select__button:first-child, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a:first-child, .markItUpHeader ul .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a:first-child, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .filter-bar__button:first-child, .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .license-status-badge:first-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .button:first-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .pagination__link:first-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .no-results a:first-child,
+.no-results .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .field-no-results a:first-child,
+.field-no-results .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .select-popup:first-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools select:first-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .select__button:first-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .markItUpHeader ul a:first-child,
+.markItUpHeader ul .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools a:first-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .filter-bar__button:first-child,
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools .license-status-badge:first-child {
   margin-right: 10px;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr.no-results,
-.grid-field.overwidth .grid-field__table tbody tr.no-results {
+.live-preview__form-content .grid-field .grid-field__table > tbody tr.no-results,
+.grid-field.overwidth .grid-field__table > tbody tr.no-results {
   border-bottom: none;
   padding: 0;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr.grid__item--collapsed,
-.grid-field.overwidth .grid-field__table tbody tr.grid__item--collapsed {
+.live-preview__form-content .grid-field .grid-field__table > tbody tr.grid__item--collapsed,
+.grid-field.overwidth .grid-field__table > tbody tr.grid__item--collapsed {
   padding-bottom: 0 !important;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset,
-.grid-field.overwidth .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
+.live-preview__form-content .grid-field .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset,
+.grid-field.overwidth .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
   border-bottom: none !important;
 }
-.live-preview__form-content .grid-field .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool,
-.grid-field.overwidth .grid-field__table tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+.live-preview__form-content .grid-field .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool,
+.grid-field.overwidth .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
   transform: rotate(180deg);
 }
 
@@ -18582,16 +18582,13 @@ fieldset .field-control #eye {
   border: none;
   box-shadow: none;
 }
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td.grid-field__column--tools {
+.grid-field.overwidth .grid-field__table > tbody tr:not(.hidden) > td.grid-field__column--tools {
   display: none !important;
 }
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td div:empty {
-  display: none;
-}
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td.grid-field__item-fieldset {
+.grid-field.overwidth .grid-field__table > tbody tr:not(.hidden) > td.grid-field__item-fieldset {
   position: relative;
 }
-.grid-field.overwidth .grid-field__table tbody tr:not(.hidden) td.grid-field__item-fieldset .grid-field__item-tools {
+.grid-field.overwidth .grid-field__table > tbody tr:not(.hidden) > td.grid-field__item-fieldset .grid-field__item-tools {
   width: auto !important;
 }
 

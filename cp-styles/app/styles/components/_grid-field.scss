@@ -283,15 +283,15 @@
 	.grid-field__table {
 		display: block;
 
-		thead {
+		& > thead {
 			display: none;
 		}
 
-		tbody {
+		& > tbody {
 			display: block;
 			border: none;
 
-			tr:not(.hidden) {
+			& > tr:not(.hidden) {
 				display: flex;
 				flex-direction: column;
 				position: relative;
@@ -300,7 +300,7 @@
 				padding-bottom: 15px;
 				background-color: var(--ee-bg-blank);
 
-				td {
+				& > td {
 					border-right: none;
 					min-width: 0;
 					width: 100%;
@@ -407,47 +407,47 @@
 	}
 
 	.grid-field:not(.horizontal-layout) .grid-field__table {
-		&, tbody, th, td, tr {
-			// position: relative;
+		&, & > tbody {
 			display: block;
 			border: none;
 		}
 
-		thead {
+		& > thead {
 			display: none;
 		}
 
-		tr {
-			display: flex;
-			flex-direction: column;
+		& > tbody {
+			& > tr {
+				display: flex;
+				flex-direction: column;
 
-      &.hidden {
-        display: none;
-      }
-		}
+	      &.hidden {
+	        display: none;
+	      }
+			}
 
-		tr {
-			position: relative;
-			border: 1px solid color(border);
-			margin-bottom: 10px;
-			padding-bottom: $sq-s;
-			background-color: var(--ee-bg-blank);
+			& > tr {
+				position: relative;
+				border: 1px solid color(border);
+				margin-bottom: 10px;
+				padding-bottom: $sq-s;
+				background-color: var(--ee-bg-blank);
 
-      &.no-results {
-        padding: 0px;
+	      &.no-results {
+	        padding: 0px;
 
-        td {
-          // padding-top: 0;
-        }
-      }
-		}
+	        td {
+	          // padding-top: 0;
+	        }
+	      }
+	    }
 
-		td {
+		& > tr > td {
 			display: block !important;
 			border-bottom: none;
 			padding: $sq-inset-s;
-			// padding-bottom: 0;
 		}
+	}
 
 		tr.grid__item--collapsed {
 				padding-bottom: 0 !important;
@@ -510,15 +510,15 @@
 	.grid-field__table {
 		display: flex;
 
-		thead {
+		& > thead {
 			display: none;
 		}
 
-		tbody {
+		& > tbody {
 			width: 100%;
 			border: none;
 
-			tr:not(.hidden) {
+			& > tr:not(.hidden) {
 				display: flex;
 				flex-direction: column;
 				position: relative;
@@ -527,15 +527,7 @@
 				padding-bottom: 15px;
 				background-color: var(--ee-bg-blank);
 
-				// &:last-child {
-				// 	border-bottom: none;
-
-				// 	@include m-tablet-down {
-				// 		border-bottom-width: 1px;
-				// 	}
-				// }
-
-				td:not(.hidden) {
+				& > td:not(.hidden) {
 					border-right: none;
 					min-width: 0;
 					width: 100%;
@@ -566,8 +558,6 @@
 						color: var(--ee-text-secondary);
 						font-weight: 500;
 						white-space: normal;
-						// border-right: 1px solid var(--ee-table-border);
-						// margin-right: 15px;
 						margin-bottom: 10px;
 						flex: 0 0 100%;
 
@@ -632,13 +622,12 @@
 	}
 
 	.grid-field__table {
-		tbody tr:not(.hidden) {
-			td {
-				// flex-wrap: nowrap !important;
-				// align-items: center;
+		& > tbody tr:not(.hidden) {
+			& > td {
+
 				&.grid-field__column--tools { display: none !important;}
 
-				div:empty { display: none;}
+				// div:empty { display: none;}
 
 				&.grid-field__item-fieldset {
 					position: relative;
