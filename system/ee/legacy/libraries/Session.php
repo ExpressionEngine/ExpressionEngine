@@ -1204,11 +1204,17 @@ class EE_Session
      */
     private function _setupMemberModel($memberId)
     {
+        if (empty($memberId)) {
+            return null;
+        }
         $memberQuery = ee('Model')->get('Member', $memberId)
-                ->with('PrimaryRole', 'Roles', 'RoleGroups');
+            ->with(['PrimaryRole' => 'RoleSettings'])
+            ->with('Roles')
+            ->with('RoleGroups');
         if (REQ == 'CP') {
             $memberQuery->with('EntryManagerViews');
         }
+        $memberQuery->filter('RoleSettings.site_id', ee()->config->item('site_id'));
         $this->member_model = $memberQuery->all()->first();
     }
 

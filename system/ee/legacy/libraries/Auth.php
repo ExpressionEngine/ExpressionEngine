@@ -716,7 +716,13 @@ class Auth_result
             }
         }
 
-        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
+        // check MFA setting with respect to current site
+        if (! $multi) {
+            $roleSettings = ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first(true);
+        } else {
+            $roleSettings = ee('Model')->get('Role')->with('RoleSettings')->filter('role_id', $this->member('role_id'))->filter('RoleSettings.site_id', ee()->config->item('site_id'))->first()->RoleSettings->first();
+        }
+        if ($roleSettings->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
             $sessions = ee('Model')
                 ->get('Session')
                 ->filter('member_id', ee()->session->userdata('member_id'))
