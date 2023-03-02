@@ -159,9 +159,9 @@ class Member_memberlist extends Member
         ee()->email->message($message);
 
         if (isset($_POST['self_copy'])) {
-            /*	If CC'ing the send, they get the email and the recipient is BCC'ed
-            Because Rick says his filter blocks emails without a To: field
-            */
+            /** If CC'ing the send, they get the email and the recipient is BCC'ed
+             *  Because Rick says his filter blocks emails without a To: field
+             */
 
             ee()->email->to(ee()->session->userdata['email']);
             ee()->email->bcc($query->row('email'));
@@ -339,10 +339,10 @@ class Member_memberlist extends Member
         /* ----------------------------------------
         /*  Check for Search URL
         /*	In an attempt to be clever, I decided to first check for
-        the Search ID and if found, use an explode to set it and
-        find a new $this->cur_id.  This solves the problem easily
-        and saves me from using substr() and strpos() far too many times
-        for a sane man to consider reasonable. -Paul
+         *  the Search ID and if found, use an explode to set it and
+         *  find a new $this->cur_id.  This solves the problem easily
+         *  and saves me from using substr() and strpos() far too many times
+         *  for a sane man to consider reasonable. -Paul
         /* ----------------------------------------*/
 
         $search_path = '';
@@ -558,7 +558,7 @@ class Member_memberlist extends Member
                         } else {
                             $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $temp);
                         }
-                    }
+                    } 
                     /** ------------------------------------------
                     /**  Parse conditions in custom member fields
                     /** ------------------------------------------*/
