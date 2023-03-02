@@ -704,6 +704,8 @@ class Member_memberlist extends Member
                     /** ----------------------------------------*/
                     if (isset($fields[$val]) and isset($row['m_field_id_' . $fields[$val]])) {
                         $temp = $this->_var_swap_single($val, $row['m_field_id_' . $fields[$val]], $temp);
+                    } elseif (isset($fields[$val]) and !isset($row['m_field_id_' . $fields[$val]])) {
+                        $temp = $this->_var_swap_single($val, '', $temp);
                     }
                 }
 
