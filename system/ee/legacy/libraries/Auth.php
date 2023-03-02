@@ -717,8 +717,8 @@ class Auth_result
         }
 
         // check MFA setting with respect to current site
-        $roleSettings = ee('Model')->get('Role')->with('RoleSettings')->filter('role_id', $this->member('role_id'))->filter('RoleSettings.site_id', ee()->config->item('site_id'))->first(true);
-        if (!empty($roleSettings) && !empty($roleSettings->RoleSettings) && $roleSettings->RoleSettings->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
+        $roleSettings = ee('Model')->get('Role')->with('RoleSettings')->filter('role_id', $this->member('role_id'))->filter('RoleSettings.site_id', ee()->config->item('site_id'))->first();
+        if (!empty($roleSettings) && !is_null($roleSettings->RoleSettings) && $roleSettings->RoleSettings->first()->require_mfa === true && ee()->session->getMember()->enable_mfa !== true) {
             $sessions = ee('Model')
                 ->get('Session')
                 ->filter('member_id', ee()->session->userdata('member_id'))
