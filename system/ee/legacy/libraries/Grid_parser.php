@@ -459,6 +459,11 @@ class Grid_parser
                     !empty($row['fluid_field_data_id']) ? $row['fluid_field_data_id'] : 0
                 );
 
+                // If the replace data is null, we'll set it to an empty string
+                if (is_null($replace_data)) {
+                    $replace_data = '';
+                }
+
                 // Replace tag pair
                 $grid_row = str_replace($chunk, $replace_data, $grid_row);
             }
