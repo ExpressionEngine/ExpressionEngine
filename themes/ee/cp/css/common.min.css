@@ -30301,7 +30301,6 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   margin-bottom: 0;
   position: relative;
   font-weight: normal;
-  pointer-events: none;
 }
 .checkbox-label .checkbox-label__text {
   display: inline-block;
@@ -30312,7 +30311,6 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   transition: background 100ms ease;
   color: var(--ee-text-primary);
   border-radius: 5px;
-  pointer-events: auto;
 }
 .checkbox-label .checkbox-label__text.checkbox-label__text-editable {
   display: block;
@@ -30322,7 +30320,6 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   position: absolute;
   top: 9px;
   left: 0px;
-  pointer-events: auto;
 }
 .checkbox-label input.checkbox--large {
   z-index: 1;
