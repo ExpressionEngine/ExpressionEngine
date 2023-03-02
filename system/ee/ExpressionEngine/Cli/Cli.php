@@ -75,6 +75,7 @@ class Cli
     private $internalCommands = [
         'list' => Commands\CommandListCommands::class,
         'update' => Commands\CommandUpdate::class,
+        'update:config' => Commands\CommandUpdateConfig::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,
         'update:run-hook' => Commands\CommandUpdateRunHook::class,
         'make:action' => Commands\CommandMakeAction::class,

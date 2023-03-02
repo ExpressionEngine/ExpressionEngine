@@ -1,0 +1,68 @@
+<?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
+
+namespace ExpressionEngine\Cli\Commands;
+
+use ExpressionEngine\Cli\Cli;
+
+/**
+ * Command to update config values
+ */
+class CommandUpdateConfig extends Cli
+{
+    /**
+     * name of command
+     * @var string
+     */
+    public $name = 'Update Config Values';
+
+    /**
+     * signature of command
+     * @var string
+     */
+    public $signature = 'update:config';
+
+    /**
+     * How to use command
+     * @var string
+     */
+    public $usage = 'php eecli.php update:config';
+
+    /**
+     * options available for use in command
+     * @var array
+     */
+    public $commandOptions = [
+        'config-variable,c:'    => 'command_update_config_option_config_variable',
+        'value,v:'               => 'command_update_config_option_value',
+    ];
+
+    protected $data = [];
+
+    /**
+     * Run the command
+     * @return mixed
+     */
+    public function handle()
+    {
+        $this->info('command_update_config_welcome');
+
+        // Gather all the config variable information
+        $this->data['config-variable'] = $this->getOptionOrAsk('--config-variable', 'command_update_config_ask_config_variable', '', true);
+        $this->data['value'] = $this->getOptionOrAsk('--value', 'command_update_config_ask_config_variable', '', true);
+
+        $this->info('command_update_config_updating_config_variable');
+
+        // Set config item
+        ee('Config')->getFile()->set($this->data['config-variable'], $this->data['value'], true);
+
+        $this->info('command_update_config_config_value_saved');
+    }
+}
