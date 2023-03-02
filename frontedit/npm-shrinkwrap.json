@@ -2146,7 +2146,6 @@
           "resolved": "https://registry.npmjs.org/chalk/-/chalk-4.1.2.tgz",
           "integrity": "sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==",
           "dev": true,
-          "optional": true,
           "requires": {
             "ansi-styles": "^4.1.0",
             "supports-color": "^7.1.0"
@@ -2267,7 +2266,6 @@
           "resolved": "https://registry.npmjs.org/vue-loader/-/vue-loader-16.8.3.tgz",
           "integrity": "sha512-7vKN45IxsKxe5GcVCbc2qFU5aWzyiLrYJyUuMz4BQLKctCj/fmCa0w6fGiiQ2cLFetNcek1ppGJQDCup0c1hpA==",
           "dev": true,
-          "optional": true,
           "requires": {
             "chalk": "^4.1.0",
             "hash-sum": "^2.0.0",
@@ -15635,9 +15633,9 @@
       }
     },
     "minimist": {
-      "version": "1.2.5",
-      "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.5.tgz",
-      "integrity": "sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw=="
+      "version": "1.2.8",
+      "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz",
+      "integrity": "sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA=="
     },
     "minipass": {
       "version": "3.1.3",
