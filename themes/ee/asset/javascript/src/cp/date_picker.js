@@ -148,15 +148,15 @@ EE.cp.datePicker = {
 					parent = $(this.element).closest('form');
 				}
 
-				var time_format = EE.date.time_format
+				var include_seconds = EE.date.include_seconds
 
-				if (time_format == '12') {
-					timeBlock = '<div id="date-picker-time-block"><input type="number" min="0" max="12" id="hoursInput"><input type="number" min="0" max="59" id="minutsInput"><select><option value="am" selected>AM</option><option value="pm">PM</option></select></div>';
+				if (include_seconds == 'y') {
+					timeBlock = '<input type="time" value="00:00:00" step="1">';
 				} else {
-					timeBlock = '<div id="date-picker-time-block"><input type="number" min="0" max="23" id="hoursInput" value="0"><input type="number" min="0" max="59" id="minutsInput" value="00"></div>';
+					timeBlock = '<input type="time" value="00:00">';
 				}
 
-				var _picker = $('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">Today</button>'+timeBlock+'</div></div>');
+				var _picker = $('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">Today</button><div id="date-picker-time-block">'+timeBlock+'</div></div></div>');
 
 				_picker.appendTo(parent);
 				var _pickerWidth = _picker.width();
@@ -185,30 +185,12 @@ EE.cp.datePicker = {
 					e.preventDefault();
 				});
 
-				// $('.date-picker-wrap').on('focusin', '#minutsInput', function(){
-				// 	console.log("Saving value " + $(this).val());
-				// 	$(this).data('val', $(this).val());
-				// });
-
-				$('.date-picker-wrap').on('input', '#minutsInput, #hoursInput', function(){
-					var that = $(this);
-					var current = that.val();
-					console.log('current', current);
-					setTimeout(function(){
-						if (that.val() < 10) {
-							that.val('0'+current);
-						} else {
-							that.val(current)
-						}
-					}, 500);
-				});
-
 				// listen for clicks on elements classed with .date-picker-back
 				$('.date-picker-clip-inner').on('click', '.date-picker-item td a', function(e){
 					$('.date-picker-item td.act').removeClass('act');
 					$(this).closest('td').addClass('act');
 
-					var timeVal = $('.date-picker-wrap #date-picker-time-block').val();
+					var timeVal = $('.date-picker-wrap #date-picker-time-block input[type="time"]').val();
 
 					if ($(that.element).val()) {
 						var d = new Date($(that.element).data('timestamp') * 1000);
@@ -221,9 +203,25 @@ EE.cp.datePicker = {
 
 					var now = new Date();
 
-					d.setHours(now.getHours());
-					d.setMinutes(now.getMinutes());
-					d.setSeconds(now.getSeconds());
+					var hoursVal = timeVal.substring(0,timeVal.indexOf(':'));
+					var minutesVal, secondsVal;
+
+					if (include_seconds == 'y') {
+						minutesVal = timeVal.substring(timeVal.indexOf(':')+1);
+						secondsVal = minutesVal.substring(minutesVal.indexOf(':')+1);
+						minutesVal = minutesVal.substring(0,minutesVal.indexOf(':'));
+					} else {
+						minutesVal = timeVal.substring(timeVal.indexOf(':')+1);
+						secondsVal = '00';
+					}
+
+					d.setHours(hoursVal);
+					d.setMinutes(minutesVal);
+					d.setSeconds(secondsVal);
+
+					// d.setHours(now.getHours());
+					// d.setMinutes(now.getMinutes());
+					// d.setSeconds(now.getSeconds());
 
 					var date_format = EE.date.date_format;
 

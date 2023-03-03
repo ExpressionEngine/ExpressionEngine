@@ -36972,6 +36972,20 @@ body[data-theme="dark"] {
 .date-picker-wrap .date-picker-footer {
   text-align: center;
   margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.date-picker-wrap .date-picker-footer input[type=time] {
+  padding: 5px 15px !important;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  border-radius: 4px;
+  color: var(--ee-button-default-color);
+  background-color: var(--ee-button-default-bg);
+  border: 1px solid var(--ee-button-default-border);
+  font-weight: normal;
+  box-shadow: none;
 }
 .date-picker-wrap .date-picker-today-button {
   box-shadow: none;

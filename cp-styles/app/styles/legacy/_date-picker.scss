@@ -158,11 +158,25 @@
 		}
 }
 
-
 .date-picker-wrap {
 	.date-picker-footer {
 		text-align: center;
 		margin-top: $s-xs;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		input[type="time"] {
+			padding: 5px 15px !important;
+			font-size: 0.8rem;
+			line-height: 1.5;
+			border-radius: 4px;
+			color: var(--ee-button-default-color);
+			background-color: var(--ee-button-default-bg);
+			border: 1px solid var(--ee-button-default-border);
+			font-weight: normal;
+			box-shadow: none;
+		}
 	}
 	.date-picker-today-button {
 		@extend .button--default;
