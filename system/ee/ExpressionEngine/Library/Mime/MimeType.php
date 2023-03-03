@@ -35,7 +35,7 @@ class MimeType
         $this->detector = new MimeTypeDetection\FinfoMimeTypeDetector();
         $this->addMimeTypes($mimes);
     }
-    
+
     public function whitelistMimesFromConfig()
     {
         $whitelist = ee()->config->loadFile('mimes');
@@ -200,7 +200,7 @@ class MimeType
             $mime = 'image/webp';
             // PDF files start with "%PDF" (25 50 44 46) or " %PDF"
             // @see https://en.wikipedia.org/wiki/Magic_number_%28programming%29#Examples
-        } else if (strpos($contents, '%PDF') !== false) {
+        } elseif (strpos($contents, '%PDF') !== false) {
             $mime = 'application/pdf';
         }
 
@@ -221,9 +221,9 @@ class MimeType
             return false;
         }
 
-        if ($mime == 'image/svg+xml') {
+        if (strpos($mime, 'image/svg') === 0) {
             $file = file_get_contents($path);
-            if ((strpos($file, '<?xml') !==0 && strpos($file, '<svg') !== 0) || strpos($file, '<svg') === false) {
+            if ((strpos($file, '<?xml') !== 0 && strpos($file, '<svg') !== 0) || strpos($file, '<svg') === false) {
                 return false;
             }
             return true;

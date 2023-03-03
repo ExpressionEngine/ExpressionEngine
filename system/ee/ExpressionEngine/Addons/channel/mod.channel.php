@@ -70,7 +70,7 @@ class Channel
     // Array of parameters allowed to be set dynamically
     private $_dynamic_parameters = array();
 
-    protected $query_string = '';
+    public $query_string = '';
 
     /**
       * Constructor
