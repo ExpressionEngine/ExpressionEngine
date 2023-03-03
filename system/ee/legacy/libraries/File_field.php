@@ -763,12 +763,16 @@ class File_field
         $manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
         if (! empty($manipulations)) {
+
+            $isManipulated = isset($file['mime_type']) && strpos($file['mime_type'], 'image/') === 0 && strpos($file['mime_type'], 'image/svg') !== 0;
+
             foreach ($manipulations as $manipulation) {
-                $file['url:' . $manipulation->short_name] = $file['path'] . '_' . $manipulation->short_name . '/' . $file['file_name'];
+                $manipulationDir = $isManipulated ? '_' . $manipulation->short_name . '/' : '';
+                $file['url:' . $manipulation->short_name] = $file['path'] . $manipulationDir . $file['file_name'];
 
                 $dimensions = $manipulation->getNewDimensionsOfFile($file['model_object']);
 
-                $size = $upload_dir->getFilesystem()->getSize('_' . $manipulation->short_name . '/' . $fs_file_name);
+                $size = $upload_dir->getFilesystem()->getSize($manipulationDir . $fs_file_name);
 
                 $file['width:' . $manipulation->short_name] = $manipulation->width;
                 $file['height:' . $manipulation->short_name] = $manipulation->height;
