@@ -427,7 +427,13 @@ class Auth
         }
 
         if (in_array($member->row('role_id'), $always_disallowed)) {
-            return ee()->output->show_user_error('general', lang('mbr_account_not_active'));
+            if ($member->row('role_id') == Member::PENDING) {
+                ee()->lang->loadfile('member');
+                $error = lang('mbr_account_not_active');
+            } else {
+                $error = lang('not_authorized');
+            }
+            return ee()->output->show_user_error('general', $error);
         }
 
         $m_salt = $member->row('salt');
