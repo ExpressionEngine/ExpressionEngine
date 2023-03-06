@@ -255,6 +255,7 @@ class Notifications
 
             ee()->email->EE_initialize();
             ee()->email->wordwrap = false;
+            ee()->email->mailtype = ee()->config->item('mail_format');
             ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
             ee()->email->to($address['email']);
             ee()->email->reply_to($replyto);
