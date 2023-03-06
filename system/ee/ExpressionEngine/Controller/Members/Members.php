@@ -15,6 +15,7 @@ use ExpressionEngine\Library\CP;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Service\Model\Query\Builder;
 use ExpressionEngine\Service\Member\Member;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Members Controller
@@ -1743,7 +1744,7 @@ class Members extends CP_Controller
                     continue;
                 }
             }
-            $role = ee('Model')->get('Role', $role_id)->fields('role_id', 'name', 'is_locked')->first();
+            $role = ee('Model')->get('Role', $role_id)->first();
             if (empty($role)) {
                 $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username, $role->name);
                 continue;
@@ -1752,6 +1753,7 @@ class Members extends CP_Controller
                 $errors[] = sprintf(lang('cannot_activate_member_role_is_locked'), $member->username, $role->name);
                 continue;
             }
+            $member->Roles = new Collection([$role]);
             $member->role_id = $role_id;
             $member->save();
             $approvedCount++;

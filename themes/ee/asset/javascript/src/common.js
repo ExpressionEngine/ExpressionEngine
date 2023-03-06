@@ -1169,4 +1169,14 @@ $(document).ready(function(){
 	        	$(this).attr('data-max', maxValue);
         	});
         }
+
+    if ($('.checkbox-label').length) {
+			$('.checkbox-label').each(function(e){
+				if (!$(this).closest('div[data-input-value^="categories["]').length) {
+						$(this).css('pointer-events', 'none');
+						$(this).find('.checkbox-label__text').css('pointer-events', 'auto');
+						$(this).find('input').css('pointer-events', 'auto');
+				}
+			});
+		}
 }); // close (document).ready

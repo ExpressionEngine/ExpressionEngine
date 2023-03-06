@@ -212,6 +212,11 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                         $tpl_chunk = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tpl_chunk);
                     }
 
+                    // $tpl_chunk can be a str or array, but not null
+                    if (is_null($tpl_chunk)) {
+                        $tpl_chunk = '';
+                    }
+
                     $tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
 
                     // additional round of replacements if edit link is outside of chunk

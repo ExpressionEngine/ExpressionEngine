@@ -16,6 +16,8 @@ use PHPUnit\Framework\TestCase;
 
 class TypedColumnsTest extends TestCase
 {
+    public $obj;
+
     public function setUp(): void
     {
         $class = __NAMESPACE__ . '\TypedColumnsStub';

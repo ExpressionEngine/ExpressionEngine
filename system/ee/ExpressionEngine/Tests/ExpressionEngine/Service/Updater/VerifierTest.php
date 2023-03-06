@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class VerifierTest extends TestCase
 {
+    public $filesystem;
+    public $verifier;
+
     public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
