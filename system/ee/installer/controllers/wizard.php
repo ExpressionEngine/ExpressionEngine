@@ -131,6 +131,8 @@ class Wizard extends CI_Controller
         // Enabled for cleaner view files and compatibility
         'rewrite_short_tags' => true
     );
+	
+	public $db_connect_attempt;
 
     /**
      * Constructor
