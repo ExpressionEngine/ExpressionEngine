@@ -241,6 +241,47 @@ EE.cp.datePicker = {
 					e.stopPropagation();
 				});
 
+				$('.date-picker-wrap #date-picker-time-block input[type="time"]').on('change', function(e){
+					var timeVal = $(this).val();
+					var now = new Date();
+					var year = now.getUTCFullYear();
+					var month = now.getUTCMonth();
+					var day = now.getUTCDate();
+
+					if ($(that.element).val()) {
+						var timeStamp = Date.parse($(that.element).val());
+						var d = new Date(timeStamp);
+					} else {
+						var d = new Date(year, month, day);
+					}
+
+					var hoursVal = timeVal.substring(0,timeVal.indexOf(':'));
+					var minutesVal, secondsVal;
+
+					if (include_seconds == 'y') {
+						minutesVal = timeVal.substring(timeVal.indexOf(':')+1);
+						secondsVal = minutesVal.substring(minutesVal.indexOf(':')+1);
+						minutesVal = minutesVal.substring(0,minutesVal.indexOf(':'));
+					} else {
+						minutesVal = timeVal.substring(timeVal.indexOf(':')+1);
+						secondsVal = '00';
+					}
+
+					d.setHours(hoursVal);
+					d.setMinutes(minutesVal);
+					d.setSeconds(secondsVal);
+
+					var date_format = EE.date.date_format;
+
+					// Allow custom date format via data-date-format parameter
+					if ($(that.element).data('dateFormat'))
+					{
+						date_format = $(that.element).data('dateFormat');
+					}
+
+					$(that.element).val(EE.cp.datePicker.get_formatted_date(d, date_format)).trigger('change');
+				});
+
 				$('.date-picker-wrap').on('click', '.date-picker-today-button', function(e){
 					$('.date-picker-item td.act').removeClass('act');
 					$(this).closest('td').addClass('act');
@@ -290,6 +331,19 @@ EE.cp.datePicker = {
 				month = d.getMonth();
 			}
 
+			var pickedHours = this.addZero(d.getUTCHours());
+			var pickedMinutes = this.addZero(d.getMinutes());
+			var pickedSeconds = this.addZero(d.getUTCSeconds());
+
+			var include_seconds = EE.date.include_seconds;
+			var value;
+
+			if (include_seconds == 'y') {
+				value = pickedHours + ":" + pickedMinutes + ":" + pickedSeconds;
+			} else {
+				value = pickedHours + ":" + pickedMinutes;
+			}
+
 			var html = this.generate(year, month);
 			if (html != null) {
 				$('.date-picker-clip-inner').html(html);
@@ -299,6 +353,8 @@ EE.cp.datePicker = {
 							$(this).addClass('act');
 						}
 					});
+
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val(value);
 				}
 			}
 		},
@@ -392,6 +448,11 @@ EE.cp.datePicker = {
 			this.calendars.push(year + '-' + month);
 
 			return preamble.join('') + out.join('') + closing.join('');
+		},
+
+		addZero: function(i) {
+			if (i < 10) {i = "0" + i}
+			return i;
 		}
 
 	},
