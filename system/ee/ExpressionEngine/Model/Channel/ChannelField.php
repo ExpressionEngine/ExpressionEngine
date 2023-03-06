@@ -179,13 +179,18 @@ class ChannelField extends FieldModel
 
     public function onBeforeInsert()
     {
-        if ($this->field_order) {
-            return;
+        if ($this->getProperty('field_list_items') == null) {
+            $this->setProperty('field_list_items', '');
         }
 
-        $this->field_order = $this->getModelFacade()->get('ChannelField')
-            ->filter('site_id', 'IN', array(0, $this->site_id))
-            ->count() + 1;
+        $field_order = $this->getProperty('field_order');
+
+        if (empty($field_order)) {
+            $field_order = $this->getModelFacade()->get('ChannelField')
+                ->filter('site_id', 'IN', array(0, $this->site_id))
+                ->count() + 1;
+            $this->setProperty('field_order', $field_order);
+        }
     }
 
     public function onAfterInsert()
