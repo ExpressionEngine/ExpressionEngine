@@ -1301,8 +1301,6 @@ class ChannelEntry extends ContentModel
 
                 if (! array_key_exists($key, $data)) {
                     $data[$key] = null;
-                } elseif ($field->field_type == 'date') {
-                    $data[$key] = $this->stringToTimestamp($data[$key]);
                 }
             }
         }
