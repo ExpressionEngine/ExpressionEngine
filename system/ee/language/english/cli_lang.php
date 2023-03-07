@@ -199,6 +199,17 @@ $lang = array(
     // make:fieldtype options
     'command_make_fieldtype_option_addon'                 => 'Folder for third-party add-on you want to add fieldtype to.',
 
+    // Lang entries for command update:config
+    'command_update_config_description'             => 'Updates config values in config.php file',
+    'command_update_config_summary'                 => 'Gives the ability to update config values',
+    'command_update_config_ask_config_variable'     => 'What config item would you like to set?',
+    'command_update_config_updating_config_variable' => 'Updating config item...',
+    'command_update_config_config_value_saved'      => 'Config item saved.',
+
+    // update:config options
+    'command_update_config_option_config_variable'  => 'The config item to modify',
+    'command_update_config_option_value'            => 'The value to set the config item to',
+
     // Lang entries for command make:cp-route
     'command_make_cp_route_description'                  => 'Generates a control panel route for a given third-party add-on',
     'command_make_cp_route_summary'                      => 'This interactively generates a control panel route in an existing third-party addon',
@@ -221,7 +232,6 @@ $lang = array(
 
     // make:jump options
     'command_make_jump_file_addon'                 => 'Folder for third-party add-on you want to add Jump Menu file to.',
-
 
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',

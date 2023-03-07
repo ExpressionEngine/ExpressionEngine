@@ -33,7 +33,7 @@ class CommandUpdateConfig extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php update:config';
+    public $usage = 'php eecli.php update:config -c is_system_on -v n';
 
     /**
      * options available for use in command
@@ -52,8 +52,6 @@ class CommandUpdateConfig extends Cli
      */
     public function handle()
     {
-        $this->info('command_update_config_welcome');
-
         // Gather all the config variable information
         $this->data['config-variable'] = $this->getOptionOrAsk('--config-variable', 'command_update_config_ask_config_variable', '', true);
         $this->data['value'] = $this->getOptionOrAsk('--value', 'command_update_config_ask_config_variable', '', true);
@@ -61,7 +59,8 @@ class CommandUpdateConfig extends Cli
         $this->info('command_update_config_updating_config_variable');
 
         // Set config item
-        ee('Config')->getFile()->set($this->data['config-variable'], $this->data['value'], true);
+        $config = ee('Config')->getFile();
+        $config->set($this->data['config-variable'], $this->data['value'], true);
 
         $this->info('command_update_config_config_value_saved');
     }
