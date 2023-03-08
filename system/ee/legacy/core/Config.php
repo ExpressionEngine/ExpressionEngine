@@ -1106,6 +1106,12 @@ class EE_Config
             //hack for CLI updater to write to config file on early steps
             $divineAll = [];
         }
+
+        // Allow the update:config command to write to the config file
+        if (REQ == 'CLI' && ee()->cache->get('cli/update-config-settings')) {
+            $divineAll = [];
+        }
+
         if (is_array($new_values)) {
             foreach ($new_values as $key => $val) {
                 if (is_array($val)) {
