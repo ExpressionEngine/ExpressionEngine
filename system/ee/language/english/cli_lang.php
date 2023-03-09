@@ -18,14 +18,32 @@ $lang = array(
     'command_cache_clear_cache_does_not_exist'     => 'Cache does not exist. Use --help to see available caches.',
     'command_cache_clear_caches_cleared'           => ' caches are cleared!',
 
-    // Lang entries for command addon:install
-    'command_addon_install_description'            => 'Installs add-on and all its components',
-    'command_addon_install_summary'                => '',
-    'command_addon_install_begin'                  => 'Add-on installation is about to begin',
-    'command_addon_install_ask_addon'              => 'Which add-on do you want to install?',
-    'command_addon_install_in_progress'            => 'Performing %s add-on installation',
-    'command_addon_install_complete'               => '%s installed successfully',
-    'command_addon_install_option_addon'           => 'Add-on\'s short name',
+    // Lang entries for command addons:install
+    'command_addons_install_description'            => 'Installs add-on and all its components',
+    'command_addons_install_summary'                => '',
+    'command_addons_install_begin'                  => 'Add-on installation is about to begin',
+    'command_addons_install_ask_addon'              => 'Which add-on do you want to install?',
+    'command_addons_install_in_progress'            => 'Performing %s add-on installation',
+    'command_addons_install_complete'               => '%s installed successfully',
+    'command_addons_install_option_addon'           => 'Add-on\'s short name',
+
+    // Lang entries for command addons:uninstall
+    'command_addons_uninstall_description'            => 'Uninstalls add-on and all its components',
+    'command_addons_uninstall_summary'                => '',
+    'command_addons_uninstall_begin'                  => 'Add-on uninstallation is about to begin',
+    'command_addons_uninstall_ask_addon'              => 'Which add-on do you want to uninstall?',
+    'command_addons_uninstall_in_progress'            => 'Performing %s add-on uninstallation',
+    'command_addons_uninstall_complete'               => '%s uninstalled successfully',
+    'command_addons_uninstall_option_addon'           => 'Add-on\'s short name',
+
+    // Lang entries for command addons:list
+    'command_addons_list_description'                => 'List the add-ons',
+    'command_addons_list_summary'                    => '',
+    'command_addons_list'                            => 'The following add-ons %s',
+    'command_addons_option_available'                => 'are available',
+    'command_addons_option_installed'                => 'are installed',
+    'command_addons_option_uninstalled'              => 'are not installed',
+    'command_addons_option_update'                   => 'can be updated',
 
     // Lang entries for command list
     'command_list_description'                  => 'Lists all available commands',

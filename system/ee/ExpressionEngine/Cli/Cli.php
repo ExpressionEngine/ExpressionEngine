@@ -121,7 +121,9 @@ class Cli
         'migrate:reset' => Commands\CommandMigrateReset::class,
         'migrate:rollback' => Commands\CommandMigrateRollback::class,
         'cache:clear' => Commands\CommandClearCaches::class,
-        'addon:install' => Commands\CommandAddonInstall::class,
+        'addons:list' => Commands\CommandAddonsList::class,
+        'addons:install' => Commands\CommandAddonsInstall::class,
+        'addons:uninstall' => Commands\CommandAddonsUninstall::class,
         'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
     ];
 
@@ -473,7 +475,7 @@ class Cli
     protected function loadOptions()
     {
         if (empty($this->commandOptions)) {
-            return [];
+            $this->commandOptions = [];
         }
 
         // This parses the command options through the lang file
@@ -541,7 +543,7 @@ class Cli
 
     public function getOptionOrAskAddon($option, $askText = null, $default = 'first', $required = true, $showAddons = 'all')
     {
-        $addonList = $this->getAddonList($showAddons);
+        $addonList = array_keys($this->getAddonList($showAddons));
         // Get option if it was passed
         if ($this->option($option)) {
             $addon = $this->option($option);
@@ -602,25 +604,29 @@ class Cli
             if ($info->get('built_in')) {
                 continue;
             }
+            $addon = [
+                'name' => $info->getName(),
+                'version' => $info->getVersion()
+            ];
             switch ($showAddons) {
                 case 'installed':
                     if ($info->isInstalled()) {
-                        $list[] = $name;
+                        $list[$name] = $addon;
                     }
                     break;
                 case 'uninstalled':
                     if (! $info->isInstalled()) {
-                        $list[] = $name;
+                        $list[$name] = $addon;
                     }
                     break;
                 case 'update':
                     if ($info->hasUpdate()) {
-                        $list[] = $name;
+                        $list[$name] = $addon;
                     }
                     break;
                 case 'all':
                 default:
-                    $list[] = $name;
+                    $list[$name] = $addon;
                     break;
             }
         }

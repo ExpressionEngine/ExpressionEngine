@@ -15,7 +15,7 @@ use ExpressionEngine\Cli\Cli;
 /**
  * Command to install addon
  */
-class CommandAddonInstall extends Cli
+class CommandAddonsInstall extends Cli
 {
     /**
      * name of command
@@ -27,20 +27,20 @@ class CommandAddonInstall extends Cli
      * signature of command
      * @var string
      */
-    public $signature = 'addon:install';
+    public $signature = 'addons:install';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php addon:install addon_name';
+    public $usage = 'php eecli.php addons:install -a addon_name';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        'addon,a:'        => 'command_addon_install_option_addon',
+        'addon,a:'        => 'command_addons_install_option_addon',
     ];
 
     protected $data = [];
@@ -52,14 +52,14 @@ class CommandAddonInstall extends Cli
     public function handle()
     {
         ee()->lang->loadfile('addons');
-        $this->info('command_addon_install_begin');
+        $this->info('command_addons_install_begin');
 
         // Gather all the mcp information
-        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_addon_install_ask_addon", '', true, 'uninstalled');
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_addons_install_ask_addon", '', true, 'uninstalled');
 
         $addon = ee('pro:Addon')->get($this->data['addon']);
 
-        $this->info(sprintf(lang('command_addon_install_in_progress'), $addon->getName()));
+        $this->info(sprintf(lang('command_addons_install_in_progress'), $addon->getName()));
 
         $requires = $addon->getProvider()->get('requires');
         if (!empty($requires)) {
@@ -125,6 +125,6 @@ class CommandAddonInstall extends Cli
         ee()->cache->file->delete('/addons-status');
         ee('CP/JumpMenu')->clearAllCaches();
 
-        $this->info(sprintf(lang('command_addon_install_complete'), $addon->getName()));
+        $this->info(sprintf(lang('command_addons_install_complete'), $addon->getName()));
     }
 }
