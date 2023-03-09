@@ -26,7 +26,7 @@
 
 		<div class="dropdown__scroll">
 		<?php foreach ($options as $url => $label): ?>
-			<a class="dropdown__link" href="<?=$url?>"><?=$label?></a>
+			<a class="dropdown__link" href="<?=$url?>"><?=htmlspecialchars_decode($label)?></a>
 		<?php endforeach; ?>
 		</div>
 	</div>
