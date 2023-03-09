@@ -121,6 +121,7 @@ class Cli
         'migrate:reset' => Commands\CommandMigrateReset::class,
         'migrate:rollback' => Commands\CommandMigrateRollback::class,
         'cache:clear' => Commands\CommandClearCaches::class,
+        'addon:install' => Commands\CommandAddonInstall::class,
         'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
     ];
 

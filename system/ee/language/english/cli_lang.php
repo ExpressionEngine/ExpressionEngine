@@ -18,6 +18,15 @@ $lang = array(
     'command_cache_clear_cache_does_not_exist'     => 'Cache does not exist. Use --help to see available caches.',
     'command_cache_clear_caches_cleared'           => ' caches are cleared!',
 
+    // Lang entries for command addon:install
+    'command_addon_install_description'            => 'Installs add-on and all its components',
+    'command_addon_install_summary'                => '',
+    'command_addon_install_begin'                  => 'Add-on installation is about to begin',
+    'command_addon_install_ask_addon'              => 'Which add-on do you want to install?',
+    'command_addon_install_in_progress'            => 'Performing %s add-on installation',
+    'command_addon_install_complete'               => '%s installed successfully',
+    'command_addon_install_option_addon'           => 'Add-on\'s short name',
+
     // Lang entries for command list
     'command_list_description'                  => 'Lists all available commands',
     'command_list_summary'                      => 'This gives a full listing of all commands',
