@@ -109,6 +109,7 @@ EE.cp.datePicker = {
 			// c: foo,
 			// r: foo,
 			U: Math.floor(date.getTime() / 1000)
+
 		};
 
 		// hat tip: http://stevenlevithan.com/assets/misc/date.format.js
@@ -188,6 +189,7 @@ EE.cp.datePicker = {
 				// listen for clicks on elements classed with .date-picker-back
 				$('.date-picker-clip-inner').on('click', '.date-picker-item td a', function(e){
 					$('.date-picker-item td.act').removeClass('act');
+
 					$(this).closest('td').addClass('act');
 
 					var timeVal = $('.date-picker-wrap #date-picker-time-block input[type="time"]').val();
@@ -230,7 +232,6 @@ EE.cp.datePicker = {
 					{
 						date_format = $(that.element).data('dateFormat');
 					}
-
 					$(that.element).val(EE.cp.datePicker.get_formatted_date(d, date_format)).trigger('change');
 					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
 
@@ -244,9 +245,9 @@ EE.cp.datePicker = {
 				$('.date-picker-wrap #date-picker-time-block input[type="time"]').on('change', function(e){
 					var timeVal = $(this).val();
 					var now = new Date();
-					var year = now.getUTCFullYear();
-					var month = now.getUTCMonth();
-					var day = now.getUTCDate();
+					var year = now.getFullYear();
+					var month = now.getMonth();
+					var day = now.getDate();
 
 					if ($(that.element).val()) {
 						var timeStamp = Date.parse($(that.element).val());
@@ -315,33 +316,42 @@ EE.cp.datePicker = {
 
 			if ($(this.element).val()) {
 				var timestamp = $(this.element).data('timestamp');
-
+				var value;
+				var include_seconds = EE.date.include_seconds;
+				console.log('element', $(this.element));
+				console.log('timestamp', timestamp);
 				if ( ! timestamp) {
 					d = new Date(Date.parse($(this.element).val()));
+					console.log('if', d);
 				} else {
 					d = new Date(timestamp * 1000);
+					console.log('else', d);
 				}
 
-				selected = d.getUTCDate();
+				selected = d.getDate();
 				year  = d.getUTCFullYear();
 				month = d.getUTCMonth();
+				var pickedHours = this.addZero(d.getHours());
+				var pickedMinutes = this.addZero(d.getMinutes());
+				var pickedSeconds = this.addZero(d.getSeconds());
+
+				if (include_seconds == 'y') {
+					value = pickedHours + ":" + pickedMinutes + ":" + pickedSeconds;
+				} else {
+					value = pickedHours + ":" + pickedMinutes;
+				}
 			} else {
 				d = new Date();
 				year  = d.getFullYear();
 				month = d.getMonth();
-			}
 
-			var pickedHours = this.addZero(d.getUTCHours());
-			var pickedMinutes = this.addZero(d.getMinutes());
-			var pickedSeconds = this.addZero(d.getUTCSeconds());
+				console.log('date', d);
 
-			var include_seconds = EE.date.include_seconds;
-			var value;
-
-			if (include_seconds == 'y') {
-				value = pickedHours + ":" + pickedMinutes + ":" + pickedSeconds;
-			} else {
-				value = pickedHours + ":" + pickedMinutes;
+				// if (include_seconds == 'y') {
+				// 	value = "00:00:00";
+				// } else {
+				// 	value = "00:00";
+				// }
 			}
 
 			var html = this.generate(year, month);
@@ -353,7 +363,7 @@ EE.cp.datePicker = {
 							$(this).addClass('act');
 						}
 					});
-
+					console.log('value', value);
 					$('.date-picker-wrap .date-picker-footer input[type="time"]').val(value);
 				}
 			}
@@ -419,7 +429,6 @@ EE.cp.datePicker = {
 					out[out_i++] = '</tr>';
 					out[out_i++] = '<tr>';
 				}
-
 				if (today.getFullYear() == year
 					&& today.getMonth() == month
 					&& today.getDate() == (j + 1)
