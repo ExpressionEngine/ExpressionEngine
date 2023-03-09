@@ -124,6 +124,7 @@ class Cli
         'addons:list' => Commands\CommandAddonsList::class,
         'addons:install' => Commands\CommandAddonsInstall::class,
         'addons:uninstall' => Commands\CommandAddonsUninstall::class,
+        'addons:update' => Commands\CommandAddonsUpdate::class,
         'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
     ];
 
@@ -544,6 +545,11 @@ class Cli
     public function getOptionOrAskAddon($option, $askText = null, $default = 'first', $required = true, $showAddons = 'all')
     {
         $addonList = array_keys($this->getAddonList($showAddons));
+
+        if (empty($addonList)) {
+            $this->fail('cli_no_addons');
+        }
+
         // Get option if it was passed
         if ($this->option($option)) {
             $addon = $this->option($option);
@@ -569,7 +575,7 @@ class Cli
 
     protected function askAddon($askText, $addonList, $default = '')
     {
-        $askText = $askText . ' (' . implode(', ', $addonList) . '): ';
+        $askText = $askText . " \n - " . implode("\n - ", $addonList) . "\n: ";
 
         // If the default is "first", then return the first element in the array
         if ($default === 'first' && ! empty($addonList)) {

@@ -10,6 +10,7 @@ $lang = array(
     'cli_option_help'                              => 'See help menu for given command',
     'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
     'cli_error_cli_disabled'                       => 'The ExpressionEngine CLI is currently disabled. To use the CLI, you must enable it in the settings.',
+    'cli_no_addons'                                => 'There are no add-ons available',
 
     // Lang entries for command cache:clear
     'command_cache_clear_description'              => 'Clears all ExpressionEngine caches',
@@ -35,6 +36,15 @@ $lang = array(
     'command_addons_uninstall_in_progress'            => 'Performing %s add-on uninstallation',
     'command_addons_uninstall_complete'               => '%s uninstalled successfully',
     'command_addons_uninstall_option_addon'           => 'Add-on\'s short name',
+
+    // Lang entries for command addons:update
+    'command_addons_update_description'            => 'Uninstalls add-on and all its components',
+    'command_addons_update_summary'                => '',
+    'command_addons_update_begin'                  => 'Add-on uninstallation is about to begin',
+    'command_addons_update_ask_addon'              => 'Which add-on do you want to update?',
+    'command_addons_update_in_progress'            => 'Performing %s add-on update',
+    'command_addons_update_complete'               => '%s updated successfully',
+    'command_addons_update_option_addon'           => 'Add-on\'s short name',
 
     // Lang entries for command addons:list
     'command_addons_list_description'                => 'List the add-ons',

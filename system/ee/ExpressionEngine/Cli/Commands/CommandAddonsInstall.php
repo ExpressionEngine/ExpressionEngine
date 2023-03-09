@@ -33,7 +33,7 @@ class CommandAddonsInstall extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php addons:install -a addon_name';
+    public $usage = 'php eecli.php addons:install -a <addon_name>';
 
     /**
      * options available for use in command
@@ -55,7 +55,7 @@ class CommandAddonsInstall extends Cli
         $this->info('command_addons_install_begin');
 
         // Gather all the mcp information
-        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_addons_install_ask_addon", '', true, 'uninstalled');
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_addons_install_ask_addon", 'first', true, 'uninstalled');
 
         $addon = ee('pro:Addon')->get($this->data['addon']);
 

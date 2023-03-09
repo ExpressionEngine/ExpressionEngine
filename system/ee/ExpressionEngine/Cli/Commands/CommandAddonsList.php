@@ -75,6 +75,10 @@ class CommandAddonsList extends Cli
 
         $this->info(sprintf(lang('command_addons_list'), lang($langOption)));
 
+        if (empty($addonList)) {
+            $this->fail('cli_no_addons');
+        }
+
         foreach ($addons as $shortName => $data) {
             $this->write($shortName . ' ' . $data['name'] . ' v.' . $data['version']);
         }

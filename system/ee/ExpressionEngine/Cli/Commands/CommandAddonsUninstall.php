@@ -33,7 +33,7 @@ class CommandAddonsUninstall extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php addons:uninstall -a addon_name';
+    public $usage = 'php eecli.php addons:uninstall -a <addon_name>';
 
     /**
      * options available for use in command
