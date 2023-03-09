@@ -49,6 +49,30 @@ class Cli
     public $arguments;
 
     /**
+     * name of command
+     * @var string
+     */
+    public $name;
+
+    /**
+     * signature of command
+     * @var string
+     */
+    public $signature;
+
+    /**
+     * How to use command
+     * @var string
+     */
+    public $usage;
+
+    /**
+     * options available for use in command
+     * @var array
+     */
+    public $commandOptions;
+
+    /**
      * Summary of the command
      * @var string
      */
@@ -62,7 +86,7 @@ class Cli
 
     /**
      * Command options
-     * @var array
+     * @var object
      */
     public $options;
 
@@ -447,7 +471,7 @@ class Cli
      */
     protected function loadOptions()
     {
-        if (! isset($this->commandOptions)) {
+        if (empty($this->commandOptions)) {
             return [];
         }
 
@@ -483,6 +507,9 @@ class Cli
      */
     protected function option($name, $default = null)
     {
+        if (empty($this->options)) {
+            return $default;
+        }
         return $this->options->get($name, $default);
     }
 
@@ -504,19 +531,20 @@ class Cli
     private function setDescriptionAndSummaryFromLang()
     {
         // Automatically load the description and signature from the lang file
-        if (isset($this->signature)) {
+        if (!empty($this->signature)) {
             $simplifiedSignature = str_replace([':', '-'], '_', $this->signature);
-            $this->description = isset($this->description) ? lang($this->description) : lang('command_' . $simplifiedSignature . '_description');
-            $this->summary = isset($this->summary) ? lang($this->summary) : lang('command_' . $simplifiedSignature . '_summary');
+            $this->description = !empty($this->description) ? lang($this->description) : lang('command_' . $simplifiedSignature . '_description');
+            $this->summary = !empty($this->summary) ? lang($this->summary) : lang('command_' . $simplifiedSignature . '_summary');
         }
     }
 
-    public function getOptionOrAskAddon($option, $askText = null, $default = 'first', $required = true)
+    public function getOptionOrAskAddon($option, $askText = null, $default = 'first', $required = true, $showAddons = 'all')
     {
+        $addonList = $this->getAddonList($showAddons);
         // Get option if it was passed
         if ($this->option($option)) {
             $addon = $this->option($option);
-            $this->validateAddonName($addon);
+            $this->validateAddonName($addon, $addonList);
 
             return $addon;
         }
@@ -526,7 +554,7 @@ class Cli
         }
 
         // Get the answer by asking
-        $answer = $this->askAddon(lang($askText), $default);
+        $answer = $this->askAddon(lang($askText), $addonList, $default);
 
         // If it was a required field and no answer was passed, fail
         if ($required && empty(trim($answer))) {
@@ -536,9 +564,8 @@ class Cli
         return $answer;
     }
 
-    protected function askAddon($askText, $default = '')
+    protected function askAddon($askText, $addonList, $default = '')
     {
-        $addonList = $this->getAddonList();
         $askText = $askText . ' (' . implode(', ', $addonList) . '): ';
 
         // If the default is "first", then return the first element in the array
@@ -550,15 +577,13 @@ class Cli
         // Get the answer by asking
         $answer = $this->ask($askText, $default);
 
-        $this->validateAddonName($answer);
+        $this->validateAddonName($answer, $addonList);
 
         return $answer;
     }
 
-    protected function validateAddonName($addon)
+    protected function validateAddonName($addon, $addonList)
     {
-        $addonList = $this->getAddonList();
-
         if (!in_array($addon, $addonList)) {
             $this->fail($addon . ' is not a valid addon');
         }
@@ -566,25 +591,39 @@ class Cli
         return true;
     }
 
-    protected function getAddonList()
+    protected function getAddonList($showAddons = 'all')
     {
-        $addons = [];
-        foreach ($this->filesystem->getDirectoryContents(PATH_THIRD) as $name) {
-            // Skip non-directories
-            if (! $this->filesystem->isDir($name)) {
+        $list = [];
+        $addons = ee('Addon')->all();
+
+        foreach ($addons as $name => $info) {
+            //if (strpos($info->getPath(), PATH_THIRD) !== 0) {
+            if ($info->get('built_in')) {
                 continue;
             }
-
-            // Skip add-ons without addon.setup.php file
-            if (! $this->filesystem->exists($name . '/addon.setup.php')) {
-                continue;
+            switch ($showAddons) {
+                case 'installed':
+                    if ($info->isInstalled()) {
+                        $list[] = $name;
+                    }
+                    break;
+                case 'uninstalled':
+                    if (! $info->isInstalled()) {
+                        $list[] = $name;
+                    }
+                    break;
+                case 'update':
+                    if ($info->hasUpdate()) {
+                        $list[] = $name;
+                    }
+                    break;
+                case 'all':
+                default:
+                    $list[] = $name;
+                    break;
             }
-
-            // Lets get the shortname
-            $addon_shortname = explode('/', $name);
-            $addons[] = end($addon_shortname);
         }
 
-        return $addons;
+        return $list;
     }
 }
