@@ -281,6 +281,12 @@ EE.cp.datePicker = {
 					}
 
 					$(that.element).val(EE.cp.datePicker.get_formatted_date(d, date_format)).trigger('change');
+					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
+
+					$(that.element).focus();
+
+					e.preventDefault();
+					e.stopPropagation();
 				});
 
 				$('.date-picker-wrap').on('click', '.date-picker-today-button', function(e){
@@ -316,16 +322,13 @@ EE.cp.datePicker = {
 
 			if ($(this.element).val()) {
 				var timestamp = $(this.element).data('timestamp');
-				var value;
+				var timevalue;
 				var include_seconds = EE.date.include_seconds;
-				console.log('element', $(this.element));
 				console.log('timestamp', timestamp);
 				if ( ! timestamp) {
 					d = new Date(Date.parse($(this.element).val()));
-					console.log('if', d);
 				} else {
 					d = new Date(timestamp * 1000);
-					console.log('else', d);
 				}
 
 				selected = d.getDate();
@@ -336,22 +339,19 @@ EE.cp.datePicker = {
 				var pickedSeconds = this.addZero(d.getSeconds());
 
 				if (include_seconds == 'y') {
-					value = pickedHours + ":" + pickedMinutes + ":" + pickedSeconds;
+					timevalue = pickedHours + ":" + pickedMinutes + ":" + pickedSeconds;
 				} else {
-					value = pickedHours + ":" + pickedMinutes;
+					timevalue = pickedHours + ":" + pickedMinutes;
 				}
 			} else {
 				d = new Date();
 				year  = d.getFullYear();
 				month = d.getMonth();
-
-				console.log('date', d);
-
-				// if (include_seconds == 'y') {
-				// 	value = "00:00:00";
-				// } else {
-				// 	value = "00:00";
-				// }
+				if (include_seconds == 'y') {
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('00:00:00');
+				} else {
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('00:00')
+				}
 			}
 
 			var html = this.generate(year, month);
@@ -363,8 +363,7 @@ EE.cp.datePicker = {
 							$(this).addClass('act');
 						}
 					});
-					console.log('value', value);
-					$('.date-picker-wrap .date-picker-footer input[type="time"]').val(value);
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val(timevalue);
 				}
 			}
 		},
