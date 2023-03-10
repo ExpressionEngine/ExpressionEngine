@@ -324,7 +324,7 @@ EE.cp.datePicker = {
 				var timestamp = $(this.element).data('timestamp');
 				var timevalue;
 				var include_seconds = EE.date.include_seconds;
-				console.log('timestamp', timestamp);
+
 				if ( ! timestamp) {
 					d = new Date(Date.parse($(this.element).val()));
 				} else {
