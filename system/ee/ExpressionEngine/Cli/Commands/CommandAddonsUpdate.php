@@ -83,6 +83,8 @@ class CommandAddonsUpdate extends Cli
             }
             if ($addon->hasFieldtype()) {
                 $fts = $addon->getFieldtypeNames();
+                ee()->load->library('api');
+                ee()->legacy_api->instantiate('channel_fields');
                 foreach ($fts as $shortName => $name) {
                     ee()->api_channel_fields->include_handler($shortName);
                     $FT = ee()->api_channel_fields->setup_handler($shortName, true);

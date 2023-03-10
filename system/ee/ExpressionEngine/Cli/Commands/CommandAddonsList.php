@@ -63,7 +63,7 @@ class CommandAddonsList extends Cli
                 $addons = $this->getAddonList('uninstalled');
                 break;
             case 'a':
-            case 'update-avaiable':
+            case 'update-available':
                 $langOption = 'command_addons_option_update';
                 $addons = $this->getAddonList('update');
                 break;
@@ -75,7 +75,7 @@ class CommandAddonsList extends Cli
 
         $this->info(sprintf(lang('command_addons_list'), lang($langOption)));
 
-        if (empty($addonList)) {
+        if (empty($addons)) {
             $this->fail('cli_no_addons');
         }
 
