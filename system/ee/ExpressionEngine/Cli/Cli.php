@@ -73,6 +73,7 @@ class Cli
      * @var array
      */
     private $internalCommands = [
+        'backup:database' => Commands\CommandBackupDatabase::class,
         'list' => Commands\CommandListCommands::class,
         'update' => Commands\CommandUpdate::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,
