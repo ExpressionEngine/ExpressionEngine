@@ -67,9 +67,13 @@ $lang = array(
 
     'contact_developer' => 'Please contact the add-on developer(s) for assistance.',
 
+    'addons_not_uninstalled' => 'Add-Ons Not Uninstalled',
+
     'addons_uninstalled' => 'Add-Ons Uninstalled',
 
     'addons_uninstalled_desc' => 'The following add-on(s) have been uninstalled: ',
+
+    'addons_not_updated' => 'Add-Ons Updated',
 
     'addons_updated' => 'Add-Ons Updated',
 

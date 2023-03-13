@@ -67,7 +67,7 @@ class CommandMakeAction extends Cli
             $service = ee('ActionGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_action_created_successfully');
