@@ -33,6 +33,7 @@ class Updater
 
         foreach ($steps as $k => $v) {
             $this->$v();
+        }
 
         return true;
     }
@@ -40,7 +41,7 @@ class Updater
     public function modifyMemberFieldTypeColumn()
     {
         ee()->smartforge->modify_column(
-            'm_field_type',
+            'member_fields',
             [
                 'm_field_type' => [
                     'name' => 'm_field_type',

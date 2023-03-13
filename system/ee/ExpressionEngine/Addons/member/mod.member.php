@@ -2369,11 +2369,17 @@ class Member
      */
     public function custom_profile_data($typography = true)
     {
-        $member_id = (! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
-
-        $member = ee('Model')
-            ->get('Member', $member_id)
-            ->first();
+        if (ee()->TMPL->fetch_param('username')) {
+            $member = ee('Model')
+                ->get('Member')
+                ->filter('username', ee('Security/XSS')->clean(ee()->TMPL->fetch_param('username')))
+                ->first();
+        } else {
+            $member_id = (! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
+            $member = ee('Model')
+                ->get('Member', $member_id)
+                ->first();
+        }
 
         if (! $member) {
             return ee()->TMPL->tagdata = '';
@@ -2436,7 +2442,7 @@ class Member
         }
 
         $more_fields = array(
-            'send_private_message' => $this->_member_path('messages/pm/' . $member_id),
+            'send_private_message' => $this->_member_path('messages/pm/' . $member->getId()),
             'search_path' => $search_path,
             'avatar' => $avatar,
             'avatar_url' => $avatar_path,
@@ -2547,13 +2553,21 @@ class Member
      */
     public function roles()
     {
-        $member_id = (!ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
-
-        $member = ee('Model')
-            ->get('Member', $member_id)
-            ->with('PrimaryRole', 'Roles', 'RoleGroups')
-            ->all()
-            ->first();
+        if (ee()->TMPL->fetch_param('username')) {
+            $member = ee('Model')
+                ->get('Member')
+                ->with('PrimaryRole', 'Roles', 'RoleGroups')
+                ->filter('username', ee('Security/XSS')->clean(ee()->TMPL->fetch_param('username')))
+                ->all()
+                ->first();
+        } else {
+            $member_id = (! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
+            $member = ee('Model')
+                ->get('Member', $member_id)
+                ->with('PrimaryRole', 'Roles', 'RoleGroups')
+                ->all()
+                ->first();
+        }
 
         if (!$member) {
             return ee()->TMPL->no_results();
