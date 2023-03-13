@@ -130,6 +130,19 @@ $lang = array(
     'command_make_prolet_option_widget_name'           => 'Name of widget',
     'command_make_prolet_option_generate_icon'         => 'Generate a default add-on icon file when creating a prolet',
 
+    // Lang entries for command backup:database
+    'command_backup_database_description'                  => 'Backup the database',
+    'command_backup_database_summary'                      => 'Backup the ExpressionEngine database',
+    'command_backup_database_backing_up_database'          => 'Backing up the database...',
+    'command_backup_database_failed_with_error'            => 'Database backup failed with error message:',
+    'command_backup_database_completed_successfully'       => 'Database backup completed successfully.',
+    'command_backup_database_backup_path'                  => 'Backup path: %s',
+
+    // backup:database options
+    'command_backup_database_option_absolute_path'   => 'Absolute path to database backup',
+    'command_backup_database_option_relative_path'   => 'Path to database backup, relative to the cache folder',
+    'command_backup_database_option_file_name'       => 'Name of sql file to be saved',
+
     // Lang entries for command make:action
     'command_make_action_description'                  => 'Creates a new action for an add-on',
     'command_make_action_summary'                      => 'This interactively generates an EE Action for an existing third-party addon',
@@ -221,7 +234,6 @@ $lang = array(
 
     // make:jump options
     'command_make_jump_file_addon'                 => 'Folder for third-party add-on you want to add Jump Menu file to.',
-
 
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',

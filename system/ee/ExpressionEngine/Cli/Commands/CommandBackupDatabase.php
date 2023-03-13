@@ -39,7 +39,11 @@ class CommandBackupDatabase extends Cli
      * options available for use in command
      * @var array
      */
-    public $commandOptions = [];
+    public $commandOptions = [
+        'relative_path,p:'  => 'command_backup_database_option_relative_path',
+        'absolute_path,a:'  => 'command_backup_database_option_absolute_path',
+        'file_name,f:'  => 'command_backup_database_option_file_name',
+    ];
 
     protected $data = [];
 
@@ -49,5 +53,59 @@ class CommandBackupDatabase extends Cli
      */
     public function handle()
     {
+        $this->info('command_backup_database_backing_up_database');
+
+        $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%T');
+        $path = PATH_CACHE;
+        $file_name = ee()->db->database . '_' . $date . '.sql';
+
+        // Change the file name if its specified
+        if ($this->option('--file_name')) {
+            $file_name = $this->option('--file_name');
+        }
+
+        // Change the backup path if its specified
+        if ($this->option('--relative_path')) {
+            $path = PATH_CACHE . $this->option('--relative_path');
+        } elseif ($this->option('--absolute_path')) {
+            $path = $this->option('--absolute_path');
+        }
+
+        $path = reduce_double_slashes($path);
+        $file_path = reduce_double_slashes($path . '/' . $file_name);
+
+        $this->info(sprintf(lang('command_backup_database_backup_path'), $file_path));
+
+        // Make sure the directory exists
+        if (! ee('Filesystem')->exists($path)) {
+            $this->fail('Directory does not exist: ' . $path);
+        }
+
+        // Make sure the file doesnt already exist:
+        if (ee('Filesystem')->exists($file_path)) {
+            $this->fail('File already exists; exiting.');
+        }
+
+        $backup = ee('Database/Backup', $file_path);
+
+        // Beginning a new backup
+        try {
+            $backup->startFile();
+            $backup->writeDropAndCreateStatements();
+        } catch (\Exception $e) {
+            $this->error('command_backup_database_failed_with_error');
+            $this->fail($e->getMessage());
+        }
+
+        try {
+            $backup->writeAllTableInserts();
+        } catch (Exception $e) {
+            $this->error('command_backup_database_failed_with_error');
+            $this->fail($e->getMessage());
+        }
+
+        $backup->endFile();
+
+        $this->complete('command_backup_database_completed_successfully');
     }
 }
