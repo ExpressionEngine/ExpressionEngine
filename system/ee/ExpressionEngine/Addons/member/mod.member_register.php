@@ -87,6 +87,35 @@ class Member_register extends Member
                 $field = '';
                 $temp = $field_chunk;
 
+                // Replace {required} pair
+                if ($row['m_field_required'] == 'y') {
+                    $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", $req_chunk, $temp);
+                } else {
+                    $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", '', $temp);
+                }
+
+                // Parse input fields
+                ee()->load->helper('form');
+                $field = $member_fields[$row['m_field_id']]->getField();
+                $field->setName('m_field_id_' . $row['m_field_id']);
+                $field = $field->getForm();
+
+                if (! empty($tagdata)) {
+                    $field_vars = [
+                        'field_name' => $row['m_field_label'],
+                        'lang:profile_field' => $row['m_field_label'],
+                        'field_description' => $row['m_field_description'],
+                        'lang:profile_field_description' => $row['m_field_description'],
+                        'required' => $row['m_field_required'],
+                        'field' => $field,
+                        'form:custom_profile_field' => $field
+                    ];
+                    $str .= ee()->TMPL->parse_variables_row($temp, $field_vars);
+                    continue;
+                }
+
+                $temp = str_replace("{field}", $field, $temp);
+
                 // Replace {field_name}
                 $temp = str_replace("{field_name}", $row['m_field_label'], $temp);
 
@@ -97,22 +126,6 @@ class Member_register extends Member
                 }
 
                 $temp = str_replace("{field_description}", $row['m_field_description'], $temp);
-
-                // Replace {required} pair
-                if ($row['m_field_required'] == 'y') {
-                    $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", $req_chunk, $temp);
-                } else {
-                    $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", '', $temp);
-                }
-
-                // Parse input fields
-
-                ee()->load->helper('form');
-                $field = $member_fields[$row['m_field_id']]->getField();
-                $field->setName('m_field_id_' . $row['m_field_id']);
-                $field = $field->getForm();
-
-                $temp = str_replace("{field}", $field, $temp);
 
                 $str .= $temp;
             }
@@ -191,7 +204,7 @@ class Member_register extends Member
 
         $inline_errors = 'no';
 
-        if(ee()->TMPL->fetch_param('error_handling') == 'inline') {
+        if (ee()->TMPL->fetch_param('error_handling') == 'inline') {
             // determine_error_return function looks for yes.
             $inline_errors = 'yes';
 
@@ -214,7 +227,7 @@ class Member_register extends Member
             ]),
         );
 
-        if(!empty(ee()->TMPL->form_class)) {
+        if (!empty(ee()->TMPL->form_class)) {
             $data['class'] = ee()->TMPL->form_class;
         }
 
@@ -224,8 +237,24 @@ class Member_register extends Member
 
         $data['id'] = 'register_member_form';
 
+        ee()->load->add_package_path(PATH_ADDONS . 'channel');
+        ee()->load->library('channel_form/channel_form_lib');
+        ee()->channel_form_lib->datepicker = get_bool_from_string(ee()->TMPL->fetch_param('datepicker', 'y'));
+        ee()->channel_form_lib->compile_js();
+
+        $out = ee()->functions->form_declaration($data) . $reg_form . "\n" . "</form>";
+
+        //make head appear by default
+        if (preg_match('/' . LD . 'form_assets' . RD . '/', $out)) {
+            $out = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $out);
+        } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'y')) {
+            // Head should only be there if the param is there
+            $out .= ee()->channel_form_lib->head;
+        }
+        ee()->load->remove_package_path(PATH_ADDONS . 'channel');
+
         // Return the final rendered form
-        return ee()->functions->form_declaration($data) . $reg_form . "\n" . "</form>";
+        return $out;
     }
 
     /**
