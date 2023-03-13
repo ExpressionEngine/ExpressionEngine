@@ -106,7 +106,7 @@ class Member_register extends Member
                         'lang:profile_field' => $row['m_field_label'],
                         'field_description' => $row['m_field_description'],
                         'lang:profile_field_description' => $row['m_field_description'],
-                        'required' => $row['m_field_required'],
+                        'required' => get_bool_from_string($row['m_field_required']),
                         'field' => $field,
                         'form:custom_profile_field' => $field
                     ];
