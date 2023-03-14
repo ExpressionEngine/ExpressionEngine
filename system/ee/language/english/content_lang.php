@@ -379,6 +379,8 @@ $lang = array(
 
     'exact_match' => 'Exact Match',
 
+    'extra_title' => 'List of selected categories:',
+
     'field_blank' => 'You left a field blank.',
 
     'fields' => 'Fields',
