@@ -804,7 +804,10 @@ class Channels extends AbstractChannelsController
             ->pluck('status_id');
 
         // Make sure open and closed are always selected
-        $selected = array_merge($selected, $default);
+        // And they are still haven't included
+        if (!empty(array_diff($default, $selected))) {
+            $selected = array_merge($selected, $default);
+        }
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([
             'field_name' => 'statuses',
