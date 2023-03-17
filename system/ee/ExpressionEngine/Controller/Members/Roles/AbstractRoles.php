@@ -24,11 +24,8 @@ abstract class AbstractRoles extends CP_Controller
     {
         parent::__construct();
 
-        if (! ee('Permission')->hasAny(
-            'can_create_roles',
-            'can_edit_roles',
-            'can_delete_roles'
-        )) {
+        if ((! ee('Permission')->has('can_access_members')) || 
+        (! ee('Permission')->has('can_admin_roles')))  {
             show_error(lang('unauthorized_access'), 403);
         }
 
