@@ -841,6 +841,7 @@ class Login extends CP_Controller
         // Instantiate the email class
         $this->load->library('email');
         $this->email->wordwrap = true;
+        $this->email->mailtype = ee()->config->item('mail_format');
         $this->email->from($this->config->item('webmaster_email'), $this->config->item('webmaster_name'));
         $this->email->to($address);
         $this->email->subject($message_title);
