@@ -66,10 +66,15 @@ class ColumnFactory
      */
     public static function getAvailableColumns($channel = false)
     {
-        return array_merge(
-            self::getStandardColumns(),
-            self::getChannelFieldColumns($channel)
+        $columns = array_merge(
+            static::getStandardColumns(),
+            static::getCustomFieldColumns($channel)
         );
+        $availableColumns = [];
+        foreach ($columns as $column) {
+            $availableColumns[$column->getTableColumnIdentifier()] = $column;
+        }
+        return $availableColumns;
     }
 
     /**
@@ -89,7 +94,7 @@ class ColumnFactory
      *
      * @return array[Column]
      */
-    private static function getChannelFieldColumns($channel = false)
+    protected static function getCustomFieldColumns($channel = false)
     {
         // Grab all the applicable fields based on the channel if there is one.
         if (! empty($channel)) {
