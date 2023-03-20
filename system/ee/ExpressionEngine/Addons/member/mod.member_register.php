@@ -565,6 +565,7 @@ class Member_register extends Member
 
             ee()->load->library('email');
             ee()->email->wordwrap = true;
+            ee()->email->mailtype = ee()->config->item('mail_format');
             ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
             ee()->email->to($notify_address);
             ee()->email->subject($email_tit);
@@ -612,6 +613,7 @@ class Member_register extends Member
 
             ee()->load->library('email');
             ee()->email->wordwrap = true;
+            ee()->email->mailtype = ee()->config->item('mail_format');
             ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
             ee()->email->to($data['email']);
             ee()->email->subject($email_tit);
