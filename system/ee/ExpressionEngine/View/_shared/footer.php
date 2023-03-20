@@ -39,7 +39,7 @@
             <?php endif ?>
 
             <?php if (ee('Permission')->can('access_footer_report_bug')): ?>
-                <a href="https://github.com/ExpressionEngine/ExpressionEngine/issues/new?template=1-EE6-bug-report.md" class="dropdown__link app-about__link app-about__bug-link" rel="external noreferrer"><i class="fas fa-bug fa-fw"></i> <?=lang('report_bug')?></a>
+                <a href="https://github.com/ExpressionEngine/ExpressionEngine/issues/new?template=1-bug-report.md" class="dropdown__link app-about__link app-about__bug-link" rel="external noreferrer"><i class="fas fa-bug fa-fw"></i> <?=lang('report_bug')?></a>
             <?php endif ?>
             <?php if (ee('Permission')->can('access_footer_user_guide')): ?>
                 <a href="<?=DOC_URL?>" class="dropdown__link app-about__link app-about__user-guide-link" rel="external noreferrer"><i class="fas fa-book fa-fw"></i> <?=lang('user_guide')?></a>
