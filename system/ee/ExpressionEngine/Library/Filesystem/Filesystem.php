@@ -688,7 +688,7 @@ class Filesystem
 
         if (isset($time) && $this->isLocal()) {
             touch($this->flysystem->getAdapter()->applyPathPrefix($this->normalize($path)), $time);
-        } else {
+        } elseif ($this->isFile($path)) {
             $this->write($this->normalize($path), '');
         }
     }
