@@ -599,7 +599,7 @@ class Filesystem
      */
     public function exists($path)
     {
-        if ($this->isLocal() && DIRECTORY_SEPARATOR == '\\' && strpos($path, '/') === 0) {
+        if ($this->isLocal() && DIRECTORY_SEPARATOR == '\\' && !empty($path) && strpos($path, '/') === 0) {
             //on Windows server, the path can't start with /
             return false;
         }

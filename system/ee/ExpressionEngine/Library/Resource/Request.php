@@ -132,14 +132,16 @@ class Request
                 ee()->load->helper('file');
                 $filepath = PATH_TMPL . (!empty($site_name) ? $site_name : ee()->config->item('site_short_name')) . '/';
                 $filepath .= $group . '.group' . '/' . $name . '.' . $this->type;
-                $file_edit_date = filemtime($filepath);
+                if (file_exists($filepath)) {
+                    $file_edit_date = filemtime($filepath);
 
-                if ($file_edit_date > $edit_date) {
-                    $str = read_file($filepath);
+                    if ($file_edit_date > $edit_date) {
+                        $str = read_file($filepath);
 
-                    if (false !== $str) {
-                        $template_data = $str;
-                        $edit_date = $file_edit_date;
+                        if (false !== $str) {
+                            $template_data = $str;
+                            $edit_date = $file_edit_date;
+                        }
                     }
                 }
             }
