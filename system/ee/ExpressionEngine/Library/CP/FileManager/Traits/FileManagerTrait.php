@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Library\CP\FileManager\Traits;
 
-use ExpressionEngine\Library\CP\EntryManager;
+use ExpressionEngine\Library\CP\FileManager;
 use ExpressionEngine\Library\CP\FileManager\ColumnFactory;
 
 trait FileManagerTrait
@@ -217,7 +217,7 @@ trait FileManagerTrait
             }
         }
 
-        $column_renderer = new EntryManager\ColumnRenderer($columns);
+        $column_renderer = new FileManager\ColumnRenderer($columns);
         $table_columns = $column_renderer->getTableColumnsConfig();
         $table->setColumns($table_columns);
 

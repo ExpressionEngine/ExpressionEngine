@@ -15,7 +15,7 @@ namespace ExpressionEngine\Library\CP\EntryManager;
  */
 class ColumnRenderer
 {
-    private $columns = [];
+    protected $columns = [];
 
     /**
      * Constructor
