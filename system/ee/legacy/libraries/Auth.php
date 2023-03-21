@@ -716,7 +716,8 @@ class Auth_result
             }
         }
 
-        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
+        $siteSettings = ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first();
+        if (!empty($siteSettings) && $siteSettings->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
             $sessions = ee('Model')
                 ->get('Session')
                 ->filter('member_id', ee()->session->userdata('member_id'))

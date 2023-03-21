@@ -41,7 +41,7 @@ class Request
         $name = '';
         $site_name = '';
         $template_version = 0;
-        $modified_since = ee('Request')->header('IF_MODIFIED_SINCE');
+        $modified_since = (string) ee('Request')->header('IF_MODIFIED_SINCE');
 
         // requests by trigger segments, the ones without version suffixes
         if (in_array(ee()->uri->segment(1), ee()->uri->reserved) && false !== ee()->uri->segment(2)) {
