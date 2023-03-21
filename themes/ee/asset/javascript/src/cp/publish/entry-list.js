@@ -216,6 +216,9 @@ $(document).ready(function () {
 			var _form = $('.filter-search-bar div[rev="toggle-columns"]').closest('form');
 			var _data = $('input[name!="columns[]"]', _form).serialize();
 
+			if (typeof(EE.viewManager) == 'undefined' && _form.attr('data-save-default-url') !== 'undefined') {
+				saveDefaultUrl = _form.attr('data-save-default-url');
+			}
 			saveViewRequest = $.ajax({
 				url: saveDefaultUrl,
 				data: _form.serialize(),
