@@ -242,7 +242,7 @@ EE.cp.datePicker = {
 					e.stopPropagation();
 				});
 
-				$('.date-picker-wrap #date-picker-time-block input[type="time"]').on('change', function(e){
+				$('.date-picker-wrap #date-picker-time-block input[type="time"]').focusout(function(e){
 					var timeVal = $(this).val();
 					var now = new Date();
 					var year = now.getFullYear();
