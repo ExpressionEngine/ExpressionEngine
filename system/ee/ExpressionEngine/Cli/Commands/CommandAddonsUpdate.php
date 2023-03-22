@@ -40,7 +40,8 @@ class CommandAddonsUpdate extends Cli
      * @var array
      */
     public $commandOptions = [
-        'addon,a:'        => 'command_addons_update_option_addon',
+        'addon,a:'  => 'command_addons_update_option_addon',
+        'all,l'     => 'command_addons_update_option_all',
     ];
 
     protected $data = [];
@@ -54,16 +55,38 @@ class CommandAddonsUpdate extends Cli
         ee()->lang->loadfile('addons');
         $this->info('command_addons_update_begin');
 
-        // Gather all the mcp information
-        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_addons_update_ask_addon", 'first', true, 'update');
+        ee()->load->library('session');
+        ee()->load->library('addons/addons_installer');
+        // some add-ons might be using this in installer
+        ee()->router->set_class('cp');
+        ee()->load->library('cp');
 
-        $addon = ee('pro:Addon')->get($this->data['addon']);
+        if ($this->option('--all')) {
+            $addons = array_keys($this->getAddonList('update'));
+
+            // Update all addons with available updates
+            foreach ($addons as $addon) {
+                $this->updateAddon($addon);
+            }
+
+            $this->info('command_addons_update_all_complete');
+        } else {
+            // Get the single addon to update
+            $addon = $this->getOptionOrAskAddon('--addon', "command_addons_update_ask_addon", 'first', true, 'update');
+
+            $this->updateAddon($addon);
+        }
+
+        ee()->cache->file->delete('/addons-status');
+        ee('CP/JumpMenu')->clearAllCaches();
+    }
+
+    private function updateAddon($addon)
+    {
+        $addon = ee('pro:Addon')->get($addon);
 
         $this->info(sprintf(lang('command_addons_update_in_progress'), $addon->getName()));
 
-        ee()->load->library('addons/addons_installer');
-        ee()->router->set_class('cp'); // some add-ons might be using this in installer
-        ee()->load->library('cp');
         ee()->load->add_package_path($addon->getPath());
         ee()->lang->loadfile($addon->getPrefix(), '', false);
 
@@ -133,13 +156,10 @@ class CommandAddonsUpdate extends Cli
             $addon->updateProlets();
         } catch (\Exception $e) {
             $this->info(lang('addons_not_installed'));
-            $this->fail(addslashes($e->getMessage()));
+            $this->error(addslashes($e->getMessage()));
         }
 
         ee()->load->remove_package_path($addon->getPath());
-
-        ee()->cache->file->delete('/addons-status');
-        ee('CP/JumpMenu')->clearAllCaches();
 
         $this->info(sprintf(lang('command_addons_update_complete'), $addon->getName()));
     }

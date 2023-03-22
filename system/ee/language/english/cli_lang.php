@@ -40,10 +40,11 @@ $lang = array(
     // Lang entries for command addons:update
     'command_addons_update_description'            => 'Uninstalls add-on and all its components',
     'command_addons_update_summary'                => '',
-    'command_addons_update_begin'                  => 'Add-on update is about to begin',
+    'command_addons_update_begin'                  => 'Add-on update is about to begin.',
     'command_addons_update_ask_addon'              => 'Which add-on do you want to update?',
-    'command_addons_update_in_progress'            => 'Performing %s add-on update',
-    'command_addons_update_complete'               => '%s updated successfully',
+    'command_addons_update_in_progress'            => 'Performing %s add-on update...',
+    'command_addons_update_complete'               => '%s updated successfully.',
+    'command_addons_update_all_complete'           => 'All Add-Ons updated successfully.',
     'command_addons_update_option_addon'           => 'Add-on\'s short name',
 
     // Lang entries for command addons:list
@@ -258,7 +259,6 @@ $lang = array(
 
     // make:jump options
     'command_make_jump_file_addon'                 => 'Folder for third-party add-on you want to add Jump Menu file to.',
-
 
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',
