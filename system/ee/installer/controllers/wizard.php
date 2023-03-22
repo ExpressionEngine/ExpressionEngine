@@ -131,8 +131,8 @@ class Wizard extends CI_Controller
         // Enabled for cleaner view files and compatibility
         'rewrite_short_tags' => true
     );
-	
-	public $db_connect_attempt;
+
+    public $db_connect_attempt;
 
     /**
      * Constructor
@@ -2040,7 +2040,7 @@ class Wizard extends CI_Controller
         $table_name = null;
         $offset = 0;
 
-        $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%T');
+        $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%ss%T');
         $file_path = PATH_CACHE . ee()->db->database . '_' . $date . '.sql';
 
         // Some tables might be resource-intensive, do what we can

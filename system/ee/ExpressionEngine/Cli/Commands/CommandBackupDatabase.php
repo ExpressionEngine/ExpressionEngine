@@ -55,7 +55,7 @@ class CommandBackupDatabase extends Cli
     {
         $this->info('command_backup_database_backing_up_database');
 
-        $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%T');
+        $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%ss%T');
         $path = PATH_CACHE;
         $file_name = ee()->db->database . '_' . $date . '.sql';
 
