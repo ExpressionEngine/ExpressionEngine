@@ -93,14 +93,14 @@ class CommandAddonsUpdate extends Cli
         try {
             $version = $addon->getVersion();
             $addon->updateConsentRequests();
+
             if ($addon->hasModule() && $addon->hasInstaller()) {
+                $module = ee('Model')->get('Module')->filter('module_name', ucfirst($addon->getPrefix()))->first();
                 $class = $addon->getInstallerClass();
                 $UPD = new $class();
-                if ($UPD->update($version) !== false) {
-                    $module = ee('Model')->get('Module')
-                        ->filter('module_name', ucfirst($addon->getPrefix()))
-                        ->first();
+                if ($UPD->update($module->module_version) !== false) {
                     $module->module_version = $version;
+
                     $module->save();
                 }
             }
