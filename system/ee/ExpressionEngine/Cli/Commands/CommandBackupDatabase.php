@@ -43,6 +43,7 @@ class CommandBackupDatabase extends Cli
         'relative_path,p:'  => 'command_backup_database_option_relative_path',
         'absolute_path,a:'  => 'command_backup_database_option_absolute_path',
         'file_name,f:'  => 'command_backup_database_option_file_name',
+        'speed,s:'  => 'command_backup_database_option_speed',
     ];
 
     protected $data = [];
@@ -53,7 +54,7 @@ class CommandBackupDatabase extends Cli
      */
     public function handle()
     {
-        $this->info('command_backup_database_backing_up_database');
+        $this->info('command_backup_database_beginning_database_backup');
 
         $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%ss%T');
         $path = PATH_CACHE;
@@ -70,6 +71,17 @@ class CommandBackupDatabase extends Cli
         } elseif ($this->option('--absolute_path')) {
             $path = $this->option('--absolute_path');
         }
+
+        // Set the database backup speed
+        $speed = !is_null($this->option('--speed')) ? (int) $this->option('--speed') : 5;
+
+        // Keep the speed between 0 and 10
+        if (!in_array($speed, range(0, 10))) {
+            $speed = ($speed > 10) ? 10 : 0;
+        }
+
+        // Set the waittime based on the speed
+        $waitTime = (10 - $speed) * 10000;
 
         $path = reduce_double_slashes($path);
         $file_path = reduce_double_slashes($path . '/' . $file_name);
@@ -88,6 +100,8 @@ class CommandBackupDatabase extends Cli
 
         $backup = ee('Database/Backup', $file_path);
 
+        $this->info('command_backup_database_backing_up_database');
+
         // Beginning a new backup
         try {
             $backup->startFile();
@@ -97,12 +111,34 @@ class CommandBackupDatabase extends Cli
             $this->fail($e->getMessage());
         }
 
-        try {
-            $backup->writeAllTableInserts();
-        } catch (Exception $e) {
-            $this->error('command_backup_database_failed_with_error');
-            $this->fail($e->getMessage());
-        }
+        $table_name = null;
+        $offset = 0;
+        $returned = true;
+
+        do {
+            try {
+                $returned = $backup->writeTableInsertsConservatively($table_name, $offset);
+            } catch (Exception $e) {
+                $this->error('command_backup_database_failed_with_error');
+                $this->fail($e->getMessage());
+            }
+
+            if ($returned !== false) {
+                // Progress dots
+                echo '.';
+
+                // Verbose output:
+                // $this->info("Table: $table_name\t\tOffset: $offset");
+
+                // Add a wait so the Database is freed up a bit between requests
+                usleep($waitTime);
+
+                $table_name = $returned['table_name'];
+                $offset = $returned['offset'];
+            }
+        } while ($returned !== false);
+
+        $this->write('');
 
         $backup->endFile();
 
