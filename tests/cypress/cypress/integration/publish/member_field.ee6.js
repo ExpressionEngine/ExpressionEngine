@@ -720,7 +720,7 @@ context('Member field', () => {
 
         })
 
-        it.only('check member field in grid inside fluid', () => {
+        it('check member field in grid inside fluid', () => {
 
             cy.visit('admin.php?/cp/publish/edit/entry/1')
 

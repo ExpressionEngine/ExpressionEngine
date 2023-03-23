@@ -32,6 +32,6 @@ class PublishTest extends TestCase
 
         sort($controller_methods);
 
-        $this->assertEquals(array('authorlist', 'autosave', 'create', 'field', 'preview', 'relationshipfilter', 'memberrelationshipfilter'), $controller_methods);
+        $this->assertEquals(array('authorlist', 'autosave', 'create', 'field', 'memberrelationshipfilter', 'preview', 'relationshipfilter'), $controller_methods);
     }
 }
