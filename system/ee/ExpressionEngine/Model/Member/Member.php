@@ -75,6 +75,15 @@ class Member extends ContentModel
             'model' => 'ChannelEntry',
             'to_key' => 'author_id'
         ),
+        'RelatedChannelEntries' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'ChannelEntry',
+            'pivot' => array(
+                'table' => 'member_relationships',
+                'left' => 'child_id',
+                'right' => 'parent_id'
+            )
+        ),
         'LastAuthoredSpecialtyTemplates' => array(
             'type' => 'hasMany',
             'model' => 'SpecialtyTemplate',
