@@ -407,6 +407,11 @@ context('Member field', () => {
             cy.get('[data-relationship-react] .list-item__title:contains("Member 1")').should('not.exist')
             cy.get('button:contains("Edit Relationships")').should('be.visible')
             cy.hasNoErrors()
+
+            cy.visit(field_url);
+            cy.get('[data-toggle-for="deferred_loading"]').click()
+            cy.get('[data-toggle-for="deferred_loading"]').should('have.class', 'off')
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
         })
     })
 
@@ -642,10 +647,10 @@ context('Member field', () => {
             cy.get('[name=field_id_3]').invoke('val').should('eq', "{filedir_2}ee_banner_120_240.gif");
             cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Member 2")').should('exist')
             cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Member 1")').should('exist')
-        })
 
-        // check relationship field with defer off in grid
-        after(() => {
+
+            // check relationship field with defer off in grid
+            cy.log('check relationship field with defer off in grid')
             cy.visit('admin.php?/cp/fields/edit/19');
             cy.get('.fields-grid-item:last-child .fields-grid-tool-expand').first().click()
             cy.get('[data-toggle-for="deferred_loading"]').first().click()
