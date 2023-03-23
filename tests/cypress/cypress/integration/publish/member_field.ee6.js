@@ -14,6 +14,8 @@ context('Member field', () => {
     before(function(){
         cy.task('db:seed')
         cy.task('db:load', '../../support/sql/grid-and-fluid.sql')
+        cy.task('db:query', 'UPDATE exp_member_data_field_1 SET m_field_id_1=1609528440 WHERE member_id=6;')
+        cy.task('db:query', 'UPDATE exp_member_data_field_1 SET m_field_id_1=1643829240 WHERE member_id=7;')
         cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
         cy.eeConfig({ item: 'show_profiler', value: 'y' })
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
@@ -561,7 +563,7 @@ context('Member field', () => {
         })
 
         //	display_entry_id On, items have been added
-        it('check relationship field with display entry id in grid', () => {
+        it('check field with display member id in grid', () => {
             cy.visit('admin.php?/cp/fields/edit/19');
             cy.get('.fields-grid-item:last-child .fields-grid-tool-expand').first().click()
             cy.get('[data-toggle-for="display_member_id"]').first().click()
@@ -581,7 +583,7 @@ context('Member field', () => {
         })
 
         //  display_entry_id Off, items have been added
-        it('check relationship field with display entry id in grid', () => {
+        it('check field without display member id in grid', () => {
             cy.visit('admin.php?/cp/fields/edit/19');
             cy.get('.fields-grid-item:last-child .fields-grid-tool-expand').first().click()
             cy.get('[data-toggle-for="display_member_id"]').first().click()
@@ -642,8 +644,8 @@ context('Member field', () => {
             cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Member 1")').should('exist')
         })
 
-        // default, defer field initialization Off
-        it('check relationship field with defer off in grid', () => {
+        // check relationship field with defer off in grid
+        after(() => {
             cy.visit('admin.php?/cp/fields/edit/19');
             cy.get('.fields-grid-item:last-child .fields-grid-tool-expand').first().click()
             cy.get('[data-toggle-for="deferred_loading"]').first().click()
