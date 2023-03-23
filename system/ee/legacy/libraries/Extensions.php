@@ -142,7 +142,7 @@ class EE_Extensions
         $class_name = ucfirst($class);
         $name = ee()->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
 
-        $path = isset(ee()->addons->_packages[$name]) ? ee()->addons->_packages[$name]['extension']['path'] : '';
+        $path = isset(ee()->addons->_packages[$name]) && isset(ee()->addons->_packages[$name]['extension']) ? ee()->addons->_packages[$name]['extension']['path'] : '';
         $extension_path = reduce_double_slashes($path . '/ext.' . $name . '.php');
 
         // Check to see if we need to automatically load the path
@@ -150,6 +150,25 @@ class EE_Extensions
 
         if ($automatically_load_path) {
             if (! file_exists($extension_path)) {
+
+                $can_view_system = false;
+                if (
+                    ee()->config->item('is_system_on') == 'y' &&
+                    (ee()->config->item('multiple_sites_enabled') != 'y' or ee()->config->item('is_site_on') == 'y')
+                ) {
+                    if (ee()->session->userdata('can_view_online_system') == 'y') {
+                        $can_view_system = true;
+                    }
+                } else {
+                    if (ee()->session->userdata('can_view_offline_system') == 'y') {
+                        $can_view_system = true;
+                    }
+                }
+                $can_view_system = (ee('Permission')->isSuperAdmin()) ? true : $can_view_system;
+
+                if (REQ != 'ACTION' && $can_view_system !== true) {
+                    return ee()->output->system_off_msg();
+                }
                 $error = 'Unable to load the following extension file:<br /><br />' . 'ext.' . $name . '.php';
 
                 return ee()->output->fatal_error($error);
