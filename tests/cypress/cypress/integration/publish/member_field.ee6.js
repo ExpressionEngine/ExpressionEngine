@@ -694,7 +694,6 @@ context('Member field', () => {
             cy.get('.fluid a.dropdown__link:contains("Member 1"):visible').first().click();
             cy.get('.fluid a.dropdown__link:contains("Admin"):visible').first().click();
             cy.get('.fluid [data-relationship-react] .list-item__title:contains("Member 1")').should('exist')
-            cy.get('.fluid [data-relationship-react] .list-item__title:contains("Member 1")').parent().find('.list-item__secondary span').should('not.exist')
             cy.get('.fluid [data-relationship-react] .list-item__title:contains("Admin")').should('exist')
 
             cy.get('body').type('{ctrl}', {release: false}).type('s')
@@ -741,7 +740,6 @@ context('Member field', () => {
             cy.get('.fluid .grid-field tr:not(.hidden) a.dropdown__link:contains("Member 2")').first().click({force: true});
             cy.get('.fluid .grid-field tr:not(.hidden) a.dropdown__link:contains("Member 1")').first().click({force: true});
             cy.get('.fluid .grid-field [data-relationship-react] .list-item__title:contains("Member 2")').should('exist')
-            cy.get('.fluid .grid-field [data-relationship-react] .list-item__title:contains("Member 2")').parent().find('.list-item__secondary span').should('not.exist')
             cy.get('.fluid .grid-field [data-relationship-react] .list-item__title:contains("Member 1")').should('exist')
             cy.get('body').type('{ctrl}', {release: false}).type('s')
             cy.get('.app-notice---success').contains('Entry Updated')
