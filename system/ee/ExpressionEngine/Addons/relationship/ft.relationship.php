@@ -66,10 +66,10 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         if ((bool) $this->settings['allow_multiple']) {
             ee()->lang->load('fieldtypes');
             if (isset($this->settings['rel_min']) && (count($set) < (int) $this->settings['rel_min'])) {
-                return sprintf(lang('rel_ft_min_error'), (int) $this->settings['rel_min']);
+                return sprintf(lang('rel_ft_min_error'), (int) $this->settings['rel_min'], strtolower(lang('entries')));
             }
             if (isset($this->settings['rel_max']) && $this->settings['rel_max'] !== '' && (count($set) > (int) $this->settings['rel_max'])) {
-                return sprintf(lang('rel_ft_max_error'), (int) $this->settings['rel_max']);
+                return sprintf(lang('rel_ft_max_error'), (int) $this->settings['rel_max'], strtolower(lang('entries')));
             }
         }
 
@@ -163,9 +163,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         if (isset($this->settings['grid_field_id'])) {
             // grid takes the parent grid's field id and sticks it into "grid_field_id"
-            $all_rows_where['grid_col_id'] = $this->settings['col_id'];
-            $all_rows_where['grid_field_id'] = $this->settings['grid_field_id'];
-            $all_rows_where['grid_row_id'] = $this->settings['grid_row_id'];
+            $all_rows_where['grid_col_id'] = $this->settings['col_id'] ?? 0;
+            $all_rows_where['grid_field_id'] = $this->settings['grid_field_id'] ?? 0;
+            $all_rows_where['grid_row_id'] = $this->settings['grid_row_id'] ?? 0;
         }
 
         // clear old stuff
@@ -737,8 +737,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 )
             ),
             array(
-                'title' => sprintf(lang('rel_ft_min'), strtolower(lang('members'))),
-                'desc' => sprintf(lang('rel_ft_min_desc'), strtolower(lang('members'))),
+                'title' => sprintf(lang('rel_ft_min'), strtolower(lang('entries'))),
+                'desc' => sprintf(lang('rel_ft_min_desc'), strtolower(lang('entries'))),
                 'group' => 'rel_min_max',
                 'fields' => array(
                     'rel_min' => array(
@@ -748,8 +748,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 )
             ),
             array(
-                'title' => sprintf(lang('rel_ft_max'), strtolower(lang('members'))),
-                'desc' => sprintf(lang('rel_ft_max_desc'), strtolower(lang('members'))),
+                'title' => sprintf(lang('rel_ft_max'), strtolower(lang('entries'))),
+                'desc' => sprintf(lang('rel_ft_max_desc'), strtolower(lang('entries'))),
                 'group' => 'rel_min_max',
                 'fields' => array(
                     'rel_max' => array(

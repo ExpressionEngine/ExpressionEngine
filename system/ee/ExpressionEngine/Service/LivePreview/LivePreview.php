@@ -101,6 +101,24 @@ class LivePreview
 
         $entry->set($_POST);
         $data = $entry->getModChannelResultsArray();
+        // because the template parser operates with saved data, and we have only raw data
+        // we need to normalize those first
+        // the data passed with POST can be different (array, or formatting applied)
+        // so we pass it through save() function of the fieldtypes
+        // which normally returns the field's to-be-saved content
+        ee()->legacy_api->instantiate('channel_fields');
+        foreach ($entry->getStructure()->getAllCustomFields() as $field) {
+            $key = 'field_id_' . $field->getId();
+            if (array_key_exists($key, $_POST) && !empty($data[$key])) {
+                $ftClass = ucfirst($field->field_type) . '_ft';
+                ee()->api_channel_fields->include_handler($field->field_type);
+                $justTheFt = new $ftClass();
+                $saved = $justTheFt->save($_POST[$key]);
+                if (!empty($saved)) {
+                    $data[$key] = $saved;
+                }
+            }
+        }
         $data['entry_site_id'] = $entry->site_id;
         if (isset($_POST['categories'])) {
             $data['categories'] = $_POST['categories'];
@@ -158,7 +176,7 @@ class LivePreview
                 if (! $template_id) {
                     $template_id = $entry->getPageTemplateID();
                 }
-            } else {
+            } elseif (!empty($channel->preview_url)) {
                 //channel settings
                 // We want to avoid replacing `{url_title}` with an empty string since that
                 // can cause the wrong thing to render (like 404s).

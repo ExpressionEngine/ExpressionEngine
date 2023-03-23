@@ -24,6 +24,8 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
 
     public $has_array_data = true;
 
+    public $complex_data_structure = true;
+
     private $_table = 'member_relationships';
 
     public $default_settings = [
@@ -322,6 +324,9 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
         );
 
         $members = ee('Model')->get('Member')->with('PrimaryRole');
+        if (!empty($this->settings['roles'])) {
+            $members->filter('PrimaryRole.role_id', 'IN', $this->settings['roles']);
+        }
         if (!empty($this->settings['limit'])) {
             $limit = (int) $this->settings['limit'];
             if (!empty($selectedIds)) {
@@ -652,7 +657,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
                     'allow_multiple' => array(
                         'type' => 'yes_no',
                         'group_toggle' => array(
-                            'y' => 'rel_min_max',
+                            'y' => 'member_rel_min_max',
                         ),
                         'value' => $data['allow_multiple']
                     )
@@ -661,7 +666,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             array(
                 'title' => sprintf(lang('rel_ft_min'), strtolower(lang('members'))),
                 'desc' => sprintf(lang('rel_ft_min_desc'), strtolower(lang('members'))),
-                'group' => 'rel_min_max',
+                'group' => 'member_rel_min_max',
                 'fields' => array(
                     'rel_min' => array(
                         'type' => 'text',
@@ -672,7 +677,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             array(
                 'title' => sprintf(lang('rel_ft_max'), strtolower(lang('members'))),
                 'desc' => sprintf(lang('rel_ft_max_desc'), strtolower(lang('members'))),
-                'desc' => 'rel_ft_max_desc',
+                'group' => 'member_rel_min_max',
                 'fields' => array(
                     'rel_max' => array(
                         'type' => 'text',
