@@ -512,9 +512,18 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             'entries' => []
         ];
         foreach ($data as $member_id => $order) {
-            $memberQuery = ee('Model')->get('Member', $member_id)->first();
+            $memberQuery = ee('Model')->get('Member', $member_id)->with('PrimaryRole')->first();
             if (!empty($memberQuery)) {
-                $memberData = $memberQuery->toArray();
+                $memberData = array_merge(
+                    $memberQuery->toArray(),
+                    [
+                        'primary_role_id' => $memberQuery->PrimaryRole->getId();
+                        'primary_role_name' => $memberQuery->PrimaryRole->name;
+                        'primary_role_description' => $memberQuery->PrimaryRole->description;
+                        'primary_role_short_name' => $memberQuery->PrimaryRole->short_name;
+                    ]
+                    $memberQuery->PrimaryRole->toArray()
+                );
                 unset($memberData['password']);
                 unset($memberData['unique_id']);
                 unset($memberData['crypt_key']);
@@ -561,6 +570,10 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
         $parser = ee()->channel_entries_parser->create($tagdata, $prefix);
 
         $tagdata = $parser->parse($channel, $vars);
+
+        if (isset($params['backspace']) && !empty($params['backspace'])) {
+            $tagdata = substr($tagdata, 0, - (int) $params['backspace']);
+        }
 
         return $tagdata;
     }

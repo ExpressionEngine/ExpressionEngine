@@ -753,7 +753,7 @@ context('Member field', () => {
             cy.get('.fluid .grid-field [data-relationship-react] .list-item__title:contains("Member 1")').should('exist')
 
             cy.visit('index.php/entries/members')
-            cy.get('.fluid-grid .grid-row-1 .ids').invoke('text').should('eq', '6|7')
+            cy.get('.fluid-grid .grid-row-1 .grid-ids').invoke('text').should('eq', '6|7')
             cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .username').should('contain', 'member1')
             cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .screen_name').should('contain', 'Member 1')
             cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .birthday').should('contain', '2021-01-01')
