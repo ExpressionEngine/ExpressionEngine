@@ -124,6 +124,8 @@ class Publish extends AbstractPublishController
         }
         if (!empty($settings['channel_id'])) {
             $members->filter('PrimaryRole.role_id', $settings['channel_id']);
+        } elseif (!empty($settings['roles'])) {
+            $members->filter('PrimaryRole.role_id', 'IN', $settings['roles']);
         }
         if (!empty($settings['search'])) {
             $members->search(['screen_name', 'username', 'email', 'member_id'], $settings['search']);
