@@ -517,11 +517,11 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
                 $memberData = array_merge(
                     $memberQuery->toArray(),
                     [
-                        'primary_role_id' => $memberQuery->PrimaryRole->getId();
-                        'primary_role_name' => $memberQuery->PrimaryRole->name;
-                        'primary_role_description' => $memberQuery->PrimaryRole->description;
-                        'primary_role_short_name' => $memberQuery->PrimaryRole->short_name;
-                    ]
+                        'primary_role_id' => $memberQuery->PrimaryRole->getId(),
+                        'primary_role_name' => $memberQuery->PrimaryRole->name,
+                        'primary_role_description' => $memberQuery->PrimaryRole->description,
+                        'primary_role_short_name' => $memberQuery->PrimaryRole->short_name
+                    ],
                     $memberQuery->PrimaryRole->toArray()
                 );
                 unset($memberData['password']);
@@ -530,6 +530,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
                 unset($memberData['authcode']);
                 unset($memberData['salt']);
                 unset($memberData['backup_mfa_code']);
+                unset($memberData['enable_mfa']);
                 $vars['entries'][] = array_merge(
                     [
                         'site_id' => $this->row['site_id'],
