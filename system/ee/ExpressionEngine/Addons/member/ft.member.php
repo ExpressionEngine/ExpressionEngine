@@ -464,6 +464,11 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
         ];
     }
 
+    /**
+     * Pre-process the data before displaying.
+     * @param array $data
+     * @return array $data
+     */
     public function pre_process($data)
     {
         if (! ee('LivePreview')->hasEntryData()) {
@@ -574,6 +579,16 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
     public function replace_total_rows($data, $params = '', $tagdata = '')
     {
         return count($data);
+    }
+
+    /**
+     * :member_ids modifier
+     */
+    public function replace_member_ids($data, $params = '', $tagdata = '')
+    {
+        $delim = isset($params['delimiter']) ? $params['delimiter'] : '|';
+
+        return implode($delim, array_keys($data));
     }
 
     /**

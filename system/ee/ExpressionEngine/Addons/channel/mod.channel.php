@@ -25,14 +25,15 @@ class Channel
     public $return_data = '';       // Final data
     public $hit_tracking_id = false;
     public $sql = false;
-    public $cfields = array();
-    public $dfields = array();
-    public $rfields = array();
-    public $gfields = array();
-    public $mfields = array();
-    public $pfields = array();
-    public $ffields = array();
-    public $tfields = array();
+    public $cfields = array(); // Custom fields
+    public $dfields = array(); // Date fields
+    public $rfields = array(); // Relationship fields
+    public $gfields = array(); // Grid fields
+    public $msfields = array(); // Member select fields
+    public $mfields = array(); // Custom member fields
+    public $pfields = array(); // Pair custom fields
+    public $ffields = array(); // Fluid fields
+    public $tfields = array(); // Toggle fields
     public $categories = array();
     public $catfields = array();
     public $channel_name = array();
@@ -308,6 +309,7 @@ class Channel
             isset(ee()->session->cache['channel']['date_fields']) &&
             isset(ee()->session->cache['channel']['relationship_fields']) &&
             isset(ee()->session->cache['channel']['grid_fields']) &&
+            isset(ee()->session->cache['channel']['members_fields']) &&
             isset(ee()->session->cache['channel']['pair_custom_fields']) &&
             isset(ee()->session->cache['channel']['fluid_field_fields']) &&
             isset(ee()->session->cache['channel']['toggle_fields'])
@@ -316,6 +318,7 @@ class Channel
             $this->dfields = ee()->session->cache['channel']['date_fields'];
             $this->rfields = ee()->session->cache['channel']['relationship_fields'];
             $this->gfields = ee()->session->cache['channel']['grid_fields'];
+            $this->msfields = ee()->session->cache['channel']['members_fields'];
             $this->pfields = ee()->session->cache['channel']['pair_custom_fields'];
             $this->ffields = ee()->session->cache['channel']['fluid_field_fields'];
             $this->tfields = ee()->session->cache['channel']['toggle_fields'];
@@ -331,6 +334,7 @@ class Channel
         $this->cfields = $fields['custom_channel_fields'];
         $this->dfields = $fields['date_fields'];
         $this->rfields = $fields['relationship_fields'];
+        $this->msfields = $fields['members_fields'];
         $this->gfields = $fields['grid_fields'];
         $this->pfields = $fields['pair_custom_fields'];
         $this->ffields = $fields['fluid_field_fields'];
@@ -343,7 +347,7 @@ class Channel
                 ->all(true);
             $site_ids = $sites->getIds();
 
-            foreach (['cfields', 'dfields', 'rfields', 'gfields', 'pfields', 'ffields', 'tfields'] as $custom_fields) {
+            foreach (['cfields', 'dfields', 'rfields', 'gfields', 'msfields', 'pfields', 'ffields', 'tfields'] as $custom_fields) {
                 $tmp = $this->$custom_fields;
 
                 if (! isset($tmp[0])) {
@@ -365,6 +369,7 @@ class Channel
         ee()->session->cache['channel']['custom_channel_fields'] = $this->cfields;
         ee()->session->cache['channel']['date_fields'] = $this->dfields;
         ee()->session->cache['channel']['relationship_fields'] = $this->rfields;
+        ee()->session->cache['channel']['members_fields'] = $this->msfields;
         ee()->session->cache['channel']['grid_fields'] = $this->gfields;
         ee()->session->cache['channel']['pair_custom_fields'] = $this->pfields;
         ee()->session->cache['channel']['fluid_field_fields'] = $this->ffields;

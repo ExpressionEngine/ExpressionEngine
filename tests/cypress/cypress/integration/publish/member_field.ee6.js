@@ -100,12 +100,13 @@ context('Member field', () => {
 
             cy.log('check field tag on frontend')
             cy.visit('index.php/entries/members')
-            cy.get('.field .member-1 .username').should('contain', 'member1')
-            cy.get('.field .member-1 .screen_name').should('contain', 'Member 1')
-            cy.get('.field .member-1 .birthday').should('contain', '2021-01-01')
-            cy.get('.field .member-2 .username').should('contain', 'member2')
-            cy.get('.field .member-2 .screen_name').should('contain', 'Member 2')
-            cy.get('.field .member-2 .birthday').should('contain', '2022-02-02')
+            cy.get('.field .ids').invoke('text').should('eq', '6|7')
+            cy.get('.field .member-1 .username').invoke('text').should('eq', 'member1')
+            cy.get('.field .member-1 .screen_name').invoke('text').should('eq', 'Member 1')
+            cy.get('.field .member-1 .birthday').invoke('text').should('eq', '2021-01-01')
+            cy.get('.field .member-2 .username').invoke('text').should('eq', 'member2')
+            cy.get('.field .member-2 .screen_name').invoke('text').should('eq', 'Member 2')
+            cy.get('.field .member-2 .birthday').invoke('text').should('eq', '2022-02-02')
 
             cy.visit('admin.php?/cp/publish/edit/entry/1')
             cy.get('[data-relationship-react] .list-item__title:contains("Member 1")').closest('.list-item').find('[title="Remove"]').click()
@@ -115,9 +116,10 @@ context('Member field', () => {
             cy.get('[data-relationship-react] .list-item__title:contains("Member 1")').should('not.exist')
 
             cy.visit('index.php/entries/members')
-            cy.get('.field .member-1 .username').should('contain', 'member2')
-            cy.get('.field .member-1 .screen_name').should('contain', 'Member 2')
-            cy.get('.field .member-1 .birthday').should('contain', '2022-02-02')
+            cy.get('.field .ids').invoke('text').should('eq', '7')
+            cy.get('.field .member-1 .username').invoke('text').should('eq', 'member2')
+            cy.get('.field .member-1 .screen_name').invoke('text').should('eq', 'Member 2')
+            cy.get('.field .member-1 .birthday').invoke('text').should('eq', '2022-02-02')
             cy.get('.field .member-2').should('not.exist')
 
             cy.visit('admin.php?/cp/publish/edit/entry/1')
@@ -558,12 +560,13 @@ context('Member field', () => {
 
             cy.log('check grid field tag on frontend')
             cy.visit('index.php/entries/members')
-            cy.get('.grid-row-1 .grid-member-1 .username').should('contain', 'member2')
-            cy.get('.grid-row-1 .grid-member-1 .screen_name').should('contain', 'Member 2')
-            cy.get('.grid-row-1 .grid-member-1 .birthday').should('contain', '2022-02-02')
-            cy.get('.grid-row-1 .grid-member-2 .username').should('contain', 'member1')
-            cy.get('.grid-row-1 .grid-member-2 .screen_name').should('contain', 'Member 1')
-            cy.get('.grid-row-1 .grid-member-2 .birthday').should('contain', '2021-01-01')
+            cy.get('.grid-row-1 .ids').invoke('text').should('eq', '7,6')
+            cy.get('.grid-row-1 .grid-member-1 .username').invoke('text').should('eq', 'member2')
+            cy.get('.grid-row-1 .grid-member-1 .screen_name').invoke('text').should('eq', 'Member 2')
+            cy.get('.grid-row-1 .grid-member-1 .birthday').invoke('text').should('eq', '2022-02-02')
+            cy.get('.grid-row-1 .grid-member-2 .username').invoke('text').should('eq', 'member1')
+            cy.get('.grid-row-1 .grid-member-2 .screen_name').invoke('text').should('eq', 'Member 1')
+            cy.get('.grid-row-1 .grid-member-2 .birthday').invoke('text').should('eq', '2021-01-01')
 
         })
 
@@ -704,11 +707,12 @@ context('Member field', () => {
 
             cy.log('check field tag on frontend')
             cy.visit('index.php/entries/members')
-            cy.get('.fluid .member-1 .username').should('contain', 'member1')
-            cy.get('.fluid .member-1 .screen_name').should('contain', 'Member 1')
-            cy.get('.fluid .member-1 .birthday').should('contain', '2021-01-01')
-            cy.get('.fluid .member-2 .username').should('contain', 'admin')
-            cy.get('.fluid .member-2 .screen_name').should('contain', 'Admin')
+            cy.get('.fluid .ids').invoke('text').should('eq', '6|1')
+            cy.get('.fluid .member-1 .username').invoke('text').should('eq', 'member1')
+            cy.get('.fluid .member-1 .screen_name').invoke('text').should('eq', 'Member 1')
+            cy.get('.fluid .member-1 .birthday').invoke('text').should('eq', '2021-01-01')
+            cy.get('.fluid .member-2 .username').invoke('text').should('eq', 'admin')
+            cy.get('.fluid .member-2 .screen_name').invoke('text').should('eq', 'Admin')
             cy.get('.fluid .member-2 .birthday').should('be.empty')
 
             cy.visit('admin.php?/cp/publish/edit/entry/1')
@@ -719,8 +723,9 @@ context('Member field', () => {
             cy.get('.fluid [data-relationship-react] .list-item__title:contains("Member 1")').should('not.exist')
 
             cy.visit('index.php/entries/members')
-            cy.get('.fluid .member-1 .username').should('contain', 'admin')
-            cy.get('.fluid .member-1 .screen_name').should('contain', 'Admin')
+            cy.get('.fluid .ids').invoke('text').should('eq', '1')
+            cy.get('.fluid .member-1 .username').invoke('text').should('eq', 'admin')
+            cy.get('.fluid .member-1 .screen_name').invoke('text').should('eq', 'Admin')
             cy.get('.fluid .member-1 .birthday').should('be.empty')
             cy.get('.fluid .member-2').should('not.exist')
 
@@ -748,6 +753,7 @@ context('Member field', () => {
             cy.get('.fluid .grid-field [data-relationship-react] .list-item__title:contains("Member 1")').should('exist')
 
             cy.visit('index.php/entries/members')
+            cy.get('.fluid-grid .grid-row-1 .ids').invoke('text').should('eq', '6|7')
             cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .username').should('contain', 'member1')
             cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .screen_name').should('contain', 'Member 1')
             cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .birthday').should('contain', '2021-01-01')

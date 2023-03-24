@@ -2,6 +2,7 @@
 
 {exp:channel:entries entry_id="1"} 
 <div class="field">
+    <div class="ids">{members:member_ids}</div>
     {members}
         <div class="member-{members:count}">
             <div class="username">{members:username}</div>
@@ -15,6 +16,7 @@
 <div class="grid">
     {stupid_grid}
         <div class="grid-row-{stupid_grid:count}">
+            <div class="ids">{stupid_grid:members_title:member_ids delimiter=","}</div>
             {stupid_grid:members_title}
             <div class="grid-member-{stupid_grid:members_title:count}">
                 <div class="username">{stupid_grid:members_title:username}</div>
@@ -30,6 +32,7 @@
 <div class="fluid">
     {corpse:members}
         {content}
+        <div class="ids">{content:member_ids}</div>
         <div class="member-{content:count}">
             <div class="username">{content:username}</div>
             <div class="screen_name">{content:screen_name}</div>
@@ -44,6 +47,7 @@
     {corpse:stupid_grid}
         {content}
         <div class="grid-row-{content:count}">
+            <div class="ids">{content:members_title:member_ids}</div>
             {content:members_title}
             <div class="fluid-grid-member-{content:members_title:count}">
                 <div class="username">{content:members_title:username}</div>
