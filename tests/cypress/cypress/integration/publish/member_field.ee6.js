@@ -753,13 +753,13 @@ context('Member field', () => {
             cy.get('.fluid .grid-field [data-relationship-react] .list-item__title:contains("Member 1")').should('exist')
 
             cy.visit('index.php/entries/members')
-            cy.get('.fluid-grid .grid-row-1 .grid-ids').invoke('text').should('eq', '6|7')
-            cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .username').should('contain', 'member1')
-            cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .screen_name').should('contain', 'Member 1')
-            cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .birthday').should('contain', '2021-01-01')
+            cy.get('.fluid-grid .grid-row-1 .grid-ids').invoke('text').should('eq', '7|6')
             cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-1 .username').should('contain', 'member2')
             cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-1 .screen_name').should('contain', 'Member 2')
             cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-1 .birthday').should('contain', '2022-02-02')
+            cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .username').should('contain', 'member1')
+            cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .screen_name').should('contain', 'Member 1')
+            cy.get('.fluid-grid .grid-row-1 .fluid-grid-member-2 .birthday').should('contain', '2021-01-01')
         })
 
     })
