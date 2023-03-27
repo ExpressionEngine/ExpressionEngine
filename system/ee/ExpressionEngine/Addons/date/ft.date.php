@@ -363,6 +363,16 @@ class Date_ft extends EE_Fieldtype
                             'value' => isset($data['localize']) ? $data['localize'] : true,
                         )
                     )
+                ),
+                array(
+                    'title' => 'show_time',
+                    'desc' => 'show_time_desc',
+                    'fields' => array(
+                        'show_time' => array(
+                            'type' => 'yes_no',
+                            'value' => isset($data['show_time']) ? $data['show_time'] : true,
+                        )
+                    )
                 )
             )
         );
@@ -371,7 +381,8 @@ class Date_ft extends EE_Fieldtype
     public function grid_save_settings($data)
     {
         return array(
-            'localize' => get_bool_from_string($data['localize'])
+            'localize' => get_bool_from_string($data['localize']),
+            'show_time' => get_bool_from_string($data['localize'])
         );
     }
 

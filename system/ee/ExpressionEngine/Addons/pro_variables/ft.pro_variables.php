@@ -252,10 +252,13 @@ class Pro_variables_ft extends EE_Fieldtype
         // -------------------------------------
 
         if (@$this->settings['lv_ft_multiple'] == 'y') {
+            if (! is_array($value)) {
+                $value = explode("\n", (string) $value);
+            }
             $field = array(
                 'type'    => 'checkbox',
                 'choices' => $choices,
-                'value'   => explode("\n", (string) $value),
+                'value'   => $value,
                 'wrap'    => true
             );
         } else {
