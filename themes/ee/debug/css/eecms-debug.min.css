@@ -1123,6 +1123,7 @@ body[data-theme=pink] .file-card__info {
 .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .tab-off:before,
+.ee-debugger .tab-bar--editable .tab-edit:before,
 .fa-light,
 .fat,
 .fa-thin,
@@ -1141,7 +1142,8 @@ body[data-theme=pink] .file-card__info {
 
 .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
-.ee-debugger .tab-bar--editable .tab-off:before {
+.ee-debugger .tab-bar--editable .tab-off:before,
+.ee-debugger .tab-bar--editable .tab-edit:before {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   display: inline-block;
@@ -17950,6 +17952,7 @@ readers do not read off random characters that represent icons */
 .fal, .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
 .ee-debugger .tab-bar--editable .tab-off:before,
+.ee-debugger .tab-bar--editable .tab-edit:before,
 .fa-light {
   font-family: "Font Awesome 6 Pro";
   font-weight: 300;
@@ -18287,12 +18290,14 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
 }
 .ee-debugger .tab-bar--editable .tab-remove,
 .ee-debugger .tab-bar--editable .tab-on,
-.ee-debugger .tab-bar--editable .tab-off {
+.ee-debugger .tab-bar--editable .tab-off,
+.ee-debugger .tab-bar--editable .tab-edit {
   cursor: pointer;
 }
 .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
-.ee-debugger .tab-bar--editable .tab-off:before {
+.ee-debugger .tab-bar--editable .tab-off:before,
+.ee-debugger .tab-bar--editable .tab-edit:before {
   display: inline;
   padding: 4px;
   transform: translateY(-1px);
@@ -18302,7 +18307,8 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
 @media (max-width: 767px) {
   .ee-debugger .tab-bar--editable .tab-remove:before,
 .ee-debugger .tab-bar--editable .tab-on:before,
-.ee-debugger .tab-bar--editable .tab-off:before {
+.ee-debugger .tab-bar--editable .tab-off:before,
+.ee-debugger .tab-bar--editable .tab-edit:before {
     position: absolute;
   }
 }
@@ -18338,6 +18344,18 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
 }
 @media (min-width: 768px) {
   .ee-debugger .tab-bar--editable .tab-on:before {
+    right: 0;
+    top: 3px;
+  }
+}
+.ee-debugger .tab-bar--editable .tab-edit:before {
+  color: var(--ee-brand-primary);
+  content: "\f303";
+  right: 10px;
+  top: 13px;
+}
+@media (min-width: 768px) {
+  .ee-debugger .tab-bar--editable .tab-edit:before {
     right: 0;
     top: 3px;
   }

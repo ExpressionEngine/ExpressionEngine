@@ -442,9 +442,9 @@ class Roles extends AbstractRolesController
 
         $role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
 
-        $role->name = ee('Security/XSS')->clean($_POST['name']);
-        $role->short_name = ee('Security/XSS')->clean($_POST['short_name']);
-        $role->description = ee('Request')->post('description');
+        $role->name = ee('Security/XSS')->clean(ee('Request')->post('name'));
+        $role->short_name = ee('Security/XSS')->clean(ee('Request')->post('short_name'));
+        $role->description = ee('Security/XSS')->clean(ee('Request')->post('description'));
 
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();

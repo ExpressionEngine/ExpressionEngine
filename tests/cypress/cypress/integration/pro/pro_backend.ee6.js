@@ -152,6 +152,7 @@ context('Pro', () => {
         cy.wait(15000)
         cy.logFrontendPerformance()
 
+        cy.get('div').should('not.contain', '{')
         cy.get('#img-tag .eeFrontEdit').should('have.length', 1);
         cy.get('#img-tag-2 .eeFrontEdit').should('have.length', 1);
         cy.get('#img-tag-auto .eeFrontEdit').should('have.length', 1);
@@ -161,6 +162,14 @@ context('Pro', () => {
         cy.get('#img-tag-pair-2 .eeFrontEdit').should('have.length', 1);
         cy.get('#img-tag-pair-3 .eeFrontEdit').should('have.length', 1);
         cy.get('#img-tag-pair-4 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-1 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-2 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-3 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-4 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-11 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-12 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-13 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-14 .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-bg .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-pair-bg .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-pair-bg-2 .eeFrontEdit').should('have.length', 1);
