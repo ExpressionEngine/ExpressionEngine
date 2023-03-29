@@ -231,10 +231,20 @@ class Fluid_field_parser
                         continue;
                     }
 
+                    $field_group_id = null;
+                    foreach (array_keys($value) as $k) {
+                        if (strpos($k, 'field_group_id_') === 0) {
+                            $field_group_id = (int) str_replace('field_group_id_', '', $k);
+                            break;
+                        }
+                    }
+
+                    $value = reset($value);
+
+                    $field_id = null;
                     foreach (array_keys($value) as $k) {
                         if (strpos($k, 'field_id_') === 0) {
                             $field_id = (int) str_replace('field_id_', '', $k);
-
                             break;
                         }
                     }
@@ -244,6 +254,8 @@ class Fluid_field_parser
                     $fluid_field->fluid_field_id = $fluid_field_id;
                     $fluid_field->entry_id = $entry_id;
                     $fluid_field->field_id = $field_id;
+                    $fluid_field->field_group_id = $field_group_id;
+                    $fluid_field->group = $i; // use the order passed in request
                     $fluid_field->order = $i;
                     $fluid_field->field_data_id = $i;
 

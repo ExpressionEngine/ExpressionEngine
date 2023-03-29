@@ -169,6 +169,10 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $fluid_field_data = $this->getFieldData()->indexBy('id');
 
+        if (empty($fluid_field_data)) {
+            return '';
+        }
+
         $compiled_data_for_search = [];
 
         foreach ($data['fields'] as $key => $value) {
@@ -188,7 +192,7 @@ class Fluid_field_ft extends EE_Fieldtype
             if (strpos($key, 'field_') === 0) {
                 $fluid_field_id = (int) str_replace('field_', '', $key);
             // New field - field_id_3[fields][new_field_1][field_group_1][field_id_2] = value
-            } else if (strpos($key, 'new_field_') === 0) {
+            } elseif (strpos($key, 'new_field_') === 0) {
                 $create = true;
             }
 
