@@ -371,3 +371,19 @@
 	  }
 	}
 }
+
+.modal-wrap {
+  .filter-bar {
+    .filter-bar__item  {
+      &:first-child {
+        .dropdown {
+          width: max-content;
+
+          @include m-tablet-down {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}

@@ -15054,6 +15054,15 @@ input[type=button].btn-block {
   display: block;
 }
 
+.modal-wrap .filter-bar .filter-bar__item:first-child .dropdown, .modal-wrap .filter-bar .filter-bar__item:first-child .select__dropdown {
+  width: max-content;
+}
+@media (max-width: 767px) {
+  .modal-wrap .filter-bar .filter-bar__item:first-child .dropdown, .modal-wrap .filter-bar .filter-bar__item:first-child .select__dropdown {
+    width: 100%;
+  }
+}
+
 .tab-bar {
   display: flex;
   flex-wrap: wrap-reverse;
