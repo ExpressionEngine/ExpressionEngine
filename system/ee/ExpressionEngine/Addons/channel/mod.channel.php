@@ -2158,7 +2158,6 @@ class Channel
             $sql .= ", wd.entry_id, wd.site_id, wd.channel_id";
 
             if(!empty($legacy_fields)) {
-
                 foreach($legacy_fields as $lField) {
                     $sql .=', wd.field_ft_'.$lField->field_id;
                     $sql .=', wd.field_id_'.$lField->field_id;
