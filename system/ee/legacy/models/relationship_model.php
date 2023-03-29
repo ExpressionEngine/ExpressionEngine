@@ -243,7 +243,7 @@ class Relationship_model extends CI_Model
     {
         if ($fluid_field_data_id) {
             list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
-            $data = $data[$fluid_field]['fields'][$sub_field_id];
+            $data = reset($data[$fluid_field]['fields'][$sub_field_id]);
         }
 
         foreach ($grid_field_ids as $field_id) {
