@@ -97,11 +97,11 @@ class NavigationSidebar extends AbstractSidebar
             }
         }
 
-    	if (ee('Permission')->has('can_access_members')) {
+        if (ee('Permission')->has('can_access_members')) {
             $section = $this->addSection(lang('members'));
 
             $item = $section->addItem(lang('members'), ee('CP/URL', 'members'))->withIcon('users');
-                
+
             if (ee()->uri->segment(3) == 'roles') {
                 $item->isInactive();
             }
