@@ -125,8 +125,10 @@ class CommandAddonsUpdate extends Cli
                         $model = ee('Model')->get('Fieldtype')
                             ->filter('name', $shortName)
                             ->first();
-                        $model->version = $version;
-                        $model->save();
+                        if (!empty($model)) {
+                            $model->version = $version;
+                            $model->save();
+                        }
                     }
                 }
             }
