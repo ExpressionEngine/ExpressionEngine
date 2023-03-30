@@ -64,4 +64,73 @@ class CommandUpdateEnv extends Cli
         $this->info('command_update_env_config_value_saved');
     }
 
+    // @TODO:
+    // Move all of the below to an ENV service
+
+    private function setEnv($key, $value)
+    {
+        if (! $this->envFileExists()) {
+            $this->createEnvFile();
+        }
+
+        if ($this->keyIsInEnv($key)) {
+            $this->overwriteExistingValue($key, $value);
+        } else {
+            $this->writeNewEnvValue($key, $value);
+        }
+    }
+
+    private function getEnvFilePath()
+    {
+        return SYSPATH . '../.env.php';
+    }
+
+    private function envFileExists()
+    {
+        return ee('Filesystem')->exists($this->getEnvFilePath());
+    }
+
+    private function keyIsInEnv($key)
+    {
+        return (strpos($this->getEnvFileContents(), $key) !== false);
+    }
+
+    private function writeNewEnvValue($key, $value)
+    {
+        $envContents = $this->getEnvFileContents()
+            . "\n" . $key . '=' . $value;
+
+        $this->writeToEnv($envContents);
+    }
+
+    private function overwriteExistingValue($key, $value)
+    {
+        $envContents = str_replace(
+            $key . '=' . $this->env($key),
+            $key . '=' . $value,
+            $this->getEnvFileContents()
+        );
+
+        $this->writeToEnv($envContents);
+    }
+
+    private function env($key)
+    {
+        return $_ENV[$key] ?? '';
+    }
+
+    private function createEnvFile()
+    {
+        ee('Filesystem')->write($this->getEnvFilePath(), '', true);
+    }
+
+    private function getEnvFileContents()
+    {
+        return ee('Filesystem')->read($this->getEnvFilePath());
+    }
+
+    private function writeToEnv($envContents)
+    {
+        return ee('Filesystem')->write($this->getEnvFilePath(), trim($envContents), true);
+    }
 }
