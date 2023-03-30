@@ -263,6 +263,17 @@ $lang = array(
     'command_update_config_option_config_variable'  => 'The config item to modify',
     'command_update_config_option_value'            => 'The value to set the config item to',
 
+    // Lang entries for command update:config
+    'command_update_env_description'             => 'Updates env values in .env.php file',
+    'command_update_env_summary'                 => 'Gives the ability to update env values',
+    'command_update_env_ask_config_variable'     => 'What env item would you like to set?',
+    'command_update_env_updating_config_variable' => 'Updating env item...',
+    'command_update_env_config_value_saved'      => 'Env item saved.',
+
+    // update:config options
+    'command_update_env_option_config_variable'  => 'The env item to set/modify',
+    'command_update_env_option_value'            => 'The value to set the env item to',
+
     // Lang entries for command make:cp-route
     'command_make_cp_route_description'                  => 'Generates a control panel route for a given third-party add-on',
     'command_make_cp_route_summary'                      => 'This interactively generates a control panel route in an existing third-party addon',

@@ -101,6 +101,7 @@ class Cli
         'list' => Commands\CommandListCommands::class,
         'update' => Commands\CommandUpdate::class,
         'update:config' => Commands\CommandUpdateConfig::class,
+        'update:env' => Commands\CommandUpdateEnv::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,
         'update:run-hook' => Commands\CommandUpdateRunHook::class,
         'make:action' => Commands\CommandMakeAction::class,
@@ -516,6 +517,7 @@ class Cli
         if (empty($this->options)) {
             return $default;
         }
+
         return $this->options->get($name, $default);
     }
 
@@ -621,20 +623,24 @@ class Cli
                     if ($info->isInstalled()) {
                         $list[$name] = $addon;
                     }
+
                     break;
                 case 'uninstalled':
                     if (! $info->isInstalled()) {
                         $list[$name] = $addon;
                     }
+
                     break;
                 case 'update':
                     if ($info->hasUpdate()) {
                         $list[$name] = $addon;
                     }
+
                     break;
                 case 'all':
                 default:
                     $list[$name] = $addon;
+
                     break;
             }
         }
