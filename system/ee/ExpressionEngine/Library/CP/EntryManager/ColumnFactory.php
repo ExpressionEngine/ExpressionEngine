@@ -84,9 +84,16 @@ class ColumnFactory
      */
     private static function getStandardColumns()
     {
-        return array_map(function ($identifier, $column) {
-            return self::getColumn($identifier);
-        }, array_keys(self::$standard_columns), self::$standard_columns);
+        return array_filter(
+            array_map(function ($identifier, $column) {
+                if ($identifier != 'comments' || bool_config_item('enable_comments')) {
+                    return static::getColumn($identifier);
+                }
+            }, array_keys(static::$standard_columns), static::$standard_columns),
+            function ($column) {
+                return (! empty($column));
+            }
+        );
     }
 
     /**
