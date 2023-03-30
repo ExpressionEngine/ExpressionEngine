@@ -2092,10 +2092,9 @@ class Channel
 
         // check if we have param for needed fields only.. default is no
         if (! $needed_fields_only = ee()->TMPL->fetch_param('needed_fields_only')) {
-
             // string is weird on this one.. but it keeps the query
             // well formatted for viewing when fully rendered
-            $sql .="
+            $sql .= ", 
                         wd.*";
         }
 
@@ -2137,11 +2136,10 @@ class Channel
             // Get the fields for the channels passed in
             foreach ($channels as $channel) {
                 foreach ($channel->getAllCustomFields() as $field) {
-                    
                     // assign fields in new storage format to array
                     if (! $field->legacy_field_data) {
                         $fields[$field->field_id] = $field;
-                    } 
+                    }
 
                     // if we're including only the needed legacy fields, assign them to the array
                     if ($needed_fields_only && $field->legacy_field_data) {
@@ -2152,13 +2150,12 @@ class Channel
         }
 
         //Build string for legacy fields to be added in.
-        if($needed_fields_only) {
-
+        if ($needed_fields_only) {
             // add the fields that are needed for joins etc.
             $sql .= ", wd.entry_id, wd.site_id, wd.channel_id";
 
-            if(!empty($legacy_fields)) {
-                foreach($legacy_fields as $lField) {
+            if (!empty($legacy_fields)) {
+                foreach ($legacy_fields as $lField) {
                     $sql .=', wd.field_ft_'.$lField->field_id;
                     $sql .=', wd.field_id_'.$lField->field_id;
                 }
