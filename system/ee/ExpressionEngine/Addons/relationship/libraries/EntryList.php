@@ -57,7 +57,7 @@ class EntryList
 
         $entries = ee('Model')->get('ChannelEntry')
             ->with('Channel')
-            ->fields('Channel.channel_title', 'title')
+            ->fields('Channel.channel_title', 'title', 'status')
             ->order($order_field, $order_dir);
 
         if ($related == 'related') {
@@ -209,12 +209,16 @@ class EntryList
             show_error(lang('unauthorized_access'), 403);
         }
 
+        $statuses = ee('Model')->get('Status')->all('true')->indexBy('name');
+
         $response = array();
         foreach ($this->query($settings) as $entry) {
             $response[] = [
                 'value' => $entry->getId(),
                 'label' => $entry->title,
                 'instructions' => $entry->Channel->channel_title,
+                'channel_id' => $entry->Channel->channel_id,
+                'highlight' => isset($statuses[$entry->status]) ? $statuses[$entry->status]->highlight : ''
             ];
         }
 
