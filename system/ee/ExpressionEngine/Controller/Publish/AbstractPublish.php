@@ -254,7 +254,7 @@ abstract class AbstractPublish extends CP_Controller
 
         $data = array();
         $authors = array();
-        $i = $entry->getAutosaves()->count();
+        $i = $entry->getAutosaves()->filter('channel_id', $entry->channel_id)->count();
 
         if (! $entry->isNew()) {
             $i++;
@@ -282,7 +282,7 @@ abstract class AbstractPublish extends CP_Controller
         }
 
         $currentAutosaveId = null;
-        foreach ($entry->getAutosaves()->sortBy('edit_date')->reverse() as $autosave) {
+        foreach ($entry->getAutosaves()->filter('channel_id', $entry->channel_id)->sortBy('edit_date')->reverse() as $autosave) {
             if (! isset($authors[$autosave->author_id]) && $autosave->Author) {
                 $authors[$autosave->author_id] = $autosave->Author->getMemberName();
             }
@@ -318,7 +318,7 @@ abstract class AbstractPublish extends CP_Controller
             $i--;
         }
 
-        if ($autosave_id && empty($currentAutosaveId)) {
+        if ($autosave_id && ! empty($data) && empty($currentAutosaveId)) {
             $data[0]['attrs'] = ['class' => 'selected'];
         }
 
