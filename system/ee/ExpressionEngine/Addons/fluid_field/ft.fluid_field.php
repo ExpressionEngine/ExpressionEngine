@@ -89,9 +89,10 @@ class Fluid_field_ft extends EE_Fieldtype
             $f = $field->getField();
             $ft_instance = $f->getNativeField();
 
-            if (isset($ft_instance->has_array_data)
-                && $ft_instance->has_array_data
-                && ! is_array($data['field_id_' . $field_id])) {
+            if (isset($ft_instance->has_array_data) && 
+                $ft_instance->has_array_data
+                && ! is_array($data['field_id_' . $field_id])
+               ) {
                 $data['field_id_' . $field_id] = array();
             }
 
@@ -733,8 +734,9 @@ class Fluid_field_ft extends EE_Fieldtype
                     [$this->id()]
                 );
 
-                if (! isset($data["field_id_{$this->id()}"])
-                    || ! isset($data["field_id_{$this->id()}"]['fields'])) {
+                if (! isset($data["field_id_{$this->id()}"]) || 
+                    ! isset($data["field_id_{$this->id()}"]['fields'])
+                   ) {
                     return 0;
                 }
             }
