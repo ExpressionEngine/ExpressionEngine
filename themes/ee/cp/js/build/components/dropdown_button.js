@@ -20,9 +20,7 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var DropDownButton =
-/*#__PURE__*/
-function (_React$Component) {
+var DropDownButton = /*#__PURE__*/function (_React$Component) {
   _inherits(DropDownButton, _React$Component);
 
   function DropDownButton(props) {
@@ -37,6 +35,10 @@ function (_React$Component) {
         items: _this.initialItems.filter(function (item) {
           return item.label.toLowerCase().includes(event.target.value.toLowerCase());
         })
+      });
+
+      _this.setState({
+        search: true
       });
     });
 
@@ -79,7 +81,8 @@ function (_React$Component) {
     _this.initialItems = SelectList.formatItems(props.items);
     _this.state = {
       items: _this.initialItems,
-      selected: null
+      selected: null,
+      search: false
     };
     return _this;
   }
@@ -101,7 +104,7 @@ function (_React$Component) {
           return _this2.dropdown = el;
         },
         className: "dropdown"
-      }, this.state.items.length > 7 && React.createElement("div", {
+      }, (this.state.items.length > 7 || this.state.search) && React.createElement("div", {
         className: "dropdown__search"
       }, React.createElement("form", null, React.createElement("div", {
         className: "search-input"
