@@ -209,7 +209,7 @@ class EntryList
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $statuses = ee('Model')->get('Status')->all('true')->indexBy('name');
+        $statuses = ee('Model')->get('Status')->all('true')->indexBy('status');
 
         $response = array();
         foreach ($this->query($settings) as $entry) {

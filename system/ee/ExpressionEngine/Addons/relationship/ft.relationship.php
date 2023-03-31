@@ -467,7 +467,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         $multiple = (bool) $this->settings['allow_multiple'];
 
-        $statuses = ee('Model')->get('Status')->all('true')->indexBy('name');
+        $statuses = ee('Model')->get('Status')->all('true')->indexBy('status');
 
         $choices = [];
         foreach ($entries as $entry) {
