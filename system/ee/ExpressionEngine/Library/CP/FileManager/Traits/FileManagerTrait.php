@@ -15,7 +15,6 @@ use ExpressionEngine\Library\CP\FileManager\ColumnFactory;
 
 trait FileManagerTrait
 {
-    
     protected function listingsPage($uploadLocation = null, $view_type = 'list', $filepickerMode = false)
     {
         $vars = array();
@@ -26,6 +25,8 @@ trait FileManagerTrait
 
         $controller = $filepickerMode ? 'addons/settings/filepicker/modal' : (empty($uploadLocation) ? 'files' : 'files/directory/' . $upload_location_id);
         $base_url = ee('CP/URL')->make($controller);
+
+        $member = ee()->session->getMember();
 
         if (empty($uploadLocation)) {
             $model = 'File';
@@ -60,6 +61,10 @@ trait FileManagerTrait
         if (empty($upload_location_id)) {
             $files->filter('UploadDestination.module_id', 0)
                 ->filter('site_id', ee()->config->item('site_id'));
+            if (! ee('Permission')->isSuperAdmin()) {
+                $assigned_dirs = $member->getAssignedUploadDestinations()->pluck('id');
+                $files->filter('upload_location_id', 'IN', $assigned_dirs);
+            }
         } else {
             $files->filter('upload_location_id', $upload_location_id);
         }
@@ -85,7 +90,7 @@ trait FileManagerTrait
                 $vars['breadcrumbs'] = array_merge([$base_url->compile() => $uploadLocation->name], array_reverse($breadcrumbs));
                 $base_url->setQueryStringVariable('directory_id', (int) ee('Request')->get('directory_id'));
             }
-        } else if (bool_config_item('file_manager_compatibility_mode')) {
+        } elseif (bool_config_item('file_manager_compatibility_mode')) {
             $files->filter('directory_id', 0);
         }
 
@@ -259,7 +264,7 @@ trait FileManagerTrait
         }
 
         $sort_field = ($sort_col == 'date_added') ? 'upload_date' : $columns[$sort_col]->getEntryManagerColumnSortField();
-        $preselectedFileId =ee()->session->flashdata('file_id');
+        $preselectedFileId = ee()->session->flashdata('file_id');
 
         if ($preselectedFileId) {
             $files = $files->order('FIELD( file_id, ' . $preselectedFileId . ' )', 'DESC', false);
@@ -287,8 +292,6 @@ trait FileManagerTrait
         $data = array();
         $missing_files = false;
 
-        $member = ee()->session->getMember();
-
         $destinationsToEagerLoad = [];
 
         foreach ($files as $file) {
@@ -312,7 +315,7 @@ trait FileManagerTrait
             ];
 
             if ($file->isDirectory()) {
-                $attrs['file_upload_id'] = $file->upload_location_id.'.'.$file->file_id;
+                $attrs['file_upload_id'] = $file->upload_location_id . '.' . $file->file_id;
             }
 
             if (! $file->exists()) {
@@ -386,7 +389,7 @@ trait FileManagerTrait
             'lang.remove_confirm' => lang('file') . ': <b>### ' . lang('files') . '</b>',
             'viewManager.saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => $upload_location_id, 'viewtype' => $view_type])->compile()
         ]);
-        
+
         ee()->cp->add_js_script(array(
             'file' => array(
                 'cp/confirm_remove',
