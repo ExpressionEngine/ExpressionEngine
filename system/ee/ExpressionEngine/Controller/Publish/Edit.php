@@ -94,10 +94,6 @@ class Edit extends AbstractPublishController
         }
         $columns = array_filter($columns);
 
-        if (! ee('Permission')->hasAny($this->permissions['others'])) {
-            $entries->filter('author_id', ee()->session->userdata('member_id'));
-        }
-
         $count = $entry_listing->getEntryCount();
 
         // if no entries check to see if we have any channels
