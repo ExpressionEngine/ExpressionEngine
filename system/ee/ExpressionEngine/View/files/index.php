@@ -6,7 +6,7 @@ if (! AJAX_REQUEST) {
 
 <div class="box panel">
     <div class="tbl-ctrls f_manager-wrapper">
-        <?=form_open($form_url)?>
+        <?=form_open($form_url, ['data-save-default-url' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => $upload_id, 'viewtype' => $viewtype])->compile()])?>
             <div class="panel-heading">
                 <div class="title-bar">
                     <h3 class="title-bar__title title-bar--large"><?=$cp_heading?></h3>
