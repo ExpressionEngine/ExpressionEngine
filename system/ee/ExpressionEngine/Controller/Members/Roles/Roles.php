@@ -117,7 +117,7 @@ class Roles extends AbstractRolesController
         }
 
         foreach ($roles as $role) {
-            $edit_url = ee('CP/URL')->make('members/roles/edit/' . $role->getId());
+            $edit_url = (ee('Permission')->hasAny('can_edit_roles')) ? ee('CP/URL')->make('members/roles/edit/' . $role->getId()) : '';
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,

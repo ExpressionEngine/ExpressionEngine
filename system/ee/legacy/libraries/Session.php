@@ -79,6 +79,8 @@ class EE_Session
     public $cookies_exist = false;
     public $session_exists = false;
 
+    public $mfa_flag = 'skip';
+
     public $validation;
 
     // Garbage collection probability. Used to kill expired sessions.
@@ -1209,10 +1211,13 @@ class EE_Session
     private function _setupMemberModel($memberId)
     {
         $memberQuery = ee('Model')->get('Member', $memberId)
-                ->with('PrimaryRole', 'Roles', 'RoleGroups');
+            ->with(['PrimaryRole' => 'RoleSettings'])
+            ->with('Roles')
+            ->with('RoleGroups');
         if (REQ == 'CP') {
             $memberQuery->with('EntryManagerViews');
         }
+        $memberQuery->filter('RoleSettings.site_id', ee()->config->item('site_id'));
         $this->member_model = $memberQuery->all()->first();
     }
 
