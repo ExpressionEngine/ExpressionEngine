@@ -95,28 +95,9 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6, 7.1, 7.2, 7.4, 8.0]
-                os: [ubuntu-18.04]
-                containers: [0, 1, 2, 3, 4 , 5]
-                include:
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 0
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 1
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 2
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 3
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 4
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 5
+                php: [5.6, 7.1, 7.2, 7.4, 8.0, 8.1]
+                os: [ubuntu-latest]
+                containers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
         name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}
 
