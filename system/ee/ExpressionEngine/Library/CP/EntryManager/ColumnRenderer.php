@@ -24,7 +24,13 @@ class ColumnRenderer
      */
     public function __construct(array $columns)
     {
-        $this->columns = $columns;
+        $availableColumnKeys = array_keys(ColumnFactory::getAvailableColumns());
+        foreach ($columns as $key => $column) {
+            if (!in_array($key, $availableColumnKeys)) {
+                continue;
+            }
+            $this->columns[$key] = $column;
+        }
     }
 
     /**
