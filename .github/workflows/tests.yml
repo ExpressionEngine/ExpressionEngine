@@ -4,10 +4,8 @@ on:
   push:
     branches:
       - 6.dev
-      - release/6.3.0
-      - release/6.4.0
-      - release/6.5.0
-      - bug/6.x/full-tests
+      - release/*
+      - feature/6.x/update-gh-runner
 
 jobs:
 
