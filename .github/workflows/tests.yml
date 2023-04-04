@@ -95,8 +95,8 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [5.6, 7.1, 7.2, 7.4, 8.0]
-                os: [ubuntu-18.04]
+                php: [7.4, 8.0]
+                os: [ubuntu-20.04]
                 containers: [0, 1, 2, 3, 4 , 5]
                 include:
                   - php: 8.1
