@@ -168,11 +168,12 @@ jobs:
                   sudo chmod -R 777 tests/cypress/cypress/videos
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v2
+              uses: shivammathur/setup-php@verbose
               with:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
+                  fail-fast: true
                   ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Configure MySQL
