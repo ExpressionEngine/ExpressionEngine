@@ -75,7 +75,7 @@ class ConsentRequest extends Model
             $pattern .= ':';
         }
 
-        if (preg_match("/^([" . $pattern . "])+$/i", $value)) {
+        if (preg_match("/^([" . $pattern . "])+$/i", (string) $value)) {
             return true;
         }
 
