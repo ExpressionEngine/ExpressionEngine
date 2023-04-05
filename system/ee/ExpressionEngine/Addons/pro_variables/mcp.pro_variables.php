@@ -379,7 +379,7 @@ class Pro_variables_mcp
 
             // Update record
             $this->vars->update($id, array(
-                'variable_data' => $data,
+                'variable_data' => !is_null($data) ? $data : '',
                 'edit_date'     => time()
             ));
 
