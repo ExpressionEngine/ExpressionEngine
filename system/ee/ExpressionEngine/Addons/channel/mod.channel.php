@@ -2088,8 +2088,15 @@ class Channel
     {
         $sql = " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
                         w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
-                        m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.role_id, m.member_id,
+                        m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.role_id, m.member_id";
+
+        // check if we have param for needed fields only.. default is no
+        if (! $needed_fields_only = ee()->TMPL->fetch_param('needed_fields_only')) {
+            // string is weird on this one.. but it keeps the query
+            // well formatted for viewing when fully rendered
+            $sql .= ", 
                         wd.*";
+        }
 
         $from = " FROM exp_channel_titles       AS t
                 LEFT JOIN exp_channels      AS w  ON t.channel_id = w.channel_id
@@ -2126,14 +2133,35 @@ class Channel
                 ee()->session->set_cache(__CLASS__, $cache_key, $channels);
             }
 
+            // Get the fields for the channels passed in
             foreach ($channels as $channel) {
                 foreach ($channel->getAllCustomFields() as $field) {
+                    // assign fields in new storage format to array
                     if (! $field->legacy_field_data) {
                         $fields[$field->field_id] = $field;
+                    }
+
+                    // if we're including only the needed legacy fields, assign them to the array
+                    if ($needed_fields_only && $field->legacy_field_data) {
+                        $legacy_fields[] = $field;
                     }
                 }
             }
         }
+
+        //Build string for legacy fields to be added in.
+        if ($needed_fields_only) {
+            // add the fields that are needed for joins etc.
+            $sql .= ", wd.entry_id, wd.site_id, wd.channel_id";
+
+            if (!empty($legacy_fields)) {
+                foreach ($legacy_fields as $lField) {
+                    $sql .=', wd.field_ft_'.$lField->field_id;
+                    $sql .=', wd.field_id_'.$lField->field_id;
+                }
+            }
+        }
+
 
         //MySQL has limit of 61 joins, so we need to make sure to not hit it
         $join_limit = 61 - 7 - $mfieldCount;

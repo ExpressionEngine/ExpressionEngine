@@ -248,6 +248,11 @@ class Filemanager
             return false;
         }
 
+        $mime = $filesystem->getMimetype($file_path);
+        if (! $this->is_image($mime)) {
+            return false;
+        }
+
         // PHP7.4 does not come with GD JPEG processing by default
         // So, we need to run this check.
         if (function_exists('getimagesize')) {

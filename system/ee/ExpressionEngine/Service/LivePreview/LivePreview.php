@@ -143,8 +143,9 @@ class LivePreview
 
         $template_id = null;
 
-        if (! empty($_POST['pages__pages_uri'])
-                && ! empty($_POST['pages__pages_template_id'])) {
+        if (! empty($_POST['pages__pages_uri']) && 
+            ! empty($_POST['pages__pages_template_id'])
+           ) {
             //pages data passed with POST
             $values = [
                 'pages_uri' => $_POST['pages__pages_uri'],

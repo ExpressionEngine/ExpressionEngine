@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Library\CP\FileManager\Traits;
 
-use ExpressionEngine\Library\CP\EntryManager;
+use ExpressionEngine\Library\CP\FileManager;
 use ExpressionEngine\Library\CP\FileManager\ColumnFactory;
 
 trait FileManagerTrait
@@ -114,6 +114,7 @@ trait FileManagerTrait
                 'date_added|desc'
             );
         }
+
         $filters->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
 
         $search_terms = ee()->input->get_post('filter_by_keyword');
@@ -216,7 +217,7 @@ trait FileManagerTrait
             }
         }
 
-        $column_renderer = new EntryManager\ColumnRenderer($columns);
+        $column_renderer = new FileManager\ColumnRenderer($columns);
         $table_columns = $column_renderer->getTableColumnsConfig();
         $table->setColumns($table_columns);
 
@@ -377,6 +378,7 @@ trait FileManagerTrait
         $vars['filters'] = $filters->renderEntryFilters($base_url);
         $vars['filters_search'] = $filters->renderSearch($base_url, true);
         $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+        $vars['upload_id'] = $upload_location_id;
 
         ee()->javascript->set_global([
             'file_view_url' => ee('CP/URL')->make('files/file/view/###')->compile(),
