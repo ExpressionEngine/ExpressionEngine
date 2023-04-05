@@ -1930,6 +1930,26 @@ class Pro_variables_mcp
             $choices[$key] = $type['name']; // .' &mdash; <i>'.$type['version'].'</i>';
         }
 
+        // if there is variable named `file` we can't allow file field
+        $partials = ee('Model')->get('Snippet')->all()->pluck('snippet_name');
+        $global_variables = ee('Model')->get('GlobalVariable')->all()->pluck('variable_name');
+        $usedVarNameFile = false;
+        if (in_array('file', $partials)) {
+            $usedVarNameFile = 'partial';
+        }
+        if (in_array('file', $global_variables)) {
+            $usedVarNameFile = 'variable';
+        }
+        if ($usedVarNameFile !== false) {
+            unset($choices['file']);
+            ee()->lang->load('design');
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asWarning()
+                ->withTitle(sprintf(lang('var_type_disabled'), 'File'))
+                ->addToBody(sprintf(lang('var_exists_same_name'), lang($usedVarNameFile)))
+                ->now();
+        }
+
         $value = $this->settings->get('enabled_types');
 
         if (! in_array(Pro_variables_types::DEFAULT_TYPE, $value)) {

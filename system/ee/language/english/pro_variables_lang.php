@@ -645,6 +645,12 @@ $lang = array(
     'settings_saved' =>
     'Settings saved',
 
+    'var_type_disabled' =>
+    'Variable type <code>%s</code> disabled',
+
+    'var_exists_same_name' =>
+    '%s already exists with same name',
+
     //----------------------------------------
     // Required for FIELDTYPE page
     //----------------------------------------
