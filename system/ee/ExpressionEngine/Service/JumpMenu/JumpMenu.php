@@ -601,6 +601,15 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'include_seconds',
                         'command_title' => 'include_seconds'
                     ),
+                    // Week start
+                    'fieldset-fieldset-week_start' => array(
+                        'trail' => [
+                            'settings',
+                            // 'general_settings'
+                        ],
+                        'command' => 'week_start week_start_desc',
+                        'command_title' => 'week_start'
+                    ),
                 )
             ),
             'systemSettingsUrls' => array(

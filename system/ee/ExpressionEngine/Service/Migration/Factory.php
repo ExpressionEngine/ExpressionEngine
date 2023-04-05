@@ -23,6 +23,9 @@ class Factory
     public $filesystem;
     public $migration;
 
+    private $stepsRemaining;
+    private $respectMigrationGroups;
+
     public function __construct(Database\Query $db, Filesystem $filesystem, MigrationModel $migration = null)
     {
         $this->db = $db;

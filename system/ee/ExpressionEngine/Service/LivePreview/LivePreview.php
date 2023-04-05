@@ -101,6 +101,28 @@ class LivePreview
 
         $entry->set($_POST);
         $data = $entry->getModChannelResultsArray();
+        // because the template parser operates with saved data, and we have only raw data
+        // we need to normalize those first
+        // the data passed with POST can be different (array, or formatting applied)
+        // so we pass it through save() function of the fieldtypes
+        // which normally returns the field's to-be-saved content
+        ee()->legacy_api->instantiate('channel_fields');
+        foreach ($entry->getStructure()->getAllCustomFields() as $field) {
+            $key = 'field_id_' . $field->getId();
+            if (array_key_exists($key, $_POST) && !empty($data[$key])) {
+                $ftClass = ucfirst($field->field_type) . '_ft';
+                ee()->api_channel_fields->include_handler($field->field_type);
+                $justTheFt = new $ftClass();
+                try {
+                    $saved = $justTheFt->save($_POST[$key]);
+                    if (!empty($saved)) {
+                        $data[$key] = $saved;
+                    }
+                } catch (\Throwable $e) {
+                    // `save` code might be too complex, so if it errors, silently continue
+                }
+            }
+        }
         $data['entry_site_id'] = $entry->site_id;
         if (isset($_POST['categories'])) {
             $data['categories'] = $_POST['categories'];
@@ -121,8 +143,9 @@ class LivePreview
 
         $template_id = null;
 
-        if (! empty($_POST['pages__pages_uri'])
-                && ! empty($_POST['pages__pages_template_id'])) {
+        if (! empty($_POST['pages__pages_uri']) && 
+            ! empty($_POST['pages__pages_template_id'])
+           ) {
             //pages data passed with POST
             $values = [
                 'pages_uri' => $_POST['pages__pages_uri'],

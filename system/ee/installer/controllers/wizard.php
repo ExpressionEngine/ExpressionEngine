@@ -1635,6 +1635,7 @@ class Wizard extends CI_Controller
             'allow_extensions' => 'y',
             'date_format' => '%n/%j/%Y',
             'time_format' => '12',
+            'week_start' => 'sunday',
             'include_seconds' => 'n',
             'server_offset' => '',
             'default_site_timezone' => date_default_timezone_get(),

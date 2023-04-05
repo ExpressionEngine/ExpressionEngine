@@ -10,12 +10,11 @@
 
 namespace ExpressionEngine\Library\CP\FileManager\Traits;
 
-use ExpressionEngine\Library\CP\EntryManager;
+use ExpressionEngine\Library\CP\FileManager;
 use ExpressionEngine\Library\CP\FileManager\ColumnFactory;
 
 trait FileManagerTrait
 {
-    
     protected function listingsPage($uploadLocation = null, $view_type = 'list', $filepickerMode = false)
     {
         $vars = array();
@@ -56,10 +55,10 @@ trait FileManagerTrait
 
         $files = ee('Model')->get($model)
             // ->fields($model . '.*', 'UploadDestination.server_path', 'UploadDestination.url');
-            ->with('UploadDestination');
+            ->with('UploadDestination')
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         if (empty($upload_location_id)) {
-            $files->filter('UploadDestination.module_id', 0)
-                ->filter('site_id', ee()->config->item('site_id'));
+            $files->filter('UploadDestination.module_id', 0);
         } else {
             $files->filter('upload_location_id', $upload_location_id);
         }
@@ -85,7 +84,7 @@ trait FileManagerTrait
                 $vars['breadcrumbs'] = array_merge([$base_url->compile() => $uploadLocation->name], array_reverse($breadcrumbs));
                 $base_url->setQueryStringVariable('directory_id', (int) ee('Request')->get('directory_id'));
             }
-        } else if (bool_config_item('file_manager_compatibility_mode')) {
+        } elseif (bool_config_item('file_manager_compatibility_mode')) {
             $files->filter('directory_id', 0);
         }
 
@@ -115,6 +114,7 @@ trait FileManagerTrait
                 'date_added|desc'
             );
         }
+
         $filters->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
 
         $search_terms = ee()->input->get_post('filter_by_keyword');
@@ -205,7 +205,7 @@ trait FileManagerTrait
                         }
                     }
                 }
-                if (!empty($column->getEntryManagerColumnFields())) {
+                /*if (!empty($column->getEntryManagerColumnFields())) {
                     foreach ($column->getEntryManagerColumnFields() as $field) {
                         if (!empty($field)) {
                             // $files->fields($field);
@@ -213,11 +213,11 @@ trait FileManagerTrait
                     }
                 } else {
                     // $files->fields($column->getTableColumnIdentifier());
-                }
+                }*/
             }
         }
 
-        $column_renderer = new EntryManager\ColumnRenderer($columns);
+        $column_renderer = new FileManager\ColumnRenderer($columns);
         $table_columns = $column_renderer->getTableColumnsConfig();
         $table->setColumns($table_columns);
 
@@ -259,7 +259,7 @@ trait FileManagerTrait
         }
 
         $sort_field = ($sort_col == 'date_added') ? 'upload_date' : $columns[$sort_col]->getEntryManagerColumnSortField();
-        $preselectedFileId =ee()->session->flashdata('file_id');
+        $preselectedFileId = ee()->session->flashdata('file_id');
 
         if ($preselectedFileId) {
             $files = $files->order('FIELD( file_id, ' . $preselectedFileId . ' )', 'DESC', false);
@@ -312,7 +312,7 @@ trait FileManagerTrait
             ];
 
             if ($file->isDirectory()) {
-                $attrs['file_upload_id'] = $file->upload_location_id.'.'.$file->file_id;
+                $attrs['file_upload_id'] = $file->upload_location_id . '.' . $file->file_id;
             }
 
             if (! $file->exists()) {
@@ -372,13 +372,13 @@ trait FileManagerTrait
 
         $table->setData($data);
 
-
         $vars['table'] = $table->viewData($base_url);
         $vars['form_url'] = $vars['table']['base_url'];
 
         $vars['filters'] = $filters->renderEntryFilters($base_url);
         $vars['filters_search'] = $filters->renderSearch($base_url, true);
         $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+        $vars['upload_id'] = $upload_location_id;
 
         ee()->javascript->set_global([
             'file_view_url' => ee('CP/URL')->make('files/file/view/###')->compile(),
@@ -386,7 +386,7 @@ trait FileManagerTrait
             'lang.remove_confirm' => lang('file') . ': <b>### ' . lang('files') . '</b>',
             'viewManager.saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => $upload_location_id, 'viewtype' => $view_type])->compile()
         ]);
-        
+
         ee()->cp->add_js_script(array(
             'file' => array(
                 'cp/confirm_remove',
@@ -405,7 +405,7 @@ trait FileManagerTrait
     private function createUploadLocationFilter($uploadLocation = null)
     {
         $upload_destinations = ee('Model')->get('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->order('name', 'asc');
 
@@ -544,7 +544,7 @@ trait FileManagerTrait
         if (ee('Permission')->can('upload_new_files')) {
             $upload_destinations = ee('Model')->get('UploadDestination')
                 ->fields('id', 'name', 'adapter')
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                 ->filter('module_id', 0)
                 ->order('name', 'asc')
                 ->all();
