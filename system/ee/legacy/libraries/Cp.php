@@ -1081,7 +1081,7 @@ class Cp
         );
 
         $prefixes = array(
-            'parents', 'siblings'
+            'parents', 'siblings', 'file'
         );
 
         $control_structures = array(

@@ -3260,6 +3260,12 @@ class EE_Template
             $str = preg_replace_callback("/" . LD . "\s*route=(.*?)" . RD . "/", array( & ee()->functions, 'create_route'), $str);
         }
 
+        // Pase `{file:XX:url}` variables
+        if (strpos($str, LD . 'filedir_') !== false || strpos($str, LD . 'file:') !== false) {
+            ee()->load->library('file_field');
+            $str = ee()->file_field->parse_string($str);
+        }
+
         // Add security hashes to forms
         // We do this here to keep the security hashes from being cached
         if (defined('CSRF_TOKEN')) {

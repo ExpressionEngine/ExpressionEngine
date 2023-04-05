@@ -165,6 +165,15 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     }
 
     /**
+     * Display the field for Pro Variables
+     *
+     */
+    public function var_display_field($data)
+    {
+        return $this->display_field($data);
+    }
+
+    /**
      * Return a status of "warning" if the file is missing, otherwise "ok"
      *
      * @return string "warning" if the file is missing, "ok" otherwise
