@@ -44,6 +44,8 @@
 				references.input_img.after('<i class="fal fa-file-archive fa-3x"></i>');
 			} else if(data.file_type === 'audio') {
 				references.input_img.after('<i class="fal fa-file-audio fa-3x"></i>');
+			} else if(data.file_type === 'video') {
+				references.input_img.after('<i class="fal fa-file-video fa-3x"></i>>');
 			} else if (data.file_type === 'doc') {
 				if (data.mime_type.includes('pdf')) {
 					references.input_img.after('<i class="fal fa-file-pdf fa-3x"></i>');
