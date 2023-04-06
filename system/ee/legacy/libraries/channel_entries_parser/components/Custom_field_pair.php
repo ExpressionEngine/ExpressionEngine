@@ -209,7 +209,9 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                         if (!$frontedit_disabled) {
                             $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
                         }
-                        $tpl_chunk = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tpl_chunk);
+                        if (! empty($tpl_chunk)) {
+                            $tpl_chunk = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tpl_chunk);
+                        }
                     }
 
                     // $tpl_chunk can be a str or array, but not null
