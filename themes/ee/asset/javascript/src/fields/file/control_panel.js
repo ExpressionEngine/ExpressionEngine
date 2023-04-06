@@ -34,6 +34,7 @@
 			figure.toggleClass('no-img', ! data.isImage);
 			figure.toggleClass('is-svg', data.isSVG);
 			figure.find('img').toggleClass('hidden', ! data.isImage);
+
 			if (data.isImage) {
 				// Set the thumbnail
 				references.input_img.attr('src', data.thumb_path);
@@ -45,7 +46,7 @@
 			} else if(data.file_type === 'audio') {
 				references.input_img.after('<i class="fal fa-file-audio fa-3x"></i>');
 			} else if(data.file_type === 'video') {
-				references.input_img.after('<i class="fal fa-file-video fa-3x"></i>>');
+				references.input_img.after('<i class="fal fa-file-video fa-3x"></i>');
 			} else if (data.file_type === 'doc') {
 				if (data.mime_type.includes('pdf')) {
 					references.input_img.after('<i class="fal fa-file-pdf fa-3x"></i>');
@@ -57,6 +58,8 @@
 					references.input_img.after('<i class="fal fa-file-spreadsheet fa-3x"></i>');
 				} else if (data.mime_type.includes('powerpoint') || data.mime_type.includes('presentation')) {
 					references.input_img.after('<i class="fal fa-file-powerpoint fa-3x"></i>');
+				} else {
+					references.input_img.after('<i class="fal fa-file-alt fa-3x"></i>');
 				}
 			} else {
 				references.input_img.after('<i class="fas fa-file fa-3x"></i>');

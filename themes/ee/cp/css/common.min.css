@@ -31295,6 +31295,7 @@ fieldset .field-control #eye {
   padding: 10px;
   text-align: center;
   border-radius: 5px;
+  color: var(--ee-secondary-sidebar-item-icon);
 }
 .fields-upload-chosen .fields-upload-chosen-file img {
   max-width: 200px;
