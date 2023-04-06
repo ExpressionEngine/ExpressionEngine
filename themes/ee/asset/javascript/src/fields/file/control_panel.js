@@ -41,6 +41,20 @@
 				if (figure.find('i').length) {
 					figure.find('i').remove();
 				}
+			} else if(data.file_type === 'archive') {
+				references.input_img.after('<i class="fal fa-file-archive fa-3x"></i>');
+			} else if(data.file_type === 'audio') {
+				references.input_img.after('<i class="fal fa-file-audio fa-3x"></i>');
+			} else if (data.mime_type.includes('pdf')) {
+				references.input_img.after('<i class="fal fa-file-pdf fa-3x"></i>');
+			} else if (data.mime_type.includes('html') || data.mime_type.includes('css') || data.mime_type.includes('xml')) {
+				references.input_img.after('<i class="fal fa-file-code fa-3x"></i>');
+			} else if (data.mime_type.includes('rtf') || data.mime_type.includes('richtext') || data.mime_type.includes('word')) {
+				references.input_img.after('<i class="fal fa-file-word fa-3x"></i>');
+			} else if (data.mime_type.includes('excel') || data.mime_type.includes('spreadsheet') || data.mime_type.includes('csv')) {
+				references.input_img.after('<i class="fal fa-file-spreadsheet fa-3x"></i>');
+			} else if (data.mime_type.includes('powerpoint') || data.mime_type.includes('presentation')) {
+				references.input_img.after('<i class="fal fa-file-powerpoint fa-3x"></i>');
 			} else {
 				references.input_img.after('<i class="fas fa-file fa-3x"></i>');
 			}
