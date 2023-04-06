@@ -113,9 +113,13 @@ class LivePreview
                 $ftClass = ucfirst($field->field_type) . '_ft';
                 ee()->api_channel_fields->include_handler($field->field_type);
                 $justTheFt = new $ftClass();
-                $saved = $justTheFt->save($_POST[$key]);
-                if (!empty($saved)) {
-                    $data[$key] = $saved;
+                try {
+                    $saved = $justTheFt->save($_POST[$key]);
+                    if (!empty($saved)) {
+                        $data[$key] = $saved;
+                    }
+                } catch (\Exception $e) {
+                    // `save` code might be too complex, so if it errors, silently continue
                 }
             }
         }
