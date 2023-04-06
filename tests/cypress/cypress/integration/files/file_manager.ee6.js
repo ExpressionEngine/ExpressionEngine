@@ -188,6 +188,36 @@ context('File Manager', () => {
 
     });
 
+    it('sorting is kept when paginating', () => {
+        cy.visit(page.url + '&perpage=1')
+        cy.log('set to 5 files per page')
+        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
+        page.get('perpage_filter').click()
+        page.get('perpage_manual_filter').type('5{enter}')
+        cy.wait('@fileRequest')
+        cy.hasNoErrors()
+
+        cy.log('sort by title, asc')
+        page.get('title_name_header').find('a.column-sort').click()
+        cy.wait('@fileRequest')
+        cy.hasNoErrors()
+        cy.log('sort by title, desc')
+        page.get('title_name_header').find('a.column-sort').click()
+        cy.wait('@fileRequest')
+        cy.hasNoErrors()
+        page.get('title_name_header').find('a.column-sort').should('have.class', 'column-sort--desc');
+
+        let first_file = '';
+        page.get('title_names').eq(0).find('a').invoke('text').then((text) => {
+            first_file = text.trim()
+            cy.wait(1000)
+            page.get('pages').contains('2').click();
+            cy.wait('@fileRequest')
+            cy.hasNoErrors()
+            page.get('title_names').should('not.contain', first_file)
+        })
+    });
+
     it('can sort by file type', () => {
         beforeEach_all_files();
         // beforeEach_perpage_50();

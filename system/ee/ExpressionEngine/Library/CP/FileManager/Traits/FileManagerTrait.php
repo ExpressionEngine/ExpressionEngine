@@ -271,7 +271,7 @@ trait FileManagerTrait
             $files = $files->order('FIELD( file_id, ' . $preselectedFileId . ' )', 'DESC', false);
         }
 
-        if (! ($table->sort_dir == 'desc' && $table->sort_col != 'date_added')) {
+        if (! ($table->sort_dir == 'desc' && $table->sort_col == 'date_added')) {
             $base_url->addQueryStringVariables(
                 array(
                     'sort_dir' => $table->sort_dir,
