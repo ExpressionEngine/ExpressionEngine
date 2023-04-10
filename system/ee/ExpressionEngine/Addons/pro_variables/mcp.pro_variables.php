@@ -262,7 +262,8 @@ class Pro_variables_mcp
                     'type' => 'submit',
                     'value' => '',
                     'text' => 'pro_variables_save',
-                    'working' => 'btn_saving'
+                    'working' => 'btn_saving',
+                    'shortcut' => 's'
                 ));
 
                 // Add button for clearing cache
@@ -951,6 +952,8 @@ class Pro_variables_mcp
 
             // Do we have settings?
             $settings = $obj->display_settings();
+
+            ee()->load->add_package_path(PATH_ADDONS . $this->package);
 
             // Skip empty settings
             if (empty($settings)) {
