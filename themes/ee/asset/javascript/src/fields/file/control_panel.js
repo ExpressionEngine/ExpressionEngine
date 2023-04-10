@@ -90,6 +90,7 @@
 				figure_container.siblings('em').remove(); // Hide the "missing file" erorr
 				figure_container.siblings('input[type="hidden"]').val('').trigger('change');
 				figure_container.siblings('.fields-upload-btn').removeClass('hidden');
+				figure_container.find('.fields-upload-chosen-file i').remove();
 				e.preventDefault();
 			});
 
