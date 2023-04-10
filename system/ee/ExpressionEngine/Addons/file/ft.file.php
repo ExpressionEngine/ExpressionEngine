@@ -338,6 +338,23 @@ JSC;
     }
 
     /**
+     * Display the field for Pro Variables
+     *
+     */
+    public function var_replace_tag($data, $params = array(), $tagdata = false)
+    {
+        $data = $this->pre_process($data);
+        if ($tagdata === '') {
+            $tagdata = false;
+        }
+        $fn = 'replace_' . ee()->TMPL->fetch_param('modifier', 'tag');
+        if (! method_exists($this, $fn)) {
+            $fn = 'replace_tag';
+        }
+        return $this->$fn($data, $params, $tagdata);
+    }
+
+    /**
      * Resize an image
      *
      * Supported parameters:
