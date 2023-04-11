@@ -156,7 +156,6 @@ EE.cp.datePicker = {
 				} else {
 					timeBlock = '<input type="time" value="00:00">';
 				}
-
 				var _picker = $('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">Today</button><div id="date-picker-time-block">'+timeBlock+'</div></div></div>');
 
 				_picker.appendTo(parent);
@@ -334,9 +333,9 @@ EE.cp.datePicker = {
 				selected = d.getDate();
 				year  = d.getUTCFullYear();
 				month = d.getUTCMonth();
-				var pickedHours = '00';
-				var pickedMinutes = '00';
-				var pickedSeconds = '00';
+				var pickedHours = this.addZero(d.getHours());
+				var pickedMinutes = this.addZero(d.getMinutes());
+				var pickedSeconds = this.addZero(d.getSeconds());
 
 				if (include_seconds == 'y') {
 					timevalue = pickedHours + ":" + pickedMinutes + ":" + pickedSeconds;
@@ -347,6 +346,11 @@ EE.cp.datePicker = {
 				d = new Date();
 				year  = d.getFullYear();
 				month = d.getMonth();
+				if (include_seconds == 'y') {
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('00:00:00');
+				} else {
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('00:00')
+				}
 			}
 
 			var html = this.generate(year, month);
