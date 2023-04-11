@@ -35,6 +35,10 @@
 			figure.toggleClass('is-svg', data.isSVG);
 			figure.find('img').toggleClass('hidden', ! data.isImage);
 
+			if (! data.isImage && figure.find('i').length) {
+				figure.find('i').remove();
+			}
+
 			if (data.isImage) {
 				// Set the thumbnail
 				references.input_img.attr('src', data.thumb_path);
@@ -82,6 +86,7 @@
 			$('.file-field-filepicker', container).FilePicker({
 				callback: EE.FileField.pickerCallback
 			});
+
 
 			$('.button.remove', container).click(function (e) {
 				var figure_container = $(this).closest('.fields-upload-chosen');
