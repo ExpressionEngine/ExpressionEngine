@@ -15,7 +15,6 @@ use ExpressionEngine\Library\CP\FileManager\ColumnFactory;
 
 trait FileManagerTrait
 {
-    
     protected function listingsPage($uploadLocation = null, $view_type = 'list', $filepickerMode = false)
     {
         $vars = array();
@@ -85,7 +84,7 @@ trait FileManagerTrait
                 $vars['breadcrumbs'] = array_merge([$base_url->compile() => $uploadLocation->name], array_reverse($breadcrumbs));
                 $base_url->setQueryStringVariable('directory_id', (int) ee('Request')->get('directory_id'));
             }
-        } else if (bool_config_item('file_manager_compatibility_mode')) {
+        } elseif (bool_config_item('file_manager_compatibility_mode')) {
             $files->filter('directory_id', 0);
         }
 
@@ -260,7 +259,7 @@ trait FileManagerTrait
         }
 
         $sort_field = ($sort_col == 'date_added') ? 'upload_date' : $columns[$sort_col]->getEntryManagerColumnSortField();
-        $preselectedFileId =ee()->session->flashdata('file_id');
+        $preselectedFileId = ee()->session->flashdata('file_id');
 
         if ($preselectedFileId) {
             $files = $files->order('FIELD( file_id, ' . $preselectedFileId . ' )', 'DESC', false);
@@ -415,7 +414,7 @@ trait FileManagerTrait
             if ($destination->memberHasAccess(ee()->session->getMember()) === false) {
                 continue;
             }
-            $options[$destination->getId()] = htmlspecialchars($destination->name, ENT_QUOTES, 'UTF-8');
+            $options[$destination->getId()] = $destination->name;
         }
 
         $filter = ee('CP/Filter')->make('requested_directory', lang('upload_location'), $options);

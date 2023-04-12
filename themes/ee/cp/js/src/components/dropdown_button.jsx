@@ -6,7 +6,8 @@ class DropDownButton extends React.Component {
 
         this.state = {
             items: this.initialItems,
-            selected: null
+            selected: null,
+            search: false,
         }
     }
 
@@ -15,6 +16,10 @@ class DropDownButton extends React.Component {
             items: this.initialItems.filter(item =>
                 item.label.toLowerCase().includes(event.target.value.toLowerCase())
             )
+        })
+
+        this.setState({
+            search: true
         })
     }
 
@@ -60,7 +65,7 @@ class DropDownButton extends React.Component {
             <>
                 <button type="button" className={"button js-dropdown-toggle has-sub " + this.props.buttonClass} onClick={this.toggle}>{this.state.selected ? this.state.selected.label : this.props.title}</button>
                 <div ref={(el) => this.dropdown = el} className="dropdown">
-                    {this.state.items.length > 7 &&
+                    {(this.state.items.length > 7 || this.state.search) &&
                         <div className="dropdown__search">
                             <form>
                                 <div className="search-input">

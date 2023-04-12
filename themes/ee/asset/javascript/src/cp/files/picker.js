@@ -36,6 +36,10 @@
 		$.get(url, function(data) {
 			modal.find('div.box').html(data);
 
+			// function that is responsible for the correct working of 
+			// the search inside filter-search-bar__item 
+			$.fuzzyFilter()
+
 			if (typeof options.selected != 'undefined') {
 				var selected = modal.find('tbody *[data-id="' + options.selected + '"]');
 				selected.addClass('selected');

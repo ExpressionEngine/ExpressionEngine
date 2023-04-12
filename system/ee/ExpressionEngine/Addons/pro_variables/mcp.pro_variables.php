@@ -203,6 +203,9 @@ class Pro_variables_mcp
 
             // Loop through each var and generate input field
             foreach ($vars as $var) {
+                if ($var['variable_type'] == 'pro_rte') {
+                    $var['variable_type'] = 'rte';
+                }
                 // Get variable type object from var row
                 $obj = $this->types->get($var);
 
@@ -536,7 +539,7 @@ class Pro_variables_mcp
             // Type
             $type = array_key_exists($var['variable_type'], $types)
                 ? $var['variable_type']
-                : Pro_variables_types::DEFAULT_TYPE;
+                : ($var['variable_type'] == 'pro_rte' ? 'rte' : Pro_variables_types::DEFAULT_TYPE);
 
             $row[] = $types[$type]['name'];
 
@@ -1010,7 +1013,7 @@ class Pro_variables_mcp
         // Determine fallback
         $type = array_key_exists($var['variable_type'], $types)
             ? $var['variable_type']
-            : Pro_variables_types::DEFAULT_TYPE;
+            : ($var['variable_type'] == 'pro_rte' ? 'rte' : Pro_variables_types::DEFAULT_TYPE);
 
         $sections[0][] = array(
             'title' => 'variable_type',
