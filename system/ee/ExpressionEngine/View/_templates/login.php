@@ -32,6 +32,13 @@
 			{
 				document.getElementById('<?=$focus_field?>').focus();
 			});
+			var currentTheme = localStorage.getItem('theme');
+
+			// Restore the currently selected theme
+			// This is at the top of the body to prevent the default theme from flashing
+			if (currentTheme) {
+				document.body.dataset.theme = currentTheme;
+			}
 		</script>
 		<?=ee()->view->script_tag('cp/login.js')?>
 		<?=ee()->view->script_tag('cp/passwords.js')?>
