@@ -22,6 +22,12 @@ class Hooks
         'library' => 'Core',
     ];
 
+    public const CORE_CP_BOOT = [
+        'name' => 'core_cp_boot',
+        'params' => '',
+        'library' => 'Core',
+    ];
+
     public const CORE_TEMPLATE_ROUTE = [
         'name' => 'core_template_route',
         'params' => '$uri_string',
