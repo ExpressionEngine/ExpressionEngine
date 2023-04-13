@@ -132,7 +132,7 @@ class MetaDataReader
             $gateway_class = $prefix . '\\Gateway\\' . $name;
             $gateway = new $gateway_class();
             $gateway_model = $gateway->getGatewayModel();
-            if ($i > 0 && ! is_null($gateway_model)) {
+            if ($i > 0 && ! is_null($gateway_model) && $gateway_model != 'ChannelField') {
                 // if the gateway model is defined, check if it has any objects (e.g. custom fields)
                 // if none defined, no reason to query on this gateway
                 $fieldsExist = ee('Model')->get($gateway_model)->count(true);
