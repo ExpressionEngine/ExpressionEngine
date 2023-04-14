@@ -542,6 +542,15 @@ $(document).ready(function() {
                 el.hide();
                 $('#fieldset-enable_frontedit').prev('h2').hide();
             });
+        } else if($(this).val() == "relationship") {
+            hiddenList.each(function(){
+                var el = $(this);
+                el.show();
+                $('#fieldset-enable_frontedit').prev('h2').show();
+                
+                $(textInputSelectors, el).prop('disabled', false);
+            });
+            $('#fieldset-field_search').hide();
         } else {
             hiddenList.each(function(){
                 var el = $(this);
