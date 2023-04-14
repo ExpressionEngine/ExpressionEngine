@@ -17358,8 +17358,7 @@ fieldset .field-control #eye {
   }
 }
 .fields-multiselect label span {
-  flex: 0 1 80px;
-  max-width: 80px;
+  min-width: 60px;
   margin-right: 5px;
 }
 @media (max-width: 767px) {
@@ -17371,6 +17370,11 @@ fieldset .field-control #eye {
 }
 .fields-multiselect label select {
   max-width: 100%;
+}
+@media (max-width: 767px) {
+  .fields-multiselect label select {
+    width: 100%;
+  }
 }
 
 .note-fieldtype {

@@ -440,8 +440,7 @@ fieldset {
 		}
 
 		span {
-			flex: 0 1 80px;
-			max-width: 80px;
+			min-width: 60px;
 			margin-right: 5px;
 
 			@include m-tablet-down {
@@ -453,6 +452,10 @@ fieldset {
 
 		select {
 			max-width: 100%;
+
+			@include m-tablet-down {
+				width: 100%;
+			}
 		}
 	}
 }
