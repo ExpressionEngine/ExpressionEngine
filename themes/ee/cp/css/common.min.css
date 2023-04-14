@@ -30991,6 +30991,32 @@ fieldset .field-control #eye {
   background: var(--ee-accent-light);
 }
 
+#fieldset-pages_templates label {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+}
+@media (max-width: 767px) {
+  #fieldset-pages_templates label {
+    display: block;
+  }
+}
+#fieldset-pages_templates label span {
+  flex: 0 1 80px;
+  max-width: 80px;
+  margin-right: 5px;
+}
+@media (max-width: 767px) {
+  #fieldset-pages_templates label span {
+    max-width: 100%;
+    display: block;
+    margin-bottom: 5px;
+  }
+}
+#fieldset-pages_templates label select {
+  max-width: 100%;
+}
+
 .note-fieldtype {
   color: var(--ee-note-fieldtype-color);
   background-color: var(--ee-note-fieldtype-bg);
