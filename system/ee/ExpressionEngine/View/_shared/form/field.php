@@ -175,7 +175,8 @@ case 'multiselect': ?>
     <div class="fields-select" class="<?=$class?>">
         <div class="field-inputs">
             <?php foreach ($field['choices'] as $field_name => $options): ?>
-                <label><?=$options['label']?>
+                <label>
+                    <span><?=$options['label']?></span>
                     <?=form_dropdown($field_name, $options['choices'], $options['value'])?>
                 </label>
             <?php endforeach ?>

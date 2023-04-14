@@ -426,3 +426,33 @@ fieldset {
 		}
 	}
 }
+
+
+// Style for Page Add-on Template setting
+#fieldset-pages_templates {
+	label {
+		display: flex;
+		margin-bottom: 10px;
+		align-items: center;
+
+		@include m-tablet-down {
+			display: block;
+		}
+
+		span {
+			flex: 0 1 80px;
+			max-width: 80px;
+			margin-right: 5px;
+
+			@include m-tablet-down {
+				max-width: 100%;
+				display: block;
+				margin-bottom: 5px;
+			}
+		}
+
+		select {
+			max-width: 100%;
+		}
+	}
+}
