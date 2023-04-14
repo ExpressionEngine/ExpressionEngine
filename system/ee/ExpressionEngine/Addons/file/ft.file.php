@@ -515,7 +515,7 @@ JSC;
         $new = $data['filesystem']->createTempFile();
 
         $destination_path = $new_image_dir . $new_image;
-        $destination_url = $data['filesystem']->getUrl("_{$function}/" . rawurlencode($new_image));
+        $destination_url = $data['filesystem']->getUrl("_{$function}/" . $new_image);
         $props = null;
 
         if (!$data['filesystem']->exists($destination_path)) {
