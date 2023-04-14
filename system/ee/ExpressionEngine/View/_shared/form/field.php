@@ -172,7 +172,7 @@ case 'textarea':
 <?php break;
     // no break
 case 'multiselect': ?>
-    <div class="fields-select" class="<?=$class?>">
+    <div class="fields-select fields-multiselect <?=$class?>">
         <div class="field-inputs">
             <?php foreach ($field['choices'] as $field_name => $options): ?>
                 <label>

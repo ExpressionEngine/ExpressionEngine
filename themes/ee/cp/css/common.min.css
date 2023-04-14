@@ -17347,29 +17347,29 @@ fieldset .field-control #eye {
     }
   }
 }
-#fieldset-pages_templates label {
+.fields-multiselect label {
   display: flex;
   margin-bottom: 10px;
   align-items: center;
 }
 @media (max-width: 767px) {
-  #fieldset-pages_templates label {
+  .fields-multiselect label {
     display: block;
   }
 }
-#fieldset-pages_templates label span {
+.fields-multiselect label span {
   flex: 0 1 80px;
   max-width: 80px;
   margin-right: 5px;
 }
 @media (max-width: 767px) {
-  #fieldset-pages_templates label span {
+  .fields-multiselect label span {
     max-width: 100%;
     display: block;
     margin-bottom: 5px;
   }
 }
-#fieldset-pages_templates label select {
+.fields-multiselect label select {
   max-width: 100%;
 }
 
