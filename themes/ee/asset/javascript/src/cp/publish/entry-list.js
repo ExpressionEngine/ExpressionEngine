@@ -19,6 +19,7 @@ $(document).ready(function () {
 	var form_selector = '.container > .panel > .tbl-ctrls > form';
 	var replaceData = function(data) {
 		$(form_selector).parents('.container').first().html(data.html);
+		$.fuzzyFilter();
 
 		if (typeof(EE.viewManager)!=='undefined') {
 			saveDefaultUrl = data.viewManager_saveDefaultUrl;
