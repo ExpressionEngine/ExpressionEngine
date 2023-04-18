@@ -566,6 +566,22 @@ $(document).ready(function() {
     });
 
     $("input[name='field_type']").trigger("change");
+
+    $('body').on('change', 'input[name ^="grid"][name $="[col_type]"]', function(){
+        if ($(this).val() == "relationship") {
+            var el = $(this);
+            var el_parent = el.parents('.fields-grid-common');
+            el_parent.find('fieldset[id ^="fieldset-grid"][id $="[col_search]"]').hide();
+        } else {
+            var el = $(this);
+            var el_parent = el.parents('.fields-grid-common');
+            el_parent.find('fieldset[id ^="fieldset-grid"][id $="[col_search]"]').show();
+        }
+    })
+
+    if ($('input[name ^="grid"][name $="[col_type]"').length) {
+        $('input[name ^="grid"][name $="[col_type]"').trigger("change");
+    }
 });
 
 })(jQuery);
