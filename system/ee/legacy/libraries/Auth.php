@@ -229,7 +229,7 @@ class Auth
             }
 
             ee()->session->set_flashdata('message', $line);
-            ee()->functions->redirect(BASE . AMP . 'C=login');
+            ee()->functions->redirect(BASE . '/login');
         }
 
         //  Check credentials

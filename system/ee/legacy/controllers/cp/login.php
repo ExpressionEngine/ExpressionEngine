@@ -37,9 +37,9 @@ class Login extends CP_Controller
         // has their session Timed out and they are requesting a page?
         // Grab the URL, base64_encode it and send them to the login screen.
         $safe_refresh = ee()->cp->get_safe_refresh();
-        $return_url = ($safe_refresh == 'C=homepage') ? '' : AMP . 'return=' . urlencode(ee('Encrypt')->encode($safe_refresh));
+        $return_url = (empty($safe_refresh) || $safe_refresh == 'C=homepage') ? '' : AMP . 'return=' . urlencode(ee('Encrypt')->encode($safe_refresh));
 
-        ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
+        ee()->functions->redirect(BASE . '/login' . $return_url);
     }
 
     public function mfa()
@@ -673,7 +673,7 @@ class Login extends CP_Controller
         if ($updated) {
             $this->session->set_flashdata('message', lang('unpw_updated'));
         }
-        $this->functions->redirect(BASE . AMP . 'C=login');
+        $this->functions->redirect(BASE . '/login');
     }
 
     /**
@@ -688,7 +688,7 @@ class Login extends CP_Controller
         ee()->session->lock_cp();
 
         if (! AJAX_REQUEST) {
-            $this->functions->redirect(BASE . AMP . 'C=login');
+            $this->functions->redirect(BASE . '/login');
         }
 
         $this->output->send_ajax_response(array(
@@ -705,7 +705,7 @@ class Login extends CP_Controller
     public function logout()
     {
         if ($this->session->userdata('group_id') == 3) {
-            $this->functions->redirect(BASE . AMP . 'C=login');
+            $this->functions->redirect(BASE . '/login');
         }
 
         $this->db->where('ip_address', $this->input->ip_address());
@@ -719,7 +719,7 @@ class Login extends CP_Controller
         $this->logger->log_action(lang('member_logged_out'));
 
         if ($this->input->get('auto_expire')) {
-            $this->functions->redirect(BASE . AMP . 'C=login&auto_expire=true');
+            $this->functions->redirect(BASE . '/login' . AMP . 'auto_expire=true');
         }
 
         /* -------------------------------------------
@@ -734,7 +734,7 @@ class Login extends CP_Controller
         /*
         /* -------------------------------------------*/
 
-        $this->functions->redirect(BASE . AMP . 'C=login');
+        $this->functions->redirect(BASE . '/login');
     }
 
     /**
@@ -779,7 +779,7 @@ class Login extends CP_Controller
         }
 
         if (! $address = $this->input->post('email')) {
-            $this->functions->redirect(BASE . AMP . 'C=login' . AMP . 'M=forgotten_password_form');
+            $this->functions->redirect(BASE . '/login/forgotten_password_form');
         }
 
         $address = strip_tags($address);
@@ -829,7 +829,7 @@ class Login extends CP_Controller
         $swap = array(
             'name' => $name,
             'username' => $username,
-            'reset_url' => reduce_double_slashes($this->config->item('cp_url') . "?S=0&D=cp&C=login&M=reset_password&resetcode=" . $rand),
+            'reset_url' => reduce_double_slashes($this->config->item('cp_url') . "?/cp/login/reset_password&resetcode=" . $rand),
             'site_name' => stripslashes($this->config->item('site_name')),
             'site_url' => $this->config->item('site_url')
         );
@@ -1047,7 +1047,7 @@ class Login extends CP_Controller
 
         $this->session->set_flashdata('message', lang($lang_key));
 
-        $redirect = 'C=login';
+        $redirect = '/login';
 
         // If we have a return argument, keep it
         if (ee()->input->post('return_path')) {
@@ -1056,7 +1056,7 @@ class Login extends CP_Controller
             $redirect .= AMP . 'return=' . ee('Encrypt')->encode(ee()->input->get('return'));
         }
 
-        $this->functions->redirect(BASE . AMP . $redirect);
+        $this->functions->redirect(BASE . $redirect);
     }
 
     /**
