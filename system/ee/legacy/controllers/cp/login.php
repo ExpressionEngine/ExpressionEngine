@@ -37,7 +37,7 @@ class Login extends CP_Controller
         // has their session Timed out and they are requesting a page?
         // Grab the URL, base64_encode it and send them to the login screen.
         $safe_refresh = ee()->cp->get_safe_refresh();
-        $return = (empty($safe_refresh) || $safe_refresh == 'C=homepage') ? [] : ['return' => urlencode(ee('Encrypt')->encode($safe_refresh))];
+        $return = (empty($safe_refresh) || $safe_refresh == 'C=homepage') ? [] : ['return' => ee('Encrypt')->encode($safe_refresh)];
 
         ee()->functions->redirect(ee('CP/URL')->make('login', $return)->compile());
     }
@@ -485,7 +485,8 @@ class Login extends CP_Controller
             } else {
                 $return_path = ee()->uri->reformat($base . AMP . $return_path, $base);
             }
-        } else {
+        }
+        if (!isset($return_path) || empty($return_path)) {
             $return_path = ee()->session->getMember()->getCPHomepageURL();
         }
 
@@ -1046,16 +1047,16 @@ class Login extends CP_Controller
 
         $this->session->set_flashdata('message', lang($lang_key));
 
-        $redirect = '/login';
+        $redirect = [];
 
         // If we have a return argument, keep it
         if (ee()->input->post('return_path')) {
-            $redirect .= AMP . 'return=' . ee()->input->post('return_path');
+            $redirect = ['return' => ee()->input->post('return_path')];
         } elseif (ee()->input->get('return')) {
-            $redirect .= AMP . 'return=' . ee('Encrypt')->encode(ee()->input->get('return'));
+            $redirect = ['return' => ee('Encrypt')->encode(ee()->input->get('return'))];
         }
 
-        $this->functions->redirect(BASE . $redirect);
+        $this->functions->redirect(ee('CP/URL')->make('login', $redirect)->compile());
     }
 
     /**

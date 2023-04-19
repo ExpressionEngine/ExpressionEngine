@@ -544,7 +544,7 @@ class EE_Core
             // has their session Timed out and they are requesting a page?
             // Grab the URL, base64_encode it and send them to the login screen.
             $safe_refresh = ee()->cp->get_safe_refresh();
-            $return = (empty($safe_refresh) || $safe_refresh == 'C=homepage') ? [] : ['return' => urlencode(ee('Encrypt')->encode($safe_refresh))];
+            $return = (empty($safe_refresh) || $safe_refresh == 'C=homepage') ? [] : ['return' => ee('Encrypt')->encode($safe_refresh)];
 
             ee()->functions->redirect(ee('CP/URL')->make('login', $return)->compile());
         }
