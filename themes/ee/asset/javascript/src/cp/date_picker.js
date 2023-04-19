@@ -320,19 +320,21 @@ EE.cp.datePicker = {
 			}
 
 			if ($(this.element).val()) {
-				var timestamp = $(this.element).data('timestamp');
+				// var timestamp = $(this.element).data('timestamp');
+				var timestamp = Date.parse($(this.element).val());
 				var timevalue;
 				var include_seconds = EE.date.include_seconds;
 
 				if ( ! timestamp) {
 					d = new Date(Date.parse($(this.element).val()));
 				} else {
-					d = new Date(timestamp * 1000);
+					d = new Date(timestamp);
 				}
 
 				selected = d.getDate();
 				year  = d.getUTCFullYear();
 				month = d.getUTCMonth();
+
 				var pickedHours = this.addZero(d.getHours());
 				var pickedMinutes = this.addZero(d.getMinutes());
 				var pickedSeconds = this.addZero(d.getSeconds());
@@ -342,6 +344,8 @@ EE.cp.datePicker = {
 				} else {
 					timevalue = pickedHours + ":" + pickedMinutes;
 				}
+				$(this.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
+
 			} else {
 				d = new Date();
 				year  = d.getFullYear();
