@@ -503,7 +503,7 @@ class EE_Core
             ee()->router->fetch_class() == ''/* OR
             ! isset($_GET['S'])*/
         ) {
-            ee()->functions->redirect(BASE . '/homepage');
+            ee()->functions->redirect(ee('CP/URL')->make('homepage')->compile());
         }
 
         if (ee()->uri->segment(1) == 'cp') {
@@ -544,9 +544,9 @@ class EE_Core
             // has their session Timed out and they are requesting a page?
             // Grab the URL, base64_encode it and send them to the login screen.
             $safe_refresh = ee()->cp->get_safe_refresh();
-            $return_url = (empty($safe_refresh) || $safe_refresh == 'C=homepage') ? '' : AMP . 'return=' . urlencode(ee('Encrypt')->encode($safe_refresh));
+            $return = (empty($safe_refresh) || $safe_refresh == 'C=homepage') ? [] : ['return' => urlencode(ee('Encrypt')->encode($safe_refresh))];
 
-            ee()->functions->redirect(BASE . '/login' . $return_url);
+            ee()->functions->redirect(ee('CP/URL')->make('login', $return)->compile());
         }
 
         if ((ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') && ee()->session->userdata('mfa_flag') != 'skip') {

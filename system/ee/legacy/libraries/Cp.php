@@ -302,21 +302,21 @@ class Cp
 
         $pro_status = !ee('pro:Access')->requiresValidLicense() ? 'skip' : (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
         switch ($pro_status) {
-                case 'update_available':
-                    ee()->view->pro_license_status = 'valid';
+            case 'update_available':
+                ee()->view->pro_license_status = 'valid';
 
-                    break;
+                break;
 
-                case '':
-                    ee()->view->pro_license_status = 'na';
+            case '':
+                ee()->view->pro_license_status = 'na';
 
-                    break;
+                break;
 
-                default:
-                    ee()->view->pro_license_status = $pro_status;
+            default:
+                ee()->view->pro_license_status = $pro_status;
 
-                    break;
-            }
+                break;
+        }
 
         $this->_notices();
 
@@ -602,11 +602,11 @@ class Cp
         $requests = $this->_seal_combo_loader($include_common);
 
         foreach ($requests as $req) {
-            $str .= '<script type="text/javascript" charset="utf-8" src="' . BASE . '/javascript/combo_load' . $req . '"></script>';
+            $str .= '<script type="text/javascript" charset="utf-8" src="' . BASE . AMP . 'C=javascript' . AMP . 'M=combo_load' . $req . '"></script>';
         }
 
         if (ee()->extensions->active_hook('cp_js_end') === true) {
-            $str .= '<script type="text/javascript" src="' . BASE . '/javascript/load' . AMP . 'file=ext_scripts"></script>';
+            $str .= '<script type="text/javascript" src="' . BASE . AMP . 'C=javascript' . AMP . 'M=load' . AMP . 'file=ext_scripts"></script>';
         }
 
         return $str;
@@ -902,7 +902,7 @@ class Cp
         $package = trim(str_replace(array(PATH_THIRD, PATH_ADDONS, 'views'), '', $current_top_path), '/');
 
         if (REQ == 'CP') {
-            $url = BASE . '/css/third_party' . AMP . 'package=' . $package . AMP . 'file=' . $file;
+            $url = BASE . AMP . 'C=css' . AMP . 'M=third_party' . AMP . 'package=' . $package . AMP . 'file=' . $file;
         } else {
             $url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Channel', 'combo_loader') . AMP . 'type=css' . AMP . 'package=' . $package . AMP . 'file=' . $file;
         }
