@@ -64,11 +64,11 @@ class Spam implements SpamProtocol
      *
      * @see ExpressionEngine\Protocol\Spam\Spam
      */
-    public function moderate($content_type, $entity, $document, $optional_data)
+    public function moderate($content_type, $entity, $document, $optional_data, $author_id = null)
     {
         $data = array(
             'content_type' => $content_type,
-            'author_id' => ee()->session->userdata('member_id'),
+            'author_id' => !is_null($author_id) ? $author_id : ee()->session->userdata('member_id'),
             'trap_date' => ee()->localize->now,
             'ip_address' => $_SERVER['REMOTE_ADDR'],
             'entity' => $entity,
