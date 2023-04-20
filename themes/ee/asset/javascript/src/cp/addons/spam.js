@@ -21,7 +21,7 @@
 		$('.overlay').fadeIn('slow').css('height',heightIs);
 		$('.modal-wrap' + modal).fadeIn('slow');
 		e.preventDefault();
-		$('#top').animate({ scrollTop: 0 }, 100);
+		$('#top, html').animate({ scrollTop: 0 }, 500);
 
 		modal = $(modal);
 		modal.find('.date').html($(this).data('date'));
