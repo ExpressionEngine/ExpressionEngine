@@ -115,6 +115,7 @@ class File_field
         $vars['filebrowser'] = $filebrowser;
 
         $existing_files = null;
+        $compatibilityMode = bool_config_item('file_manager_compatibility_mode');
 
         if (! $filebrowser && isset($existing_limit) && $specified_directory != 'all') {
             $options = array(
@@ -138,7 +139,11 @@ class File_field
             // Put database files into list
             if ($files_from_db['results'] !== false) {
                 foreach ($files_from_db['results']->result() as $file) {
-                    $files[$file->file_name] = $file->file_name;
+                    if ($compatibilityMode) {
+                        $files[$file->file_name] = $file->file_name;
+                    } else {
+                        $files[$file->file_id] = $file->file_name;
+                    }
                 }
             }
 
@@ -402,7 +407,11 @@ class File_field
             if (array_key_exists('error', $data)) {
                 return $data['error'];
             } else {
-                $filename = $data['file_name'];
+                if (bool_config_item('file_manager_compatibility_mode')) {
+                    $filename = $data['file_name'];
+                } else {
+                    $filename = $data['file_id'];
+                }
             }
         } else {
             // Check we're not exceeding PHP's post_max_size
@@ -448,7 +457,7 @@ class File_field
                 return array('value' => '', 'error' => lang('directory_no_access'));
             }
 
-            if ('{filedir_' . $hidden_dir . '}' . $filename != $query->row($field_name)) {
+            if ('{filedir_' . $hidden_dir . '}' . $filename != $query->row($field_name) || (is_numeric($filename) && '{file:' . $filename . ':url}' != $query->row($field_name))) {
                 return array('value' => '', 'error' => lang('directory_no_access'));
             }
         }
@@ -473,6 +482,9 @@ class File_field
     public function format_data($file_name, $directory_id = 0)
     {
         if ($file_name != '') {
+            if (is_numeric($file_name) && !bool_config_item('file_manager_compatibility_mode')) {
+                return '{file:' . $file_name . ':url}';
+            }
             if (! empty($directory_id)) {
                 return '{filedir_' . $directory_id . '}' . $file_name;
             }
