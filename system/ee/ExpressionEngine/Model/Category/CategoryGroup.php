@@ -24,6 +24,9 @@ class CategoryGroup extends StructureModel
     protected static $_hook_id = 'category_group';
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'CategoryFields' => array(
             'type' => 'hasMany',
             'model' => 'CategoryField'

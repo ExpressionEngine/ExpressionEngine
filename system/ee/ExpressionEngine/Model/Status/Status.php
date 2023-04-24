@@ -43,9 +43,6 @@ class Status extends Model
             'model' => 'ChannelEntry',
             'weak' => true
         ],
-        'Site' => array(
-            'type' => 'BelongsTo'
-        ),
         'Roles' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'Role',

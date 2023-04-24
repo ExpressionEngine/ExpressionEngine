@@ -40,6 +40,9 @@ class ChannelField extends FieldModel
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'ChannelFieldGroups' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'ChannelFieldGroup',
