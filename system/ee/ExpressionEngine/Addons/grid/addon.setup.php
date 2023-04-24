@@ -18,5 +18,13 @@ return [
             'name' => 'File Grid',
             'compatibility' => 'file_grid'
         ]
+    ],
+    'models' => [
+        'GridColumn' => 'Model\GridColumn'
+    ],
+    'models.dependencies' => [
+        'GridColumn' => [
+            'ee:ChannelField'
+        ]
     ]
 ];

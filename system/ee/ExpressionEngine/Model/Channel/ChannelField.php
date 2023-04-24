@@ -81,6 +81,12 @@ class ChannelField extends FieldModel
             'model' => 'FieldCondition',
             'from_key' => 'field_id',
             'to_key' => 'condition_field_id'
+        ),
+        'GridColumns' => array(
+            'type' => 'hasMany',
+            'model' => 'grid:GridColumn',
+            'from_key' => 'field_id',
+            'to_key' => 'field_id'
         )
     );
 
