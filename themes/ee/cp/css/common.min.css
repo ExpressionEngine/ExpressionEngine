@@ -17347,6 +17347,36 @@ fieldset .field-control #eye {
     }
   }
 }
+.fields-multiselect label {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+}
+@media (max-width: 767px) {
+  .fields-multiselect label {
+    display: block;
+  }
+}
+.fields-multiselect label span {
+  min-width: 60px;
+  margin-right: 5px;
+}
+@media (max-width: 767px) {
+  .fields-multiselect label span {
+    max-width: 100%;
+    display: block;
+    margin-bottom: 5px;
+  }
+}
+.fields-multiselect label select {
+  max-width: 100%;
+}
+@media (max-width: 767px) {
+  .fields-multiselect label select {
+    width: 100%;
+  }
+}
+
 .note-fieldtype {
   color: var(--ee-note-fieldtype-color);
   background-color: var(--ee-note-fieldtype-bg);

@@ -36,7 +36,7 @@ function encode_multi_field($data = array())
     foreach ($data as $key => $val) {
         $data[$key] = is_array($val)
             ? encode_multi_field($val)
-            : str_replace(array('\\', '|'), array('\\\\', '\|'), $val);
+            : str_replace(array('\\', '|'), array('\\\\', '\|'), (string) $val);
     }
 
     // Implode on seperator

@@ -24,7 +24,6 @@ class EE_Logger
     private function logger_db()
     {
         if (! isset($this->db)) {
-
              // do we have the db loaded?
             if (! isset(ee()->db)) {
                 ee()->load->database();
@@ -43,8 +42,8 @@ class EE_Logger
     /**
      * Log an action
      *
-     * @access	public
-     * @param	string	action
+     * @access  public
+     * @param   string  action
      */
     public function log_action($action = '')
     {
@@ -74,34 +73,35 @@ class EE_Logger
     /**
      * Log an item in the Developer Log
      *
-     * @param	mixed $data String containing log message, or array of data
-     *		such as information for a deprecation warning.
-     * @param	bool $update If set to TRUE, function will not add the log
-     *		item if one like it already exists. It will instead set the
-     *		viewed status to unviewed and update the timestamp on the
-     *		existing log item.
-     * @param	int $expires If $update set to TRUE, $expires is the amount
-     *		of time in seconds to have elapsed from the initial logging to
-     *		mark as unread and alert Super Admin again. For example, an item
-     *		is logged with an expires of 3600 seconds. If the developer
-     *		function is called with the same data within that 3600 seconds,
-     *		it will hold off displaying a notice to the Super Admin until
-     *		the developer function is called again after the 3600 seconds
-     *		are up. This is designed to make log item alerts less annoying
-     *		to the user.
-     * @return	int ID of inserted or updated record
+     * @param   mixed $data String containing log message, or array of data
+     *  such as information for a deprecation warning.
+     * @param   bool $update If set to TRUE, function will not add the log
+     *  item if one like it already exists. It will instead set the
+     *  viewed status to unviewed and update the timestamp on the
+     *  existing log item.
+     * @param   int $expires If $update set to TRUE, $expires is the amount
+     *  of time in seconds to have elapsed from the initial logging to
+     *  mark as unread and alert Super Admin again. For example, an item
+     *  is logged with an expires of 3600 seconds. If the developer
+     *  function is called with the same data within that 3600 seconds,
+     *  it will hold off displaying a notice to the Super Admin until
+     *  the developer function is called again after the 3600 seconds
+     *  are up. This is designed to make log item alerts less annoying
+     *  to the user.
+     * @return  int ID of inserted or updated record
      */
     public function developer($data, $update = false, $expires = 0)
     {
         // Grab previously-logged items upfront and cache
         if (empty($this->_dev_log_hashes)) {
-            // Order by timestamp to store only the latest timestamp in the
-            // cache array
             $rows = $this->logger_db()->select('hash, timestamp')
-                ->order_by('timestamp', 'asc')
+                ->order_by('log_id', 'desc')
+                ->limit(100)
                 ->get('developer_log')
                 ->result_array();
 
+            // store only the latest timestamp in the cache array
+            $rows = array_reverse($rows);
             foreach ($rows as $row) {
                 $this->_dev_log_hashes[$row['hash']] = $row['timestamp'];
             }
@@ -112,9 +112,8 @@ class EE_Logger
         // If we were passed an array, place its contents to $log_data
         if (is_array($data)) {
             $log_data = $data;
-        }
-        // Otherwise it's probably a string, stick it in the 'description' field
-        else {
+        } else {
+            // Otherwise it's probably a string, stick it in the 'description' field
             $log_data['description'] = $data;
         }
 
@@ -178,9 +177,9 @@ class EE_Logger
      *
      * This not public to third-party developers.
      *
-     * @param	string $version Version function was deprecated
-     * @param	string $use_instead Function to use instead, if applicable
-     * @return	void
+     * @param   string $version Version function was deprecated
+     * @param   string $use_instead Function to use instead, if applicable
+     * @return  void
      */
     public function deprecated($version = null, $use_instead = null)
     {
@@ -201,12 +200,11 @@ class EE_Logger
 
         // Information we are capturing from the incident
         $deprecated = array(
-            'function' => $function . '()',				// Name of deprecated function
-            'line' => $line,						// Line where 'function' was called
-            'file' => $file,						// File where 'function' was called
-            'deprecated_since' => $version,					// Version function was deprecated
-            'use_instead' => (! empty($use_instead))		// Function to use instead
-                ? htmlentities($use_instead) : null
+            'function' => $function . '()', // Name of deprecated function
+            'line' => $line, // Line where 'function' was called
+            'file' => $file, // File where 'function' was called
+            'deprecated_since' => $version, // Version function was deprecated
+            'use_instead' => (! empty($use_instead)) ? htmlentities($use_instead) : null // Function to use instead
         );
 
         // On page requests we need to check a bunch of other stuff
@@ -264,10 +262,10 @@ class EE_Logger
      * From there, the use of the deprecated hook is logged in the
      * developer log for Super Admin review.
      *
-     * @param	string	$hook - the name of the deprecated hook
-     * @param	string	$version (optional) - the version number it was deprecated in
-     * @param	string	$use_instead (optional) - the name of the hook to use instead
-     * @return	void
+     * @param   string  $hook - the name of the deprecated hook
+     * @param   string  $version (optional) - the version number it was deprecated in
+     * @param   string  $use_instead (optional) - the name of the hook to use instead
+     * @return  void
      **/
     public function deprecated_hook($hook, $version = null, $use_instead = null)
     {
@@ -439,11 +437,13 @@ class EE_Logger
         $full_filename = $path . $filename;
         $pathinfo = pathinfo($full_filename);
 
-        if (($specific_template == ''
+        if (
+            ($specific_template == ''
             or $specific_template == $filename)
             && in_array($pathinfo['extension'], array('html', 'css', 'feed', 'xml'))
             && ($file_contents = read_file($full_filename))
-            && preg_match($regex, $file_contents)) {
+            && preg_match($regex, $file_contents)
+        ) {
             write_file(
                 $full_filename,
                 preg_replace(
@@ -462,10 +462,10 @@ class EE_Logger
     /**
      * Log a message in the Updater log.
      *
-     * @access	public
-     * @param	string		Message to add to the log.
-     * @param	bool			If TRUE, add backtrace info to the log.
-     * @return	void
+     * @access  public
+     * @param   string  Message to add to the log.
+     * @param   bool    If TRUE, add backtrace info to the log.
+     * @return  void
      */
     public function updater($log_message, $exception = false)
     {
@@ -493,8 +493,8 @@ class EE_Logger
      * when the Updater begins. Only creates the table if it doesn't already
      * exist.
      *
-     * @access	private
-     * @return	bool
+     * @access  private
+     * @return  bool
      */
     private function _setup_update_log()
     {
