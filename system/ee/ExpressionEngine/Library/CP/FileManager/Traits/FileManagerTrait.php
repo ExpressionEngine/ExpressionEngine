@@ -26,6 +26,8 @@ trait FileManagerTrait
         $controller = $filepickerMode ? 'addons/settings/filepicker/modal' : (empty($uploadLocation) ? 'files' : 'files/directory/' . $upload_location_id);
         $base_url = ee('CP/URL')->make($controller);
 
+        $member = ee()->session->getMember();
+
         if (empty($uploadLocation)) {
             $model = 'File';
         } else {
@@ -59,6 +61,10 @@ trait FileManagerTrait
         if (empty($upload_location_id)) {
             $files->filter('UploadDestination.module_id', 0)
                 ->filter('site_id', ee()->config->item('site_id'));
+            if (! ee('Permission')->isSuperAdmin()) {
+                $assigned_dirs = $member->getAssignedUploadDestinations()->pluck('id');
+                $files->filter('upload_location_id', 'IN', $assigned_dirs);
+            }
         } else {
             $files->filter('upload_location_id', $upload_location_id);
         }
@@ -286,8 +292,6 @@ trait FileManagerTrait
 
         $data = array();
         $missing_files = false;
-
-        $member = ee()->session->getMember();
 
         $destinationsToEagerLoad = [];
 

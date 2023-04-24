@@ -30991,6 +30991,36 @@ fieldset .field-control #eye {
   background: var(--ee-accent-light);
 }
 
+.fields-multiselect label {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+}
+@media (max-width: 767px) {
+  .fields-multiselect label {
+    display: block;
+  }
+}
+.fields-multiselect label span {
+  margin-right: 5px;
+  min-width: 60px;
+}
+@media (max-width: 767px) {
+  .fields-multiselect label span {
+    max-width: 100%;
+    display: block;
+    margin-bottom: 5px;
+  }
+}
+.fields-multiselect label select {
+  max-width: 100%;
+}
+@media (max-width: 767px) {
+  .fields-multiselect label select {
+    width: 100%;
+  }
+}
+
 .note-fieldtype {
   color: var(--ee-note-fieldtype-color);
   background-color: var(--ee-note-fieldtype-bg);
@@ -31295,6 +31325,7 @@ fieldset .field-control #eye {
   padding: 10px;
   text-align: center;
   border-radius: 5px;
+  color: var(--ee-secondary-sidebar-item-icon);
 }
 .fields-upload-chosen .fields-upload-chosen-file img {
   max-width: 200px;
@@ -35802,7 +35833,7 @@ table .field-no-results {
   text-transform: none;
   letter-spacing: revert;
   font-size: 1.728em;
-  color: #111;
+  color: inherit;
   margin-bottom: 0.5em;
   padding: 0;
 }
