@@ -542,6 +542,15 @@ $(document).ready(function() {
                 el.hide();
                 $('#fieldset-enable_frontedit').prev('h2').hide();
             });
+        } else if($(this).val() == "relationship") {
+            hiddenList.each(function(){
+                var el = $(this);
+                el.show();
+                $('#fieldset-enable_frontedit').prev('h2').show();
+                
+                $(textInputSelectors, el).prop('disabled', false);
+            });
+            $('#fieldset-field_search').hide();
         } else {
             hiddenList.each(function(){
                 var el = $(this);
@@ -555,6 +564,22 @@ $(document).ready(function() {
     });
 
     $("input[name='field_type']").trigger("change");
+
+    $('body').on('change', 'input[name ^="grid"][name $="[col_type]"]', function(){
+        if ($(this).val() == "relationship") {
+            var el = $(this);
+            var el_parent = el.parents('.fields-grid-common');
+            el_parent.find('fieldset[id ^="fieldset-grid"][id $="[col_search]"]').hide();
+        } else {
+            var el = $(this);
+            var el_parent = el.parents('.fields-grid-common');
+            el_parent.find('fieldset[id ^="fieldset-grid"][id $="[col_search]"]').show();
+        }
+    })
+
+    if ($('input[name ^="grid"][name $="[col_type]"').length) {
+        $('input[name ^="grid"][name $="[col_type]"').trigger("change");
+    }
 });
 
 })(jQuery);
