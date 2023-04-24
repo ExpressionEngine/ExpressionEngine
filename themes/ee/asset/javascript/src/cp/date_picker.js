@@ -152,9 +152,9 @@ EE.cp.datePicker = {
 				var include_seconds = EE.date.include_seconds
 
 				if (include_seconds == 'y') {
-					timeBlock = '<input type="time" value="00:00:00" step="1">';
+					timeBlock = '<input type="time" value="12:00:00" step="1">';
 				} else {
-					timeBlock = '<input type="time" value="00:00">';
+					timeBlock = '<input type="time" value="12:00">';
 				}
 				var _picker = $('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">Today</button><div id="date-picker-time-block">'+timeBlock+'</div></div></div>');
 
@@ -220,10 +220,6 @@ EE.cp.datePicker = {
 					d.setMinutes(minutesVal);
 					d.setSeconds(secondsVal);
 
-					// d.setHours(now.getHours());
-					// d.setMinutes(now.getMinutes());
-					// d.setSeconds(now.getSeconds());
-
 					var date_format = EE.date.date_format;
 
 					// Allow custom date format via data-date-format parameter
@@ -249,10 +245,9 @@ EE.cp.datePicker = {
 					var day = now.getDate();
 
 					if ($(that.element).val()) {
-						var timeStamp = Date.parse($(that.element).val());
-						var d = new Date(timeStamp);
+						d = new Date($(that.element).data('timestamp') * 1000);
 					} else {
-						var d = new Date(year, month, day);
+						var d = new Date(that.year, that.month, $(this).text());
 					}
 
 					var hoursVal = timeVal.substring(0,timeVal.indexOf(':'));
@@ -320,40 +315,72 @@ EE.cp.datePicker = {
 			}
 
 			if ($(this.element).val()) {
-				// var timestamp = $(this.element).data('timestamp');
-				var timestamp = Date.parse($(this.element).val());
+				var timestamp = $(this.element).data('timestamp');
+
+				var time_format = EE.date.time_format;
+				var value = $(this.element).val();
+				var timeHours;
+
+				value = value.substring(value.indexOf(' ') + 1);
+
+				if (time_format === '12') {
+					timeHours = value.substring(value.indexOf(' ') + 1);
+					value = value.substring(0, value.indexOf(' '));
+				}
+
 				var timevalue;
 				var include_seconds = EE.date.include_seconds;
 
 				if ( ! timestamp) {
 					d = new Date(Date.parse($(this.element).val()));
 				} else {
-					d = new Date(timestamp);
+					d = new Date(timestamp * 1000);
 				}
 
 				selected = d.getDate();
 				year  = d.getUTCFullYear();
 				month = d.getUTCMonth();
 
-				var pickedHours = this.addZero(d.getHours());
-				var pickedMinutes = this.addZero(d.getMinutes());
-				var pickedSeconds = this.addZero(d.getSeconds());
+				var pickedHours = value.substring(0, value.indexOf(':'));
+
+				if (timeHours == "PM" && parseInt(pickedHours) < 12) {
+					pickedHours = parseInt(pickedHours) + 12;
+					pickedHours = pickedHours.toString();
+				}
+
+				if (timeHours == "AM") {
+					if (parseInt(pickedHours) == 12) {
+						pickedHours = parseInt(pickedHours) - 12;
+					}
+
+					pickedHours = this.addZero(pickedHours);
+					pickedHours = pickedHours.toString();
+				}
+
+				var pickedMinutes, pickedSeconds;
+
+				if (include_seconds == 'y') {
+					pickedMinutes = value.substring(value.indexOf(':')+1);
+					pickedSeconds = pickedMinutes.substring(pickedMinutes.indexOf(':')+1);
+					pickedMinutes = pickedMinutes.substring(0,pickedMinutes.indexOf(':'));
+				} else {
+					pickedMinutes = value.substring(value.indexOf(':')+1);
+					pickedSeconds = '00';
+				}
 
 				if (include_seconds == 'y') {
 					timevalue = pickedHours + ":" + pickedMinutes + ":" + pickedSeconds;
 				} else {
 					timevalue = pickedHours + ":" + pickedMinutes;
 				}
-				$(this.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
-
 			} else {
 				d = new Date();
 				year  = d.getFullYear();
 				month = d.getMonth();
 				if (include_seconds == 'y') {
-					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('00:00:00');
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('12:00:00');
 				} else {
-					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('00:00')
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('12:00')
 				}
 			}
 
@@ -465,7 +492,6 @@ EE.cp.datePicker = {
 			if (i < 10) {i = "0" + i}
 			return i;
 		}
-
 	},
 
 	Month: {
