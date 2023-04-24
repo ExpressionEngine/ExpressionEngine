@@ -31,6 +31,24 @@ class CategoryGroup extends StructureModel
         'Categories' => array(
             'type' => 'hasMany',
             'model' => 'Category'
+        ),
+        'Channels' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Channel',
+            'pivot' => array(
+                'table' => 'channel_category_groups',
+                'left' => 'group_id',
+                'right' => 'channel_id'
+            )
+        ),
+        'UploadDestinations' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'UploadDestination',
+            'pivot' => array(
+                'table' => 'upload_prefs_category_groups',
+                'left' => 'group_id',
+                'right' => 'upload_location_id'
+            )
         )
     );
 
@@ -67,22 +85,6 @@ class CategoryGroup extends StructureModel
                 $channel->save();
             }
         }
-    }
-
-    public function __get($name)
-    {
-        // Fake the Channel relationship since it's stored weird; old
-        // relationship name was just "Channel"
-        if ($name == 'Channel' || $name == 'Channels') {
-            return ee('Model')->get('Channel')
-                ->filter('site_id', ee()->config->item('site_id'))
-                ->all(true)
-                ->filter(function ($channel) {
-                    return in_array($this->getId(), explode('|', (string) $channel->cat_group));
-                });
-        }
-
-        return parent::__get($name);
     }
 
     // Clean XSS from group name when saved

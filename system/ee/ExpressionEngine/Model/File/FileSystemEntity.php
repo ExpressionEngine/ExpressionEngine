@@ -507,11 +507,7 @@ class FileSystemEntity extends ContentModel
     public function setCategoriesFromPost($categories)
     {
         // Currently cannot get multiple category groups through relationships
-        $cat_groups = array();
-
-        if ($this->UploadDestination->cat_group) {
-            $cat_groups = explode('|', (string) $this->UploadDestination->cat_group);
-        }
+        $cat_groups = $this->UploadDestination->CategoryGroups->pluck('group_id');
 
         if (empty($categories)) {
             $this->Categories = null;

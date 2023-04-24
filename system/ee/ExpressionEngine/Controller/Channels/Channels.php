@@ -202,7 +202,7 @@ class Channels extends AbstractChannelsController
             $channel->CustomFields = null;
             $channel->Statuses = null;
         } else {
-            $channel = ee('Model')->get('Channel', (int) $channel_id)->first();
+            $channel = ee('Model')->get('Channel', (int) $channel_id)->with('FieldGroups', 'CustomFields', 'Statuses', 'CategoryGroups')->first();
 
             if (! $channel) {
                 show_error(lang('unauthorized_access'), 403);
@@ -714,7 +714,7 @@ class Channels extends AbstractChannelsController
         $selected = ee('Request')->post('cat_group') ?: [];
 
         if ($channel && ! empty($channel->cat_group)) {
-            $selected = explode('|', (string) $channel->cat_group);
+            $selected = ee('Request')->isPost() ? ee('Request')->post('cat_group') : ($channel ? $channel->CategoryGroups->pluck('group_id') : []);
         }
 
         $no_results = [
@@ -847,7 +847,7 @@ class Channels extends AbstractChannelsController
 
         $deft_category_options = ['' => lang('none')];
 
-        $category_group_ids = $channel->cat_group ? explode('|', (string) $channel->cat_group) : array();
+        $category_group_ids = $channel->CategoryGroups->pluck('group_id');
 
         if (count($category_group_ids)) {
             $categories = ee('Model')->get('Category')
@@ -1492,7 +1492,9 @@ class Channels extends AbstractChannelsController
      */
     private function setWithPost($channel)
     {
+        $categoryGroups = [];
         if (isset($_POST['cat_group']) && is_array($_POST['cat_group'])) {
+            $categoryGroups = ee('Request')->post('cat_group');
             $_POST['cat_group'] = implode('|', array_filter($_POST['cat_group'], 'is_numeric'));
         } else {
             $_POST['cat_group'] = '';
@@ -1503,6 +1505,7 @@ class Channels extends AbstractChannelsController
         }
         $channel->set($_POST);
 
+        $channel->CategoryGroups = ee('Model')->get('ChannelFieldGroup', $categoryGroups)->all();
         $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', ee()->input->post('field_groups'))->all();
         $channel->CustomFields = ee('Model')->get('ChannelField', ee()->input->post('custom_fields'))->all();
 

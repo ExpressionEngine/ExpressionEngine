@@ -789,7 +789,7 @@ class Channel
                 if ($qstring != '' and $this->reserved_cat_segment != '' and in_array($this->reserved_cat_segment, explode("/", $qstring)) and $dynamic and ee()->TMPL->fetch_param('channel')) {
                     $qstring = preg_replace("/(.*?)\/" . preg_quote($this->reserved_cat_segment) . "\//i", '', '/' . $qstring);
 
-                    $sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') AND ";
+                    $sql = "SELECT exp_channel_category_groups.channel_id, exp_channel_category_groups.group_id FROM exp_channel_category_groups LEFT JOIN exp_channels ON exp_channel_category_groups.channel_id=exp_channels.channel_id WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') AND ";
 
                     $xsql = ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('channel'), 'channel_name');
 
@@ -797,25 +797,32 @@ class Channel
                         $xsql = substr($xsql, 3);
                     }
 
-                    $sql .= ' ' . $xsql;
+                    $sql .= ' ' . $xsql . ' ORDER BY exp_channel_category_groups.channel_id';
 
                     $query = ee()->db->query($sql);
 
                     if ($query->num_rows() > 0) {
-                        $valid_cats = explode('|', $query->row('cat_group'));
+                        $valid_cats = [];
 
-                        foreach ($query->result_array() as $row) {
-                            if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes') {
-                                $valid_cats = array_merge($valid_cats, explode('|', $row['cat_group']));
-                            } else {
-                                $valid_cats = array_intersect($valid_cats, explode('|', $row['cat_group']));
+                        if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes') {
+                            foreach ($query->result_array() as $row) {
+                                $valid_cats[] = $row['group_id'];
                             }
-
-                            $valid_cats = array_unique($valid_cats);
-
-                            if (count($valid_cats) == 0) {
-                                return '';
+                        } else {
+                            $channel_cat_groups = [];
+                            foreach ($query->result_array() as $row) {
+                                if (!isset($channel_cat_groups[$row['channel_id']])) {
+                                    $channel_cat_groups[$row['channel_id']] = [];
+                                }
+                                $channel_cat_groups[$row['channel_id']][] = $row['group_id'];
                             }
+                            $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                        }
+
+                        $valid_cats = array_unique($valid_cats);
+
+                        if (count($valid_cats) == 0) {
+                            return '';
                         }
 
                         // the category URL title should be the first segment left at this point in $qstring,
@@ -2719,7 +2726,8 @@ class Channel
         //
         // -------------------------------------------
 
-        $sql = "SELECT DISTINCT cat_group, channel_id FROM exp_channels WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+        $site_ids_str = implode("','", ee()->TMPL->site_ids);
+        $sql = "SELECT exp_channel_category_groups.channel_id, exp_channel_category_groups.group_id FROM exp_channel_category_groups LEFT JOIN exp_channels ON exp_channel_category_groups.channel_id=exp_channels.channel_id WHERE site_id IN ('" . $site_ids_str . "') ";
 
         if ($channel = ee()->TMPL->fetch_param('channel')) {
             $sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('channel'), 'channel_name');
@@ -2735,28 +2743,29 @@ class Channel
         $group_ids = array();
         foreach ($cat_groups->result_array() as $group) {
             $channel_ids[] = $group['channel_id'];
-            $group_ids[] = $group['cat_group'];
+            $group_ids[] = $group['group_id'];
         }
 
-        // Combine the group IDs from multiple channels into a string
-        $group_ids = implode('|', $group_ids);
+        $channel_ids = array_unique($channel_ids);
+        $group_ids = array_unique($group_ids);
 
         if ($category_group = ee()->TMPL->fetch_param('category_group')) {
             if (substr($category_group, 0, 4) == 'not ') {
                 $x = explode('|', substr($category_group, 4));
 
-                $groups = array_diff(explode('|', $group_ids), $x);
+                $group_ids = array_diff($group_ids, $x);
             } else {
                 $x = explode('|', $category_group);
 
-                $groups = array_intersect(explode('|', $group_ids), $x);
+                $group_ids = array_intersect($group_ids, $x);
             }
 
-            if (count($groups) == 0) {
+            if (count($group_ids) == 0) {
                 return ee()->TMPL->no_results();
-            } else {
-                $group_ids = implode('|', $groups);
             }
+
+            $group_ids = array_filter($group_ids, 'is_numeric');
+            $group_ids_str = implode("','", $group_ids);
         }
 
         $parent_only = (ee()->TMPL->fetch_param('parent_only') == 'yes') ? true : false;
@@ -2811,7 +2820,7 @@ class Channel
 
                 $query = ee()->db->query("SELECT cat_id, parent_id
                                      FROM exp_categories
-                                     WHERE group_id IN ('" . str_replace('|', "','", ee()->db->escape_str($group_ids)) . "')
+                                     WHERE group_id IN ('" . $group_ids_str . "')
                                      ORDER BY group_id, parent_id, cat_order");
 
                 $all = array();
@@ -2830,14 +2839,14 @@ class Channel
                 $sql = "SELECT DISTINCT(exp_categories.cat_id), exp_categories.group_id, exp_categories.parent_id, exp_categories.cat_order FROM exp_categories
                         LEFT JOIN exp_category_posts ON exp_categories.cat_id = exp_category_posts.cat_id
                         LEFT JOIN exp_channel_titles ON exp_category_posts.entry_id = exp_channel_titles.entry_id
-                        WHERE group_id IN ('" . str_replace('|', "','", ee()->db->escape_str($group_ids)) . "') ";
+                        WHERE group_id IN ('" . $group_ids_str . "') ";
 
                 $sql .= "AND exp_category_posts.cat_id IS NOT NULL ";
 
                 if ($strict_empty == 'yes') {
                     $sql .= "AND exp_channel_titles.channel_id IN ('" . implode("','", $channel_ids) . "') ";
                 } else {
-                    $sql .= "AND exp_channel_titles.site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+                    $sql .= "AND exp_channel_titles.site_id IN ('" . $site_ids_str . "') ";
                 }
 
                 if (($status = ee()->TMPL->fetch_param('status')) !== false) {
@@ -2907,7 +2916,7 @@ class Channel
                 $sql = "SELECT c.cat_name, c.cat_url_title, c.cat_image, c.cat_description, c.cat_id, c.parent_id {$field_sqla}
                         FROM exp_categories AS c
                         {$field_sqlb}
-                        WHERE c.group_id IN ('" . str_replace('|', "','", ee()->db->escape_str($group_ids)) . "') ";
+                        WHERE c.group_id IN ('" . $group_ids_str . "') ";
 
                 if ($parent_only === true) {
                     $sql .= " AND c.parent_id = 0";
@@ -3083,7 +3092,7 @@ class Channel
       */
     public function category_archive()
     {
-        $sql = "SELECT DISTINCT cat_group, channel_id FROM exp_channels WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+        $sql = "SELECT exp_channel_category_groups.channel_id, exp_channel_category_groups.group_id FROM exp_channel_category_groups LEFT JOIN exp_channels ON exp_channel_category_groups.channel_id=exp_channels.channel_id WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
 
         if ($channel = ee()->TMPL->fetch_param('channel')) {
             $sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('channel'), 'channel_name');
@@ -3101,23 +3110,23 @@ class Channel
         $group_ids = array();
         foreach ($cat_groups->result_array() as $group) {
             $channel_ids[] = $group['channel_id'];
-            $group_ids[] = $group['cat_group'];
+            $group_ids[] = $group['group_id'];
         }
 
-        // Combine the group IDs from multiple channels into a string
-        $group_ids = implode('|', $group_ids);
+        $channel_ids = array_unique($channel_ids);
+        $group_ids = array_unique($group_ids);
 
         if ($category_group = ee()->TMPL->fetch_param('category_group')) {
             if (substr($category_group, 0, 4) == 'not ') {
                 $x = explode('|', substr($category_group, 4));
-                $group_ids = array_diff(explode('|', $group_ids), $x);
+                $group_ids = array_diff($group_ids, $x);
             } else {
                 $x = explode('|', $category_group);
 
-                $group_ids = array_intersect(explode('|', $group_ids), $x);
+                $group_ids = array_intersect($group_ids, $x);
             }
 
-            $group_ids = implode('|', $group_ids);
+            $group_ids = array_filter($group_ids, 'is_numeric');
         }
 
         $sql = "SELECT exp_category_posts.cat_id, exp_channel_titles.entry_id, exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.entry_date,
@@ -3333,7 +3342,7 @@ class Channel
                 }
             }
 
-            $sql .= " WHERE c.group_id IN ('" . str_replace('|', "','", ee()->db->escape_str($group_ids)) . "') ";
+            $sql .= " WHERE c.group_id IN ('" . implode("','", $group_ids) . "') ";
 
             if (ee()->TMPL->fetch_param('show_empty') == 'no') {
                 if (count($channel_ids)) {
@@ -4113,7 +4122,7 @@ class Channel
         ) {
             $qstring = preg_replace("/(.*?)\/" . preg_quote($this->reserved_cat_segment) . "\//i", '', '/' . $qstring);
 
-            $sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') AND ";
+            $sql = "SELECT exp_channel_category_groups.channel_id, exp_channel_category_groups.group_id FROM exp_channel_category_groups LEFT JOIN exp_channels ON exp_channel_category_groups.channel_id=exp_channels.channel_id WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "')  AND ";
 
             $xsql = ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('channel'), 'channel_name');
 
@@ -4127,22 +4136,27 @@ class Channel
 
             if ($query->num_rows() > 0) {
                 $valid = 'y';
-                $valid_cats = explode('|', $query->row('cat_group'));
+                $valid_cats = [];
 
-                foreach ($query->result_array() as $row) {
-                    if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes') {
-                        $valid_cats = array_merge($valid_cats, explode('|', $row['cat_group']));
-                    } else {
-                        $valid_cats = array_intersect($valid_cats, explode('|', $row['cat_group']));
+                if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes') {
+                    foreach ($query->result_array() as $row) {
+                        $valid_cats[] = $row['group_id'];
                     }
-
-                    $valid_cats = array_unique($valid_cats);
-
-                    if (count($valid_cats) == 0) {
-                        $valid = 'n';
-
-                        break;
+                } else {
+                    $channel_cat_groups = [];
+                    foreach ($query->result_array() as $row) {
+                        if (!isset($channel_cat_groups[$row['channel_id']])) {
+                            $channel_cat_groups[$row['channel_id']] = [];
+                        }
+                        $channel_cat_groups[$row['channel_id']][] = $row['group_id'];
                     }
+                    $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                }
+
+                $valid_cats = array_unique($valid_cats);
+
+                if (count($valid_cats) == 0) {
+                    $valid = 'n';
                 }
             } else {
                 $valid = 'n';
@@ -5133,8 +5147,10 @@ class Channel
         $sql = "SELECT field_id, field_name FROM exp_category_fields WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "')";
 
         if (! empty($group_ids)) {
-            $group_ids = implode("','", array_unique(array_filter(explode('|', $group_ids))));
-            $sql .= " AND group_id IN ('" . $group_ids . "')";
+            if (! is_array($group_ids)) {
+                $group_ids = array_unique(array_filter(explode('|', $group_ids)));
+            }
+            $sql .= " AND group_id IN ('" . implode("','", $group_ids) . "')";
         }
 
         $query = ee()->db->query($sql);
