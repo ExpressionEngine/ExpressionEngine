@@ -487,7 +487,7 @@ class Filemanager
             $config = array(
                 'rotation_angle' => $deg,
                 'library_path' => ee()->config->item('image_library_path'),
-                'image_library' => ee()->config->item('image_resize_protocol'),
+                'image_library' => !empty(ee()->config->item('image_resize_protocol')) ? ee()->config->item('image_resize_protocol') : 'gd2',
                 'source_image' => $file_path
             );
 
@@ -586,7 +586,7 @@ class Filemanager
 
         $config['source_image'] = $file_path;
         $config['maintain_ratio'] = true;
-        $config['image_library'] = ee()->config->item('image_resize_protocol');
+        $config['image_library'] = !empty(ee()->config->item('image_resize_protocol')) ? ee()->config->item('image_resize_protocol') : 'gd2';
         $config['library_path'] = ee()->config->item('image_library_path');
 
         ee()->image_lib->initialize($config);
@@ -1181,7 +1181,7 @@ class Filemanager
             );
         }
 
-        $protocol = ee()->config->item('image_resize_protocol');
+        $protocol = !empty(ee()->config->item('image_resize_protocol')) ? ee()->config->item('image_resize_protocol') : 'gd2';
         $lib_path = ee()->config->item('image_library_path');
 
         // Make sure height and width are set
@@ -2312,7 +2312,7 @@ class Filemanager
             }
         }
 
-        $config['image_library'] = ee()->config->item('image_resize_protocol');
+        $config['image_library'] = !empty(ee()->config->item('image_resize_protocol')) ? ee()->config->item('image_resize_protocol') : 'gd2';
         $config['library_path'] = ee()->config->item('image_library_path');
         $config['source_image'] = $file;
 
@@ -2740,7 +2740,7 @@ class Filemanager
             'height' => (ee()->input->post('crop_height')) ? ee()->input->post('crop_height') : null,
             'master_dim' => 'width',
             'library_path' => ee()->config->item('image_library_path'),
-            'image_library' => ee()->config->item('image_resize_protocol'),
+            'image_library' => !empty(ee()->config->item('image_resize_protocol')) ? ee()->config->item('image_resize_protocol') : 'gd2',
             'source_image' => $source['path'],
             'new_image' => $new['path']
         );
@@ -2787,7 +2787,7 @@ class Filemanager
         $config = array(
             'rotation_angle' => ee()->input->post('rotate'),
             'library_path' => ee()->config->item('image_library_path'),
-            'image_library' => ee()->config->item('image_resize_protocol'),
+            'image_library' => !empty(ee()->config->item('image_resize_protocol')) ? ee()->config->item('image_resize_protocol') : 'gd2',
             'source_image' => $source['path'],
             'new_image' => $new['path']
         );
@@ -2835,7 +2835,7 @@ class Filemanager
             'width' => ee()->input->get_post('resize_width'),
             'maintain_ratio' => ee()->input->get_post('constrain'),
             'library_path' => ee()->config->item('image_library_path'),
-            'image_library' => ee()->config->item('image_resize_protocol'),
+            'image_library' => !empty(ee()->config->item('image_resize_protocol')) ? ee()->config->item('image_resize_protocol') : 'gd2',
             'source_image' => $source['path'],
             'new_image' => $new['path']
         );
