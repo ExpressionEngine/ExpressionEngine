@@ -63,7 +63,8 @@ class Status extends Model
     );
 
     protected static $_events = array(
-        'beforeInsert'
+        'beforeInsert',
+        'afterUpdate'
     );
 
     protected $status_id;
@@ -96,6 +97,20 @@ class Status extends Model
         if (empty($status_order)) {
             $count = $this->getModelFacade()->get('Status')->count();
             $this->setProperty('status_order', $count + 1);
+        }
+    }
+
+    /**
+     * Update the existing entries using this status
+     *
+     * @param array $previous
+     * @return void
+     */
+    public function onAfterUpdate($previous)
+    {
+        if ($previous['status'] != $this->status) {
+            //direct SQL, as we need it to be fast
+            ee('db')->where('status', $previous['status'])->update('channel_titles', ['status' => $this->status]);
         }
     }
 
