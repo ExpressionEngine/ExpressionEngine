@@ -64,6 +64,7 @@ class Status extends Model
 
     protected static $_events = array(
         'beforeInsert',
+        'afterInsert',
         'afterUpdate'
     );
 
@@ -98,6 +99,17 @@ class Status extends Model
             $count = $this->getModelFacade()->get('Status')->count();
             $this->setProperty('status_order', $count + 1);
         }
+    }
+
+    /**
+     * New status might have same name as the one that was deleted
+     * and the entries were left orphan
+     * In that case, we establish relationship
+     */
+    public function onAfterInsert()
+    {
+        //direct SQL, as we need it to be fast
+        ee('db')->where('status', $this->getProperty('status'))->update('channel_titles', ['status_id' => $this->getId()]);
     }
 
     /**
