@@ -1075,7 +1075,7 @@ class EE_Schema
         $Q[] = "CREATE TABLE exp_upload_prefs_category_groups (
 			upload_location_id int(4) unsigned NOT NULL,
 			group_id int(6) unsigned NOT NULL,
-			PRIMARY KEY `upload_location_id_group_id` (`upload_location_id`, `group_id`)
+			PRIMARY KEY `upload_location_id_group_id` (`upload_location_id`, `group_id`),
 			KEY `group_id` (`group_id`)
 		)";
 
