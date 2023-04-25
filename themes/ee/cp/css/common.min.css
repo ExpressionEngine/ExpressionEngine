@@ -23018,6 +23018,7 @@ dialog {
 .alert__content p {
   margin: 0;
   color: var(--ee-text-tertiary);
+  font-size: initial;
 }
 .app-notice__content p.alert__title,
 .alert__content p.alert__title {
