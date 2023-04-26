@@ -162,13 +162,13 @@ class Date_ft extends EE_Fieldtype
             $date = $field_data;
         }
 
-        $include_seconds = ee()->config->item('include_seconds');
+        $include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
 
         ee()->lang->loadfile('calendar');
 
         ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format());
         ee()->javascript->set_global('date.include_seconds', $include_seconds);
-        ee()->javascript->set_global('date.time_format', ee()->config->item('time_format'));
+        ee()->javascript->set_global('date.time_format', ee()->session->userdata('time_format', ee()->config->item('time_format')));
         ee()->javascript->set_global('lang.date.months.full', array(
             lang('cal_january'),
             lang('cal_february'),
