@@ -168,7 +168,7 @@ class Member_auth extends Member
             $return_link = reduce_double_slashes(ee()->functions->form_backtrack());
         }
 
-        if ($current_idx === false) {
+        if (!empty($sites) && $current_idx === false) {
             ee()->output->show_user_error('general', lang('multi_auth_redirect_site_not_found'));
         }
 

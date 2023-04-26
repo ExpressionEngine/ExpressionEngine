@@ -281,7 +281,7 @@ class Rte_ft extends EE_Fieldtype
     }
 
     /**
-     * Display the field for Low Variables
+     * Display the field for Pro Variables
      *
      * @param mixed $data field data
      *

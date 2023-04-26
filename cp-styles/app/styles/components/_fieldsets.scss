@@ -462,3 +462,35 @@ fieldset {
 		background: color(accent-light);
 	}
 }
+
+// Added style for Page Add-on Template setting
+.fields-multiselect {
+	label {
+		display: flex;
+		margin-bottom: 10px;
+		align-items: center;
+
+		@include m-tablet-down {
+			display: block;
+		}
+
+		span {
+			margin-right: 5px;
+			min-width: 60px;
+
+			@include m-tablet-down {
+				max-width: 100%;
+				display: block;
+				margin-bottom: 5px;
+			}
+		}
+
+		select {
+			max-width: 100%;
+
+			@include m-tablet-down {
+				width: 100%;
+			}
+		}
+	}
+}

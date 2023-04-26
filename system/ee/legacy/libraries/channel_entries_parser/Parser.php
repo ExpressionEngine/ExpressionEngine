@@ -547,20 +547,14 @@ class EE_Channel_data_parser
 
                             $cond[$key . ':' . $modifier] = $result;
 
-                            // If this key also happens to be a Grid field with the modifier
+                            // If this key also happens to be a Grid / Fluid field with the modifier
                             // "total_rows", make it the default value for evaluating
                             // conditionals
-                            if (isset($channel->gfields[$row['site_id']][$key]) &&
-                                $modifier == 'total_rows') {
-                                $cond[$key] = (int) $result;
-                            }
-
-                            // If this key also happens to be a Fluid field with the modifier
-                            // "total_fields", make it the default value for evaluating
-                            // conditionals
-                            if (isset($channel->ffields[$row['site_id']][$key]) &&
-                                $modifier == 'total_fields') {
-                                $cond[$key] = (int) $result;
+                            if (
+                                (isset($channel->gfields[$row['site_id']][$key]) && $modifier == 'total_rows') ||
+                                (isset($channel->ffields[$row['site_id']][$key]) && $modifier == 'total_fields')
+                            ) {
+                                $cond[$key] = $result !== 0 ? $result : '';
                             }
                         }
                     }

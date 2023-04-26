@@ -3046,7 +3046,8 @@ class EE_Template
                 if ($info->isInstalled()) {
                     $this->module_data[ucfirst($name)] = $name;
                 }
-            } elseif ($info->hasPlugin() && $info->isInstalled()) {
+            }
+            if ($info->hasPlugin() && $info->isInstalled()) {
                 $this->plugins[] = $name;
             }
         }
