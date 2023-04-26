@@ -117,7 +117,7 @@ class Roles extends AbstractRolesController
         }
 
         foreach ($roles as $role) {
-            $edit_url = ee('CP/URL')->make('members/roles/edit/' . $role->getId());
+            $edit_url = (ee('Permission')->hasAny('can_edit_roles')) ? ee('CP/URL')->make('members/roles/edit/' . $role->getId()) : '';
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
@@ -420,9 +420,9 @@ class Roles extends AbstractRolesController
 
         $role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
 
-        $role->name = ee('Request')->post('name');
+        $role->name = ee('Security/XSS')->clean(ee('Request')->post('name'));
         $role->short_name = ee('Request')->post('short_name');
-        $role->description = ee('Request')->post('description');
+        $role->description = ee('Security/XSS')->clean(ee('Request')->post('description'));
 
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();

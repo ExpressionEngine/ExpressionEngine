@@ -35,11 +35,35 @@
 			figure.toggleClass('is-svg', data.isSVG);
 			figure.find('img').toggleClass('hidden', ! data.isImage);
 
+			if (! data.isImage && figure.find('i').length) {
+				figure.find('i').remove();
+			}
+
 			if (data.isImage) {
 				// Set the thumbnail
 				references.input_img.attr('src', data.thumb_path);
 				if (figure.find('i').length) {
 					figure.find('i').remove();
+				}
+			} else if(data.file_type === 'archive') {
+				references.input_img.after('<i class="fal fa-file-archive fa-3x"></i>');
+			} else if(data.file_type === 'audio') {
+				references.input_img.after('<i class="fal fa-file-audio fa-3x"></i>');
+			} else if(data.file_type === 'video') {
+				references.input_img.after('<i class="fal fa-file-video fa-3x"></i>');
+			} else if (data.file_type === 'doc') {
+				if (data.mime_type.includes('pdf')) {
+					references.input_img.after('<i class="fal fa-file-pdf fa-3x"></i>');
+				} else if (data.mime_type.includes('html') || data.mime_type.includes('css') || data.mime_type.includes('xml')) {
+					references.input_img.after('<i class="fal fa-file-code fa-3x"></i>');
+				} else if (data.mime_type.includes('rtf') || data.mime_type.includes('richtext') || data.mime_type.includes('word')) {
+					references.input_img.after('<i class="fal fa-file-word fa-3x"></i>');
+				} else if (data.mime_type.includes('excel') || data.mime_type.includes('spreadsheet') || data.mime_type.includes('csv')) {
+					references.input_img.after('<i class="fal fa-file-spreadsheet fa-3x"></i>');
+				} else if (data.mime_type.includes('powerpoint') || data.mime_type.includes('presentation')) {
+					references.input_img.after('<i class="fal fa-file-powerpoint fa-3x"></i>');
+				} else {
+					references.input_img.after('<i class="fal fa-file-alt fa-3x"></i>');
 				}
 			} else {
 				references.input_img.after('<i class="fas fa-file fa-3x"></i>');
@@ -63,6 +87,7 @@
 				callback: EE.FileField.pickerCallback
 			});
 
+
 			$('.button.remove', container).click(function (e) {
 				var figure_container = $(this).closest('.fields-upload-chosen');
 
@@ -70,6 +95,7 @@
 				figure_container.siblings('em').remove(); // Hide the "missing file" erorr
 				figure_container.siblings('input[type="hidden"]').val('').trigger('change');
 				figure_container.siblings('.fields-upload-btn').removeClass('hidden');
+				figure_container.find('.fields-upload-chosen-file i').remove();
 				e.preventDefault();
 			});
 

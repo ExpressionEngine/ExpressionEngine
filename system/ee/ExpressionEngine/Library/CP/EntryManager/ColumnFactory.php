@@ -66,10 +66,15 @@ class ColumnFactory
      */
     public static function getAvailableColumns($channel = false)
     {
-        return array_merge(
+        $columns = array_merge(
             static::getStandardColumns(),
             static::getCustomFieldColumns($channel)
         );
+        $availableColumns = [];
+        foreach ($columns as $column) {
+            $availableColumns[$column->getTableColumnIdentifier()] = $column;
+        }
+        return $availableColumns;
     }
 
     /**

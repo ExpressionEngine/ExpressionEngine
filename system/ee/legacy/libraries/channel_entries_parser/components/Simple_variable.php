@@ -16,6 +16,8 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
     // bring in the :modifier methods
     use ExpressionEngine\Service\Template\Variables\ModifiableTrait;
 
+    public $conditional_vars = array();
+
     /**
      * There are always simple variables. Let me tell you ...
      *
@@ -381,7 +383,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
     {
         if ($raw_val = preg_replace('/^' . $prefix . '/', '', $val)) {
             if (array_key_exists($raw_val, $data)) {
-                $tagdata = str_replace(LD . $val . RD, $data[$raw_val] ?: '', $tagdata);
+                // cast the data to string
+                if (is_null($data[$raw_val]) || $data[$raw_val] === false) {
+                    $data[$raw_val] = '';
+                }
+                $tagdata = str_replace(LD . $val . RD, $data[$raw_val], $tagdata);
             } else {
                 $field = ee('Variables/Parser')->parseVariableProperties($key, $prefix);
                 $method = 'replace_' . $field['modifier'];

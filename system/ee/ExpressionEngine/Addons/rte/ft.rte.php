@@ -279,7 +279,7 @@ class Rte_ft extends EE_Fieldtype
     }
 
     /**
-     * Display the field for Low Variables
+     * Display the field for Pro Variables
      *
      * @param mixed $data field data
      *
@@ -287,10 +287,6 @@ class Rte_ft extends EE_Fieldtype
      */
     public function var_display_field($data)
     {
-        // Low Variables doesn't mix in the fieldtype's global settings,
-        // so we'll do it manually here
-        $this->settings = array_merge($this->settings, RteHelper::getGlobalSettings());
-
         return $this->display_field($data);
     }
 
