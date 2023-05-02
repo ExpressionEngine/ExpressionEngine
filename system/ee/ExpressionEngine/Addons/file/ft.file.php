@@ -977,6 +977,17 @@ JSC;
             'field_fmt' => 'none'
         );
 
+        if (empty($data)) {
+            // for Pro vars, go directly into POST
+            $data = array(
+                'field_content_type' => ee('Request')->post('field_content_type', 'all'),
+                'allowed_directories' => ee('Request')->post('allowed_directories', ''),
+                'show_existing' => ee('Request')->post('show_existing', ''),
+                'num_existing' => ee('Request')->post('num_existing', 0),
+                'field_fmt' => ee('Request')->post('field_fmt', 'none')
+            );
+        }
+
         $all = array_merge($defaults, $data);
 
         return array_intersect_key($all, $defaults);
