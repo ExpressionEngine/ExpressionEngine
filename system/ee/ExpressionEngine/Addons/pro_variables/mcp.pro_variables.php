@@ -1169,6 +1169,11 @@ class Pro_variables_mcp
             if ($this->vars->var_exists($name, $var_id)) {
                 $errors[] = lang('variable_name_already_exists') . ': ' . $name;
             }
+
+            if (in_array($name, ee()->cp->invalid_custom_field_names())) {
+                ee()->lang->load('design');
+                $errors[] = lang('reserved_name');
+            }
         }
 
         if ($errors) {

@@ -165,6 +165,15 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     }
 
     /**
+     * Display the field for Pro Variables
+     *
+     */
+    public function var_display_field($data)
+    {
+        return $this->display_field($data);
+    }
+
+    /**
      * Return a status of "warning" if the file is missing, otherwise "ok"
      *
      * @return string "warning" if the file is missing, "ok" otherwise
@@ -326,6 +335,23 @@ JSC;
 
             return $full_path;
         }
+    }
+
+    /**
+     * Display the field for Pro Variables
+     *
+     */
+    public function var_replace_tag($data, $params = array(), $tagdata = false)
+    {
+        $data = $this->pre_process($data);
+        if ($tagdata === '') {
+            $tagdata = false;
+        }
+        $fn = 'replace_' . ee()->TMPL->fetch_param('modifier', 'tag');
+        if (! method_exists($this, $fn)) {
+            $fn = 'replace_tag';
+        }
+        return $this->$fn($data, $params, $tagdata);
     }
 
     /**
