@@ -33,6 +33,9 @@ class CategoryField extends FieldModel
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'CategoryGroup' => array(
             'type' => 'belongsTo'
         )

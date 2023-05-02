@@ -26,12 +26,12 @@ class DashboardLayout extends Core\DashboardLayout
             )
         ),
         'Members' => array(
-            'model' => 'Member',
+            'model' => 'ee:Member',
             'type' => 'belongsTo',
             'from_key' => 'member_id'
         ),
         'Roles' => array(
-            'model' => 'Role',
+            'model' => 'ee:Role',
             'type' => 'belongsTo',
             'from_key' => 'role_id'
         ),
