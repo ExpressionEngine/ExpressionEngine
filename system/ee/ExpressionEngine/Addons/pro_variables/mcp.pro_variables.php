@@ -1126,8 +1126,8 @@ class Pro_variables_mcp
         //  Get name and suffix
         // -------------------------------------
 
-        $var_name = trim(ee('Request')->post('variable_name'));
-        $suffix = trim(ee('Request')->post('variable_suffix'));
+        $var_name = trim((string) ee('Request')->post('variable_name'));
+        $suffix = trim((string) ee('Request')->post('variable_suffix'));
         $vars = array();
 
         // -------------------------------------
