@@ -9,7 +9,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Updater\Version_6_3_4;
+namespace ExpressionEngine\Updater\Version_7_2_17;
 
 /**
  * Update
@@ -25,27 +25,7 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator(
-            [
-                'syncMemberStats',
-            ]
-        );
-
-        foreach ($steps as $k => $v) {
-            $this->$v();
-        }
-
         return true;
-    }
-
-    private function syncMemberStats()
-    {
-        if (ee()->config->item('ignore_member_stats') != 'y') {
-            foreach (ee('Model')->get('Role')->fields('total_members')->all() as $role) {
-                $role->total_members = null;
-                $role->save();
-            }
-        }
     }
 }
 

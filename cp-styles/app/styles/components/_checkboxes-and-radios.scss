@@ -283,6 +283,36 @@ $radio-size: 15px;
   padding: 5px 15px 15px;
 }
 
+.lots-of-checkboxes .splitForTwo {
+  display: inline-block;
+  vertical-align: top;
+  width: 50%;
+  border-right: 2px solid var(--ee-border);
+
+  h3 {
+  	display: none;
+    color: var(--ee-text-normal);
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 1em;
+  }
+
+  @include m-tablet-down {
+  	display: block;
+  	width: 100%;
+  	border-right: none;
+  	border-bottom: 2px solid var(--ee-border);
+
+  	h3 {
+  		display: block;
+  	}
+  }
+}
+
+.lots-of-checkboxes .second-list {
+  border: none;
+}
+
 .lots-of-checkboxes__items--too-many {
 	height: 250px;
     max-height: 1000px;

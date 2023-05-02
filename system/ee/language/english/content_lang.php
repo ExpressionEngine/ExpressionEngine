@@ -379,6 +379,8 @@ $lang = array(
 
     'exact_match' => 'Exact Match',
 
+    'extra_title' => 'List of selected categories:',
+
     'field_blank' => 'You left a field blank.',
 
     'fields' => 'Fields',
@@ -708,6 +710,10 @@ $lang = array(
     'status_changed' => 'Status Changed',
 
     'status_changed_desc' => 'Entry status has been changed to <b>%s</b>',
+
+    'status_not_available' => 'Status not available',
+
+    'status_not_available_desc' => 'Current entry status is <b>%s</b> cannot be accessed. <br /> It is either deleted, not assigned to this channel, or you don\'t have permissions for it.',
 
     'tab_count_zero' => 'There needs to be at least one tab available to hold fields.',
 

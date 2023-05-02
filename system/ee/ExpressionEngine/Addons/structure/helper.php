@@ -129,17 +129,19 @@ function structure_array_get($array, $key, $default = null)
  *
  * @return mixed
  */
-function pick()
-{
-    $args = func_get_args();
+if (!function_exists('pick')) {
+    function pick()
+    {
+        $args = func_get_args();
 
-    if (!is_array($args) || !count($args)) {
-        return null;
-    }
+        if (!is_array($args) || !count($args)) {
+            return null;
+        }
 
-    foreach ($args as $arg) {
-        if (!is_null($arg) && $arg !== '') {
-            return $arg;
+        foreach ($args as $arg) {
+            if (!is_null($arg) && $arg !== '') {
+                return $arg;
+            }
         }
     }
 }
@@ -164,10 +166,12 @@ function structure_dd($value)
  * @param  mixed  $value
  * @return void
  */
-function rd($value)
-{
-    echo "<pre>";
-    print_r($value);
-    echo "</pre>";
-    die;
+if (!function_exists('rd')) {
+    function rd($value)
+    {
+        echo "<pre>";
+        print_r($value);
+        echo "</pre>";
+        die;
+    }
 }
