@@ -363,7 +363,7 @@ class Edit extends AbstractPublishController
         }
 
         $entry = ee('Model')->get('ChannelEntry', $id)
-            ->with('Channel', 'Autosaves')
+            ->with('Channel', 'Status', 'Autosaves')
             ->all()
             ->first();
 
