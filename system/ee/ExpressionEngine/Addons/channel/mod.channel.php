@@ -2757,6 +2757,7 @@ class Channel
 
         $channel_ids = array_unique($channel_ids);
         $group_ids = array_unique($group_ids);
+        $group_ids_str = implode("','", $group_ids);
 
         if ($category_group = ee()->TMPL->fetch_param('category_group')) {
             if (substr($category_group, 0, 4) == 'not ') {

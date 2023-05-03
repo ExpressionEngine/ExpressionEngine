@@ -74,6 +74,12 @@ INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_ti
 	(2, 1, 'about', 'Information Pages', 'http://ee2/index.php/about', NULL, 'en', 7, 0, 0, 1409242030, 0, '2', 'open', 7, '', 'y', 'y', 0, 'all', 'y', 'n', 'n', '', 'n', 'http://ee2/index.php/news/comments', 'n', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, 'http://ee2/index.php/news/comments', '', 'n', 10, '', 'Title', '', NULL, 'y', 0);
 /*!40000 ALTER TABLE `exp_channels` ENABLE KEYS */;
 
+-- Dumping data for table ee-test.exp_channel_category_groups: ~0 rows (approximately)
+DELETE FROM `exp_channel_category_groups`;
+INSERT INTO `exp_channel_category_groups` (`channel_id`, `group_id`) VALUES
+	(1, 1),
+	(2, 2);
+
 -- Dumping data for table ee-test.exp_channels_channel_fields: ~0 rows (approximately)
 DELETE FROM `exp_channels_channel_fields`;
 /*!40000 ALTER TABLE `exp_channels_channel_fields` DISABLE KEYS */;
