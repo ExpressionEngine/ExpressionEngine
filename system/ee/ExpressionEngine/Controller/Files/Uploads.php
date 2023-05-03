@@ -974,6 +974,8 @@ class Uploads extends AbstractFilesController
             }
         }
 
+        $filesystem = $uploadDestination->getFilesystem();
+
         foreach ($current_files as $filePath) {
             $fileInfo = $filesystem->getWithMetadata($filePath);
             if (!isset($fileInfo['basename'])) {
