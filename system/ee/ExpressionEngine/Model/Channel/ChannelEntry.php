@@ -530,12 +530,15 @@ class ChannelEntry extends ContentModel
 
     private function ensureStatusSynced($update_by_name)
     {
-        if ($update_by_name) {
+        // if selected status is new one, but has the same name as the one that was deleted
+        // then there's no change and $update_by_name would be false
+        // so additional check if Status (by status_id) actually exists
+        if ($update_by_name === false && !is_null($this->Status)) {
+            $this->setProperty('status', $this->Status->status);
+        } else {
             $this->Status = $this->getModelFacade()->get('Status')
                 ->filter('status', $this->getProperty('status'))
                 ->first();
-        } else {
-            $this->setProperty('status', $this->Status->status);
         }
     }
 

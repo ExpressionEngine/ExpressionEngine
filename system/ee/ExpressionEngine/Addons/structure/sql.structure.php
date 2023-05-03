@@ -991,7 +991,7 @@ class Sql_structure
         $structure_channel_ids = $this->_get_structure_channel_ids($include_listings);
 
         // Get the Channel Entries that have are in a Structure Channel
-        $selectFields = array_map(function($field_data) {
+        $selectFields = array_map(function ($field_data) {
             return 'field_id_' . $field_data['field_id'];
         }, $sql_fields);
         $channelEntries = ee('Model')->get('ChannelEntry')->fields('entry_id', 'channel_id', 'site_id', 'title');
@@ -1183,7 +1183,7 @@ class Sql_structure
         $listing_ids_empty = StaticCache::get('listing_ids_empty');
 
         if (!is_array($listing_ids)) {
-			$listing_ids = array();
+            $listing_ids = array();
         }
 
         if (empty($listing_ids_empty) && empty($listing_ids)) {

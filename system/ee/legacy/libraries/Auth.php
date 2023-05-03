@@ -26,24 +26,27 @@
  *   1. Grab user info using a unique identifier.
  *
  *   2. Determine the function used for their stored password.
- * 	 We do this by looking at the length of the hash. This
- * 	 also means that we can never support two algorithms of
- * 	 the same length. Not a big problem.
+ *   We do this by looking at the length of the hash. This
+ *   also means that we can never support two algorithms of
+ *   the same length. Not a big problem.
  *
  *   3. Determine if their old password hash was salted.
- * 	 This is easy; we store the salt with their userdata.
+ *   This is easy; we store the salt with their userdata.
  *
  *   4. Hash the input password with the old salt and hash function.
- * 	 If this fails we're done, the password was incorrect.
+ *   If this fails we're done, the password was incorrect.
  *
  *   5. Check if we can improve security of their password.
- * 	 If it wasn't salted, we salt it. If we support a newer
- * 	 hash function, we create a new salt and rehash the password.
+ *   If it wasn't salted, we salt it. If we support a newer
+ *   hash function, we create a new salt and rehash the password.
  *
  * EE Dev Note: In EE's db the password and salt column
  * should always be as long as the best available hash.
  *
  */
+
+use ExpressionEngine\Service\Member\Member;
+
 class Auth
 {
     public $errors = array();
@@ -59,12 +62,12 @@ class Auth
         32 => 'md5'
     );
 
-    const BCRYPT_HASH_LENGTH = 60;
+    private const BCRYPT_HASH_LENGTH = 60;
 
     /**
      * Constructor
      *
-     * @access	public
+     * @access public
      */
     public function __construct()
     {
@@ -76,7 +79,7 @@ class Auth
     /**
      * Authenticate with an id
      *
-     * @access	public
+     * @access public
      */
     public function authenticate_id($id, $password)
     {
@@ -88,7 +91,7 @@ class Auth
     /**
      * Authenticate with email
      *
-     * @access	public
+     * @access public
      */
     public function authenticate_email($email, $password)
     {
@@ -100,7 +103,7 @@ class Auth
     /**
      * Authenticate with username
      *
-     * @access	public
+     * @access public
      */
     public function authenticate_username($username, $password)
     {
@@ -112,7 +115,7 @@ class Auth
     /**
      * Authenticate from basic http auth
      *
-     * @access	public
+     * @access public
      */
     public function authenticate_http_basic(
         $not_allowed_groups = array(),
@@ -152,7 +155,7 @@ class Auth
     /**
      * Authenticate from digest http auth
      *
-     * @access	public
+     * @access public
      */
     public function authenticate_http_digest()
     {
@@ -163,13 +166,13 @@ class Auth
      * Run through the majority of the authentication checks
      *
      * @return array(
-     *		username: from POST
-     *		password: from POST
-     *		incoming: from Auth library, using username and password
-     *	)
+     *      username: from POST
+     *      password: from POST
+     *      incoming: from Auth library, using username and password
+     *  )
      *
      * Your best option is to use:
-     * 		list($username, $password, $incoming) = $this->verify()
+     * list($username, $password, $incoming) = $this->verify()
      *
      * If an error results, the lang key will be added to $this->(auth->)errors[]
      * and this method will return FALSE
@@ -190,7 +193,7 @@ class Auth
             /*
             /* -------------------------------------------*/
         }
-        
+
         $username = (string) ee()->input->post('username');
 
         // No username/password?  Bounce them...
@@ -288,14 +291,16 @@ class Auth
     /**
      * Check Required IP
      *
-     * @access	public
-     * @return 	boolean
+     * @access public
+     * @return boolean
      */
     public function check_require_ip()
     {
         if (ee()->config->item('require_ip_for_login') == 'y') {
-            if (ee()->session->userdata('ip_address') == '' or
-                ee()->session->userdata('user_agent') == '') {
+            if (
+                ee()->session->userdata('ip_address') == '' or
+                ee()->session->userdata('user_agent') == ''
+            ) {
                 return false;
             }
         }
@@ -311,7 +316,7 @@ class Auth
      * to an old password. The latter is mostly internal, you probably
      * want one of the authenticate_* methods instead.
      *
-     * @access	public
+     * @access public
      */
     public function hash_password($password, $salt = false, $h_byte_size = false)
     {
@@ -361,7 +366,7 @@ class Auth
     /**
      * Update Username
      *
-     * @access	public
+     * @access public
      */
     public function update_username($member_id, $username)
     {
@@ -374,7 +379,7 @@ class Auth
     /**
      * Update Password
      *
-     * @access	public
+     * @access public
      */
     public function update_password($member_id, $password)
     {
@@ -407,14 +412,14 @@ class Auth
     /**
      * Authenticate
      *
-     * @access	private
+     * @access private
      */
     private function _authenticate(CI_DB_result $member, $password)
     {
-        $always_disallowed = array(4);
+        $always_disallowed = array(Member::GUESTS, Member::PENDING);
 
         if (bool_config_item('allow_pending_login')) {
-            $always_disallowed = array_diff($always_disallowed, array(4));
+            $always_disallowed = array_diff($always_disallowed, array(Member::PENDING));
         }
 
         if ($member->num_rows() !== 1) {
@@ -422,7 +427,13 @@ class Auth
         }
 
         if (in_array($member->row('role_id'), $always_disallowed)) {
-            return ee()->output->show_user_error('general', lang('mbr_account_not_active'));
+            if ($member->row('role_id') == Member::PENDING) {
+                ee()->lang->loadfile('member');
+                $error = lang('mbr_account_not_active');
+            } else {
+                $error = lang('not_authorized');
+            }
+            return ee()->output->show_user_error('general', $error);
         }
 
         $m_salt = $member->row('salt');
@@ -460,7 +471,7 @@ class Auth
     /**
      * Retrieve Basic HTTP Credentials
      *
-     * @access	private
+     * @access private
      */
     private function _retrieve_http_basic()
     {
@@ -544,9 +555,9 @@ class Auth_result
     /**
      * Constructor
      *
-     * @access	public
-     * @param	object	member query row
-     * @param	int		session id if using multi login
+     * @access public
+     * @param   object  member query row
+     * @param   int     session id if using multi login
      */
     public function __construct(stdClass $member)
     {
@@ -556,7 +567,7 @@ class Auth_result
     /**
      * Group data getter
      *
-     * @access	public
+     * @access public
      */
     public function group($key, $default = false)
     {
@@ -577,7 +588,7 @@ class Auth_result
     /**
      * Multi-login check
      *
-     * @access	public
+     * @access public
      */
     public function has_other_session()
     {
@@ -598,8 +609,10 @@ class Auth_result
             $ip = ee()->session->userdata['ip_address'];
             $ua = ee()->session->userdata['user_agent'];
 
-            if ($ip != $result->row('ip_address') or
-                $ua != $result->row('user_agent')) {
+            if (
+                $ip != $result->row('ip_address') or
+                $ua != $result->row('user_agent')
+            ) {
                 $result->free_result();
 
                 return true;
@@ -614,7 +627,7 @@ class Auth_result
     /**
      * Simplified permission checks
      *
-     * @access	public
+     * @access public
      */
     public function has_permission($perm)
     {
@@ -638,7 +651,7 @@ class Auth_result
     /**
      * Ban check
      *
-     * @access	public
+     * @access public
      */
     public function is_banned()
     {
@@ -652,7 +665,7 @@ class Auth_result
     /**
      * Member data getter
      *
-     * @access	public
+     * @access public
      */
     public function member($key, $default = false)
     {
@@ -662,7 +675,7 @@ class Auth_result
     /**
      * Anon setter
      *
-     * @access	public
+     * @access public
      */
     public function anon($anon)
     {
@@ -674,7 +687,7 @@ class Auth_result
      *
      * Handles all of the checks and cookie stuff
      *
-     * @access	public
+     * @access public
      */
     public function start_session($cp_sess = false)
     {
@@ -782,7 +795,7 @@ class Auth_result
      *
      * Only works after the session has been started
      *
-     * @access	public
+     * @access public
      */
     public function session_id()
     {
@@ -795,7 +808,7 @@ class Auth_result
      * Tells start_session to latch onto an existing session for
      * the multi site login
      *
-     * @access	public
+     * @access public
      */
     public function use_session_id($session_id)
     {
@@ -807,7 +820,7 @@ class Auth_result
      *
      * Whether or not this session will be started with 'remember me'
      *
-     * @access	public
+     * @access public
      */
     public function remember_me($remember = true)
     {
@@ -821,7 +834,7 @@ class Auth_result
      * this is a silly workaround. Doing a clone aslo isolates the hook
      * from the rest of the code, which I like.
      *
-     * @access	private
+     * @access private
      */
     private function _hook_data()
     {

@@ -33,7 +33,7 @@ $lang = array(
     'rte_advanced_config_desc' => 'Edit configuration directly in JSON format',
     'rte_config_json' => 'Configuration JSON',
     'rte_config_json_desc' => 'Overrides visually constructed tool set',
-    'rte_advanced_config_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be careful with using this feature and check your work.</p><p>Providing invalid configuration can make the RTE fields inaccessible.</p>',
+    'rte_advanced_config_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be careful with using this feature and check your work.</p><p>Providing invalid configuration can make the RTE fields inaccessible.</p><p>Consult editing engine docs: <a href="https://ckeditor.com/docs/ckeditor5/latest/installation/getting-started/configuration.html" target="_blank">CKEditor</a>, <a href="https://imperavi.com/redactor/docs/settings/" target="_blank">Redactor</a>.</p><p>Note that some options might be not available or implemented differently. We suggest using Full configuration as starting base.<p>',
     'rte_config_saved' => 'Configuration Saved!',
     'rte_config_saved_desc' => 'Your configuration saved successfully.',
 

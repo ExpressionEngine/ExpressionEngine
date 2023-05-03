@@ -22363,6 +22363,13 @@ em label input[type=checkbox] {
   margin-top: 5px;
 }
 
+input[type=text][dir=rtl][field_content_type=numeric],
+input[type=text][dir=rtl][field_content_type=integer],
+input[type=text][dir=rtl][field_content_type=decimal] {
+  direction: ltr;
+  text-align: right;
+}
+
 .grid-instruct {
   display: block;
   color: var(--ee-text-secondary);
@@ -23011,6 +23018,7 @@ dialog {
 .alert__content p {
   margin: 0;
   color: var(--ee-text-tertiary);
+  font-size: initial;
 }
 .app-notice__content p.alert__title,
 .alert__content p.alert__title {
@@ -30385,6 +30393,35 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
 
 .lots-of-checkboxes .lots-of-checkboxes__items {
   padding: 5px 15px 15px;
+}
+
+.lots-of-checkboxes .splitForTwo {
+  display: inline-block;
+  vertical-align: top;
+  width: 50%;
+  border-right: 2px solid var(--ee-border);
+}
+.lots-of-checkboxes .splitForTwo h3 {
+  display: none;
+  color: var(--ee-text-normal);
+  margin-bottom: 5px;
+  font-weight: 500;
+  font-size: 1em;
+}
+@media (max-width: 767px) {
+  .lots-of-checkboxes .splitForTwo {
+    display: block;
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid var(--ee-border);
+  }
+  .lots-of-checkboxes .splitForTwo h3 {
+    display: block;
+  }
+}
+
+.lots-of-checkboxes .second-list {
+  border: none;
 }
 
 .lots-of-checkboxes__items--too-many {
