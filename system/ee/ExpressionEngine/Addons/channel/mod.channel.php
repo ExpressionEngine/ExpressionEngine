@@ -2796,7 +2796,7 @@ class Channel
 
         if (ee()->TMPL->fetch_param('style') == '' or ee()->TMPL->fetch_param('style') == 'nested') {
             $this->category_tree(array(
-                'group_id' => $group_ids,
+                'group_id' => implode('|', $group_ids),
                 'channel_ids' => $channel_ids,
                 'template' => ee()->TMPL->tagdata,
                 'path' => $path,
@@ -3315,7 +3315,7 @@ class Channel
             }
 
             $this->category_tree(array(
-                'group_id' => $group_ids,
+                'group_id' => implode('|', $group_ids),
                 'channel_ids' => $channel_ids,
                 'path' => $c_path,
                 'template' => $cat_chunk,
