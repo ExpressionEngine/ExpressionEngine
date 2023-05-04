@@ -16,6 +16,14 @@ class EE_Logger
     protected $_dev_log_hashes = array();
     private $db;
 
+    public function __construct()
+    {
+        // This library relies on the session, so we load it if we're using the CLI
+        if (defined('REQ') && REQ === 'CLI' && ! isset(ee()->session)) {
+            ee()->load->library('session');
+        }
+    }
+
     /**
      * Generates or returns the logger DB as to not interfere with other Active
      * Record queries
@@ -24,7 +32,7 @@ class EE_Logger
     private function logger_db()
     {
         if (! isset($this->db)) {
-             // do we have the db loaded?
+            // do we have the db loaded?
             if (! isset(ee()->db)) {
                 ee()->load->database();
             }

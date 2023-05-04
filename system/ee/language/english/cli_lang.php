@@ -222,7 +222,6 @@ $lang = array(
     // make:jump options
     'command_make_jump_file_addon'                 => 'Folder for third-party add-on you want to add Jump Menu file to.',
 
-
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',
     'command_make_widget_lets_build_widget'           => 'Let\'s build a widget!',
@@ -334,6 +333,12 @@ $lang = array(
     'command_update_option_force_addon_upgrades'                => 'Automatically runs all add-on updaters at end of update (advanced)',
     'command_update_option_y'                                   => 'Skip all confirmations. Don\'t do this.',
     'command_update_option_skip_cleanup'                        => 'Skip cleanup steps after update',
+
+    // Lang entries for command update:file-usage
+    'command_update_file_usage_description'     => 'Updates the file usage for all files',
+    'command_update_file_usage_summary'         => '',
+    'command_update_file_usage'                 => 'Updating file usage.',
+    'command_update_file_usage_done'            => 'File usage updated successfully.',
 
     // Lang entries for command update:prepare
     'command_update_prepare_description'                        => 'Prepare a site to be upgraded using these files',
