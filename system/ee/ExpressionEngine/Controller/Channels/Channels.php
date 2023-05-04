@@ -204,7 +204,7 @@ class Channels extends AbstractChannelsController
             $channel->CustomFields = null;
             $channel->Statuses = null;
         } else {
-            $channel = ee('Model')->get('Channel', (int) $channel_id)->with('FieldGroups', 'CustomFields', 'Statuses', 'CategoryGroups')->first();
+            $channel = ee('Model')->get('Channel', (int) $channel_id)->first();
 
             if (! $channel) {
                 show_error(lang('unauthorized_access'), 403);
@@ -715,7 +715,7 @@ class Channels extends AbstractChannelsController
 
         $selected = ee('Request')->post('cat_group') ?: [];
 
-        if ($channel && ! empty($channel->cat_group)) {
+        if ($channel && ! is_null($channel->CategoryGroups)) {
             $selected = ee('Request')->isPost() ? ee('Request')->post('cat_group') : ($channel ? $channel->CategoryGroups->pluck('group_id') : []);
         }
 

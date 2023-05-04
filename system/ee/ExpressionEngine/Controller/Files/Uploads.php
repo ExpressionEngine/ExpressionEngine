@@ -96,7 +96,7 @@ class Uploads extends AbstractFilesController
             $upload_destination = ee('Model')->make('UploadDestination');
             $upload_destination->site_id = ee()->config->item('site_id');
         } else {
-            $upload_destination = ee('Model')->get('UploadDestination', $upload_id)->with('Roles', 'CategoryGroups')->first();
+            $upload_destination = ee('Model')->get('UploadDestination', $upload_id)->first();
 
             if (! $upload_destination) {
                 show_error(lang('unauthorized_access'), 403);
