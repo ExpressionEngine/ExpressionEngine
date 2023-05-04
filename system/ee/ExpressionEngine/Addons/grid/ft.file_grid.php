@@ -229,6 +229,16 @@ class file_grid_ft extends Grid_ft
 
         parent::post_save_settings($data);
     }
+
+    // for File Grid, we need to validate grid_min_rows
+    public function validate($data)
+    {
+        if (!ee('Request')->isAjax() && !empty($this->settings['grid_min_rows']) && (empty($data) || count($data) < $this->settings['grid_min_rows'])) {
+            return sprintf(lang('grid_min_rows_required'), $this->settings['grid_min_rows']);
+        }
+
+        return parent::validate($data);
+    }
 }
 
 // EOF
