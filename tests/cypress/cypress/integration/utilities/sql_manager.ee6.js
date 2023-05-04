@@ -154,7 +154,7 @@ context('SQL manager', () => {
 	    page.get('search_field').clear()
 	    page.get('search_field').type('category')
 	    page.get('search_field').type('{enter}')
-	     cy.get('tbody > :nth-child(3) > :nth-child(1)').contains('exp_category_posts')
+	     cy.get('tbody > :nth-child(6) > :nth-child(1)').contains('exp_category_posts')
 
 	})
 
