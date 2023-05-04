@@ -56,7 +56,7 @@
                                     <?php if (isset($settings['content'])): ?>
                                         <?=$settings['content']?>
                                     <?php else: ?>
-                                        <label for="<?=$table_id?>-select-all" class="hidden"><?=lang('select_all_files')?></label>
+                                        <label for="<?=$table_id?>-select-all" class="sr-only"><?=lang('select_all_files')?></label>
                                         <input id="<?=$table_id?>-select-all" class="input--no-mrg" type="checkbox" title="<?=lang('select_all_files')?>">
                                     <?php endif ?>
                                 <?php endif ?>
@@ -80,6 +80,7 @@
                             }
                             ?>
                             <th<?php if (! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+
                                 <?php if ($header_sorts): ?>
                                     <?php
                                     $url = clone $base_url;
@@ -167,7 +168,7 @@
     								</td>
     							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
     								<td class="app-listing__cell app-listing__cell--input text--center checkbox-column">
-    									<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
+    									<label class="sr-only" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
     									<input
     										id="<?=$table_id . '-' . $i . '-' . $row_id?>"
     										class="input--no-mrg<?php if (isset($column['hidden']) && $column['hidden']):?> hidden<?php endif; ?>"

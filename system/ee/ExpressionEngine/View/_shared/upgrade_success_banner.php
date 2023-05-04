@@ -22,6 +22,6 @@
 			<p>In version 7.2 we've added new options to customize rich text editors (custom styles), added the ability to edit related entries from the relationship field, the ability to see where a field is in use, <span class="upgrade-success-banner__blurb-learn">and much more</span>.</p>
 		</a>
 	</div>
-	<a href="<?=ee('CP/URL')->make('homepage/dismiss-banner')->compile();?>" class="banner-dismiss"></a>
+	<a href="<?=ee('CP/URL')->make('homepage/dismiss-banner')->compile();?>" class="banner-dismiss"><span class="sr-only">close banner icon</span></a>
 </div>
 <?php endif; ?>

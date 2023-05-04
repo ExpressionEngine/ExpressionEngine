@@ -9,9 +9,11 @@
 		<?php if ($has_custom_value): ?>
 		<div class="dropdown__search">
 			<div class="search-input">
+				<label for="<?=$name?>" class="sr-only"><?=$name?></label>
 			<input
 				type="text"
 				name="<?=$name?>"
+				id="<?=$name?>"
 				value="<?=htmlentities($custom_value, ENT_QUOTES, 'UTF-8')?>"
 				placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
 				data-threshold="<?=$threshold?>"

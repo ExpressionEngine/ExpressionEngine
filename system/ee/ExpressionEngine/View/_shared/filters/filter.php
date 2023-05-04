@@ -10,6 +10,7 @@
 		<?php if ($has_custom_value || $has_list_filter): ?>
 			<div class="dropdown__search">
 				<div class="search-input">
+				<label for="<?=$name?>" class="sr-only"><?=$name?></label>
 				<input
 					type="text"
 					name="<?=$name?>"
@@ -19,6 +20,7 @@
 					data-fuzzy-filter="true"
 					<?php endif; ?>
 					class="search-input__input input--small"
+					id="<?=$name?>"
 				>
 				</div>
 			</div>
