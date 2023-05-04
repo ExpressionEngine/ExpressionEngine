@@ -20,7 +20,7 @@ class Usage
     protected $fieldsAndTables = [];
     protected $updating = false;
     //the numbers of rows to handle on each run
-    protected $entriesLimit = 10;
+    protected $entriesLimit = 50;
     protected $offset = 0;
 
     public function __construct()
@@ -28,6 +28,11 @@ class Usage
         // Load the logger
         if (! isset(ee()->logger)) {
             ee()->load->library('logger');
+        }
+
+        // If this is a CLI request, we will set the entries limit to practically infinite
+        if (defined('REQ') && REQ === 'CLI') {
+            $this->entriesLimit = PHP_INT_MAX;
         }
 
         $this->initializeFieldsAndTables();
