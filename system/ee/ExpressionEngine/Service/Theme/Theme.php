@@ -177,6 +177,10 @@ class Theme
     {
         $files = array();
 
+        if (! file_exists($path)) {
+            return $files;
+        }
+
         if (! $fp = @opendir($path)) {
             return $files;
         }

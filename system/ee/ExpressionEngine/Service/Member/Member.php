@@ -86,6 +86,9 @@ class Member
     public function calculatePasswordComplexity($password)
     {
         $rank = 0;
+        if (empty($password)) {
+            return $rank;
+        }
         $length = strlen($password);
         $passwordArray = str_split($password);
         $charsCount = [

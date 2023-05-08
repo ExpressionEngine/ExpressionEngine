@@ -368,7 +368,7 @@ class EE_Lang
         }
 
         if (! isset($lang)) {
-            log_message('error', 'Language file contains no data: language/' . $idiom . '/' . $langfile);
+            log_message('debug', 'Language file contains no data: language/' . $idiom . '/' . $langfile);
 
             return;
         }

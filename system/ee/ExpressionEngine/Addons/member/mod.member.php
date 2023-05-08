@@ -15,6 +15,7 @@ class Member
 {
     public $trigger = 'member';
     public $member_template = true;
+    public $member_fields;
     public $theme_class = 'profile_theme';
     public $request = 'public_profile';
     public $no_menu = array(

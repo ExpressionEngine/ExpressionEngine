@@ -68,6 +68,10 @@ $lang = array(
 
     'date_time_settings' => 'Date &amp; Time Settings',
 
+    'week_start' => 'Week start',
+
+    'week_start_desc' => 'The day on which the new week starts',
+
     'defaults' => 'Defaults',
 
     'enable_msm' => 'Enable Site Manager (MSM)?',

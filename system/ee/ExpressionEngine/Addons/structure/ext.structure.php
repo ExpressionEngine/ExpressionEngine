@@ -28,6 +28,9 @@ class Structure_ext
     public $parent_id;
     public $page_title;
     public $uri;
+    public $structure;
+    public $segment_1;
+    public $top_id;
 
     public function __construct($settings = '')
     {
@@ -272,7 +275,7 @@ class Structure_ext
                 $session_id = null;
             }
 
-            $url = new \EllisLab\ExpressionEngine\Library\CP\URL(
+            $url = new \ExpressionEngine\Library\CP\URL(
                 $path,
                 $session_id,
                 '',

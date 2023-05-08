@@ -117,7 +117,7 @@ class Roles extends AbstractRolesController
         }
 
         foreach ($roles as $role) {
-            $edit_url = ee('CP/URL')->make('members/roles/edit/' . $role->getId());
+            $edit_url = (ee('Permission')->hasAny('can_edit_roles')) ? ee('CP/URL')->make('members/roles/edit/' . $role->getId()) : '';
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
@@ -320,6 +320,18 @@ class Roles extends AbstractRolesController
 
         $role_groups = $role->RoleGroups;
         $active_groups = $role_groups->pluck('group_id');
+
+        if (defined('CLONING_MODE') && CLONING_MODE === true) {
+            $role->setId(null);
+            while (true !== $role->validateUnique('field_name', $_POST['short_name'])) {
+                $_POST['short_name'] = 'copy_' . $_POST['short_name'];
+            }
+            if ($_POST['name'] == $role->name) {
+                $_POST['name'] = lang('copy_of') . ' ' . $_POST['name'];
+            }
+            return $this->create(!empty($active_groups) ? $active_groups[0] : null);
+        }
+
         $this->generateSidebar($active_groups);
 
         $errors = null;
@@ -402,6 +414,16 @@ class Roles extends AbstractRolesController
             ),
         );
 
+        if ($role->getId() != 1) {
+            $vars['buttons'][] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_as_new_entry',
+                'text' => sprintf(lang('clone_to_new'), lang('role')),
+                'working' => 'btn_saving'
+            ];
+        }
+
         ee()->view->cp_page_title = lang('edit_role');
         ee()->view->extra_alerts = array('search-reindex');
 
@@ -420,9 +442,9 @@ class Roles extends AbstractRolesController
 
         $role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
 
-        $role->name = ee('Request')->post('name');
-        $role->short_name = ee('Request')->post('short_name');
-        $role->description = ee('Request')->post('description');
+        $role->name = ee('Security/XSS')->clean(ee('Request')->post('name'));
+        $role->short_name = ee('Security/XSS')->clean(ee('Request')->post('short_name'));
+        $role->description = ee('Security/XSS')->clean(ee('Request')->post('description'));
 
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
@@ -465,7 +487,7 @@ class Roles extends AbstractRolesController
         $assignedUploadDestinations = $role->AssignedUploadDestinations->getDictionary('id', 'site_id');
         if (!empty($assignedUploadDestinations)) {
             foreach ($assignedUploadDestinations as $dest_id => $dest_site_id) {
-                if ($dest_site_id != $site_id) {
+                if ($dest_site_id != 0 && $dest_site_id != $site_id) {
                     $uploadDestinationIds[] = $dest_id;
                 }
             }
@@ -952,7 +974,7 @@ class Roles extends AbstractRolesController
             ->getDictionary('module_id', 'module_name');
 
         $allowed_upload_destinations = ee('Model')->get('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->all()
             ->getDictionary('id', 'name');

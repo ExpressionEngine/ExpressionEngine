@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="21px" height="24px" viewBox="0 0 21 24" version="1.1" fill="#5D63F1" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image">
+<g id="surface1">
+<path d="M 11.25 3.75 C 11.25 2.921875 10.578125 2.25 9.75 2.25 C 8.921875 2.25 8.25 2.921875 8.25 3.75 L 8.25 10.5 L 1.5 10.5 C 0.671875 10.5 0 11.171875 0 12 C 0 12.828125 0.671875 13.5 1.5 13.5 L 8.25 13.5 L 8.25 20.25 C 8.25 21.078125 8.921875 21.75 9.75 21.75 C 10.578125 21.75 11.25 21.078125 11.25 20.25 L 11.25 13.5 L 18 13.5 C 18.828125 13.5 19.5 12.828125 19.5 12 C 19.5 11.171875 18.828125 10.5 18 10.5 L 11.25 10.5 Z M 11.25 3.75 "/>
+</g>
+</svg>
