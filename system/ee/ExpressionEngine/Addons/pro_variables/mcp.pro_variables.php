@@ -383,7 +383,7 @@ class Pro_variables_mcp
 
             // Update record
             $this->vars->update($id, array(
-                'variable_data' => $data,
+                'variable_data' => !is_null($data) ? $data : '',
                 'edit_date'     => time()
             ));
 
@@ -1126,8 +1126,8 @@ class Pro_variables_mcp
         //  Get name and suffix
         // -------------------------------------
 
-        $var_name = trim(ee('Request')->post('variable_name'));
-        $suffix = trim(ee('Request')->post('variable_suffix'));
+        $var_name = trim((string) ee('Request')->post('variable_name'));
+        $suffix = trim((string) ee('Request')->post('variable_suffix'));
         $vars = array();
 
         // -------------------------------------
@@ -1168,6 +1168,11 @@ class Pro_variables_mcp
             // Check if it doesn't exist
             if ($this->vars->var_exists($name, $var_id)) {
                 $errors[] = lang('variable_name_already_exists') . ': ' . $name;
+            }
+
+            if (in_array($name, ee()->cp->invalid_custom_field_names())) {
+                ee()->lang->load('design');
+                $errors[] = lang('reserved_name');
             }
         }
 

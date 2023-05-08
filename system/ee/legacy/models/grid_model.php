@@ -222,7 +222,7 @@ class Grid_model extends CI_Model
             ee()->api_channel_fields->edit_datatype(
                 $col_id,
                 $column['col_type'],
-                json_decode($column['col_settings'], true),
+                is_array($column['col_settings']) ? $column['col_settings'] : json_decode($column['col_settings'], true),
                 $this->_get_ft_api_settings($column['field_id'], $content_type)
             );
 
@@ -239,7 +239,7 @@ class Grid_model extends CI_Model
             ee()->api_channel_fields->setup_handler($column['col_type']);
             ee()->api_channel_fields->set_datatype(
                 $col_id,
-                json_decode($column['col_settings'], true),
+                is_array($column['col_settings']) ? $column['col_settings'] : json_decode($column['col_settings'], true),
                 array(),
                 true,
                 false,
@@ -791,7 +791,7 @@ class Grid_model extends CI_Model
             ->result_array();
 
         foreach ($columns as &$column) {
-            $column['col_settings'] = json_decode($column['col_settings'], true);
+            $column['col_settings'] = is_array($column['col_settings']) ? $column['col_settings'] : json_decode($column['col_settings'], true);
             $this->_columns[$content_type][$column['field_id']][$column['col_id']] = $column;
         }
 

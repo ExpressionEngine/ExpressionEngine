@@ -654,7 +654,7 @@ class Channel
                 if (in_array($field_name, ['title', 'url_title'])) {
                     $table = 't';
                     $search_column_name = $table . '.' . $field_name;
-                } else if (! isset($this->cfields[$site_id][$field_name])) {
+                } elseif (! isset($this->cfields[$site_id][$field_name])) {
                     continue;
                 }
 
@@ -668,6 +668,15 @@ class Channel
                     $field_id = $this->cfields[$site_id][$field_name];
                     $table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
                     $search_column_name = $table . '.field_id_' . $this->cfields[$site_id][$field_name];
+                    if (ee()->config->item('show_profiler') === 'y') {
+                        if (isset($this->rfields[$site_id][$field_name])) {
+                            ee()->TMPL->log_item('WARNING: Using Relationship fields in `search` parameter is not supported.');
+                        } elseif (isset($this->gfields[$site_id][$field_name])) {
+                            ee()->TMPL->log_item('NOTE: Using Grid fields in `search` parameter requires the field to be marked as searchable.');
+                        } elseif (isset($this->ffields[$site_id][$field_name])) {
+                            ee()->TMPL->log_item('NOTE: Using Fluid fields in `search` parameter requires the field to be marked as searchable.');
+                        }
+                    }
                 }
 
                 $fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
@@ -2156,8 +2165,8 @@ class Channel
 
             if (!empty($legacy_fields)) {
                 foreach ($legacy_fields as $lField) {
-                    $sql .=', wd.field_ft_'.$lField->field_id;
-                    $sql .=', wd.field_id_'.$lField->field_id;
+                    $sql .= ', wd.field_ft_' . $lField->field_id;
+                    $sql .= ', wd.field_id_' . $lField->field_id;
                 }
             }
         }

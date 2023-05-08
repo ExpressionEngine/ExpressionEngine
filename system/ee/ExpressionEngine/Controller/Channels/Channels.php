@@ -74,11 +74,13 @@ class Channels extends AbstractChannelsController
                 'toolbar_items' => [
                     'download' => [
                         'href' => ee('CP/URL', 'channels/sets/export/' . $channel->getId()),
-                        'title' => lang('export')
+                        'title' => lang('export'),
+                        'content' => ' ' . lang('export')
                     ],
                     'layout-set' => [
                         'href' => ee('CP/URL', 'channels/layouts/' . $channel->getId()),
-                        'title' => lang('layouts')
+                        'title' => $channel->channel_title . ' ' . lang('layouts'),
+                        'content' => ' ' . lang('layouts')
                     ]
                 ],
                 'selection' => [

@@ -74,6 +74,9 @@ class RequirementsChecker
             'ExpressionEngine requires at least 32MB of memory allocated to PHP.',
             function () {
                 $memory_limit = @ini_get('memory_limit');
+                if ($memory_limit == '-1') {
+                    return true;
+                }
                 sscanf($memory_limit, "%d%s", $limit, $unit);
 
                 if (strtolower($unit) == 'm') {
