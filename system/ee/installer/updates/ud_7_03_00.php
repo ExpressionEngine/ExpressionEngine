@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
+                'addChannelProlet',
                 'addEnforceAutoUrlTitle',
                 'addWeekStartColForMembers',
                 'setWeekStartPreference',
@@ -40,6 +41,12 @@ class Updater
         }
 
         return true;
+    }
+
+    private function addChannelProlet()
+    {
+        $channelModule = ee('pro:Addon')->get('channel');
+        $channelModule->updateProlets();
     }
 
     private function addEnforceAutoUrlTitle()
