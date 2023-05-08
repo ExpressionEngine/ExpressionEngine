@@ -396,7 +396,12 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
           className: "list-item__content"
         }, React.createElement("div", {
           "class": "list-item__title"
-        }, item.label, " ", _this5.state.selected.length > 10 && React.createElement("small", {
+        }, item.highlight && React.createElement("span", {
+          className: "status-indicator",
+          style: {
+            backgroundColor: '#' + item.highlight
+          }
+        }), item.label, " ", _this5.state.selected.length > 10 && React.createElement("small", {
           className: "meta-info ml-s float-right"
         }, " ", item.instructions)), _this5.state.selected.length <= 10 && React.createElement("div", {
           "class": "list-item__secondary"
