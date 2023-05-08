@@ -34410,6 +34410,16 @@ a.ck.ck-button.ck-on {
 
 .list-item__title {
   font-weight: 500;
+  position: relative;
+}
+.list-item__title .status-indicator {
+  position: absolute;
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  top: 10px;
+  left: -8px;
 }
 
 .list-item__secondary {

@@ -334,7 +334,7 @@ class Relationship extends React.Component {
 									<div class="list-item__handle"><i class="fal fa-bars"></i></div>
 									}
                                     <div className="list-item__content">
-                                        <div class="list-item__title">{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
+                                        <div class="list-item__title">{item.highlight && <span className="status-indicator" style={{backgroundColor: '#'+item.highlight}}></span>}{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
                                         {this.state.selected.length <= 10 &&
                                         <div class="list-item__secondary">{props.display_entry_id && <span> #{item.value} / </span>}{item.instructions}</div>
                                         }

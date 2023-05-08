@@ -419,7 +419,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 // Cache children for this entry
                 $children_cache[$entry_id] = ee('Model')->get('ChannelEntry', $entry_id)
                     ->with('Children', 'Channel')
-                    ->fields('Channel.channel_title', 'Children.entry_id', 'Children.title', 'Children.channel_id')
+                    ->fields('Channel.channel_title', 'Children.entry_id', 'Children.title', 'Children.channel_id', 'Children.status')
                     ->first()
                     ->Children;
 
@@ -452,7 +452,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         if (! empty($new_children_ids)) {
             $new_children = ee('Model')->get('ChannelEntry', $new_children_ids)
                 ->with('Channel')
-                ->fields('Channel.*', 'entry_id', 'title', 'channel_id')
+                ->fields('Channel.*', 'entry_id', 'title', 'channel_id', 'status')
                 ->all()
                 ->indexBy('entry_id');
         }
@@ -467,13 +467,15 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         $multiple = (bool) $this->settings['allow_multiple'];
 
+        $statuses = ee('Model')->get('Status')->all('true')->indexBy('status');
+
         $choices = [];
         foreach ($entries as $entry) {
-            $choices[] = $this->_buildOption($entry);
+            $choices[] = $this->_buildOption($entry, $statuses);
         }
         $selected = [];
         foreach ($related as $child) {
-            $selected[] = $this->_buildOption($child);
+            $selected[] = $this->_buildOption($child, $statuses);
         }
 
         $field_name = $field_name . '[data]';
@@ -539,12 +541,13 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         ]);
     }
 
-    private function _buildOption($entry) {
+    private function _buildOption($entry, $statuses = []) {
         return [
             'value' => $entry->getId(),
             'label' => $entry->title,
             'instructions' => $entry->Channel->channel_title,
-            'channel_id' => $entry->Channel->getId()
+            'channel_id' => $entry->Channel->getId(),
+            'highlight' => isset($statuses[$entry->status]) ? $statuses[$entry->status]->highlight : ''
         ];
     }
 
