@@ -63,7 +63,7 @@ class CommandMakeSidebar extends Cli
             $service = ee('SidebarGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_sidebar_created_successfully');
