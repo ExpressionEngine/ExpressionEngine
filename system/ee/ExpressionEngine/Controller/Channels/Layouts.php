@@ -214,16 +214,14 @@ class Layouts extends AbstractChannelsController
             ),
         ));
 
+        $roles = ee('Model')->get('Role', ee()->input->post('roles'))->all();
+        $channel_layout->PrimaryRoles = $roles;
+
         if (AJAX_REQUEST) {
             ee()->form_validation->run_ajax();
             exit;
         } elseif (ee()->form_validation->run() !== false) {
             $channel_layout->layout_name = ee()->input->post('layout_name');
-
-            $roles = ee('Model')->get('Role', ee()->input->post('roles'))
-                ->all();
-
-            $channel_layout->PrimaryRoles = $roles;
 
             $channel_layout->save();
 
