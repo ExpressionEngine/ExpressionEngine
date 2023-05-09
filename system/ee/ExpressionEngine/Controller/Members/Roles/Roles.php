@@ -323,10 +323,10 @@ class Roles extends AbstractRolesController
 
         if (defined('CLONING_MODE') && CLONING_MODE === true) {
             $role->setId(null);
-            while (true !== $role->validateUnique('field_name', $_POST['short_name'])) {
+            while (true !== $role->validateUnique('short_name', $_POST['short_name'])) {
                 $_POST['short_name'] = 'copy_' . $_POST['short_name'];
             }
-            if ($_POST['name'] == $role->name) {
+            while (true !== $role->validateUnique('name', $_POST['name'])) {
                 $_POST['name'] = lang('copy_of') . ' ' . $_POST['name'];
             }
             return $this->create(!empty($active_groups) ? $active_groups[0] : null);
@@ -442,8 +442,9 @@ class Roles extends AbstractRolesController
 
         $role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
 
-        $role->name = ee('Security/XSS')->clean(ee('Request')->post('name'));
-        $role->short_name = ee('Security/XSS')->clean(ee('Request')->post('short_name'));
+        // can't use ee('Request') because $_POST could have been modified for cloning
+        $role->name = ee('Security/XSS')->clean($_POST['name']);
+        $role->short_name = ee('Security/XSS')->clean($_POST['short_name']);
         $role->description = ee('Security/XSS')->clean(ee('Request')->post('description'));
 
         // Settings
