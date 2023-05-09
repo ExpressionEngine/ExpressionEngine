@@ -464,6 +464,7 @@ class Categories extends AbstractCategoriesController
                 $category->group_id = $group_id;
                 $category->parent_id = ee('Security/XSS')->clean($_POST['parent_id']);
                 $category->cat_order = null;
+                $category->Children = null; // no deep cloning (yet)
                 $category->markAsDirty();
             }
             $category->set($_POST);
