@@ -305,7 +305,12 @@ class EE_URI
 
         if (! isset($base)) {
             if (!defined('BASE')) {
-                define('BASE', EESELF . '?S=' . ee()->session->session_id() . '&amp;D=cp');
+                $base = EESELF . '?/cp';
+                $session_id = ee()->session->session_id();
+                if (!empty($session_id)) {
+                    $base .= '&amp;S=' . $session_id;
+                }
+                define('BASE', $base); // cp url
             }
             $base = BASE;
         }
