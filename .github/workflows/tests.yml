@@ -217,6 +217,11 @@ jobs:
             #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 4 ${{ matrix.containers }})"
             #   id: specs
 
+            - name: Install Chrome
+              uses: browser-actions/setup-chrome@latest
+              with:
+                chrome-version: stable
+
             - name: Run Cypress Tests
               if: matrix.php != '5.6'
               uses: cypress-io/github-action@v5
