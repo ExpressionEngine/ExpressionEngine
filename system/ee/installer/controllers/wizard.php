@@ -42,6 +42,12 @@ class Wizard extends CI_Controller
     public $month;
     public $day;
 
+    protected $requirements;
+    protected $db_connect_attempt;
+    protected $shouldBackupDatabase;
+    protected $shouldUpgradeAddons;
+    protected $next_ud_file = false;
+
     // These are the methods that are allowed to be called via $_GET['m']
     // for either a new installation or an update. Note that the function names
     // are prefixed but we don't include the prefix here.
@@ -599,7 +605,8 @@ class Wizard extends CI_Controller
      */
     private function db_validation($error_number, Closure $callable)
     {
-        if (! ee()->input->post('db_hostname')
+        if (
+            ! ee()->input->post('db_hostname')
             || ! ee()->input->post('db_name')
             || ! ee()->input->post('db_username')
         ) {
@@ -608,7 +615,7 @@ class Wizard extends CI_Controller
             return false;
         }
 
-        if (! isset($this->db_connect_attempt)) {
+        if (! isset($this->db_connect_attempt) || is_null($this->db_connect_attempt)) {
             $this->db_connect_attempt = $this->db_connect(array(
                 'hostname' => ee()->input->post('db_hostname'),
                 'database' => ee()->input->post('db_name'),
@@ -858,6 +865,18 @@ class Wizard extends CI_Controller
         // Does the specified database schema type exist?
         if (! file_exists(APPPATH . 'schema/mysqli_schema.php')) {
             $errors[] = lang('unreadable_dbdriver');
+        }
+
+        // If we got no error, then we have been connected to DB
+        // now we can run server requirements checks
+        if (empty($errors)) {
+            require_once(APPPATH . 'updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
+            $this->requirements = new RequirementsChecker($db);
+            if (($result = $this->requirements->check()) !== true) {
+                $errors = array_map(function ($requirement) {
+                    return $requirement->getMessage();
+                }, $result);
+            }
         }
 
         // Were there errors?
@@ -1984,7 +2003,8 @@ class Wizard extends CI_Controller
      */
     private function isSecure()
     {
-        if ((! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
+        if (
+            (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
             || $_SERVER['SERVER_PORT'] == '443'
         ) {
             return true;

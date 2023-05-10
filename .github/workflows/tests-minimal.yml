@@ -201,10 +201,10 @@ jobs:
               env:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
-            - name: Install Chrome Beta
+            - name: Install Chrome
               uses: browser-actions/setup-chrome@latest
               with:
-                chrome-version: beta
+                chrome-version: stable
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v5

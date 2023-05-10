@@ -131,7 +131,7 @@ class RequirementsChecker
         $password = $config['password'];
         $database = $config['database'];
         $char_set = $config['char_set'];
-        $pconnect = $config['pconnect'];
+        $pconnect = isset($config['pconnect']) ? $config['pconnect'] : false;
         $port = isset($config['port']) ? $config['port'] : 3306;
 
         $dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
