@@ -27,8 +27,8 @@ class File extends AbstractFilesController
         }
 
         $file = ee('Model')->get('File', $id)
-            ->with('UploadDestination', 'UploadAuthor', 'ModifyAuthor', 'Categories')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->with('UploadDestination', 'UploadAuthor', 'ModifyAuthor')
+            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->all()
             ->first();
 
@@ -552,7 +552,7 @@ class File extends AbstractFilesController
     public function download($id)
     {
         $file = ee('Model')->get('File', $id)
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->first();
 
         if (! $file) {
