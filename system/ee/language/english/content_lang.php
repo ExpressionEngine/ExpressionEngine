@@ -551,6 +551,8 @@ $lang = array(
 
     'no_entries_matching_that_criteria' => 'There are no entries matching the criteria you selected.',
 
+    'no_entries_on_this_site' => 'The entry belongs to different site.',
+
     'no_glossary' => 'A glossary does not exist',
 
     'no_member_roles' => 'You need to select at least one member role to apply/remove a layout.',

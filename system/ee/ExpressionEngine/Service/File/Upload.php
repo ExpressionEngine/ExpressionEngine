@@ -477,7 +477,7 @@ class Upload
                     ($file->description && ($file->description != $original->description))
                     || ($file->credit && ($file->credit != $original->credit))
                     || ($file->location && ($file->location != $original->location))
-                    || ($file->Categories->count() > 0 && ($file->Categories->count() != $file->Categories->count()))
+                    || ($file->Categories->count() > 0 && ($file->Categories->count() != $original->Categories->count()))
                 ) {
                     $result['warning'] = lang('replace_no_metadata');
                 }
