@@ -37,7 +37,7 @@ class Date_ft extends EE_Fieldtype
     private function _parse_date($date)
     {
         $include_time = true;
-        if (isset($this->settings['show_time']) && $this->settings['show_time'] == 'n') {
+        if (isset($this->settings['show_time']) && get_bool_from_string($this->settings['show_time']) === false) {
             $include_time = false;
         }
 
@@ -129,7 +129,7 @@ class Date_ft extends EE_Fieldtype
         $localize = true;
 
         $include_time = true;
-        if (isset($this->settings['show_time']) && $this->settings['show_time'] == 'n') {
+        if (isset($this->settings['show_time']) && get_bool_from_string($this->settings['show_time']) === false) {
             $include_time = false;
         }
 
@@ -382,7 +382,7 @@ class Date_ft extends EE_Fieldtype
     {
         return array(
             'localize' => get_bool_from_string($data['localize']),
-            'show_time' => get_bool_from_string($data['localize'])
+            'show_time' => get_bool_from_string($data['show_time'])
         );
     }
 
