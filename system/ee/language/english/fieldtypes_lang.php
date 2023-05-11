@@ -81,6 +81,10 @@ $lang = array(
 
     'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
 
+    'rel_ft_display_status' => 'Display Status?',
+
+    'rel_ft_display_status_desc' => 'When enabled, colored status badge will be displayed together with entry title inside the field.',
+
     'rel_ft_deferred' => 'Defer field initialization?',
 
     'rel_ft_deferred_desc' => 'When enabled, this field won’t initialize until the Edit Relationships button is clicked on. This can result in faster control panel page load times.',

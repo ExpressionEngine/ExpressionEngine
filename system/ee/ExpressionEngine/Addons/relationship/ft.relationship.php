@@ -467,15 +467,18 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         $multiple = (bool) $this->settings['allow_multiple'];
 
-        $statuses = ee('Model')->get('Status')->all('true')->indexBy('status');
+        $statuses = ee('Model')->get('Status')->all('true')->getDictionary('status', 'highlight');
+        ee()->javascript->set_global([
+            'statuses' => $statuses
+        ]);
 
         $choices = [];
         foreach ($entries as $entry) {
-            $choices[] = $this->_buildOption($entry, $statuses);
+            $choices[] = $this->_buildOption($entry);
         }
         $selected = [];
         foreach ($related as $child) {
-            $selected[] = $this->_buildOption($child, $statuses);
+            $selected[] = $this->_buildOption($child);
         }
 
         $field_name = $field_name . '[data]';
@@ -536,18 +539,19 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'channels' => $channel_choices,
             'in_modal' => ($this->get_setting('in_modal_context') || ee('Request')->get('modal_form') == 'y'),
             'display_entry_id' => isset($this->settings['display_entry_id']) ? (bool) $this->settings['display_entry_id'] : false,
+            'display_status' => isset($this->settings['display_status']) ? (bool) $this->settings['display_status'] : false,
             'rel_min' =>  isset($this->settings['rel_min']) ? (int) $this->settings['rel_min'] : 0,
             'rel_max' =>  isset($this->settings['rel_max']) ? (int) $this->settings['rel_max'] : '',
         ]);
     }
 
-    private function _buildOption($entry, $statuses = []) {
+    private function _buildOption($entry) {
         return [
             'value' => $entry->getId(),
             'label' => $entry->title,
             'instructions' => $entry->Channel->channel_title,
             'channel_id' => $entry->Channel->getId(),
-            'highlight' => isset($statuses[$entry->status]) ? $statuses[$entry->status]->highlight : ''
+            'status' => $entry->status
         ];
     }
 
@@ -760,6 +764,16 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 )
             ),
             array(
+                'title' => 'rel_ft_display_status',
+                'desc' => 'rel_ft_display_status_desc',
+                'fields' => array(
+                    'relationship_display_status' => array(
+                        'type' => 'yes_no',
+                        'value' => ($values['display_status']) ? 'y' : 'n'
+                    )
+                )
+            ),
+            array(
                 'title' => 'rel_ft_deferred',
                 'desc' => 'rel_ft_deferred_desc',
                 'fields' => array(
@@ -800,6 +814,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         // Boolstring conversion
         $save['allow_multiple'] = get_bool_from_string($save['allow_multiple']);
         $save['display_entry_id'] = get_bool_from_string($save['display_entry_id']);
+        $save['display_status'] = get_bool_from_string($save['display_status']);
         $save['deferred_loading'] = get_bool_from_string($save['deferred_loading']);
 
         foreach ($save as $field => $value) {
@@ -837,6 +852,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'order_field' => 'title',
             'order_dir' => 'asc',
             'display_entry_id' => false,
+            'display_status' => false,
             'deferred_loading' => false,
             'allow_multiple' => 'y',
             'rel_min' => 0,
@@ -855,6 +871,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         // any default values that are not the empty ones
         $default_values = array(
             'display_entry_id' => false,
+            'display_status' => false,
             'allow_multiple' => true,
             'deferred_loading' => false,
         );
