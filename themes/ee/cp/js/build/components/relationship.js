@@ -517,7 +517,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
           style: {
             color: '#' + EE.statuses[item.status]
           }
-        }, item.status), " ", React.createElement("span", {
+        }, "(", item.status, ")"), " ", React.createElement("span", {
           className: "dropdown__link-right"
         }, item.instructions));
       }), dropdownItems.length == 0 && React.createElement("div", {
