@@ -528,7 +528,7 @@ class Template extends AbstractDesignController
         $templates = ee('Model')->get('Template')
             ->with('TemplateGroup')
             ->filter('site_id', ee()->config->item('site_id'))
-            ->filter('template_data', 'LIKE', '%' . $search_terms . '%');
+            ->filter('template_data', 'LIKE', '%' . ee()->db->escape_like_str($search_terms) . '%');
 
         $base_url = ee('CP/URL')->make('design/template/search');
         $base_url->setQueryStringVariable('search', $search_terms);
