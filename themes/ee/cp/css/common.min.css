@@ -29006,6 +29006,15 @@ input[type=button].btn-block {
   margin-left: 3px;
 }
 
+.dropdown__link-status-indicator {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 3px;
+  text-transform: lowercase;
+  font-size: 80%;
+}
+
 .dropdown__link-right {
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -34410,16 +34419,6 @@ a.ck.ck-button.ck-on {
 
 .list-item__title {
   font-weight: 500;
-  position: relative;
-}
-.list-item__title .status-indicator {
-  position: absolute;
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  top: 10px;
-  left: -8px;
 }
 
 .list-item__secondary {
@@ -34428,6 +34427,18 @@ a.ck.ck-button.ck-on {
   position: absolute;
   top: 34px;
   left: 15px;
+}
+.list-item__secondary .status-indicator {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px 5px 4px;
+  border: 1px solid;
+  border-radius: 15px;
+  line-height: 1;
+  text-transform: capitalize;
+  margin-left: 5px;
+  font-size: 11px;
 }
 
 .list-item__content .list-item__secondary {

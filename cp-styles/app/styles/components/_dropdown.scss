@@ -151,6 +151,15 @@
 	margin-left: 3px;
 }
 
+.dropdown__link-status-indicator {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 3px;
+    text-transform: lowercase;
+    font-size: 80%;
+}
+
 .dropdown__link-right {
   text-transform: uppercase;
   letter-spacing: 1px;
