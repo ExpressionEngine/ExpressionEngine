@@ -108,6 +108,10 @@ class Preflight
             return preg_replace("#/+#", "/", rtrim($path, DIRECTORY_SEPARATOR) . '/ee/');
         }, $this->getThemePaths());
 
+        foreach ($theme_paths as $theme_path) {
+            $this->validateThemePath($theme_path);
+        }
+
         $paths = array_merge(
             [
                 $this->path(),
