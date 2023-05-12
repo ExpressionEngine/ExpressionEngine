@@ -17920,9 +17920,6 @@ fieldset .field-control #eye {
 
 .add-on-card__desc {
   position: relative;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   max-width: 100%;
   color: var(--ee-text-secondary);
 }
