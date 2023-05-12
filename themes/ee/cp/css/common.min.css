@@ -17874,6 +17874,7 @@ fieldset .field-control #eye {
   align-items: center;
   flex: 0 0 50px;
   margin-right: 20px;
+  margin-bottom: auto;
 }
 .add-on-card__icon .price {
   margin-top: 5px;
