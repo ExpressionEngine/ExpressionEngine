@@ -60,7 +60,7 @@ class EE_Logger
                 'exp_cp_log',
                 array(
                     'member_id' => $this->getMemberId(),
-                    'username' => $this->Username(),
+                    'username' => $this->getUsername(),
                     'ip_address' => ee()->input->ip_address(),
                     'act_date' => ee()->localize->now,
                     'action' => $action,
