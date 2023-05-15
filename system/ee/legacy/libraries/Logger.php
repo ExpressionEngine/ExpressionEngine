@@ -16,14 +16,6 @@ class EE_Logger
     protected $_dev_log_hashes = array();
     private $db;
 
-    public function __construct()
-    {
-        // This library relies on the session, so we load it if we're using the CLI
-        if (defined('REQ') && REQ === 'CLI' && ! isset(ee()->session)) {
-            ee()->load->library('session');
-        }
-    }
-
     /**
      * Generates or returns the logger DB as to not interfere with other Active
      * Record queries
@@ -67,8 +59,8 @@ class EE_Logger
             $this->logger_db()->insert_string(
                 'exp_cp_log',
                 array(
-                    'member_id' => ee()->session->userdata('member_id'),
-                    'username' => ee()->session->userdata['username'],
+                    'member_id' => $this->getMemberId(),
+                    'username' => $this->Username(),
                     'ip_address' => ee()->input->ip_address(),
                     'act_date' => ee()->localize->now,
                     'action' => $action,
@@ -556,6 +548,27 @@ class EE_Logger
             ee()->dbforge->create_table($table);
         }
     }
+
+    protected function getUsername()
+    {
+        // Do not use the session library if running from the CLI
+        if (defined('REQ') && REQ === 'CLI') {
+            return 'CLI Command';
+        } else {
+            return ee()->session->userdata['username'];
+        }
+    }
+
+    protected function getMemberId()
+    {
+        // Do not use the session library if running from the CLI
+        if (defined('REQ') && REQ === 'CLI') {
+            return 0;
+        } else {
+            return ee()->session->userdata('member_id');
+        }
+    }
+
 }
 // END CLASS
 
