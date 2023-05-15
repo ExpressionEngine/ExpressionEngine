@@ -75,6 +75,8 @@ class Installer
             return false;
         }
 
+        $classname = $this->addon->getModuleClass();
+
         // Loop through each action and insert it if it doesnt exist, update if it does
         foreach ($this->actions as $action) {
             if (!isset($action['class'])) {

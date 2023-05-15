@@ -135,7 +135,7 @@ context('Member Group List', () => {
 
       page.get('edit.save_dropdown').click()
       cy.wait(1000)
-      page.get('edit.submit').last().click({waitForAnimations: false})
+      page.get('edit.submit').eq(2).click({waitForAnimations: false})
 
       page.get('list.groups').find('a:contains("Editors")').click()
 
@@ -284,7 +284,7 @@ context('Member Group List', () => {
     page.get('edit.can_access_sys_prefs_toggle').click()
     page.get('edit.save_dropdown').click()
     cy.wait(1000)
-    page.get('edit.submit').last().click({waitForAnimations: false})
+    page.get('edit.submit').eq(2).click({waitForAnimations: false})
 
     page.get('list.groups').find('a:contains("Moderators")').click()
 

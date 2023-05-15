@@ -383,8 +383,9 @@ abstract class AbstractPublish extends CP_Controller
 
         if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
             $entry->setId(null);
+            $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
             while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
-                $_POST['url_title'] = 'copy_' . $_POST['url_title'];
+                $_POST['url_title'] = 'copy' . $word_separator . $_POST['url_title'];
             }
             if ($_POST['title'] == $entry->title) {
                 $_POST['title'] = lang('copy_of') . ' ' . $_POST['title'];
@@ -393,6 +394,13 @@ abstract class AbstractPublish extends CP_Controller
             $entry->set($_POST);
             $entry->markAsDirty();
         } else {
+            if ($entry->isNew() && $entry->Channel->enforce_auto_url_title) {
+                $_POST['url_title'] = ee('Format')->make('Text',  $entry->Channel->url_title_prefix . ee()->input->post('title', true))->urlSlug()->compile();
+                $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
+                while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
+                    $_POST['url_title'] = $_POST['url_title'] . $word_separator . uniqid();
+                }
+            }
             $entry->set($_POST);
         }
 

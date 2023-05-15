@@ -16,6 +16,7 @@ $component = [
     'can_add_items' => (REQ != 'CP') ? false : !$in_modal,
     'channels' => $channels,
     'display_entry_id' => $display_entry_id,
+    'display_status' => $display_status,
     'rel_min' => $rel_min,
     'rel_max' => $rel_max,
 ];

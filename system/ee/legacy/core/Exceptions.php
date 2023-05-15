@@ -141,6 +141,11 @@ class EE_Exceptions
      */
     public function show_error($heading, $message, $template = 'error_general', $status_code = 500)
     {
+        if (REQ == 'CLI') {
+            $cli = new \ExpressionEngine\Cli\Cli();
+            $cli->fail($message);
+        }
+
         set_status_header($status_code);
 
         // Ajax Requests get a reasonable response
