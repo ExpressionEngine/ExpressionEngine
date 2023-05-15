@@ -12,8 +12,6 @@ namespace ExpressionEngine\Model\Template;
 
 use ExpressionEngine\Service\Model\Model;
 
-use ExpressionEngine\Library\Filesystem\Filesystem;
-
 /**
  * Template Group Model
  */
@@ -103,7 +101,14 @@ class TemplateGroup extends Model
             $new_path = $this->getFolderPath();
 
             if ($old_path !== null && $new_path !== null) {
-                ee('Filesystem')->rename($old_path, $new_path);
+                // if there's change in letter casing, we can't rename directly
+                if (0 === strcasecmp($old_path, $new_path)) {
+                    $tempPath = substr($old_path, 0, -6) . '_' . uniqid();
+                    ee('Filesystem')->rename($old_path, $tempPath);
+                    ee('Filesystem')->rename($tempPath, $new_path);
+                } else {
+                    ee('Filesystem')->rename($old_path, $new_path);
+                }
             }
         }
 
@@ -212,11 +217,6 @@ class TemplateGroup extends Model
     {
         $return = parent::validateUnique($key, $value, $params);
         if (is_bool($return)) {
-            // Don't allow case insensitive matches on template group names
-            if (strcasecmp((string) $value, (string) $this->getBackup($key)) == 0) {
-                return 'template_group_taken';
-            }
-
             return $return;
         }
 
