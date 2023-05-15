@@ -513,6 +513,7 @@ abstract class AbstractDesign extends CP_Controller
             $column[] = array(
                 'name' => 'selection[]',
                 'value' => $template->template_id,
+                'disabled' => (bool_config_item('save_tmpl_files') && $template->template_name == 'index') ? true : false,
                 'data' => array(
                     'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES, 'UTF-8') . '</b>'
                 )
