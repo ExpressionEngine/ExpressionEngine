@@ -238,6 +238,9 @@ class Pages_tab
     private function makeValidURIRule()
     {
         return function ($field, $value) {
+            if (empty($value)) {
+                return true;
+            }
             $c_page_uri = preg_replace(
                 "#[^a-zA-Z0-9_\-/\.]+$#i",
                 '',
@@ -261,6 +264,9 @@ class Pages_tab
     private function makeValidSegmentCountRule()
     {
         return function ($field, $value) {
+            if (empty($value)) {
+                return true;
+            }
             $value_segs = substr_count(trim($value, '/'), '/');
 
             // More than 9 pages URI segs?  goodbye
@@ -281,6 +287,9 @@ class Pages_tab
     private function makeNotDuplicatedRule($entry)
     {
         return function ($field, $value) use ($entry) {
+            if (empty($value)) {
+                return true;
+            }
             $static_pages = ee()->config->item('site_pages');
             $uris = $static_pages[ee()->config->item('site_id')]['uris'];
 
