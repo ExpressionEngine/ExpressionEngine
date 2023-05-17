@@ -2239,10 +2239,10 @@ class EE_Template
         else {
             if ($query->num_rows() > 1) {
                 $duplicate = true;
-                $log_message = "Duplicate Template Group: " . ee()->uri->segment(1);
+                $this->log_item("Duplicate Template Group: " . ee()->uri->segment(1));
             } else {
                 $duplicate = false;
-                $log_message = "Template group and template not found, showing 404 page";
+                $this->log_item("Template group and template not found, showing 404 page");
             }
 
             // If we are enforcing strict URLs we need to show a 404
