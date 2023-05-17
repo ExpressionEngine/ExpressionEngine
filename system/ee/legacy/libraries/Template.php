@@ -2280,10 +2280,10 @@ class EE_Template
             // The first segment in the URL does NOT correlate to a valid template group.  Oh my!
             if ($query->num_rows() > 1) {
                 $duplicate = true;
-                $log_message = "Duplicate Template Group: " . ee()->uri->segment(1);
+                $this->log_item("Duplicate Template Group: " . ee()->uri->segment(1));
             } else {
                 $duplicate = false;
-                $log_message = "Template group and template not found, showing 404 page";
+                $this->log_item("Template group and template not found, showing 404 page");
             }
 
             // If we are enforcing strict URLs we need to show a 404
