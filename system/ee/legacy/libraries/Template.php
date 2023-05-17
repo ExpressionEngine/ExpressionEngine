@@ -931,6 +931,8 @@ class EE_Template
         $open_tag = LD . 'layout:set';
         $close_tag = LD . '/layout:set' . RD;
 
+        $template = $this->decode_channel_form_ee_tags($template);
+
         $open_tag_len = strlen($open_tag);
         $close_tag_len = strlen($close_tag);
 
