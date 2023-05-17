@@ -16,6 +16,12 @@ class Hooks
 {
     use EnumTrait;
 
+    public const CLI_BOOT = [
+        'name' => 'cli_boot',
+        'params' => '$cli, $commandClassName, $commandObject',
+        'library' => 'CLI',
+    ];
+
     public const CORE_BOOT = [
         'name' => 'core_boot',
         'params' => '',
