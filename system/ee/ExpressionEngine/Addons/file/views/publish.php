@@ -1,10 +1,10 @@
-<input type="hidden" class="js-file-input" name="<?=$field_name?>" value="<?=$value?>" data-id="<?=$file->file_id?>">
+<input type="hidden" class="js-file-input" name="<?=$field_name?>" value="<?=$value?>" data-id="<?php if ($file): echo $file->file_id; endif;?>">
 
 <div class="fields-upload-chosen list-item <?php if (empty($value)) {
     echo " hidden";
 }?>">
 	<div class="fields-upload-chosen-name">
-		<div title="<?=$title?>" data-name="<?=$file->file_name?>">
+		<div title="<?=$title?>">
 			<?php if ($title): ?>
 				<?=$title?>
 			<?php elseif ($file): $file_info = pathinfo($file->file_name); ?>

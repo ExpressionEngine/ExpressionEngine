@@ -26,7 +26,8 @@
 			if (EE.fileManagerCompatibilityMode) {
 				input.val('{filedir_' + data.upload_location_id + '}' + data.file_name)
 			} else {
-				input.val('{file:' + data.file_id + ':url}')
+				input.val('{file:' + data.file_id + ':url}');
+				input.attr('data-id', data.file_id);
 			}
 			input.trigger('change')
 				.trigger('hasFile', data);
@@ -101,15 +102,12 @@
 
 			$('.button.edit-meta', container).click(function (e) {
 				e.preventDefault();
-				var figure_container = $(this).closest('.grid-file-upload');
-				var file_id = figure_container.find('input[type="hidden"]').data('id');
-				var file_title = figure_container.find('.fields-upload-chosen-name > div').data('name');
+				var figure_container = $(this).closest('.fields-upload-chosen');
+				var file_id = figure_container.siblings('input[type="hidden"]').attr('data-id');
 
 				EE.cp.ModalForm.openForm({
 					url: EE.file.publishCreateUrl.replace('###', file_id),
-					load: (modal) => {
-						const fileTitle = file_title;
-					},
+					load: (modal) => {},
 				})
 
 			});
