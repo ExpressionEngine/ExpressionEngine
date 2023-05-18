@@ -99,6 +99,20 @@
 				e.preventDefault();
 			});
 
+			$('.button.edit-meta', container).click(function (e) {
+				e.preventDefault();
+				var figure_container = $(this).closest('.grid-file-upload');
+				var file_id = figure_container.find('input[type="hidden"]').data('id');
+				var file_title = figure_container.find('.fields-upload-chosen-name > div').data('name');
+
+				EE.cp.ModalForm.openForm({
+					url: EE.file.publishCreateUrl.replace('###', file_id),
+					load: (modal) => {
+						const fileTitle = file_title;
+					},
+				})
+
+			});
 			// Drag and drop component
 			FileField.renderFields(container)
 		}

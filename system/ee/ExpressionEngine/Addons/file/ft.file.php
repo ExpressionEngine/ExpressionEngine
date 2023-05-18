@@ -148,6 +148,10 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
         $show_existing = (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
         $filebrowser = (REQ == 'CP');
 
+        ee()->javascript->set_global([
+            'file.publishCreateUrl' => ee('CP/URL')->make('files/file/view/###')->compile(),
+        ]);
+
         if (REQ == 'CP') {
             return ee()->file_field->dragAndDropField($this->field_name, $data, $allowed_file_dirs, $content_type);
         }

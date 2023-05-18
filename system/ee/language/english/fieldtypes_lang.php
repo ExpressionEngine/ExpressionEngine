@@ -6,6 +6,8 @@ $lang = array(
 
     'directory_no_access' => 'You do not have access to the directory specified for this field',
 
+    'edit_meta' => 'Edit meta data',
+
     'file_undo_remove' => 'Undo Remove',
 
     'remove_file' => 'Remove File',
