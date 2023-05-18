@@ -999,6 +999,9 @@ class Uploads extends AbstractFilesController
             }
         }
 
+        $mimes = ee()->config->loadFile('mimes');
+        $fileTypes = array_filter(array_keys($mimes), 'is_string');
+
         $filesystem = $uploadDestination->getFilesystem();
 
         foreach ($current_files as $filePath) {
@@ -1090,6 +1093,15 @@ class Uploads extends AbstractFilesController
                 });
                 $file->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
                 $file->file_size = $fileInfo['size'];
+                if ($file->file_type === null) {
+                    $file->setProperty('file_type', 'other'); // default
+                    foreach ($fileTypes as $fileType) {
+                        if (in_array($file->getProperty('mime_type'), $mimes[$fileType])) {
+                            $file->setProperty('file_type', $fileType);
+                            break;
+                        }
+                    }
+                }
                 $file->save();
 
                 continue;
