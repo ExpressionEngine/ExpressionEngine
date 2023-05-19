@@ -978,7 +978,9 @@ class Moblog
             $data['category'] = array_unique($data['category']);
         }
 
-        $entry->Categories->set($data['category']);
+        if (!empty($data['category'])) {
+            $entry->Categories = ee('Model')->get('Category')->filter('cat_id', 'IN', $data['category'])->all();
+        }
 
         // forgive me, please.
 
