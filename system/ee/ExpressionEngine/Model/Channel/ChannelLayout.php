@@ -31,6 +31,9 @@ class ChannelLayout extends Model implements LayoutInterface
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'Channel' => array(
             'type' => 'belongsTo',
             'key' => 'channel_id'
@@ -175,6 +178,9 @@ class ChannelLayout extends Model implements LayoutInterface
         $field_layout = $this->field_layout;
 
         foreach ($field_layout as $i => $section) {
+            if (!isset($section['fields']) || empty($section['fields'])) {
+                continue;
+            }
             foreach ($section['fields'] as $j => $field_info) {
                 $field_name = isset($field_info['field']) ? $field_info['field'] : 0;
 

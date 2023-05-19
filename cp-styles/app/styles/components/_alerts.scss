@@ -217,6 +217,7 @@ $alert-padding-x: 20px;
 	p {
 		margin: 0;
     color: color(text-tertiary);
+    font-size: initial;
 
     &.alert__title {
       color: color(text-primary);

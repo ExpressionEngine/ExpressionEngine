@@ -186,19 +186,51 @@ class Sandr extends Utilities
             $rows += 5;
         } elseif (strncmp($where, 'template_', 9) == 0) {
             // all templates or a specific group?
-            if ($where == 'template_data') {
-                $templates = ee('Model')->get('Template')
-                    ->search('template_data', $search)
-                    ->all();
-            } else {
-                $templates = ee('Model')->get('Template')
-                    ->filter('group_id', substr($where, 9))
-                    ->search('template_data', $search)
-                    ->all();
+            switch ($where) {
+                case 'template_partials':
+                    $templates = ee('Model')->get('Snippet')
+                        ->search('snippet_contents', $search)
+                        ->all();
+                    break;
+
+                case 'template_variables':
+                    $templates = ee('Model')->get('GlobalVariable')
+                        ->search('variable_data', $search)
+                        ->all();
+                    break;
+
+                case 'template_system':
+                    $templates = ee('Model')->get('SpecialtyTemplate')
+                        ->search('template_data', $search)
+                        ->all();
+                    break;
+
+                case 'template_data':
+                    $templates = ee('Model')->get('Template')
+                        ->search('template_data', $search)
+                        ->all();
+                    break;
+
+                default:
+                    $templates = ee('Model')->get('Template')
+                        ->filter('group_id', substr($where, 9))
+                        ->search('template_data', $search)
+                        ->all();
+                    break;
             }
 
             foreach ($templates as $template) {
-                $template->template_data = str_ireplace($search, $replace, $template->template_data);
+                switch ($where) {
+                    case 'template_partials':
+                        $template->snippet_contents = str_ireplace($search, $replace, $template->snippet_contents);
+                        break;
+                    case 'template_variables':
+                        $template->variable_data = str_ireplace($search, $replace, $template->variable_data);
+                        break;
+                    default:
+                        $template->template_data = str_ireplace($search, $replace, $template->template_data);
+                        break;
+                }
                 $template->edit_date = ee()->localize->now;
             }
 

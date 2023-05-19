@@ -26,7 +26,7 @@ class Dropdown extends React.Component {
     }
     this.state = {
       selected: selected,
-      open: false
+      open: false,
     }
   }
 
@@ -43,6 +43,10 @@ class Dropdown extends React.Component {
 
       if (window.selectedFolder) {
         props.selected = window.selectedFolder;
+      }
+
+      if ($(this).parents('tr.hidden').length) {
+        props.disabledInput = true
       }
 
       ReactDOM.render(React.createElement(FilterableDropdown, props, null), this)
@@ -159,6 +163,7 @@ class Dropdown extends React.Component {
               name={this.props.name}
               value={this.state.selected ? this.state.selected.value : ''}
               data-group-toggle={this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'}
+              disabled={this.props.disabledInput ? 'disabled' : null}
             />
           </label>
 

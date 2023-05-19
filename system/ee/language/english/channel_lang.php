@@ -219,6 +219,8 @@ $lang = array(
 
     'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
 
+    'nested_fluid_will_be_hidden' => 'Nested fluid fields will not be shown',
+
     'edit_channel' => 'Edit Channel',
 
     'invalid_short_name' => 'Your channel name must contain only alpha-numeric characters and no spaces.',
@@ -406,6 +408,10 @@ $lang = array(
 
     'url_title_prefix_desc' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix assigned to all <b>new</b> entries in this channel.',
 
+    'enforce_auto_url_title' => 'Enforce automatic URL title',
+
+    'enforce_auto_url_title_desc' => 'Make the URL title field read-only and generate unique value for it automatically.',
+
     'versioning' => 'Versioning',
 
     'xml_language' => '<abbr title="Extensible Markup Language">XML</abbr> language',
@@ -568,6 +574,10 @@ $lang = array(
     'text_input' => 'Text Input',
 
     'textarea' => 'Textarea',
+
+    'fields_ajax_reorder_fail' => 'Failed to save fields order',
+
+    'fields_ajax_reorder_fail_desc' => 'We failed to save your new fields order. You may try to refresh the page and try again.',
 
     /* Statuses */
     'create_status' => 'New Status',

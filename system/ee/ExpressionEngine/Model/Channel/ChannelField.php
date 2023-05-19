@@ -40,6 +40,9 @@ class ChannelField extends FieldModel
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'ChannelFieldGroups' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'ChannelFieldGroup',
@@ -81,6 +84,12 @@ class ChannelField extends FieldModel
             'model' => 'FieldCondition',
             'from_key' => 'field_id',
             'to_key' => 'condition_field_id'
+        ),
+        'GridColumns' => array(
+            'type' => 'hasMany',
+            'model' => 'grid:GridColumn',
+            'from_key' => 'field_id',
+            'to_key' => 'field_id'
         )
     );
 

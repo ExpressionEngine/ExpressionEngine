@@ -203,6 +203,9 @@ class Pro_variables_mcp
 
             // Loop through each var and generate input field
             foreach ($vars as $var) {
+                if ($var['variable_type'] == 'pro_rte') {
+                    $var['variable_type'] = 'rte';
+                }
                 // Get variable type object from var row
                 $obj = $this->types->get($var);
 
@@ -262,7 +265,8 @@ class Pro_variables_mcp
                     'type' => 'submit',
                     'value' => '',
                     'text' => 'pro_variables_save',
-                    'working' => 'btn_saving'
+                    'working' => 'btn_saving',
+                    'shortcut' => 's'
                 ));
 
                 // Add button for clearing cache
@@ -379,7 +383,7 @@ class Pro_variables_mcp
 
             // Update record
             $this->vars->update($id, array(
-                'variable_data' => $data,
+                'variable_data' => !is_null($data) ? $data : '',
                 'edit_date'     => time()
             ));
 
@@ -536,7 +540,7 @@ class Pro_variables_mcp
             // Type
             $type = array_key_exists($var['variable_type'], $types)
                 ? $var['variable_type']
-                : Pro_variables_types::DEFAULT_TYPE;
+                : ($var['variable_type'] == 'pro_rte' ? 'rte' : Pro_variables_types::DEFAULT_TYPE);
 
             $row[] = $types[$type]['name'];
 
@@ -952,6 +956,8 @@ class Pro_variables_mcp
             // Do we have settings?
             $settings = $obj->display_settings();
 
+            ee()->load->add_package_path(PATH_ADDONS . $this->package);
+
             // Skip empty settings
             if (empty($settings)) {
                 continue;
@@ -1010,7 +1016,7 @@ class Pro_variables_mcp
         // Determine fallback
         $type = array_key_exists($var['variable_type'], $types)
             ? $var['variable_type']
-            : Pro_variables_types::DEFAULT_TYPE;
+            : ($var['variable_type'] == 'pro_rte' ? 'rte' : Pro_variables_types::DEFAULT_TYPE);
 
         $sections[0][] = array(
             'title' => 'variable_type',
@@ -1120,8 +1126,8 @@ class Pro_variables_mcp
         //  Get name and suffix
         // -------------------------------------
 
-        $var_name = trim(ee('Request')->post('variable_name'));
-        $suffix = trim(ee('Request')->post('variable_suffix'));
+        $var_name = trim((string) ee('Request')->post('variable_name'));
+        $suffix = trim((string) ee('Request')->post('variable_suffix'));
         $vars = array();
 
         // -------------------------------------
@@ -1162,6 +1168,11 @@ class Pro_variables_mcp
             // Check if it doesn't exist
             if ($this->vars->var_exists($name, $var_id)) {
                 $errors[] = lang('variable_name_already_exists') . ': ' . $name;
+            }
+
+            if (in_array($name, ee()->cp->invalid_custom_field_names())) {
+                ee()->lang->load('design');
+                $errors[] = lang('reserved_name');
             }
         }
 

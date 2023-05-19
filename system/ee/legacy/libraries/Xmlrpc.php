@@ -16,7 +16,7 @@ if (! function_exists('xml_parser_create')) {
  */
 class EE_Xmlrpc
 {
-    public $debug = false;	// Debugging on or off
+    public $debug = false;// Debugging on or off
     public $xmlrpcI4 = 'i4';
     public $xmlrpcInt = 'int';
     public $xmlrpcBoolean = 'boolean';
@@ -29,7 +29,7 @@ class EE_Xmlrpc
 
     public $xmlrpcTypes = array();
     public $valid_parents = array();
-    public $xmlrpcerr = array();	// Response numbers
+    public $xmlrpcerr = array(); // Response numbers
     public $xmlrpcstr = array();  // Response strings
 
     public $xmlrpc_defencoding = 'UTF-8';
@@ -43,7 +43,8 @@ class EE_Xmlrpc
     public $method;
     public $data;
     public $message = '';
-    public $error = '';		// Error string for request
+    public $error = ''; // Error string for request
+    public $errstr = '';
     public $result;
     public $response = array();  // Response from remote server
 
@@ -683,7 +684,7 @@ class XML_RPC_Message extends EE_Xmlrpc
         if ($this->debug === true) {
             echo "<pre>";
 
-            if (count($this->xh[$parser_name]['headers'] > 0)) {
+            if (count($this->xh[$parser_name]['headers']) > 0) {
                 echo "---HEADERS---\n";
                 foreach ($this->xh[$parser_name]['headers'] as $header) {
                     echo "$header\n";
@@ -780,26 +781,26 @@ class XML_RPC_Message extends EE_Xmlrpc
 
                 array_unshift($this->xh[$parser_name]['valuestack'], $cur_val);
 
-            break;
+                break;
             case 'METHODNAME':
             case 'NAME':
                 $this->xh[$parser_name]['ac'] = '';
 
-            break;
+                break;
             case 'FAULT':
                 $this->xh[$parser_name]['isf'] = 1;
 
-            break;
+                break;
             case 'PARAM':
                 $this->xh[$parser_name]['value'] = null;
 
-            break;
+                break;
             case 'VALUE':
                 $this->xh[$parser_name]['vt'] = 'value';
                 $this->xh[$parser_name]['ac'] = '';
                 $this->xh[$parser_name]['lv'] = 1;
 
-            break;
+                break;
             case 'I4':
             case 'INT':
             case 'STRING':
@@ -817,7 +818,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
                 $this->xh[$parser_name]['ac'] = '';
 
-            break;
+                break;
             case 'MEMBER':
                 // Set name of <member> to nothing to prevent errors later if no <name> is found
                 $this->xh[$parser_name]['valuestack'][0]['name'] = '';
@@ -825,19 +826,19 @@ class XML_RPC_Message extends EE_Xmlrpc
                 // Set NULL value to check to see if value passed for this param/member
                 $this->xh[$parser_name]['value'] = null;
 
-            break;
+                break;
             case 'DATA':
             case 'METHODCALL':
             case 'METHODRESPONSE':
             case 'PARAMS':
                 // valid elements that add little to processing
-            break;
+                break;
             default:
                 /// An Invalid Element is Found, so we have trouble
                 $this->xh[$parser_name]['isf'] = 2;
                 $this->xh[$parser_name]['isf_reason'] = "Invalid XML-RPC element found: $name";
 
-            break;
+                break;
         }
 
         // Add current element name to stack, to allow validation of nesting
@@ -875,11 +876,11 @@ class XML_RPC_Message extends EE_Xmlrpc
                 $this->xh[$parser_name]['value'] = (! isset($cur_val['values'])) ? array() : $cur_val['values'];
                 $this->xh[$parser_name]['vt'] = strtolower($name);
 
-            break;
+                break;
             case 'NAME':
                 $this->xh[$parser_name]['valuestack'][0]['name'] = $this->xh[$parser_name]['ac'];
 
-            break;
+                break;
             case 'BOOLEAN':
             case 'I4':
             case 'INT':
@@ -923,7 +924,7 @@ class XML_RPC_Message extends EE_Xmlrpc
                 $this->xh[$parser_name]['ac'] = '';
                 $this->xh[$parser_name]['lv'] = 3; // indicate we've found a value
 
-            break;
+                break;
             case 'VALUE':
                 // This if() detects if no scalar was inside <VALUE></VALUE>
                 if ($this->xh[$parser_name]['vt'] == 'value') {
@@ -942,7 +943,7 @@ class XML_RPC_Message extends EE_Xmlrpc
                     $this->xh[$parser_name]['value'] = $temp;
                 }
 
-            break;
+                break;
             case 'MEMBER':
                 $this->xh[$parser_name]['ac'] = '';
 
@@ -951,30 +952,30 @@ class XML_RPC_Message extends EE_Xmlrpc
                     $this->xh[$parser_name]['valuestack'][0]['values'][$this->xh[$parser_name]['valuestack'][0]['name']] = $this->xh[$parser_name]['value'];
                 }
 
-            break;
+                break;
             case 'DATA':
                 $this->xh[$parser_name]['ac'] = '';
 
-            break;
+                break;
             case 'PARAM':
                 if ($this->xh[$parser_name]['value']) {
                     $this->xh[$parser_name]['params'][] = $this->xh[$parser_name]['value'];
                 }
 
-            break;
+                break;
             case 'METHODNAME':
                 $this->xh[$parser_name]['method'] = ltrim($this->xh[$parser_name]['ac']);
 
-            break;
+                break;
             case 'PARAMS':
             case 'FAULT':
             case 'METHODCALL':
             case 'METHODRESPONSE':
                 // We're all good kids with nuthin' to do
-            break;
+                break;
             default:
                 // End of an Invalid Element.  Taken care of during the opening tag though
-            break;
+                break;
         }
     }
 
@@ -1202,7 +1203,7 @@ class XML_RPC_Values extends EE_Xmlrpc
                 }
                 $rs .= '</struct>';
 
-            break;
+                break;
             case 2:
                 // array
                 $rs .= "<array>\n<data>\n";
@@ -1217,24 +1218,20 @@ class XML_RPC_Values extends EE_Xmlrpc
                 switch ($typ) {
                     case $this->xmlrpcBase64:
                         $rs .= "<{$typ}>" . base64_encode((string) $val) . "</{$typ}>\n";
-
-                    break;
+                        break;
                     case $this->xmlrpcBoolean:
                         $rs .= "<{$typ}>" . ((bool) $val ? '1' : '0') . "</{$typ}>\n";
-
-                    break;
+                        break;
                     case $this->xmlrpcString:
                         $rs .= "<{$typ}>" . htmlspecialchars((string) $val) . "</{$typ}>\n";
-
-                    break;
+                        break;
                     default:
                         $rs .= "<{$typ}>{$val}</{$typ}>\n";
-
-                    break;
+                        break;
                 }
                 // no break
             default:
-            break;
+                break;
         }
 
         return $rs;

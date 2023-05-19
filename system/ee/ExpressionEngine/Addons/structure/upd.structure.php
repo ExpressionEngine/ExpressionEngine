@@ -21,6 +21,7 @@ class Structure_upd
     public $sql;
     public $version;
     public $page_title;
+    public $nset;
 
     public function __construct($switch = true)
     {

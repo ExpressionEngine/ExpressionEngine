@@ -258,7 +258,7 @@
 							if (altKey === true) {
 								return (b[1] !== undefined) ? b[1] : b[0];
 							} else {
-								return (b[1] === undefined) ? "" : b[0];
+								return b[0];
 							}
 						}
 					);

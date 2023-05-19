@@ -5,6 +5,8 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - '*.dev'
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - 'release/[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
     cancel-running-tests:
@@ -143,6 +145,10 @@ jobs:
               run: |
                 mv system/ee/installer system/ee/_installer
 
+            - name: Add logs folder
+              run: |
+                mkdir system/user/logs
+
             - name: Setup Permissions
               run: |
                 sudo chmod 666 system/user/config/config.php
@@ -150,6 +156,7 @@ jobs:
                 sudo chmod -R 777 system/user/cache
                 sudo chmod -R 777 system/user/templates
                 sudo chmod -R 777 system/user/language
+                sudo chmod -R 777 system/user/logs
                 sudo chmod -R 777 tests/cypress/support/tmp
                 sudo chmod -R 777 tests/cypress/support/file-sync/uploads
                 sudo chmod -R 777 images
@@ -194,10 +201,10 @@ jobs:
               env:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
-            - name: Install Chrome Beta
+            - name: Install Chrome
               uses: browser-actions/setup-chrome@latest
               with:
-                chrome-version: beta
+                chrome-version: stable
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v5
@@ -247,3 +254,9 @@ jobs:
               with:
                 name: csv-reports.PHP${{ matrix.php }}-${{ matrix.containers }}
                 path: tests/cypress/cypress/downloads/
+
+            - name: Archive EE error logs
+              uses: actions/upload-artifact@v3
+              with:
+                name: ee-error-logs.PHP${{ matrix.php }}-${{ matrix.containers }}
+                path: system/user/logs/

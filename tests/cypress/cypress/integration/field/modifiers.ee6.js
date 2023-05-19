@@ -160,4 +160,15 @@ context('Categories', () => {
 
     })
 
+    it('multiple modifiers on title', function() {
+        cy.visit('index.php/modifiers/multiple')
+
+        cy.get('h4').contains('limit, prefixed and unprefixed').next('span').invoke('text').should('eq', 'Welcome to')
+        cy.get('h4').contains('limit + urlencode').next('span').invoke('text').should('eq', 'Welcome+to')
+        cy.get('h4').contains('urlencode, prefixed only').next('span').invoke('text').should('eq', 'Welcome+to+the+Example+Site%21')
+        cy.get('h4').contains('limit + urlencode, mixed params').next('span').invoke('text').should('eq', 'Welcome+to')
+
+        cy.logFrontendPerformance()
+    })
+
 })

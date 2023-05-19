@@ -193,7 +193,7 @@ class Localize
      * @param   bool    Include seconds in returned string or not
      * @return  string  Formatted string
      */
-    public function human_time($timestamp = null, $localize = true, $seconds = false)
+    public function human_time($timestamp = null, $localize = true, $seconds = false, $include_time = true)
     {
         // Override the userdata/config with the parameter only if it was provided
         $include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
@@ -201,7 +201,7 @@ class Localize
             $seconds = true;
         }
 
-        $format_string = $this->get_date_format($seconds);
+        $format_string = $this->get_date_format($seconds, $include_time);
 
         return $this->format_date($format_string, $timestamp, $localize);
     }
@@ -212,11 +212,15 @@ class Localize
      * @param   bool    Include seconds in the date format string or not
      * @return  string  Date format string
      */
-    public function get_date_format($seconds = false)
+    public function get_date_format($seconds = false, $include_time = true)
     {
         $include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
         $date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
         $time_format = ee()->session->userdata('time_format', ee()->config->item('time_format'));
+
+        if (! $include_time) {
+            return $date_format;
+        }
 
         // Override the userdata/config with the parameter only if it was provided
         if (func_num_args() != 1 && $include_seconds == 'y') {

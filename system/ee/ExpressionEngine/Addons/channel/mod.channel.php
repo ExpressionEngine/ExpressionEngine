@@ -654,7 +654,7 @@ class Channel
                 if (in_array($field_name, ['title', 'url_title'])) {
                     $table = 't';
                     $search_column_name = $table . '.' . $field_name;
-                } else if (! isset($this->cfields[$site_id][$field_name])) {
+                } elseif (! isset($this->cfields[$site_id][$field_name])) {
                     continue;
                 }
 
@@ -668,6 +668,15 @@ class Channel
                     $field_id = $this->cfields[$site_id][$field_name];
                     $table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
                     $search_column_name = $table . '.field_id_' . $this->cfields[$site_id][$field_name];
+                    if (ee()->config->item('show_profiler') === 'y') {
+                        if (isset($this->rfields[$site_id][$field_name])) {
+                            ee()->TMPL->log_item('WARNING: Using Relationship fields in `search` parameter is not supported.');
+                        } elseif (isset($this->gfields[$site_id][$field_name])) {
+                            ee()->TMPL->log_item('NOTE: Using Grid fields in `search` parameter requires the field to be marked as searchable.');
+                        } elseif (isset($this->ffields[$site_id][$field_name])) {
+                            ee()->TMPL->log_item('NOTE: Using Fluid fields in `search` parameter requires the field to be marked as searchable.');
+                        }
+                    }
                 }
 
                 $fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
@@ -2088,8 +2097,15 @@ class Channel
     {
         $sql = " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
                         w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
-                        m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.role_id, m.member_id,
+                        m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.role_id, m.member_id";
+
+        // check if we have param for needed fields only.. default is no
+        if (! $needed_fields_only = ee()->TMPL->fetch_param('needed_fields_only')) {
+            // string is weird on this one.. but it keeps the query
+            // well formatted for viewing when fully rendered
+            $sql .= ", 
                         wd.*";
+        }
 
         $from = " FROM exp_channel_titles       AS t
                 LEFT JOIN exp_channels      AS w  ON t.channel_id = w.channel_id
@@ -2126,14 +2142,35 @@ class Channel
                 ee()->session->set_cache(__CLASS__, $cache_key, $channels);
             }
 
+            // Get the fields for the channels passed in
             foreach ($channels as $channel) {
                 foreach ($channel->getAllCustomFields() as $field) {
+                    // assign fields in new storage format to array
                     if (! $field->legacy_field_data) {
                         $fields[$field->field_id] = $field;
+                    }
+
+                    // if we're including only the needed legacy fields, assign them to the array
+                    if ($needed_fields_only && $field->legacy_field_data) {
+                        $legacy_fields[] = $field;
                     }
                 }
             }
         }
+
+        //Build string for legacy fields to be added in.
+        if ($needed_fields_only) {
+            // add the fields that are needed for joins etc.
+            $sql .= ", wd.entry_id, wd.site_id, wd.channel_id";
+
+            if (!empty($legacy_fields)) {
+                foreach ($legacy_fields as $lField) {
+                    $sql .= ', wd.field_ft_' . $lField->field_id;
+                    $sql .= ', wd.field_id_' . $lField->field_id;
+                }
+            }
+        }
+
 
         //MySQL has limit of 61 joins, so we need to make sure to not hit it
         $join_limit = 61 - 7 - $mfieldCount;
@@ -3928,7 +3965,6 @@ class Channel
                 $content = $data[$field_name];
 
                 if (! empty($var_props['modifier'])) {
-                    $parse_fnc = 'replace_' . $var_props['modifier'];
 
                     if ($field_name == 'category_image') {
                         $class = $file_fieldtype;
@@ -3940,19 +3976,40 @@ class Channel
                         $class = $fieldtype;
                     }
 
-                    if (method_exists($class, $parse_fnc)) {
-                        $content = ee()->api_channel_fields->apply($parse_fnc, array(
-                            $content,
-                            $var_props['params'],
-                            false
-                        ));
-                    } elseif (method_exists($class, 'replace_tag_catchall')) {
-                        $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
-                            $content,
-                            $var_props['params'],
-                            false,
-                            $var_props['modifier']
-                        ));
+                    if (isset($var_props['all_modifiers']) && !empty($var_props['all_modifiers'])) {
+                        foreach ($var_props['all_modifiers'] as $modifier => $params) {
+                            $parse_fnc = 'replace_' . $modifier;
+                            if (method_exists($class, $parse_fnc)) {
+                                $content = ee()->api_channel_fields->apply($parse_fnc, array(
+                                    $content,
+                                    $params,
+                                    false
+                                ));
+                            } elseif (method_exists($class, 'replace_tag_catchall')) {
+                                $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
+                                    $content,
+                                    $params,
+                                    false,
+                                    $modifier
+                                ));
+                            }
+                        }
+                    } else {
+                        $parse_fnc = 'replace_' . $var_props['modifier'];
+                        if (method_exists($class, $parse_fnc)) {
+                            $content = ee()->api_channel_fields->apply($parse_fnc, array(
+                                $content,
+                                $var_props['params'],
+                                false
+                            ));
+                        } elseif (method_exists($class, 'replace_tag_catchall')) {
+                            $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
+                                $content,
+                                $var_props['params'],
+                                false,
+                                $var_props['modifier']
+                            ));
+                        }
                     }
                 }
 

@@ -41,7 +41,7 @@ class Request
         $name = '';
         $site_name = '';
         $template_version = 0;
-        $modified_since = ee('Request')->header('IF_MODIFIED_SINCE');
+        $modified_since = (string) ee('Request')->header('IF_MODIFIED_SINCE');
 
         // requests by trigger segments, the ones without version suffixes
         if (in_array(ee()->uri->segment(1), ee()->uri->reserved) && false !== ee()->uri->segment(2)) {
@@ -132,14 +132,16 @@ class Request
                 ee()->load->helper('file');
                 $filepath = PATH_TMPL . (!empty($site_name) ? $site_name : ee()->config->item('site_short_name')) . '/';
                 $filepath .= $group . '.group' . '/' . $name . '.' . $this->type;
-                $file_edit_date = filemtime($filepath);
+                if (file_exists($filepath)) {
+                    $file_edit_date = filemtime($filepath);
 
-                if ($file_edit_date > $edit_date) {
-                    $str = read_file($filepath);
+                    if ($file_edit_date > $edit_date) {
+                        $str = read_file($filepath);
 
-                    if (false !== $str) {
-                        $template_data = $str;
-                        $edit_date = $file_edit_date;
+                        if (false !== $str) {
+                            $template_data = $str;
+                            $edit_date = $file_edit_date;
+                        }
                     }
                 }
             }

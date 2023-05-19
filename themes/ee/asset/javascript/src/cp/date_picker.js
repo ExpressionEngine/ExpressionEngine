@@ -295,6 +295,34 @@ EE.cp.datePicker = {
 
 			trailing = (trailing == 7) ? 0 : trailing;
 
+			var daysArr = [];
+			var dayIndex;
+
+			switch (EE.date.week_start) {
+				case 'sunday':
+					dayIndex = 0;
+					break;
+				case 'monday':
+					dayIndex = 1;
+					break;
+				case 'friday':
+					dayIndex = 5;
+					break;
+				case 'saturday':
+					dayIndex = 6;
+					break;
+				default:
+					dayIndex = 0;
+			}
+
+			for (var i = dayIndex; i < EE.lang.date.days.length + dayIndex; i++) {
+				if (i <= 6 ) {
+					daysArr.push('<th>' + EE.lang.date.days[i] + '</th>');
+				} else {
+					daysArr.push('<th>' + EE.lang.date.days[i-7] + '</th>');
+				}
+			}
+
 			var preamble = [
 				'<div class="date-picker-item">',
 				'<div class="date-picker-heading">',
@@ -304,14 +332,17 @@ EE.cp.datePicker = {
 				'</div>',
 				'<table>',
 				'<tr>',
-				'<th>' + EE.lang.date.days[0] + '</th>',
-				'<th>' + EE.lang.date.days[1] + '</th>',
-				'<th>' + EE.lang.date.days[2] + '</th>',
-				'<th>' + EE.lang.date.days[3] + '</th>',
-				'<th>' + EE.lang.date.days[4] + '</th>',
-				'<th>' + EE.lang.date.days[5] + '</th>',
-				'<th>' + EE.lang.date.days[6] + '</th>',
-				'</tr>'
+				// '<th>' + EE.lang.date.days[1] + '</th>',
+				// '<th>' + EE.lang.date.days[2] + '</th>',
+				// '<th>' + EE.lang.date.days[3] + '</th>',
+				// '<th>' + EE.lang.date.days[4] + '</th>',
+				// '<th>' + EE.lang.date.days[5] + '</th>',
+				// '<th>' + EE.lang.date.days[6] + '</th>',
+				// '<th>' + EE.lang.date.days[0] + '</th>',
+				// '</tr>'
+				],
+				closeTr = [
+					'</tr>'
 				],
 				closing = [
 				'</table>',
@@ -363,7 +394,7 @@ EE.cp.datePicker = {
 
 			this.calendars.push(year + '-' + month);
 
-			return preamble.join('') + out.join('') + closing.join('');
+			return preamble.join('') + daysArr.join('') + closeTr.join('') + out.join('') + closing.join('');
 		}
 
 	},
@@ -397,7 +428,25 @@ EE.cp.datePicker = {
 		},
 
 		first_day: function(year, month) {
-			return new Date(year, month, 1).getDay();
+			var day;
+			switch (EE.date.week_start) {
+				case 'sunday':
+					day = 1;
+					break;
+				case 'monday':
+					day = 0;
+					break;
+				case 'friday':
+					day = 3;
+					break;
+				case 'saturday':
+					day = 2;
+					break;
+				default:
+					day = 1;
+			}
+
+			return new Date(year, month, day).getDay();
 		}
 	},
 

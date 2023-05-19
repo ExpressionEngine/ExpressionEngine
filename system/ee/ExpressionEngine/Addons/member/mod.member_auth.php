@@ -104,6 +104,10 @@ class Member_auth extends Member
         // Figure out how many sites we're dealing with here
         $sites = ee()->config->item('multi_login_sites');
         $sites_array = explode('|', $sites);
+        $protocolsReplace = [
+            'http://' => 'https://',
+            'https://' => 'http://'
+        ];
 
         // No username/password?  Bounce them...
         $multi = (ee()->input->get('multi') && count($sites_array) > 0)
@@ -142,7 +146,10 @@ class Member_auth extends Member
 
             $current_url = ee()->functions->fetch_site_index();
             $current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
-            $current_idx = array_search($current_search_url, $sites_array);
+            do {
+                $current_idx = array_search($current_search_url, $sites_array);
+                $current_search_url = str_replace(array_key_first($protocolsReplace), array_shift($protocolsReplace), $current_search_url);
+            } while ($current_idx === false && !empty($protocolsReplace));
 
             // Figure out return
             if (! $return_link = ee()->input->get('RET')) {
@@ -159,6 +166,10 @@ class Member_auth extends Member
             $current_idx = array_search($current_search_url, $sites_array);
 
             $return_link = reduce_double_slashes(ee()->functions->form_backtrack());
+        }
+
+        if (!empty($sites) && $current_idx === false) {
+            ee()->output->show_user_error('general', lang('multi_auth_redirect_site_not_found'));
         }
 
         // Set login state
