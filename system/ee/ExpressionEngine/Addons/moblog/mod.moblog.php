@@ -816,7 +816,7 @@ class Moblog
             'title' => (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->post_data['subject']) : $this->post_data['subject'],
             'ip_address' => $this->post_data['ip'],
             'entry_date' => $entry_date,
-            'edit_date' => gmdate("YmdHis", $entry_date),
+            'edit_date' => $entry_date,
             'year' => gmdate('Y', $entry_date),
             'month' => gmdate('m', $entry_date),
             'day' => gmdate('d', $entry_date),
