@@ -33,7 +33,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     /**
      * Constructor
      *
-     * @access	public
+     * @access public
      */
     public function __construct()
     {
@@ -44,21 +44,23 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     /**
      * Validate the upload
      *
-     * @access	public
+     * @access public
      */
     public function validate($data)
     {
         // Is it required but empty?
-        if (($this->settings['field_required'] === true
-            || $this->settings['field_required'] == 'y')
-                && empty($data)) {
+        if (
+            ($this->settings['field_required'] === true || $this->settings['field_required'] == 'y')
+            && empty($data)
+        ) {
             return array('value' => '', 'error' => lang('required'));
         }
 
         // Is it optional and empty?
-        if (($this->settings['field_required'] === false
-            || $this->settings['field_required'] == 'n')
-                && empty($data)) {
+        if (
+            ($this->settings['field_required'] === false || $this->settings['field_required'] == 'n')
+            && empty($data)
+        ) {
             return array('value' => '');
         }
 
@@ -125,7 +127,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     /**
      * Save the correct value {fieldir_\d}filename.ext
      *
-     * @access	public
+     * @access public
      */
     public function save($data)
     {
@@ -136,7 +138,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     /**
      * Show the publish field
      *
-     * @access	public
+     * @access public
      */
     public function display_field($data)
     {
@@ -149,7 +151,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
         $filebrowser = (REQ == 'CP');
 
         ee()->javascript->set_global([
-            'file.publishCreateUrl' => ee('CP/URL')->make('files/file/view/###')->compile(),
+            'file.publishCreateUrl' => ee('CP/URL')->make('files/file/view/###', ['modal_form' => 'y'])->compile(),
         ]);
 
         if (REQ == 'CP') {
@@ -198,7 +200,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     /**
      * Basic javascript interaction on the frontend
      *
-     * @access	public
+     * @access public
      */
     protected function _frontend_js()
     {
@@ -268,7 +270,7 @@ JSC;
     /**
      * Prep the publish data
      *
-     * @access	public
+     * @access public
      */
     public function pre_process($data)
     {
@@ -278,7 +280,7 @@ JSC;
     /**
      * Runs before the channel entries loop on the front end
      *
-     * @param array $data	All custom field data about to be processed for the front end
+     * @param array $data All custom field data about to be processed for the front end
      * @return void
      */
     public function pre_loop($data)
@@ -289,7 +291,7 @@ JSC;
     /**
      * Replace frontend tag
      *
-     * @access	public
+     * @access public
      */
     public function replace_tag($data, $params = array(), $tagdata = false)
     {
@@ -618,7 +620,7 @@ JSC;
 
             return ($return_as_path ? $destination_path : $destination_url);
         } else {
-            if(!$props) {
+            if (!$props) {
                 $tmp = $data['filesystem']->copyToTempFile($destination_path);
                 $props = ee()->image_lib->get_image_properties($tmp['path'], true);
                 fclose($tmp['file']);
@@ -743,7 +745,7 @@ JSC;
      * Here, the modifier is the short name of the image manipulation,
      * e.g. "small" in {about_image:small}
      *
-     * @access	public
+     * @access public
      */
     public function replace_tag_catchall($data = [], $params = array(), $tagdata = false, $modifier = '')
     {
@@ -779,7 +781,7 @@ JSC;
     /**
      * Wrap it helper function
      *
-     * @access	private
+     * @access private
      */
     public function _wrap_it($data, $type, $full_path)
     {
@@ -803,7 +805,8 @@ JSC;
     /**
      * Display settings screen
      *
-     * @access	public
+     * @access public
+     * @return array
      */
     public function display_settings($data)
     {
@@ -940,11 +943,11 @@ JSC;
      * Help simplify the form building and enforces a strict layout. If
      * you think this table needs to look different, go bug James.
      *
-     * @param	left cell content
-     * @param	right cell content
-     * @param	vertical alignment of left column
+     * @param string  left cell content
+     * @param string  right cell content
+     * @param string  vertical alignment of left column
      *
-     * @return	void - adds a row to the EE table class
+     * @return  void - adds a row to the EE table class
      */
     protected function _row($cell1, $cell2 = '', $valign = 'center')
     {
@@ -1000,7 +1003,7 @@ JSC;
     /**
      * Form Validation callback
      *
-     * @return	boolean	Whether or not to pass validation
+     * @return boolean Whether or not to pass validation
      */
     public function _validate_file_settings($key, $value, $params, $rule)
     {

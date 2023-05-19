@@ -1,4 +1,4 @@
-<?php $this->extend('_templates/default-nav'); ?>
+<?php if (!$modal_form) { $this->extend('_templates/default-nav'); } ?>
 
 <?php
 $form_class = '';
@@ -52,23 +52,25 @@ if (! isset($alerts_name)) {
 
 
       <div class="panel-body file-preview-modal">
+            <?php if (!$modal_form) : ?>
             <div class="file-preview-modal__preview">
                 <?php if ($is_image) : ?>
                     <a href="<?=$file->getAbsoluteURL() . '?v=' . time()?>" target="_blank"><img src="<?=$file->getAbsoluteURL() . '?v=' . time()?>"></a>
-                <?php else: ?>
+                <?php else : ?>
                     <div class="file-preview-modal__preview-file-name"><?=str_replace('fa-3x', 'fa-10x', ee('Thumbnail')->get($file)->tag)?></div>
                 <?php endif; ?>
             </div>
+            <?php endif; ?>
 
             <div class="file-preview-modal__form">
                 <div class="form-standard">
                     <div class="">
-                        <?php if (isset($tabs)):?>
+                        <?php if (isset($tabs)) :?>
                             <?php $active_tab = (isset($active_tab)) ? $active_tab : array_key_first($tabs); ?>
                             <div class="tab-wrap">
                                 <div class="tab-bar">
                                     <div class="tab-bar__tabs">
-                                    <?php foreach (array_keys($tabs) as $key):
+                                    <?php foreach (array_keys($tabs) as $key) :
                                         $class = '';
                                         if ($key == $active_tab) {
                                             $class = 'active';
@@ -95,8 +97,8 @@ if (! isset($alerts_name)) {
                                     echo ee('CP/Alert')->get($alert);
                                 }
                             }
-                            if (isset($tabs)):
-                                foreach ($tabs as $key => $html):
+                            if (isset($tabs)) :
+                                foreach ($tabs as $key => $html) :
                             ?>
                             <div class="tab t-<?=$key?><?php if ($key == $active_tab) { echo ' tab-open'; }?>"><?=$html?></div>
                                 <?php
@@ -113,12 +115,12 @@ if (! isset($alerts_name)) {
                                     $this->embed('_shared/form/section', array('name' => $name, 'settings' => $settings));
                                 }
                                 ?>
-                        <?php foreach ($secure_form_ctrls as $setting):
+                        <?php foreach ($secure_form_ctrls as $setting) :
                             $this->embed('ee:_shared/form/fieldset', ['setting' => $setting, 'group' => false]); ?>
                         <?php endforeach ?>
                         </div>
 
-                        <?php if (isset($tabs)):?>
+                        <?php if (isset($tabs)) :?>
                             </div>
                         <?php endif; ?>
 
