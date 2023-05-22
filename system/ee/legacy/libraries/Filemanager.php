@@ -1893,7 +1893,7 @@ class Filemanager
 
         $field = ($field_name) ? $field_name : 'userfile';
         $original_filename = $_FILES[$field]['name'];
-        $clean_filename = basename($this->clean_filename(
+        $clean_filename = basename($this->clean_subdir_and_filename(
             $_FILES[$field]['name'],
             $dir['id'],
             array('ignore_dupes' => true)
@@ -2261,7 +2261,7 @@ class Filemanager
     public function _rename_raw_file($old_file_name, $new_file_name, $directory_id)
     {
         // Make sure the filename is clean
-        $new_file_name = $this->clean_filename($new_file_name, $directory_id);
+        $new_file_name = $this->clean_subdir_and_filename($new_file_name, $directory_id);
 
         // Check they have permission for this directory and get directory info
         $upload_directory = $this->fetch_upload_dir_prefs($directory_id);
