@@ -156,6 +156,14 @@ abstract class AbstractFiles extends CP_Controller
 
         $file->save();
 
+        if (AJAX_REQUEST) {
+            ee()->output->send_ajax_response(array(
+                'success' => true,
+                'file_id' => $file->file_id,
+                'title' => $file->title,
+            ));
+        }
+
         $alert = ee('CP/Alert')->makeInline('shared-form')
             ->asSuccess()
             ->withTitle(lang($action . '_success'))

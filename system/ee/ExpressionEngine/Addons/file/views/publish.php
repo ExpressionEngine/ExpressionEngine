@@ -1,9 +1,9 @@
-<input type="hidden" class="js-file-input" name="<?=$field_name?>" value="<?=$value?>" data-id="<?php if ($file): echo $file->file_id; endif;?>">
+<input type="hidden" class="js-file-input" name="<?=$field_name?>" value="<?=$value?>" data-id="<?=($file ? $file->file_id : '')?>">
 
 <div class="fields-upload-chosen list-item <?php if (empty($value)) {
     echo " hidden";
 }?>">
-	<div class="fields-upload-chosen-name">
+	<div class="fields-upload-chosen-name" data-id="<?=($file ? $file->file_id : '')?>">
 		<div title="<?=$title?>">
 			<?php if ($title): ?>
 				<?=$title?>

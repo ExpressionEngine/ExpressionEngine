@@ -126,17 +126,20 @@ class File extends AbstractFilesController
                     'text' => 'btn_edit_file_meta',
                     'working' => 'btn_saving'
                 ],
-                [
-                    'name' => 'submit',
-                    'type' => 'submit',
-                    'value' => 'save_and_close',
-                    'text' => 'save_and_close',
-                    'working' => 'btn_saving'
-                ],
             ],
             'sections' => array(),
             'hide_top_buttons' => true
         ];
+
+        if (ee('Request')->get('modal_form') !== 'y') {
+            $vars['buttons'][] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_and_close',
+                'text' => 'save_and_close',
+                'working' => 'btn_saving'
+            ];
+        }
 
         ee()->view->cp_page_title = lang('edit_file_metadata');
 

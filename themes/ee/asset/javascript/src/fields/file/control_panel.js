@@ -107,7 +107,14 @@
 
 				EE.cp.ModalForm.openForm({
 					url: EE.file.publishCreateUrl.replace('###', file_id),
-					load: (modal) => {},
+					load: (modal) => {
+						if ($('div[data-select-react]', modal).length) {
+							SelectField.renderFields();
+						}
+					},
+					success: (result) => {
+						$('.fields-upload-chosen-name[data-id=' + file_id + ']').attr('title', result.title).text(result.title)
+					}
 				})
 
 			});
