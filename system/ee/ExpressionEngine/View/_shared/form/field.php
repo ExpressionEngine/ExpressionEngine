@@ -108,7 +108,7 @@ if ($field['type'] == 'checkbox' && ! $value) {
         'field_name' => $field_name,
         'choices' => $field['choices'],
         'disabled_choices' => isset($field['disabled_choices']) ? $field['disabled_choices'] : null,
-        'value' => array_unique($value),
+        'value' => is_array($value) ? array_unique($value) : $value,
         'scalar' => isset($field['scalar']) ? $field['scalar'] : null,
         'multi' => ($field['type'] == 'checkbox'),
         'nested' => isset($field['nested']) ? $field['nested'] : false,
