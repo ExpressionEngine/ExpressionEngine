@@ -1002,14 +1002,14 @@ class Uploads extends AbstractFilesController
             $file = $uploadDestination->getFileByPath($filePath);
 
             // Clean filename
-            $clean_filename = ee()->filemanager->clean_filename($fileInfo['path'], $id, array(
+            $clean_filename = ee()->filemanager->clean_subdir_and_filename($fileInfo['path'], $id, array(
                 'convert_spaces' => false,
                 'ignore_dupes' => true
             ));
 
             if ($fileInfo['path'] != $clean_filename) {
                 // Make sure clean filename is unique
-                $clean_filename = ee()->filemanager->clean_filename($clean_filename, $id, array(
+                $clean_filename = ee()->filemanager->clean_subdir_and_filename($clean_filename, $id, array(
                     'convert_spaces' => false,
                     'ignore_dupes' => false
                 ));
