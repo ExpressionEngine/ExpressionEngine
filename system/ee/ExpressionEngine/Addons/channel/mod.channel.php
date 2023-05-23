@@ -2007,7 +2007,7 @@ class Channel
         /**  Add Limits to query
         /**------*/
 
-        if (ee('LivePreview')->hasEntryData()) {
+        if (isset(ee()->session) && ee('LivePreview')->hasEntryData()) {
             $parts = explode(' WHERE ', $sql);
             $this->preview_conditions = explode(' AND ', $parts[1]);
         }
@@ -2088,8 +2088,10 @@ class Channel
         $this->sql .= $this->generateSQLForEntries($entries, $channel_ids);
 
         //cache the entry_id
-        ee()->session->cache['channel']['entry_ids'] = $entries;
-        ee()->session->cache['channel']['channel_ids'] = $channel_ids;
+        if (isset(ee()->session)) {
+            ee()->session->cache['channel']['entry_ids'] = $entries;
+            ee()->session->cache['channel']['channel_ids'] = $channel_ids;
+        }
 
         $end = "ORDER BY FIELD(t.entry_id, " . implode(',', $entries) . ")";
 
@@ -2216,6 +2218,10 @@ class Channel
     {
         $return = false;
 
+        if (!isset(ee()->session)) {
+            return $return;
+        }
+
         if (ee('LivePreview')->hasEntryData()) {
             $data = ee('LivePreview')->getEntryData();
             if (in_array($this->query_string, [$data['entry_id'], $data['url_title']])) {
@@ -2235,6 +2241,10 @@ class Channel
 
     private function overrideWithPreviewData($result_array)
     {
+        if (!isset(ee()->session)) {
+            return $result_array;
+        }
+
         if (ee('LivePreview')->hasEntryData()) {
             $found = false;
             $show_closed = false;
@@ -2489,7 +2499,9 @@ class Channel
 
         $this->cacheCategoryFieldModels();
 
-        ee()->session->set_cache('mod_channel', 'active', $this);
+        if (isset(ee()->session)) {
+            ee()->session->set_cache('mod_channel', 'active', $this);
+        }
         $this->return_data = $parser->parse($this, $data, $config);
 
         unset($parser, $entries, $data);
@@ -3998,7 +4010,11 @@ class Channel
      */
     private function cacheCategoryFieldModels()
     {
-        $this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
+        if (isset(ee()->session)) {
+            $this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
+        } else {
+            $this->cat_field_models = [];
+        }
 
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
@@ -4027,7 +4043,9 @@ class Channel
             ->all()
             ->indexBy('field_id');
 
-        ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
+        if (isset(ee()->session)) {
+            ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
+        }
     }
 
     /**

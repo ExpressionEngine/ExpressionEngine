@@ -257,7 +257,11 @@ class Localize
 
         // Localize to member's timezone or leave as GMT
         if (is_bool($timezone)) {
-            $timezone = ($timezone) ? ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')) : 'UTC';
+            if ($timezone) {
+                $timezone = isset(ee()->session) ? ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')) : ee()->config->item('default_site_timezone');
+            } else {
+                $timezone = 'UTC';
+            }
         }
 
         // If timezone isn't known by PHP, it may be our legacy timezone
