@@ -354,7 +354,7 @@ class EE_Template
             'template_id' => $this->template_id,
             'template_type' => $this->embed_type ?: $this->template_type,
             'is_ajax_request' => AJAX_REQUEST,
-            'is_live_preview_request' => isset(ee()->session) && ee('LivePreview')->hasEntryData(),
+            'is_live_preview_request' => isset(ee()->session) ? ee('LivePreview')->hasEntryData() : false,
         ];
 
         //Pro conditionals
@@ -4453,7 +4453,7 @@ class EE_Template
 
     protected function getMemberVariables()
     {
-        static $vars;
+        static $vars = [];
 
         if (!isset(ee()->session)) {
             //early parsing, e.g. called from code and not web request
