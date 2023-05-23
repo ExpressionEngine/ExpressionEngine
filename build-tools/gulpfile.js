@@ -381,6 +381,7 @@ gulp.task('_delete_files', function (cb) {
 
 		'system/ee/EllisLab/Tests/',
 		'system/ee/ExpressionEngine/Tests/',
+		'system/ee/installer/updater/ExpressionEngine/Tests/',
 
 		'src',
 		'vue.config.js',

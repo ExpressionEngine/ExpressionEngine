@@ -657,6 +657,10 @@ $setup = [
             return new Validation\Factory();
         },
 
+        'Variables/Modifiers' => function ($ee) {
+            return new Template\Variables\Modifiers();
+        },
+
         'View/Helpers' => function ($ee) {
             return new View\ViewHelpers();
         }

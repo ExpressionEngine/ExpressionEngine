@@ -24,6 +24,9 @@ class ChannelFieldGroup extends Model
     protected static $_hook_id = 'channel_field_group';
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'Channels' => array(
             'weak' => true,
             'type' => 'hasAndBelongsToMany',
@@ -53,6 +56,7 @@ class ChannelFieldGroup extends Model
     protected $group_id;
     protected $site_id;
     protected $group_name;
+    protected $group_description;
 
     /**
      * Convenience method to fix inflection

@@ -126,6 +126,7 @@ context('Create combinations of field', () => {
 			cy.get('div.list-item__content-right > div > div > a.layout-set.button.button--default').first().click()
 			cy.get('a.button').contains('New Layout').first().click()
 			cy.get("input[name = 'layout_name']").type('AATestPublishLayout')
+			cy.get('#fieldset-roles input[type=checkbox]').eq(0).check()
 
 			// Move the field to the top of the available fields
 			channelLayout.get('fields').filter(':visible').eq(0).then(function(target) {

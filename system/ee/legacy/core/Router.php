@@ -55,6 +55,9 @@ class EE_Router
             if (isset($_GET[$this->config->item('directory_trigger')])) {
                 $this->set_directory(trim($this->uri->_filter_uri($_GET[$this->config->item('directory_trigger')])));
                 $segments[] = rtrim($this->fetch_directory(), '/');
+            } elseif (isset($_GET['/cp'])) {
+                // weird mix of old and new routing?
+                $segments[] = 'cp';
             }
 
             if (isset($_GET[$this->config->item('controller_trigger')])) {

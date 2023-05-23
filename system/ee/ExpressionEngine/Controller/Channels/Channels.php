@@ -74,11 +74,13 @@ class Channels extends AbstractChannelsController
                 'toolbar_items' => [
                     'download' => [
                         'href' => ee('CP/URL', 'channels/sets/export/' . $channel->getId()),
-                        'title' => lang('export')
+                        'title' => lang('export'),
+                        'content' => ' ' . lang('export')
                     ],
                     'layout-set' => [
                         'href' => ee('CP/URL', 'channels/layouts/' . $channel->getId()),
-                        'title' => lang('layouts')
+                        'title' => $channel->channel_title . ' ' . lang('layouts'),
+                        'content' => ' ' . lang('layouts')
                     ]
                 ],
                 'selection' => [
@@ -804,7 +806,10 @@ class Channels extends AbstractChannelsController
             ->pluck('status_id');
 
         // Make sure open and closed are always selected
-        $selected = array_merge($selected, $default);
+        // And they are still haven't included
+        if (!empty(array_diff($default, $selected))) {
+            $selected = array_merge($selected, $default);
+        }
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([
             'field_name' => 'statuses',
@@ -1014,6 +1019,16 @@ class Channels extends AbstractChannelsController
                         'url_title_prefix' => array(
                             'type' => 'text',
                             'value' => $channel->url_title_prefix
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'enforce_auto_url_title',
+                    'desc' => 'enforce_auto_url_title_desc',
+                    'fields' => array(
+                        'enforce_auto_url_title' => array(
+                            'type' => 'yes_no',
+                            'value' => $channel->enforce_auto_url_title
                         )
                     )
                 ),

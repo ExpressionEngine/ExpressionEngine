@@ -214,16 +214,14 @@ class Layouts extends AbstractChannelsController
             ),
         ));
 
+        $roles = ee('Model')->get('Role', ee()->input->post('roles'))->all();
+        $channel_layout->PrimaryRoles = $roles;
+
         if (AJAX_REQUEST) {
             ee()->form_validation->run_ajax();
             exit;
         } elseif (ee()->form_validation->run() !== false) {
             $channel_layout->layout_name = ee()->input->post('layout_name');
-
-            $roles = ee('Model')->get('Role', ee()->input->post('roles'))
-                ->all();
-
-            $channel_layout->PrimaryRoles = $roles;
 
             $channel_layout->save();
 
@@ -309,6 +307,23 @@ class Layouts extends AbstractChannelsController
 
         if (! $channel_layout) {
             show_error(lang('unauthorized_access'), 403);
+        }
+
+        if (defined('CLONING_MODE') && CLONING_MODE === true) {
+            if ($_POST['layout_name'] == $channel_layout->layout_name) {
+                $_POST['layout_name'] = lang('copy_of') . ' ' . $_POST['layout_name'];
+            }
+            if (! empty($_POST['roles'])) {
+                foreach ($channel_layout->PrimaryRoles->pluck('role_id') as $role_id) {
+                    if (($roleIdKey = array_search($role_id, $_POST['roles'])) !== false) {
+                        unset($_POST['roles'][$roleIdKey]);
+                    }
+                }
+            }
+            if (empty($_POST['roles'])) {
+                unset($_POST['roles']);
+            }
+            return $this->create($channel_layout->channel_id);
         }
 
         $channel_layout->synchronize();
@@ -399,6 +414,13 @@ class Layouts extends AbstractChannelsController
                     'type' => 'submit',
                     'value' => 'save_and_close',
                     'text' => 'save_and_close',
+                    'working' => 'btn_saving'
+                ],
+                [
+                    'name' => 'submit',
+                    'type' => 'submit',
+                    'value' => 'save_as_new_entry',
+                    'text' => sprintf(lang('clone_to_new'), lang('layout')),
                     'working' => 'btn_saving'
                 ]
             ]

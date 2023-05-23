@@ -34,6 +34,9 @@ class FileDimension extends Model
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'UploadDestination' => array(
             'type' => 'belongsTo',
             'from_key' => 'upload_location_id'

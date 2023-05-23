@@ -23,14 +23,14 @@ class LegacyParser
      * Given a template variable string, this parses out parameters and modifiers
      * e.g. {variable:modifier param1='foo' param2='bar'} returns:
      *
-     * 		array(
-     * 			'field_name' => 'variable',
-     * 			'params' => array(
-     * 				'param1' => 'foo',
-     * 				'param2' => 'bar',
-     * 			),
-     * 			'modifier' => 'modifier'
-     * 		)
+     * array(
+     *  'field_name' => 'variable',
+     *  'params' => array(
+     *      'param1' => 'foo',
+     *      'param2' => 'bar',
+     *  ),
+     *  'modifier' => 'modifier'
+     * )
      *
      * Note: 'field_name' is used instead of just 'name' or 'variable_name' as this was
      * originally a method of the legacy Channel Fields API, and the LegacyParser
@@ -46,7 +46,9 @@ class LegacyParser
             'invalid_modifier' => false,
         ];
 
+        // strip prefix
         $unprefixed_var = ltrim(preg_replace('/^' . $prefix . '/', '', $template_var));
+        // we don't need params - take away what's separated by space
         $orig_field_name_length = strpos($unprefixed_var, ' ') ?: strpos($unprefixed_var, "\n");
         if ($orig_field_name_length === false) {
             $orig_field_name = $unprefixed_var;
@@ -62,6 +64,8 @@ class LegacyParser
         $full_modifier_loc = strpos($orig_field_name, ':');
         $modifier_loc = strrpos($orig_field_name, ':');
 
+        // start with the leftmost modifier
+        // NOTE: previously we used only the last one
         if ($full_modifier_loc !== false) {
             $field_name = substr($orig_field_name, 0, $full_modifier_loc);
             $full_modifier = substr($orig_field_name, $full_modifier_loc + 1);
@@ -79,9 +83,40 @@ class LegacyParser
         }
 
         $props['field_name'] = trim($field_name);
-        $props['params'] = (trim($param_string) && ! $props['invalid_modifier']) ? $this->parseTagParameters($param_string) : [];
         $props['modifier'] = trim($modifier);
         $props['full_modifier'] = trim($full_modifier);
+        if (trim($param_string) && ! $props['invalid_modifier']) {
+            $props['params'] = $params = $this->parseTagParameters($param_string);
+            $prefix = $props['modifier'] . ':';
+            $prefix_legnth = strlen($prefix);
+            foreach ($props['params'] as $param => $value) {
+                if (strpos($param, $prefix) === 0) {
+                    $props['params'][substr($param, $prefix_legnth)] = $value;
+                }
+            }
+        } else {
+            $props['params'] = $params = [];
+        }
+
+        $all_modifiers = explode(':', $props['full_modifier']);
+        if (count($all_modifiers) > 1) {
+            $props['all_modifiers'] = [];
+            foreach ($all_modifiers as $modifier) {
+                $modifier_params = $params;
+                $prefix = $modifier . ':';
+                $prefix_legnth = strlen($prefix);
+                foreach ($modifier_params as $param => $value) {
+                    if (strpos($param, $prefix) === 0) {
+                        $modifier_params[substr($param, $prefix_legnth)] = $value;
+                    }
+                }
+                $props['all_modifiers'][$modifier] = $modifier_params;
+            }
+        } else {
+            $props['all_modifiers'] = [
+                $props['modifier'] => $props['params']
+            ];
+        }
 
         return $props;
     }
@@ -122,8 +157,10 @@ class LegacyParser
             }
 
             foreach ($defaults as $name => $default_value) {
-                if (! isset($result[$name])
-                    or (is_numeric($default_value) && ! is_numeric($result[$name]))) {
+                if (
+                    ! isset($result[$name])
+                    or (is_numeric($default_value) && ! is_numeric($result[$name]))
+                ) {
                     $result[$name] = $default_value;
                 }
             }
@@ -150,9 +187,9 @@ class LegacyParser
      *
      * This legacy method was originally Functions::assign_variables()
      *
-     * @param	string $tagdata The Tagdata to extract variables from
-     * @param	string $target A specific variable to target for extraction. Default NULL (all variables)
-     * @return	array array('var_single' => ..., 'var_pair' => ..., )
+     * @param   string $tagdata The Tagdata to extract variables from
+     * @param   string $target A specific variable to target for extraction. Default NULL (all variables)
+     * @return  array array('var_single' => ..., 'var_pair' => ..., )
      */
     public function extractVariables($tagdata, $target = null)
     {
@@ -178,10 +215,12 @@ class LegacyParser
         $temp_misc = [];
 
         foreach ($matches[1] as $key => $val) {
-            if (!is_numeric($val) &&
+            if (
+                !is_numeric($val) &&
                 strncmp($val, 'if ', 3) !== 0 &&
                 strncmp($val, 'if:', 3) !== 0 &&
-                substr($val, 0, 3) != '/if') {
+                substr($val, 0, 3) != '/if'
+            ) {
                 if (strpos($val, '{') !== false) {
                     if (preg_match("/(.+?)" . LD . "(.*)/s", $val, $matches2)) {
                         $temp_misc[$key] = $matches2[2];
@@ -295,7 +334,7 @@ class LegacyParser
      *
      * This function looks within a variable for this prototype:
      *
-     * 		{date format="%Y %m %d"}
+     *  {date format="%Y %m %d"}
      *
      * If found, returns only the date format codes: %Y %m %d
      *
@@ -322,11 +361,11 @@ class LegacyParser
      * Useful when tags are nested or split, to make sure you've got the full chunk that you want.
      * Example:
      *
-     * 	[quote]This is a BBCode style quote. [quote]What kind of quote is this?[/quote] It's still pretty common online.[/quote]
+     *  [quote]This is a BBCode style quote. [quote]What kind of quote is this?[/quote] It's still pretty common online.[/quote]
      *
      * A simpler regex may have grabbed only to the first closing tag, resulting in a partially matched tag:
      *
-     * 	[quote]This is a BBCode style quote. [quote]What kind of quote is this?[/quote]
+     *  [quote]This is a BBCode style quote. [quote]What kind of quote is this?[/quote]
      *
      * This method will start with your partial match, and expand it to make sure that any matching nested tags that were opened inside
      * of this one are fully closed, so you are left with the complete outer tag's contents.
@@ -376,15 +415,31 @@ class LegacyParser
                 $extracted_vars = $this->extractVariables($str, $name);
 
                 foreach ($extracted_vars['var_single'] as $modified_var) {
+                    $content = $value;
                     $var_props = $this->parseVariableProperties($modified_var, $prefix);
 
-                    // is the modifier valid?
-                    $method = 'replace_' . $var_props['modifier'];
-                    if (! method_exists($this, $method)) {
-                        continue;
+                    // in order to support multiple modifiers, we'll do this in a loop
+                    if (isset($var_props['all_modifiers']) && !empty($var_props['all_modifiers'])) {
+                        foreach ($var_props['all_modifiers'] as $modifier => $params) {
+                            // is the modifier valid?
+                            $method = 'replace_' . $modifier;
+                            if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($modifier)) {
+                                continue;
+                            }
+
+                            $content = $this->$method($content, $params);
+                        }
+                    } else {
+                        // fallback to just last modifier if 'all_modifiers' is not set
+                        // which should never happen, but...
+                        $method = 'replace_' . $var_props['modifier'];
+                        if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($var_props['modifier'])) {
+                            continue;
+                        }
+
+                        $content = $this->$method($content, $var_props['params']);
                     }
 
-                    $content = $this->$method($value, $var_props['params']);
                     $str = str_replace(LD . $modified_var . RD, $content, $str);
                     $conditionals[$modified_var] = $content;
                 }
@@ -407,13 +462,13 @@ class LegacyParser
      * Provides a consistent method to handle 'not foo|bar|bat' type parameters.
      * Returns an array of options, and whether or not the options are negated (not true/false):
      *
-     *		array (size=2)
-     *			'options' =>
-     *				array (size=4)
-     *					0 => string 'foo' (length=3)
-     *					1 => string 'bar' (length=3)
-     *					2 => string 'bat' (length=3)
-     *			'not' => boolean true
+     *  array (size=2)
+     *      'options' =>
+     *      array (size=4)
+     *          0 => string 'foo' (length=3)
+     *          1 => string 'bar' (length=3)
+     *          2 => string 'bat' (length=3)
+     *          'not' => boolean true
      *
      * @param  string $param The parameter string
      * @return array Array of options and whether the options are negated (not)

@@ -563,6 +563,7 @@ class EE_Config
             'default_site_timezone',
             'date_format',
             'time_format',
+            'week_start',
             'mail_protocol',
             'email_newline',
             'smtp_server',

@@ -22,7 +22,7 @@ context('Test Member roles', () => {
 		password: 'password'
 	})
 
-	cy.get('p').contains('You are not authorized to perform this action')
+	cy.get('body').contains('You are not authorized to perform this action')
   })
 
   it('Default Banned cannot access the control pannel',() => {
@@ -30,7 +30,7 @@ context('Test Member roles', () => {
 		email: 'Banned1',
 		password: 'password'
 	})
-	cy.get('p').contains('wrong username or password')
+	cy.get('body').contains('wrong username or password')
   })
 
   it('Default Members cannot access the control pannel',() =>{
@@ -38,7 +38,7 @@ context('Test Member roles', () => {
 		email: 'Members1',
 		password: 'password'
 	})
-	cy.get('p').contains('You are not authorized to perform this action')
+	cy.get('body').contains('You are not authorized to perform this action')
   })
 
   it('Super Admins have access to all ee-sidebar options',() =>{
@@ -57,14 +57,3 @@ context('Test Member roles', () => {
 
 
 })
-
-
-
-
-
-
-
-
-
-
-

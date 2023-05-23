@@ -85,6 +85,10 @@ class Site extends Model
             'model' => 'UploadDestination',
             'type' => 'hasMany'
         ),
+        'FileDimensions' => array(
+            'model' => 'FileDimension',
+            'type' => 'hasMany'
+        ),
         'Permissions' => array(
             'model' => 'Permission',
             'type' => 'hasMany'
@@ -103,6 +107,26 @@ class Site extends Model
         ),
         'RoleSettings' => array(
             'model' => 'RoleSetting',
+            'type' => 'hasMany'
+        ),
+        'CategoryGroups' => array(
+            'model' => 'CategoryGroup',
+            'type' => 'hasMany'
+        ),
+        'Categories' => array(
+            'model' => 'Category',
+            'type' => 'hasMany'
+        ),
+        'ChannelFieldGroups' => array(
+            'model' => 'ChannelFieldGroup',
+            'type' => 'hasMany'
+        ),
+        'ChannelFields' => array(
+            'model' => 'ChannelField',
+            'type' => 'hasMany'
+        ),
+        'ChannelLayouts' => array(
+            'model' => 'ChannelLayout',
             'type' => 'hasMany'
         ),
     );
