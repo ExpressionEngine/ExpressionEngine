@@ -828,6 +828,13 @@ class Fluid_field_ft extends EE_Fieldtype
                 return is_numeric($value);
             });
 
+            // Sometimes a fluid field with no fields attached to it gets saved as an empty string
+            //   rather than an empty array. In this case, we need to convert it to an array to
+            //   perform array operations on it
+            if(is_string($all['field_channel_fields']) && empty($all['field_channel_fields'])){
+                $all['field_channel_fields'] = [];
+            }
+
             $removed_fields = (array_diff($this->settings['field_channel_fields'], $all['field_channel_fields']));
 
             if (! empty($removed_fields)) {
