@@ -441,6 +441,8 @@ class Set
             $destination = ee('Model')->make('UploadDestination');
             $destination->site_id = $this->site_id;
             $destination->name = $upload_data->name;
+            $destination->url = isset($upload_data->url) ? $upload_data->url : '{base_url}';
+            $destination->server_path = isset($upload_data->server_path) ? $upload_data->server_path : null;
 
             $this->applyOverrides($destination, $upload_data->name);
 
