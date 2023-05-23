@@ -132,8 +132,6 @@ class Wizard extends CI_Controller
         'rewrite_short_tags' => true
     );
 
-    public $db_connect_attempt;
-
     /**
      * Constructor
      * @return void
