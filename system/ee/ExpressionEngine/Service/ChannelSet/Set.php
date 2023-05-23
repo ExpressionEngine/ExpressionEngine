@@ -443,6 +443,7 @@ class Set
             $destination->name = $upload_data->name;
             $destination->adapter = isset($upload_data->adapter) ? $upload_data->adapter : 'local';
             $destination->url = isset($upload_data->url) ? $upload_data->url : '{base_url}';
+            $destination->server_path = isset($upload_data->server_path) ? $upload_data->server_path : null;
 
             $this->applyOverrides($destination, $upload_data->name);
 
