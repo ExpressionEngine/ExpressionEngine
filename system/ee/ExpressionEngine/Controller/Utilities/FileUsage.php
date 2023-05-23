@@ -113,7 +113,7 @@ class FileUsage extends Utilities
 
         $progress = (int) ee('Request')->post('progress');
 
-        $this->fileUsage->process($progress);
+        $progress = $this->fileUsage->process($progress);
 
         // If completed
         if (! $this->fileUsage->inProgress()) {

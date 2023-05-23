@@ -251,6 +251,8 @@ class Usage
             $this->updating = false; // For symmetry and "futureproofing"
             ee()->cache->delete(self::CACHE_KEY); // All done!
         }
+
+        return $progress;
     }
 }
 
