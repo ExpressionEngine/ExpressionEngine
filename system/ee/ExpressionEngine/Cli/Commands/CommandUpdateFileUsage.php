@@ -59,6 +59,8 @@ class CommandUpdateFileUsage extends Cli
      */
     public function handle()
     {
+        ee()->lang->loadfile('utilities');
+
         $this->info('command_update_file_usage');
         $fileUsage = ee('FileUsage');
 
