@@ -801,7 +801,7 @@ class Set
 
         foreach ($data as $key => $value) {
             if (($type == 'grid' || $type == 'file_grid') && $key == 'columns') {
-                $this->importGrid($field, $value);
+                $this->importGrid($field, $value, $type);
 
                 continue;
             }
@@ -890,11 +890,11 @@ class Set
      * @param Array $columns The columns defined in the field.type file
      * @return void
      */
-    private function importGrid($field, $columns)
+    private function importGrid($field, $columns, $type = 'grid')
     {
         $that = $this;
-        $fn = function () use ($columns, $that) {
-            unset($_POST['grid']);
+        $fn = function () use ($columns, $that, $type) {
+            unset($_POST[$type]);
 
             // grid[cols][new_0][col_label]
             foreach ($columns as $i => $column) {
@@ -906,7 +906,7 @@ class Set
                 }
 
                 foreach ($column as $col_label => $col_value) {
-                    $_POST['grid']['cols']["new_{$i}"]['col_' . $col_label] = $col_value;
+                    $_POST[$type]['cols']["new_{$i}"]['col_' . $col_label] = $col_value;
                 }
             }
         };

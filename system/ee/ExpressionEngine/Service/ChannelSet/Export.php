@@ -344,6 +344,10 @@ class Export
     {
         $dir = ee('Model')->get('UploadDestination', $id)->first();
 
+        if (is_null($dir)) {
+            return 'all';
+        }
+
         $result = new StdClass();
         $result->name = $dir->name;
         $result->adapter = $dir->adapter;
