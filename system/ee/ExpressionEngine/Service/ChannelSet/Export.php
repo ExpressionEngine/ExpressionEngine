@@ -346,6 +346,9 @@ class Export
 
         $result = new StdClass();
         $result->name = $dir->name;
+        $result->adapter = $dir->adapter;
+        $result->server_path = $dir->server_path;
+        $result->url = $dir->url;
 
         $this->upload_destinations[$dir->name] = $result;
 
@@ -478,8 +481,10 @@ class Export
             $result->channels = array();
 
             foreach ($settings['channels'] as $id) {
-                $channel = $this->channels[$id];
-                $result->channels[] = $channel->channel_title;
+                if (array_key_exists($id, $this->channels)) {
+                    $channel = $this->channels[$id];
+                    $result->channels[] = $channel->channel_title;
+                }
             }
         }
 
