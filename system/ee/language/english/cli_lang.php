@@ -256,7 +256,6 @@ $lang = array(
     'command_update_config_description'             => 'Updates config values in config.php file',
     'command_update_config_summary'                 => 'Gives the ability to update config values',
     'command_update_config_ask_config_variable'     => 'What config item would you like to set?',
-    // please note env command makes use of command_update_config_ask_config_value as well
     'command_update_config_ask_config_value'        => 'What value would you like it set to?',
     'command_update_config_updating_config_variable' => 'Updating config item...',
     'command_update_config_config_value_saved'      => 'Config item saved.',
@@ -269,6 +268,7 @@ $lang = array(
     'command_update_env_description'             => 'Updates env values in .env.php file',
     'command_update_env_summary'                 => 'Gives the ability to update env values',
     'command_update_env_ask_config_variable'     => 'What env item would you like to set?',
+    'command_update_env_ask_config_value'        => 'What value would you like it set to?',
     'command_update_env_updating_config_variable' => 'Updating env item...',
     'command_update_env_config_value_saved'      => 'Env item saved.',
 
