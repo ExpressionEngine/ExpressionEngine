@@ -121,7 +121,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     }
 
                     $f->setName($field_name);
-                    $f = $this->setupFieldInstance($f, $datum, $fluid_field_data_id);
+                    $f = $this->setupFieldInstance($f, $datum, !is_null($fluid_field_data_id) ? $fluid_field_data_id : $key);
 
                     $validator = ee('Validation')->make();
                     $validator->defineRule('validateField', function ($key, $value, $parameters, $rule) use ($f) {
