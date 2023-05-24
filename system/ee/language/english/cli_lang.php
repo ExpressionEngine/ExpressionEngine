@@ -256,6 +256,7 @@ $lang = array(
     'command_update_config_description'             => 'Updates config values in config.php file',
     'command_update_config_summary'                 => 'Gives the ability to update config values',
     'command_update_config_ask_config_variable'     => 'What config item would you like to set?',
+    'command_update_config_ask_config_value'        => 'What value would you like it set to?',
     'command_update_config_updating_config_variable' => 'Updating config item...',
     'command_update_config_config_value_saved'      => 'Config item saved.',
 
