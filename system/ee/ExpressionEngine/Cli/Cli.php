@@ -97,14 +97,26 @@ class Cli
      * @var array
      */
     private $internalCommands = [
+        // Addons
+        'addons:install' => Commands\CommandAddonsInstall::class,
+        'addons:list' => Commands\CommandAddonsList::class,
+        'addons:uninstall' => Commands\CommandAddonsUninstall::class,
+        'addons:update' => Commands\CommandAddonsUpdate::class,
+
+        // Backup
         'backup:database' => Commands\CommandBackupDatabase::class,
+
+        // Cache
+        'cache:clear' => Commands\CommandClearCaches::class,
+
+        // Config
+        'config:config' => Commands\CommandConfigConfig::class,
+        'config:env' => Commands\CommandConfigEnv::class,
+
+        // List
         'list' => Commands\CommandListCommands::class,
-        'update' => Commands\CommandUpdate::class,
-        'update:file-usage' => Commands\CommandUpdateFileUsage::class,
-        'update:config' => Commands\CommandUpdateConfig::class,
-        'update:env' => Commands\CommandUpdateEnv::class,
-        'update:prepare' => Commands\CommandUpdatePrepare::class,
-        'update:run-hook' => Commands\CommandUpdateRunHook::class,
+
+        // Make
         'make:action' => Commands\CommandMakeAction::class,
         'make:addon' => Commands\CommandMakeAddon::class,
         'make:command' => Commands\CommandMakeCommand::class,
@@ -118,18 +130,23 @@ class Cli
         'make:sidebar' => Commands\CommandMakeSidebar::class,
         'make:template-tag' => Commands\CommandMakeTemplateTag::class,
         'make:widget' => Commands\CommandMakeWidget::class,
+
+        // Migrate
         'migrate' => Commands\CommandMigrate::class,
-        'migrate:all' => Commands\CommandMigrateAll::class,
         'migrate:addon' => Commands\CommandMigrateAddon::class,
+        'migrate:all' => Commands\CommandMigrateAll::class,
         'migrate:core' => Commands\CommandMigrateCore::class,
         'migrate:reset' => Commands\CommandMigrateReset::class,
         'migrate:rollback' => Commands\CommandMigrateRollback::class,
-        'cache:clear' => Commands\CommandClearCaches::class,
-        'addons:list' => Commands\CommandAddonsList::class,
-        'addons:install' => Commands\CommandAddonsInstall::class,
-        'addons:uninstall' => Commands\CommandAddonsUninstall::class,
-        'addons:update' => Commands\CommandAddonsUpdate::class,
+
+        // Sync
         'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
+        'sync:file-usage' => Commands\CommandSyncFileUsage::class,
+
+        // Update
+        'update' => Commands\CommandUpdate::class,
+        'update:prepare' => Commands\CommandUpdatePrepare::class,
+        'update:run-hook' => Commands\CommandUpdateRunHook::class,
     ];
 
     /**
