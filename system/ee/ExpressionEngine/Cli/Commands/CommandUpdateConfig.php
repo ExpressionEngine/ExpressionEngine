@@ -54,7 +54,7 @@ class CommandUpdateConfig extends Cli
     {
         // Gather all the config variable information
         $this->data['config-variable'] = $this->getOptionOrAsk('--config-variable', 'command_update_config_ask_config_variable', '', true);
-        $this->data['value'] = $this->getOptionOrAsk('--value', 'command_update_config_ask_config_variable', '', true);
+        $this->data['value'] = $this->getOptionOrAsk('--value', 'command_update_config_ask_config_value', '', true);
 
         $this->info('command_update_config_updating_config_variable');
 
