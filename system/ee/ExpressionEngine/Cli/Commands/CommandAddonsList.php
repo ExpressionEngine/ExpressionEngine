@@ -79,8 +79,12 @@ class CommandAddonsList extends Cli
             $this->fail('cli_no_addons');
         }
 
-        foreach ($addons as $shortName => $data) {
-            $this->write($shortName . ' ' . $data['name'] . ' v.' . $data['version']);
-        }
+        // Output a text-based table of add-ons and versions
+        $this->table([
+            lang('command_addons_list_table_header_name'),
+            lang('command_addons_list_table_header_shortname'),
+            lang('command_addons_list_table_header_version'),
+            lang('command_addons_list_table_header_installed'),
+        ], $addons);
     }
 }

@@ -306,6 +306,75 @@ class Cli
     }
 
     /**
+     * Prints a text based table given the headers and data
+     * @param  array $headers
+     * @param  array $data
+     * @return null
+     */
+    public function table(array $headers, array $data){
+        // We need headers in order to print a table
+        if(empty($headers)){
+            return;
+        }
+
+        // Determine the width of each column based on the headers and data
+        $widths = [];
+        foreach ($headers as $header) {
+            $widths[] = strlen($header);
+        }
+
+        // Loop through the data and determine the max width of each column
+        foreach ($data as $row) {
+            $count = 0;
+            foreach ($row as $value) {
+                $widths[$count] = max($widths[$count], strlen($value));
+                $count++;
+            }
+        }
+
+        // Create a format string for sprintf based on the widths
+        $format = '';
+        foreach ($widths as $k => $width) {
+            $format .= '%-' . $width . 's | ';
+
+            // if last row by key
+            if($k === array_key_last($widths)){
+                $format = rtrim($format, '| ');
+            }
+        }
+
+        // Output the headers
+        $this->write(vsprintf($format, $headers));
+
+        // Add a line of dashes under the headers with | between each column
+        $dash_str = '';
+        foreach ($widths as $k => $width) {
+            $length = $width + 2;
+            if($k === array_key_first($widths)){
+                $length -= 1;
+            }
+
+            $dash_str .= str_repeat('-', $length) . '|';
+
+            // if last row by key
+            if($k === array_key_last($widths)){
+                $dash_str = rtrim($dash_str, '|');
+            }
+        }
+        $this->write($dash_str);
+
+        // Output the data with the format string
+        foreach ($data as $row) {
+            $this->write(vsprintf($format, $row));
+        }
+
+        // if the data is empty, print no results
+        if(empty($data)){
+            $this->write(lang('cli_table_no_results'));
+        }
+    }
+
+    /**
      * Ask question and get input
      * @param  string $question
      * @return mixed
@@ -615,10 +684,14 @@ class Cli
             if ($info->get('built_in')) {
                 continue;
             }
+
             $addon = [
                 'name' => $info->getName(),
-                'version' => $info->getVersion()
+                'shortname' => $name,
+                'version' => $info->getVersion(),
+                'installed' => $info->isInstalled() ? 'yes' : 'no',
             ];
+
             switch ($showAddons) {
                 case 'installed':
                     if ($info->isInstalled()) {
@@ -645,7 +718,6 @@ class Cli
                     break;
             }
         }
-
         return $list;
     }
 }

@@ -11,6 +11,7 @@ $lang = array(
     'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
     'cli_error_cli_disabled'                       => 'The ExpressionEngine CLI is currently disabled. To use the CLI, you must enable it in the settings.',
     'cli_no_addons'                                => 'There are no add-ons available',
+    'cli_table_no_results'                         => 'No results found.',
 
     // Lang entries for command cache:clear
     'command_cache_clear_description'              => 'Clears all ExpressionEngine caches',
@@ -55,6 +56,10 @@ $lang = array(
     'command_addons_option_installed'                => 'are installed',
     'command_addons_option_uninstalled'              => 'are not installed',
     'command_addons_option_update'                   => 'can be updated',
+    'command_addons_list_table_header_name'          => 'Name',
+    'command_addons_list_table_header_shortname'     => 'Shortname',
+    'command_addons_list_table_header_version'       => 'Version',
+    'command_addons_list_table_header_installed'     => 'Installed',
 
     // Lang entries for command list
     'command_list_description'                  => 'Lists all available commands',
