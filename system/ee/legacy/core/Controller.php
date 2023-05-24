@@ -101,18 +101,6 @@ class CP_Controller extends EE_Controller
     {
         parent::__construct();
         ee()->core->run_cp();
-
-        // -------------------------------------------
-        // 'core_cp_boot' hook.
-        //  - Runs on every Control Panel request
-        //
-        if (ee()->extensions->active_hook('core_cp_boot') === true) {
-            ee()->extensions->call('core_cp_boot');
-            if (ee()->extensions->end_script === true) {
-                return;
-            }
-        }
-        // -------------------------------------------
     }
 
     /**

@@ -111,20 +111,27 @@ class CommandAddonsUpdate extends Cli
                 foreach ($fts as $shortName => $name) {
                     ee()->api_channel_fields->include_handler($shortName);
                     $FT = ee()->api_channel_fields->setup_handler($shortName, true);
+
+                    $fieldtype = ee('Model')->get('Fieldtype')
+                        ->filter('name', $shortName)
+                        ->first();
+
                     $update_ft = false;
                     if (!method_exists($FT, 'update')) {
                         $update_ft = true;
                     } else {
-                        if ($FT->update($version) !== false) {
-                            if (ee()->api_channel_fields->apply('update', array($version)) !== false) {
+                        if ($FT->update($fieldtype->version) !== false) {
+                            if (ee()->api_channel_fields->apply('update', array($fieldtype->version)) !== false) {
                                 $update_ft = true;
                             }
                         }
                     }
+
                     if ($update_ft) {
                         $model = ee('Model')->get('Fieldtype')
                             ->filter('name', $shortName)
                             ->first();
+
                         if (!empty($model)) {
                             $model->version = $version;
                             $model->save();

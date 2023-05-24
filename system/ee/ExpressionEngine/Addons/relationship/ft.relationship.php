@@ -540,6 +540,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'in_modal' => ($this->get_setting('in_modal_context') || ee('Request')->get('modal_form') == 'y'),
             'display_entry_id' => isset($this->settings['display_entry_id']) ? (bool) $this->settings['display_entry_id'] : false,
             'display_status' => isset($this->settings['display_status']) ? (bool) $this->settings['display_status'] : false,
+            'statuses' => $statuses,
             'rel_min' =>  isset($this->settings['rel_min']) ? (int) $this->settings['rel_min'] : 0,
             'rel_max' =>  isset($this->settings['rel_max']) ? (int) $this->settings['rel_max'] : '',
         ]);

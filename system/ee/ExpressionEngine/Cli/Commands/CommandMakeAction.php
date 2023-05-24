@@ -13,7 +13,7 @@ namespace ExpressionEngine\Cli\Commands;
 use ExpressionEngine\Cli\Cli;
 
 /**
- * Command to clear selected caches
+ * Command to make action files for addons
  */
 class CommandMakeAction extends Cli
 {

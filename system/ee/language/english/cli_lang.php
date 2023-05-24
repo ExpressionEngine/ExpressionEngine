@@ -168,6 +168,21 @@ $lang = array(
     'command_make_prolet_option_widget_name'           => 'Name of widget',
     'command_make_prolet_option_generate_icon'         => 'Generate a default add-on icon file when creating a prolet',
 
+    // Lang entries for command backup:database
+    'command_backup_database_description'                  => 'Backup the database',
+    'command_backup_database_summary'                      => 'Backup the ExpressionEngine database',
+    'command_backup_database_beginning_database_backup'          => 'Beginning database backup.',
+    'command_backup_database_backing_up_database'          => 'Backing up the database...',
+    'command_backup_database_failed_with_error'            => 'Database backup failed with error message:',
+    'command_backup_database_completed_successfully'       => 'Database backup completed successfully.',
+    'command_backup_database_backup_path'                  => 'Backup path: %s',
+
+    // backup:database options
+    'command_backup_database_option_absolute_path'   => 'Absolute path to database backup',
+    'command_backup_database_option_relative_path'   => 'Path to database backup, relative to the cache folder',
+    'command_backup_database_option_file_name'       => 'Name of sql file to be saved',
+    'command_backup_database_option_speed'       => 'Speed of database backup (between 1-10). Setting a lower speed allows for more time between database commands. Default speed is 5.',
+
     // Lang entries for command make:action
     'command_make_action_description'                  => 'Creates a new action for an add-on',
     'command_make_action_summary'                      => 'This interactively generates an EE Action for an existing third-party addon',
@@ -236,6 +251,28 @@ $lang = array(
 
     // make:fieldtype options
     'command_make_fieldtype_option_addon'                 => 'Folder for third-party add-on you want to add fieldtype to.',
+
+    // Lang entries for command update:config
+    'command_update_config_description'             => 'Updates config values in config.php file',
+    'command_update_config_summary'                 => 'Gives the ability to update config values',
+    'command_update_config_ask_config_variable'     => 'What config item would you like to set?',
+    'command_update_config_updating_config_variable' => 'Updating config item...',
+    'command_update_config_config_value_saved'      => 'Config item saved.',
+
+    // update:config options
+    'command_update_config_option_config_variable'  => 'The config item to modify',
+    'command_update_config_option_value'            => 'The value to set the config item to',
+
+    // Lang entries for command update:config
+    'command_update_env_description'             => 'Updates env values in .env.php file',
+    'command_update_env_summary'                 => 'Gives the ability to update env values',
+    'command_update_env_ask_config_variable'     => 'What env item would you like to set?',
+    'command_update_env_updating_config_variable' => 'Updating env item...',
+    'command_update_env_config_value_saved'      => 'Env item saved.',
+
+    // update:config options
+    'command_update_env_option_config_variable'  => 'The env item to set/modify',
+    'command_update_env_option_value'            => 'The value to set the env item to',
 
     // Lang entries for command make:cp-route
     'command_make_cp_route_description'                  => 'Generates a control panel route for a given third-party add-on',
