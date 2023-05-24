@@ -306,6 +306,43 @@ class Cli
     }
 
     /**
+     * Prints a text based table given the headers and data
+     * @param  array $headers
+     * @param  array $data
+     * @return null
+     */
+    public function table(array $headers, array $data){
+        // Determine the width of each column based on the headers and data
+        $widths = [];
+        foreach ($headers as $header) {
+            $widths[] = strlen($header);
+        }
+
+        // Loop through the data and determine the max width of each column
+        foreach ($data as $row) {
+            $count = 0;
+            foreach ($row as $value) {
+                $widths[$count] = max($widths[$count], strlen($value));
+                $count++;
+            }
+        }
+
+        // Create a format string for sprintf based on the widths
+        $format = '';
+        foreach ($widths as $width) {
+            $format .= '%-' . $width . 's  ';
+        }
+
+        // Output the headers
+        $this->write(vsprintf($format, $headers));
+
+        // Output the data with the format string
+        foreach ($data as $row) {
+            $this->write(vsprintf($format, $row));
+        }
+    }
+
+    /**
      * Ask question and get input
      * @param  string $question
      * @return mixed
