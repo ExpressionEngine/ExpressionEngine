@@ -570,6 +570,10 @@ $setup = [
             return new File\Factory();
         },
 
+        'FileUsage' => function ($ee) {
+            return new File\Usage();
+        },
+
         'Filesystem' => function ($ee) {
             return new Filesystem\Filesystem();
         },

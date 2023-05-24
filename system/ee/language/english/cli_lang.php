@@ -409,6 +409,12 @@ $lang = array(
     'command_update_option_y'                                   => 'Skip all confirmations. Don\'t do this.',
     'command_update_option_skip_cleanup'                        => 'Skip cleanup steps after update',
 
+    // Lang entries for command update:file-usage
+    'command_update_file_usage_description'     => 'Updates the file usage for all files',
+    'command_update_file_usage_summary'         => '',
+    'command_update_file_usage'                 => 'Updating file usage.',
+    'command_update_file_usage_done'            => 'File usage updated successfully.',
+
     // Lang entries for command update:prepare
     'command_update_prepare_description'                        => 'Prepare a site to be upgraded using these files',
     'command_update_prepare_summary'                            => 'This command copies all files necessary for upgrading into a different ExpressionEngine site and restructures it',

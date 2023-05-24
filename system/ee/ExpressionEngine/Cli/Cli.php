@@ -100,6 +100,7 @@ class Cli
         'backup:database' => Commands\CommandBackupDatabase::class,
         'list' => Commands\CommandListCommands::class,
         'update' => Commands\CommandUpdate::class,
+        'update:file-usage' => Commands\CommandUpdateFileUsage::class,
         'update:config' => Commands\CommandUpdateConfig::class,
         'update:env' => Commands\CommandUpdateEnv::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,
