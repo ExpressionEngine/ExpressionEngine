@@ -516,7 +516,9 @@ abstract class FieldModel extends Model
                 ));
             }
         }
-
+        if (is_null($data)) {
+            $data = '';
+        }
         if ($tag) {
             return str_replace(LD . $tag . RD, $data, $tagdata);
         }
