@@ -652,10 +652,14 @@ class Cli
             if ($info->get('built_in')) {
                 continue;
             }
+
             $addon = [
                 'name' => $info->getName(),
-                'version' => $info->getVersion()
+                'shortname' => $name,
+                'version' => $info->getVersion(),
+                'installed' => $info->isInstalled() ? 'yes' : 'no',
             ];
+
             switch ($showAddons) {
                 case 'installed':
                     if ($info->isInstalled()) {
@@ -682,7 +686,6 @@ class Cli
                     break;
             }
         }
-
         return $list;
     }
 }
