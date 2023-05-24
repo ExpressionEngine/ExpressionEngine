@@ -23,6 +23,9 @@ $attrs = (isset($field['attrs'])) ? $field['attrs'] : '';
 if (isset($field['disabled']) && $field['disabled'] == true) {
     $attrs .= ' disabled="disabled"';
 }
+if (isset($field['readonly']) && $field['readonly'] == true) {
+    $attrs .= ' readonly="readonly"';
+}
 // This is to handle showing and hiding certain parts
 // of the form when a form element changes
 if (isset($field['group_toggle'])) {

@@ -98,7 +98,7 @@ class Help
      *
      * @param array $options The option definitions.
      *
-     * @return null
+     * @return object
      *
      */
     public function setOptions(array $options)
@@ -126,7 +126,7 @@ class Help
      *
      * @param string $summary The single-line summary.
      *
-     * @return null
+     * @return object
      *
      */
     public function setSummary($summary)
@@ -154,7 +154,7 @@ class Help
      *
      * @param string|array $usage The usage line(s).
      *
-     * @return null
+     * @return object
      *
      */
     public function setUsage($usage)
@@ -170,7 +170,7 @@ class Help
      *
      * @param string $descr The long-form description.
      *
-     * @return null
+     * @return object
      *
      */
     public function setDescr($descr)

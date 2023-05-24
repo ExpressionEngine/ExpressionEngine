@@ -16,13 +16,13 @@ class RequirementsChecker
 {
     private $requirements = [];
     private $minimum_php = '7.2.5';
-    private $minimum_mysql = '5.5.3';
+    private $minimum_mysql = '5.6.4';
     private $db_config = [];
 
     /**
      * Constructor
      *
-     * @param	string	$db_config	Array of DB config info
+     * @param   string  $db_config  Array of DB config info
      */
     public function __construct($db_config)
     {
@@ -121,8 +121,8 @@ class RequirementsChecker
     /**
      * Attempts to connect to a database in the specifed config array
      *
-     * @param	array	Database connection configuration
-     * @return	PDO		PDO connection object
+     * @param   array   Database connection configuration
+     * @return  PDO     PDO connection object
      */
     private function connectToDbUsingConfig($config)
     {
@@ -131,7 +131,7 @@ class RequirementsChecker
         $password = $config['password'];
         $database = $config['database'];
         $char_set = $config['char_set'];
-        $pconnect = $config['pconnect'];
+        $pconnect = isset($config['pconnect']) ? $config['pconnect'] : false;
         $port = isset($config['port']) ? $config['port'] : 3306;
 
         $dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
@@ -155,7 +155,7 @@ class RequirementsChecker
      * Gathers all the requirements test results and reports TRUE if good,
      * or returns an array of the failed Requirement objects
      *
-     * @return	mixed	TRUE if good, or array of failed Requirement objects
+     * @return  mixed   TRUE if good, or array of failed Requirement objects
      */
     public function check()
     {
@@ -192,8 +192,8 @@ class Requirement
     /**
      * Constructor
      *
-     * @param	string	$message	Message to display if this requirement fails
-     * @return	mixed	$result		Callable to run to test requirement, or
+     * @param   string  $message    Message to display if this requirement fails
+     * @return  mixed   $result     Callable to run to test requirement, or
      *   pre-derermined boolean of requirement result
      */
     public function __construct($message, $result = false)
@@ -206,7 +206,7 @@ class Requirement
      * Set a different failure message other than the one set in the constructor,
      * handy for conditionally setting messages inside a test callback
      *
-     * @param	string	$message	Message to display if this requirement fails
+     * @param   string  $message    Message to display if this requirement fails
      */
     public function setMessage($message)
     {
@@ -216,7 +216,7 @@ class Requirement
     /**
      * Gets the failure message
      *
-     * @return	string	Message to display if this requirement fails
+     * @return  string  Message to display if this requirement fails
      */
     public function getMessage()
     {
@@ -226,7 +226,7 @@ class Requirement
     /**
      * Gets the result of the requirement test
      *
-     * @return	boolean	Success or failure indicator of requirement test
+     * @return  boolean Success or failure indicator of requirement test
      */
     public function getResult()
     {

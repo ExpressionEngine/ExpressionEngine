@@ -51,7 +51,11 @@ class Utilities extends CP_Controller
         if (ee('Permission')->can('access_comm')) {
             $sidebar->addHeader(lang('communicate'));
 
-            $sidebar->addItem(lang('send_email'), ee('CP/URL')->make('utilities/communicate'));
+            $url = ee('CP/URL')->make('utilities/communicate');
+            $item = $sidebar->addItem(lang('send_email'), $url);
+            if ($url->matchesTheRequestedURI() && ee()->uri->segment('4') != 'sent') {
+                $item->isActive();
+            }
 
             if (ee('Permission')->can('send_cached_email')) {
                 $sidebar->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));

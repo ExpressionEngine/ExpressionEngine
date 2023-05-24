@@ -56,6 +56,7 @@ class ChannelFieldGroup extends Model
     protected $group_id;
     protected $site_id;
     protected $group_name;
+    protected $group_description;
 
     /**
      * Convenience method to fix inflection

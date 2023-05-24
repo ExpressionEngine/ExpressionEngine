@@ -10,6 +10,7 @@ $lang = array(
     'cli_option_help'                              => 'See help menu for given command',
     'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
     'cli_error_cli_disabled'                       => 'The ExpressionEngine CLI is currently disabled. To use the CLI, you must enable it in the settings.',
+    'cli_no_addons'                                => 'There are no add-ons available',
 
     // Lang entries for command cache:clear
     'command_cache_clear_description'              => 'Clears all ExpressionEngine caches',
@@ -17,6 +18,43 @@ $lang = array(
     'command_cache_clear_option_type'              => 'Type of cache to clear (default: all)',
     'command_cache_clear_cache_does_not_exist'     => 'Cache does not exist. Use --help to see available caches.',
     'command_cache_clear_caches_cleared'           => ' caches are cleared!',
+
+    // Lang entries for command addons:install
+    'command_addons_install_description'            => 'Installs add-on and all its components',
+    'command_addons_install_summary'                => '',
+    'command_addons_install_begin'                  => 'Add-on installation is about to begin',
+    'command_addons_install_ask_addon'              => 'Which add-on do you want to install?',
+    'command_addons_install_in_progress'            => 'Performing %s add-on installation',
+    'command_addons_install_complete'               => '%s installed successfully',
+    'command_addons_install_option_addon'           => 'Add-on\'s short name',
+
+    // Lang entries for command addons:uninstall
+    'command_addons_uninstall_description'            => 'Uninstalls add-on and all its components',
+    'command_addons_uninstall_summary'                => '',
+    'command_addons_uninstall_begin'                  => 'Add-on uninstallation is about to begin',
+    'command_addons_uninstall_ask_addon'              => 'Which add-on do you want to uninstall?',
+    'command_addons_uninstall_in_progress'            => 'Performing %s add-on uninstallation',
+    'command_addons_uninstall_complete'               => '%s uninstalled successfully',
+    'command_addons_uninstall_option_addon'           => 'Add-on\'s short name',
+
+    // Lang entries for command addons:update
+    'command_addons_update_description'            => 'Uninstalls add-on and all its components',
+    'command_addons_update_summary'                => '',
+    'command_addons_update_begin'                  => 'Add-on update is about to begin.',
+    'command_addons_update_ask_addon'              => 'Which add-on do you want to update?',
+    'command_addons_update_in_progress'            => 'Performing %s add-on update...',
+    'command_addons_update_complete'               => '%s updated successfully.',
+    'command_addons_update_all_complete'           => 'All Add-Ons updated successfully.',
+    'command_addons_update_option_addon'           => 'Add-on\'s short name',
+
+    // Lang entries for command addons:list
+    'command_addons_list_description'                => 'List the add-ons',
+    'command_addons_list_summary'                    => '',
+    'command_addons_list'                            => 'The following add-ons %s',
+    'command_addons_option_available'                => 'are available',
+    'command_addons_option_installed'                => 'are installed',
+    'command_addons_option_uninstalled'              => 'are not installed',
+    'command_addons_option_update'                   => 'can be updated',
 
     // Lang entries for command list
     'command_list_description'                  => 'Lists all available commands',
@@ -221,7 +259,6 @@ $lang = array(
 
     // make:jump options
     'command_make_jump_file_addon'                 => 'Folder for third-party add-on you want to add Jump Menu file to.',
-
 
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',

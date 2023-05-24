@@ -57,7 +57,7 @@ class EntryList
 
         $entries = ee('Model')->get('ChannelEntry')
             ->with('Channel')
-            ->fields('Channel.channel_title', 'title')
+            ->fields('Channel.channel_title', 'title', 'status')
             ->order($order_field, $order_dir);
 
         if ($related == 'related') {
@@ -215,6 +215,8 @@ class EntryList
                 'value' => $entry->getId(),
                 'label' => $entry->title,
                 'instructions' => $entry->Channel->channel_title,
+                'channel_id' => $entry->Channel->channel_id,
+                'status' => $entry->status
             ];
         }
 
