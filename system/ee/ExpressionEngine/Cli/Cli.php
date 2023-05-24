@@ -312,6 +312,11 @@ class Cli
      * @return null
      */
     public function table(array $headers, array $data){
+        // We need headers in order to print a table
+        if(empty($headers)){
+            return;
+        }
+
         // Determine the width of each column based on the headers and data
         $widths = [];
         foreach ($headers as $header) {
@@ -329,19 +334,43 @@ class Cli
 
         // Create a format string for sprintf based on the widths
         $format = '';
-        foreach ($widths as $width) {
-            $format .= '%-' . $width . 's  ';
+        foreach ($widths as $k => $width) {
+            $format .= '%-' . $width . 's | ';
+
+            // if last row by key
+            if($k === array_key_last($widths)){
+                $format = rtrim($format, '| ');
+            }
         }
 
         // Output the headers
         $this->write(vsprintf($format, $headers));
 
-        // Add a line of dashes under the headers
-        $this->write(str_repeat('-', array_sum($widths) + (count($widths) * 2) - 1));
+        // Add a line of dashes under the headers with | between each column
+        $dash_str = '';
+        foreach ($widths as $k => $width) {
+            $length = $width + 2;
+            if($k === array_key_first($widths)){
+                $length -= 1;
+            }
+
+            $dash_str .= str_repeat('-', $length) . '|';
+
+            // if last row by key
+            if($k === array_key_last($widths)){
+                $dash_str = rtrim($dash_str, '|');
+            }
+        }
+        $this->write($dash_str);
 
         // Output the data with the format string
         foreach ($data as $row) {
             $this->write(vsprintf($format, $row));
+        }
+
+        // if the data is empty, print no results
+        if(empty($data)){
+            $this->write(lang('cli_table_no_results'));
         }
     }
 
