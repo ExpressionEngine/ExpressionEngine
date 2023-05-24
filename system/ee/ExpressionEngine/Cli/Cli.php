@@ -336,6 +336,9 @@ class Cli
         // Output the headers
         $this->write(vsprintf($format, $headers));
 
+        // Add a line of dashes under the headers
+        $this->write(str_repeat('-', array_sum($widths) + (count($widths) * 2) - 1));
+
         // Output the data with the format string
         foreach ($data as $row) {
             $this->write(vsprintf($format, $row));
