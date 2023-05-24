@@ -54,7 +54,7 @@ class CommandUpdateEnv extends Cli
     {
         // Gather all the config variable information
         $this->data['env-variable'] = $this->getOptionOrAsk('--env-variable', 'command_update_env_ask_config_variable', '', true);
-        $this->data['value'] = $this->getOptionOrAsk('--value', 'command_update_env_ask_config_variable', '', true);
+        $this->data['value'] = $this->getOptionOrAsk('--value', 'command_update_config_ask_config_value', '', true);
 
         $this->info('command_update_env_updating_config_variable');
 
