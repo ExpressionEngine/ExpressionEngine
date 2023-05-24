@@ -111,6 +111,31 @@
 						if ($('div[data-select-react]', modal).length) {
 							SelectField.renderFields();
 						}
+
+						$('.js-copy-url-button').on('click', function (e) {
+							e.preventDefault();
+							// copy asset link to clipboard
+							var copyText = $(this).attr('href');
+
+							document.addEventListener('copy', function(e) {
+								e.clipboardData.setData('text/plain', copyText);
+								e.preventDefault();
+							}, true);
+
+							document.execCommand('copy');
+
+							// show notification
+							$('.f_manager-alert').css('display', 'flex');
+							DropdownController.hideAllDropdowns()
+
+							// hide notification in 10 sec
+							setTimeout(function() {
+								$('.f_manager-alert').css('display', 'none');
+							}, 5000);
+
+							return false;
+						});
+
 					},
 					success: (result) => {
 						$('.fields-upload-chosen-name[data-id=' + file_id + ']').attr('title', result.title).text(result.title)
