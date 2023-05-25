@@ -191,6 +191,10 @@ $lang = array(
 
     'file_dnd_create_directory' => 'Create New Directory',
 
+    'file_dnd_no_directories' => 'No upload directories available',
+
+    'file_dnd_no_directories_desc' => 'This field is limited to upload directory not available for current member and site.',
+
     'file_grid_vertical_layout_title' => 'File Grid layout',
 
     /* Grid */

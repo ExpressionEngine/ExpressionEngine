@@ -68,6 +68,10 @@ class DragAndDropUpload extends React.Component {
 
     var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
 
+    if (typeof(directory) === 'undefined') {
+      return ' ';
+    }
+
     return directory.label
   }
 
@@ -80,6 +84,13 @@ class DragAndDropUpload extends React.Component {
       }
     } else {
       var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      if (typeof(directory) === 'undefined') {
+        return {
+          upload_location_id: null,
+          path: '',
+          directory_id: 0
+        };
+      }
       if (directory.value == directory.upload_location_id) {
         directory.directory_id = 0
       } else {
@@ -542,6 +553,12 @@ class DragAndDropUpload extends React.Component {
     if (this.state.pendingFiles) {
       heading = EE.lang.file_dnd_choose_file_directory
       subheading = EE.lang.file_dnd_choose_directory_before_uploading
+    }
+
+    if (EE.dragAndDrop.uploadDesinations.length == 0 && this.state.directory != 'all') {
+      heading = EE.lang.file_dnd_no_directories
+      subheading = EE.lang.file_dnd_no_directories_desc
+      this.props.showActionButtons = false;
     }
 
     let checkChildren = this.directoryHasChild(this.props.allowedDirectory);

@@ -295,6 +295,11 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
     value: function getDirectoryName(directory) {
       if (directory == 'all') return null;
       var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
+      if (typeof directory === 'undefined') {
+        return ' ';
+      }
+
       return directory.label;
     }
   }, {
@@ -308,6 +313,14 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         };
       } else {
         var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
+        if (typeof directory === 'undefined') {
+          return {
+            upload_location_id: null,
+            path: '',
+            directory_id: 0
+          };
+        }
 
         if (directory.value == directory.upload_location_id) {
           directory.directory_id = 0;
@@ -626,6 +639,12 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
       if (this.state.pendingFiles) {
         heading = EE.lang.file_dnd_choose_file_directory;
         subheading = EE.lang.file_dnd_choose_directory_before_uploading;
+      }
+
+      if (EE.dragAndDrop.uploadDesinations.length == 0 && this.state.directory != 'all') {
+        heading = EE.lang.file_dnd_no_directories;
+        subheading = EE.lang.file_dnd_no_directories_desc;
+        this.props.showActionButtons = false;
       }
 
       var checkChildren = this.directoryHasChild(this.props.allowedDirectory);
