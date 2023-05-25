@@ -13,39 +13,39 @@ namespace ExpressionEngine\Cli\Commands;
 use ExpressionEngine\Cli\Cli;
 
 /**
- * Update file usage
+ * Sync file usage
  */
-class CommandUpdateFileUsage extends Cli
+class CommandSyncFileUsage extends Cli
 {
     /**
      * name of command
      * @var string
      */
-    public $name = 'Update File Usage';
+    public $name = 'Sync File Usage';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'update:file-usage';
+    public $signature = 'sync:file-usage';
 
     /**
      * description of command
      * @var string
      */
-    public $description = 'command_update_file_usage_description';
+    public $description = 'command_sync_file_usage_description';
 
     /**
      * summary of command
      * @var string
      */
-    public $summary = 'command_update_file_usage_summary';
+    public $summary = 'command_sync_file_usage_summary';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php update:file-usage';
+    public $usage = 'php eecli.php sync:file-usage';
 
     /**
      * options available for use in command
@@ -61,7 +61,7 @@ class CommandUpdateFileUsage extends Cli
     {
         ee()->lang->loadfile('utilities');
 
-        $this->info('command_update_file_usage');
+        $this->info('command_sync_file_usage');
         $fileUsage = ee('FileUsage');
 
         foreach($fileUsage->getProgressSteps() as $progressStep) {
@@ -70,6 +70,6 @@ class CommandUpdateFileUsage extends Cli
         }
 
         $this->write('');
-        $this->info('command_update_file_usage_done');
+        $this->info('command_sync_file_usage_done');
     }
 }

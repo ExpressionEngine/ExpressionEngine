@@ -257,29 +257,29 @@ $lang = array(
     // make:fieldtype options
     'command_make_fieldtype_option_addon'                 => 'Folder for third-party add-on you want to add fieldtype to.',
 
-    // Lang entries for command update:config
-    'command_update_config_description'             => 'Updates config values in config.php file',
-    'command_update_config_summary'                 => 'Gives the ability to update config values',
-    'command_update_config_ask_config_variable'     => 'What config item would you like to set?',
-    'command_update_config_ask_config_value'        => 'What value would you like it set to?',
-    'command_update_config_updating_config_variable' => 'Updating config item...',
-    'command_update_config_config_value_saved'      => 'Config item saved.',
+    // Lang entries for command config:config
+    'command_config_config_description'             => 'Updates config values in config.php file',
+    'command_config_config_summary'                 => 'Gives the ability to update config values',
+    'command_config_config_ask_config_variable'     => 'What config item would you like to set?',
+    'command_config_config_ask_config_value'        => 'What value would you like it set to?',
+    'command_config_config_updating_config_variable' => 'Updating config item...',
+    'command_config_config_config_value_saved'      => 'Config item saved.',
 
-    // update:config options
-    'command_update_config_option_config_variable'  => 'The config item to modify',
-    'command_update_config_option_value'            => 'The value to set the config item to',
+    // config:config options
+    'command_config_config_option_config_variable'  => 'The config item to modify',
+    'command_config_config_option_value'            => 'The value to set the config item to',
 
-    // Lang entries for command update:env
-    'command_update_env_description'             => 'Updates env values in .env.php file',
-    'command_update_env_summary'                 => 'Gives the ability to update env values',
-    'command_update_env_ask_config_variable'     => 'What env item would you like to set?',
-    'command_update_env_ask_config_value'        => 'What value would you like it set to?',
-    'command_update_env_updating_config_variable' => 'Updating env item...',
-    'command_update_env_config_value_saved'      => 'Env item saved.',
+    // Lang entries for command config:env
+    'command_config_env_description'             => 'Updates env values in .env.php file',
+    'command_config_env_summary'                 => 'Gives the ability to update env values',
+    'command_config_env_ask_config_variable'     => 'What env item would you like to set?',
+    'command_config_env_ask_config_value'        => 'What value would you like it set to?',
+    'command_config_env_updating_config_variable' => 'Updating env item...',
+    'command_config_env_config_value_saved'      => 'Env item saved.',
 
-    // update:config options
-    'command_update_env_option_config_variable'  => 'The env item to set/modify',
-    'command_update_env_option_value'            => 'The value to set the env item to',
+    // config:env options
+    'command_config_env_option_config_variable'  => 'The env item to set/modify',
+    'command_config_env_option_value'            => 'The value to set the env item to',
 
     // Lang entries for command make:cp-route
     'command_make_cp_route_description'                  => 'Generates a control panel route for a given third-party add-on',
@@ -416,11 +416,11 @@ $lang = array(
     'command_update_option_y'                                   => 'Skip all confirmations. Don\'t do this.',
     'command_update_option_skip_cleanup'                        => 'Skip cleanup steps after update',
 
-    // Lang entries for command update:file-usage
-    'command_update_file_usage_description'     => 'Updates the file usage for all files',
-    'command_update_file_usage_summary'         => '',
-    'command_update_file_usage'                 => 'Updating file usage.',
-    'command_update_file_usage_done'            => 'File usage updated successfully.',
+    // Lang entries for command sync:file-usage
+    'command_sync_file_usage_description'     => 'Syncs the file usage for all files',
+    'command_sync_file_usage_summary'         => '',
+    'command_sync_file_usage'                 => 'Updating file usage.',
+    'command_sync_file_usage_done'            => 'File usage updated successfully.',
 
     // Lang entries for command update:prepare
     'command_update_prepare_description'                        => 'Prepare a site to be upgraded using these files',

@@ -15,7 +15,7 @@ use ExpressionEngine\Cli\Cli;
 /**
  * Command to update config values
  */
-class CommandUpdateConfig extends Cli
+class CommandConfigConfig extends Cli
 {
     /**
      * name of command
@@ -27,21 +27,21 @@ class CommandUpdateConfig extends Cli
      * signature of command
      * @var string
      */
-    public $signature = 'update:config';
+    public $signature = 'config:config';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php update:config -c is_system_on -v n';
+    public $usage = 'php eecli.php config:config -c is_system_on -v n';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        'config-variable,c:'    => 'command_update_config_option_config_variable',
-        'value,v:'               => 'command_update_config_option_value',
+        'config-variable,c:'    => 'command_config_config_option_config_variable',
+        'value,v:'               => 'command_config_config_option_value',
     ];
 
     protected $data = [];
@@ -53,10 +53,10 @@ class CommandUpdateConfig extends Cli
     public function handle()
     {
         // Gather all the config variable information
-        $this->data['config-variable'] = $this->getOptionOrAsk('--config-variable', 'command_update_config_ask_config_variable', '', true);
-        $this->data['value'] = $this->getOptionOrAsk('--value', 'command_update_config_ask_config_value', '', true);
+        $this->data['config-variable'] = $this->getOptionOrAsk('--config-variable', 'command_config_config_ask_config_variable', '', true);
+        $this->data['value'] = $this->getOptionOrAsk('--value', 'command_config_config_ask_config_value', '', true);
 
-        $this->info('command_update_config_updating_config_variable');
+        $this->info('command_config_config_updating_config_variable');
 
         ee()->cache->save('cli/update-config-settings', true);
 
@@ -64,6 +64,6 @@ class CommandUpdateConfig extends Cli
         $config = ee('Config')->getFile();
         $config->set($this->data['config-variable'], $this->data['value'], true);
 
-        $this->info('command_update_config_config_value_saved');
+        $this->info('command_config_config_config_value_saved');
     }
 }
