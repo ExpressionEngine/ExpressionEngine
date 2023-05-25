@@ -94,7 +94,7 @@ class EE_Router
         $this->uri->_fetch_uri_string();
 
         // Is there a URI string? If not, the default controller specified in the "routes" file will be shown.
-        if ($this->uri->uri_string == '') {
+        if ($this->uri->uri_string == '' || $this->uri->uri_string == 'cp') {
             return $this->_set_default_controller();
         }
 

@@ -719,7 +719,7 @@ class Login extends CP_Controller
         $this->logger->log_action(lang('member_logged_out'));
 
         if ($this->input->get('auto_expire')) {
-            $this->functions->redirect(ee('CP/URL')->make('login', ['auto_expire', 'true'])->compile());
+            $this->functions->redirect(ee('CP/URL')->make('login', ['auto_expire' => 'true'])->compile());
         }
 
         /* -------------------------------------------
