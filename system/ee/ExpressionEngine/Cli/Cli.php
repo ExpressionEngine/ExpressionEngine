@@ -253,6 +253,12 @@ class Cli
             ->setUsage($this->usage)
             ->setOptions($this->commandOptions);
 
+        // Echo out just the simple options for the command
+        if($this->option('--options')) {
+            $this->write($help->getHelpOptionsSimple());
+            exit();
+        }
+
         $this->output->outln($help->getHelp($this->name));
 
         exit();
@@ -575,7 +581,8 @@ class Cli
         $commandOptions = array_merge(
             $this->commandOptions,
             [
-                'help,h' => 'cli_option_help'
+                'help,h' => 'cli_option_help',
+                'options' => 'cli_option_help_options'
             ]
         );
 

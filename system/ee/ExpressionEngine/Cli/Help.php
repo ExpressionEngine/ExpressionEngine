@@ -383,6 +383,40 @@ class Help
 
     /**
      *
+     * Gets the simple options output.
+     *
+     * @return string
+     *
+     */
+    public function getHelpOptionsSimple()
+    {
+        if (! $this->options) {
+            return;
+        }
+        $text = '';
+        foreach ($this->options as $option => $descr) {
+            // check if $option contains a colon
+            $needsValue = (strpos($option, ':') !== false);
+
+            // Remove the ':' from the option
+            $option = str_replace(':', '', $option);
+            $option = explode(',', $option);
+            $option = '--' . $option[0];
+
+            // If the command needs a value, we need to add an '='
+            if ($needsValue) {
+                $option .= '=';
+            }
+
+            // Concat all option lines together with their descriptions
+            $text .= $option . '[' . $descr . "]\n";
+        }
+
+        return $text;
+    }
+
+    /**
+     *
      * Gets the formatted output for one option.
      *
      * @param \stdClass $option An option structure.
