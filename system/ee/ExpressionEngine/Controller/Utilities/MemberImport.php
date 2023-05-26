@@ -545,7 +545,7 @@ class MemberImport extends Utilities
                     if ($screen_name) {
                         $validationRules['screen_name'] = 'validScreenName|notBanned';
                     }
-                    $validationRules['email'] = 'email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned';
+                    $validationRules['email'] = 'email|uniqueEmail|max_length[254]|notBanned';
                     $validationResult = ee('Validation')->make($validationRules)->validate($validationData);
 
                     if ($validationResult->isNotValid()) {

@@ -2726,7 +2726,7 @@ class Member
                                 $validationRules[$field] = 'validPassword|passwordMatchesSecurityPolicy';
                                 break;
                             case 'email':
-                                $validationRules[$field] = 'email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned';
+                                $validationRules[$field] = 'email|uniqueEmail|max_length[254]|notBanned';
                                 break;
                             case 'screen_name':
                                 $validationRules[$field] = 'validScreenName|notBanned';

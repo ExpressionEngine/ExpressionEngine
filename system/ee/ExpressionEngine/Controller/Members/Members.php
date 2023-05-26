@@ -1575,7 +1575,7 @@ class Members extends CP_Controller
                     'email' => [
                         'type' => 'text',
                         'required' => true,
-                        'maxlength' => USERNAME_MAX_LENGTH
+                        'maxlength' => 254
                     ]
                 ]
             ],

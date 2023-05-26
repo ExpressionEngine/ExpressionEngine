@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '7.2.17'; // The version being installed
+    public $version = '7.4.0'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -779,7 +779,7 @@ class Wizard extends CI_Controller
             array(
                 'field' => 'email_address',
                 'label' => 'lang:email_address',
-                'rules' => 'required|email|max_length[' . USERNAME_MAX_LENGTH . ']'
+                'rules' => 'required|email|max_length[254]'
             ),
             array(
                 'field' => 'license_agreement',
