@@ -81,6 +81,14 @@
                             ?>
                             <th<?php if (! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 
+                                <?php if (empty($settings['label']) && $settings['name'] == 'thumbnail') {?>
+                                    <span class="sr-only">Thumbnail Column</span>
+                                <?php } ?>
+
+                                <?php if (empty($settings['label']) && $settings['name'] == 'manage') {?>
+                                    <span class="sr-only">Toolbar Column</span>
+                                <?php } ?>
+
                                 <?php if ($header_sorts): ?>
                                     <?php
                                     $url = clone $base_url;

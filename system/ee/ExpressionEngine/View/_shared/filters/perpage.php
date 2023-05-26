@@ -39,7 +39,7 @@
 	<div class="modal">
 		<div class="col-group">
 			<div class="col w-16">
-				<a class="m-close" href="#"></a>
+				<a class="m-close" href="#"><span class="sr-only">close modal window</span></a>
 				<div class="form-standard">
 					<form>
 						<div class="form-btns form-btns-top">

@@ -683,7 +683,8 @@ class DragAndDropUpload extends React.Component {
               e.preventDefault()
               this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
-            <input type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
+            <label htmlFor="f_open-filepicker_id" className="sr-only">Hidden input for file upload</label>
+            <input id="f_open-filepicker_id" type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
             </div>
           </React.Fragment>
           )
@@ -722,7 +723,8 @@ class DragAndDropUpload extends React.Component {
         {this.props.imitationButton && (
           <React.Fragment>
           <a href="#" style={{display: 'none'}} onClick={(el) => this.hiddenUpload(el)} data-upload_location_id={''} data-directory_id={''} data-path={''} className='imitation_button'>Imitation</a>
-          <input type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
+          <label htmlFor="f_open-filepicker_id" className="sr-only">Hidden input for file upload</label>
+          <input id="f_open-filepicker_id" type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
           </React.Fragment>
         )}
         </div>
