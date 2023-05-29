@@ -387,7 +387,7 @@ class Filemanager
             // It is important to use the same upload destination object because of filesystem caching
             $prefs['directory'] = $directory['upload_destination'];
 
-            if (! $this->create_thumb($file_path, $prefs)) {
+            if (! $this->create_thumb($image_path, $prefs)) {
                 return $this->_save_file_response(false, lang('thumb_not_created'));
             }
         }
@@ -435,6 +435,10 @@ class Filemanager
      */
     public function orientation_check($file_path, $prefs)
     {
+        if (isset($prefs['image_processed']) && $prefs['image_processed'] === true) {
+            return;
+        }
+        
         if (! function_exists('exif_read_data')) {
             return;
         }
@@ -523,6 +527,10 @@ class Filemanager
      */
     public function max_hw_check($file_path, $prefs)
     {
+        if (isset($prefs['image_processed']) && $prefs['image_processed'] === true) {
+            return $prefs;
+        }
+
         $force_master_dim = false;
 
         // Make sure height and width are set
@@ -2009,6 +2017,8 @@ class Filemanager
                     )
                 );
             }
+
+            $file_data['image_processed'] = true;
         }
 
         // Save file to database
