@@ -14370,6 +14370,14 @@ input[type=button].btn-block {
   outline: none;
   box-shadow: none;
 }
+@media (max-width: 767px) {
+  .sidebar__link--parent {
+    display: flex;
+  }
+  .sidebar__link--parent a {
+    display: inline-block;
+  }
+}
 
 .ui-sortable .sidebar__link .ui-sortable-handle i, .ui-sortable .add-on-layout .secondary-sidebar .sidebar__section-title a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) .ui-sortable-handle i, .add-on-layout .secondary-sidebar .sidebar__section-title .ui-sortable a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) .ui-sortable-handle i {
   cursor: move;
