@@ -141,8 +141,10 @@
 						$('.fields-upload-chosen-name[data-id=' + file_id + ']').attr('title', result.title).text(result.title)
 					}
 				})
-
+				e.stopImmediatePropagation();
+				return false;
 			});
+
 			// Drag and drop component
 			FileField.renderFields(container)
 		}
