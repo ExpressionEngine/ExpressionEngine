@@ -437,10 +437,21 @@ class EE_Input
             return '0.0.0.0';
         }
 
+        $possibleIpHeaders = [
+            'HTTP_X_CLIENT_IP',
+            'HTTP_CLIENT_IP',
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_FORWARDED_FOR',
+            'HTTP_X_FORWARDED',
+            'HTTP_FORWARDED',
+            'HTTP_CF_CONNECTING_IP',
+            'HTTP_X_CLUSTER_CLIENT_IP'
+        ];
+
         $proxy_ips = config_item('proxy_ips');
         if (! empty($proxy_ips)) {
             $proxy_ips = explode(',', str_replace(' ', '', $proxy_ips));
-            foreach (array('HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'HTTP_X_CLIENT_IP', 'HTTP_X_CLUSTER_CLIENT_IP') as $header) {
+            foreach ($possibleIpHeaders as $header) {
                 if (($spoof = $this->server($header)) !== false) {
                     // Some proxies typically list the whole chain of IP
                     // addresses through which the client has reached us.
