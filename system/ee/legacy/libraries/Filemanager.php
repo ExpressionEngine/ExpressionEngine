@@ -1376,7 +1376,9 @@ class Filemanager
         }
 
         // Clean up source temporary file
-        fclose($tmp['file']);
+        if (isset($tmp['file'])) {
+            fclose($tmp['file']);
+        }
 
         return true;
     }
