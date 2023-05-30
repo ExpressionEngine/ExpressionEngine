@@ -15,7 +15,7 @@ context('Test Member roles Addons ', () => {
 		cy.logout();
 	})
 
-	it('Addon Manager can not login because cp access has not been given yet',() => {
+	it('Add-on Manager can not login because cp access has not been given yet',() => {
 		cy.auth({
 			email: 'AddonManager1',
 			password: 'password'
@@ -24,7 +24,7 @@ context('Test Member roles Addons ', () => {
 	   cy.get('p').contains('You are not authorized to perform this action')
 	 })
 
-	it('Let Addon Role access Addons and CP', () => {
+	it('Let Add-on Role access Add-ons and CP', () => {
 		cy.auth()
 
 		cy.hasNoErrors()

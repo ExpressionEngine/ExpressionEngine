@@ -17,6 +17,13 @@
   padding: 20px 25px;
 }
 
+// Adjust for odd-sized tabs on Publish form
+.panel-body.panel-body__publish {
+  @include m-tablet-up {
+    padding-top: 2px;
+  }
+}
+
 // Optional heading
 .panel-heading {
   padding: 20px 25px;

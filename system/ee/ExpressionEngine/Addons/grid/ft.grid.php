@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,6 +13,7 @@
  */
 class Grid_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Grid',
         'version' => '1.0.0'
@@ -27,6 +28,13 @@ class Grid_ft extends EE_Fieldtype
     public $settings_form_field_name = 'grid';
 
     private $errors;
+
+    /**
+     * A list of operators that this fieldtype supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = null;
 
     public function __construct()
     {
@@ -173,7 +181,10 @@ class Grid_ft extends EE_Fieldtype
             'grid_max_rows' => $this->settings['grid_max_rows'],
             'reorder' => isset($this->settings['allow_reorder'])
                 ? get_bool_from_string($this->settings['allow_reorder'])
-                : true
+                : true,
+            'vertical_layout' => isset($this->settings['vertical_layout'])
+                ? ($this->settings['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $this->settings['vertical_layout'])
+                : 'n',
         ));
         $grid->loadAssets();
         $grid->setNoResultsText(
@@ -593,6 +604,21 @@ class Grid_ft extends EE_Fieldtype
                                 'value' => isset($data['allow_reorder']) ? $data['allow_reorder'] : 'y'
                             )
                         )
+                    ),
+                    array(
+                        'title' => 'grid_vertical_layout_title',
+                        'desc' => 'grid_vertical_layout_desc',
+                        'fields' => array(
+                            'vertical_layout' => array(
+                                'type' => 'radio',
+                                'choices' => array(
+                                    'n' => lang('grid_auto'),
+                                    'y' => lang('grid_vertical_layout'),
+                                    'horizontal' => lang('grid_horizontal_layout'),
+                                ),
+                                'value' => isset($data['vertical_layout']) ? ($data['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $data['vertical_layout']) : 'n'
+                            )
+                        )
                     )
                 )
             ),
@@ -755,7 +781,8 @@ class Grid_ft extends EE_Fieldtype
         return array(
             'grid_min_rows' => empty($data['grid_min_rows']) ? 0 : $data['grid_min_rows'],
             'grid_max_rows' => empty($data['grid_max_rows']) ? '' : $data['grid_max_rows'],
-            'allow_reorder' => empty($data['allow_reorder']) ? 'y' : $data['allow_reorder']
+            'allow_reorder' => empty($data['allow_reorder']) ? 'y' : $data['allow_reorder'],
+            'vertical_layout' => empty($data['vertical_layout']) ? 'n' : $data['vertical_layout'],
         );
     }
 

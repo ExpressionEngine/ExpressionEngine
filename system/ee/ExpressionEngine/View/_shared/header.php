@@ -16,6 +16,22 @@
 		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext')?>" type="text/css" />
 		<?php endif;?>
 
+		<?php if (ee()->config->item('site_color') != ''): ?>
+		<style type="text/css">
+			body {
+				--ee-sidebar-title-bg: #<?=ee()->config->item('site_color')?>;
+				--ee-sidebar-title-bg-hover: #<?=ee()->config->item('site_color')?>;
+				--ee-sidebar-text-faded: #FFFFFF;
+			}
+			.ee-sidebar__title, .ee-sidebar__items-bottom, .ee-sidebar__title:hover {
+				background-color: #<?=ee()->config->item('site_color')?>;
+			}
+			.ee-sidebar__title-down-arrow, .ee-sidebar__items .ee-sidebar__version {
+				color: #FFFFFF;
+			}
+		</style>
+		<?php endif; ?>
+
 		<?php
         foreach (ee()->cp->get_head() as $item) {
             echo $item . "\n";

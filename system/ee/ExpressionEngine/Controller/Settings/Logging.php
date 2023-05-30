@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -43,6 +43,9 @@ class Logging extends Settings
         $base_url = ee('CP/URL')->make('settings/logging');
 
         if (! empty($_POST)) {
+            if (is_array($_POST['anonymize_consent_logs'])) {
+                $_POST['anonymize_consent_logs'] = implode('|', $_POST['anonymize_consent_logs']);
+            }
             if ($this->saveSettings($vars['sections'])) {
                 ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), true);
             } else {

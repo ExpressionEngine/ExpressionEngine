@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,6 +23,7 @@ class ColumnFactory
         'status' => Columns\Status::class,
         'sticky' => Columns\Sticky::class,
         'entry_date' => Columns\EntryDate::class,
+        'edit_date' => Columns\EditDate::class,
         'expiration_date' => Columns\ExpirationDate::class,
         'channel' => Columns\ChannelName::class,
         'comments' => Columns\Comments::class,
@@ -65,10 +66,15 @@ class ColumnFactory
      */
     public static function getAvailableColumns($channel = false)
     {
-        return array_merge(
-            self::getStandardColumns(),
-            self::getChannelFieldColumns($channel)
+        $columns = array_merge(
+            static::getStandardColumns(),
+            static::getCustomFieldColumns($channel)
         );
+        $availableColumns = [];
+        foreach ($columns as $column) {
+            $availableColumns[$column->getTableColumnIdentifier()] = $column;
+        }
+        return $availableColumns;
     }
 
     /**
@@ -78,9 +84,16 @@ class ColumnFactory
      */
     private static function getStandardColumns()
     {
-        return array_map(function ($identifier, $column) {
-            return self::getColumn($identifier);
-        }, array_keys(self::$standard_columns), self::$standard_columns);
+        return array_filter(
+            array_map(function ($identifier, $column) {
+                if ($identifier != 'comments' || bool_config_item('enable_comments')) {
+                    return static::getColumn($identifier);
+                }
+            }, array_keys(static::$standard_columns), static::$standard_columns),
+            function ($column) {
+                return (! empty($column));
+            }
+        );
     }
 
     /**
@@ -88,7 +101,7 @@ class ColumnFactory
      *
      * @return array[Column]
      */
-    private static function getChannelFieldColumns($channel = false)
+    protected static function getCustomFieldColumns($channel = false)
     {
         // Grab all the applicable fields based on the channel if there is one.
         if (! empty($channel)) {

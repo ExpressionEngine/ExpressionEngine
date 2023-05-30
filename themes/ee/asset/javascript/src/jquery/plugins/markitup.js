@@ -258,7 +258,7 @@
 							if (altKey === true) {
 								return (b[1] !== undefined) ? b[1] : b[0];
 							} else {
-								return (b[1] === undefined) ? "" : b[0];
+								return b[0];
 							}
 						}
 					);
@@ -291,6 +291,9 @@
 
 			// build block to insert
 			function build(string) {
+				if (clicked.className !== undefined && clicked.className.includes('html-upload')) {
+					localStorage.setItem('caretPosition', clicked.caretPosition);
+				}
 				openWith 	= prepare(clicked.openWith);
 				placeHolder = prepare(clicked.placeHolder);
 				replaceWith = prepare(clicked.replaceWith);

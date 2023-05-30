@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,6 +22,12 @@ function makeFilterableComponent(WrappedComponent) {
       this.ajaxFilter = (SelectList.countItems(this.initialItems) >= props.limit && props.filterUrl)
       this.ajaxTimer = null
       this.ajaxRequest = null
+
+      // We need this function only for checkbox that have selected elements and there are more than tooMany
+      // excluding categories on the Entry page
+      if (props.tooMany && props.multi && this.props.selected.length && !props.name.startsWith("categories[")) {
+        this.moveSelectableToTop();
+      }
     }
 
     itemsChanged = (items) => {
@@ -116,6 +122,28 @@ function makeFilterableComponent(WrappedComponent) {
         },
         error: () => {} // Defined to prevent error on .abort above
       })
+    }
+
+    moveSelectableToTop () {
+      var regularItems = this.state.items;
+      var selectedItems = this.props.selected;
+      var checked = [];
+
+      var unchecked = regularItems.filter(i => selectedItems.every(item => item.value != i.value));
+      var checkedIndex = selectedItems.map(el => el.value);
+      
+      regularItems.filter(function(item) {
+        selectedItems.forEach(function(el) {
+          if (item.value == el.value) {
+            checked.push(item);
+          }
+        })
+      });
+
+      // first shows checked elements then elements that are not checked
+      var newImemsOrder = checked.concat(unchecked);
+      this.setState({ items: newImemsOrder })
+      this.state.items = newImemsOrder
     }
 
     render() {

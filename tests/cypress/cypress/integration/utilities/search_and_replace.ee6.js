@@ -3,6 +3,10 @@ import SearchAndReplace from '../../elements/pages/utilities/Search_and_replace'
 const page = new SearchAndReplace
 
 context('Search and Replace', () => {
+  
+    before(function(){
+        cy.task('db:seed')
+    })
 
 	  beforeEach(function() {
 	  	cy.auth()

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -26,18 +26,31 @@ class Relationship extends React.Component {
     }
 
     static renderFields(context) {
-        $('div[data-relationship-react]', context).each(function () {
+        $('div[data-relationship-react]:not(.react-deferred-loading)', context).each(function () {
             let props = JSON.parse(window.atob($(this).data('relationshipReact')))
             props.name = $(this).data('inputValue')
 
             ReactDOM.render(React.createElement(Relationship, props, null), this)
-        })
-	}
+        });
 
-	componentDidMount() {
+        $('.react-deferred-loading--relationship', context).each(function () {
+            var $wrapper = $(this);
+            var $button = $wrapper.find('.js-dropdown-toggle');
+
+            $button.on('click', function () {
+                $('div[data-relationship-react]', $wrapper).each(function () {
+                    var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+                    props.name = $(this).data('inputValue');
+                    ReactDOM.render(React.createElement(Relationship, props, null), this);
+                });
+            });
+        });
+    }
+
+    componentDidMount() {
         this.bindSortable()
         EE.cp.formValidation.bindInputs(ReactDOM.findDOMNode(this).parentNode);
-	}
+    }
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.selected !== prevState.selected) {
@@ -80,7 +93,7 @@ class Relationship extends React.Component {
             iframe: true,
             success: this.entryWasCreated,
             load: (modal) => {
-                const entryTitle = this.field.closest('[data-publish]').find('input[name=title]').val()
+                const entryTitle = $(this.field.closest('[data-publish]')).find('input[name=title]').val()
 
                 let title = EE.relationship.lang.creatingNew
                     .replace('#to_channel#', channelTitle)
@@ -132,6 +145,7 @@ class Relationship extends React.Component {
         }
 
         return $.ajax({
+            method: 'POST',
             url: this.props.filter_url,
             data: $.param(params),
             dataType: 'json',
@@ -270,9 +284,7 @@ class Relationship extends React.Component {
             return notInSelected && allowedChannel && filterName
         })
 
-        let maxItems = this.props.rel_max ? this.props.rel_max : this.props.limit
-
-        let showAddButton = ((maxItems > this.state.selected.length) && (this.props.multi || this.state.selected.length==0) && (this.props.items.length > this.state.selected.length))
+        let showAddButton = ( (this.props.multi || this.state.selected.length==0) && ( this.props.rel_max == 0 || this.props.rel_max > this.state.selected.length) );
 
         let channelFilterItems = props.channels.map((channel) => {
             return { label: channel.title, value: channel.id}
@@ -329,7 +341,7 @@ class Relationship extends React.Component {
                                         <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={EE.relationship.lang.search} />
                                     </div>
                                 </div>
-                                {props.channels.length > 1 && 
+                                {props.channels.length > 1 &&
                                 <div className="filter-bar__item">
                                     <DropDownButton
                                         keepSelectedState={true}
@@ -347,7 +359,7 @@ class Relationship extends React.Component {
                                     }
                                     {props.channels.length > 1 &&
                                     <div>
-                                    <button type="button" className="js-dropdown-toggle button button--primary button--small">New Entry <i class="fas fa-caret-down icon-right"></i></button>
+                                    <button type="button" className="js-dropdown-toggle button button--primary button--small" data-dropdown-pos="bottom-end">New Entry <i class="fas fa-caret-down icon-right"></i></button>
                                     <div className="dropdown">
                                         {props.channels.map((channel) => {
                                             return (

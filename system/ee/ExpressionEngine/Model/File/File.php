@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -83,6 +83,8 @@ class File extends Model
     protected $modified_date;
     protected $file_hw_original;
 
+    protected $_absolutePath;
+
     public function get__width()
     {
         $dimensions = explode(" ", $this->getProperty('file_hw_original'));
@@ -159,7 +161,10 @@ class File extends Model
      */
     public function getAbsolutePath()
     {
-        return rtrim($this->UploadDestination->server_path, '/') . '/' . $this->file_name;
+        if (empty($this->_absolutePath)) {
+            $this->_absolutePath = rtrim($this->UploadDestination->server_path, '/') . '/' . $this->file_name;
+        }
+        return $this->_absolutePath;
     }
 
     /**

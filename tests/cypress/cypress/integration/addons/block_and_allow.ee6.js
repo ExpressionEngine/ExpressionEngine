@@ -10,6 +10,7 @@ context('Block and Allow', () => {
 
   before(function(){
     cy.task('db:seed')
+    cy.task('installer:replace_config')
     cy.intercept('**/check').as('check')
     cy.intercept('**/license/handleAccessResponse').as('license')
 

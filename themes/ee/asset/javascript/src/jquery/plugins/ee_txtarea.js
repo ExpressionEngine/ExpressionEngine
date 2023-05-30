@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -81,21 +81,33 @@ $(textarea).scrollToCursor();
 
 		replaceWith: function(text) {
 			var newStart;
+			var firstPart;
+			var lastPart;
 
 			this.el.focus();
 
 			if ('selectionStart' in this.el) {
-				newStart = this.el.selectionStart + text.length;
 
-				this.el.value = this.el.value.substr(0, this.el.selectionStart) +
+				if (localStorage.getItem('caretPosition')) {
+					this.el.selectionStart = localStorage.getItem('caretPosition');
+				}
+
+				newStart = this.el.selectionStart + text.length;
+				firstPart = this.el.value.substr(0, this.el.selectionStart);
+				lastPart = this.el.value.substr(this.el.selectionStart);
+				this.el.value = firstPart +
 								text +
-								this.el.value.substr(this.el.selectionEnd, this.el.value.length);
+								lastPart;
+
 				this.el.setSelectionRange(newStart, newStart);
 			}
 			else if (document.selection) {
 				document.selection.createRange().text = text;
 			}
 
+			if (localStorage.getItem('caretPosition')) {
+				localStorage.removeItem('caretPosition');
+			}
 			return this;
 		},
 

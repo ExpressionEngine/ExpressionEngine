@@ -15,19 +15,19 @@ $config['site_url'] = $config['base_url'];
 
 $config['app_version'] = '3.0.5';
 $config['debug'] = '1';
-$config['cp_url'] = 'http://localhost:8888/system/index.php';
-$config['theme_folder_url'] = 'http://localhost:8888/themes/';
+$config['cp_url'] = "{$config['base_url']}index.php";
+$config['theme_folder_url'] = "{$config['base_url']}themes";
 $config['doc_url'] = 'https://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
 $config['cache_driver'] = 'file';
 $config['database'] = array(
-	'expressionengine' => array(
-		'hostname' => 'localhost',
-		'database' => 'ee-test',
-		'username' => 'root',
-		'password' => 'root',
-	),
+    'expressionengine' => array(
+        'hostname' => 'localhost',
+        'database' => 'ee-test',
+        'username' => 'root',
+        'password' => 'root',
+    ),
 );
 $config['db_port'] = '';
 $config['site_label'] = '';
@@ -53,7 +53,7 @@ $config['cookie_httponly'] = 'y';
 | 'ORIG_PATH_INFO'	Uses the ORIG_PATH_INFO
 |
 */
-$config['uri_protocol']	= 'AUTO';
+$config['uri_protocol']    = 'AUTO';
 
 /*
 |--------------------------------------------------------------------------

@@ -34,9 +34,8 @@
 	background-color: color(bg-0);
 	margin-bottom: 40px;
 	padding: $sq-inset-m;
-	// overflow: hidden;
 	position: relative;
-	border-radius: $corners;
+	border-radius: $border-radius-large;
 	@include shadow-modal;
 
 	.title-bar {
@@ -55,8 +54,8 @@
 
   .m-close {
     height: 20px;
-    top: 20px;
-    right: 20px;
+    right: 15px;
+    top: 15px;
 
     &:before { font-size: 20px; }
   }
@@ -151,8 +150,6 @@
     }
   }
 
-
-
   .meta-info {
     font-size: 0.8rem;
     margin-top: 10px;
@@ -162,5 +159,12 @@
     .danger-link {
       cursor: pointer;
     }
+  }
+}
+
+.modal-wrap.modal-template-settings {
+  .m-close {
+    top: 9px;
+    right: 20px;
   }
 }

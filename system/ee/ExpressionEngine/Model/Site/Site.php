@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -110,6 +110,7 @@ class Site extends Model
     protected static $_validation_rules = array(
         'site_name' => 'required|validateShortName|unique',
         'site_label' => 'required',
+        'site_color' => 'hexColor'
     );
 
     protected static $_events = array(
@@ -123,12 +124,13 @@ class Site extends Model
     protected $site_label;
     protected $site_name;
     protected $site_description;
+    protected $site_color;
     protected $site_bootstrap_checksums;
     protected $site_pages;
 
     public function validateShortName($key, $value, $params, $rule)
     {
-        if (preg_match('/[^a-z0-9\-\_]/i', $value)) {
+        if (preg_match('/[^a-z0-9\-\_]/i', (string) $value)) {
             return 'invalid_short_name';
         }
 

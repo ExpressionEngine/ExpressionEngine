@@ -4,12 +4,13 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace ExpressionEngine\Service\Database\Backup;
 
+use Exception;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
@@ -119,6 +120,27 @@ class Backup
     }
 
     /**
+     * Gets an array of tables to backup (with some information data)
+     *
+     * @see Backup::getTables()
+     * @return array Array of tables data
+     */
+    protected function getTablesInformation()
+    {
+        $tablesInformation = $this->query->getTables();
+        if (empty($this->tables_to_backup)) {
+            return $tablesInformation;
+        }
+        $tablesNames = array_keys($tablesInformation);
+
+        //make sure we only try to backup existing tables
+        $this->tables_to_backup = array_intersect($this->tables_to_backup, $tablesNames);
+        $tablesInformation = array_intersect_key($tablesInformation, array_flip($this->tables_to_backup));
+
+        return $tablesInformation;
+    }
+
+    /**
      * Class will write a file with comments and helpful whitespace formatting
      */
     public function makePrettyFile()
@@ -212,18 +234,28 @@ class Backup
      */
     public function writeDropAndCreateStatements()
     {
-        $tables = $this->getTables();
+        $tables = $this->getTablesInformation();
 
         $this->writeSeparator('Drop old tables if exists');
 
-        foreach ($tables as $table) {
-            $this->writeChunk($this->query->getDropStatement($table));
+        foreach ($tables as $tableName => $table) {
+            $this->writeChunk($this->query->getDropStatement($tableName));
         }
 
         $this->writeSeparator('Create tables and their structure');
 
-        foreach ($tables as $table) {
-            $create = $this->query->getCreateForTable($table);
+        foreach ($tables as $name => $structure) {
+            switch ($structure['type']) {
+                case Query::TABLE_STRUCTURE:
+                    $create = $this->query->getCreateForTable($name);
+                    break;
+                case Query::VIEW_STRUCTURE:
+                    $create = $this->query->getCreateForView($name);
+                    break;
+                default:
+                    throw new Exception("There is no implementation of 'get create' for type {$structure['type']}. Name: $name");
+                /** @see Query::getTables() */
+            }
 
             // Add an extra linebreak if not a compact file
             if (! $this->compact_file) {

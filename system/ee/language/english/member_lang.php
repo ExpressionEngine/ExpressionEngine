@@ -162,7 +162,7 @@ $lang = array(
 
     'mbr_aim_console' => 'AOL IM',
 
-    'mbr_all_member_groups' => 'All Member Groups',
+    'mbr_all_member_groups' => 'All Roles',
 
     'mbr_aol' => 'AOL',
 

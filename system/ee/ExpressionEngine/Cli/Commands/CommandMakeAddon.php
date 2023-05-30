@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,7 +21,7 @@ class CommandMakeAddon extends Cli
      * name of command
      * @var string
      */
-    public $name = 'Addon Generator';
+    public $name = 'Add-on Generator';
 
     /**
      * signature of command
@@ -33,24 +33,25 @@ class CommandMakeAddon extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php make:addon "My Awesome Addon" --extension --hooks=category_save,after_category_field_update';
+    public $usage = 'php eecli.php make:addon "My Awesome Add-on" --extension --hooks=category_save,after_category_field_update';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        // Addon types
+        // Add-on types
         'extension,ext'   => 'command_make_addon_option_extension',
         'plugin,pi'       => 'command_make_addon_option_plugin',
         'fieldtype,ft'    => 'command_make_addon_option_fieldtype',
         'module,mod'      => 'command_make_addon_option_module',
 
-        // Addon setup toggles
-        'typography,t'    => 'command_make_addon_option_typography',
-        'has-settings,e:' => 'command_make_addon_option_has',
+        // Add-on setup toggles
+        'typography,t'          => 'command_make_addon_option_typography',
+        'has-settings,e:'       => 'command_make_addon_option_has',
+        'compatibility-mode,p'  => 'command_make_addon_option_compatibility_mode',
 
-        // Addon values
+        // Add-on values
         'version,v:'      => 'command_make_addon_option_version',
         'description,d:'  => 'command_make_addon_option_description',
         'author,a:'       => 'command_make_addon_option_author',
@@ -88,13 +89,13 @@ class CommandMakeAddon extends Cli
         $this->data['type'] = $this->getType();
 
         // Get description
-        $this->data['description']  = $this->getOptionOrAsk(
+        $this->data['description'] = $this->getOptionOrAsk(
             "--description",
             "{$this->type['name']} " . lang('command_make_addon_description_question')
         );
 
         // Get version
-        $this->data['version']  = $this->getOptionOrAsk(
+        $this->data['version'] = $this->getOptionOrAsk(
             "--version",
             "{$this->type['name']} " . lang('command_make_addon_version_question'),
             '1.0.0',
@@ -102,13 +103,13 @@ class CommandMakeAddon extends Cli
         );
 
         // Get author
-        $this->data['author']  = $this->getOptionOrAsk(
+        $this->data['author'] = $this->getOptionOrAsk(
             "--author",
             "{$this->type['name']} " . lang('command_make_addon_author_question')
         );
 
         // Get author_url
-        $this->data['author_url']  = $this->getOptionOrAsk(
+        $this->data['author_url'] = $this->getOptionOrAsk(
             "--author-url",
             "{$this->type['name']} " . lang('command_make_addon_author_url_question')
         );
@@ -121,7 +122,7 @@ class CommandMakeAddon extends Cli
             $this->data['has_settings'] = 'no';
         } else {
             // Ask if not passed and not a plugin
-            $this->data['has_settings']  = $this->confirm(lang('command_make_addon_does_your') . "{$this->type['slug']} " . lang('command_make_addon_have_settings_question'));
+            $this->data['has_settings'] = $this->confirm(lang('command_make_addon_does_your') . "{$this->type['slug']} " . lang('command_make_addon_have_settings_question'));
         }
 
         $this->getTypeSpecificData();
@@ -185,6 +186,9 @@ class CommandMakeAddon extends Cli
 
             $this->data['cookies'] = $cookies;
         }
+
+        // Set the compatibilty mode
+        $this->data['compatibility-mode'] = (bool) $this->option('--compatibility-mode');
     }
 
     private function build()

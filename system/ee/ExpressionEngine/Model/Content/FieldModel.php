@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -63,6 +63,16 @@ abstract class FieldModel extends Model
         return $this->_field_facade;
     }
 
+    public function getSupportedEvaluationRules()
+    {
+        return $this->getField($this->getSettingsValues())->getSupportedEvaluationRules();
+    }
+
+    public function getPossibleValuesForEvaluation()
+    {
+        return $this->getField($this->getSettingsValues())->getPossibleValuesForEvaluation();
+    }
+
     public function getSettingsForm()
     {
         return $this->getField($this->getSettingsValues())->getSettingsForm();
@@ -80,7 +90,7 @@ abstract class FieldModel extends Model
 
     public function set(array $data = array())
     {
-        // getField() requires that we have a field type, but we might be trying
+        // getField() requires that we have a fieldtype, but we might be trying
         // to set it! So, if we are, we'll do that first.
         if (isset($data['field_type'])) {
             $this->setProperty('field_type', $data['field_type']);
@@ -100,16 +110,24 @@ abstract class FieldModel extends Model
 
         if (isset($settings['field_settings'])) {
             $field = $this->getField($this->getSettingsValues());
-            $settings_result = $field->validateSettingsForm($settings['field_settings']);
+
+            $settings_result = $field->validateSettingsForm(array_merge($settings, $settings['field_settings']));
 
             if ($settings_result instanceof ValidationResult && $settings_result->failed()) {
                 foreach ($settings_result->getFailed() as $name => $rules) {
                     foreach ($rules as $rule) {
+                        if ($name == 'field_pre_field_id') {
+                            // because this field is not visually present on page, we set error on parent field
+                            $name = 'field_pre_populate_id';
+                        }
                         $result->addFailed($name, $rule);
                     }
                 }
             }
         }
+
+        //validate assigned conditions
+        
 
         return $result;
     }
@@ -215,11 +233,11 @@ abstract class FieldModel extends Model
     }
 
     /**
-     * Simple getter for field type, override if your field type property has a
+     * Simple getter for fieldtype, override if your fieldtype property has a
      * different name.
      *
      * @access protected
-     * @return string The field type.
+     * @return string The fieldtype.
      */
     protected function getFieldType()
     {

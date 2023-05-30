@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -117,6 +117,7 @@ $.fn.miniGrid = function(params) {
 Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 	init: function() {
+		this._hideToolbarRowForVerticalLayout();
 		this._bindSortable();
 		this._bindAddButton();
 		this._bindDeleteButton();
@@ -134,6 +135,22 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Allow access to this Grid.Publish object from the DOM element;
 		// this may be a bad idea
 		this.root.data('GridInstance', this)
+	},
+
+	/**
+	 * Hide first td if it has class grid-field__item-fieldset
+	**/
+	_hideToolbarRowForVerticalLayout: function() {
+		var that = this;
+
+		var notEmptyRows = this.rowContainer.children(this.rowSelector).not(this.emptyField);
+		notEmptyRows.each(function(){
+			var gridFieldType = $(this).parents('.grid-field');
+
+			if (gridFieldType.hasClass('vertical-layout')) {
+				$(this).find('.grid-field__item-fieldset').show();
+			}
+		})
 	},
 
 	/**
@@ -261,6 +278,18 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			this.root.toggleClass('hidden', rowCount == 0)
 		}
 
+		if ($(this.rowContainer).parents('.fluid__item-field').length) {
+			var gridFieldWidth = $(this.rowContainer).innerWidth()
+		} else {
+			var gridFieldWidth = $(this.rowContainer).width();
+		}
+
+		if ($(this.rowContainer).parents('.field-control').length) {
+			var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
+		} else {
+			var parentFieldControlWidth = gridFieldWidth;
+		}
+			
 		if(rowCount == 0) {
 			var showAddButton = setInterval(function (){
 				if ( !that.find('.field-no-results').hasClass('hidden') ) {
@@ -268,6 +297,11 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 					clearInterval(showAddButton);
 				}
 			}, 50);
+
+			if ( !$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && $(this.rowContainer).parents('.grid-field').hasClass('entry-grid') && (parentFieldControlWidth >= gridFieldWidth)) {
+				$(this.rowContainer).parents('.grid-field').removeClass('overwidth');
+				$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').hide()
+			}
 		}
 	},
 
@@ -351,6 +385,34 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Bind the new row's inputs to AJAX form validation
 		if (EE.cp && EE.cp.formValidation !== undefined) {
 			EE.cp.formValidation.bindInputs(el);
+		}
+
+		if ($(this.rowContainer).parents('.fluid__item-field').length) {
+			var gridFieldWidth = $(this.rowContainer).innerWidth()
+		} else {
+			var gridFieldWidth = $(this.rowContainer).width();
+		}
+
+		if ($(this.rowContainer).parents('.field-control').length) {
+			var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
+		} else {
+			var parentFieldControlWidth = gridFieldWidth;
+		}
+
+		if ( !$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && $(this.rowContainer).parents('.grid-field').hasClass('entry-grid') && (parentFieldControlWidth < gridFieldWidth)) {
+			$(this.rowContainer).parents('.grid-field').addClass('overwidth');
+			$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').show()
+		}
+
+		if ($(this.rowContainer).find('tr:not(.hidden) div[data-relationship-react]').length) {
+			$(this.rowContainer).find('tr:not(.hidden) div[data-relationship-react]').each(function(el) {
+				var button = $(this).find('.js-dropdown-toggle').get(0);
+				DropdownController.getDropdownForElement(button);
+			})
+		}
+
+		if ($(this.rowContainer).parents('.grid-field').hasClass('vertical-layout')) {
+			$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').show();
 		}
 
 		return el;
@@ -816,6 +878,7 @@ Grid.Settings.prototype = {
 
 			// Find the container holding the settings form, replace its contents
 			customSettingsContainer.html(settings);
+			SelectField.renderFields();
 
 			// Fire displaySettings event
 			that._fireEvent('displaySettings', settings);
@@ -957,6 +1020,126 @@ $(document).ready(function () {
 	FluidField.on('grid', 'add', function(el) {
   		EE.grid($('div', el));
 	});
+
+	// Toggle grid item
+	$('body').on('click', '.grid-field .js-toggle-grid-item', function() {
+		$(this).parents('tr').toggleClass('grid__item--collapsed');
+
+		if ($(this).parents('tr').hasClass('grid__item--collapsed')) {
+			$(this).parents('tr').find('td:not(.grid-field__item-fieldset)').each(function() {
+				$(this).hide();
+			});
+		} else {
+			$(this).parents('tr').find('td:not(.grid-field__item-fieldset)').each(function() {
+				$(this).show();
+			});
+		}
+
+		return false;
+	});
+
+	// Hide all grid items
+	$('body').on('click', '.grid-field .js-hide-all-grid-field-items', function() {
+		$(this).parents('tbody').find('tr:not(.hidden)').addClass('grid__item--collapsed');
+
+		$(this).parents('tbody').find('tr:not(.hidden)').find('td:not(.grid-field__item-fieldset)').each(function() {
+			$(this).hide();
+		});
+
+		// Hide the dropdown menu
+		$('.js-dropdown-toggle.dropdown-open').trigger('click');
+
+		return false;
+	});
+
+	// Show all grid items
+	$('body').on('click', '.grid-field .js-show-all-grid-field-items', function() {
+		$(this).parents('tbody').find('tr:not(.hidden)').removeClass('grid__item--collapsed');
+
+		$(this).parents('tbody').find('tr:not(.hidden)').find('td:not(.grid-field__item-fieldset)').each(function() {
+			$(this).show();
+		});
+
+		// Hide the dropdown menu
+		$('.js-dropdown-toggle.dropdown-open').trigger('click');
+
+		return false;
+	});
+
+});
+
+function checkGrigWidth() {
+	var gridTables = $('.grid-field:not(.horizontal-layout)');
+
+	gridTables.each(function(el) {
+
+		if ( $(this).parents('.hidden').length ) return;
+
+		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
+			var tableInnerWidth = $(this).find('.grid-field__table').innerWidth()
+		} else {
+			var tableInnerWidth = $(this).find('.grid-field__table').width();
+		}
+
+		if ($(this).parents('.field-control').length) {
+			var containerWidth = $(this).parents('.field-control').width();
+		} else {
+			var containerWidth = tableInnerWidth;
+		}
+
+		if ($(this).hasClass('entry-grid') && containerWidth < tableInnerWidth) {
+			$(this).addClass('overwidth');
+			$(this).find('.grid-field__item-fieldset').show();
+		}
+
+		if ($(this).hasClass('entry-grid') && containerWidth >= tableInnerWidth && $(window).width() > 1440) {
+			$(this).removeClass('overwidth');
+			$(this).find('.grid-field__item-fieldset').hide();
+		}
+	});
+}
+
+function checkGrigWidthForResize() {
+	var gridTables = $('.grid-field:not(.horizontal-layout)');
+
+	gridTables.each(function(el) {
+
+		if ( $(this).parents('.hidden').length ) return;
+
+		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
+			var tableInnerWidth = $(this).find('.grid-field__table').parents('.fluid__item-field').innerWidth()
+		} else {
+			var tableInnerWidth = $(this).find('.grid-field__table').width();
+		}
+
+		if ($(this).parents('.field-control').length) {
+			var containerWidth = $(this).parents('.field-control').width();
+		} else {
+			var containerWidth = tableInnerWidth;
+		}
+
+		if ($(this).hasClass('entry-grid') && containerWidth < tableInnerWidth) {
+			$(this).addClass('overwidth');
+			$(this).find('.grid-field__item-fieldset').show();
+		}
+	});
+}
+
+function addHorizontalClassToFluid() {
+	var grid = $('.grid-field.horizontal-layout');
+
+	if (grid.parents('.fluid__item-field').length) {
+		grid.parents('.fluid__item-field').addClass('horizontal');
+	}
+}
+
+$(window).on('load', function() {
+	addHorizontalClassToFluid();
+	checkGrigWidth();
+});
+
+$(window).on('resize', function() {
+	checkGrigWidthForResize();
 });
 
 })(jQuery);

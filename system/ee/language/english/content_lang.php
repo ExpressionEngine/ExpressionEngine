@@ -84,7 +84,13 @@ $lang = array(
 
     'comments_status_updated_desc' => 'The following comments were set to %s',
 
+    'clone_entry_success' => 'Entry Created',
+
+    'clone_entry_success_desc' => 'This is your new cloned entry.',
+
     'create_entry_error' => 'Cannot Create Entry',
+
+    'copy_of' => 'Copy of',
 
     'create_entry_error_desc' => 'We were unable to create this entry, please review and fix errors below.',
 
@@ -145,6 +151,8 @@ $lang = array(
     'expiration_date' => 'Expiration date',
 
     'expiration_date_desc' => 'Date this entry should expire.',
+
+    'edit_date' => 'Last edit date',
 
     'filter_autosaves' => 'filter auto saves',
 
@@ -705,6 +713,8 @@ $lang = array(
 
     'status_changed' => 'Status Changed',
 
+    'status_changed_desc' => 'Entry status has been changed to <b>%s</b>',
+
     'tab_count_zero' => 'There needs to be at least one tab available to hold fields.',
 
     'tab_has_req_field' => 'The tab may not be deleted while it contains the following required fields: ',
@@ -773,6 +783,8 @@ $lang = array(
 
     'version_preview' => 'Revision Number %s',
 
+    'version_no' => 'Revision #%d',
+
     'versioning_enabled' => 'Enable entry revisions?',
 
     'versioning_enabled_desc' => 'When enabled, you can store up to %d revisions of this entry.',
@@ -786,6 +798,10 @@ $lang = array(
     'view_filtered' => 'Return to Filtered Entries',
 
     'view_wider' => 'View Wider',
+
+    'viewing_revision' => 'You Are Viewing a Revision',
+
+    'viewing_revision_desc' => 'Any changes saved will overwrite the newest version of this entry',
 
     'warning' => 'Warning',
 

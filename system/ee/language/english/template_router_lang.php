@@ -20,8 +20,6 @@ $lang = array(
 
     'route' => 'Route',
 
-    'route_not_found' => 'Template route not found.',
-
     'segments_required' => 'Segments Required?',
 
     'template_routes_header' => 'Template Routes',

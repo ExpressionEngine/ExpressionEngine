@@ -18,6 +18,7 @@ class ControlPanel {
 
             // Main Section
             "page_title": '.ee-main .main-nav h1',
+            "page_sub_title": '.panel-heading .title-bar__title',
             "wrap": 'section.ee-wrapper .ee-main',
             "nav": 'section.ee-wrapper .ee-sidebar',
             "page_heading": ".ee-main .title-bar .title-bar__title",

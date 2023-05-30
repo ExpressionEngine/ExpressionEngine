@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -48,11 +48,11 @@ class Text extends Formatter
             return $this;
         }
 
-        $chars = preg_split('//u', $this->content, null, PREG_SPLIT_NO_EMPTY);
+        $chars = preg_split('//u', $this->content, 0, PREG_SPLIT_NO_EMPTY);
 
         $this->content = '';
         foreach ($chars as $index => $char) {
-            $decoded = utf8_decode($char);
+            $decoded = mb_convert_encoding($char, 'ISO-8859-1', 'UTF-8');
 
             if ($decoded != '?') {
                 $char = $decoded;
@@ -157,7 +157,7 @@ class Text extends Formatter
                 return $this;
             }
 
-            $censored = preg_split('/[\n|\|]/', $censored, null, PREG_SPLIT_NO_EMPTY);
+            $censored = preg_split('/[\n|\|]/', $censored, 0, PREG_SPLIT_NO_EMPTY);
 
             foreach ($censored as $key => $bad) {
                 $length = strlen($bad);
@@ -229,6 +229,7 @@ class Text extends Formatter
     {
         static $emoji_map;
         static $shorthand_regex;
+        static $usingLegacyEmojiConfig = false;
 
         // save some cycles if we know we can't possibly find a match
         if (substr_count($this->content, ':') < 2) {
@@ -237,18 +238,27 @@ class Text extends Formatter
 
         // setup our regex and our map just once, pretty intensive
         if (empty($shorthand_regex)) {
-            $emoji_map = $this->getConfig('emoji_map');
+            //legacy support for old emoji config files
+            if (file_exists(SYSPATH . 'user/config/emoji.php')) {
+                $usingLegacyEmojiConfig = true;
+                $emoji_map = ee()->config->loadFile('emoji');
+                $short_names = array_keys($emoji_map);
+
+                // preg_quote the short names for our regex, and store the preg_quoted version with each symbol for later use
+                $short_names = array_map(
+                    function ($item) use ($emoji_map) {
+                        return $emoji_map[$item]->preg_quoted_name = preg_quote($item, '/');
+                    },
+                    $short_names
+                );
+            } else {
+                //the "new" way of getting emoji data
+                $emoji_map = ee('Emoji')->emojiMap;
+                $short_names = array_keys($emoji_map);
+            }
             $short_names = array_keys($emoji_map);
 
-            // preg_quote the short names for our regex, and store the preg_quoted version with each symbol for later use
-            $short_names = array_map(
-                function ($item) use ($emoji_map) {
-                    return $emoji_map[$item]->preg_quoted_name = preg_quote($item, '/');
-                },
-                $short_names
-            );
-
-            $shorthand_regex = '/:(' . implode('|', $short_names) . '):/';
+            $shorthand_regex = '/:(' . str_replace('+', '\+', implode('|', $short_names)) . '):/';
         }
 
         // grab 'em!
@@ -266,16 +276,29 @@ class Text extends Formatter
         //   1 => string 'rabbit' (length=6)
         foreach ($matches as $match) {
             if (isset($emoji_map[$match[1]])) {
-                if ($use_regex) {
-                    // This regex says "match our emoji shorthand that are not followed by ...[/code] without a [code] inbetween"
-                    // essentially ignoring all matches inside of [code][/code]/<code></code> blocks
-                    $this->content = preg_replace(
-                        "/(:{$emoji_map[$match[1]]->preg_quoted_name}:)(?!(.(?![<\[]code))*[<\[]\/code[>\]])/is",
-                        $emoji_map[$match[1]]->html_entity,
-                        $this->content
-                    );
+                if ($usingLegacyEmojiConfig) {
+                    if ($use_regex) {
+                        // This regex says "match our emoji shorthand that are not followed by ...[/code] without a [code] inbetween"
+                        // essentially ignoring all matches inside of [code][/code]/<code></code> blocks
+                        $this->content = preg_replace(
+                            "/(:{$emoji_map[$match[1]]->preg_quoted_name}:)(?!(.(?![<\[]code))*[<\[]\/code[>\]])/is",
+                            $emoji_map[$match[1]]->html_entity,
+                            $this->content
+                        );
+                    } else {
+                        $this->content = str_replace($match[0], $emoji_map[$match[1]]->html_entity, $this->content);
+                    }
                 } else {
-                    $this->content = str_replace($match[0], $emoji_map[$match[1]]->html_entity, $this->content);
+                    //the "new" way
+                    if ($use_regex) {
+                        $this->content = preg_replace(
+                            "/({$match[0]})(?!(.(?![<\[]code))*[<\[]\/code[>\]])/is",
+                            $emoji_map[$match[1]],
+                            $this->content
+                        );
+                    } else {
+                        $this->content = str_replace($match[0], $emoji_map[$match[1]], $this->content);
+                    }
                 }
             }
         }
@@ -355,7 +378,7 @@ class Text extends Formatter
 
         $json_options = 0;
         if (isset($options['options'])) {
-            foreach (preg_split('/[\s\|]/', $options['options'], null, PREG_SPLIT_NO_EMPTY) as $param) {
+            foreach (preg_split('/[\s\|]/', $options['options'], 0, PREG_SPLIT_NO_EMPTY) as $param) {
                 $json_options += constant($param);
             }
         }
@@ -459,7 +482,7 @@ class Text extends Formatter
         }
 
         $find = $this->removeEvalModifier($find);
-        $valid = @preg_match($find, null);
+        $valid = @preg_match($find, '');
 
         // valid regex only, unless DEBUG is enabled
         if ($valid !== false or DEBUG) {
@@ -590,7 +613,7 @@ class Text extends Formatter
             // replace whitespace and forward slashes with the separator
             '#\s+|/+|\|+#i' => $options['separator'],
             // only allow low ascii letters, numbers, dash, dot, underscore, and emoji
-            '#[^a-z0-9\-\._' . $this->getConfig('emoji_regex') . ']#iu' => '',
+            '#[^a-z0-9\-\._' . ee('Emoji')->emojiRegex . ']#iu' => '',
             // no dot-then-separator (in case multiple sentences were passed)
             '#\.' . $options['separator'] . '#i' => $options['separator'],
             // reduce multiple instances of the separator to a single

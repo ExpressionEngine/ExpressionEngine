@@ -39,7 +39,7 @@
             <?php endif ?>
 
             <?php if (ee('Permission')->can('access_footer_report_bug')): ?>
-                <a href="https://github.com/ExpressionEngine/ExpressionEngine/issues/new?template=1-EE6-bug-report.md" class="dropdown__link app-about__link app-about__bug-link" rel="external noreferrer"><i class="fas fa-bug fa-fw"></i> <?=lang('report_bug')?></a>
+                <a href="https://github.com/ExpressionEngine/ExpressionEngine/issues/new?template=1-bug-report.md" class="dropdown__link app-about__link app-about__bug-link" rel="external noreferrer"><i class="fas fa-bug fa-fw"></i> <?=lang('report_bug')?></a>
             <?php endif ?>
             <?php if (ee('Permission')->can('access_footer_user_guide')): ?>
                 <a href="<?=DOC_URL?>" class="dropdown__link app-about__link app-about__user-guide-link" rel="external noreferrer"><i class="fas fa-book fa-fw"></i> <?=lang('user_guide')?></a>
@@ -68,7 +68,17 @@
                 <div class="app-about__status app-about__status--update-major hidden">
                     <?=lang('out_of_date_upgrade_major')?>
 
-                    <div class="app-about__status--update_major_version <?=isset(ee()->view->major_update) ? '' : 'hidden'?>">
+                    <br><br>
+
+                    <?php
+                    // IF the user is not currently using pro AND they have multiple members
+                    //   OR they have pro installed but dont have a valid license
+                    // THEN theyre gonna need a license
+                     if (ee('Model')->get('Member')->count() > 1 && (! IS_PRO || ee()->view->pro_license_status !== 'valid')): ?>
+                        <?=lang('one_click_major_update_pro_license_required')?><br><br>
+                    <?php endif;?>
+                        <?=lang('one_click_major_update_pro_license_info')?><br><br>
+                    <div class="app-about__status--update_major_version">
                         <?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name' => 'one_click_major_update_confirm'])?>
                             <input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
                             <fieldset>
@@ -86,7 +96,7 @@
                         <?=form_close()?>
                     </div>
 
-                    <div class="app-about__status--update_regular <?=isset(ee()->view->major_update) ? 'hidden' : ''?>">
+                    <div class="app-about__status--update_regular hidden">
                         <a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--primary"><?=lang('update_btn')?></a>
                     </div>
                     <div class="app-about__status-version"></div>
@@ -107,21 +117,21 @@
 
         echo ee()->javascript->get_global();
 
-        echo ee()->cp->render_footer_js();
+    echo ee()->cp->render_footer_js();
 
-        if (isset($_extra_library_src)) {
-            echo $_extra_library_src;
-        }
+    if (isset($_extra_library_src)) {
+        echo $_extra_library_src;
+    }
 
-        echo ee()->javascript->script_foot();
+    echo ee()->javascript->script_foot();
 
-        foreach (ee()->cp->get_foot() as $item) {
-            echo $item . "\n";
-        }
+    foreach (ee()->cp->get_foot() as $item) {
+        echo $item . "\n";
+    }
 
-        $this->embed('ee:_shared/idle-modal');
+    $this->embed('ee:_shared/idle-modal');
 
-        ?>
+    ?>
 
         <script type="text/javascript" src="<?=ee('CP/URL')->make('jumps/js')->compile()?>"></script>
 

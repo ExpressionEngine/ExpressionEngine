@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -152,6 +152,10 @@ class File_model extends CI_Model
     public function save_file($data = array())
     {
         $successful = true;
+
+        if (empty($data['title']) && isset($data['orig_name']) && !empty($data['orig_name'])) {
+            $data['title'] = $data['orig_name'];
+        }
 
         // Define valid array keys as keys to use in array_intersect_key
         $valid_keys = array(

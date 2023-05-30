@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -131,7 +131,7 @@ class Consent extends Model
         $log->ConsentRequest = $this->ConsentRequest;
         $log->ConsentRequestVersion = $this->ConsentRequestVersion;
         $log->Member = $this->Member;
-        $anonymize = ee()->config->item('anonymize_consent_logs');
+        $anonymize = explode('|', ee()->config->item('anonymize_consent_logs'));
         if (!empty($anonymize) && in_array('ip_address', $anonymize)) {
             $log->ip_address = ee('IpAddress')->anonymize(ee()->input->ip_address());
         } else {

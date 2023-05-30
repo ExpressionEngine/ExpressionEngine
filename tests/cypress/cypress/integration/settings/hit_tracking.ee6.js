@@ -4,14 +4,19 @@ import HitTracking from '../../elements/pages/settings/HitTracking';
 
 const page = new HitTracking
 
-context('Hit Tracking', () => {
+context('Tracking', () => {
+
+  before(function(){
+    cy.task('db:seed')
+  })
+  
   beforeEach(function(){
     cy.auth();
     page.load()
     cy.hasNoErrors()
   })
 
-  it('shows the Hit Tracking page', () => {
+  it('shows the Tracking page', () => {
     //page.all_there?.should == true
   })
 

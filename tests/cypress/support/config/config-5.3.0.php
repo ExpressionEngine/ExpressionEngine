@@ -24,8 +24,8 @@ $config['app_version'] = '5.3.0';
 $config['license_contact'] = 'ellislab.developers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';
-$config['cp_url'] = 'http://localhost:8888/system/index.php';
-$config['theme_folder_url'] = 'http://localhost:8888/themes/';
+$config['cp_url'] = "{$config['base_url']}index.php";
+$config['theme_folder_url'] = "{$config['base_url']}themes";
 $config['theme_folder_path'] = '/home/ubuntu/ExpressionEngine/themes/';
 $config['doc_url'] = 'https://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';
@@ -34,9 +34,10 @@ $config['cookie_prefix'] = '';
 $config['cache_driver'] = 'file';
 $config['database'] = array(
 	'expressionengine' => array(
+        'hostname' => 'localhost',
 		'database' => 'ee-test',
 		'username' => 'root',
-		'password' => 'root'
+		'password' => 'root',
 	),
 );
 $config['encryption_key'] = '631cbbc6e1de577805226ce0d1cc6c144cfd6c86';

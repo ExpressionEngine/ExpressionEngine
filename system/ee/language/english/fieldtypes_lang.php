@@ -12,6 +12,12 @@ $lang = array(
 
     'remove_file' => 'Remove File',
 
+    'ft_allow_multi' => 'Allow multiple selections?',
+
+    'ft_allow_multi_desc' => 'When enabled, authors will be allowed to select multiple items.',
+
+    'ft_multiselect_not_allowed' => 'Selecting multiple options is not allowed for this field',
+
     /* Relationships */
     'any_author' => 'Any author',
 
@@ -22,6 +28,8 @@ $lang = array(
     'any_status' => 'Any status',
 
     'relate_entry' => 'Relate Entry',
+
+    'relate_entry_deferred' => 'Edit Relationships',
 
     'rel_ft_allow_multi' => 'Allow multiple relationships?',
 
@@ -47,9 +55,9 @@ $lang = array(
 
     'rel_ft_include_future' => 'Future entries',
 
-    'rel_ft_limit' => 'Maximum entries',
+    'rel_ft_limit' => 'Maximum number of available entries',
 
-    'rel_ft_limit_desc' => 'Maximum number of entries to show in relationship field.<br><i>Leave blank to allow all entries.</i>',
+    'rel_ft_limit_desc' => 'Sets the number of entries displayed in the field\'s dropdown.<br><i>Leave blank to allow all entries.</i>',
 
     'rel_ft_order' => 'Order by',
 
@@ -75,19 +83,21 @@ $lang = array(
 
     'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
 
-    'rel_ft_max' => 'Maximum selection',
+    'rel_ft_deferred' => 'Defer field initialization?',
+
+    'rel_ft_deferred_desc' => 'When enabled, this field won’t initialize until the Edit Relationships button is clicked on. This can result in faster control panel page load times.',
+
+    'rel_ft_max' => 'Maximum number of related entries',
 
     'rel_ft_max_desc' => 'Sets the maximum number of entries this field can be used to relate.',
 
     'rel_ft_max_error' => 'You can select no more than %d entries.',
 
-    'rel_ft_min' => 'Minimum selection',
+    'rel_ft_min' => 'Minimum number of related entries',
 
-    'rel_ft_min_desc' => 'Sets the minimum number of entries this field can be used to relate',
+    'rel_ft_min_desc' => 'Sets the minimum number of entries this field should be used to relate.',
 
     'rel_ft_min_error' => 'You need to select at least %d entries.',
-
-    'rel_ft_min_settings_error' => 'The minimum selection cannot be set to number less than maximum entries to be shown',
 
     /* Duration */
     'duration_ft_hh' => 'hh',
@@ -131,7 +141,7 @@ $lang = array(
 
     'file_ft_limit_desc' => 'Maximum number of files to show in the drop down.<br><i>Leave blank to show all files.</i>',
 
-    'file_ft_no_upload_directories' => 'There are currently no upload directories available. Please <a href="%s">add one or more upload directories</a> to use the File field type.',
+    'file_ft_no_upload_directories' => 'There are currently no upload directories available. Please <a href="%s">add one or more upload directories</a> to use the File fieldtype.',
 
     'file_ft_select_existing' => 'Select an existing file',
 
@@ -181,12 +191,24 @@ $lang = array(
 
     'file_dnd_upload_new' => 'Upload New',
 
+    'file_grid_vertical_layout_title' => 'File Grid layout',
+
     /* Grid */
     'grid_add_field' => 'add new field',
 
     'grid_add_some_data' => 'You have not added any rows of data yet. <a href="#" class="grid_link_add">Add some data?</a>',
 
     'grid_allow_reorder' => 'Allow reordering of rows?',
+
+    'grid_vertical_layout' => 'Vertical layout',
+
+    'grid_horizontal_layout' => 'Horizontal layout',
+
+    'grid_auto' => 'Auto',
+
+    'grid_vertical_layout_title' => 'Grid layout',
+
+    'grid_vertical_layout_desc' => 'Choose how the field is displayed on publish pages.',
 
     'grid_chars_allowed' => 'Characters allowed.',
 
@@ -269,6 +291,8 @@ $lang = array(
 
     'url_ft_protocol_relative_url' => 'Protocol Relative URL',
 
+    'url_ft_single_slash_protocol_relative_url' => 'Root Relative URL',
+
     'url_ft_url_scheme_placeholder' => 'URL Scheme Placeholder',
 
     'url_ft_url_scheme_placeholder_desc' => 'Displayed as placeholder text when no URL has been submitted.',
@@ -294,6 +318,34 @@ $lang = array(
     'colorpicker_swatches_populate_values' => 'Values',
     'colorpicker_swatches_populate_manually' => 'Populate the swatches manually',
 
+    /* Conditional Evaluation Rules */
+    'contains' => 'contains',
+    'notContains' => 'does not contain',
+    'equal' => 'is',
+    'notEqual' => 'is not',
+    'isEmpty' => 'is empty',
+    'isNotEmpty' => 'has any value',
+    'greaterThan' => 'greater than',
+    'greaterOrEqualThan' => 'greater than or equal to',
+    'lessThan' => 'less than',
+    'lessOrEqualThan' => 'less than or equal to',
+
+    'turnedOn' => 'is turned on',
+    'turnedOff' => 'is turned off',
+
+    'includes' => 'includes',
+    'notIncludes' => 'does not include',
+
+    /* Slider */
+    'field_step' => 'Step',
+
+    'field_prefix' => 'Prefix',
+
+    'field_suffix' => 'Suffix',
+
+    /* Notes */
+    'notes_note_content' => 'Note Content',
+    'notes_note_content_desc' => 'This content will appear as a note on the publish form. Markdown formatting is supported.',
 );
 
 // EOF

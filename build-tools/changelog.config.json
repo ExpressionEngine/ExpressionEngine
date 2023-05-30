@@ -1,0 +1,28 @@
+{
+    "categories": [
+      {
+        "title": "**Enhancements** 🚀",
+        "labels": ["enhancement", "enhancement: accepted"]
+      },
+      {
+        "title": "**Bug Fixes** 💃🐛",
+        "labels": ["Bug: Accepted"]
+      },
+      {
+        "title": "**Developers** 💻",
+        "labels": ["refactoring", "development"]
+      }
+    ],
+    "ignore_labels": [
+      "ignore"
+    ],
+    "sort": "DESC",
+    "template": "${{CHANGELOG}}",
+    "pr_template": "- ${{TITLE}}",
+    "empty_template": "- no changes",
+    "base_branches": [
+      "6.dev",
+      "6.x",
+      "release/6.*"
+    ]
+  }

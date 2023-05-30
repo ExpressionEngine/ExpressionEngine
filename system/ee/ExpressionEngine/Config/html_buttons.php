@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -76,7 +76,7 @@ return array(
         ),
         'picture' => array(
             'tag_name' => lang('html_btn_picture'),
-            'tag_open' => '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />',
+            'tag_open' => '<img src="[![Link:!:http://]!]" alt="" height="" width="">',
             'tag_close' => '',
             'accesskey' => '',
             'classname' => 'html-upload'

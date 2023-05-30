@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,7 +25,7 @@ class Member_model extends CI_Model
     public function get_username($id = '', $field = 'screen_name')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
         if ($id == '') {
             // no id, return false
             return false;
@@ -57,7 +57,7 @@ class Member_model extends CI_Model
     public function get_upload_groups()
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $this->db->select('group_id, group_title');
         $this->db->from('member_groups');
@@ -83,7 +83,7 @@ class Member_model extends CI_Model
     public function get_members($group_id = '', $limit = '', $offset = '', $search_value = '', $order = array(), $column = 'all')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         // Is a unique order by specified
         $add_orderby = true;
@@ -134,7 +134,7 @@ class Member_model extends CI_Model
     public function get_member_count($group_id = false)
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $member_ids = array();
 
@@ -180,7 +180,7 @@ class Member_model extends CI_Model
     public function get_all_member_fields($additional_where = array(), $restricted = true)
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         // Extended profile fields
         $this->db->from('member_fields');
@@ -213,7 +213,7 @@ class Member_model extends CI_Model
     public function get_all_member_data($id)
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $this->db->from('member_data');
         $this->db->where('member_id', $id);
@@ -234,7 +234,7 @@ class Member_model extends CI_Model
     public function get_member_data($member_id = false, $fields = array())
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if (count($fields) >= 1) {
             $this->db->select($fields);
@@ -257,7 +257,7 @@ class Member_model extends CI_Model
     public function get_member_ignore_list($member_id = false)
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $query = $this->get_member_data($this->id, array('ignore_list'));
 
@@ -319,7 +319,7 @@ class Member_model extends CI_Model
     public function get_member_emails($additional_fields = array(), $additional_where = array())
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if (! is_array($additional_fields)) {
             $additional_fields = array($additional_fields);
@@ -335,9 +335,8 @@ class Member_model extends CI_Model
 
         $this->db->select("m.member_id, m.screen_name, m.email");
         $this->db->from("members AS m");
-        $this->db->join('member_groups AS mg', 'mg.group_id = m.group_id');
-        $this->db->where('mg.site_id', $this->config->item('site_id'));
-
+        $this->db->join('roles AS r', 'r.role_id = m.role_id');
+        
         foreach ($additional_where as $where) {
             foreach ($where as $field => $value) {
                 if (is_array($value)) {
@@ -467,7 +466,7 @@ class Member_model extends CI_Model
     {
         // for later use
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
     }
 
     /**
@@ -483,7 +482,7 @@ class Member_model extends CI_Model
     public function update_member_data($member_id = '', $data = array(), $additional_where = array())
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if (! isset($additional_where[0])) {
             $additional_where = array($additional_where);
@@ -517,7 +516,7 @@ class Member_model extends CI_Model
     public function delete_member($member_ids = array(), $heir_id = null)
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         // ---------------------------------------------------------------
         // 'member_delete' hook.
@@ -533,7 +532,7 @@ class Member_model extends CI_Model
         // ---------------------------------------------------------------
 
         ee()->load->library('logger');
-        ee()->logger->deprecated('4.3', "Member Model delete()");
+        ee()->logger->deprecated('6.0.0', '4.3', "Member Model delete()");
 
         ee('Model')->get('Member', $member_ids)->delete();
     }
@@ -583,7 +582,7 @@ class Member_model extends CI_Model
     public function delete_from_authorlist($member_ids = array())
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if (! is_array($member_ids)) {
             $member_ids = array($member_ids);
@@ -606,7 +605,7 @@ class Member_model extends CI_Model
     public function update_authorlist($member_ids = array())
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if (! is_array($member_ids)) {
             $member_ids = array($member_ids);
@@ -630,7 +629,7 @@ class Member_model extends CI_Model
     public function get_author_groups($channel_id = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $this->db->select('role_settings.role_id');
         $this->db->join("channel_member_roles", "role_settings.role_id = channel_member_roles.role_id", 'left');
@@ -710,7 +709,7 @@ class Member_model extends CI_Model
     public function get_member_groups($additional_fields = array(), $additional_where = array(), $limit = '', $offset = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated("6.0.0", "ee('Model')->get('Member')");
 
         if (! is_array($additional_fields)) {
             $additional_fields = array($additional_fields);
@@ -765,7 +764,7 @@ class Member_model extends CI_Model
     public function delete_member_group($group_id = '', $reassign_group = false)
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if ($reassign_group !== false) {
             // reassign current members to new group
@@ -787,7 +786,7 @@ class Member_model extends CI_Model
     public function count_members($group_id = '', $search_value = '', $search_field = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $this->_prep_search_query($group_id, $search_value, $search_field);
 
@@ -804,7 +803,7 @@ class Member_model extends CI_Model
     public function count_records($table = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         return $this->db->count_all($table);
     }
@@ -819,7 +818,7 @@ class Member_model extends CI_Model
     public function count_member_entries($member_ids = array())
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if (! is_array($member_ids)) {
             $member_ids = array($member_ids);
@@ -845,7 +844,7 @@ class Member_model extends CI_Model
     public function get_members_group_ids($member_ids = array())
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if (! is_array($member_ids)) {
             $member_ids = array($member_ids);
@@ -883,7 +882,7 @@ class Member_model extends CI_Model
     public function get_custom_member_fields($member_id = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if ($member_id != '') {
             $this->db->where('m_field_id', $member_id);
@@ -906,7 +905,7 @@ class Member_model extends CI_Model
     public function get_member_by_screen_name($screen_name = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $this->db->select('member_id');
         $this->db->from('members');
@@ -927,7 +926,7 @@ class Member_model extends CI_Model
     public function get_ip_members($ip_address = '', $limit = 10, $offset = 0)
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $this->db->select('member_id, username, screen_name, ip_address, email, join_date');
         $this->db->like('ip_address', $ip_address, 'both');
@@ -951,7 +950,7 @@ class Member_model extends CI_Model
     public function get_group_members($group_id, $order_by = 'join_date')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $this->db->select('member_id, username, screen_name, email, join_date');
         $this->db->where('group_id', $group_id);
@@ -973,7 +972,7 @@ class Member_model extends CI_Model
     public function check_duplicate($value = '', $field = 'username')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $this->db->like($field, $value);
         $this->db->from('members');
@@ -1001,7 +1000,7 @@ class Member_model extends CI_Model
     public function get_theme_list($path = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if ($path == '') {
             return;
@@ -1035,7 +1034,7 @@ class Member_model extends CI_Model
     public function get_profile_templates($path = PATH_MBR_THEMES)
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $themes = array();
         $this->load->helper('directory');
@@ -1064,7 +1063,7 @@ class Member_model extends CI_Model
     public function insert_group_layout($member_groups = array(), $channel_id = '', $layout_info = array())
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if (! is_array($member_groups)) {
             $member_groups = array($member_groups);
@@ -1109,7 +1108,7 @@ class Member_model extends CI_Model
     public function delete_group_layout($member_group = '', $channel_id = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $this->db->where("site_id", $this->config->item('site_id'));
         $this->db->where("channel_id", $channel_id);
@@ -1134,7 +1133,7 @@ class Member_model extends CI_Model
     public function get_group_layout($member_group = '', $channel_id = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $this->load->model('layout_model');
 
@@ -1158,7 +1157,7 @@ class Member_model extends CI_Model
     public function get_all_group_layouts($channel_id = array())
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         if (! is_array($channel_id)) {
             $channel_id = array($channel_id);
@@ -1190,7 +1189,7 @@ class Member_model extends CI_Model
     public function get_notepad_content($id = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Model')->get('Member')");
+        ee()->logger->deprecated('6.0.0', "ee('Model')->get('Member')");
 
         $id = $id ? $id : $this->session->userdata('member_id');
 
@@ -1217,7 +1216,7 @@ class Member_model extends CI_Model
     public function can_access_module($module, $group_id = '')
     {
         ee()->load->library('logger');
-        ee()->logger->deprecated("ee('Permission')");
+        ee()->logger->deprecated('6.0.0', "ee('Permission')");
 
         // Superadmin sees all
         if (ee('Permission')->isSuperAdmin()) {

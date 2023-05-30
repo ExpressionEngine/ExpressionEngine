@@ -91,5 +91,48 @@ context('Site Manager', () => {
       //page.get('global_menu').should('have.text', 'Rspec Site ' + counter)
       cy.get('h1').contains('Rspec Site '+ counter)
     })
+
+    it('color code a site', () => {
+      page.get('sites').last().find('a').click()
+      cy.get('[name=site_label]').invoke('val').then((val) => {
+        expect(val).to.eq('Rspec Site ' + counter)
+      })
+      cy.get('[name=site_label]').type('edited')
+      cy.get('[name=site_name]').invoke('val').then((val) => {
+        expect(val).to.eq('rspec_site_'+counter)
+      })
+      cy.get('[name=site_name]').type('edited')
+      cy.get('[data-toggle-for="is_site_on"]').click()
+      cy.get('[data-toggle-for="custom_site_color"]').click()
+      cy.get('[name="site_color"]').should('be.visible');
+      cy.get('[name="site_color"]').clear().type('aabbcc');
+      cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+      cy.visit('admin.php?/cp/msm');
+      page.get('sites').last().find('td:nth-child(2)').contains('Rspec Site ' + counter + 'edited')
+      page.get('sites').last().find('td:nth-child(3)').contains('{rspec_site_'+counter+'edited}')
+      page.get('sites').last().find('td:nth-child(4)').contains('Offline')
+
+      page.get('global_menu').click()
+      page.get('dropdown').find('a[href*="cp/msm/switch_to/'+counter+'"]').click()
+      cy.get('.ee-sidebar__title').should('have.css', 'backgroundColor').and('equal', 'rgb(170, 187, 204)');
+
+      cy.visit('admin.php?/cp/msm');
+      page.get('sites').last().find('a').click()
+      cy.get('[name=site_label]').invoke('val').then((val) => {
+        expect(val).to.eq('Rspec Site ' + counter + 'edited')
+      })
+      cy.get('[name=site_name]').invoke('val').then((val) => {
+        expect(val).to.eq('rspec_site_'+counter+'edited')
+      })
+      cy.get('[data-toggle-for="is_site_on"]').should('not.have.class', 'on')
+      cy.get('[data-toggle-for="custom_site_color"]').should('have.class', 'on')
+      cy.get('[name="site_color"]').should('be.visible');
+      cy.get('[data-toggle-for="custom_site_color"]').click()
+      cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+      cy.get('.ee-sidebar__title').should('have.css', 'backgroundColor').and('equal', 'rgb(45, 46, 64)');
+    })
+
   })
 })

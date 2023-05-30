@@ -6,6 +6,11 @@ const page = new ContentDesign
 
 context('Content & Design Settings', () => {
 
+  before(function(){
+    cy.task('db:seed')
+    cy.task('installer:replace_config')
+  })
+
   beforeEach(function() {
     cy.auth();
     page.load()
@@ -99,7 +104,7 @@ context('Content & Design Settings', () => {
       page.get('image_library_path').blur()
       //page.hasErrorsCount(0)AJ
 
-      
+
       page.hasNoError(page.get('image_library_path'))
       //page.hasNoErrors()AJ
     })

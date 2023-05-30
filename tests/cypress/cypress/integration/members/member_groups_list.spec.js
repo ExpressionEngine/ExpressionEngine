@@ -7,6 +7,9 @@ const page = new MemberGroups
 
 context('Member Group List', () => {
 
+  before(function(){
+    cy.task('db:seed')
+  })
 
   beforeEach(function() {
     cy.auth();

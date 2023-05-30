@@ -5,9 +5,22 @@ import Installer from '../../elements/pages/installer/Installer';
 const page = new Installer
 
 context('One-Click Updater', () => {
-
+ 
   before(function(){
+    cy.task('updater:backup_files')
     cy.task('db:seed')
+    cy.task('installer:disable')
+
+    // This test is also used in the pre-release.yml workflow and gets a copy of 6.1.5
+    // We've just selected the same version here to not interfere with that test
+    // but also allow this to do a simple check for working updater in current code
+    cy.eeConfig({item: 'app_version'}) .then((config) => {
+      if (config != '6.1.5') {
+        cy.eeConfig({item: 'app_version', value: '6.1.5'})
+        // add column that gets removed in 6.3.5
+        cy.task('db:query', "ALTER TABLE exp_members ADD COLUMN `dismissed_pro_banner` CHAR(1) NULL DEFAULT 'n'")
+      }
+    })
   })
 
   beforeEach(function() {
@@ -18,16 +31,26 @@ context('One-Click Updater', () => {
     @themespath = File.expand_path('../../themes/ee/');*/
 
     cy.auth();
+    cy.get('.ee-sidebar__version').should('be.visible')
+
+    cy.task('filesystem:delete', '../../system/user/cache/current_version')
+    cy.wait(5000)
+
+    cy.visit('admin.php')
 
     cy.get('.ee-sidebar__version').click();
     cy.get('.app-about__status .button--primary').should('be.visible');
     //app-about__status-version 6.1.6
-    
+
   })
 
   afterEach(function() {
     // Expand stack trace if we have one
     //click_link('view stack trace') unless page.has_no_css?('a[rel="updater-stack-trace"]')
+  })
+
+  after(function() {
+      cy.task('updater:restore_files')
   })
 
   it('should fail preflight check when permissions are incorrect', () => {
@@ -47,15 +70,21 @@ context('One-Click Updater', () => {
 
       cy.intercept("POST", "**C=updater&M=run&step=selfDestruct").as("selfDestruct");
       cy.wait('@selfDestruct');
-      cy.visit('admin.php')
+      cy.screenshot({capture: 'fullPage'});
+      cy.visit('admin.php', {failOnStatusCode: false})
+      cy.screenshot({capture: 'fullPage'});
       cy.get('body').contains('Up to date!')
+
+      /*cy.get('.ee-sidebar__version-number').invoke('text').then((text) => {
+        expect(text).to.eq(latestVersion)
+      })*/
     }
   })
 
   it.skip('should continue update when permissions are fixed', () => {
     cy.screenshot({capture: 'fullPage'});
     page.get('wrap').contains('Update Stopped')
-    
+
     if (Cypress.platform === 'win32')
     {
         cy.log('skipped because of Windows platform')

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -115,6 +115,10 @@ class Member extends ContentModel
             'model' => 'ChannelEntryAutosave',
             'to_key' => 'author_id'
         ),
+        'EntryManagerViews' => array(
+            'type' => 'hasMany',
+            'model' => 'EntryManagerView'
+        ),
         'Comments' => array(
             'type' => 'hasMany',
             'model' => 'Comment',
@@ -215,10 +219,10 @@ class Member extends ContentModel
 
     protected static $_validation_rules = array(
         'role_id' => 'required|isNatural|validateRoles',
-        'username' => 'required|unique|validateUsername',
-        'screen_name' => 'validateScreenName',
-        'email' => 'required|email|uniqueEmail|validateEmail',
-        'password' => 'required|validatePassword',
+        'username' => 'required|unique|validUsername|validateWhenIsNew|notBanned',
+        'screen_name' => 'validScreenName|notBanned',
+        'email' => 'required|email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned',
+        'password' => 'required|validPassword|passwordMatchesSecurityPolicy',
         'timezone' => 'validateTimezone',
         'date_format' => 'validateDateFormat',
         'time_format' => 'enum[12,24]',
@@ -305,8 +309,10 @@ class Member extends ContentModel
     protected $cp_homepage;
     protected $cp_homepage_channel;
     protected $cp_homepage_custom;
-    protected $dismissed_pro_banner;
+    protected $dismissed_banner;
     protected $enable_mfa;
+
+    protected $_cpHomepageUrl;
 
     /**
      * Getter for legacy group_id property
@@ -427,19 +433,14 @@ class Member extends ContentModel
         ee()->cache->file->delete('jumpmenu/' . md5($this->member_id));
     }
 
-    public function onAfterInsert()
-    {
-        if (ee()->config->item('ignore_member_stats') != 'y') {
-            foreach ($this->getAllRoles() as $role) {
-                $role->total_members = null;
-                $role->save();
-            }
-        }
-    }
-
     public function onAfterDelete()
     {
-        if (ee()->config->item('ignore_member_stats') != 'y') {
+        $this->updateRoleTotalMembers();
+    }
+
+    public function updateRoleTotalMembers()
+    {
+        if (!bool_config_item('ignore_member_stats')) {
             foreach ($this->getAllRoles() as $role) {
                 $role->total_members = null;
                 $role->save();
@@ -623,6 +624,10 @@ class Member extends ContentModel
      */
     public function getCPHomepageURL($site_id = null)
     {
+        if (!empty($this->_cpHomepageUrl)) {
+            return $this->_cpHomepageUrl;
+        }
+
         $cp_homepage = null;
         $cp_homepage_custom = 'homepage';
 
@@ -658,24 +663,24 @@ class Member extends ContentModel
 
         switch ($cp_homepage) {
             case 'entries_edit':
-                $url = ee('CP/URL', 'publish/edit');
+                $this->_cpHomepageUrl = ee('CP/URL', 'publish/edit');
 
                 break;
             case 'publish_form':
-                $url = ee('CP/URL', 'publish/create/' . $cp_homepage_channel);
+                $this->_cpHomepageUrl = ee('CP/URL', 'publish/create/' . $cp_homepage_channel);
 
                 break;
             case 'custom':
-                $url = ee('CP/URL', $cp_homepage_custom);
+                $this->_cpHomepageUrl = ee('CP/URL', $cp_homepage_custom);
 
                 break;
             default:
-                $url = ee('CP/URL', 'homepage');
+                $this->_cpHomepageUrl = ee('CP/URL', 'homepage');
 
                 break;
         }
 
-        return $url;
+        return $this->_cpHomepageUrl;
     }
 
     /**
@@ -729,112 +734,11 @@ class Member extends ContentModel
     }
 
     /**
-     * Ensures the username doesn't have invalid characters, is the correct length, and isn't banned
+     * Additional validation for new member
      */
-    public function validateUsername($key, $username)
+    public function validateWhenIsNew($key, $value, $parameters, $rule)
     {
-        if (preg_match("/[\|'\"!<>\{\}]/", $username)) {
-            return 'invalid_characters_in_username';
-        }
-
-        // Is username min length correct?
-        $un_length = ee()->config->item('un_min_len');
-        if (strlen($username) < ee()->config->item('un_min_len')) {
-            return sprintf(lang('username_too_short'), $un_length);
-        }
-
-        if (strlen($username) > USERNAME_MAX_LENGTH) {
-            return 'username_too_long';
-        }
-
-        if ($this->isNew()) {
-            // Is username banned?
-            if (ee()->session->ban_check('username', $username)) {
-                return 'username_taken';
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Validation callback for screen name
-     */
-    public function validateScreenName($key, $screen_name)
-    {
-        if (preg_match('/[\{\}<>]/', $screen_name)) {
-            return 'disallowed_screen_chars';
-        }
-
-        if (strlen($screen_name) > USERNAME_MAX_LENGTH) {
-            return 'screenname_too_long';
-        }
-
-        if ($this->isNew()) {
-            if (ee()->session->ban_check('screen_name', $screen_name)) {
-                return 'screen_name_taken';
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Validation callback for email field
-     */
-    public function validateEmail($key, $email)
-    {
-        if (strlen($email) > USERNAME_MAX_LENGTH) {
-            return 'email_too_long';
-        }
-
-        // Is email address banned?
-        if (ee()->session->ban_check('email', $email)) {
-            return 'email_taken';
-        }
-
-        return true;
-    }
-
-    /**
-     * Ensures the group ID exists and the member has permission to add to the group
-     */
-    public function validatePassword($key, $password)
-    {
-        ee()->lang->loadfile('myaccount');
-
-        $pw_length = ee()->config->item('pw_min_len');
-        if (strlen($password) < $pw_length) {
-            return sprintf(lang('password_too_short'), $pw_length);
-        }
-
-        // Is password max length correct?
-        if (strlen($password) > PASSWORD_MAX_LENGTH) {
-            return 'password_too_long';
-        }
-
-        //  Make UN/PW lowercase for testing
-        $lc_user = strtolower($this->username);
-        $lc_pass = strtolower($password);
-        $nm_pass = strtr($lc_pass, 'elos', '3105');
-
-        if ($lc_user == $lc_pass or $lc_user == strrev($lc_pass) or $lc_user == $nm_pass or $lc_user == strrev($nm_pass)) {
-            return 'password_based_on_username';
-        }
-
-        // Are secure passwords required?
-        if (! ee('Validation')->check('passwordMatchesSecurityPolicy', $password)) {
-            return 'not_secure_password';
-        }
-
-        // Does password exist in dictionary?
-        // TODO: move out of form validation library
-        ee()->load->library('form_validation');
-        if (ee()->form_validation->_lookup_dictionary_word($lc_pass) == true) {
-            return 'password_in_dictionary';
-        }
-
-        return true;
+        return $this->isNew() ? true : $rule->skip();
     }
 
     /**
@@ -893,7 +797,7 @@ class Member extends ContentModel
      */
     public function validateDateFormat($key, $value, $params, $rule)
     {
-        if (! preg_match("#^[a-zA-Z0-9_\.\-%/]+$#i", $value)) {
+        if (! preg_match("#^[a-zA-Z0-9_\.\-%/]+$#i", (string) $value)) {
             return 'invalid_date_format';
         }
 
@@ -1038,22 +942,6 @@ class Member extends ContentModel
         return (bool) preg_match('/^redacted\d+$/', $this->email);
     }
 
-    protected function saveToCache($key, $data)
-    {
-        if (isset(ee()->session)) {
-            ee()->session->set_cache(__CLASS__, $key, $data);
-        }
-    }
-
-    protected function getFromCache($key)
-    {
-        if (isset(ee()->session)) {
-            return ee()->session->cache(__CLASS__, $key, false);
-        }
-
-        return false;
-    }
-
     /**
      * Get all roles assigned to member, including Primary Role, extra roles and roles assigned via Role Groups
      * @param  bool $cache Whether to cache roles during this request
@@ -1095,18 +983,26 @@ class Member extends ContentModel
      */
     public function getAssignedModules()
     {
-        if ($this->isSuperAdmin()) {
-            return $this->getModelFacade()->get('Module')->all();
-        }
+        $cache_key = "Member/{$this->member_id}/Modules";
 
-        $modules = [];
-        foreach ($this->getAllRoles() as $role) {
-            foreach ($role->AssignedModules as $module) {
-                $modules[$module->getId()] = $module;
+        $modulesCollection = $this->getFromCache($cache_key);
+
+        if ($modulesCollection === false) {
+            if ($this->isSuperAdmin()) {
+                $modulesCollection = $this->getModelFacade()->get('Module')->all(true);
+            } else {
+                $modules = [];
+                foreach ($this->getAllRoles() as $role) {
+                    foreach ($role->AssignedModules as $module) {
+                        $modules[$module->getId()] = $module;
+                    }
+                }
+                $modulesCollection = new Collection($modules);
             }
+            $this->saveToCache($cache_key, $modulesCollection);
         }
 
-        return new Collection($modules);
+        return $modulesCollection;
     }
 
     /**

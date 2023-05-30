@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -49,8 +49,7 @@ class Export
         $location = PATH_CACHE . "cset/{$channels[0]->channel_name}.zip";
 
         if (! is_dir(PATH_CACHE . 'cset/')) {
-            $filesystem = new Filesystem();
-            $filesystem->mkdir(PATH_CACHE . 'cset/');
+            ee('Filesystem')->mkdir(PATH_CACHE . 'cset/');
         }
 
         $this->zip->open($location, ZipArchive::CREATE | ZipArchive::OVERWRITE);

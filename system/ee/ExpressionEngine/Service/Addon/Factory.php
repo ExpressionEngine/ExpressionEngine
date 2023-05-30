@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -14,7 +14,7 @@ use ExpressionEngine\Core\Application;
 use ExpressionEngine\Core\Provider;
 
 /**
- * Addon Service Factory
+ * Add-on Service Factory
  */
 class Factory
 {
@@ -29,13 +29,17 @@ class Factory
     }
 
     /**
-     * Get the addon `$name`
+     * Get the add-on `$name`
      *
-     * @param String $name Addon short name
-     * @return Object Addon The requested addon
+     * @param String $name Add-on short name
+     * @return Object Add-on The requested addon
      */
     public function get($name)
     {
+        if (isset(ee()->core) && false !== $addon = ee()->core->cache(__CLASS__, $name, false)) {
+            return $addon;
+        }
+        
         if (! $this->app->has($name)) {
             return null;
         }
@@ -43,7 +47,11 @@ class Factory
         $provider = $this->app->get($name);
 
         if ($this->isAddon($provider)) {
-            return new Addon($provider);
+            $addon = new Addon($provider);
+            if (isset(ee()->core)) {
+                ee()->core->set_cache(__CLASS__, $name, $addon);
+            }
+            return $addon;
         }
 
         return null;
@@ -52,10 +60,14 @@ class Factory
     /**
      * Get all addons
      *
-     * @return array An array of Addon objects.
+     * @return array An array of Add-on objects.
      */
     public function all()
     {
+        if (isset(ee()->core) && false !== $all = ee()->core->cache(__CLASS__, '_all', false)) {
+            return $all;
+        }
+
         $providers = $this->app->getProviders();
 
         $all = array();
@@ -66,13 +78,17 @@ class Factory
             }
         }
 
+        if (isset(ee()->core)) {
+            ee()->core->set_cache(__CLASS__, '_all', $all);
+        }
+
         return $all;
     }
 
     /**
      * Fetch all installed addons
      *
-     * @return array An array of Addon objects.
+     * @return array An array of Add-on objects.
      */
     public function installed()
     {

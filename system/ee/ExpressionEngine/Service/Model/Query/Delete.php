@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -30,6 +30,9 @@ class Delete extends Query
         if (! count($parent_ids)) {
             return;
         }
+
+        $mainClass = $this->store->getMetaDataReader($from)->getClass();
+        $mainClass::emitStatic('beforeAssociationsBulkDelete', $parent_ids);
 
         $from_alias = 'CurrentlyDeleting';
 
@@ -90,6 +93,7 @@ class Delete extends Query
                 $delete_ids = $this->deleteCollection($delete_models, $to_meta);
             } while (count($delete_ids) == $batch_size);
         }
+        $mainClass::emitStatic('afterAssociationsBulkDelete', $parent_ids);
     }
 
     /**

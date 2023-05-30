@@ -8,6 +8,7 @@ context('System Templates', () => {
 
     before(function() {
         cy.task('db:seed')
+        cy.task('installer:replace_config')
         cy.uninstallTheme('member')
         cy.uninstallTheme('forum')
     })

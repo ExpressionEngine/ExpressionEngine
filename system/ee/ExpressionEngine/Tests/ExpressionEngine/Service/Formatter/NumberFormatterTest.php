@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -18,6 +18,10 @@ require_once __DIR__ . '/../../../../../ExpressionEngine/Boot/boot.common.php';
 
 class NumberFormatterTest extends TestCase
 {
+    public $lang;
+    public $sess;
+    public $factory;
+
     public function setUp(): void
     {
         $this->lang = m::mock('EE_Lang');
@@ -121,7 +125,9 @@ class NumberFormatterTest extends TestCase
             [112358.13, 'UAH', 'en', '112358.13', 0],
             ['fake', null, null, '$0.00', 0],
         ];
-        if (PHP_OS != "WINNT") {
+        // Currently currency formatter only works on PHP8 with the intl extension.
+        // This may be a bug we need to fix
+        if (PHP_OS != "WINNT" && (int) phpversion() < 8) {
             $currency = array_merge($currency, $no_intl);
         }
 

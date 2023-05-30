@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -103,8 +103,7 @@ class TemplateGroup extends Model
             $new_path = $this->getFolderPath();
 
             if ($old_path !== null && $new_path !== null) {
-                $fs = new Filesystem();
-                $fs->rename($old_path, $new_path);
+                ee('Filesystem')->rename($old_path, $new_path);
             }
         }
 
@@ -138,11 +137,10 @@ class TemplateGroup extends Model
      */
     public function ensureFolderExists()
     {
-        $fs = new Filesystem();
         $path = $this->getFolderPath();
 
-        if (isset($path) && ! $fs->isDir($path)) {
-            $fs->mkDir($path, false);
+        if (isset($path) && ! ee('Filesystem')->isDir($path)) {
+            ee('Filesystem')->mkDir($path, false);
         }
     }
 
@@ -181,11 +179,10 @@ class TemplateGroup extends Model
      */
     public function onAfterDelete()
     {
-        $fs = new Filesystem();
         $path = $this->getFolderPath();
 
-        if (isset($path) && $fs->isDir($path)) {
-            $fs->deleteDir($path);
+        if (isset($path) && ee('Filesystem')->isDir($path)) {
+            ee('Filesystem')->deleteDir($path);
         }
     }
 
@@ -194,7 +191,7 @@ class TemplateGroup extends Model
      */
     public function validateTemplateGroupName($key, $value, $params, $rule)
     {
-        $reserved_names = array('act', 'css');
+        $reserved_names = array('act', 'css', 'js');
 
         if (in_array($value, $reserved_names)) {
             return 'reserved_name';
@@ -216,7 +213,7 @@ class TemplateGroup extends Model
         $return = parent::validateUnique($key, $value, $params);
         if (is_bool($return)) {
             // Don't allow case insensitive matches on template group names
-            if (strcasecmp($value, (string) $this->getBackup($key)) == 0) {
+            if (strcasecmp((string) $value, (string) $this->getBackup($key)) == 0) {
                 return 'template_group_taken';
             }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -110,16 +110,12 @@ class Profile extends CP_Controller
 
         $list->addItem(lang('consents'), ee('CP/URL')->make('members/profile/consent', $this->query_string));
 
-        $publishing_link = null;
-
-        if (ee('Permission')->hasAll('can_access_members', 'can_edit_members')) {
-            $publishing_link = ee('CP/URL')->make('members/profile/publishing', $this->query_string);
-        }
-
         $list = $sidebar->addHeader(lang('content'))
             ->addBasicList();
 
-        $list->addItem(lang('publishing_settings'), $publishing_link);
+        if (ee('Permission')->hasAll('can_access_members', 'can_edit_members')) {
+            $list->addItem(lang('publishing_settings'), ee('CP/URL')->make('members/profile/publishing', $this->query_string));
+        }
 
         if (ee('Permission')->can('edit_html_buttons')) {
             $url = ee('CP/URL')->make('members/profile/buttons', $this->query_string);
@@ -228,18 +224,9 @@ class Profile extends CP_Controller
                     if (ee('Model')->get('ChannelEntry')->filter('author_id', $this->member->getId())->count() > 0) {
                         $role_ids = array(1, $this->member->role_id);
 
-                        $heirs = ee('Model')->get('Member')
-                            ->fields('username', 'screen_name')
-                            ->filter('role_id', 'IN', $role_ids)
-                            ->filter('member_id', '!=', $this->member->getId())
-                            ->order('screen_name')
-                            ->limit(100)
-                            ->all();
-
-                        $vars['heirs'] = [];
-                        foreach ($heirs as $heir) {
-                            $vars['heirs'][$heir->getId()] = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;
-                            ;
+                        $vars['heirs'] = ee('Member')->getAuthors();
+                        if (array_key_exists($this->member->getId(), $vars['heirs'])) {
+                            unset($vars['heirs'][$this->member->getId()]);
                         }
 
                         $vars['selected'] = array($this->member->getId());

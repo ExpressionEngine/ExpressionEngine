@@ -6,7 +6,7 @@ return array(
     'name' => 'Duration',
     'description' => 'Duration Field',
     'version' => '1.0.0',
-    'namespace' => 'ExpressionEngine\Addons\Url',
+    'namespace' => 'ExpressionEngine\Addons\Duration',
     'settings_exist' => false,
     'built_in' => true,
 );

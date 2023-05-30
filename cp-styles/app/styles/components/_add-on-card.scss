@@ -137,6 +137,58 @@
 	}
 }
 
+.add-on-card__table {
+  white-space: nowrap;
+
+  table {
+    margin: 6px 0 -6px 0;
+    border: none;
+    background: none;
+
+    td {
+      color: var(--ee-button-secondary-color);
+      padding: 0;
+
+      .toolbar-wrap {
+        .toolbar {
+          display: flex;
+          flex-wrap: wrap;
+
+          a {
+            text-transform: capitalize !important;
+            color: var(--ee-button-secondary-color) !important;
+            background: none !important;
+            font-weight: 700;
+
+            &:before { display: none;}
+
+            &.no {
+              color: var(--ee-error) !important;
+              padding-left: 20px;
+              position: relative;
+              margin-right: 20px;
+              font-weight: 400;
+
+              &:before {
+                position: absolute;
+                top: 2px;
+                left: 0;
+                width: 20px;
+                height: 20px;
+                display: inline-block;
+                flex-shrink: 0;
+                content: "\f06a";
+                font-weight: 400;;
+                font-family: 'Font Awesome 5 Free';
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 .add-on-card.first-party .first-party-svg {
   color: color(brand-primary);
   max-width: 50px;
@@ -232,28 +284,17 @@
 
 
 .license-status-badge {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 15px;
-  font-weight:bold;
-  padding: 2px 10px 1px 10px;
-  border-radius: 5px;
-  font-size: 12px;
-  vertical-align: middle;
-  border: 2px solid color(accent-medium);
-  background-color: color(bg-blank);
-  color: color(accent-medium);
+  @extend .button;
+  @extend .button--secondary;
+  @extend .button--xsmall;
+  border-radius: $border-radius-full;
 
   &.license-status-expired {
-    background-color: color(warning);
-    color: #fff;
-    border: none;
+    @extend .button--warning;
   }
 
   &.license-status-invalid {
-    background-color: color(danger);
-    color: #fff;
-    border: none;
+    @extend .button--danger;
   }
 }
 // Special styling for Pro add-on card

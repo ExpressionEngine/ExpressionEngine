@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,8 +22,8 @@ class VariableColumnGateway extends Gateway
      */
     public function getFieldList($cached = true)
     {
-        if ($cached && isset($this->_field_list_cache)) {
-            return $this->_field_list_cache;
+        if ($cached && isset(static::$_field_list_cache[get_class($this)])) {
+            return static::$_field_list_cache[get_class($this)];
         }
 
         $all = ee('Database')
@@ -32,7 +32,11 @@ class VariableColumnGateway extends Gateway
 
         $known = parent::getFieldList();
 
-        return $this->_field_list_cache = array_merge($known, $all);
+        if (!is_array(static::$_field_list_cache)) {
+            static::$_field_list_cache = [];
+        }
+
+        return static::$_field_list_cache[get_class($this)] = array_merge($known, $all);
     }
 }
 

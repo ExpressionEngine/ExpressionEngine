@@ -4,13 +4,14 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace ExpressionEngine\Model\Channel;
 
 use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Channel Field Group Model
@@ -63,7 +64,7 @@ class ChannelFieldGroup extends Model
 
     public function validateName($key, $value, $params, $rule)
     {
-        if (! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", $value)) {
+        if (! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", (string) $value)) {
             return 'illegal_characters';
         }
 
@@ -77,6 +78,17 @@ class ChannelFieldGroup extends Model
                 $layout->synchronize();
             }
         }
+    }
+
+    public function getAllChannels()
+    {
+        $channels = [];
+
+        foreach ($this->Channels as $channel) {
+            $channels[$channel->getId()] = $channel;
+        }
+
+        return new Collection($channels);
     }
 }
 

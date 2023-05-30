@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -888,6 +888,9 @@ class EE_Functions
         }
         if ($which == 'jumpmenu') {
             ee('CP/JumpMenu')->clearAllCaches();
+        }
+        if (isset(ee()->extensions) && ee()->extensions->active_hook('cache_clearing_end') === true) {
+            $result = ee()->extensions->call('cache_clearing_end', $which);
         }
     }
 

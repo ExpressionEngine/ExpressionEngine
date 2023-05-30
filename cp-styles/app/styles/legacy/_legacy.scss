@@ -132,6 +132,23 @@
   .form-btns > .button-group {
     margin-left: 5px;
   }
+
+  &.title-bar__extra-tools-publish {
+
+    .form-btns {
+
+      @include m-tablet-down {
+        display: block;
+      }
+    }
+  }
+}
+
+.panel-heading {
+  .title-bar__extra-tools > .button,
+  .title-bar__extra-tools > .button-group {
+    margin-left: 5px;
+  }
 }
 
 .form-standard {
@@ -326,4 +343,14 @@
   	fieldset {
   		margin-bottom: 10px;
   	}
+  }
+
+  .design-system-template-body {
+  	.app-notice {
+  		margin: 20px 25px;
+  	}
+  }
+
+  .single-templates-notice-wrapper {
+  	padding: 0 10px;
   }

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -56,11 +56,14 @@ class Cli
         'update' => Commands\CommandUpdate::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,
         'update:run-hook' => Commands\CommandUpdateRunHook::class,
+        'make:action' => Commands\CommandMakeAction::class,
         'make:addon' => Commands\CommandMakeAddon::class,
         'make:command' => Commands\CommandMakeCommand::class,
+        'make:extension-hook' => Commands\CommandMakeExtensionHook::class,
         'make:migration' => Commands\CommandMakeMigration::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
+        'make:tag' => Commands\CommandMakeTag::class,
         'make:widget' => Commands\CommandMakeWidget::class,
         'migrate' => Commands\CommandMigrate::class,
         'migrate:all' => Commands\CommandMigrateAll::class,
@@ -69,6 +72,7 @@ class Cli
         'migrate:reset' => Commands\CommandMigrateReset::class,
         'migrate:rollback' => Commands\CommandMigrateRollback::class,
         'cache:clear' => Commands\CommandClearCaches::class,
+        'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
     ];
 
     /**
@@ -264,23 +268,23 @@ class Cli
         $argument = isset($this->arguments[0]) ? $this->arguments[0] : null;
 
         // If the first argument is an option, we have nothing so return null
-        if (substr($argument, 0, 1) === '-') {
+        if (is_string($argument) && substr($argument, 0, 1) === '-') {
             $argument = null;
         }
 
-        if (empty(trim($argument)) && !is_null($question)) {
+        if (empty(trim((string) $argument)) && !is_null($question)) {
             $argument = $this->ask($question, $default);
         }
 
         // Name is a required field
-        if ($required && empty(trim($argument))) {
+        if ($required && empty(trim((string) $argument))) {
             $this->fail(lang('cli_error_is_required'));
         }
 
         return $argument;
     }
 
-    public function getOptionOrAsk($option, $askText, $default=null, $required=false)
+    public function getOptionOrAsk($option, $askText, $default = null, $required = false)
     {
         // Get option if it was passed
         if ($this->option($option)) {
@@ -437,7 +441,6 @@ class Cli
             $errors = $this->options->getErrors();
 
             foreach ($errors as $error) {
-
                 // print error messages to stderr using a Stdio object
                 $this->error($error->getMessage());
             }
@@ -477,8 +480,8 @@ class Cli
         // Automatically load the description and signature from the lang file
         if (isset($this->signature)) {
             $simplifiedSignature = str_replace([':', '-'], '_', $this->signature);
-            $this->description = isset($this->description) ? $this->description : lang('command_' . $simplifiedSignature . '_description');
-            $this->summary = isset($this->summary) ? $this->summary : lang('command_' . $simplifiedSignature . '_description');
+            $this->description = isset($this->description) ? lang($this->description) : lang('command_' . $simplifiedSignature . '_description');
+            $this->summary = isset($this->summary) ? lang($this->summary) : lang('command_' . $simplifiedSignature . '_description');
         }
     }
 }

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '6.2.0'; // The version being installed
+    public $version = '6.4.11'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -488,6 +488,9 @@ class Wizard extends CI_Controller
     {
         ee()->functions->clear_caching('all');
 
+        // reset the flag for dismissed banner for members
+        ee('db')->update('members', ['dismissed_banner' => 'n']);
+
         foreach (ee('Model')->get('Channel')->all() as $channel) {
             $channel->updateEntryStats();
         }
@@ -572,7 +575,8 @@ class Wizard extends CI_Controller
      */
     private function db_validation($error_number, Closure $callable)
     {
-        if (! ee()->input->post('db_hostname')
+        if (
+            ! ee()->input->post('db_hostname')
             || ! ee()->input->post('db_name')
             || ! ee()->input->post('db_username')
         ) {
@@ -735,7 +739,7 @@ class Wizard extends CI_Controller
             array(
                 'field' => 'username',
                 'label' => 'lang:username',
-                'rules' => 'required|valid_username'
+                'rules' => 'required|unique|validUsername'
             ),
             array(
                 'field' => 'install_default_theme',
@@ -745,12 +749,12 @@ class Wizard extends CI_Controller
             array(
                 'field' => 'password',
                 'label' => 'lang:password',
-                'rules' => 'required|valid_password[username]'
+                'rules' => 'required|validPassword|passwordMatchesSecurityPolicy'
             ),
             array(
                 'field' => 'email_address',
                 'label' => 'lang:email_address',
-                'rules' => 'required|valid_email'
+                'rules' => 'required|email|max_length[' . USERNAME_MAX_LENGTH . ']'
             ),
             array(
                 'field' => 'license_agreement',
@@ -936,8 +940,10 @@ class Wizard extends CI_Controller
         // This goes last because a custom installer might create Member Groups
         // besides the default five, which might affect the Template Access
         // permissions.
-        if ($this->userdata['install_default_theme'] == 'y'
-            && ! $this->install_site_theme()) {
+        if (
+            $this->userdata['install_default_theme'] == 'y'
+            && ! $this->install_site_theme()
+        ) {
             $this->set_output('error', array('error' => lang('improper_grants')));
 
             return false;
@@ -1712,6 +1718,9 @@ class Wizard extends CI_Controller
             'show_ee_news' => 'y',
             'cli_enabled' => 'y',
             'theme_folder_path' => $this->userdata['theme_folder_path'],
+            'legacy_member_data' => 'n',
+            'legacy_channel_data' => 'n',
+            'legacy_category_field_data' => 'n',
         );
 
         $inserts = [];
@@ -1905,15 +1914,19 @@ class Wizard extends CI_Controller
      */
     public function canRenameAutomatically($template_variables)
     {
-        if (version_compare($this->version, '3.0.0', '=')
-            && file_exists(SYSPATH . 'user/cache/mailing_list.zip')) {
+        if (
+            version_compare($this->version, '3.0.0', '=')
+            && file_exists(SYSPATH . 'user/cache/mailing_list.zip')
+        ) {
             return false;
         }
 
-        if (!empty($template_variables['mailing_list'])
+        if (
+            !empty($template_variables['mailing_list'])
             || !empty($template_variables['update_notices'])
             || !empty($template_variables['errors'])
-            || !empty($template_variables['error_messages'])) {
+            || !empty($template_variables['error_messages'])
+        ) {
             return false;
         }
 
@@ -1948,7 +1961,8 @@ class Wizard extends CI_Controller
      */
     private function isSecure()
     {
-        if ((! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
+        if (
+            (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
             || $_SERVER['SERVER_PORT'] == '443'
         ) {
             return true;

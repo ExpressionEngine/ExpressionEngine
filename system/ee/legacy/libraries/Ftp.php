@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -110,7 +110,7 @@ class EE_FTP
      */
     public function _is_conn()
     {
-        if (! is_resource($this->conn_id)) {
+        if ($this->conn_id === false) {
             if ($this->debug == true) {
                 $this->_error('ftp_no_connection');
             }

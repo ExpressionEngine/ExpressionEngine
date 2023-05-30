@@ -5,6 +5,10 @@ const { _, $ } = Cypress
 
 context('Developer Log', () => {
 
+    before(function(){
+        cy.task('db:seed')
+    })
+
 	beforeEach(function() {
       cy.visit('admin.php?/cp/login');
       cy.get('#username').type('admin');

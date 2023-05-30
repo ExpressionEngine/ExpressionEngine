@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -382,6 +382,7 @@ abstract class EE_Fieldtype
         $boolean_fields = array(
             'field_disabled',
             'field_is_hidden',
+            'field_is_conditional',
             'field_pre_populate',
             'field_required',
             'field_search',
@@ -832,7 +833,7 @@ abstract class EE_Fieldtype
             } else {
                 $field_options = $this->settings['field_list_items'];
             }
-        } else {
+        } elseif ($this->get_setting('field_pre_channel_id') !== 0) {
             $field = 'field_id_' . $this->settings['field_pre_field_id'];
 
             $data = ee('Model')->get('ChannelEntry')
@@ -1067,7 +1068,7 @@ abstract class EE_Fieldtype
     {
         $channels_options = ee()->cache->get('fieldtype/channel-field-list');
 
-        if (! empty($channels_options)) {
+        if ($channels_options !== false) {
             return $channels_options;
         }
 
@@ -1134,6 +1135,9 @@ abstract class EE_Fieldtype
      */
     public function renderTableCell($data, $field_id, $entry)
     {
+        if (is_null($data)) {
+            return '';
+        }
         $out = strip_tags($this->replace_tag($data));
         if (strlen($out) > 255) {
             $out = substr($out, 0, min(255, strpos($out, " ", 240))) . '&hellip;';
@@ -1163,6 +1167,14 @@ abstract class EE_Fieldtype
     public function getEntryManagerColumnSortField()
     {
         return '';
+    }
+
+    /**
+     * Conditional Fields
+     */
+    public function getPossibleValuesForEvaluation()
+    {
+        return [];
     }
 }
 // END EE_Fieldtype class

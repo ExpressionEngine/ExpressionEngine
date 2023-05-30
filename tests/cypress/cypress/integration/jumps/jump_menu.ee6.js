@@ -18,7 +18,7 @@ context('Jump Menu', () => {
 	}
 
 	before(function() {
-        //cy.task('db:seed')
+        cy.task('db:seed')
     })
 
     beforeEach(function() {
@@ -72,7 +72,7 @@ context('Jump Menu', () => {
 			page.get('jump_menu').contains("Howard")
 			page.get('secondary_input').type('{enter}');
 
-			page.get('page_title').contains("Edit Entry")
+			page.get('page_sub_title').contains("Edit Entry")
 			page.get('wrap').find('input[name=title]').invoke('val').should("eq", "Howard")
 		})
 

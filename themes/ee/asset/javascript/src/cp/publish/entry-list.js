@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,7 +19,7 @@ $(document).ready(function () {
 	var form_selector = '.container > .panel > .tbl-ctrls > form';
 	var replaceData = function(data) {
 		$(form_selector).parents('.container').first().html(data.html);
-
+		$.fuzzyFilter();
 		if (typeof(EE.viewManager)!=='undefined') {
 			saveDefaultUrl = data.viewManager_saveDefaultUrl;
 		}
@@ -93,7 +93,7 @@ $(document).ready(function () {
 		clearTimeout(searchingTimeout)
 		searchingTimeout = setTimeout(function() {
 			//only submit when search is empty or min. 3 chars
-			if (val.length == 0 || val.length >= 3) {
+			if (val.length == 0 || val.length >= 3 || !isNaN(val)) {
 				var url = typeof($(form_selector).data('search-url'))!='undefined' ? $(form_selector).data('search-url') : $(form_selector).attr('action');
 				url = url.replace(/(filter_by_keyword=).*?(&)/,'$1' + val + '$2');
 

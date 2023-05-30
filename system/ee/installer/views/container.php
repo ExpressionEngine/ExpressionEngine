@@ -14,11 +14,20 @@
             if ($ajax_progress) {
                 $refresh_url .= '&ajax_progress=yes';
             }
-            echo '<meta http-equiv="refresh" content="1;url=' . $refresh_url . '" />';
+            echo '<meta http-equiv="refresh" content="0;url=' . $refresh_url . '" />';
         }
         ?>
 	</head>
 	<body class="installer-page">
+		<script type="text/javascript">
+			var currentTheme = localStorage.getItem('theme');
+
+			// Restore the currently selected theme
+			// This is at the top of the body to prevent the default theme from flashing
+			if (currentTheme) {
+				document.body.dataset.theme = currentTheme;
+			}
+		</script>
 		<section class="flex-wrap">
 			<section class="wrap">
 				<div class="login__logo"><?=$logo?></div>

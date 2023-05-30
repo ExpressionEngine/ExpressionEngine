@@ -1,0 +1,15 @@
+{layout="cypress/layout"}
+{exp:channel:entries dynamic="no" entry_id="2"}
+<div>
+    <h4>Entry ID all same line</h4>
+    <span>{entry_date     format="%Y"}</span>
+    <hr />
+</div>
+<div>
+    <h4>Entry ID param next line</h4>
+    <span>{entry_date
+format="%Y"}</span>
+    <hr />
+</div>
+
+{/exp:channel:entries}

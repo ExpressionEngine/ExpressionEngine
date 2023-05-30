@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -404,7 +404,7 @@ class Groups extends AbstractCategoriesController
         return ee('View')->make('ee:_shared/form/fields/select')->render([
             'field_name' => 'category_fields',
             'choices' => $choices,
-            'tooManyLimit' => 999,
+            'tooManyLimit' => 8,
             'value' => null,
             'force_react' => true,
             'multi' => false,

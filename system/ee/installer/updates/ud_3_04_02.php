@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -71,13 +71,13 @@ class Updater
      */
     private function fix_file_dimension_site_ids()
     {
-        $upload_destinations = ee('Model')->get('UploadDestination')->all();
+        $upload_destinations = ee('db')->from('upload_prefs')->get();
 
-        foreach ($upload_destinations as $upload) {
-            foreach ($upload->FileDimensions as $size) {
+        foreach ($upload_destinations->result() as $upload) {
+            $FileDimensions = ee('db')->where('upload_location_id', $upload->id)->from('file_dimensions')->get();
+            foreach ($FileDimensions->result() as $size) {
                 if ($size->site_id != $upload->site_id) {
-                    $size->site_id = $upload->site_id;
-                    $size->save();
+                    ee('db')->where('id', $size->id)->update('file_dimensions', ['site_id' => $upload->site_id]);
                 }
             }
         }

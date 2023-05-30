@@ -62,6 +62,15 @@ $lang = array(
 
     'switch_to' => 'Switch to',
 
+    /* Site color */
+    'site_color_settings' => 'Site color settings',
+
+    'site_color' => 'Color code this site?',
+
+    'site_color_desc' => 'Apply a custom color to the top of the control panel’s sidebar for this site.',
+
+    'pick_color' => 'Pick a Color'
+
 );
 
 // EOF

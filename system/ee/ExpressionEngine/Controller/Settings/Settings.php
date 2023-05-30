@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -85,7 +85,7 @@ class Settings extends CP_Controller
             $list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
         }
 
-        $list->addItem(lang('hit_tracking'), ee('CP/URL')->make('settings/hit-tracking'));
+        $list->addItem(lang('tracking'), ee('CP/URL')->make('settings/tracking'));
 
         $list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
 

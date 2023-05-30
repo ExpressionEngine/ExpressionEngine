@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,6 +19,12 @@ class EE_Core
     private $bootstrapped = false;
     private $ee_loaded = false;
     private $cp_loaded = false;
+
+    // Store data for just this page load.
+    // Multi-dimensional array with module/class name,
+    // e.g. $this->cache['module']['var_name']
+    // Use set_cache() and cache() methods.
+    public $cache = array();
 
     /**
      * Sets constants, sets paths contants to appropriate directories, loads
@@ -39,8 +45,8 @@ class EE_Core
         }
 
         // Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
-        if (function_exists("set_time_limit") == true) {
-            @set_time_limit((REQ == 'CP' || REQ == 'CLI') ? 300 : 90);
+        if (function_exists("set_time_limit") == true && php_sapi_name() !== 'cli') {
+            @set_time_limit((REQ == 'CP') ? 300 : 90);
         }
 
         // If someone's trying to access the CP but EE_APPPATH is defined, it likely
@@ -68,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20211021');
-        define('APP_VER', '6.2.0');
+        define('APP_BUILD', '20230414');
+        define('APP_VER', '6.4.11');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -83,6 +89,7 @@ class EE_Core
         define('PASSWORD_MAX_LENGTH', 72);
         define('DOC_URL', 'https://docs.expressionengine.com/v6/');
         define('URL_TITLE_MAX_LENGTH', 200);
+        define('CLONING_MODE', (ee('Request') && ee('Request')->post('submit') == 'save_as_new_entry'));
 
         ee()->load->helper('language');
         ee()->load->helper('string');
@@ -90,7 +97,22 @@ class EE_Core
         // Load the default caching driver
         ee()->load->driver('cache');
 
-        ee()->load->database();
+        try {
+            ee()->load->database();
+        } catch (\Exception $e) {
+            if (REQ == 'CLI' && isset($_SERVER['argv'][1]) && $_SERVER['argv'][1] == 'update') {
+                // If this is running form an earlier version of EE < 3.0.0
+                // We'll load the DB the old fashioned way
+                $db_config_path = SYSPATH . '/user/config/database.php';
+                if (is_file($db_config_path)) {
+                    require $db_config_path;
+                    ee()->config->_update_dbconfig($db[$active_group], true);
+                }
+                ee()->load->database();
+            } else {
+                throw $e;
+            }
+        }
         ee()->db->swap_pre = 'exp_';
         ee()->db->db_debug = false;
 
@@ -111,11 +133,13 @@ class EE_Core
         }
 
         // setup cookie settings for all providers
-        $providers = ee('App')->getProviders();
-        foreach ($providers as $provider) {
-            $provider->registerCookiesSettings();
+        if (REQ != 'CLI') {
+            $providers = ee('App')->getProviders();
+            foreach ($providers as $provider) {
+                $provider->registerCookiesSettings();
+            }
+            ee('CookieRegistry')->loadCookiesSettings();
         }
-        ee('CookieRegistry')->loadCookiesSettings();
 
         // Set ->api on the legacy facade to the model factory
         ee()->set('api', ee()->di->make('Model'));
@@ -187,8 +211,10 @@ class EE_Core
         ee()->config->set_item('secure_forms', $secure_forms);
 
         // Set the path to the "themes" folder
-        if (ee()->config->item('theme_folder_path') !== false &&
-            ee()->config->item('theme_folder_path') != '') {
+        if (
+            ee()->config->item('theme_folder_path') !== false &&
+            ee()->config->item('theme_folder_path') != ''
+        ) {
             $theme_path = preg_replace("#/+#", "/", ee()->config->item('theme_folder_path') . '/');
         } else {
             $theme_path = substr(APPPATH, 0, - strlen(SYSDIR . '/expressionengine/')) . 'themes/';
@@ -235,6 +261,43 @@ class EE_Core
     }
 
     /**
+     * Set Core Cache
+     *
+     * This method is a setter for the $cache class variable.
+     * Note, this is not persistent across requests
+     *
+     * @param   string  Super Class/Unique Identifier
+     * @param   string  Key for cached item
+     * @param   mixed   item to put in the cache
+     * @return  object
+     */
+    public function set_cache($class, $key, $val)
+    {
+        if (! isset($this->cache[$class])) {
+            $this->cache[$class] = array();
+        }
+
+        $this->cache[$class][$key] = $val;
+
+        return $this;
+    }
+
+    /**
+     * Get Core Cache
+     *
+     * This method extracts a value from the session cache.
+     *
+     * @param   string  Super Class/Unique Identifier
+     * @param   string  Key to extract from the cache.
+     * @param   mixed   Default value to return if key doesn't exist
+     * @return  mixed
+     */
+    public function cache($class, $key, $default = false)
+    {
+        return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
+    }
+
+    /**
      * Initialize EE
      *
      * Called from EE_Controller to run EE's front end.
@@ -258,10 +321,13 @@ class EE_Core
             'rte', 'search', 'simple_commerce', 'spam', 'stats'
         );
 
-        // Is this a stylesheet request?  If so, we're done.
+        // Is this a asset request?  If so, we're done.
         if (isset($_GET['css']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) {
-            ee()->load->library('stylesheet');
-            ee()->stylesheet->request_css_template();
+            ee('Resource/Stylesheet')->request_template();
+            exit;
+        }
+        if (isset($_GET['js']) or (isset($_GET['ACT']) && $_GET['ACT'] == 'js')) {
+            ee('Resource/Javascript')->request_template();
             exit;
         }
 
@@ -282,7 +348,6 @@ class EE_Core
         ee()->load->library('remember');
         ee()->load->library('localize');
         ee()->load->library('session');
-        ee()->load->library('user_agent');
 
         // Get timezone to set as PHP timezone
         $timezone = ee()->session->userdata('timezone', ee()->config->item('default_site_timezone'));
@@ -430,8 +495,10 @@ class EE_Core
 
         // Show the control panel home page in the event that a
         // controller class isn't found in the URL
-        if (ee()->router->fetch_class() == ''/* OR
-            ! isset($_GET['S'])*/) {
+        if (
+            ee()->router->fetch_class() == ''/* OR
+            ! isset($_GET['S'])*/
+        ) {
             ee()->functions->redirect(BASE . AMP . 'C=homepage');
         }
 
@@ -465,9 +532,11 @@ class EE_Core
 
         // Does an admin session exist?
         // Only the "login" class can be accessed when there isn't an admin session
-        if (ee()->session->userdata('admin_sess') == 0  //if not logged in
+        if (
+            ee()->session->userdata('admin_sess') == 0  //if not logged in
             && ee()->router->fetch_class(true) !== 'login' // if not on login page
-            && ee()->router->fetch_class() != 'css') { // and the class isnt css
+            && ee()->router->fetch_class() != 'css'
+        ) { // and the class isnt css
             // has their session Timed out and they are requesting a page?
             // Grab the URL, base64_encode it and send them to the login screen.
             $safe_refresh = ee()->cp->get_safe_refresh();
@@ -476,7 +545,7 @@ class EE_Core
             ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
         }
 
-        if (ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if ((ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') && ee()->session->userdata('mfa_flag') != 'skip' && IS_PRO && ee('pro:Access')->hasValidLicense()) {
             //only allow MFA code page
             if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset', 'logout'])) && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
@@ -486,13 +555,15 @@ class EE_Core
         // Is the user banned or not allowed CP access?
         // Before rendering the full control panel we'll make sure the user isn't banned
         // But only if they are not a Super Admin, as they can not be banned
-        if ((! ee('Permission')->isSuperAdmin() && ee()->session->ban_check('ip')) or
-            (ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp'))) {
+        if (
+            (! ee('Permission')->isSuperAdmin() && ee()->session->ban_check('ip')) or
+            (ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp'))
+        ) {
             return ee()->output->fatal_error(lang('not_authorized'));
         }
 
         //is member role forced to use MFA?
-        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true && IS_PRO && ee('pro:Access')->hasValidLicense()) {
+        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa === true && ee()->session->getMember()->enable_mfa !== true && IS_PRO && ee('pro:Access')->hasValidLicense()) {
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->lang->load('pro', ee()->session->get_language(), false, true, PATH_ADDONS . 'pro/');
                 ee('CP/Alert')->makeInline('shared-form')
@@ -612,8 +683,10 @@ class EE_Core
         $forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
         $profile_trigger = ee()->config->item('profile_trigger');
 
-        if ($forum_trigger &&
-            in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))) {
+        if (
+            $forum_trigger &&
+            in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))
+        ) {
             require PATH_MOD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
@@ -722,8 +795,10 @@ class EE_Core
     public function _garbage_collection()
     {
         if (class_exists('Stats')) {
-            if (ee()->stats->statdata('last_cache_clear')
-                && ee()->stats->statdata('last_cache_clear') > 1) {
+            if (
+                ee()->stats->statdata('last_cache_clear')
+                && ee()->stats->statdata('last_cache_clear') > 1
+            ) {
                 $last_clear = ee()->stats->statdata('last_cache_clear');
             }
         }
@@ -829,7 +904,7 @@ class EE_Core
                 )
             ) {
                 $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos($cookie_domain, ee()->config->item('site_url'));
+                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos(ee()->config->item('site_url'), $cookie_domain);
                 if ($domain_matches === false) {
                     $error = lang('cookie_domain_mismatch');
                 }

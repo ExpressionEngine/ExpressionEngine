@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -206,7 +206,9 @@ class Updater
         ee('Model')->get('Config')->filter('key', 'IN', ['enable_avatars', 'allow_avatar_uploads'])->delete();
 
         // Remove avatar member preference
-        ee()->dbforge->drop_column('members', 'display_avatars');
+        if (ee()->db->field_exists('display_avatars', 'members')) {
+            ee()->dbforge->drop_column('members', 'display_avatars');
+        }
     }
 
     private function removeJqueryAddon()

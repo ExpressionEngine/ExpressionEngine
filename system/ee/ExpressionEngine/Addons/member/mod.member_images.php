@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -211,13 +211,19 @@ class Member_images extends Member
 
         //if we run EE template parser, do some things differently
         if (! empty($tagdata)) {
-            return ee()->functions->form_declaration(array(
-                'enctype' => 'multi',
-                'hidden_fields' => array(
-                    'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
-                    'ACT' => ee()->functions->fetch_action_id('Member', 'upload_avatar')
-                )
-            )) . $template . '</form>';
+            if (ee()->TMPL->fetch_param('form_name', '') != "") {
+	            $data['name'] = ee()->TMPL->fetch_param('form_name');
+	        }
+
+	        $data['id'] = ee()->TMPL->form_id;
+	        $data['class'] = ee()->TMPL->form_class;
+			$data['enctype'] = 'multi';
+
+            $data['hidden_fields'] = array(
+                'RET' => (ee()->TMPL->fetch_param('return', '') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
+                'ACT' => ee()->functions->fetch_action_id('Member', 'upload_avatar'));
+
+            return ee()->functions->form_declaration($data) . $template . '</form>';
         }
 
         // Finalize the template
@@ -361,7 +367,7 @@ class Member_images extends Member
         $height = $vals['1'];
 
         // Update DB
-        $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $member = ee()->session->getMember();
         $member->set(
             array(
                 'avatar_filename' => $avatar,

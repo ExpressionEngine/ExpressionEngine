@@ -7,7 +7,7 @@
   		</div>
       <div class="form-btns form-btns-top">
         <div class="title-bar title-bar--large">
-          <h3 class="title-bar__title"><?=lang('all_items')?>
+          <h3 class="title-bar__title"><?=lang('all_sc_items')?>
       			<ul class="toolbar">
       				<li class="download"><a href="<?=ee('CP/URL')->make('addons/settings/simple_commerce/export_items')?>" title="<?=lang('export_items')?>"></a></li>
       			</ul>

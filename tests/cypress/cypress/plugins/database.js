@@ -1,17 +1,22 @@
 const fs = require('fs');
 const path = require('path');
 const mysql = require('mysql2');
+const mysqldump = require('mysqldump');
 
 class Database {
     constructor(config) {
         // create the connection to database
         this.path = __dirname + './../../support/sql/';
-        config = Object.assign(config, { multipleStatements: true });
-        this.connection = mysql.createPool(config);
+        this.config = Object.assign(config, { multipleStatements: true });
+        this.connection = mysql.createPool(this.config);
+    }
+
+    sqlPath(file) {
+        return path.resolve(this.path + file)
     }
 
     readSQL(file) {
-        return fs.readFileSync(path.resolve(this.path + file), 'utf8');
+        return fs.readFileSync(this.sqlPath(file), 'utf8');
     }
 
     query(sql) {
@@ -35,6 +40,24 @@ class Database {
             // console.log("DB loaded file " + file);
             //self.connection.end();
             return true;
+        });
+    }
+
+    dump(file) {
+        return mysqldump({
+            connection: {
+                host: this.config.host,
+                port: this.config.port,
+                user: this.config.user,
+                password: this.config.password,
+                database: this.config.database,
+            },
+            dump: {
+                data: {
+                    maxRowsPerInsertStatement: 100,
+                },
+            },
+            dumpToFile: this.sqlPath(file),
         });
     }
 }

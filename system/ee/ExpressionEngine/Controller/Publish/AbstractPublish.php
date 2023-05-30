@@ -4,15 +4,13 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace ExpressionEngine\Controller\Publish;
 
 use CP_Controller;
-use ExpressionEngine\Library\CP\Table;
-
 use ExpressionEngine\Model\Channel\ChannelEntry;
 
 /**
@@ -67,14 +65,14 @@ abstract class AbstractPublish extends CP_Controller
         $autosave_interval_seconds = (ee()->config->item('autosave_interval_seconds') === false) ?
                                         60 : ee()->config->item('autosave_interval_seconds');
 
-        //	Create Foreign Character Conversion JS
+        //  Create Foreign Character Conversion JS
         $foreign_characters = ee()->config->loadFile('foreign_chars');
 
         /* -------------------------------------
         /*  'foreign_character_conversion_array' hook.
         /*  - Allows you to use your own foreign character conversion array
         /*  - Added 1.6.0
-        * 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+        *   - Note: in 2.0, you can edit the foreign_chars.php config file as well
         */
         if (isset(ee()->extensions->extensions['foreign_character_conversion_array'])) {
             $foreign_characters = ee()->extensions->call('foreign_character_conversion_array');
@@ -87,6 +85,14 @@ abstract class AbstractPublish extends CP_Controller
         if ($smileys_enabled) {
             ee()->load->helper('smiley');
             ee()->cp->add_to_foot(smiley_js());
+        }
+
+        $usesConditionalFields = false;
+        foreach ($entry->getCustomFields() as $field) {
+            if ($field->getItem('field_is_conditional') === true) {
+                $usesConditionalFields = true;
+                break;
+            }
         }
 
         ee()->javascript->set_global(array(
@@ -112,6 +118,7 @@ abstract class AbstractPublish extends CP_Controller
             'publish.url_title_prefix' => $entry->Channel->url_title_prefix,
             'publish.which' => ($entry_id) ? 'edit' : 'new',
             'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-',
+            'publish.has_conditional_fields' => $usesConditionalFields,
             'user.can_edit_html_buttons' => ee('Permission')->can('edit_html_buttons'),
             'user.foo' => false,
             'user_id' => ee()->session->userdata('member_id'),
@@ -120,9 +127,9 @@ abstract class AbstractPublish extends CP_Controller
         ee('Category')->addCategoryJS();
 
         // -------------------------------------------
-        //	Publish Page Title Focus - makes the title field gain focus when the page is loaded
+        //  Publish Page Title Focus - makes the title field gain focus when the page is loaded
         //
-        //	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
+        //  Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
 
         ee()->javascript->set_global('publish.title_focus', false);
 
@@ -372,11 +379,33 @@ abstract class AbstractPublish extends CP_Controller
             }
         }
 
-        $entry->set($_POST);
+        if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
+            $entry->setId(null);
+            while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
+                $_POST['url_title'] = 'copy_' . $_POST['url_title'];
+            }
+            if ($_POST['title'] == $entry->title) {
+                $_POST['title'] = lang('copy_of') . ' ' . $_POST['title'];
+            }
+            $action = 'create';
+            $entry->set($_POST);
+            $entry->markAsDirty();
+        } else {
+            $entry->set($_POST);
+        }
+
+        $hidden_fields = $entry->evaluateConditionalFields();
 
         $result = $entry->validate();
 
         if ($response = $this->ajaxValidation($result)) {
+            if (isset($response[0]) && $response[0] == 'success') {
+                $response = [
+                    'success' => 'success',
+                    'hidden_fields' => $hidden_fields
+                ];
+            }
+
             ee()->output->send_ajax_response($response);
         }
 
@@ -395,6 +424,21 @@ abstract class AbstractPublish extends CP_Controller
     {
         $action = ($entry->isNew()) ? 'create' : 'edit';
         $entry->edit_date = ee()->localize->now;
+        if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
+            $action = 'clone';
+            $entry->markAsDirty();
+            $entry->set([
+                'status' => 'closed',
+                'recent_comment_date' => null,
+                'comment_total' => 0,
+                'forum_topic_id' => null,
+                'view_count_one' => 0,
+                'view_count_two' => 0,
+                'view_count_three' => 0,
+                'view_count_four' => 0,
+                'entry_date' => ee()->localize->now,
+            ]);
+        }
         $entry->save();
 
         ee()->session->set_flashdata('entry_id', $entry->entry_id);
@@ -431,7 +475,19 @@ abstract class AbstractPublish extends CP_Controller
             }
 
             return $result;
-        } elseif (ee()->input->post('submit') == 'save') {
+        } elseif (ee()->input->post('submit') == 'save' || (defined('CLONING_MODE') && CLONING_MODE === true)) {
+            // If we just cloned an entry, we set the "status changed" warning banner
+            if ((defined('CLONING_MODE') && CLONING_MODE === true)) {
+                $cloneAlert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
+                    ? ee('CP/Alert')->makeStandard('entry-form-clone')
+                    : ee('CP/Alert')->makeInline('entry-form-clone');
+
+                $cloneAlert->asWarning()
+                ->canClose()
+                ->addToBody(sprintf(lang('status_changed_desc'), lang('closed')))
+                ->defer();
+            }
+
             if (ee()->input->get('return') != '') {
                 $redirect_url = urldecode(ee()->input->get('return'));
             } elseif (ee()->input->post('return') != '') {
@@ -499,7 +555,7 @@ abstract class AbstractPublish extends CP_Controller
             ]
         ];
 
-        if (ee('Permission')->has('can_create_entries')) {
+        if (ee('Permission')->has('can_create_entries') && !$entry->Channel->maxEntriesLimitReached()) {
             $buttons[] = [
                 'name' => 'submit',
                 'type' => 'submit',
@@ -519,9 +575,15 @@ abstract class AbstractPublish extends CP_Controller
             'attrs' => 'disabled="disabled"'
         ];
 
-        // get rid of Save & New button if we've reached the max entries for this channel
-        if ($entry->Channel->maxEntriesLimitReached()) {
-            unset($buttons[1]);
+        if (!$entry->isNew() && $this->entryCloningEnabled($entry) && !$entry->Channel->maxEntriesLimitReached()) {
+            $buttons[] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_as_new_entry',
+                'text' => 'save_as_new_entry',
+                'working' => 'btn_saving',
+                'attrs' => 'disabled="disabled"'
+            ];
         }
 
         if ($livePreviewSetup === true) {
@@ -548,9 +610,21 @@ abstract class AbstractPublish extends CP_Controller
         return $buttons;
     }
 
+    protected function entryCloningEnabled(ChannelEntry $entry)
+    {
+        if (IS_PRO && ee('pro:Access')->hasValidLicense()) {
+            if (ee()->config->item('enable_entry_cloning') === false || ee()->config->item('enable_entry_cloning') === 'y') {
+                if ($entry->Channel->enable_entry_cloning) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     protected function createLivePreviewModal(ChannelEntry $entry)
     {
-        if ($entry->isLivePreviewable() || ee()->input->get('return') != '') {
+        if (($entry->livePreviewAllowed() && $entry->isLivePreviewable()) || ee()->input->get('return') != '') {
             $lp_domain_mismatch = false;
             if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
                 $lp_domain_mismatch = true;
@@ -608,6 +682,9 @@ abstract class AbstractPublish extends CP_Controller
                 ee('CP/Modal')->addModal('live-preview', $modal);
                 return true;
             }
+        } elseif (!$entry->livePreviewAllowed()) {
+            // if preview is disabled on channel, we do not show banner
+            return null;
         } elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
             $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
                 ->asIssue()
@@ -615,15 +692,6 @@ abstract class AbstractPublish extends CP_Controller
                 ->withTitle(lang('preview_url_not_set'))
                 ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
             ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-
-            if (!$entry->livePreviewAllowed()) {
-                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-                    ->asIssue()
-                    ->canClose()
-                    ->withTitle(lang('preview_not_allowed'))
-                    ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-allow_preview'));
-                ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-            }
             return false;
         }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -176,6 +176,21 @@ class Auth
      */
     public function verify()
     {
+        // If this is being called from the CP, use the hook
+        if (REQ == 'CP') {
+            /* -------------------------------------------
+            /* 'login_authenticate_start' hook.
+            /*  - Take control of CP authentication routine
+            /*  - Added EE 1.4.2
+            */
+            ee()->extensions->call('login_authenticate_start');
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+            /*
+            /* -------------------------------------------*/
+        }
+        
         $username = (string) ee()->input->post('username');
 
         // No username/password?  Bounce them...
@@ -191,21 +206,6 @@ class Auth
             $this->errors[] = 'no_password';
 
             return false;
-        }
-
-        // If this is being called from the CP, use the hook
-        if (REQ == 'CP') {
-            /* -------------------------------------------
-            /* 'login_authenticate_start' hook.
-            /*  - Take control of CP authentication routine
-            /*  - Added EE 1.4.2
-            */
-            ee()->extensions->call('login_authenticate_start');
-            if (ee()->extensions->end_script === true) {
-                return;
-            }
-            /*
-            /* -------------------------------------------*/
         }
 
         // Is IP and User Agent required for login?
@@ -716,7 +716,9 @@ class Auth_result
             }
         }
 
-        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
+        // check MFA setting with respect to current site
+        $roleSettings = ee('Model')->get('Role')->with('RoleSettings')->filter('role_id', $this->member('role_id'))->filter('RoleSettings.site_id', ee()->config->item('site_id'))->first();
+        if (!empty($roleSettings) && !is_null($roleSettings->RoleSettings) && $roleSettings->RoleSettings->first()->require_mfa === true && ee()->session->getMember()->enable_mfa !== true) {
             $sessions = ee('Model')
                 ->get('Session')
                 ->filter('member_id', ee()->session->userdata('member_id'))

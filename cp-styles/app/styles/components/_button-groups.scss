@@ -22,6 +22,7 @@
 }
 .button-group {
   display: flex;
+  flex-wrap:wrap;
 }
 
 // Add space between buttons when buttons are next to each other

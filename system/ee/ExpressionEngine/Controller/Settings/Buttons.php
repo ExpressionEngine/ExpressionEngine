@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -55,7 +55,7 @@ class Buttons extends Settings
             ->all();
 
         foreach ($buttons as $button) {
-            $name = (strpos($button->classname, 'html-') !== 0) ? htmlentities($button->tag_name) : '';
+            $name = (empty($button->classname) || strpos($button->classname, 'html-') !== 0) ? htmlentities($button->tag_name) : '';
 
             $preview = array('toolbar_items' => array(
                 $button->classname => array(
@@ -293,6 +293,7 @@ class Buttons extends Settings
         $open = isset($values['tag_open']) ? $values['tag_open'] : '';
         $close = isset($values['tag_close']) ? $values['tag_close'] : '';
         $shortcut = isset($values['accesskey']) ? $values['accesskey'] : '';
+        $readonly = isset($values['classname']) && $values['classname'] == 'html-upload' ? true : false;
 
         $vars['sections'] = array(
             array(
@@ -306,21 +307,21 @@ class Buttons extends Settings
                     'title' => 'tag_open',
                     'desc' => 'tag_open_desc',
                     'fields' => array(
-                        'tag_open' => array('type' => 'text', 'value' => $open, 'required' => true)
+                        'tag_open' => array('type' => 'text', 'value' => $open, 'required' => true, 'attrs' => ($readonly ? 'readonly="readonly"' : ''))
                     )
                 ),
                 array(
                     'title' => 'tag_close',
                     'desc' => 'tag_close_desc',
                     'fields' => array(
-                        'tag_close' => array('type' => 'text', 'value' => $close, 'required' => true)
+                        'tag_close' => array('type' => 'text', 'value' => $close, 'required' => true, 'attrs' => ($readonly ? 'readonly="readonly"' : ''))
                     )
                 ),
                 array(
                     'title' => 'accesskey',
                     'desc' => 'accesskey_desc',
                     'fields' => array(
-                        'accesskey' => array('type' => 'text', 'value' => $shortcut)
+                        'accesskey' => array('type' => 'text', 'value' => $shortcut, 'attrs' => ($readonly ? 'readonly="readonly"' : ''))
                     )
                 )
             )

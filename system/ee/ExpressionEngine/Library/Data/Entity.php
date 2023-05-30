@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -349,6 +349,26 @@ abstract class Entity extends MixableImpl implements Publisher
     }
 
     /**
+     * Mark a property or the entire entity as dirty.
+     *
+     * @param String $name Property name [optional]
+     */
+    public function markAsDirty($name = null)
+    {
+        if (!empty($name)) {
+            if (! $this->hasBackup($name) && $this->hasProperty($name)) {
+                $this->setBackup($name, $this->getRawProperty($name));
+            }
+        } else {
+            foreach ($this->getFields() as $field) {
+                $this->setBackup($field, $this->getRawProperty($field));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Restore all or one original value(s).
      *
      * @param String $name Name of property to restore [optional]
@@ -375,6 +395,9 @@ abstract class Entity extends MixableImpl implements Publisher
      */
     public function hasProperty($name)
     {
+        if (! is_string($name)) {
+            return false;
+        }
         return (property_exists($this, $name) && $name[0] !== '_');
     }
 

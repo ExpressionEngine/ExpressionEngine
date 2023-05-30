@@ -3,10 +3,10 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
-require_once PATH_ADDONS . 'grid/ft.grid.php';
+ require_once PATH_ADDONS . 'grid/ft.grid.php';
 
 /**
  * File Grid Fieldtype
@@ -19,6 +19,8 @@ class file_grid_ft extends Grid_ft
     ];
 
     public $size = 'large';
+
+    public $supportedEvaluationRules = null;
 
     public $settings_form_field_name = 'file_grid';
 
@@ -44,7 +46,10 @@ class file_grid_ft extends Grid_ft
             'grid_markup' => $grid_markup,
             'allowed_directory' => $this->get_setting('allowed_directories', 'all'),
             'content_type' => $this->get_setting('field_content_type', 'all'),
-            'grid_max_rows' => $this->get_setting('grid_max_rows')
+            'grid_max_rows' => $this->get_setting('grid_max_rows'),
+            'vertical_layout' => isset($this->settings['vertical_layout'])
+                ? ($this->settings['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $this->settings['vertical_layout'])
+                : 'n',
         ]);
     }
 
@@ -124,6 +129,21 @@ class file_grid_ft extends Grid_ft
                                 ]
                             ]
                         ]
+                    ],
+                    [
+                        'title' => 'file_grid_vertical_layout_title',
+                        'desc' => 'grid_vertical_layout_desc',
+                        'fields' => [
+                            'vertical_layout' => [
+                                'type' => 'radio',
+                                'choices' => [
+                                    'n' => lang('grid_auto'),
+                                    'y' => lang('grid_vertical_layout'),
+                                    'horizontal' => lang('grid_horizontal_layout'),
+                                ],
+                                'value' => isset($data['vertical_layout']) ? ($data['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $data['vertical_layout']) : 'n'
+                            ]
+                        ]
                     ]
                 ]
             ],
@@ -167,7 +187,7 @@ class file_grid_ft extends Grid_ft
                 'col_name' => 'file',
                 'col_instructions' => '',
                 'col_required' => 'n',
-                'col_search' => 'n',
+                'col_search' => 'y',
                 'col_width' => '',
                 'col_settings' => [
                     'field_content_type' => 'image',
@@ -186,6 +206,7 @@ class file_grid_ft extends Grid_ft
 
         $settings['field_content_type'] = $data['field_content_type'];
         $settings['allowed_directories'] = $data['allowed_directories'];
+        $settings['vertical_layout'] = empty($data['vertical_layout']) ? 'n' : $data['vertical_layout'];
 
         return $settings;
     }

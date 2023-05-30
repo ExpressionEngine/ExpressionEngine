@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -85,7 +85,7 @@ class File_field
         }
 
         // Create the hidden fields for the file and directory
-        $vars['hidden'] = form_hidden($field_name . '_hidden_file', $vars['filename']);
+        $vars['hidden'] = form_hidden($field_name . '_hidden_file', rawurldecode($vars['filename']));
         $vars['hidden'] .= form_hidden($field_name . '_hidden_dir', $vars['upload_location_id']);
 
         // Create a standard file upload field and dropdown for folks
@@ -255,6 +255,7 @@ class File_field
             $file_name = str_replace($matches[0], '', $data);
 
             $file = ee('Model')->get('File')
+                ->with('UploadDestination')
                 ->filter('file_name', $file_name)
                 ->filter('upload_location_id', $dir_id)
                 ->filter('site_id', ee()->config->item('site_id'))
@@ -262,7 +263,7 @@ class File_field
         }
         // If file field is just a file ID
         elseif (! empty($data) && is_numeric($data)) {
-            $file = ee('Model')->get('File', $data)->first();
+            $file = ee('Model')->get('File', $data)->with('UploadDestination')->first();
         }
 
         return $file;

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -479,7 +479,7 @@ class Filemanager
 
             // We need to reset some prefs
             if ($new_image) {
-                ee()->load->helper('number');
+                ee()->load->helper('file');
                 $f_size = get_file_info($file_path);
                 $prefs['file_height'] = $new_image['height'];
                 $prefs['file_width'] = $new_image['width'];
@@ -516,7 +516,7 @@ class Filemanager
             $prefs['file_width'] = $prefs['width'];
         }
 
-        if ($prefs['max_width'] == 0 && $prefs['max_height'] == 0) {
+        if (empty($prefs['max_width']) && empty($prefs['max_height'])) {
             return $prefs;
         }
 
@@ -528,12 +528,12 @@ class Filemanager
         ee()->image_lib->clear();
 
         // If either h/w unspecified, calculate the other here
-        if ($prefs['max_width'] == 0) {
-            $config['width'] = ($prefs['width'] / $prefs['height']) * $prefs['max_height'];
+        if (empty($prefs['max_width'])) {
+            $config['width'] = ((int) $prefs['width'] / (int) $prefs['height']) * (int) $prefs['max_height'];
             $force_master_dim = 'height';
-        } elseif ($prefs['max_height'] == 0) {
+        } elseif (empty($prefs['max_height'])) {
             // Old h/old w * new width
-            $config['height'] = ($prefs['height'] / $prefs['width']) * $prefs['max_width'];
+            $config['height'] = ((int) $prefs['height'] / (int) $prefs['width']) * (int) $prefs['max_width'];
             $force_master_dim = 'width';
         }
 
@@ -574,7 +574,7 @@ class Filemanager
 
         // We need to reset some prefs
         if ($new_image) {
-            ee()->load->helper('number');
+            ee()->load->helper('file');
             $f_size = get_file_info($file_path);
 
             $prefs['file_size'] = ($f_size) ? $f_size['size'] : 0;

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -221,6 +221,9 @@
 
 				if ( ! ('selected' in options)) {
 					options.selected = $(this).data('selected');
+				}
+				if (options.input_value.prop("selectionStart")) {
+					localStorage.setItem('caretPosition', options.input_value.prop("selectionStart"));
 				}
 
 				bind_modal(options.url, options);

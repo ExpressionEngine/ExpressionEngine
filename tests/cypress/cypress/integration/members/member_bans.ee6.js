@@ -5,6 +5,10 @@ import BansMembers from '../../elements/pages/members/BansMembers';
 const page = new BansMembers
 
 context('Ban Settings', () => {
+    before(function(){
+        cy.task('db:seed')
+    })
+    
   beforeEach(function() {
     cy.auth();
     page.load()

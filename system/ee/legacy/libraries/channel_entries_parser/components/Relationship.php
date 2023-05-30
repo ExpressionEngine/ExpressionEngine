@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -68,11 +68,31 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component
                 }
             }
 
+            $disabledFeatures = $pre->disabledFeatures();
+            if (strpos($tagdata, 'categories') === false) {
+                $disableCategories = true;
+                $tagStrings = array_merge($pre->pairs, $pre->singles);
+                if (!empty($tagStrings)) {
+                    foreach ($tagStrings as $string => $data) {
+                        if (strpos($string, 'category') !== false) {
+                            $disableCategories = false;
+                            break;
+                        }
+                    }
+                }
+                if ($disableCategories) {
+                    $disabledFeatures[] = 'relationship_categories';
+                }
+            }
+
             return ee()->relationships_parser->create(
                 $pre->channel()->rfields,
                 $pre->entry_ids(),
                 null,
-                $grid_relationships
+                $grid_relationships,
+                null,
+                null,
+                $disabledFeatures
             );
         } catch (EE_Relationship_exception $e) {
             ee()->TMPL->log_item($e->getMessage());
@@ -92,6 +112,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component
      */
     public function replace($tagdata, EE_Channel_data_parser $obj, $relationship_parser)
     {
+        ee()->TMPL->log_item('Replace all of the relationship fields');
         if (! isset($relationship_parser)) {
             return $tagdata;
         }

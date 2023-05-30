@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -237,8 +237,9 @@ class Publish extends AbstractPublishController
             'errors' => new \ExpressionEngine\Service\Validation\Result(),
             'revisions' => $this->getRevisionsTable($entry),
             'buttons' => $this->getPublishFormButtons($entry, $livePreviewReady),
-            'header' => [
+            'head' => [
                 'title' => lang('new_entry'),
+                'class' => 'entries'
             ],
         );
 
@@ -281,6 +282,16 @@ class Publish extends AbstractPublishController
             ->with('PrimaryRoles')
             ->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
             ->first();
+
+        if (empty($channel_layout)) {
+            $channel_layout = ee('Model')->get('ChannelLayout')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('channel_id', $entry->channel_id)
+                ->with('PrimaryRoles')
+                ->filter('PrimaryRoles.role_id', 'IN', ee()->session->getMember()->getAllRoles()->pluck('role_id'))
+                ->all()
+                ->first();
+        }
 
         $vars['layout'] = $entry->getDisplay($channel_layout);
 

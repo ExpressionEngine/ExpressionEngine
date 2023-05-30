@@ -1,13 +1,6 @@
 <?php $this->extend('_templates/wrapper'); ?>
 
-<?php if (!(defined('IS_PRO') && IS_PRO) && ee()->session->getMember()->dismissed_pro_banner!='y'): ?>
-  <div class="promo-banner-outer">
-    <a href="https://expressionengine.com/pro" class="promo-banner-wrapper" style="background-image: url('<?=URL_THEMES?>asset/img/ee-pro-promo-banner-bg@2x.png'); background-color: #fff;" target="_blank">
-      <img src="<?=URL_THEMES?>asset/img/ee-pro-promo-banner@2x.png" alt="ExpressionEngine Pro" style="max-height: 250px;">
-    </a>
-    <a href="<?=ee('CP/URL')->make('homepage/dismissBanner')->compile();?>" class="banner-dismiss"></a>
-  </div>
-<?php endif; ?>
+<?php $this->embed('_shared/upgrade_success_banner'); ?>
 
 <?php if (isset($header)): ?>
 <div class="main-nav<?php if ((!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) && (empty(ee()->uri->segment(2)) || ee()->uri->segment(2) == 'homepage')) : ?> hidden<?php endif; ?>">

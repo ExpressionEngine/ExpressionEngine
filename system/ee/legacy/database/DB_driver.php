@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -577,7 +577,12 @@ class CI_DB_driver
                 return $this->display_error('db_field_param_missing');
             }
 
-            return false;
+            return [];
+        }
+
+        //no legacy data, no query needed
+        if (ee()->config->item('legacy_' . $table) === 'n') {
+            return [];
         }
 
         if (false === ($sql = $this->_list_columns($table))) {
@@ -585,7 +590,7 @@ class CI_DB_driver
                 return $this->display_error('db_unsupported_function');
             }
 
-            return false;
+            return [];
         }
 
         $query = $this->query($sql);

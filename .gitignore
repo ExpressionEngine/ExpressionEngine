@@ -39,6 +39,9 @@ system/user/config/database.php
 system/user/language/*
 !system/user/language/index.html
 
+system/user/logs/*
+!system/user/logs/index.html
+
 system/user/templates/*
 !system/user/templates/index.html
 !system/user/templates/.htaccess
@@ -59,8 +62,10 @@ system/ee/ExpressionEngine/Tests/vendor/*
 system/ee/installer/updater/ExpressionEngine/Tests/vendor/*
 
 tests/cypress/cypress/integration/pro
+tests/cypress/support/sql/seed.sql
 tests/cypress/vendor/
 tests/cypress/vendor/*
+tests/cypress/cypress/downloads/*
 cypress.env.json
 
 
@@ -125,3 +130,7 @@ themes/ee/pro
 
 #
 *.code-workspace
+/.ddev
+/vendor/
+system/ee/vendor-build/
+/vendor-bin/*/vendor

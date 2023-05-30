@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -42,14 +42,11 @@ class ZipToSet
         $this->ensureNoPHP($zip);
 
         // create a temporary directory for the contents in our cache folder
-        $fs = new Filesystem();
-
         if (! is_dir(PATH_CACHE . 'cset/')) {
-            $fs->mkdir(PATH_CACHE . 'cset/');
+            ee('Filesystem')->mkdir(PATH_CACHE . 'cset/');
         }
-
         $tmp_dir = 'cset/tmp_' . ee('Encrypt')->generateKey();
-        $fs->mkdir(PATH_CACHE . $tmp_dir, false);
+        ee('Filesystem')->mkdir(PATH_CACHE . $tmp_dir, false);
 
         // extract the archive
         if ($zip->extractTo(PATH_CACHE . $tmp_dir) !== true) {

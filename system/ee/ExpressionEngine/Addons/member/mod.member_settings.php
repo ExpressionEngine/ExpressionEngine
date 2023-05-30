@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -759,7 +759,7 @@ class Member_settings extends Member
 
         //		$result_row = $result->row_array()
 
-        $this->member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+        $this->member = ee()->session->getMember();
 
         if (empty($this->member)) {
             if (! empty($tagdata)) {
@@ -770,6 +770,11 @@ class Member_settings extends Member
         }
 
         $result_row = $this->member->getValues();
+
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('channel_fields');
+        // we need to reset this, because might have already been populated by channel:entries tag
+        ee()->api_channel_fields->custom_fields = array();
 
         if ($query->num_rows() > 0) {
             foreach ($this->member->getDisplay()->getFields() as $field) {
@@ -839,13 +844,19 @@ class Member_settings extends Member
             ee()->channel_form_lib->datepicker = get_bool_from_string(ee()->TMPL->fetch_param('datepicker', 'y'));
             ee()->channel_form_lib->compile_js();
 
-            $return = ee()->functions->form_declaration(array(
-                'id' => 'cform',
-                'hidden_fields' => array(
-                    'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
-                    'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
-                )
-            )) . $template . '</form>';
+            if (ee()->TMPL->fetch_param('form_name', '') != "") {
+                $data['name'] = ee()->TMPL->fetch_param('form_name');
+            }
+
+            $data['id'] = 'cform';
+            $data['class'] = ee()->TMPL->form_class;
+
+            $data['hidden_fields'] = array(
+                'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
+                'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
+            );
+
+            $return = ee()->functions->form_declaration($data) . $template . '</form>';
             //make head appear by default
             if (preg_match('/' . LD . 'form_assets' . RD . '/', $return)) {
                 $return = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $return);
@@ -1661,8 +1672,8 @@ class Member_settings extends Member
         /** -------------------------------------
         /**  Parse the $_POST data
         /** -------------------------------------*/
-        if ($_POST['screen_name'] == '' &&
-            $_POST['email'] == ''
+        if (ee('Request')->post('screen_name') == '' &&
+            ee('Request')->post('email') == ''
             ) {
             ee()->functions->redirect($redirect_url);
             exit;
@@ -1678,11 +1689,11 @@ class Member_settings extends Member
 
             if ($key == 'group_id') {
                 if ($val != 'any') {
-                    $search_query[] = " role_id ='" . ee()->db->escape_str($_POST['group_id']) . "'";
+                    $search_query[] = " role_id ='" . ee()->db->escape_str((int) $_POST['group_id']) . "'";
                 }
-            } else {
+            } else if (in_array($key, ['screen_name', 'email'])) {
                 if ($val != '') {
-                    $search_query[] = ee()->db->escape_str($key) . " LIKE '%" . ee()->db->escape_like_str($val) . "%'";
+                    $search_query[] = ee()->db->escape_str($key) . " LIKE '%" . ee()->db->escape_like_str(ee('Security/XSS')->clean($val)) . "%'";
                 }
             }
         }
@@ -1982,15 +1993,12 @@ UNGA;
         /** -------------------------------------
         /**  Instantiate validation class
         /** -------------------------------------*/
-        if (! class_exists('EE_Validate')) {
-            require APPPATH . 'libraries/Validate.php';
-        }
 
         $new_un = (string) ee()->input->post('new_username');
         $new_pw = (string) ee()->input->post('new_password');
         $new_pwc = (string) ee()->input->post('new_password_confirm');
 
-        $VAL = new EE_Validate(array(
+        $un_pw_data = array(
             'val_type' => 'new',
             'fetch_lang' => true,
             'require_cpw' => false,
@@ -1999,24 +2007,31 @@ UNGA;
             'password' => $new_pw,
             'password_confirm' => $new_pwc,
             'cur_password' => $password,
-        ));
+        );
 
+        $validationRules = [];
         $un_exists = ($new_un !== '') ? true : false;
         $pw_exists = ($new_pw !== '' and $new_pwc !== '') ? true : false;
 
         if ($un_exists) {
-            $VAL->validate_username();
+            $validationRules['username'] = 'uniqueUsername|validUsername|notBanned';
         }
 
         if ($pw_exists) {
-            $VAL->validate_password();
+            $validationRules['password'] = 'validPassword|passwordMatchesSecurityPolicy|matches[password_confirm]';
         }
+
+        $validationResult = ee('Validation')->make($validationRules)->validate($un_pw_data);
 
         /** -------------------------------------
         /**  Display errors if there are any
         /** -------------------------------------*/
-        if (count($VAL->errors) > 0) {
-            return ee()->output->show_user_error('submission', $VAL->errors);
+        if ($validationResult->isNotValid()) {
+            $errors = [];
+            foreach ($validationResult->getAllErrors() as $error) {
+                $errors = array_merge($errors, array_values($error));
+            }
+            return ee()->output->show_user_error('submission', $errors);
         }
 
         if ($un_exists) {

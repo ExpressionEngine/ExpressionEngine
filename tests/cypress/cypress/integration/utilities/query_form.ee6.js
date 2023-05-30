@@ -7,6 +7,10 @@ const cp_log = new CpLogs
 
 context('Cache Manager', () => {
 
+  before(function(){
+    cy.task('db:seed')
+  })
+    
   beforeEach(function() {
     cy.auth();
     page.load()

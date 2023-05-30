@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -610,9 +610,11 @@ class Table
 
             foreach ($row['columns'] as $column) {
                 // Only search searchable columns
-                if ($column['type'] == self::COL_TEXT or
-                    $column['type'] == self::COL_STATUS) {
-                    if (strpos(strtolower($column['content']), strtolower($this->config['search'])) !== false) {
+                if (
+                    $column['type'] == self::COL_TEXT or
+                    $column['type'] == self::COL_STATUS
+                ) {
+                    if (!empty($column['content']) && strpos(strtolower($column['content']), strtolower($this->config['search'])) !== false) {
                         // Found a match, move on to the next row
                         $match = true;
 

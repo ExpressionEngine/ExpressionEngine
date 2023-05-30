@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -42,6 +42,7 @@ class Channel
     public $enable = array();	// modified by various tags with disable= parameter
     public $absolute_results = null;		// absolute total results returned by the tag, useful when paginating
     public $display_by = '';
+    public $hidden_fields = []; //conditionally hidden fields for given entries
 
     // These are used with the nested category trees
 
@@ -248,7 +249,8 @@ class Channel
             }
         }
 
-        if ($this->enable['categories'] == true) {
+        //only fetch catgories if those are enabled and called in template
+        if ($this->enable['categories'] == true && (empty(ee()->TMPL->tagdata) || strpos(ee()->TMPL->tagdata, 'categories') !== false)) {
             $this->fetch_categories();
         }
 
@@ -330,10 +332,10 @@ class Channel
 
         // If there are install-wide fields, make them available to each site
         if (isset($this->cfields[0])) {
-            $site_ids = ee('Model')->get('Site')
-                ->fields('site_id')
-                ->all()
-                ->getIds();
+            $sites = ee('Model')->get('Site')
+                ->fields('site_id', 'site_name')
+                ->all(true);
+            $site_ids = $sites->getIds();
 
             foreach (['cfields', 'dfields', 'rfields', 'gfields',
                 'pfields', 'ffields', 'tfields'] as $custom_fields) {
@@ -719,10 +721,12 @@ class Channel
             if ($dynamic && is_numeric($qstring)) {
                 $entry_id = $qstring;
             } else {
+                $uri_has_digit = preg_match('/[0-9]/', $qstring);
+
                 /** --------------------------------------
                 /**  Parse day
                 /** --------------------------------------*/
-                if ($dynamic && preg_match("#(^|\/)(\d{4}/\d{2}/\d{2})#", $qstring, $match)) {
+                if ($dynamic && $uri_has_digit && preg_match("#(^|\/)(\d{4}/\d{2}/\d{2})#", $qstring, $match)) {
                     $ex = explode('/', $match[2]);
 
                     $year = $ex[0];
@@ -737,7 +741,7 @@ class Channel
                 /** --------------------------------------*/
 
                 // added (^|\/) to make sure this doesn't trigger with url titles like big_party_2006
-                if ($dynamic && preg_match("#(^|\/)(\d{4}/\d{2})(\/|$)#", $qstring, $match)) {
+                if ($dynamic && $uri_has_digit && preg_match("#(^|\/)(\d{4}/\d{2})(\/|$)#", $qstring, $match)) {
                     $ex = explode('/', $match[2]);
 
                     $year = $ex[0];
@@ -749,7 +753,7 @@ class Channel
                 /** --------------------------------------
                 /**  Parse ID indicator
                 /** --------------------------------------*/
-                if ($dynamic && preg_match("#^(\d+)(.*)#", $qstring, $match)) {
+                if ($dynamic && $uri_has_digit && preg_match("#^(\d+)(.*)#", $qstring, $match)) {
                     $seg = (! isset($match[2])) ? '' : $match[2];
 
                     if (substr($seg, 0, 1) == "/" or $seg == '') {
@@ -761,7 +765,7 @@ class Channel
                 /** --------------------------------------
                 /**  Parse page number
                 /** --------------------------------------*/
-                if (($dynamic or ee()->TMPL->fetch_param('paginate')) && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) {
+                if (($dynamic or ee()->TMPL->fetch_param('paginate'))  && $uri_has_digit && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) {
                     $this->uristr = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
                     $qstring = trim_slashes(str_replace($match[0], '', $qstring));
                     $page_marker = true;
@@ -862,7 +866,7 @@ class Channel
                 // The recent comments feature uses "N" as the URL indicator
                 // It needs to be removed if presenst
 
-                if (preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match)) {
+                if ($uri_has_digit && preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match)) {
                     $this->uristr = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
 
                     $qstring = trim_slashes(str_replace($match[0], '', $qstring));
@@ -879,16 +883,14 @@ class Channel
 
                     if ($dynamic == true) {
                         $sql = "SELECT count(*) AS count
-								FROM  exp_channel_titles, exp_channels
-								WHERE exp_channel_titles.channel_id = exp_channels.channel_id";
+								FROM  exp_channel_titles
+								WHERE exp_channel_titles.site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
 
                         if ($entry_id != '') {
                             $sql .= " AND exp_channel_titles.entry_id = '" . ee()->db->escape_str($entry_id) . "'";
                         } else {
                             $sql .= " AND exp_channel_titles.url_title = '" . ee()->db->escape_str($qstring) . "'";
                         }
-
-                        $sql .= " AND exp_channels.site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
 
                         $query = ee()->db->query($sql);
 
@@ -1132,7 +1134,7 @@ class Channel
         $timestamp = ee()->localize->now;
 
         if (ee()->TMPL->fetch_param('show_future_entries') != 'yes') {
-            $sql .= " AND t.entry_date < " . $timestamp . " ";
+            $sql .= " AND t.entry_date <= " . $timestamp . " ";
         }
 
         if (ee()->TMPL->fetch_param('show_expired') == 'only') {
@@ -1190,27 +1192,31 @@ class Channel
         /**------*/
 
         if ($channel = ee()->TMPL->fetch_param('channel')) {
-            $xql = "SELECT channel_id FROM exp_channels WHERE ";
-
-            $str = ee()->functions->sql_andor_string($channel, 'channel_name');
-
-            if (substr($str, 0, 3) == 'AND') {
-                $str = substr($str, 3);
+            $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_name')->all(true);
+            $channelInOperator = 'IN';
+            if (strpos($channel, 'not ') === 0) {
+                $channelInOperator = 'NOT IN';
+                $channel = substr($channel, 4);
+            }
+            if (strpos($channel, '|') !== false) {
+                $options = preg_split('/\|/', $channel, -1, PREG_SPLIT_NO_EMPTY);
+                $options = array_map('trim', $options);
+            } elseif (! empty($channel)) {
+                $options = [$channel];
+            }
+            $channel_ids = array();
+            foreach ($options as $option) {
+                foreach ($channels as $channelModel) {
+                    if (strtolower($option) == strtolower($channelModel->channel_name)) {
+                        $channel_ids[] = $channelModel->channel_id;
+                    }
+                }
             }
 
-            $xql .= $str;
-
-            $query = ee()->db->query($xql);
-
-            if ($query->num_rows() == 0) {
+            if (empty($channel_ids)) {
                 return '';
             } else {
-                $channel_ids = array();
-                foreach ($query->result_array() as $row) {
-                    $channel_ids[] = $row['channel_id'];
-                }
-
-                $sql .= "AND t.channel_id IN (" . implode(',', $channel_ids) . ") ";
+                $sql .= "AND t.channel_id " . $channelInOperator . " (" . implode(',', $channel_ids) . ") ";
             }
         }
 
@@ -1815,6 +1821,7 @@ class Channel
 
                             if (count($order_array) - 1 == $key) {
                                 $end .= ", t.entry_date " . $sort_array[$key];
+                                $distinct_select .= ', t.entry_date ';
                             }
 
                             $sort_array[$key] = false;
@@ -2067,6 +2074,17 @@ class Channel
         $entries = array_unique($entries);
         $channel_ids = array_unique($channel_ids);
 
+        // find out which fields should be conditionally hidden
+        $hiddenFieldsQuery = ee('db')->select('entry_id, field_id')->from('channel_entry_hidden_fields')->where_in('entry_id', $entries)->get();
+        if ($hiddenFieldsQuery->num_rows() > 0) {
+            foreach ($hiddenFieldsQuery->result_array() as $hiddenFieldsRow) {
+                if (!isset($this->hidden_fields[$hiddenFieldsRow['entry_id']])) {
+                    $this->hidden_fields[$hiddenFieldsRow['entry_id']] = [];
+                }
+                $this->hidden_fields[$hiddenFieldsRow['entry_id']][] = $hiddenFieldsRow['field_id'];
+            }
+        }
+
         $this->sql .= $this->generateSQLForEntries($entries, $channel_ids);
 
         //cache the entry_id
@@ -2230,6 +2248,12 @@ class Channel
             }
 
             $data = ee('LivePreview')->getEntryData();
+            $this->hidden_fields[$data['entry_id']] = [];
+            foreach ($data as $field => $fieldValue) {
+                if (strpos($field, 'field_hide_') === 0) {
+                    $this->hidden_fields[$data['entry_id']][] = substr($field, 11);
+                }
+            }
 
             foreach ($result_array as $i => $row) {
                 if ($row['entry_id'] == $data['entry_id']) {
@@ -2370,6 +2394,18 @@ class Channel
 
         if (! empty($this->chunks)) {
             $query_result = $this->getExtraData($query_result);
+        }
+
+        if (!empty($this->hidden_fields)) {
+            foreach ($query_result as $i => $row) {
+                if (isset($this->hidden_fields[$row['entry_id']])) {
+                    foreach ($this->hidden_fields[$row['entry_id']] as $hiddenFieldId) {
+                        $row['field_hide_' . $hiddenFieldId] = 'y';
+                    }
+                    $query_result[$i] = $row;
+                    ee()->TMPL->log_item("Conditionally hidden fields for entry ID " . $row['entry_id'] . ": " . implode(", ", $this->hidden_fields[$row['entry_id']]));
+                }
+            }
         }
 
         $query_result = $this->overrideWithPreviewData($query_result);
@@ -2922,6 +2958,14 @@ class Channel
 
             ee()->load->library('typography');
 
+            $parent_ids = array();
+
+            foreach ($this->cat_array as $val) {
+                if (!empty($val[1]) && !in_array($val[1], $parent_ids)) {
+                    $parent_ids[] = $val[1];
+                }
+            }
+
             foreach ($this->cat_array as $key => $val) {
                 $chunk = ee()->TMPL->tagdata;
 
@@ -2932,6 +2976,7 @@ class Channel
                     'category_image' => (string) $val[5],
                     'category_id' => $val[0],
                     'parent_id' => $val[1],
+                    'has_children' => in_array($val[0], $parent_ids),
                     'active' => ($active_cat == $val[0] || $active_cat == $val[6])
                 );
 
@@ -3194,6 +3239,17 @@ class Channel
 
         $return_data = '';
 
+        $site_pages = config_item('site_pages');
+
+        foreach (ee()->TMPL->site_ids as $site_id) {
+            if ($site_id != ee()->config->item('site_id')) {
+                $pages = ee()->config->site_pages($site_id);
+                $site_pages[$site_id] = $pages[$site_id];
+            }
+        }
+
+        $site_id = ee()->config->item('site_id');
+
         if (ee()->TMPL->fetch_param('style') == '' or ee()->TMPL->fetch_param('style') == 'nested') {
             if ($result->num_rows() > 0 && $title_chunk != '') {
                 $i = 0;
@@ -3212,6 +3268,15 @@ class Channel
                     $chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $row['entry_date']));
 
                     $row['channel_url'] = parse_config_variables($row['channel_url']);
+
+                    if (isset($site_pages[$site_id]['uris'][$row['entry_id']])) {
+                        $row['page_uri'] = $site_pages[$site_id]['uris'][$row['entry_id']];
+                        $row['page_url'] = ee()->functions->create_page_url($site_pages[$site_id]['url'], $site_pages[$site_id]['uris'][$row['entry_id']]);
+                    } else {
+                        $row['page_uri'] = '';
+                        $row['page_url'] = '';
+                    }
+
                     $chunk = ee()->TMPL->parse_variables_row($chunk, $row);
 
                     $channel_array[$i . '_' . $row['cat_id']] = str_replace(LD . 'title' . RD, $row['title'], $chunk);
@@ -3293,12 +3358,19 @@ class Channel
 
             if ($query->num_rows() > 0) {
                 $used = array();
+                $parent_ids = array();
 
                 // Get category ID from URL for {if active} conditional
                 ee()->load->helper('segment');
                 $active_cat = parse_category($this->query_string);
 
                 ee()->load->library('typography');
+
+                foreach ($query->result_array() as $row) {
+                    if (!empty($row['parent_id']) && !in_array($row['parent_id'], $parent_ids)) {
+                        $parent_ids[] = $row['parent_id'];
+                    }
+                }
 
                 foreach ($query->result_array() as $row) {
                     // We'll concatenate parsed category and title chunks here for
@@ -3316,6 +3388,7 @@ class Channel
                             'category_image' => (string) $row['cat_image'],
                             'category_id' => $row['cat_id'],
                             'parent_id' => $row['parent_id'],
+                            'has_children' => in_array($row['cat_id'], $parent_ids),
                             'active' => ($active_cat == $row['cat_id'] || $active_cat == $row['cat_url_title'])
                         );
 
@@ -3381,6 +3454,15 @@ class Channel
                             $chunk = ee()->TMPL->parse_date_variables($chunk, array('entry_date' => $trow['entry_date']));
 
                             $trow['channel_url'] = parse_config_variables($trow['channel_url']);
+
+                            if (isset($site_pages[$site_id]['uris'][$trow['entry_id']])) {
+                                $trow['page_uri'] = $site_pages[$site_id]['uris'][$trow['entry_id']];
+                                $trow['page_url'] = ee()->functions->create_page_url($site_pages[$site_id]['url'], $site_pages[$site_id]['uris'][$trow['entry_id']]);
+                            } else {
+                                $trow['page_uri'] = '';
+                                $trow['page_url'] = '';
+                            }
+
                             $chunk = ee()->TMPL->parse_variables_row($chunk, $trow);
 
                             $titles_parsed .= $chunk;
@@ -3656,6 +3738,14 @@ class Channel
             ee()->load->helper('segment');
         }
 
+        $parent_ids = array();
+
+        foreach ($this->cat_array as $val) {
+            if (!empty($val[0]) && !in_array($val[0], $parent_ids)) {
+                $parent_ids[] = $val[0];
+            }
+        }
+
         foreach ($this->cat_array as $key => $val) {
             if ($parent_id == $val[0]) {
                 if ($open == 0) {
@@ -3674,6 +3764,7 @@ class Channel
                     'category_image' => (string) $val[2],
                     'category_id' => $key,
                     'parent_id' => $val[0],
+                    'has_children' => in_array($key, $parent_ids),
                     'active' => ($active_cat == $key || $active_cat == $val[4])
                 );
 
@@ -3837,6 +3928,7 @@ class Channel
             }
 
             if (isset($field_index[$field_name]) && isset($data['field_id_' . $field_index[$field_name]])) {
+                // custom fields
                 $field_id = $field_index[$field_name];
                 $cat_field = $this->cat_field_models[$field_id];
 
@@ -3855,6 +3947,7 @@ class Channel
                     $tag
                 );
             } elseif (isset($data[$field_name])) {
+                // built-in fields
                 $content = $data[$field_name];
 
                 if (! empty($var_props['modifier'])) {
@@ -3866,6 +3959,7 @@ class Channel
                         ee()->api_channel_fields->field_type = 'file';
                         $content = ee()->file_field->parse_field($content);
                     } else {
+                        ee()->api_channel_fields->field_type = 'text';
                         $class = $fieldtype;
                     }
 
@@ -4090,7 +4184,7 @@ class Channel
             return ee()->TMPL->no_results();
         }
 
-        $cat_id = ctype_digit(ee()->TMPL->fetch_param('category_id')) ? ee()->TMPL->fetch_param('category_id') : $match[2];
+        $cat_id = ee()->TMPL->fetch_param('category_id') !== false && ctype_digit(ee()->TMPL->fetch_param('category_id')) ? ee()->TMPL->fetch_param('category_id') : $match[2];
 
         // fetch category field names and id's
 
@@ -4791,7 +4885,9 @@ class Channel
             'custom_fields' => true,
             'member_data' => true,
             'pagination' => true,
-            'relationships' => true
+            'relationships' => true,
+            'relationship_custom_fields' => true,
+            'relationship_categories' => true,
         );
 
         if ($disable = ee()->TMPL->fetch_param('disable')) {

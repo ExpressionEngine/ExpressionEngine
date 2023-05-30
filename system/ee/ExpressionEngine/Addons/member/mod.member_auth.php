@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -104,6 +104,10 @@ class Member_auth extends Member
         // Figure out how many sites we're dealing with here
         $sites = ee()->config->item('multi_login_sites');
         $sites_array = explode('|', $sites);
+        $protocolsReplace = [
+            'http://' => 'https://',
+            'https://' => 'http://'
+        ];
 
         // No username/password?  Bounce them...
         $multi = (ee()->input->get('multi') && count($sites_array) > 0)
@@ -142,7 +146,10 @@ class Member_auth extends Member
 
             $current_url = ee()->functions->fetch_site_index();
             $current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
-            $current_idx = array_search($current_search_url, $sites_array);
+            do {
+                $current_idx = array_search($current_search_url, $sites_array);
+                $current_search_url = str_replace(array_key_first($protocolsReplace), array_shift($protocolsReplace), $current_search_url);
+            } while ($current_idx === false && !empty($protocolsReplace));
 
             // Figure out return
             if (! $return_link = ee()->input->get('RET')) {
@@ -159,6 +166,10 @@ class Member_auth extends Member
             $current_idx = array_search($current_search_url, $sites_array);
 
             $return_link = reduce_double_slashes(ee()->functions->form_backtrack());
+        }
+
+        if (!empty($sites) && $current_idx === false) {
+            ee()->output->show_user_error('general', lang('multi_auth_redirect_site_not_found'));
         }
 
         // Set login state
@@ -768,11 +779,11 @@ class Member_auth extends Member
                 $reset_url = ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url;
             }
         } else {
-            $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password');
+            $reset_url = ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password';
         }
 
         // Add the reset code and possible forum_id to the reset pass url.
-        $reset_url .= '?id=' . $resetcode . $forum_id;
+        $reset_url = reduce_double_slashes($reset_url . '?id=' . $resetcode . $forum_id);
 
         if (! empty($protected['email_template'])) {
             $email_template = ee()->TMPL->fetch_template_and_parse_from_path($protected['email_template']);
@@ -958,21 +969,27 @@ class Member_auth extends Member
             return ee()->output->show_user_error('submission', array(lang('mbr_missing_confirm')), '', $return_error_link);
         }
 
-        // Validate the password, using EE_Validate. This will also
+        // Validate the password. This will also
         // handle checking whether the password and its confirmation
         // match.
-        if (! class_exists('EE_Validate')) {
-            require APPPATH . 'libraries/Validate.php';
-        }
 
-        $VAL = new EE_Validate(array(
+        $pw_data = array(
             'password' => $password,
             'password_confirm' => $password_confirm,
-        ));
+        );
 
-        $VAL->validate_password();
-        if (count($VAL->errors) > 0) {
-            return ee()->output->show_user_error('submission', $VAL->errors, '', $return_error_link);
+        $validationRules = [
+            'password' => 'validPassword|passwordMatchesSecurityPolicy|matches[password_confirm]'
+        ];
+
+        $validationResult = ee('Validation')->make($validationRules)->validate($pw_data);
+
+        if ($validationResult->isNotValid()) {
+            $errors = [];
+            foreach ($validationResult->getAllErrors() as $error) {
+                $errors = array_merge($errors, array_values($error));
+            }
+            return ee()->output->show_user_error('submission', $errors, '', $return_error_link);
         }
 
         // Update the database with the new password.  Apply the appropriate salt first.

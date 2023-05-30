@@ -8,7 +8,7 @@ $(document).ready(() => {
     if (link && !elem.classList.contains('add-on-card--uninstalled')) {
       elem.addEventListener('click', function (e) {
         // Don't open the add-ons settings if the user clicks on a button inside of the card
-        if ($(e.target).closest('.add-on-card__cog, .add-on-card__button, .dropdown__link').length == 0) {
+        if ($(e.target).closest('.add-on-card__cog, .add-on-card__button, .dropdown__link, .toolbar-wrap, .add').length == 0) {
 		  window.location.href = link;
         }
       });

@@ -136,6 +136,17 @@
 				};
 		}
 
+		.js-layout-item { margin-bottom: 10px; }
+		.custom-drag-placeholder {
+			.none {
+				background-color: color(bg-0);
+				border: 1px dashed color(border-dark);
+				padding: 10px;
+				border-radius: $border-radius-base;
+				margin-bottom: 10px;
+			}
+		}
+
 		@include clear-float;
 
 		// @include m-tablet-up {

@@ -17,7 +17,7 @@ $lang = array(
 
     // Database Server
     'db_settings' => 'Database Settings',
-    'db_hostname' => 'Server Address',
+    'db_hostname' => 'DB Server Address',
     'db_hostname_note' => 'Commonly <b>localhost</b>, but your host may require something else.',
     'db_name' => 'DB Name',
     'db_name_note' => 'Make sure the database exists, the installer will <b>not</b> create it.',
@@ -26,7 +26,7 @@ $lang = array(
     'db_prefix' => 'Table Prefix',
     'db_prefix_note' => 'Use <b>exp</b> unless you require/prefer a different prefix.',
 
-    'utf8mb4_not_supported' => 'Your MySQL %s does not support Emoji 😞. Click install if you would like to install anyway, or <a href="' . DOC_URL . 'troubleshooting/install_and_update/emoji_support.html" rel="external">read how to fix this before installing</a>.',
+    'utf8mb4_not_supported' => 'Your MySQL %s does not support Emoji 😞. Click install if you would like to install anyway, or <a href="' . DOC_URL . 'troubleshooting/installation.html#emoji-support" rel="external">read how to fix this before installing</a>.',
     'client' => 'client',
     'server' => 'server',
     'and' => 'and',
@@ -73,13 +73,13 @@ $lang = array(
 
     // Errors
     'invalid_action' => 'The action you have requested is not valid.',
-    'unreadable_config' => 'Your config.php file (<code>system/user/config/config.php</code>) is unreadable. Please make sure the file exists and is writable. See the <a href="' . DOC_URL . 'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
-    'unwritable_config' => 'Your config.php file (<code>system/user/config/config.php</code>) is not writable. See the <a href="' . DOC_URL . 'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
-    'unwritable_templates' => 'Your template directory (<code>system/user/templates</code>) is not writeable. See the <a href="' . DOC_URL . 'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
-    'unwritable_themes_user' => 'Your user themes directory (<code>themes/user/</code>) is not writeable. See the <a href="' . DOC_URL . 'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
+    'unreadable_config' => 'Your config.php file (<code>system/user/config/config.php</code>) is unreadable. Please make sure the file exists and is writable. See the <a href="' . DOC_URL . 'troubleshooting/general.html#file-permissions" rel="external">File Permissions Documentation</a> for more information.',
+    'unwritable_config' => 'Your config.php file (<code>system/user/config/config.php</code>) is not writable. See the <a href="' . DOC_URL . 'troubleshooting/general.html#file-permissions" rel="external">File Permissions Documentation</a> for more information.',
+    'unwritable_templates' => 'Your template directory (<code>system/user/templates</code>) is not writeable. See the <a href="' . DOC_URL . 'troubleshooting/general.html#file-permissions" rel="external">File Permissions Documentation</a> for more information.',
+    'unwritable_themes_user' => 'Your user themes directory (<code>themes/user/</code>) is not writeable. See the <a href="' . DOC_URL . 'troubleshooting/general.html#file-permissions" rel="external">File Permissions Documentation</a> for more information.',
     'json_parser_missing' => 'Your instance of PHP does not support the <code>json_encode</code> and <code>json_decode</code> methods.',
     'fileinfo_missing' => 'The required Fileinfo PHP extension is not currently enabled.',
-    'unwritable_cache_folder' => 'Your cache folder (<code>system/user/cache</code>) is not writable. See the <a href="' . DOC_URL . 'troubleshooting/general/file_permissions.html" rel="external">File Permissions Documentation</a> for more information.',
+    'unwritable_cache_folder' => 'Your cache folder (<code>system/user/cache</code>) is not writable. See the <a href="' . DOC_URL . 'troubleshooting/general.html#file-permissions" rel="external">File Permissions Documentation</a> for more information.',
     'database_invalid_host' => 'The database host you submitted is invalid.',
     'database_invalid_database' => 'The database name you submitted is invalid.',
     'database_invalid_user' => 'The database user and password combination you submitted is invalid.',

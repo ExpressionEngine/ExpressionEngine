@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -220,22 +220,6 @@ class Role extends Model
             }, $field);
         }
         return $data;
-    }
-
-    protected function saveToCache($key, $data)
-    {
-        if (isset(ee()->session)) {
-            ee()->session->set_cache(__CLASS__, $key, $data);
-        }
-    }
-
-    protected function getFromCache($key)
-    {
-        if (isset(ee()->session)) {
-            return ee()->session->cache(__CLASS__, $key, false);
-        }
-
-        return false;
     }
 
     /**

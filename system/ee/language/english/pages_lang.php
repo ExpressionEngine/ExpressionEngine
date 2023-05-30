@@ -26,6 +26,8 @@ $lang = array(
 
     'duplicate_page_uri' => 'Duplicate Page URI',
 
+    'duplicate_page_uri_used' => 'Duplicate Page URI is used by <a href="%s">%s</a>.',
+
     'edit_page' => 'Edit Page',
 
     'example_uri' => '/example/pages/uri/',

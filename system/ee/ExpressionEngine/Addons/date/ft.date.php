@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,13 +22,17 @@ class Date_ft extends EE_Fieldtype
 
     public $size = 'small';
 
+    public $supportedEvaluationRules = ['isEmpty', 'isNotEmpty'];
+
+    public $defaultEvaluationRule = 'isNotEmpty';
+
     /**
      * Parses the date input, first with the configured date format (as used
      * by the datepicker). If that fails it will try again with a fuzzier
      * conversion, which allows things like "2 weeks".
      *
-     * @param	string	$date	A date string for parsing
-     * @return	mixed	Will return a UNIX timestamp or FALSE
+     * @param string $date A date string for parsing
+     * @return mixed Will return a UNIX timestamp or FALSE
      */
     private function _parse_date($date)
     {
@@ -68,17 +72,19 @@ class Date_ft extends EE_Fieldtype
     /**
      * Validate Field
      *
-     * @param 	string
-     * @return	mixed
+     * @param  string
+     * @return mixed
      */
     public function validate($data)
     {
-        if (! is_numeric($data) && trim($data) && ! empty($data)) {
+        if (! is_numeric($data) && ! empty($data) && trim($data)) {
             $data = $this->_parse_date($data);
         }
 
-        if ($data === false or is_null($data)
-            or (is_numeric($data) && ($data > 2147483647 or $data < -2147483647))) {
+        if (
+            $data === false or is_null($data)
+            or (is_numeric($data) && ($data > 2147483647 or $data < -2147483647))
+        ) {
             return lang('invalid_date');
         }
 
@@ -88,12 +94,12 @@ class Date_ft extends EE_Fieldtype
     /**
      * Display Field
      *
-     * @param 	array
+     * @param  array
      */
     public function display_field($data)
     {
         $field_data = $data;
-        
+
         ee()->lang->loadfile('content');
 
         $special = array('entry_date', 'expiration_date', 'comment_expiration_date');
@@ -117,8 +123,10 @@ class Date_ft extends EE_Fieldtype
         $custom_date = '';
         $localize = true;
 
-        if ((isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
-            or (! is_numeric($field_data) && ! empty($field_data))) {
+        if (
+            (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))
+            or (! is_numeric($field_data) && ! empty($field_data))
+        ) {
             // probably had a validation error so repopulate as-is
             $custom_date = isset($_POST[$date_field]) ? $_POST[$date_field] : $field_data;
         } else {
@@ -132,7 +140,8 @@ class Date_ft extends EE_Fieldtype
                 if ($this->get_setting('always_show_date')) {
                     $custom_date = ee()->localize->human_time();
                 }
-            } else {	// Everything else
+            } else {
+                // Everything else
                 $field_dt = $this->get_setting('field_dt');
                 if (! empty($field_dt)) {
                     $localize = $field_dt;

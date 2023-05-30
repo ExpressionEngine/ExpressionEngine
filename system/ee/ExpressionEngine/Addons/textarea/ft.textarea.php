@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,6 +15,7 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
  */
 class Textarea_ft extends EE_Fieldtype
 {
+
     public $info = array(
         'name' => 'Textarea',
         'version' => '1.0.0'
@@ -24,6 +25,8 @@ class Textarea_ft extends EE_Fieldtype
 
     public $size = 'large';
 
+    public $defaultEvaluationRule = 'isNotEmpty';
+
     public function validate($data)
     {
         return true;
@@ -31,18 +34,17 @@ class Textarea_ft extends EE_Fieldtype
 
     public function display_field($data)
     {
-        if (isset($this->settings['field_show_formatting_btns'])
+        if (
+            isset($this->settings['field_show_formatting_btns'])
             && $this->settings['field_show_formatting_btns'] == 'y'
-            && ! ee()->session->cache(__CLASS__, 'markitup_initialized')) {
-            $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))
-                ->fields('member_id')
-                ->first();
+            && ! ee()->session->cache(__CLASS__, 'markitup_initialized')
+        ) {
 
             // channel form only uses formatting buttons in the {custom_fields}{/custom_fields}
             // tag pair which does NOT call this method. This method is still called with {field:my_textarea}, though,
             // so we do need to at least avoid a fatal error if that tag exists and the form allows guest authors.
-            if ($member) {
-                $buttons = $member->getHTMLButtonsForSite(ee()->config->item('site_id'));
+            if (ee()->session->userdata('member_id') != 0) {
+                $buttons = ee()->session->getMember()->getHTMLButtonsForSite(ee()->config->item('site_id'));
             } else {
                 $buttons = ee('Model')->get('HTMLButton')
                     ->filter('site_id', ee()->config->item('site_id'))

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -232,7 +232,9 @@ class Filesystem
     public function emptyDir($path, $add_index = true)
     {
         $this->deleteDir($path, true);
-        $this->addIndexHtml($path);
+        if ($add_index) {
+            $this->addIndexHtml($path);
+        }
     }
 
     /**
@@ -245,6 +247,10 @@ class Filesystem
      */
     protected function attemptFastDelete($path)
     {
+        if (! function_exists('exec')) {
+            return false;
+        }
+
         $path = $this->normalize($path);
 
         $delete_name = sha1($path . '_delete_' . mt_rand());
@@ -255,9 +261,9 @@ class Filesystem
             $delete_path = @escapeshellarg($delete_path);
 
             if (DIRECTORY_SEPARATOR == '/') {
-                @exec("rm -rf {$delete_path}");
+                @\exec("rm -rf {$delete_path}");
             } else {
-                @exec("rd /s /q {$delete_path}");
+                @\exec("rd /s /q {$delete_path}");
             }
 
             return  ! $this->exists($delete_path);
@@ -610,7 +616,7 @@ class Filesystem
      */
     public function findAndReplace($file, $search, $replace)
     {
-        if ($this->exists($file)) {
+        if (!$this->exists($file)) {
             return;
         }
 

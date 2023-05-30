@@ -27,7 +27,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 function makeFilterableComponent(WrappedComponent) {
@@ -106,7 +106,13 @@ function makeFilterableComponent(WrappedComponent) {
       };
       _this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filterUrl;
       _this.ajaxTimer = null;
-      _this.ajaxRequest = null;
+      _this.ajaxRequest = null; // We need this function only for checkbox that have selected elements and there are more than tooMany
+      // excluding categories on the Entry page
+
+      if (props.tooMany && props.multi && _this.props.selected.length && !props.name.startsWith("categories[")) {
+        _this.moveSelectableToTop();
+      }
+
       return _this;
     }
 
@@ -167,6 +173,34 @@ function makeFilterableComponent(WrappedComponent) {
           error: function error() {} // Defined to prevent error on .abort above
 
         });
+      }
+    }, {
+      key: "moveSelectableToTop",
+      value: function moveSelectableToTop() {
+        var regularItems = this.state.items;
+        var selectedItems = this.props.selected;
+        var checked = [];
+        var unchecked = regularItems.filter(function (i) {
+          return selectedItems.every(function (item) {
+            return item.value != i.value;
+          });
+        });
+        var checkedIndex = selectedItems.map(function (el) {
+          return el.value;
+        });
+        regularItems.filter(function (item) {
+          selectedItems.forEach(function (el) {
+            if (item.value == el.value) {
+              checked.push(item);
+            }
+          });
+        }); // first shows checked elements then elements that are not checked
+
+        var newImemsOrder = checked.concat(unchecked);
+        this.setState({
+          items: newImemsOrder
+        });
+        this.state.items = newImemsOrder;
       }
     }, {
       key: "render",

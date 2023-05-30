@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -89,6 +89,8 @@ var DropdownController = (function() {
 		if (dropdownShown) {
 			hideDropdown(dropdown, button)
 		} else {
+			dropdown._popper.update();
+			dropdown._popper.scheduleUpdate();
 			showDropdown(dropdown, button)
 		}
 	})
@@ -126,7 +128,8 @@ var DropdownController = (function() {
 			$(dropdown).find('.dropdown__search input').focus();
 		}
 
-		dropdown._popper.update()
+		dropdown._popper.update();
+		dropdown._popper.scheduleUpdate();
     }
 
     function hideDropdown(dropdown, button) {
@@ -139,9 +142,9 @@ var DropdownController = (function() {
 	function updateDropdownPositions() {
 		$('.dropdown.dropdown--open').each(function() {
 			var dropdown = this
-
 			if (dropdown._popper) {
 				dropdown._popper.update()
+				dropdown._popper.scheduleUpdate();
 			}
 		})
 	}
@@ -200,7 +203,8 @@ var DropdownController = (function() {
 		hideAllDropdowns: hideAllDropdowns,
 		showDropdown: showDropdown,
 		hideDropdown: hideDropdown,
-		updateDropdownPositions: updateDropdownPositions
+		updateDropdownPositions: updateDropdownPositions,
+		getDropdownForElement: getDropdownForElement
 	}
 
 })();

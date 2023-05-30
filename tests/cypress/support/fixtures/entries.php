@@ -87,7 +87,7 @@ for ($i=0; $i < $number; $i++) {
   # Next, setup the data to add to fields
 
   foreach ($fields as $field) {
-    # Skip ahead unless it's an allowed field type
+    # Skip ahead unless it's an allowed fieldtype
     if (!in_array($field->field_type, $allowed_fields)) continue;
     # Figure out what kind of data based on the field_type
     switch ($field->field_type) {

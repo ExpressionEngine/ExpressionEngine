@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -42,9 +42,9 @@ class Updater
         $warning = false;
         $directories = array();
         // Get all of the file upload directories and see if any are using themes/ee
-        $upload_destinations = ee('Model')->get('UploadDestination')->all();
+        $upload_destinations =  ee('db')->from('upload_prefs')->get();
 
-        foreach ($upload_destinations as $upload) {
+        foreach ($upload_destinations->result() as $upload) {
             if (strpos($upload->server_path, 'themes/ee/site/default/asset/img/') !== false) {
                 $warning = true;
                 $directories[$upload->server_path] = $upload->name;

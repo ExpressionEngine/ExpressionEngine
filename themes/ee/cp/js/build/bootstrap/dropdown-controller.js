@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 // This class handles showing and hiding dropdown menus within the app
@@ -78,6 +78,10 @@ var DropdownController = function () {
     if (dropdownShown) {
       hideDropdown(dropdown, button);
     } else {
+      dropdown._popper.update();
+
+      dropdown._popper.scheduleUpdate();
+
       showDropdown(dropdown, button);
     }
   }); // Hide dropdowns when clicking on a hide dropdown button
@@ -114,6 +118,8 @@ var DropdownController = function () {
     }
 
     dropdown._popper.update();
+
+    dropdown._popper.scheduleUpdate();
   }
 
   function hideDropdown(dropdown, button) {
@@ -129,6 +135,8 @@ var DropdownController = function () {
 
       if (dropdown._popper) {
         dropdown._popper.update();
+
+        dropdown._popper.scheduleUpdate();
       }
     });
   } // Gets a dropdown for a element, and makes sure its initialized
@@ -183,6 +191,7 @@ var DropdownController = function () {
     hideAllDropdowns: hideAllDropdowns,
     showDropdown: showDropdown,
     hideDropdown: hideDropdown,
-    updateDropdownPositions: updateDropdownPositions
+    updateDropdownPositions: updateDropdownPositions,
+    getDropdownForElement: getDropdownForElement
   };
 }();

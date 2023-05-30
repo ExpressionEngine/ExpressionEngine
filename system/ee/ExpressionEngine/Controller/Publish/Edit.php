@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -173,14 +173,15 @@ class Edit extends AbstractPublishController
         $entries->order($sort_field, $table->sort_dir)
             ->limit($filter_values['perpage'])
             ->offset($offset);
+        $entries = $entries->all();
 
         $data = array();
 
         $entry_id = ee()->session->flashdata('entry_id');
 
-        $statuses = ee('Model')->get('Status')->all()->indexBy('status');
+        $statuses = ee('Model')->get('Status')->all(true)->indexBy('status');
 
-        foreach ($entries->all() as $entry) {
+        foreach ($entries as $entry) {
             // wW had a delete cascade issue that could leave entries orphaned and
             // resulted in errors, so we'll sneakily use this controller to clean up
             // for now.
@@ -295,7 +296,7 @@ class Edit extends AbstractPublishController
             $edit_perms = [];
             $del_perms = [];
 
-            foreach ($entries->all()->pluck('channel_id') as $entry_channel_id) {
+            foreach ($entries->pluck('channel_id') as $entry_channel_id) {
                 $edit_perms[] = 'can_edit_self_entries_channel_id_' . $entry_channel_id;
                 $edit_perms[] = 'can_edit_other_entries_channel_id_' . $entry_channel_id;
 
@@ -354,7 +355,8 @@ class Edit extends AbstractPublishController
         }
 
         $entry = ee('Model')->get('ChannelEntry', $id)
-            ->with('Channel')
+            ->with('Channel', 'Autosaves')
+            ->all()
             ->first();
 
         if (! $entry) {
@@ -401,8 +403,9 @@ class Edit extends AbstractPublishController
         $livePreviewReady = $this->createLivePreviewModal($entry);
 
         $vars = array(
-            'header' => [
+            'head' => [
                 'title' => lang('edit_entry'),
+                'class' => 'entries'
             ],
             'form_url' => $base_url,
             'form_attributes' => $form_attributes,
@@ -443,8 +446,18 @@ class Edit extends AbstractPublishController
 
         if ($version_id) {
             $version = $entry->Versions->filter('version_id', $version_id)->first();
-            $version_data = $version->version_data;
-            $entry->set($version_data);
+            if (!is_null($version)) {
+                $version_data = $version->version_data;
+                $vars['version'] = $version->toArray();
+                $vars['version']['number'] = $entry->Versions->filter('version_date', '<=', $version->version_date)->count();
+                $entry->set($version_data);
+
+                ee('CP/Alert')->makeInline('viewing-revision')
+                    ->asWarning()
+                    ->withTitle(lang('viewing_revision'))
+                    ->addToBody(lang('viewing_revision_desc'))
+                    ->now();
+            }
         }
 
         if (ee('Request')->get('load_autosave') == 'y') {
@@ -473,6 +486,16 @@ class Edit extends AbstractPublishController
             ->with('PrimaryRoles')
             ->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
             ->first();
+
+        if (empty($channel_layout)) {
+            $channel_layout = ee('Model')->get('ChannelLayout')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('channel_id', $entry->channel_id)
+                ->with('PrimaryRoles')
+                ->filter('PrimaryRoles.role_id', 'IN', ee()->session->getMember()->getAllRoles()->pluck('role_id'))
+                ->all()
+                ->first();
+        }
 
         $vars['layout'] = $entry->getDisplay($channel_layout);
 

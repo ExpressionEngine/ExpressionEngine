@@ -9,6 +9,7 @@ let upload_path
 context('Avatar Settings', () => {
 
   before(function(){
+    cy.task('db:seed')
     cy.task('filesystem:path', '../../images').then((path) => {
       upload_path = path
     })

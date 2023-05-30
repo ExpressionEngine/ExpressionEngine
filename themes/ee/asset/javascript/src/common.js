@@ -3,11 +3,19 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 $(document).ready(function(){
+	// the code is responsible for preventing the page scrolling when press on 
+	// the dropdown list using the spacebar (code 32)
+	window.addEventListener('keydown', (e) => {
+		if ((e.keyCode === 32 || e.keyCode === 13) && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) { 
+		  e.preventDefault();
+		  e.target.click();
+		}
+	});
 
 	// =============================================
 	// For backwards compatibility: adding $.browser
@@ -269,9 +277,12 @@ $(document).ready(function(){
 
 	var updateMainSidebar = debounce(function() {
 		if (window.innerWidth < 1000) {
-			$('.ee-wrapper').addClass('sidebar-hidden-no-anim is-mobile');
-			$('.main-nav__mobile-menu').removeClass('hidden');
-			$('.ee-wrapper-overflow').addClass('is-mobile');
+			let isMobile = $('.ee-wrapper').hasClass('is-mobile');
+			if (!isMobile) {
+				$('.ee-wrapper').addClass('sidebar-hidden-no-anim is-mobile');
+				$('.main-nav__mobile-menu').removeClass('hidden');
+				$('.ee-wrapper-overflow').addClass('is-mobile');
+			}
 		} else {
 			$('.ee-wrapper').removeClass('sidebar-hidden-no-anim sidebar-hidden is-mobile');
 			$('.main-nav__mobile-menu').addClass('hidden');
@@ -530,12 +541,15 @@ $(document).ready(function(){
 					if (data.newVersionMarkup) {
 						if (data.isVitalUpdate) {
 							$('.app-about__status--update-vital').removeClass('hidden');
+							document.getElementsByClassName('app-about__status--update-vital')[0].scrollIntoView();
 							$('.app-about__status--update-vital .app-about__status-version').html(data.newVersionMarkup);
 						} else if (data.isMajorUpdate) {
 							$('.app-about__status--update-major').removeClass('hidden');
+							document.getElementsByClassName('app-about__status--update-major')[0].scrollIntoView();
 							$('.app-about__status--update-major .app-about__status-version').html(data.newVersionMarkup);
 						} else {
 							$('.app-about__status--update').removeClass('hidden');
+							document.getElementsByClassName('app-about__status--update')[0].scrollIntoView();
 							$('.app-about__status--update .app-about__status-version').html(data.newVersionMarkup);
 						}
 					} else {
@@ -655,7 +669,10 @@ $(document).ready(function(){
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
+			if ($(this).is('.app-modal--fullscreen'))
+			{
+				$('body').css('overflow','hidden');
+			}else if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
 			{
 				setTimeout(function() {
 					$(document).scrollTop(0);
@@ -956,11 +973,11 @@ $(document).ready(function(){
 			if ($(this).hasClass('off')){
 				$(this).removeClass('off');
 				$(this).addClass('on');
-				$(input).val(yes_no ? 'y' : 1);
+				$(input).val(yes_no ? 'y' : 1).trigger('change');
 			} else {
 				$(this).removeClass('on');
 				$(this).addClass('off');
-				$(input).val(yes_no ? 'n' : 0);
+				$(input).val(yes_no ? 'n' : 0).trigger('change');
 			}
 
 			$(this).attr('alt', onOff);
@@ -972,6 +989,29 @@ $(document).ready(function(){
 			if($(input).data('groupToggle')) {
 				$('#fieldset-rel_min input[name="rel_min"]').prop('disabled', false);
 				$('#fieldset-rel_max input[name="rel_max"]').prop('disabled', false);
+			}
+
+			if($(this).attr('data-toggle-for') == 'field_is_conditional' && $(this).attr('data-state') == 'off') {
+				var invalidClass = $('#fieldset-condition_fields').find('.invalid');
+
+				if (invalidClass.length) {
+					invalidClass.each(function(){
+						$(this).find('.ee-form-error-message').remove();
+						$(this).removeClass('invalid');
+
+						// Mark entire Grid field as valid if all rows with invalid cells are cleared
+						if ($('#fieldset-condition_fields .invalid').length == 0 &&
+							EE.cp &&
+							EE.cp.formValidation !== undefined) {
+							EE.cp.formValidation.markFieldValid($('input, select, textarea', $('.conditionset-temlates-row')).eq(0));
+						}
+					});
+				}
+			}
+
+			if($(this).attr('data-toggle-for') == 'field_is_conditional' && $(this).attr('data-state') == 'on') {
+				$('.conditionset-item:not(.hidden)').find('.rule:not(.hidden) .condition-rule-field-wrap input').prop('disabled', false);
+				$('.conditionset-item:not(.hidden)').find('.match-react-element input').prop('disabled', false);
 			}
 
 			e.preventDefault();
@@ -989,6 +1029,22 @@ $(document).ready(function(){
 			}
 		});
 
+		// Check if Toggle button has data-group-toggle and 
+		// show and hide dependent blocks depending on toggle button value
+		$('.toggle-btn').find('[data-group-toggle]').each(function() {
+			var val = $(this).val();
+			var inputData = $(this).data('groupToggle')['y'];
+
+			if (val == 'n') {
+				$('[data-group='+inputData+']').each(function() {
+					$(this).hide();
+				});
+			} else {
+				$('[data-group='+inputData+']').each(function() {
+					$(this).show();
+				});
+			}
+		});
 
 		$('body').on('click', '.js-toggle-link', function(e) {
 			e.preventDefault()
@@ -1057,7 +1113,9 @@ $(document).ready(function(){
 				if (mutation.addedNodes && mutation.addedNodes.length > 0) {
 
 					var hasClass = [].some.call(mutation.addedNodes, function(el) {
-						return el.classList.contains('app-notice')
+						if(el.classList) {
+							return el.classList.contains('app-notice');
+						}
 					})
 
 					if (hasClass) {
@@ -1087,4 +1145,41 @@ $(document).ready(function(){
 		// Start observing changes
 		alertObserver.observe(document.body, { childList: true })
 
+
+		// Check the Entry page for existence and compliance with the conditions
+		// to show or hide fields depending on conditions
+        if(window.EE) {
+            EE.cp.hide_show_entries_fields = function(idArr) {
+                var hide_block = $('.hide-block');
+
+                $(hide_block).removeClass('hide-block');
+
+                $.each(idArr, function(index, id) {
+                    $('[data-field_id="'+id+'"]').each(function(){
+                        $(this).addClass('hide-block').removeClass('fieldset-invalid');
+                    })
+                });
+            }
+        }
+
+        if ($('.range-slider').length) {
+
+        	$('.range-slider').each(function() {
+	        	var minValue = $(this).find('input[type="range"]').attr('min');
+	        	var maxValue = $(this).find('input[type="range"]').attr('max');
+
+	        	$(this).attr('data-min', minValue);
+	        	$(this).attr('data-max', maxValue);
+        	});
+        }
+
+    if ($('.checkbox-label').length) {
+			$('.checkbox-label').each(function(e){
+				if (!$(this).closest('div[data-input-value^="categories["]').length) {
+						$(this).css('pointer-events', 'none');
+						$(this).find('.checkbox-label__text').css('pointer-events', 'auto');
+						$(this).find('input').css('pointer-events', 'auto');
+				}
+			});
+		}
 }); // close (document).ready

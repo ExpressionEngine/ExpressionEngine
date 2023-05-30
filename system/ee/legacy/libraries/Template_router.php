@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,7 +21,6 @@ class EE_Template_Router extends CI_Router
     {
         require_once APPPATH . 'libraries/template_router/Match.php';
         require_once APPPATH . 'libraries/template_router/Route.php';
-        ee()->lang->loadfile('template_router');
         $this->set_routes();
     }
 

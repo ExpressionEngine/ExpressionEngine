@@ -1,0 +1,76 @@
+{layout="cypress/layout"}
+
+{layout:set name="head"}
+<style>
+html,
+body {
+	margin: 0;
+	height: 100%;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: stretch;
+}
+
+body > div {
+	flex-grow: 1;
+	padding: 1.5em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+</style>
+
+<link rel="stylesheet" href="{stylesheet='resources/style'}" />
+
+<link rel="stylesheet" href="{stylesheet='second_site:resources/style'}" />
+
+<link rel="stylesheet" href="/index.php/css/resources/trigger/" />
+
+<link rel="stylesheet" href="{stylesheet='style'}" />
+
+{/layout:set}
+
+<div id="first">
+	<p>Set by <var>default_site/resources.group/style.css</var>:</p>
+	<pre>
+	<code>
+		{stylesheet='resources/style'}
+	</code>
+	</pre>
+</div>
+<div id="second">
+	<p>Set by <var>default_site/resources.group/script.js</var>:</p>
+	<pre>
+	<code>
+		{script='resources/script'}
+	</code>
+	</pre>
+</div>
+<div id="third">
+	<p>Set by <var>second_site/resources.group/style.css</var>:</p>
+	<pre>
+	<code>
+		{stylesheet='second_site:resources/style'}
+	</code>
+	</pre>
+</div>
+<div id="fourth">
+	<p>Set by:</p>
+	<ul>
+		<li><var>second_site/resources.group/script.js</var></li>
+		<li><var>/index.php/css/resources/trigger/</var></li>
+	</ul>
+	<pre>
+	<code>
+		{script='second_site:resources/script'}
+	</code>
+	</pre>
+</div>
+</div>
+
+<script src="{script='resources/script'}"></script>
+
+<script src="{script='second_site:resources/script'}"></script>

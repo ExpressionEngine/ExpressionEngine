@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -167,6 +167,9 @@ class ChannelLayout extends Model implements LayoutInterface
         $field_layout = $this->field_layout;
 
         foreach ($field_layout as $i => $section) {
+            if (!isset($section['fields']) || empty($section['fields'])) {
+                continue;
+            }
             foreach ($section['fields'] as $j => $field_info) {
                 $field_name = isset($field_info['field']) ? $field_info['field'] : 0;
 

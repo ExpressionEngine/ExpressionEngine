@@ -1,0 +1,30 @@
+{layout="members/_layout"}
+
+<h1>Logout Tag</h1>
+
+<h2>Tag Pair</h2>
+
+<h3>Template Code</h3>
+<code>&#123;exp:member:logout_form return="members/login"}
+	&lt;button type="submit">Logout&lt;/button>
+&#123;exp:member:logout_form}</code>
+
+<h3>Result</h3>
+<p><em>This is a working example.</em></p>
+<div class="result">
+{exp:member:logout_form return="members/login"}
+	<button type="submit">Logout</button>
+{/exp:member:logout_form}
+</div>
+
+<hr>
+
+<h2>Path Tag</h2>
+<h3>Template Code</h3>
+<code>&lt;a href="&#123;path='logout'}">Logout&lt;/a></code>
+
+<h3>Result</h3>
+<p><em>This is a working example.</em></p>
+<div class="result">
+	<a href="{path='logout'}">Logout</a>
+</div>

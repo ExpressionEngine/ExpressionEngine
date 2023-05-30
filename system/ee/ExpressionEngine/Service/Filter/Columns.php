@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -47,10 +47,7 @@ class Columns extends Filter
 
         $channel_id = !empty(ee()->input->post('filter_by_channel')) ? (int) ee()->input->post('filter_by_channel') : (int) ee()->input->get('filter_by_channel');
 
-        $query = ee('Model')->get('EntryManagerView')
-            ->filter('member_id', ee()->session->userdata('member_id'))
-            ->filter('channel_id', $channel_id);
-        $view = $query->first();
+        $view = ee()->session->getMember()->EntryManagerViews->filter('channel_id', $channel_id)->first();
 
         if (!empty($view)) {
             $value = $view->getColumns();

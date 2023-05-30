@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,7 +24,7 @@ class Forum_mcp extends CP_Controller
      */
     public function __construct()
     {
-        ee()->lang->loadfile('forum_cp');
+        ee()->lang->loadfile('forum_cp', 'forum');
 
         // Garbage collection.  Delete old read topic data
         $year_ago = ee()->localize->now - (60 * 60 * 24 * 365);
@@ -83,12 +83,14 @@ class Forum_mcp extends CP_Controller
             }
         }
 
-        $sidebar->addHeader(lang('templates'))
-            ->withUrl(ee('CP/URL')->make('design/forums'));
+        $templates = $sidebar->addHeader(lang('templates'))
+            ->withUrl(ee('CP/URL')->make($this->base . 'templates'));
+        if ($active == 'templates') {
+            $templates->isActive();
+        }
 
         $ranks = $sidebar->addHeader(lang('member_ranks'))
             ->withUrl(ee('CP/URL')->make($this->base . 'ranks'));
-
         if ($active == 'ranks') {
             $ranks->isActive();
         }
@@ -105,15 +107,15 @@ class Forum_mcp extends CP_Controller
         $html = '';
 
         switch ($status) {
-            case 'o': $html = '<b class="yes">' . lang('live') . '</b>';
-
-break;
-            case 'c': $html = '<b class="no">' . lang('hidden') . '</b>';
-
-break;
-            case 'a': $html = '<i>' . lang('read_only') . '</i>';
-
-break;
+            case 'o':
+                $html = '<b class="yes">' . lang('live') . '</b>';
+                break;
+            case 'c':
+                $html = '<b class="no">' . lang('hidden') . '</b>';
+                break;
+            case 'a':
+                $html = '<i>' . lang('read_only') . '</i>';
+                break;
         }
 
         return strtolower($html);
@@ -235,7 +237,7 @@ break;
                     );
                 }
                 $table->setData($data);
-                $categories[] = $table->viewData(ee('CP/URL')->make($this->base . 'index/' . $id));
+                $categories[] = $table->viewData(ee('CP/URL')->make($this->base . 'index/' . (int) $id));
             }
         }
 
@@ -260,7 +262,7 @@ break;
             ->withTitle(lang('forums_ajax_reorder_fail'))
             ->addToBody(lang('forums_ajax_reorder_fail_desc'));
 
-        ee()->javascript->set_global('forums.reorder_url', ee('CP/URL')->make($this->base . 'reorder/' . $id)->compile());
+        ee()->javascript->set_global('forums.reorder_url', ee('CP/URL')->make($this->base . 'reorder/' . (int) $id)->compile());
         ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
         $this->generateSidebar($id);
@@ -301,6 +303,9 @@ break;
             $collection[$forum_id]->forum_order = $i++;
             $collection[$forum_id]->forum_parent = ($forum_id == $current_category) ? 0 : $current_category;
             $collection[$forum_id]->save();
+
+            // Unset collection so it cant get saved again
+            unset($collection[$forum_id]);
         }
 
         ee()->output->send_ajax_response(null);
@@ -509,7 +514,7 @@ break;
             'ajax_validate' => true,
             'errors' => $errors,
             'cp_page_title' => sprintf(lang('edit_forum_board'), $board->board_label),
-            'base_url' => ee('CP/URL')->make($this->base . 'edit/board/' . $id),
+            'base_url' => ee('CP/URL')->make($this->base . 'edit/board/' . (int) $id),
             'buttons' => [
                 [
                     'name' => 'submit',
@@ -550,7 +555,7 @@ break;
         return array(
             'body' => $body,
             'breadcrumb' => array(
-                ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $board->board_label . ' ' . lang('forum_listing')
+                ee('CP/URL')->make($this->base . 'index/' . (int) $id)->compile() => $board->board_label . ' ' . lang('forum_listing')
             ),
             'heading' => $vars['cp_page_title'],
         );
@@ -568,7 +573,7 @@ break;
         $_POST['forum_notify_moderators_topics'] = 'n';
         $_POST['forum_notify_moderators_replies'] = 'n';
 
-        if (isset($_POST['notify_moderators'])) {
+        if (isset($_POST['notify_moderators']) && is_array($_POST['notify_moderators'])) {
             $_POST['forum_notify_moderators_topics'] = (in_array('forum_notify_moderators_topics', $_POST['notify_moderators'])) ? 'y' : 'n';
             $_POST['forum_notify_moderators_replies'] = (in_array('forum_notify_moderators_replies', $_POST['notify_moderators'])) ? 'y' : 'n';
             unset($_POST['notify_moderators']);
@@ -1332,7 +1337,7 @@ break;
             'ajax_validate' => true,
             'errors' => $errors,
             'cp_page_title' => sprintf(lang('edit_forum_board'), $alias->board_label),
-            'base_url' => ee('CP/URL')->make($this->base . 'edit/alias/' . $id),
+            'base_url' => ee('CP/URL')->make($this->base . 'edit/alias/' . (int) $id),
             'buttons' => [
                 [
                     'name' => 'submit',
@@ -1369,7 +1374,7 @@ break;
         return array(
             'body' => $body,
             'breadcrumb' => array(
-                ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $alias->board_label . ' ' . lang('forum_listing')
+                ee('CP/URL')->make($this->base . 'index/' . (int) $id)->compile() => $alias->board_label . ' ' . lang('forum_listing')
             ),
             'heading' => $vars['cp_page_title'],
         );
@@ -1639,7 +1644,7 @@ break;
             'ajax_validate' => true,
             'errors' => $errors,
             'cp_page_title' => lang('edit_category'),
-            'base_url' => ee('CP/URL')->make($this->base . 'edit/category/' . $id),
+            'base_url' => ee('CP/URL')->make($this->base . 'edit/category/' . (int) $id),
             'buttons' => [
                 [
                     'name' => 'submit',
@@ -1845,14 +1850,14 @@ break;
             if (ee()->input->post('submit') == 'save_and_close') {
                 ee()->functions->redirect($return);
             } else {
-                ee()->functions->redirect(ee('CP/URL')->make($this->base . 'settings/category/' . $id));
+                ee()->functions->redirect(ee('CP/URL')->make($this->base . 'settings/category/' . (int) $id));
             }
         }
 
         $vars = array(
             'errors' => $errors,
             'cp_page_title' => sprintf(lang('category_permissions'), $category->forum_name),
-            'base_url' => ee('CP/URL')->make($this->base . 'settings/category/' . $id),
+            'base_url' => ee('CP/URL')->make($this->base . 'settings/category/' . (int) $id),
             'buttons' => [
                 [
                     'name' => 'submit',
@@ -2041,7 +2046,7 @@ break;
             'ajax_validate' => true,
             'errors' => $errors,
             'cp_page_title' => lang('edit_forum'),
-            'base_url' => ee('CP/URL')->make($this->base . 'edit/forum/' . $id),
+            'base_url' => ee('CP/URL')->make($this->base . 'edit/forum/' . (int) $id),
             'buttons' => [
                 [
                     'name' => 'submit',
@@ -2429,14 +2434,14 @@ break;
             if (ee()->input->post('submit') == 'save_and_close') {
                 ee()->functions->redirect($return);
             } else {
-                ee()->functions->redirect(ee('CP/URL')->make($this->base . 'settings/forum/' . $id));
+                ee()->functions->redirect(ee('CP/URL')->make($this->base . 'settings/forum/' . (int) $id));
             }
         }
 
         $vars = array(
             'errors' => $errors,
             'cp_page_title' => sprintf(lang('forum_permissions'), $forum->forum_name),
-            'base_url' => ee('CP/URL')->make($this->base . 'settings/forum/' . $id),
+            'base_url' => ee('CP/URL')->make($this->base . 'settings/forum/' . (int) $id),
             'buttons' => [
                 [
                     'name' => 'submit',
@@ -2611,6 +2616,28 @@ break;
         }
 
         ee()->functions->redirect($return);
+    }
+
+    public function templates($arguments = [])
+    {
+        $name = 'Forums';
+        if (!is_array($arguments)) {
+            $arguments = explode('/', $arguments);
+        }
+        $function = array_shift($arguments);
+        if (empty($function)) {
+            $function = 'index';
+        }
+        $name = ucfirst($name);
+        $class = "\ExpressionEngine\Addons\Forum\Controller\Design\Forums";
+        $controller = new $class();
+
+        $this->generateSidebar('templates');
+
+        return array(
+            'body' => $controller->$function($arguments),
+            'heading' => lang('forum_templates'),
+        );
     }
 
     public function ranks()
@@ -2795,7 +2822,7 @@ break;
             'ajax_validate' => true,
             'errors' => $errors,
             'cp_page_title' => lang('edit_member_rank'),
-            'base_url' => ee('CP/URL')->make($this->base . 'edit/rank/' . $id),
+            'base_url' => ee('CP/URL')->make($this->base . 'edit/rank/' . (int) $id),
             'buttons' => [
                 [
                     'name' => 'submit',
@@ -3281,7 +3308,7 @@ break;
             ->order('forum_order', 'asc')
             ->all();
 
-        $base_url = ee('CP/URL')->make($this->base . 'moderators/' . $id);
+        $base_url = ee('CP/URL')->make($this->base . 'moderators/' . (int) $id);
 
         foreach ($boards_categories as $i => $category) {
             $table = ee('CP/Table', array('autosort' => true));
@@ -3356,7 +3383,7 @@ break;
         return array(
             'body' => $body,
             'breadcrumb' => array(
-                ee('CP/URL')->make($this->base . 'index/' . $id)->compile() => $board->board_label . ' ' . lang('forum_listing')
+                ee('CP/URL')->make($this->base . 'index/' . (int) $id)->compile() => $board->board_label . ' ' . lang('forum_listing')
             ),
             'heading' => lang('moderators'),
         );
@@ -3462,7 +3489,7 @@ break;
             'ajax_validate' => true,
             'errors' => $errors,
             'cp_page_title' => sprintf(lang('edit_moderator_in'), $forum->forum_name),
-            'base_url' => ee('CP/URL')->make($this->base . 'edit/moderator/' . $id),
+            'base_url' => ee('CP/URL')->make($this->base . 'edit/moderator/' . (int) $id),
             'buttons' => [
                 [
                     'name' => 'submit',
@@ -3782,7 +3809,11 @@ break;
      */
     private function getDefaultForumPermissions()
     {
-        require_once PATH_ADDONS . 'forum/upd.forum.php';
+        if (file_exists(PATH_THIRD . 'forum/upd.forum.php')) {
+            require_once PATH_THIRD . 'forum/upd.forum.php';
+        } else {
+            require_once PATH_ADDONS . 'forum/upd.forum.php';
+        }
 
         $UPD = new Forum_upd();
 

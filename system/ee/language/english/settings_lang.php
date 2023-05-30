@@ -25,7 +25,7 @@ $lang = array(
 
     'settings' => 'Settings',
 
-    'hit_tracking' => 'Hit Tracking',
+    'tracking' => 'Tracking',
 
     'html_buttons' => 'HTML Buttons',
 
@@ -392,7 +392,7 @@ $lang = array(
 
     'template_manager' => 'Template Manager',
 
-    /* Hit Tracking */
+    /* Tracking */
     'dynamic_tracking_disabling' => 'Suspend threshold?',
 
     'dynamic_tracking_disabling_desc' => 'All tracking will be suspended when the number of online visitors exceeds this number.</em> <em>Online user tracking must be enabled to use this feature. <a href="%s" ref="external">Learn more</a>',
@@ -408,6 +408,10 @@ $lang = array(
     'enable_online_user_tracking' => 'Enable online user tracking?',
 
     'enable_online_user_tracking_desc' => 'When enabled, ExpressionEngine will track logged in users.',
+
+    'enable_tracking_cookie' => 'Enable tracker cookie?',
+
+    'enable_tracking_cookie_desc' => 'When enabled, ExpressionEngine will set <code>exp_tracker</code> cookie on each page visit, allowing navigation through browsing history. Disabling it might influence redirect behavior of some forms on front-end.',
 
     'log_referrers' => 'Enable referrer tracking?',
 

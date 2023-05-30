@@ -4,9 +4,10 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
 require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
@@ -14,6 +15,7 @@ require_once SYSPATH . 'ee/legacy/fieldtypes/OptionFieldtype.php';
  */
 class Select_ft extends OptionFieldtype
 {
+
     public $info = array(
         'name' => 'Select Dropdown',
         'version' => '1.0.0'
@@ -21,7 +23,16 @@ class Select_ft extends OptionFieldtype
 
     public $has_array_data = true;
 
+    public $entry_manager_compatible = true;
+
     public $size = 'small';
+
+    /**
+     * A list of operators that this fieldtype supports
+     *
+     * @var array
+     */
+    public $supportedEvaluationRules = ['matches', 'notMatches', 'isEmpty', 'isNotEmpty'];
 
     public function validate($data)
     {
@@ -123,8 +134,8 @@ class Select_ft extends OptionFieldtype
     {
         if ($tagdata) {
             return $this->_parse_multi([$data], $params, $tagdata);
-        } 
-        
+        }
+
         return parent::replace_tag($data, $params, $tagdata);
     }
 
@@ -171,6 +182,11 @@ class Select_ft extends OptionFieldtype
     public function update($version)
     {
         return true;
+    }
+
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return $this->_parse_single([$data], []);
     }
 }
 

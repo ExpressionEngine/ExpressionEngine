@@ -97,7 +97,7 @@ $lang = array(
 The following files are affected:
 {changed}
 
-If you made these changes, please accept the modifications on the control panel homepage. If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and see: ' . DOC_URL . 'troubleshooting/error_messages/expressionengine_has_detected_the_modification_of_a_core_file.html',
+If you made these changes, please accept the modifications on the control panel homepage. If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and see: ' . DOC_URL . 'troubleshooting/error-messages.html#expressionengine-has-detected-the-modification-of-a-core-file',
 
     'checksum_email_subject' => 'A core file was modified on your site.',
 
@@ -153,7 +153,7 @@ If you made these changes, please accept the modifications on the control panel 
 
     'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <code>Themes Path</code> and <code>Themes URL</code>.',
 
-    'unable_to_load_field_type' => 'Unable to load requested field type file: %s.<br /> Confirm the fieldtype file is located in the /' . SYSDIR . '/user/addons/ directory',
+    'unable_to_load_field_type' => 'Unable to load requested fieldtype file: %s.<br /> Confirm the fieldtype file is located in the /' . SYSDIR . '/user/addons/ directory',
 
     'unwritable_cache_folder' => 'Your cache folder does not have proper permissions.<br />To fix: Set the cache folder (/' . SYSDIR . '/user/cache/) permissions to 777 (or equivalent for your server).',
 
@@ -179,6 +179,8 @@ If you made these changes, please accept the modifications on the control panel 
     /* Template.php */
     'error_fix_module_processing' => 'Please check that the \'%x\' module is installed and that \'%y\' is an available method of the module',
 
+    'error_fix_install_addon' => 'Please check that the \'%x\' add-on is installed.',
+
     'error_fix_syntax' => 'Please correct the syntax in your template.',
 
     'error_invalid_conditional' => 'You have an invalid conditional in your template. Please review your conditionals for an unclosed string, invalid operators, a missing }, or a missing {/if}.',
@@ -196,6 +198,8 @@ If you made these changes, please accept the modifications on the control panel 
     'template_load_order' => 'Template load order',
 
     'template_loop' => 'You have caused a template loop due to improperly nested sub-templates (\'%s\' recursively called)',
+
+    'route_not_found' => 'Template route not found.',
 
     /* Email */
     'error_sending_email' => 'Unable to send email at this time.',

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -582,7 +582,7 @@ class EE_Typography
     public function parse_type($str, $prefs = '')
     {
         if ($str == '') {
-            return;
+            return $str;
         }
 
         // -------------------------------------------
@@ -800,7 +800,7 @@ class EE_Typography
 
         if (! class_exists($plugin)) {
             if (in_array($this->text_format, ee()->core->native_plugins)) {
-                require_once PATH_ADDONS . 'pi.' . $this->text_format . '.php';
+                require_once PATH_ADDONS . $this->text_format . '/pi.' . $this->text_format . '.php';
             } else {
                 require_once PATH_THIRD . $this->text_format . '/pi.' . $this->text_format . '.php';
             }
@@ -1382,7 +1382,9 @@ class EE_Typography
         $this->html_format = $existing_format;
 
         // hit emoji shortands
-        $title = ee('Format')->make('Text', $title)->emojiShorthand();
+        if (bool_config_item('disable_emoji_shorthand') === false) {
+            $title = ee('Format')->make('Text', $title)->emojiShorthand();
+        }
 
         // and finally some basic curly quotes, em dashes, etc.
         $title = $this->format_characters($title);

@@ -1,0 +1,23 @@
+{layout="cypress/layout"}
+
+        <div class="all">
+            {exp:channel:entries entry_id="{segment_3}" status="open|Featured"} 
+                {siblings status="open|Featured"} 
+                    <p>{siblings:title}</p>
+                {/siblings}
+            {/exp:channel:entries}
+        </div>
+        <div class="open">
+            {exp:channel:entries entry_id="{segment_3}" status="open|Featured"} 
+                {siblings status="open"} 
+                    <p>{siblings:title}</p>
+                {/siblings}
+            {/exp:channel:entries}
+        </div>
+        <div class="not_open">
+            {exp:channel:entries entry_id="{segment_3}" status="open|Featured"} 
+                {siblings status="not open"} 
+                    <p>{siblings:title}</p>
+                {/siblings}
+            {/exp:channel:entries}
+        </div>

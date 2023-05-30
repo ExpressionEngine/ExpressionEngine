@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -328,7 +328,7 @@ abstract class AbstractDesign extends CP_Controller
         // Create the Zip Archive
         $zipfilename = tempnam(sys_get_temp_dir(), '');
         $zip = new ZipArchive();
-        if ($zip->open($zipfilename, ZipArchive::CREATE) !== true) {
+        if ($zip->open($zipfilename, ZipArchive::OVERWRITE) !== true) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
                 ->withTitle(lang('error_export'))

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,13 +13,15 @@ namespace ExpressionEngine\Service\Addon;
 use ExpressionEngine\Core\Provider;
 
 /**
- * Addon Service
+ * Add-on Service
  */
 class Addon
 {
     protected $provider;
     protected $basepath;
     protected $shortname;
+
+    protected $_components = [];
 
     private static $installed_plugins;
     private static $installed_modules;
@@ -30,6 +32,14 @@ class Addon
     {
         $this->provider = $provider;
         $this->shortname = $provider->getPrefix();
+
+        $files = $this->getFilesMatching('*' . $this->getPrefix() . '.php');
+        $possibleComponents = ['upd', 'mcp', 'mod', 'pi', 'ext', 'rtefb', 'upgrade', 'spam', 'jump'];
+        foreach ($possibleComponents as $type) {
+            if (in_array($this->getPath() . "/{$type}." . $this->getPrefix() . '.php', $files)) {
+                $this->_components[] = $type;
+            }
+        }
     }
 
     /**
@@ -41,7 +51,7 @@ class Addon
     }
 
     /**
-     * Is this addon installed?
+     * Is this add-on installed?
      *
      * @return bool Is installed?
      */
@@ -104,7 +114,7 @@ class Addon
 
             // Check for an installed plugin
             // @TODO restore the model approach once we have solved the
-            // circular dependency between the Addon service and the
+            // circular dependency between the Add-on service and the
             // Model/Datastore service.
             /*
             $plugin = ee('Model')->get('Plugin')
@@ -118,6 +128,13 @@ class Addon
             */
 
             $installed_plugins = self::$installed_plugins;
+
+            //always return true if the table does not exist
+            //e.g. when running update from EE2 to EE6
+            //some older version also don't use . as separator
+            if (version_compare(ee()->config->item('app_version'), '3.0.0', '<') || strpos(ee()->config->item('app_version'), '.') === false) {
+                return true;
+            }
 
             if (is_null($installed_plugins)) {
                 $installed_plugins = array_map('array_pop', ee()->db
@@ -137,7 +154,7 @@ class Addon
     }
 
     /**
-     * Does this addon have an update available?
+     * Does this add-on have an update available?
      *
      * @return bool Does it have an update available?
      */
@@ -146,7 +163,7 @@ class Addon
         if ($this->isInstalled()) {
             $version = $this->getInstalledVersion();
 
-            if (! is_null($version)) {
+            if (!is_null($version)) {
                 return version_compare($this->getVersion(), $version, '>');
             }
         }
@@ -161,7 +178,7 @@ class Addon
      */
     public function getInstalledVersion()
     {
-        if (! $this->isInstalled()) {
+        if (!$this->isInstalled()) {
             return null;
         }
 
@@ -372,6 +389,11 @@ class Addon
         return $this->getFullyQualified($class);
     }
 
+    public function getEvaluationRuleClass($rule)
+    {
+        return $this->getFullyQualified("EvaluationRules\\" . ucfirst($rule));
+    }
+
     /**
      * Has a README.md file?
      *
@@ -482,7 +504,7 @@ class Addon
         $files = $this->getFilesMatching('ft.*.php');
         $this->requireFieldtypes($files);
 
-        return ! empty($files);
+        return !empty($files);
     }
 
     /**
@@ -595,7 +617,7 @@ class Addon
     {
         // Preflight: if we have any consents that match there's been a problem.
         $requests = $this->getInstalledConsentRequests();
-        if (! empty($requests)) {
+        if (!empty($requests)) {
             throw new \Exception();
         }
 
@@ -610,12 +632,12 @@ class Addon
 
     private function hasConsentRequestInstalled($name)
     {
-        return (bool) ee('Model')->get('ConsentRequest')
+        return (bool)ee('Model')->get('ConsentRequest')
             ->filter('consent_name', $name)
             ->count();
     }
 
-    private function makeConsentRequest($name, $values)
+    public function makeConsentRequest($name, $values)
     {
         $request = ee('Model')->make('ConsentRequest');
         $request->user_created = false; // App-generated request
@@ -627,7 +649,7 @@ class Addon
             $version = ee('Model')->make('ConsentRequestVersion');
             $version->request = $values['request'];
             $version->request_format = (isset($values['request_format'])) ? $values['request_format'] : 'none';
-            $version->author_id = ee()->session->userdata('member_id');
+            $version->author_id = REQ != 'CLI' ? ee()->session->userdata('member_id') : 0;
             $version->create_date = ee()->localize->now;
             $request->Versions->add($version);
 
@@ -645,7 +667,7 @@ class Addon
 
         foreach ($requests as $name => $values) {
             $consent_name = $prefix . ':' . $name;
-            if (! $this->hasConsentRequestInstalled($consent_name)) {
+            if (!$this->hasConsentRequestInstalled($consent_name)) {
                 $this->makeConsentRequest($consent_name, $values);
             }
         }
@@ -662,7 +684,7 @@ class Addon
             $consent_names[] = $prefix . ':' . $name;
         }
 
-        if (! empty($consent_names)) {
+        if (!empty($consent_names)) {
             ee('Model')->get('ConsentRequest')
                 ->filter('consent_name', 'IN', $consent_names)
                 ->delete();
@@ -721,11 +743,11 @@ class Addon
     }
 
     /**
-    * Get icon URL
-    *
-    * @param string default icon file name
-    * @return string URL for add-on's icon, or generic one
-    */
+     * Get icon URL
+     *
+     * @param string default icon file name
+     * @return string URL for add-on's icon, or generic one
+     */
     public function getIconUrl($default = null)
     {
         $masks = [
@@ -784,7 +806,7 @@ class Addon
 
         $json = ee('Encrypt')->decode($cache, ee()->config->item('session_crypt_key'));
 
-        if (empty($json) || ! $data = json_decode($json, true)) {
+        if (empty($json) || !$data = json_decode($json, true)) {
             $this->logLicenseError('license_error_file_broken');
             return false;
         }
@@ -864,7 +886,7 @@ class Addon
      */
     protected function hasFile($prefix)
     {
-        return file_exists($this->getPath() . "/{$prefix}." . $this->getPrefix() . '.php');
+        return in_array($prefix, $this->_components);
     }
 
     /**

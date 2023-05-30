@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -30,6 +30,7 @@ class Channel extends StructureModel
         'channel_auto_link_urls' => 'boolString',
         'channel_notify' => 'boolString',
         'sticky_enabled' => 'boolString',
+        'enable_entry_cloning' => 'boolString',
         'comment_system_enabled' => 'boolString',
         'comment_require_membership' => 'boolString',
         'comment_moderate' => 'boolString',
@@ -121,6 +122,7 @@ class Channel extends StructureModel
         'channel_auto_link_urls' => 'enum[y,n]',
         'channel_notify' => 'enum[y,n]',
         'sticky_enabled' => 'enum[y,n]',
+        'enable_entry_cloning' => 'enum[y,n]',
         'comment_system_enabled' => 'enum[y,n]',
         'comment_require_membership' => 'enum[y,n]',
         'comment_moderate' => 'enum[y,n]',
@@ -185,6 +187,7 @@ class Channel extends StructureModel
     protected $channel_notify_emails;
     protected $comment_url;
     protected $sticky_enabled = false;
+    protected $enable_entry_cloning = true;
     protected $comment_system_enabled = true;
     protected $comment_require_membership = false;
     protected $comment_moderate = false;
@@ -573,22 +576,22 @@ class Channel extends StructureModel
      */
     public function getAllCustomFields()
     {
-        $fields = $this->CustomFields->indexBy('field_name');
-
-        $cache_key = "ChannelFieldGroups/{$this->getId()}/";
-        if (($field_groups = ee()->session->cache(__CLASS__, $cache_key, false)) == false) {
+        $cache_key = "ChannelCustomFields/{$this->getId()}/";
+        if (($fields = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
+            $fields = $this->CustomFields->indexBy('field_name');
             $field_groups = $this->FieldGroups;
-        }
 
-        foreach ($field_groups as $field_group) {
-            foreach ($field_group->ChannelFields as $field) {
-                $fields[$field->field_name] = $field;
+            foreach ($field_groups as $field_group) {
+                foreach ($field_group->ChannelFields as $field) {
+                    $fields[$field->field_name] = $field;
+                }
             }
+
+            $fields = new Collection($fields);
+
+            ee()->session->set_cache(__CLASS__, $cache_key, $fields);
         }
-
-        ee()->session->set_cache(__CLASS__, $cache_key, $field_groups);
-
-        return new Collection($fields);
+        return $fields;
     }
 
     public function maxEntriesLimitReached()

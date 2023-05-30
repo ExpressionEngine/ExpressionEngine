@@ -161,3 +161,34 @@ ul, ol  {
     margin-bottom: 0 !important;
   }
 }
+
+.range-slider {
+	margin-top: 50px;
+	margin-bottom: 20px;
+
+	&:before {
+		content: attr(data-min);
+	}
+
+	&:after {
+		content: attr(data-max);
+	}
+
+	& > input {
+
+		& + output {
+			padding: 2px 11px;
+		}
+
+		&:hover {
+			& + output {
+				box-shadow: none;
+				--y-offset: 0px;
+			}
+		}
+
+		&:active {
+			--thumb-color: inherit;
+		}
+	}
+}

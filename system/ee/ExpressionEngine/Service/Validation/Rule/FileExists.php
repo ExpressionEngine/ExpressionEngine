@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -18,12 +18,11 @@ use ExpressionEngine\Service\Validation\ValidationRule;
  */
 class FileExists extends ValidationRule
 {
-    protected $fs;
     protected $all_values = array();
 
     public function validate($key, $value)
     {
-        if ($this->getFilesystem()->exists(parse_config_variables($value, $this->all_values))) {
+        if (ee('Filesystem')->exists(parse_config_variables($value, $this->all_values))) {
             return true;
         }
 
@@ -39,15 +38,6 @@ class FileExists extends ValidationRule
     public function getLanguageKey()
     {
         return 'invalid_path';
-    }
-
-    protected function getFilesystem()
-    {
-        if (! isset($this->fs)) {
-            $this->fs = new Filesystem();
-        }
-
-        return $this->fs;
     }
 
     public function setAllValues(array $values)

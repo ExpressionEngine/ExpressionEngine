@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2021, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,6 +32,7 @@ class AddonGenerator
     public $type;
     public $hooks;
     public $compatibility;
+    public $compatibility_mode;
 
     protected $package;
     protected $stubPath;
@@ -45,7 +46,7 @@ class AddonGenerator
     {
         ee()->load->helper('string');
 
-        $this->filesystem  = $filesystem;
+        $this->filesystem = $filesystem;
         $this->type = $data['type'];
         $this->name = $data['name'];
         $this->slug = $this->slug($data['name']);
@@ -69,6 +70,7 @@ class AddonGenerator
         $this->services = isset($data['services']) ? $data['services'] : null;
         $this->compatibility = isset($data['compatibility']) ? $data['compatibility'] : null;
         $this->models = isset($data['models']) ? $data['models'] : null;
+        $this->compatibility_mode = isset($data['compatibility_mode']) ? (bool) $data['compatibility_mode'] : false;
 
         // Make sure we've got an array of hooks
         if (!is_array($this->hooks) && !is_null($this->hooks)) {
@@ -86,10 +88,11 @@ class AddonGenerator
         $this->addonPath = SYSPATH . 'user/addons/' . $this->slug . '/';
 
         // Get stub path
-        $this->stubPath = $this->generatorPath . '/stubs' . '/';
-
-        // Create temp directory
-        $tempDir = random_string();
+        if ($this->compatibility_mode) {
+            $this->stubPath = $this->generatorPath . '/stubs/MakeAddonCompatibility/';
+        } else {
+            $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/';
+        }
 
         if (! $this->filesystem->isDir($this->addonPath)) {
             $this->filesystem->mkDir($this->addonPath);
@@ -137,7 +140,7 @@ class AddonGenerator
             throw new \Exception("Hooks are required to generate extension", 1);
         }
 
-        $stub = $this->filesystem->read($this->stub('ext.slug.php'));
+        $stub = $this->filesystem->read($this->stub('Extension/ext.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
         $stub = $this->write('version', $this->version, $stub);
 
@@ -157,20 +160,30 @@ class AddonGenerator
                 ];
             }
 
-            $hookArrayStub = $this->filesystem->read($this->stub('hook_array.php'));
+            $hookArrayStub = $this->filesystem->read($this->stub('Extension/Hook/hook_array.php'));
             $hookArrayStub = $this->write('hook_name', $hook, $hookArrayStub);
             $hook_array .= "{$hookArrayStub}\n";
 
-            $hookMethodStub = $this->filesystem->read($this->stub('hook_method.php'));
-            $hookMethodStub = $this->write('hook_name', $hook, $hookMethodStub);
-            $hookMethodStub = $this->write('hook_methods', $hookData['params'], $hookMethodStub);
-            $hook_method .= "{$hookMethodStub}\n";
+            if ($this->compatibility_mode) {
+                $hookMethodStub = $this->filesystem->read($this->stub('Extension/Hook/hook_method.php'));
+                $hookMethodStub = $this->write('hook_name', $hook, $hookMethodStub);
+                $hookMethodStub = $this->write('hook_methods', $hookData['params'], $hookMethodStub);
+                $hook_method .= "{$hookMethodStub}\n";
+            } else {
+                $hookClassName = trim($this->studly($hook));
+                $eeObjectExtensionStub = $this->filesystem->read($this->stub('Extension/ExtensionStub.php'));
+                $eeObjectExtensionStub = $this->write('namespace', $this->namespace, $eeObjectExtensionStub);
+                $eeObjectExtensionStub = $this->write('hook_name_studly', $hookClassName, $eeObjectExtensionStub);
+                $eeObjectExtensionStub = $this->write('hook_methods', $hookData['params'], $eeObjectExtensionStub);
+                $this->putFile('Extensions/' . $hookClassName . '.php', $eeObjectExtensionStub);
+            }
         }
 
         if ($this->has_settings) {
-            $extension_settings = $this->filesystem->read($this->stub('extension_settings.php'));
+            $extension_settings = $this->filesystem->read($this->stub('Extension/extension_settings.php'));
         }
 
+        $stub = $this->write('slug', $this->slug, $stub);
         $stub = $this->write('extension_settings', $extension_settings, $stub);
         $stub = $this->write('hook_array', $hook_array, $stub);
         $stub = $this->write('hook_methods', $hook_method, $stub);
@@ -184,6 +197,7 @@ class AddonGenerator
         // Create upd file
         $stub = $this->filesystem->read($this->stub('upd.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
+        $stub = $this->write('slug', $this->slug, $stub);
         $stub = $this->write('version', $this->version, $stub);
         $stub = $this->write('has_cp_backend', $this->has_cp_backend, $stub);
         $stub = $this->write('has_publish_fields', $this->has_publish_fields, $stub);
@@ -191,12 +205,12 @@ class AddonGenerator
         if ($this->hooks) {
             $conditionalHooks = '';
 
-            $hookInstall = $this->filesystem->read($this->stub('hook_install.php'));
+            $hookInstall = $this->filesystem->read($this->stub('Extension/Hook/hook_install.php'));
 
             foreach ($this->hooks as $hook) {
                 $hookData = Hooks::getByKey(strtoupper($hook));
 
-                $hookArrayStub = $this->filesystem->read($this->stub('hook_array.php'));
+                $hookArrayStub = $this->filesystem->read($this->stub('Extension/Hook/hook_array.php'));
                 $hookArrayStub = $this->write('hook_name', $hook, $hookArrayStub);
                 $conditionalHooks .= "{$hookArrayStub}\n";
             }
@@ -205,9 +219,8 @@ class AddonGenerator
 
             $stub = $this->write('conditional_hooks', $hookInstall, $stub);
 
-            $hooksUninstall = $this->filesystem->read($this->stub('hook_uninstall.php'));
+            $hooksUninstall = $this->filesystem->read($this->stub('Extension/Hook/hook_uninstall.php'));
             $hooksUninstall = $this->write('slug_uc', $this->slug_uc, $hooksUninstall);
-
             $stub = $this->write('conditional_hooks_uninstall', $hooksUninstall, $stub);
 
             $this->buildExtension();
@@ -216,19 +229,55 @@ class AddonGenerator
             $stub = $this->erase('{{conditional_hooks_uninstall}}', $stub);
         }
 
+        if ($this->compatibility_mode) {
+            $stub = $this->erase('{{actions}}', $stub);
+        } else {
+            $actions = $this->filesystem->read($this->stub('Module/ActionInstall.php'));
+            $actions = $this->write('slug_uc', $this->slug_uc, $actions);
+            $actions = $this->write('action_name', 'ExampleAction', $actions);
+            $stub = $this->write('actions', $actions, $stub);
+        }
         $this->putFile('upd.' . $this->slug . '.php', $stub);
 
         // Create module file
-        $stub = $this->filesystem->read($this->stub('mod.slug.php'));
+        $stub = $this->filesystem->read($this->stub('Module/mod.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
+        $stub = $this->write('slug', $this->slug, $stub);
         $this->putFile('mod.' . $this->slug . '.php', $stub);
 
+        // Create example tag and action
+        if (! $this->compatibility_mode) {
+            // Create example tag
+            $stub = $this->filesystem->read($this->stub('Module/Tags/TagStub.php'));
+            $stub = $this->write('namespace', $this->namespace, $stub);
+            $stub = $this->write('slug', $this->slug, $stub);
+            $stub = $this->write('TagName', 'ExampleTag', $stub);
+            $stub = $this->write('tag_name', 'example_tag', $stub);
+            $this->putFile('Module/Tags/ExampleTag.php', $stub);
+
+            // Create example action
+            $stub = $this->filesystem->read($this->stub('Module/Actions/ActionStub.php'));
+            $stub = $this->write('namespace', $this->namespace, $stub);
+            $stub = $this->write('ActionName', 'ExampleAction', $stub);
+            $this->putFile('Module/Actions/ExampleAction.php', $stub);
+        }
+
         // Create control panel file
-        $stub = $this->filesystem->read($this->stub('mcp.slug.php'));
+        $stub = $this->filesystem->read($this->stub('Mcp/mcp.slug.php'));
         $stub = $this->write('slug_uc', $this->slug_uc, $stub);
         $stub = $this->write('slug', $this->slug, $stub);
         $this->putFile('mcp.' . $this->slug . '.php', $stub);
 
+        if (! $this->compatibility_mode) {
+            // Create EEObjects CP route
+            $stub = $this->filesystem->read($this->stub('Mcp/IndexSlug.php'));
+            $stub = $this->write('namespace', $this->namespace, $stub);
+            $this->putFile('Mcp/Index.php', $stub);
+
+            // Add Mcp view
+            $stub = $this->filesystem->read($this->stub('views/McpIndex.php'));
+            $this->putFile('views/McpIndex.php', $stub);
+        }
         $this->createLangFile();
     }
 
@@ -243,7 +292,7 @@ class AddonGenerator
 
     private function buildAddonSetup()
     {
-        $stub = $this->filesystem->read($this->stub('addon.setup.php'));
+        $stub = $this->filesystem->read($this->stub('AddonSetup/addon.setup.php'));
 
         $stub = $this->write('author', $this->author, $stub);
         $stub = $this->write('author_url', $this->author_url, $stub);
@@ -254,7 +303,7 @@ class AddonGenerator
         $stub = $this->write('settings_exist', $this->has_settings ? 'true' : 'false', $stub);
 
         if ($this->type == 'fieldtype') {
-            $ftSetup = $this->filesystem->read($this->stub('fieldtype_setup.php'));
+            $ftSetup = $this->filesystem->read($this->stub('AddonSetup/fieldtype_setup.php'));
             $ftSetup = $this->write('fieldtype_slug', $this->slug, $ftSetup);
             $ftSetup = $this->write('fieldtype_name', $this->name, $ftSetup);
             $ftSetup = $this->write('fieldtype_compatibility', $this->compatibility, $ftSetup);
@@ -282,7 +331,7 @@ class AddonGenerator
                     continue;
                 }
 
-                $servicesStub = $this->filesystem->read($this->stub('addon_service.php'));
+                $servicesStub = $this->filesystem->read($this->stub('AddonSetup/addon_service.php'));
                 $servicesStub = $this->write('service_name', $this->studly($service), $servicesStub);
 
                 $servicesWriteData .= "\n\t\t" . $servicesStub . "\n";
@@ -308,7 +357,7 @@ class AddonGenerator
                     continue;
                 }
 
-                $consentsStub = $this->filesystem->read($this->stub('addon_consent.php'));
+                $consentsStub = $this->filesystem->read($this->stub('AddonSetup/addon_consent.php'));
                 $consentsStub = $this->write('consent_name', $this->studly($consent), $consentsStub);
                 $consentsStub = $this->write('consent_slug', ee('Format')->make('Text', $consent)->urlSlug()->compile(), $consentsStub);
 
@@ -339,7 +388,7 @@ class AddonGenerator
             }
 
             foreach (explode(':', $cookieData) as $cookieType => $cookieValues) {
-                $cookiesStub = $this->filesystem->read($this->stub('cookies.php'));
+                $cookiesStub = $this->filesystem->read($this->stub('AddonSetup/cookies.php'));
                 $cookiesStub = $this->write('cookies_type', $cookieType, $cookiesStub);
 
                 $valueToWrite = "'" . implode("',\n\t'", $cookieValues) . "',";
@@ -398,7 +447,7 @@ class AddonGenerator
         $name = $this->alphaFilter($this->studly($data['name']));
         $author = $this->alphaFilter($this->studly($data['author']));
 
-        // Namespace should be the Addon name
+        // Namespace should be the Add-on name
         $namespace = $name;
 
         // If there is an author, the Author name should preface the namespace
