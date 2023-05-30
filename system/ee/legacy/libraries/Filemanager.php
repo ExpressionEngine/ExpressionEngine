@@ -1145,6 +1145,7 @@ class Filemanager
         ee()->load->helper('file');
 
         $filesystem = $prefs['directory']->getFilesystem();
+        $orig_file_path = $file_path;
         $file_path = str_replace('\\', '/', $filesystem->absolute($file_path));
 
         $img_path = ($prefs['directory']->adapter == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
@@ -1156,7 +1157,7 @@ class Filemanager
         // We need to get a temporary local copy of the file in case it's stored on
         // another filesystem. This seems a little wasteful for uploaded files
         // since there is a temporary file already in the $_FILES super global
-        $tmp = $filesystem->copyToTempFile($file_path);
+        $tmp = $filesystem->copyToTempFile(isset($prefs['temp_file']) && !empty($prefs['temp_file']) && $prefs['temp_file'] == $orig_file_path ? $orig_file_path : $file_path);
 
         if (! isset($prefs['mime_type'])) {
             // Figure out the mime type
