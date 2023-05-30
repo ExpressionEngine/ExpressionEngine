@@ -56,20 +56,24 @@ class CommandAddonsList extends Cli
             case 'installed':
                 $langOption = 'command_addons_option_installed';
                 $addons = $this->getAddonList('installed');
+
                 break;
             case 'u':
             case 'uninstalled':
                 $langOption = 'command_addons_option_uninstalled';
                 $addons = $this->getAddonList('uninstalled');
+
                 break;
             case 'a':
             case 'update-available':
                 $langOption = 'command_addons_option_update';
                 $addons = $this->getAddonList('update');
+
                 break;
             default:
                 $langOption = 'command_addons_option_available';
                 $addons = $this->getAddonList();
+
                 break;
         }
 

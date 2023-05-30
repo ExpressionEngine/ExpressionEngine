@@ -334,9 +334,10 @@ class Cli
      * @param  array $data
      * @return null
      */
-    public function table(array $headers, array $data){
+    public function table(array $headers, array $data)
+    {
         // We need headers in order to print a table
-        if(empty($headers)){
+        if(empty($headers)) {
             return;
         }
 
@@ -361,7 +362,7 @@ class Cli
             $format .= '%-' . $width . 's | ';
 
             // if last row by key
-            if($k === array_key_last($widths)){
+            if($k === array_key_last($widths)) {
                 $format = rtrim($format, '| ');
             }
         }
@@ -373,14 +374,14 @@ class Cli
         $dash_str = '';
         foreach ($widths as $k => $width) {
             $length = $width + 2;
-            if($k === array_key_first($widths)){
+            if($k === array_key_first($widths)) {
                 $length -= 1;
             }
 
             $dash_str .= str_repeat('-', $length) . '|';
 
             // if last row by key
-            if($k === array_key_last($widths)){
+            if($k === array_key_last($widths)) {
                 $dash_str = rtrim($dash_str, '|');
             }
         }
@@ -392,7 +393,7 @@ class Cli
         }
 
         // if the data is empty, print no results
-        if(empty($data)){
+        if(empty($data)) {
             $this->write(lang('cli_table_no_results'));
         }
     }
@@ -742,6 +743,7 @@ class Cli
                     break;
             }
         }
+
         return $list;
     }
 }
