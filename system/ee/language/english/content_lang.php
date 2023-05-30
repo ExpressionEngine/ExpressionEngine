@@ -132,6 +132,8 @@ $lang = array(
 
     'entry_date_desc' => 'Date of publication for this entry.',
 
+    'entry_date_future' => 'Future entry date',
+
     'entry_limit_reached' => 'Channel limit reached',
 
     'entry_limit_reached_desc' => 'This channel is limited to %d entries.',
@@ -147,6 +149,8 @@ $lang = array(
     'expiration_date' => 'Expiration date',
 
     'expiration_date_desc' => 'Date this entry should expire.',
+
+    'expiration_date_past' => 'Past expiration date',
 
     'edit_date' => 'Last edit date',
 
