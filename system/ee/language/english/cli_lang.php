@@ -39,7 +39,7 @@ $lang = array(
     'command_addons_uninstall_option_addon'           => 'Add-on\'s short name',
 
     // Lang entries for command addons:update
-    'command_addons_update_description'            => 'Uninstalls add-on and all its components',
+    'command_addons_update_description'            => 'Updates an add-on to the latest version',
     'command_addons_update_summary'                => '',
     'command_addons_update_begin'                  => 'Add-on update is about to begin.',
     'command_addons_update_ask_addon'              => 'Which add-on do you want to update?',
@@ -47,6 +47,7 @@ $lang = array(
     'command_addons_update_complete'               => '%s updated successfully.',
     'command_addons_update_all_complete'           => 'All Add-Ons updated successfully.',
     'command_addons_update_option_addon'           => 'Add-on\'s short name',
+    'command_addons_update_option_all'             => 'Updates all add-ons that have updates available',
 
     // Lang entries for command addons:list
     'command_addons_list_description'                => 'List the add-ons',
