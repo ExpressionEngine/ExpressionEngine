@@ -30766,6 +30766,9 @@ fieldset.hide-block {
   color: var(--ee-error);
   font-style: normal;
 }
+.fieldset-invalid > .field-control .fields-select {
+  padding: 0 8px;
+}
 .fieldset-invalid .WysiHat-editor,
 .fieldset-invalid .WysiHat-editor:focus {
   border: 1px solid var(--ee-error);
