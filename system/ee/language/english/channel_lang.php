@@ -74,11 +74,13 @@ $lang = array(
 
     'create_layout_error' => 'Cannot Create Publish Layout',
 
-    'create_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
+    'create_layout_error_desc' => 'We were unable to update this publish layout, please review and fix errors below.',
 
     'create_layout_success' => 'Publish Layout Created',
 
     'create_layout_success_desc' => 'The publish layout <b>%s</b> has been created.',
+
+    'clone_layout_role_error' => 'A different role needs to be selected when cloning publish layout',
 
     'custom_fields' => 'Custom Fields',
 

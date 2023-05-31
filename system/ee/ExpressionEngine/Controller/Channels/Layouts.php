@@ -241,10 +241,16 @@ class Layouts extends AbstractChannelsController
                 ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/edit/' . $channel_layout->getId()));
             }
         } elseif (ee()->form_validation->errors_exist()) {
+            $error = lang('create_layout_error_desc');
+            if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                if (ee()->form_validation->error('roles') != '') {
+                    $error = lang('clone_layout_role_error');
+                }
+            }
             ee('CP/Alert')->makeInline('layout-form')
                 ->asIssue()
                 ->withTitle(lang('create_layout_error'))
-                ->addToBody(lang('create_layout_error_desc'))
+                ->addToBody($error)
                 ->now();
         }
 
