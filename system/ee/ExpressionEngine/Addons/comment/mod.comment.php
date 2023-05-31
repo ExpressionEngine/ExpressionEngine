@@ -482,7 +482,7 @@ class Comment
         $total_results = count($comments);
 
         if ($enabled['pagination']) {
-            $absolute_count = ($pagination->current_page == '') ? 0 : ($pagination->current_page - 1) * $pagination->per_page;
+            $absolute_count = ($pagination->current_page == '') ? 0 : ($pagination->current_page - 1) * (int) $pagination->per_page;
             $total_displayed = $pagination->total_items;
         } else {
             $absolute_count = 0;
