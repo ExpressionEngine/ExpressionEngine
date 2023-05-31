@@ -1,6 +1,6 @@
 <template>
     <div class="cursor-move-ee-44E4F0E59DFA295EB450397CA40D1169" v-on:dblclick="toggleCollapsed">
-        <img v-if="storeHost" v-bind:src="storeHost +'img/drag-handle.svg'" class="svg-ee-44E4F0E59DFA295EB450397CA40D1169 ee-pro-drag-handle-ee-44E4F0E59DFA295EB450397CA40D1169" />
+        <img v-if="storeHost" v-bind:src="storeHost +'img/drag-handle.svg'" class="svg-ee-44E4F0E59DFA295EB450397CA40D1169 ee-pro-drag-handle-ee-44E4F0E59DFA295EB450397CA40D1169" alt="drag handle icon"/>
     </div>
 </template>
 
