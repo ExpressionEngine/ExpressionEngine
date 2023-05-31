@@ -21,6 +21,7 @@
 
 <div id="<?=$setBlockId?>" class="conditionset-item <?php if ($template) :?>conditionset-temlates-row hidden <?php endif; ?>">
     <a href="#" class="remove-set">
+        <span class="sr-only">remove set button</span>
         <i class="fal fa-times alert__close-icon"></i>
     </a>
 

@@ -642,7 +642,9 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       }, props.editable && React.createElement("a", {
         href: "",
         className: "button button--default flyout-edit flyout-edit-icon"
-      }, React.createElement("i", {
+      }, React.createElement("span", {
+        className: "sr-only"
+      }, "edit element button"), React.createElement("i", {
         "class": "fal fa-pencil-alt"
       })), props.removable && React.createElement("a", {
         href: "",
@@ -650,7 +652,9 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
-      }, React.createElement("i", {
+      }, React.createElement("span", {
+        className: "sr-only"
+      }, "Remove button"), React.createElement("i", {
         "class": "fal fa-fw fa-trash-alt"
       })))));
 

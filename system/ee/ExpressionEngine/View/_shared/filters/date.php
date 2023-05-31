@@ -28,6 +28,6 @@
 		</div>
 	</div>
 	<?php if ($value): ?>
-		<a class="filter-clear" href="<?=$url_without_filter?>"><i class="fal fa-times"></i></a>
+		<a class="filter-clear" href="<?=$url_without_filter?>"><span class="sr-only">Clear filter button</span><i class="fal fa-times"></i></a>
 	<?php endif; ?>
 </div>

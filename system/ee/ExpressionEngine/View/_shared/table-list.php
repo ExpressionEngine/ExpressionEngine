@@ -54,6 +54,7 @@
 								disabled="disabled"
 							<?php endif; ?>
 							type="checkbox"
+							aria-label="<?=form_prep($row['selection']['value'])?>"
 						>
 					</div>
 				<?php endif ?>
