@@ -1007,6 +1007,7 @@ class File_field
                 'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
                 'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
                 'lang.file_dnd_create_directory' => lang('file_dnd_create_directory'),
+                'lang.hidden_input' => lang('hidden_input'),
 
                 'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
                 'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),

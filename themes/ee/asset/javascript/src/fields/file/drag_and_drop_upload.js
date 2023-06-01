@@ -781,7 +781,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
       }, EE.lang.file_dnd_upload_new), React.createElement("label", {
         htmlFor: "f_open-filepicker_id",
         className: "sr-only"
-      }, "Hidden input for file upload"), React.createElement("input", {
+      }, EE.lang.hidden_input), React.createElement("input", {
         id: "f_open-filepicker_id",
         type: "file",
         className: "f_open-filepicker",
@@ -836,7 +836,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
       }, "Imitation"), React.createElement("label", {
         htmlFor: "f_open-filepicker_id",
         className: "sr-only"
-      }, "Hidden input for file upload"), React.createElement("input", {
+      }, EE.lang.hidden_input), React.createElement("input", {
         id: "f_open-filepicker_id",
         type: "file",
         className: "f_open-filepicker",

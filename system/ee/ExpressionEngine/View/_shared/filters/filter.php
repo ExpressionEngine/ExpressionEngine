@@ -33,6 +33,6 @@
 		</div>
 	</div>
 	<?php if ($value && isset($url_without_filter)): ?>
-		<a class="filter-clear" href="<?=$url_without_filter?>"><span class="sr-only">clear filter button</span><i class="fal fa-times"></i></a>
+		<a class="filter-clear" href="<?=$url_without_filter?>"><span class="sr-only"><?=lang('clear_filter')?></span><i class="fal fa-times"></i></a>
 	<?php endif; ?>
 </div>

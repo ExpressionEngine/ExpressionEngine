@@ -104,7 +104,7 @@ function FilterSearch(props) {
     className: "search-input__input input--small",
     placeholder: EE.lang.keyword_search,
     onChange: props.onSearch,
-    "aria-label": "search input"
+    "aria-label": EE.lang.search
   })));
 }
 

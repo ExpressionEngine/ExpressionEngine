@@ -126,7 +126,7 @@ var DropDownButton = /*#__PURE__*/function (_React$Component) {
       }, this.props.addInput && React.createElement("label", {
         htmlFor: "f_open-filepicker_id",
         className: "sr-only"
-      }, "Hidden input for file upload") && React.createElement("input", {
+      }, EE.lang.hidden_input) && React.createElement("input", {
         id: "f_open-filepicker_id",
         type: "file",
         className: "f_open-filepicker",

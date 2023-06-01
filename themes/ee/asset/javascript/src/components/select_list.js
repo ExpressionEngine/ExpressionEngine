@@ -644,7 +644,7 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         className: "button button--default flyout-edit flyout-edit-icon"
       }, React.createElement("span", {
         className: "sr-only"
-      }, "edit element button"), React.createElement("i", {
+      }, EE.lang.edit_element), React.createElement("i", {
         "class": "fal fa-pencil-alt"
       })), props.removable && React.createElement("a", {
         href: "",
@@ -654,7 +654,7 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         }
       }, React.createElement("span", {
         className: "sr-only"
-      }, "Remove button"), React.createElement("i", {
+      }, EE.lang.remove_btn), React.createElement("i", {
         "class": "fal fa-fw fa-trash-alt"
       })))));
 
