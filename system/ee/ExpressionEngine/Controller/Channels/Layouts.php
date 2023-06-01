@@ -242,10 +242,10 @@ class Layouts extends AbstractChannelsController
             }
         } elseif (ee()->form_validation->errors_exist()) {
                ee('CP/Alert')->makeInline('layout-form')
-                ->asIssue()
-                ->withTitle(lang('create_layout_error'))
-                ->addToBody(lang('create_layout_error_desc'))
-                ->now();
+                    ->asIssue()
+                    ->withTitle(lang('create_layout_error'))
+                    ->addToBody(lang('create_layout_error_desc'))
+                    ->now();
 
             // Error with cloning mode roles?
             if (defined('CLONING_MODE') && CLONING_MODE === true) {
@@ -255,10 +255,10 @@ class Layouts extends AbstractChannelsController
                     // and replace error banner above
 
                     ee('CP/Alert')->makeInline('layout-form')
-                    ->asWarning()
-                    ->withTitle(lang('clone_settings_success'))
-                    ->addToBody(lang('clone_layout_role_error'))
-                    ->now();
+                        ->asWarning()
+                        ->withTitle(lang('clone_settings_success'))
+                        ->addToBody(lang('clone_layout_role_error'))
+                        ->now();
                 }
             }
         }
