@@ -46,7 +46,8 @@ class ChannelFieldGroup extends Model
     );
 
     protected static $_validation_rules = array(
-        'group_name' => 'required|unique|validateName'
+        'group_name' => 'required|unique|validateName',
+        'shortname' => 'required|unique|validateShortname',
     );
 
     protected static $_events = array(
@@ -56,6 +57,7 @@ class ChannelFieldGroup extends Model
     protected $group_id;
     protected $site_id;
     protected $group_name;
+    protected $shortname;
     protected $group_description;
 
     /**
@@ -69,6 +71,15 @@ class ChannelFieldGroup extends Model
     public function validateName($key, $value, $params, $rule)
     {
         if (! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", (string) $value)) {
+            return 'illegal_characters';
+        }
+
+        return true;
+    }
+
+    public function validateShortname($key, $value, $params, $rule)
+    {
+        if (! preg_match("#^[a-zA-Z0-9_\-]+$#i", (string) $value)) {
             return 'illegal_characters';
         }
 

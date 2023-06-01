@@ -32,7 +32,8 @@ class Updater
                 'addWeekStartColForMembers',
                 'setWeekStartPreference',
                 'addFluidFieldGroups',
-                'addFieldGroupDescription'
+                'addFieldGroupDescription',
+                'addFieldGroupShortname'
             ]
         );
 
@@ -127,6 +128,30 @@ class Updater
                     ]
                 ]
             );
+        }
+    }
+
+    private function addFieldGroupShortname()
+    {
+        if (!ee()->db->field_exists('shortname', 'field_groups')) {
+            ee()->smartforge->add_column(
+                'field_groups',
+                [
+                    'shortname' => [
+                        'type' => 'text',
+                        'null' => true,
+                        'default' => null
+                    ]
+                ]
+            );
+        }
+
+        // loop through all field groups and set shortname to group name
+        $field_groups = ee('Model')->get('ChannelFieldGroup')->all();
+        foreach ($field_groups as $field_group) {
+            // change all spaces to underscores
+            $field_group->shortname = str_replace(' ', '_', $field_group->group_name);
+            $field_group->save();
         }
     }
 }
