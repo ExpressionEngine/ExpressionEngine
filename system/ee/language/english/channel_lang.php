@@ -82,7 +82,7 @@ $lang = array(
 
     'clone_settings_success' => 'Publish Layout Settings Successfully Cloned',
 
-    'clone_layout_role_error' => 'A different role needs to be selected before you can save cloned publish layout',
+    'clone_layout_role_error' => 'A different role needs to be selected before you can save a cloned publish layout',
 
     'custom_fields' => 'Custom Fields',
 
