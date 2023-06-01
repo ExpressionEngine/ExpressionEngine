@@ -80,7 +80,9 @@ $lang = array(
 
     'create_layout_success_desc' => 'The publish layout <b>%s</b> has been created.',
 
-    'clone_layout_role_error' => 'A different role needs to be selected when cloning publish layout',
+    'clone_settings_success' => 'Publish Layout Settings Successfully Cloned',
+
+    'clone_layout_role_error' => 'A different role needs to be selected before you can save a cloned publish layout',
 
     'custom_fields' => 'Custom Fields',
 
