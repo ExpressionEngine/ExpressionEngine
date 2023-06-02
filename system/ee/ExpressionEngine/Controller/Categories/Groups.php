@@ -238,7 +238,7 @@ class Groups extends AbstractCategoriesController
      *
      * @param CategoryGroup $cat_group A CategoryGroup entity
      * @param null|ValidationResult $errors NULL (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -295,7 +295,7 @@ class Groups extends AbstractCategoriesController
      *
      * @param CategoryGroup $cat_group A CategoryGroup entity
      * @param null|ValidationResult $errors NULL (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -357,7 +357,7 @@ class Groups extends AbstractCategoriesController
      *
      * @param CategoryGroup $cat_group A CategoryGroup entity
      * @param null|ValidationResult $errors NULL (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */

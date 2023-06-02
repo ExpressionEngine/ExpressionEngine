@@ -25,7 +25,7 @@ class AutoloaderTest extends TestCase
         // The testsuite autoloader technically handles the full ExpressionEngine
         // namespace, but we can take advantage of its simplicity and the fact
         // that it fails silently.
-        // By missmatching the prefix and path name we can guarantee a silent
+        // By mismatching the prefix and path name we can guarantee a silent
         // failure on the testsuite loader, thereby isolating the test to the
         // main autoloader.
 

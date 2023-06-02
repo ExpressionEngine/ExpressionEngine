@@ -43,7 +43,7 @@ class Thumbnail
     /**
      * Filesystem where the thumbnail is being stored
      *
-     * @var ExpresionEngine\Library\Filesystem\Filesystem|null
+     * @var ExpressionEngine\Library\Filesystem\Filesystem|null
      */
     protected $filesystem = null;
 

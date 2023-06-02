@@ -159,7 +159,7 @@ class URLFactory
     }
 
     /**
-     * Decodes a base64 encoded, seralized URL object.
+     * Decodes a base64 encoded, serialized URL object.
      *
      * @return URL A URL object or NULL
      */

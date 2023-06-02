@@ -122,7 +122,7 @@ class Theme
     /**
      * Gets a list of all the themes available of a certain kind. When a theme
      * exists under both the user folder and the ee folder, the user folder is
-     * prefered.
+     * preferred.
      *
      * @param string $path A path to a directory we want to list
      * @return array An associative array of the contents of the directory

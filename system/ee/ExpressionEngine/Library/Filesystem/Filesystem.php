@@ -862,7 +862,7 @@ class Filesystem
         $dirname = ($this->dirname($path) !== '.') ? $this->dirname($path) . '/' : '';
         $filename = $this->filename($path);
 
-        // Glob only works with local filesytem but is more performant than filtering directory results
+        // Glob only works with local filesystem but is more performant than filtering directory results
         if ($this->isLocal()) {
             $files = array_map(function ($file) {
                 return $this->filename($file);

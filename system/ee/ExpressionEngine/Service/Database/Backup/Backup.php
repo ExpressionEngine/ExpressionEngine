@@ -64,7 +64,7 @@ class Backup
      * Constructor
      *
      * @param	Backup\Query     $query     Query object for generating query strings
-     * @param	Filesystem       $filesytem Filesystem object for writing to files
+     * @param	Filesystem       $filesystem Filesystem object for writing to files
      * @param	string           $file_path Path to write SQL file to
      * @param	int              $row_limit Override $row_limit class property
      */
@@ -267,7 +267,7 @@ class Backup
     }
 
     /**
-     * Writes ALL table INSERTs
+     * Writes ALL table INSERTTs
      */
     public function writeAllTableInserts()
     {
@@ -283,7 +283,7 @@ class Backup
     }
 
     /**
-     * Writes partial INSERTs for a given table, with the idea being a backup
+     * Writes partial INSERTTs for a given table, with the idea being a backup
      * can be split up across multiple requests for large databases
      *
      * @param	string	$table_name	Name of table to start the backup from
@@ -357,7 +357,7 @@ class Backup
     }
 
     /**
-     * Writes partial INSERTs for a given table, with the idea being a backup
+     * Writes partial INSERTTs for a given table, with the idea being a backup
      * can be split up across multiple requests for large databases
      *
      * @param	string	$table_name	Table name
@@ -411,7 +411,7 @@ class Backup
      * Writes a pretty(ish) separator to the file with a given string of text,
      * usually to mark a new section in the file
      *
-     * @param	string	$text	Text to include in the separater
+     * @param	string	$text	Text to include in the separator
      */
     protected function writeSeparator($text)
     {

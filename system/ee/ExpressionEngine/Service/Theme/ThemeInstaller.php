@@ -510,7 +510,7 @@ class ThemeInstaller
     }
 
     /**
-     * Replace occurences of {filedir_<destination name>} with the correct ID
+     * Replace occurrences of {filedir_<destination name>} with the correct ID
      * @param string $str The string to look through for {filedir_<dest>}
      * @return string The string with the correct filedir ID
      */

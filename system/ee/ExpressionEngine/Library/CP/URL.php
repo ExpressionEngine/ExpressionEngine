@@ -88,7 +88,7 @@ class URL implements \Serializable
     }
 
     /**
-     * When accessed as a string simply complile the URL and return that
+     * When accessed as a string simply compile the URL and return that
      *
      * @return string   The URL
      */

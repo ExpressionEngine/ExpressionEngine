@@ -42,7 +42,7 @@ abstract class FileSyncedModel extends Model
      * The value returned here is compared to the file mtime on load and
      * the database value is updated from the file if the file mtime is newer.
      *
-     * @return Int Last modificaiton time of the model
+     * @return Int Last modification time of the model
      */
     abstract public function getModificationTime();
 

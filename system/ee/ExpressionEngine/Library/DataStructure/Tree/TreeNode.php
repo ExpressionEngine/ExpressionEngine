@@ -101,7 +101,7 @@ class TreeNode
      *
      * Notifies the child of its parent and adds the child name to
      * the child name array. Does not enforce unique names since it
-     * may be desireable to have non-unique named children. It's on
+     * may be desirable to have non-unique named children. It's on
      * the developer to not rely on the get() method in that case
      *
      * @return void

@@ -2361,7 +2361,7 @@ class LexerTest extends TestCase
             }
         }
 
-        // Sepcial case: negative numbers
+        // Special case: negative numbers
         foreach ($operators as $operator) {
             $value = '-5';
 
@@ -2377,7 +2377,7 @@ class LexerTest extends TestCase
             );
         }
 
-        // Sepcial case: bigfloat numbers
+        // Special case: bigfloat numbers
         foreach ($operators as $operator) {
             $value = '5.1';
 

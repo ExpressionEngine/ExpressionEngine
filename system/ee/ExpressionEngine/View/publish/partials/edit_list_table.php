@@ -2,7 +2,7 @@
     <div class="tbl-ctrls">
         <?=form_open($form_url)?>
 
-        <div class="panel-heading entry-pannel-heading"<?php if (ee()->uri->segment(3) == 'prolet') : ?> style="display: none;"<?php endif; ?>>
+        <div class="panel-heading entry-panel-heading"<?php if (ee()->uri->segment(3) == 'prolet') : ?> style="display: none;"<?php endif; ?>>
           <div class="title-bar">
                 <h3 class="title-bar__title"><?=$head['title']?></h3>
           </div>
@@ -33,7 +33,7 @@
         <?php endif ?>
         </div>
 
-        <div class="entry-pannel-notice-wrap">
+        <div class="entry-panel-notice-wrap">
             <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
         </div>
 

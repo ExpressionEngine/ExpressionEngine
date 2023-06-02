@@ -27372,22 +27372,22 @@ input[type=button].btn-block {
   word-wrap: none;
 }
 
-.entry-pannel-heading {
+.entry-panel-heading {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   flex: 1 1;
 }
-.entry-pannel-heading .title-bar {
+.entry-panel-heading .title-bar {
   flex: 1 1;
   margin-right: auto;
   padding-right: 10px;
 }
 
-.entry-pannel-notice-wrap {
+.entry-panel-notice-wrap {
   padding: 0 25px;
 }
-.entry-pannel-notice-wrap .app-notice {
+.entry-panel-notice-wrap .app-notice {
   margin-top: 20px;
 }
 
@@ -39277,12 +39277,12 @@ body[data-theme="dark"] {
   border-radius: 4px;
 }
 
-.file-edit-view .entry-pannel-notice-wrap .app-notice {
+.file-edit-view .entry-panel-notice-wrap .app-notice {
   margin-top: 20px;
   margin-bottom: 0px;
 }
 
-.file-edit-view .entry-pannel-notice-wrap {
+.file-edit-view .entry-panel-notice-wrap {
   padding: 0;
 }
 

@@ -446,7 +446,7 @@ class Provider extends InjectionBindingDecorator
     }
 
     /**
-     * Forcably override the first parameter on a given closure
+     * Forcibly override the first parameter on a given closure
      *
      * @param Closure $closure Function to partially apply
      * @param Mixed $scope First parameter

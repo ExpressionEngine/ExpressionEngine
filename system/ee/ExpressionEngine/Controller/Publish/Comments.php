@@ -490,7 +490,7 @@ class Comments extends AbstractPublishController
     }
 
     /**
-     * Builds a Table object from a Query of Comment model entitites
+     * Builds a Table object from a Query of Comment model entities
      *
      * @param Builder $comments A Query\Builder object for Comment model entities
      * @return Table A Table instance

@@ -178,7 +178,7 @@ class Email extends AbstractDesignController
      *
      * @param TemplateModel $template A Template entity
      * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -231,7 +231,7 @@ class Email extends AbstractDesignController
      *
      * @param TemplateModel $template A Template entity
      * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -261,7 +261,7 @@ class Email extends AbstractDesignController
      *
      * @param TemplateModel $template A Template entity
      * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */

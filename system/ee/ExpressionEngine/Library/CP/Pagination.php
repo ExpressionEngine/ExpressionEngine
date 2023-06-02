@@ -28,7 +28,7 @@ class Pagination
     private $current_page = 1;
 
     /**
-     * @var int $total_count The total number of itmes being paginated
+     * @var int $total_count The total number of items being paginated
      */
     private $total_count;
 
@@ -51,7 +51,7 @@ class Pagination
      * Constructor: sets the total number of items to be paginated and injects
      * a View object for rendering.
      *
-     * @param int $total_count The total number of itmes being paginated
+     * @param int $total_count The total number of items being paginated
      * @param View $view A View object for rendering the pagination data
      */
     public function __construct($total_count, View $view)

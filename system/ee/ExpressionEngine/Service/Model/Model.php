@@ -277,7 +277,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     }
 
     /**
-     * Attempt to get a property. Overriden from Entity to support events
+     * Attempt to get a property. Overridden from Entity to support events
      *
      * @param String $name Name of the property
      * @return Mixed  $value Value of the property
@@ -294,7 +294,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     }
 
     /**
-     * Attempt to set a property. Overriden from Entity to support events
+     * Attempt to set a property. Overridden from Entity to support events
      *
      * @param String $name Name of the property
      * @param Mixed  $value Value of the property
@@ -974,7 +974,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     /**
      * Alias an association
      *
-     * @param String Associaton name to create an alias for
+     * @param String Association name to create an alias for
      * @param String Alias name
      */
     public function alias($association, $as)

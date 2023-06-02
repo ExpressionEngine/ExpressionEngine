@@ -416,7 +416,7 @@ if (! function_exists('log_message')) {
  */
 function set_status_header($code = 200, $text = '')
 {
-    $stati = array(
+    $statuses = array(
         200 => 'OK',
         201 => 'Created',
         202 => 'Accepted',
@@ -462,8 +462,8 @@ function set_status_header($code = 200, $text = '')
         show_error('Status codes must be numeric', 500);
     }
 
-    if (isset($stati[$code]) and $text == '') {
-        $text = $stati[$code];
+    if (isset($statuses[$code]) and $text == '') {
+        $text = $statuses[$code];
     }
 
     if ($text == '') {
@@ -651,7 +651,7 @@ if (! function_exists('dd')) {
 }
 
 /**
- * This should be removed when mimimum PHP version gets bumped to 7.3
+ * This should be removed when minimum PHP version gets bumped to 7.3
  * array_key_first poly fill for PHP older then 7.3
  */
 if (!function_exists('array_key_first')) {

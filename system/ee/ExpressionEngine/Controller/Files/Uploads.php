@@ -983,7 +983,7 @@ class Uploads extends AbstractFilesController
         $dir_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
         ee()->filemanager->set_upload_dir_prefs($id, $dir_data);*/
 
-        // Now for everything NOT forcably replaced
+        // Now for everything NOT forcibly replaced
 
         $missing_only_sizes = (is_array($sizes[$id])) ? $sizes[$id] : array();
 
@@ -1070,7 +1070,7 @@ class Uploads extends AbstractFilesController
                     }
                 }
 
-                // Now for anything that wasn't forcably replaced- we make sure an image exists
+                // Now for anything that wasn't forcibly replaced- we make sure an image exists
                 $thumb_created = ee()->filemanager->create_thumb(
                     $file->getAbsolutePath(),
                     array(

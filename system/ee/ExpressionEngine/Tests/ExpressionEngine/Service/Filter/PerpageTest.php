@@ -90,7 +90,7 @@ class PerpageTest extends TestCase
     /**
      * @dataProvider validityDataProvider
      */
-    public function testValdity($submitted, $valid)
+    public function testValidity($submitted, $valid)
     {
         $_POST['perpage'] = $submitted;
         $filter = new Perpage(123);

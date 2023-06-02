@@ -15,7 +15,7 @@ use ExpressionEngine\Service\Model\Model;
 use ExpressionEngine\Service\Model\Relation\Relation;
 
 /**
- * Model Service: Assocation
+ * Model Service: Association
  */
 class Association
 {
@@ -197,7 +197,7 @@ class Association
     /**
      * Utility method to handle a primary key change. Public due to PHP 5.3's callbacks
      * being wonky. Don't call externally, all other methods in this class will
-     * do the right thing automtically.
+     * do the right thing automatically.
      *
      * @return void
      */
@@ -234,7 +234,7 @@ class Association
     /**
      * Utility method to mark data as loaded. Public due to PHP 5.3's callbacks
      * being wonky. Don't call externally, all other methods in this class will
-     * do the right thing automtically.
+     * do the right thing automatically.
      *
      * @return void
      */
@@ -246,7 +246,7 @@ class Association
     /**
      * Utility method to check if data has been loaded. Public due to PHP 5.3's
      * callbacks being wonky. Don't call externally, all other methods in this
-     * class will do the right thing automtically.
+     * class will do the right thing automatically.
      *
      * @return bool Association data is loaded?
      */

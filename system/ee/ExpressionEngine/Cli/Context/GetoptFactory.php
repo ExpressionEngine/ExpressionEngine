@@ -59,7 +59,7 @@ class GetoptFactory
      *
      * @param array $input The command line input array, as from $argv.
      *
-     * @param array $options An options defintion array.
+     * @param array $options An options definition array.
      *
      * @return Getopt
      *

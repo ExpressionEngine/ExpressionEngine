@@ -108,8 +108,8 @@ EE.fieldManager.sync = function() {
 			EE.fieldManager.sync();
 		},
 		success: function(data, textStatus, xhr) {
-			EE.fieldManager.remainingCount.total -= data.entries_proccessed;
-			EE.fieldManager.remainingCount.channels[data.channel_id] -= data.entries_proccessed;
+			EE.fieldManager.remainingCount.total -= data.entries_processed;
+			EE.fieldManager.remainingCount.channels[data.channel_id] -= data.entries_processed;
 
 			if(EE.fieldManager.remainingCount.channels[data.channel_id] == 0) {
 				EE.fieldManager.channelSynced(data.channel_id);

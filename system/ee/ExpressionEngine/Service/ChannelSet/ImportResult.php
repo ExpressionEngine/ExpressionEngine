@@ -132,7 +132,7 @@ class ImportResult
     }
 
     /**
-     * Proxy for cleaner controlelr code. Move it?
+     * Proxy for cleaner controllers code. Move it?
      */
     public function getTitleFieldFor($model)
     {

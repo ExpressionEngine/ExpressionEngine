@@ -29,7 +29,7 @@ class Username extends Filter
     protected $builder;
 
     /**
-     * Construtor
+     * Constructor
      *
      * @param array $usernames An associative array of usernames to use for the
      *   filter where the key is the User ID and the value is the Username. i.e.

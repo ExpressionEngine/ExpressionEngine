@@ -53,7 +53,7 @@ class Encrypt
     }
 
     /**
-     * Genrates an initialization vector based on the encryption method
+     * Generates an initialization vector based on the encryption method
      *
      * @return string An initialization vector
      */
@@ -195,12 +195,12 @@ class Encrypt
     }
 
     /**
-     * Decodes an encoded string by first base64 decodeing it, then passing the
+     * Decodes an encoded string by first base64 decoding it, then passing the
      * string off to the driver for its decoding process.
      *
      * @param string $data A base64 encoded string
      * @param string $key The encryption key, if not defined we'll use the default
-     * @return A plaintext strig
+     * @return A plaintext string
      */
     public function decode($data, $key = '')
     {

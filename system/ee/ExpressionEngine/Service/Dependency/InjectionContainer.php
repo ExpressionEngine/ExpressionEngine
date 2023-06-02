@@ -111,7 +111,7 @@ class InjectionContainer implements ServiceProvider
     }
 
     /**
-     * This will exectute the provided Closure exactly once, storing the result
+     * This will execute the provided Closure exactly once, storing the result
      * of the execution in an array and always returning that array element.
      *
      * @param Closure $object The Closure to execute

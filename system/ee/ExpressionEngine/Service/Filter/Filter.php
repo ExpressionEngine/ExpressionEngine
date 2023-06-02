@@ -25,7 +25,7 @@ abstract class Filter
     public $name;
 
     /**
-     * @var stirng A language key to use for the display label
+     * @var string A language key to use for the display label
      */
     protected $label;
 
@@ -106,7 +106,7 @@ abstract class Filter
     /**
      * Determines the value of this filter. If a selected_value was set, that
      * is used. Otherwise we'll determine the value by using the POST value, GET
-     * valeu or default value (in that order).
+     * value or default value (in that order).
      *
      * @return mixed The value of the filter
      */

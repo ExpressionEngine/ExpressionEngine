@@ -33,7 +33,7 @@ class CommandAddonsList extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php addons:list <i|installed|u|uninstalled|a|update-avaiable>';
+    public $usage = 'php eecli.php addons:list <i|installed|u|uninstalled|a|update-available>';
 
     /**
      * options available for use in command

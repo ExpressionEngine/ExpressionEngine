@@ -118,9 +118,9 @@ class RunnerTest extends TestCase
     {
         $runner = new Runner();
 
-        $inital = '{if var1 && var2 && var3 == \'bob\'}yes{if:else}no{/if}';
+        $initial = '{if var1 && var2 && var3 == \'bob\'}yes{if:else}no{/if}';
 
-        $var2 = $this->runConditionWithoutAnnotations($inital, array('var1' => 3), $runner);
+        $var2 = $this->runConditionWithoutAnnotations($initial, array('var1' => 3), $runner);
 
         $this->assertEquals(
             '{if 3 && var2 && var3 == \'bob\'}yes{if:else}no{/if}',
@@ -498,7 +498,7 @@ class RunnerTest extends TestCase
             array('/ and * ltr',	'{if 5 * 2 / 5 == 2}yes{if:else}no{/if}',	'yes'),
             array('/ and % ltr',	'{if 5 * 2 % 6 == 4}yes{if:else}no{/if}',	'yes'),
 
-            // basic math precendence
+            // basic math precedence
             array('* before +',		'{if 5 + 5 * 2 == 15}yes{if:else}no{/if}',	'yes'),
             array('/ before -',		'{if 12 - 4 / 2 == 10}yes{if:else}no{/if}',	'yes'),
 

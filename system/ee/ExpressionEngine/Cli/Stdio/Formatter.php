@@ -86,7 +86,7 @@ class Formatter
      *
      * @param bool $posix Is the destination a POSIX terminal?
      *
-     * @return string The coverted string.
+     * @return string The converted string.
      *
      */
     public function format($string, $posix)

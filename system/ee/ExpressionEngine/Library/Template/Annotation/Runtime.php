@@ -17,7 +17,7 @@ namespace ExpressionEngine\Library\Template\Annotation;
  * maybe store some metadata about that marked bit. For example, on a
  * first pass through the template you might store the original line number
  * to parts of the template that might error. Since template contents
- * change throughtout the execution process, we mark these locations with
+ * change throughout the execution process, we mark these locations with
  * a small comment right in the string.
  *
  * To prevent having to serialize, unserialize, and parse complicated

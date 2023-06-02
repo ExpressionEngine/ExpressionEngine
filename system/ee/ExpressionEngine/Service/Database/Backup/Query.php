@@ -407,7 +407,7 @@ class Query
         $types = $this->getTypesForTable($table_name);
 
         if (! isset($types[$column_name])) {
-            throw new \Exception('Non-existant column requested: ' . $table_name . '.' . $column_name, 1);
+            throw new \Exception('Non-existent column requested: ' . $table_name . '.' . $column_name, 1);
         }
 
         return $types[$column_name];

@@ -167,7 +167,7 @@ class SiteTest extends TestCase
     /**
      * @dataProvider validityDataProvider
      */
-    public function testValdity($submitted, $valid)
+    public function testValidity($submitted, $valid)
     {
         $_POST['filter_by_site'] = $submitted;
         $filter = new Site($this->sites);
