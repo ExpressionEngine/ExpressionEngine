@@ -443,7 +443,7 @@ class Spam_upd extends Installer
     private function updateForumSpam_2_00_00()
     {
         // Legacy forum stores raw SQL. Get rid of all UPDATE queries, since we have no
-        // way to determine what order they should run in, and UPDATEs (edits) to topics or posts
+        // way to determine what order they should run in, and UPDATEEs (edits) to topics or posts
         // would be destructive and random
         ee()->db->where('class', 'Forum Post');
         ee()->db->like('entity', 'UPDATE `exp_forum_posts`');

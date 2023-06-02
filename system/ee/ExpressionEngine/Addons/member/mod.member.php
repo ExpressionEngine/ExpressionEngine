@@ -155,7 +155,7 @@ class Member
      */
     public function _prep_request()
     {
-        // Typcially the profile page URLs will be something like:
+        // Typically the profile page URLs will be something like:
         //
         // index.php/member/123/
         // index.php/member/memberlist/
@@ -1072,7 +1072,7 @@ class Member
     }
 
     /**
-     * Retreive Forgotten Password
+     * Retrieve Forgotten Password
      */
     public function send_reset_token()
     {
@@ -1872,7 +1872,7 @@ class Member
     }
 
     /**
-     * Convet special characters
+     * Convert special characters
      */
     public function _convert_special_chars($str)
     {

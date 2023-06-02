@@ -136,7 +136,7 @@ class Structure_tab
         $cids = isset($data['channel_ids']) ? $data['channel_ids'] : array();
         $lcids = isset($data['listing_cids']) ? $data['listing_cids'] : array();
 
-        // overide defaults and previous data with data from the form if available (SAEFs?)
+        // override defaults and previous data with data from the form if available (SAEFs?)
         // $uri         = ee()->input->get_post('structure__uri') ? ee()->input->get_post('structure__uri') : $uri;
         // $listing     = ee()->input->get_post('structure__listing') ? ee()->input->get_post('structure__listing') : $listing;
         // $listing_cid = ee()->input->get_post('structure__listing_channel') ? ee()->input->get_post('structure__listing_channel') : $listing_cid;
@@ -469,7 +469,7 @@ class Structure_tab
             }
         }
 
-        // The data is not always consistant, and sometimes we have an array [0 => 0] instead of a number :facepalm:
+        // The data is not always consistent, and sometimes we have an array [0 => 0] instead of a number :facepalm:
         if (is_array($parent_id) && array_key_exists(0, $parent_id)) {
             $parent_id = $parent_id[0];
         }

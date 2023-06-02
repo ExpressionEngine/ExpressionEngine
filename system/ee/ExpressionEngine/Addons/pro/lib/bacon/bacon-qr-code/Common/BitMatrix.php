@@ -106,7 +106,7 @@ class BitMatrix
      *
      * @throws InvalidArgumentException if left or top are negative
      * @throws InvalidArgumentException if width or height are smaller than 1
-     * @throws InvalidArgumentException if region does not fit into the matix
+     * @throws InvalidArgumentException if region does not fit into the matrix
      */
     public function setRegion(int $left, int $top, int $width, int $height) : void
     {

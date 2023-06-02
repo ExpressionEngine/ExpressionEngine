@@ -87,7 +87,7 @@ class Comment
 
     /**
      * Get the time in seconds since the epoc at which a comment may
-     * no longer be editted. If current time is past this value then
+     * no longer be edited. If current time is past this value then
      * do not allow the user to edit it.
      *
      * @return int The time at which comment editing permission expires in seconds since the epoc.
@@ -798,7 +798,7 @@ class Comment
         /**  Has commenting expired?
         /** ----------------------------------------*/
 
-        //  First check whether expiration is overriden
+        //  First check whether expiration is overridden
         if (ee()->config->item('comment_moderation_override') !== 'y') {
             if ($query->row('comment_expiration_date') > 0) {
                 if (ee()->localize->now > $query->row('comment_expiration_date')) {

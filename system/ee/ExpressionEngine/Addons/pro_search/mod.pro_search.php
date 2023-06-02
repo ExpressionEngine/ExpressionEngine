@@ -820,7 +820,7 @@ class Pro_search
 
                 // Empty results?
                 if (empty($entry_ids)) {
-                    $this->_log('No results after handling the exising entry_id parameter');
+                    $this->_log('No results after handling the existing entry_id parameter');
 
                     return $this->_no_results();
                 }

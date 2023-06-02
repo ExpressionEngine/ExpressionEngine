@@ -237,7 +237,7 @@ class Pro_variables_ft extends EE_Fieldtype
         if (count($choices) === 1) {
             $choices = current($choices);
         } else {
-            // Again, 1 dimentional, so we can use EE3's options
+            // Again, 1 dimensional, so we can use EE3's options
             $flat = array();
 
             foreach ($choices as $val) {

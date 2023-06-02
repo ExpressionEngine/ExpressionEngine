@@ -64,7 +64,7 @@ class Member_register extends Member
                 $match
             )) ? $match['1'] : '';
 
-            // Next, separate the chunck between the {required} variable pairs
+            // Next, separate the chunk between the {required} variable pairs
             $req_chunk = (preg_match("/{required}(.*?){\/required}/s", $field_chunk, $match)) ? $match['1'] : '';
 
             // Loop through the query result
@@ -175,7 +175,7 @@ class Member_register extends Member
 
         $config_fields = ee()->config->prep_view_vars('localization_cfg');
 
-        // Parse languge lines
+        // Parse language lines
         $reg_form = $this->_var_swap(
             $reg_form,
             array(
@@ -760,7 +760,7 @@ class Member_register extends Member
         //
         // -------------------------------------------
 
-        // Upate Stats
+        // Update Stats
 
         ee()->stats->update_member_stats();
 

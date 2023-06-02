@@ -120,7 +120,7 @@ class Moblog_upd extends Installer
                     'after' => 'moblog_type'
                 ),
                 'moblog_gallery_category' => array(
-                    'alter' => array('type' => 'int', 'cosntraint' => 10, 'unsigned' => true, 'default' => '0'),
+                    'alter' => array('type' => 'int', 'constraint' => 10, 'unsigned' => true, 'default' => '0'),
                     'after' => 'moblog_gallery_id'
                 ),
                 'moblog_gallery_status' => array(
@@ -152,7 +152,7 @@ class Moblog_upd extends Installer
         if (version_compare($current, '3.0', '<')) {
             ee()->load->dbforge();
 
-            // @confrim- should be able to drop is_user_blog as well?
+            // @confirm- should be able to drop is_user_blog as well?
             ee()->dbforge->drop_column('moblogs', 'is_user_blog');
             ee()->dbforge->drop_column('moblogs', 'user_blog_id');
             ee()->dbforge->modify_column('moblogs', array(

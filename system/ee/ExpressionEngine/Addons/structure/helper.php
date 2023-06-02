@@ -36,7 +36,7 @@ class Structure_Helper
 }
 
 /**
- * This funciton will be used to add a copy of the current
+ * This function will be used to add a copy of the current
  * state of the Structure navigation to the nav History
  * it will include site_pages array and json copy of
  * the Structure table

@@ -100,7 +100,7 @@ class CkeditorService extends AbstractRteService implements RteService
             return $configHandle;
         }
 
-        // CKEditor does not allow specifying language direction implicitely, so we have to fake it by setting language
+        // CKEditor does not allow specifying language direction implicitly, so we have to fake it by setting language
         $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
         $config['language'] = (object) [
             'ui' => ee()->lang->code($language),

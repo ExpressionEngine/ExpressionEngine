@@ -266,7 +266,7 @@ class Sql_structure
         }
 
         // ---
-        // Retreive branch data from DB
+        // Retrieve branch data from DB
         // ---
 
         // generate flash-data cache name
@@ -417,7 +417,7 @@ class Sql_structure
             if ($tree->row['entry_id'] != 0) { // don't test structure ROOT (would always fail)
                 if ($tree->is_of_value('status', $statuses, $status_exclude)) {
                     return array();
-                } // root node removed based on critera
+                } // root node removed based on criteria
             }
 
             $tree->selective_prune('status', $statuses, $status_exclude);
@@ -434,7 +434,7 @@ class Sql_structure
             array_unshift($include, $branch_entry_id); // add current root node as valid
             if ($tree->is_of_value('entry_id', $include, false)) {
                 return array();
-            } // root node removed based on critera
+            } // root node removed based on criteria
 
             $tree->selective_prune_alt('entry_id', $include, false);
         }
@@ -900,7 +900,7 @@ class Sql_structure
         //
         // $pair looks like "channel:custom_field" and is a string.
         foreach ($custom_titles as $pair) {
-            // Each pair needs to have a : delimeter. If one of the pairs doesnt have it, return false.
+            // Each pair needs to have a : delimiter. If one of the pairs doesnt have it, return false.
             if (strstr($pair, ':') === false) {
                 return false;
             }
@@ -1211,7 +1211,7 @@ class Sql_structure
     /**
      * Get all data from the exp_structure_channels table
      * @param $type|unmanaged|page|listing|asset
-     * @param $channel_id you can pass a channel_id to retreive it's data
+     * @param $channel_id you can pass a channel_id to retrieve it's data
      * @param $order pass it 'alpha' to order by channel title
      * @return array An array of channel_ids and it's associated template_id, type and channel_title
      */
@@ -2784,7 +2784,7 @@ class Sql_structure
 
     public function update_root_node()
     {
-        // please note.. thsi function doesn't need nav history in it since every
+        // please note.. this function doesn't need nav history in it since every
         // function that calls it has it.. or the ones that call the ones that
         // have this have it.
 
@@ -2912,7 +2912,7 @@ class structure_leaf
     }
 
     /**
-     * On the fly depth caculation
+     * On the fly depth calculation
      */
     public function depth()
     {
@@ -3003,7 +3003,7 @@ class structure_leaf
     /**
      * Find the leaf with the specified row data
      * @param string $key Key of the row data
-     * @param seting $data Data to match to row[$key]
+     * @param setting $data Data to match to row[$key]
      */
     public function find_ancestor($key, $data)
     {
@@ -3022,7 +3022,7 @@ class structure_leaf
     }
 
     /**
-     * Determins if the provided leaf is in this this branch
+     * Determines if the provided leaf is in this this branch
      * @param leaf $leaf Possible child leaf
      */
     public function has_ancestor($leaf, $compare_on = 'entry_id')

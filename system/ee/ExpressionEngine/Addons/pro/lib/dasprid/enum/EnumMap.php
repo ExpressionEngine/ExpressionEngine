@@ -157,7 +157,7 @@ final class EnumMap implements Serializable, IteratorAggregate
      * otherwise it returns null (there can be at most one such mapping).
      *
      * A return value of null does not necessarily indicate that the map contains no mapping for the key; it's also
-     * possible that hte map explicitly maps the key to null. The {@see self::containsKey()} operation may be used to
+     * possible that the map explicitly maps the key to null. The {@see self::containsKey()} operation may be used to
      * distinguish these two cases.
      *
      * @return mixed

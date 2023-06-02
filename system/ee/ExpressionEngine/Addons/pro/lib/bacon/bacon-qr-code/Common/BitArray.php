@@ -282,7 +282,7 @@ final class BitArray
     }
 
     /**
-     * Makes an exclusive-or comparision on the current bit array.
+     * Makes an exclusive-or comparison on the current bit array.
      *
      * @throws InvalidArgumentException if sizes don't match
      */

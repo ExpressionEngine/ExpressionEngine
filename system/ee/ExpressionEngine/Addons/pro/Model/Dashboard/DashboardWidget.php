@@ -112,7 +112,7 @@ class DashboardWidget extends Model
     }
 
     /**
-     * genereate html for this widget
+     * generate html for this widget
      */
     public function generateHtml($edit_mode = false, $enabled = true)
     {
@@ -176,7 +176,7 @@ class DashboardWidget extends Model
                     return $html;
                 }
                 try {
-                    $widget = new $widgetClass($this, $edit_mode, $enabled);// we will load the widget instance into contructor
+                    $widget = new $widgetClass($this, $edit_mode, $enabled);// we will load the widget instance into constructor
                     $html = $widget->getHtml();
                 } catch (\Throwable $e) {
                 }

@@ -1100,7 +1100,7 @@ class Member_auth extends Member
     }
 
     /**
-     * Creates a timestamp for use in determinig a token's expiration
+     * Creates a timestamp for use in determining a token's expiration
      */
     private function getTokenExpiration()
     {

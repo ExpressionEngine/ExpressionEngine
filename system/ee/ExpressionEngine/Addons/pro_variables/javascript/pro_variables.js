@@ -348,7 +348,7 @@ if (typeof PRO == 'undefined') {
             // Cancel the click
             event.preventDefault();
 
-            // Rember self
+            // Remember self
             var $self = $(this);
 
             // Post it

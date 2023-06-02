@@ -63,7 +63,7 @@ class Classifier
 
         // We want to calculate Pr(Spam|F) ∀ F ∈ Features
         // We assume statistical independence for all features and multiply together
-        // to calculcate the probability the source is spam
+        // to calculate the probability the source is spam
         foreach ($source as $feature => $freq) {
             if (empty($class[$feature]) || empty($other[$feature])) {
                 // We might have more features then currently trained

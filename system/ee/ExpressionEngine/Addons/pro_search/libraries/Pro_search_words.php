@@ -313,7 +313,7 @@ class Pro_search_words
 
     /**
      * Clean a string for lexicon use:
-     * No tags, entities, non-word chacacters, or double/trailing spaces
+     * No tags, entities, non-word characters, or double/trailing spaces
      * Optionally remove ignore words
      *
      * @access     public
