@@ -481,11 +481,13 @@ class Fluid_field_ft extends EE_Fieldtype
         });
 
         foreach ($field_groups as $field_group) {
-            $filter_options[] = \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
-                'name' => $field_group->short_name,
-                'label' =>  $field_group->group_name,
-                'icon' => URL_THEMES . 'asset/img/' . 'default-addon-icon.svg'
-            ]);
+            if ($field_group->ChannelFields->count() > 0) {
+                $filter_options[] = \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
+                    'name' => $field_group->short_name,
+                    'label' =>  $field_group->group_name,
+                    'icon' => URL_THEMES . 'asset/img/' . 'default-addon-icon.svg'
+                ]);
+            }
         }
 
         $filters = ee('View')->make('fluid_field:filters')->render(array('filters' => $filter_options));
