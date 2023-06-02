@@ -31,7 +31,7 @@ class URL implements \Serializable
     public $qs = array();
 
     /**
-     * @var string $base The base part of the url which preceeds the path.
+     * @var string $base The base part of the url which precedes the path.
      */
     public $base;
 

@@ -1183,7 +1183,7 @@ class Structure extends Channel
         $pages = $this->sql->get_data();
         $entries = "";
 
-        // Check if any data before preceeding
+        // Check if any data before preceding
         if (isset($pages)) {
             foreach ($pages as $key => $entry_data) {
                 // Add entries in order

@@ -1072,7 +1072,7 @@ class Grid_lib
     }
 
     /**
-     * Performes find and replace for input names in order to namespace them
+     * Performs find and replace for input names in order to namespace them
      * for a POST array
      *
      * @param	string	String to search

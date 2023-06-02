@@ -710,7 +710,7 @@ class Api_channel_fields extends Api
 
                 // There's basically no way this *won't* be set, but let's check it anyhow.
                 // When we find it, we'll append the module's classname to it to prevent
-                // collission with other modules with similarly named fields. This namespacing
+                // collision with other modules with similarly named fields. This namespacing
                 // gets stripped as needed when the module data is processed in get_module_methods()
                 // This function is called for insertion and editing of entries.
 

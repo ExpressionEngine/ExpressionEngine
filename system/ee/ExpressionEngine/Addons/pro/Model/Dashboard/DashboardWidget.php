@@ -145,7 +145,7 @@ class DashboardWidget extends Model
                 return $html;
             }
             $html = $template->template_data;
-        } elseif ($this->widget_source == 'pro') { //first pary
+        } elseif ($this->widget_source == 'pro') { // first party
             $file_path = PATH_ADDONS . 'pro/widgets/' . $this->widget_file . '.' . $this->widget_type;
         } else { //third party add-ons
             //do they have permission for it? we only have system for module permissions in place

@@ -1014,7 +1014,7 @@ $lang = array(
 
     'move_file' => 'Move File',
 
-    'select_new_destinatin_for' => 'Select new destination for:',
+    'select_new_destination_for' => 'Select new destination for:',
 
     'destination' => 'Destination',
 

@@ -120,7 +120,7 @@ class Channel_form_category_tree_obj
     /**
      * Category sub-tree
      *
-     * This function works with the preceeding one to show a
+     * This function works with the preceding one to show a
      * hierarchical display of categories
      *
      * @param 	integer

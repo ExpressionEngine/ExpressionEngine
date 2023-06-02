@@ -563,7 +563,7 @@ class Search
 
         // do we need to limit to categories?
         if (!empty($this->_meta['category']) or !empty($_POST['cat_id'])) {
-            $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id 
+            $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
                 LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
         }
 
@@ -1706,7 +1706,7 @@ function changemenu(index)
                             $last_group = $v['0'];
                         }
 
-                        // Note: this kludgy indentation is so that the JavaScript will look nice when it's renedered on the page?>
+                        // Note: this kludgy indentation is so that the JavaScript will look nice when it's rendered on the page?>
 			categories[i] = new Option("<?php echo addslashes($v['2']); ?>", "<?php echo $v['1']; ?>"); i++; <?php echo "\n";
                     }
                 }

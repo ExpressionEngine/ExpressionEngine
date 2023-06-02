@@ -238,7 +238,7 @@ class Pro_search_collection_model extends Pro_search_model
             $val = array($val);
         }
 
-        // Loop through all and add maching to rows
+        // Loop through all and add matching to rows
         foreach ($all as $id => $row) {
             if ($in === in_array($row[$attr], $val)) {
                 $rows[$id] = $row;
