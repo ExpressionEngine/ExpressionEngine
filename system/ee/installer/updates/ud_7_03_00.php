@@ -133,7 +133,7 @@ class Updater
 
     private function addFieldGroupShortname()
     {
-        if (!ee()->db->field_exists('shortname', 'field_groups')) {
+        if (!ee()->db->field_exists('short_name', 'field_groups')) {
             ee()->smartforge->add_column(
                 'field_groups',
                 [
