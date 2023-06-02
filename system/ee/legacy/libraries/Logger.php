@@ -117,7 +117,7 @@ class EE_Logger
             $log_data['description'] = $data;
         }
 
-        // Get a hash of the data to see if we've aleady logged this
+        // Get a hash of the data to see if we've already logged this
         $hash = md5(serialize($log_data));
 
         // Load Localize in case this is being called via the Javascript

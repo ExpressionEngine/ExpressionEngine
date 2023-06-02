@@ -143,7 +143,7 @@ class EE_Cache_file extends CI_Driver
 
             if (delete_files($path, true)) {
                 // Try to remove the namespace directory; it may not be
-                // removeable on some high traffic sites where the cache fills
+                // removable on some high traffic sites where the cache fills
                 // back up quickly
                 @rmdir($path);
 

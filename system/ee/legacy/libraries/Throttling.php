@@ -20,7 +20,7 @@ class EE_Throttling
     public $current_data = false;
 
     /** ----------------------------------------------
-    /**  Runs the throttling funcitons
+    /**  Runs the throttling functions
     /** ----------------------------------------------*/
     public function run()
     {

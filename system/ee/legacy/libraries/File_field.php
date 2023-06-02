@@ -812,7 +812,7 @@ class File_field
     }
 
     /**
-     * Unlike parse(), this parses all occurances of {filedir_n} from a given
+     * Unlike parse(), this parses all occurrences of {filedir_n} from a given
      * string to their actual values and returns the processed string.
      *
      * @access  public
@@ -1012,7 +1012,7 @@ class File_field
                 'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
                 'lang.file_dnd_create_directory' => lang('file_dnd_create_directory'),
 
-                'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
+                'dragAndDrop.uploadDestinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
                 'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),
                 'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile(),
                 'dragAndDrop.filepickerEndpoint' => ee('CP/FilePicker')->make('all')->getUrl()->compile(),

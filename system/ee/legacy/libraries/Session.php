@@ -225,7 +225,7 @@ class EE_Session
 
         unset($this->sdata);
         unset($session_id);
-        unset($rememebered);
+        unset($remembered);
         unset($member_exists);
     }
 
@@ -359,7 +359,7 @@ class EE_Session
      *
      * @param 	int 		member_id
      * @param 	boolean		admin session or not
-     * @param 	boolen 		can this session see front-end debugging?
+     * @param 	boolean 		can this session see front-end debugging?
      * @return 	string 		Session ID
      */
     public function create_new_session($member_id, $admin_session = false, $can_debug = false)
@@ -635,7 +635,7 @@ class EE_Session
         }
 
         // validate the fingerprint as a last measure for 'c' and 's' sessions, since the fingerprint is only
-        // propogated in 'cs' sessions. Obviously this passes if Remember me validated for us
+        // propagated in 'cs' sessions. Obviously this passes if Remember me validated for us
         if ($this->sdata['fingerprint'] != $this->_create_fingerprint($this->sess_crypt_key)) {
             $this->_initialize_session();
             $this->_initialize_userdata();
@@ -688,7 +688,7 @@ class EE_Session
 
         // If the user has been inactive for longer than the session length
         // we'll update their last_visit item so that it contains the last_activity
-        // date.  That way, we can show the exact time they were last visitng the site.
+        // date.  That way, we can show the exact time they were last visiting the site.
 
         if (($this->userdata['last_visit'] == 0) or
             (($member_query->row('last_activity') + $this->session_length) < ee()->localize->now)) {

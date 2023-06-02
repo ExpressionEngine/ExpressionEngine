@@ -34,7 +34,7 @@ function xss_check()
 
     // There are a few times when xss cleaning may not be wanted, and
     // xss_clean should be changed to FALSE from the default TRUE
-    // 1. Super admin uplaods (never filtered)
+    // 1. Super admin uploads (never filtered)
     if (ee('Permission')->isSuperAdmin()) {
         $xss_clean = false;
     }

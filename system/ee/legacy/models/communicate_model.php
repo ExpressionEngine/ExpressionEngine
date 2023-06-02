@@ -16,7 +16,7 @@ class Communicate_model extends CI_Model
     /**
      * Get Email Cache
      *
-     * Retreives all email cache data, for a given id if supplied
+     * Retrieves all email cache data, for a given id if supplied
      *
      * @access	public
      * @param	int
@@ -49,7 +49,7 @@ class Communicate_model extends CI_Model
     /**
      * Get Cached Member Groups
      *
-     * Retreives the group id's for a given cached email
+     * Retrieves the group id's for a given cached email
      *
      * @access	public
      * @param	int

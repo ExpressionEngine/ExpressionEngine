@@ -42,7 +42,7 @@ class Updater
      * Normalize fields array in layout. Re bug #22894, if a category group was
      * unassigned from a channel, the resulting channel layout's tab's fields
      * array may end up as an associative array because we were simply unsetting
-     * the category field's index and thus making the indicies inconsistent.
+     * the category field's index and thus making the indices inconsistent.
      * This in turn would make json_encode() treat the array as an object and
      * the supporting layout JS spew errors. We've fixed the source of the
      * inconsistency, here we'll normalize the data.

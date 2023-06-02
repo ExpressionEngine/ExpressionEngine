@@ -52,7 +52,7 @@ class EE_Template_router_converters
     }
 
     /**
-     * Load a validation rule with the provided constuctor $args
+     * Load a validation rule with the provided constructor $args
      *
      * @param mixed $converter  The registered name of the validation rule
      * @param array $args       The initial arguments for initializing the validation rule

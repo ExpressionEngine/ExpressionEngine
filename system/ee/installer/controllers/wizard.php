@@ -237,7 +237,7 @@ class Wizard extends CI_Controller
             $this->theme_path = $this->base_path . 'themes/';
         } else {
             // Must be in a public system folder so try one level back from
-            // current folder. Replace only the LAST occurance of the system
+            // current folder. Replace only the LAST occurrence of the system
             // folder name with nil incase the system folder name appears more
             // than once in the path.
             $this->base_path = preg_replace('/\b' . preg_quote(SYSDIR) . '(?!.*' . preg_quote(SYSDIR) . ')\b/', '', $this->base_path);
@@ -408,7 +408,7 @@ class Wizard extends CI_Controller
         // EXCEPTIONS
         // We need to deal with a couple possible issues.
 
-        // In 2.10.0, we started putting .'s in the app_verson config. The rest
+        // In 2.10.0, we started putting .'s in the app_version config. The rest
         // of the code assumes this to be true, so we need to tweak their old config.
         if (strpos($config['app_version'], '.') === false) {
             $cap = $config['app_version'];
@@ -1080,7 +1080,7 @@ class Wizard extends CI_Controller
     }
 
     /**
-     * Show installation or upgrade succes page
+     * Show installation or upgrade success page
      * @param  string $type               'update' or 'install'
      * @param  array  $template_variables Anything to parse in the template
      * @return void

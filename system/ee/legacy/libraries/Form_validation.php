@@ -123,7 +123,7 @@ class EE_Form_validation
     }
 
     /**
-     * Returns TRUE/FALSE based on existance of validation errors
+     * Returns TRUE/FALSE based on existence of validation errors
      *
      * @return	bool
      */
@@ -1077,7 +1077,7 @@ class EE_Form_validation
      */
     public function error_string($prefix = '', $suffix = '')
     {
-        // No errrors, validation passes!
+        // No errors, validation passes!
         if (count($this->_error_array) === 0) {
             return '';
         }

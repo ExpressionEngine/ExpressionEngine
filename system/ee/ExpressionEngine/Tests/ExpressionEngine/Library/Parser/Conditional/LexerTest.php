@@ -93,7 +93,7 @@ class LexerTest extends TestCase
 
     /**
      * In the event that a comment (commonly an annotation) immemdiately
-     * preceeds a '}' in a TEMPLATE_STRING context, that '}' should not
+     * precedes a '}' in a TEMPLATE_STRING context, that '}' should not
      * be an 'RD' token, but rather a TEMPLATE_STRING token. This test
      * confirms that.
      *

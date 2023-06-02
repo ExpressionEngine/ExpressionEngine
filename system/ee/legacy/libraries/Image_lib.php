@@ -514,7 +514,7 @@ class EE_Image_lib
      */
     public function image_process_imagemagick($action = 'resize')
     {
-        //  Do we have a vaild library path?
+        //  Do we have a valid library path?
         if ($this->library_path == '') {
             $this->set_error('imglib_libpath_invalid');
 
@@ -797,7 +797,7 @@ class EE_Image_lib
      */
     public function image_preserve_alpha($new_img, $src_img)
     {
-        // Preserve transparancies for GIFs and PNGs
+        // Preserve transparencies for GIFs and PNGs
         if ($this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG) {
             $src_alpha_index = imagecolortransparent($src_img);
 
@@ -1054,7 +1054,7 @@ class EE_Image_lib
         $x_axis = (int) $this->wm_hor_offset + (int) $x_padding;
         $y_axis = (int) $this->wm_vrt_offset + (int) $y_padding;
 
-        // Set verticle alignment
+        // Set vertical alignment
         if ($this->wm_use_drop_shadow == false) {
             $this->wm_shadow_distance = 0;
         }

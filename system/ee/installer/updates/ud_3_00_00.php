@@ -1264,7 +1264,7 @@ class Updater
     }
 
     /**
-     * Adds the column "title_field_label" to the channels tabel and sets it's
+     * Adds the column "title_field_label" to the channels table and sets it's
      * default to lang('title')
      */
     private function _update_channels_table()

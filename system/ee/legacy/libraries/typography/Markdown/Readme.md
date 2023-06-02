@@ -238,7 +238,7 @@ PHP Markdown Lib 1.4.1 (4 May 2014)
 	won't be interpreted as Markdown.
 
 *	Corrected an bug where some inline links with spaces in them would not
-	work even when surounded with angle brackets:
+	work even when surrounded with angle brackets:
 	
 		[link](<s p a c e s>)
 

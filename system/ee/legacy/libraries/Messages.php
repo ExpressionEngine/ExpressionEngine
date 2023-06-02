@@ -1779,7 +1779,7 @@ DOH;
                     the copy and move commands that a single member might have
                     the last two remaining copies of a message and delete them
                     at the same time.  Thus, a normal copy_id != $row['copy_id']
-                    would not work effectively in this query to detemine if the
+                    would not work effectively in this query to determine if the
                     exp_message_data table should have this message removed.
                 */
 
@@ -3298,7 +3298,7 @@ Last modified: 10/11/02
 DESCRIPTION: These functions find the position of an <A> tag in a document,
 so other elements can be positioned relative to it.
 
-COMPATABILITY: Netscape 4.x,6.x,Mozilla, IE 5.x,6.x on Windows. Some small
+COMPATIBILITY: Netscape 4.x,6.x,Mozilla, IE 5.x,6.x on Windows. Some small
 positioning errors - usually with Window positioning - occur on the
 Macintosh platform.
 
@@ -3428,7 +3428,7 @@ DESCRIPTION: This object allows you to easily and quickly popup a window
 in a certain place. The window can either be a DIV or a separate browser
 window.
 
-COMPATABILITY: Works with Netscape 4.x, 6.x, IE 5.x on Windows. Some small
+COMPATIBILITY: Works with Netscape 4.x, 6.x, IE 5.x on Windows. Some small
 positioning errors - usually with Window positioning - occur on the
 Macintosh platform. Due to bugs in Netscape 4.x, populating the popup
 window with <STYLE> tags may cause errors.

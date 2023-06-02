@@ -2371,7 +2371,7 @@ while (--j >= 0)
     /**
      * Convert Code Markers back to rendered code.
      *
-     * The hightlight function called earlier converts the original code strings
+     * The highlight function called earlier converts the original code strings
      * into markers so that the auth_xhtml function doesn't attempt to process
      * the highlighted code chunks.  Here we convert the markers back to their
      * correct state.

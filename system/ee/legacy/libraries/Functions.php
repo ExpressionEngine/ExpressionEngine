@@ -821,7 +821,7 @@ class EE_Functions
     }
 
     /**
-     * Create pull-down optios from dirctory map
+     * Create pull-down options from directory map
      *
      * @access	public
      * @param	array
@@ -895,7 +895,7 @@ class EE_Functions
     }
 
     /**
-     * Delete Direcories
+     * Delete Directories
      *
      * @access	public
      * @param	string

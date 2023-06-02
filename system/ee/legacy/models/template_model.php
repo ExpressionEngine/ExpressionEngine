@@ -186,7 +186,7 @@ class Template_model extends CI_Model
      * Fetch the Most Recently Edited Version of the Template (File or DB)
      *
      * Load the template entities from the database and, in the case that the
-     * saved file was editted more recently than the version in the database,
+     * saved file was edited more recently than the version in the database,
      * override the entity's content with the version in the file.
      *
      * @param	mixed[] $fields	Optional. An array of fields and values that
@@ -200,7 +200,7 @@ class Template_model extends CI_Model
      * 		returned Template_Entity objects.
      *
      * @return	Template_Entity[] The fetched array of Template Entities, from
-     * 		the most recently editted source.
+     * 		the most recently edited source.
      */
     public function fetch_last_edit(array $fields = array(), $load_groups = false)
     {

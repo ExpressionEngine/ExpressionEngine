@@ -590,7 +590,7 @@ class EE_Core
         // Load the Super Model
         ee()->load->model('super_model');
 
-        // Laod Menu library
+        // Load Menu library
         ee()->load->library('menu');
 
         $this->set_newrelic_transaction(function () use ($get) {

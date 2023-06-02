@@ -12,7 +12,7 @@ Introduction
 ------------
 
 The class idna_convert allows to convert internationalized domain names
-(see RFC 3490, 3491, 3492 and 3454 for detials) as they can be used with various
+(see RFC 3490, 3491, 3492 and 3454 for details) as they can be used with various
 registries worldwide to be translated between their original (localized) form
 and their encoded form as it will be used in the DNS (Domain Name System).
 
@@ -27,7 +27,7 @@ use any of the following notations:
 
 Errors, incorrectly encoded or invalid strings will lead to either a FALSE
 response (when in strict mode) or to only partially converted strings.
-You can query the occured error by calling the method get_last_error().
+You can query the occurred error by calling the method get_last_error().
 
 Unicode strings are expected to be either UTF-8 strings, UCS-4 strings or UCS-4
 arrays. The default format is UTF-8. For setting different encodings, you can
@@ -35,7 +35,7 @@ call the method setParams() - please see the inline documentation for details.
 ACE strings (the Punycode form) are always 7bit ASCII strings.
 
 ATTENTION: We no longer supply the PHP5 version of the class. It is not
-necessary for achieving a successfull conversion, since the supplied PHP code is
+necessary for achieving a successful conversion, since the supplied PHP code is
 compatible with both PHP4 and PHP5. We expect to see no compatibility issues
 with the upcoming PHP6, too.
 

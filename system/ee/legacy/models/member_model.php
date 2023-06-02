@@ -224,7 +224,7 @@ class Member_model extends CI_Model
     /**
      * Get Member Data
      *
-     * This function retuns author data for a single member
+     * This function returns author data for a single member
      *
      * @access	public
      * @param	integer		Member Id
@@ -248,7 +248,7 @@ class Member_model extends CI_Model
     /**
      * Get Member Ignore List
      *
-     * This function retuns author data for a single member
+     * This function returns author data for a single member
      *
      * @access	public
      * @param	integer		Member Id
@@ -273,7 +273,7 @@ class Member_model extends CI_Model
     /**
      * Get Member Quicklinks
      *
-     * This function retuns an array of the users quick links
+     * This function returns an array of the users quick links
      *
      * @access	public
      * @param	integer		Member Id
@@ -619,7 +619,7 @@ class Member_model extends CI_Model
     /**
      * Get Author Groups
      *
-     * This function retuns an array if group ids for member groups
+     * This function returns an array if group ids for member groups
      * who are listed as authors for a channel
      *
      * @access	public
@@ -794,7 +794,7 @@ class Member_model extends CI_Model
     }
 
     /**
-     * Count Recrods
+     * Count Records
      *
      * @access	public
      * @param	table
@@ -873,7 +873,7 @@ class Member_model extends CI_Model
     /**
      * Get Custom Member Fields
      *
-     * This function retuns all custom member fields
+     * This function returns all custom member fields
      *
      * @access	public
      * @param	an optional member id to restrict the search on

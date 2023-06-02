@@ -1575,7 +1575,7 @@ class EE_Email
      * @param  string $string The string to be tested for shell safety
      * @see  https://gist.github.com/Zenexer/40d02da5e07f151adeaeeaa11af9ab36
      * @author Paul Buonopane <paul@namepros.com>
-     * @license Public doman per CC0 1.0. Attribution appreciated by not required.
+     * @license Public domain per CC0 1.0. Attribution appreciated by not required.
      * @return boolean Whether or not the string is safe for shell usage
      */
     protected function isShellSafe($string)

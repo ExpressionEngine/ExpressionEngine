@@ -197,7 +197,7 @@ abstract class EE_Fieldtype
      *
      * The developer of the fieldtype is responsible for completely
      * clearing the data stored by the fieldtype's custom tables. This
-     * method is available to clear everyting of a certain content type.
+     * method is available to clear everything of a certain content type.
      *
      * @param string  The name of the content type being removed
      */
@@ -209,7 +209,7 @@ abstract class EE_Fieldtype
     /**
      * Check if the fieldtype will accept a certain content type
      *
-     * For backward compatiblity, all fieldtypes will initially only
+     * For backward compatibility, all fieldtypes will initially only
      * support the channel content type. Override this method for more
      * control.
      *

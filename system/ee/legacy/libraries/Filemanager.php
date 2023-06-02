@@ -1640,7 +1640,7 @@ class Filemanager
      * Gets the files for a particular directory
      * Also, adds short name and file size
      *
-     * @param array $dir Associative array containg directory information
+     * @param array $dir Associative array containing directory information
      * @param integer $limit Number of files to retrieve
      * @param integer $offset Where to start
      *
@@ -2276,7 +2276,7 @@ class Filemanager
             ee()->functions->redirect(BASE . AMP . 'C=content_files');
         }
 
-        // crop takes precendence over resize
+        // crop takes precedence over resize
         // we need at least a width
         if (ee()->input->get_post('crop_width') != '' and ee()->input->get_post('crop_width') != 0) {
             $config['width'] = ee()->input->get_post('crop_width');
@@ -2745,7 +2745,7 @@ class Filemanager
             'new_image' => $new['path']
         );
 
-        // Must initialize seperately in case image_lib was loaded previously
+        // Must initialize separately in case image_lib was loaded previously
         ee()->load->library('image_lib');
         $return = ee()->image_lib->initialize($config);
 
@@ -2792,7 +2792,7 @@ class Filemanager
             'new_image' => $new['path']
         );
 
-        // Must initialize seperately in case image_lib was loaded previously
+        // Must initialize separately in case image_lib was loaded previously
         ee()->load->library('image_lib');
         $return = ee()->image_lib->initialize($config);
 
@@ -2846,7 +2846,7 @@ class Filemanager
             $config['master_dim'] = 'width';
         }
 
-        // Must initialize seperately in case image_lib was loaded previously
+        // Must initialize separately in case image_lib was loaded previously
         ee()->load->library('image_lib');
         $return = ee()->image_lib->initialize($config);
 

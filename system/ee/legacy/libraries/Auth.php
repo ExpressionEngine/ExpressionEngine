@@ -321,7 +321,7 @@ class Auth
     public function hash_password($password, $salt = false, $h_byte_size = false)
     {
         // Even for md5, collisions usually happen above 1024 bits, so
-        // we artifically limit their password to reasonable size.
+        // we artificially limit their password to reasonable size.
         if (! $password or strlen($password) > PASSWORD_MAX_LENGTH) {
             return false;
         }
@@ -831,7 +831,7 @@ class Auth_result
      * Hook data utility method
      *
      * We cannot change the hook parameter without lots of warning, so
-     * this is a silly workaround. Doing a clone aslo isolates the hook
+     * this is a silly workaround. Doing a clone also isolates the hook
      * from the rest of the code, which I like.
      *
      * @access private

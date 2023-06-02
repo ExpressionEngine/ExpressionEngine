@@ -148,7 +148,7 @@ class Markdown implements MarkdownInterface
     {
         #
         # Called after the transformation process to clear any variable
-        # which may be taking up memory unnecessarly.
+        # which may be taking up memory unnecessarily.
         #
         $this->urls = array();
         $this->titles = array();
@@ -452,11 +452,11 @@ class Markdown implements MarkdownInterface
     protected function runBlockGamut($text)
     {
         #
-        # Run block gamut tranformations.
+        # Run block gamut transformations.
         #
         # We need to escape raw HTML in Markdown source before doing anything
         # else. This need to be done for each block, and not only at the
-        # begining in the Markdown function since hashed blocks can be part of
+        # beginning in the Markdown function since hashed blocks can be part of
         # list items and could have been indented. Indented blocks would have
         # been seen as a code block in a previous pass of hashHTMLBlocks.
         $text = $this->hashHTMLBlocks($text);
@@ -467,7 +467,7 @@ class Markdown implements MarkdownInterface
     protected function runBasicBlockGamut($text)
     {
         #
-        # Run block gamut tranformations, without hashing HTML blocks. This is
+        # Run block gamut transformations, without hashing HTML blocks. This is
         # useful when HTML blocks are known to be already hashed, like in the first
         # whole-document pass.
         #
@@ -527,7 +527,7 @@ class Markdown implements MarkdownInterface
     protected function runSpanGamut($text)
     {
         #
-        # Run span gamut tranformations.
+        # Run span gamut transformations.
         #
         foreach ($this->span_gamut as $method => $priority) {
             $text = $this->$method($text);
@@ -1176,7 +1176,7 @@ class Markdown implements MarkdownInterface
 
         while (1) {
             #
-            # Get prepared regular expression for seraching emphasis tokens
+            # Get prepared regular expression for searching emphasis tokens
             # in current context.
             #
             $token_re = $this->em_strong_prepared_relist["$em$strong"];
@@ -1530,7 +1530,7 @@ class Markdown implements MarkdownInterface
         #        &#x6d;
         #
         #	Note: the additional output $tail is assigned the same value as the
-        #	ouput, minus the number of characters specified by $head_length.
+        #	output, minus the number of characters specified by $head_length.
         #
         #	Based by a filter by Matthew Wickline, posted to BBEdit-Talk.
         #   With some optimizations by Milian Wolff. Forced encoding of HTML
@@ -1568,7 +1568,7 @@ class Markdown implements MarkdownInterface
     protected function parseSpan($str)
     {
         #
-        # Take the string $str and parse it into tokens, hashing embeded HTML,
+        # Take the string $str and parse it into tokens, hashing embedded HTML,
         # escaped characters and handling code spans.
         #
         $output = '';
@@ -1601,8 +1601,8 @@ class Markdown implements MarkdownInterface
 
         while (1) {
             #
-            # Each loop iteration seach for either the next tag, the next
-            # openning code span marker, or the next escaped character.
+            # Each loop iteration search for either the next tag, the next
+            # opening code span marker, or the next escaped character.
             # Each token is then passed to handleSpanToken.
             #
             $parts = preg_split($span_re, $str, 2, PREG_SPLIT_DELIM_CAPTURE);
@@ -1661,7 +1661,7 @@ class Markdown implements MarkdownInterface
     }
 
     # String length function for detab. `_initDetab` will create a function to
-    # hanlde UTF-8 if the default function does not exist.
+    # handle UTF-8 if the default function does not exist.
     protected $utf8_strlen = 'mb_strlen';
 
     protected function detab($text)

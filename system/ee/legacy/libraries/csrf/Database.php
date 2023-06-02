@@ -43,7 +43,7 @@ class Csrf_database implements Csrf_storage_backend
     /**
      * Delete the current session token.
      *
-     * This also occassionally runs garbage collection for expired tokens when
+     * This also occasionally runs garbage collection for expired tokens when
      * it is used.
      *
      * @return void

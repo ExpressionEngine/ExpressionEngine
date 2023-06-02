@@ -92,7 +92,7 @@ class MarkdownExtra extends \Michelf\Markdown
     protected $footnotes_ordered = array();
     protected $footnotes_ref_count = array();
     protected $footnotes_numbers = array();
-    protected $abbr_desciptions = array();
+    protected $abbr_descriptions = array();
     protected $abbr_word_re = '';
 
     # Give the current footnote number.
@@ -109,7 +109,7 @@ class MarkdownExtra extends \Michelf\Markdown
         $this->footnotes_ordered = array();
         $this->footnotes_ref_count = array();
         $this->footnotes_numbers = array();
-        $this->abbr_desciptions = array();
+        $this->abbr_descriptions = array();
         $this->abbr_word_re = '';
         $this->footnote_counter = 1;
 
@@ -118,7 +118,7 @@ class MarkdownExtra extends \Michelf\Markdown
                 $this->abbr_word_re .= '|';
             }
             $this->abbr_word_re .= preg_quote($abbr_word);
-            $this->abbr_desciptions[$abbr_word] = trim($abbr_desc);
+            $this->abbr_descriptions[$abbr_word] = trim($abbr_desc);
         }
     }
 
@@ -131,7 +131,7 @@ class MarkdownExtra extends \Michelf\Markdown
         $this->footnotes_ordered = array();
         $this->footnotes_ref_count = array();
         $this->footnotes_numbers = array();
-        $this->abbr_desciptions = array();
+        $this->abbr_descriptions = array();
         $this->abbr_word_re = '';
 
         parent::teardown();
@@ -330,7 +330,7 @@ class MarkdownExtra extends \Michelf\Markdown
             return array('', '');
         }
 
-        # Regex to check for the presense of newlines around a block tag.
+        # Regex to check for the presence of newlines around a block tag.
         $newline_before_re = '/(?:^\n?|\n\n)*$/';
         $newline_after_re =
             '{
@@ -603,7 +603,7 @@ class MarkdownExtra extends \Michelf\Markdown
 				)
 			}xs';
 
-        $original_text = $text;		# Save original text in case of faliure.
+        $original_text = $text;		# Save original text in case of failure.
 
         $depth = 0;	# Current depth inside the tag tree.
         $block_text = "";	# Temporary text holder for current text.
@@ -631,7 +631,7 @@ class MarkdownExtra extends \Michelf\Markdown
 
             if (count($parts) < 3) {
                 #
-                # End of $text reached with unbalenced tag(s).
+                # End of $text reached with unbalanced tag(s).
                 # In that case, we return original text unchanged and pass the
                 # first character as filtered to prevent an infinite loop in the
                 # parent function.
@@ -740,7 +740,7 @@ class MarkdownExtra extends \Michelf\Markdown
     {
         #
         # Called whenever a tag must be hashed when a function inserts a "clean" tag
-        # in $text, it passes through this function and is automaticaly escaped,
+        # in $text, it passes through this function and is automatically escaped,
         # blocking invalid nested overlap.
         #
         return $this->hashPart($text, 'C');
@@ -1185,7 +1185,7 @@ class MarkdownExtra extends \Michelf\Markdown
         $underline = preg_replace('/[|] *$/m', '', $underline);
         $content = preg_replace('/[|] *$/m', '', $content);
 
-        # Reading alignement from header underline.
+        # Reading alignment from header underline.
         $separators = preg_split('/ *[|] */', $underline);
         foreach ($separators as $n => $s) {
             if (preg_match('/^ *-+: *$/', $s)) {
@@ -1720,7 +1720,7 @@ class MarkdownExtra extends \Michelf\Markdown
             $this->abbr_word_re .= '|';
         }
         $this->abbr_word_re .= preg_quote($abbr_word);
-        $this->abbr_desciptions[$abbr_word] = trim($abbr_desc);
+        $this->abbr_descriptions[$abbr_word] = trim($abbr_desc);
 
         return ''; # String that will replace the block
     }
@@ -1749,8 +1749,8 @@ class MarkdownExtra extends \Michelf\Markdown
     protected function _doAbbreviations_callback($matches)
     {
         $abbr = $matches[0];
-        if (isset($this->abbr_desciptions[$abbr])) {
-            $desc = $this->abbr_desciptions[$abbr];
+        if (isset($this->abbr_descriptions[$abbr])) {
+            $desc = $this->abbr_descriptions[$abbr];
             if (empty($desc)) {
                 return $this->hashPart("<abbr>$abbr</abbr>");
             } else {

@@ -196,7 +196,7 @@ class EE_Cache_memcached extends CI_Driver
             if (get_class($this->_memcached) === 'Memcached') {
                 $this->_memcached->addServer($host, $port, $weight);
             } else {
-                // Third parameter is persistance and defaults to TRUE.
+                // Third parameter is persistence and defaults to TRUE.
                 $this->_memcached->addServer($host, $port, true, $weight);
             }
         }
@@ -243,7 +243,7 @@ class EE_Cache_memcached extends CI_Driver
     }
 
     /**
-     * Creates a properly namespaced key ready for storage or retreval of any
+     * Creates a properly namespaced key ready for storage or retrieval of any
      * cache item.
      *
      * For example, given a key of "/page/contact" and a scope of CACHE_LOCAL,
@@ -253,7 +253,7 @@ class EE_Cache_memcached extends CI_Driver
      *
      * This is so that a Memcached server serving many EE installs can use the
      * same keys, conflict free. But it also serves to create namespaces within
-     * the cache store that we can indiviaully manange. For more information on
+     * the cache store that we can indiviaully manage. For more information on
      * this, see the doc block for _create_new_namespace above.
      *
      * @param	string	$key	Key name

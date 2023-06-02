@@ -210,7 +210,7 @@ class FileUpdater
      *
      * @param	string	$source			Source directory or file
      * @param	string	$destination	Destination directory
-     * @param	array	$exclusions		Array of any paths to exlude when moving
+     * @param	array	$exclusions		Array of any paths to exclude when moving
      * @param	boolean	$copy			When TRUE, copies instead of moves
      */
     protected function move($source, $destination, array $exclusions = [], $copy = false)
@@ -265,7 +265,7 @@ class FileUpdater
      *
      * @param	string	$source			Source directory
      * @param	string	$destination	Destination directory
-     * @param	array	$exclusions		Array of any paths to exlude when moving
+     * @param	array	$exclusions		Array of any paths to exclude when moving
      */
     protected function copy($source, $destination, array $exclusions = [])
     {
@@ -276,7 +276,7 @@ class FileUpdater
      * Deletes contents of a directory
      *
      * @param	string	$directory	Direcotry to delete the contents from
-     * @param	array	$exclusions	Array of any paths to exlude when deleting
+     * @param	array	$exclusions	Array of any paths to exclude when deleting
      */
     protected function delete($directory, array $exclusions = [])
     {

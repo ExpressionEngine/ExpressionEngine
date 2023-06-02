@@ -187,7 +187,7 @@ class Grid_parser
                     }
                 }
             } else {
-                // If there are mutliple row IDs
+                // If there are multiple row IDs
                 if (count($row_ids) > 1) {
                     // Unset all rows that AREN'T in the row_id parameter
                     foreach (array_diff(array_keys($entry_data), $row_ids) as $row_id) {
@@ -568,7 +568,7 @@ class Grid_parser
             }
         }
 
-        // Send data for entire channel entires loop to fieldtype only once
+        // Send data for entire channel entries loop to fieldtype only once
         foreach ($columns as $column) {
             if (isset($col_data[$column['col_type']])) {
                 $this->instantiate_fieldtype($column, null, $column['field_id']);
