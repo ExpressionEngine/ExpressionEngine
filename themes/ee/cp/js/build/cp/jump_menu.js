@@ -233,7 +233,7 @@ EE.cp.JumpMenu = {
   },
 
   /**
-   * This is trigged when a user clicks or presses [enter] on a jump option that has dynamic content.
+   * This is triggered when a user clicks or presses [enter] on a jump option that has dynamic content.
    * We either have to show a secondary input or load data depending on which command was selected.
    * @param  {string} commandKey The unique index for the selected command.
    */
