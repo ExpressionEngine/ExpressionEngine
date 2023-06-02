@@ -206,7 +206,7 @@ $lang = array(
 
     'constraints' => 'Constraints',
 
-    'coordiantes_desc' => 'x (horizontal) and y (vertical) axis coordinates to start the crop from.',
+    'coordinates_desc' => 'x (horizontal) and y (vertical) axis coordinates to start the crop from.',
 
     'coordinates' => 'Coordinates',
 
@@ -1056,7 +1056,7 @@ $lang = array(
 
     'error_renaming_already_exists' => 'Could not rename because file or folder with that name already exists',
 
-    'rename_success' => 'Successully renamed',
+    'rename_success' => 'Successfully renamed',
 
     'rename_success_desc' => '<code>%s</code> has been renamed to <code>%s</code>',
 

@@ -3,7 +3,7 @@
 $lang = array(
 
     /* Log-in */
-    'credential_missmatch' => 'That is the wrong username or password',
+    'credential_mismatch' => 'That is the wrong username or password',
 
     'locked' => 'Locked',
 

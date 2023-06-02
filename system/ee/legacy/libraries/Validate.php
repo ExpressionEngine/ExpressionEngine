@@ -216,7 +216,7 @@ class EE_Validate
                 $this->errors[] = $error;
             }
             foreach ($result->getErrors('password_confirm') as $key => $error) {
-                $this->errors[] = lang('missmatched_passwords');
+                $this->errors[] = lang('mismatched_passwords');
             }
             return $this->errors;
         }
@@ -311,7 +311,7 @@ class EE_Validate
         //deprecated, but will not throw deprecation error until 6.4
         //ee()->load->library('logger');
         //ee()->logger->deprecated('6.4');
-        
+
         if (ee()->config->item('allow_dictionary_pw') == 'y') {
             return false;
         }

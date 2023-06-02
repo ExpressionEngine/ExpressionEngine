@@ -388,7 +388,7 @@ class Member_register extends Member
 
         // Set member group
         $roleId = ee()->config->item('default_primary_role');
-        
+
         if (!empty($protected['primary_role'])) {
             $pendingRole = ee('Model')->get('Role', ee('Security/XSS')->clean($protected['primary_role']))->fields('role_id')->first();
             if (!empty($pendingRole)) {
@@ -454,7 +454,7 @@ class Member_register extends Member
             foreach ($passwordValidation->getAllErrors() as $errors) {
                 foreach ($errors as $key => $error) {
                     if ($key == 'matches') {
-                        $error = lang('missmatched_passwords');
+                        $error = lang('mismatched_passwords');
                     }
                     $cust_errors['error:password'] = $error;
                 }
@@ -475,7 +475,7 @@ class Member_register extends Member
             $errors = array_map('current', $e);
 
             foreach ($errors as $field => $error) {
-                // build out auto error page data    
+                // build out auto error page data
                 $label = lang($field);
 
                 if (isset($field_labels[$field])) {

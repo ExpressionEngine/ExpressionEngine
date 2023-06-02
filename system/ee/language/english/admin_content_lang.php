@@ -336,7 +336,7 @@ $lang = array(
 
     'limit' => 'limit',
 
-    'list_edit_warning' => 'If you have unsaved changes in this page they will be lost when you are transfered to the formatting editor.',
+    'list_edit_warning' => 'If you have unsaved changes in this page they will be lost when you are transferred to the formatting editor.',
 
     'localize_date' => 'Localize date?',
 

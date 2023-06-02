@@ -300,7 +300,7 @@ $lang = array(
 
     'missing_username' => 'You must submit a username',
 
-    'missmatched_passwords' => 'The password and password confirmation do not match',
+    'mismatched_passwords' => 'The password and password confirmation do not match',
 
     'month' => 'Month',
 

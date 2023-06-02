@@ -468,7 +468,7 @@ $lang = array(
 
     'ee_screencasts' => 'EE Screencasts',
 
-    'ee_seach_bookmarklet' => 'ExpressionEngine Search Bookmarklet',
+    'ee_search_bookmarklet' => 'ExpressionEngine Search Bookmarklet',
 
     'installing_ee' => 'Installing ExpressionEngine',
 
