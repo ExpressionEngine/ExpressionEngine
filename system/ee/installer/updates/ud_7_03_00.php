@@ -139,8 +139,7 @@ class Updater
                 [
                     'short_name' => [
                         'type' => 'text',
-                        'null' => true,
-                        'default' => null
+                        'null' => false,
                     ]
                 ]
             );
