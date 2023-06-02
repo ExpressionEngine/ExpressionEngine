@@ -177,17 +177,17 @@ $lang = array(
     // Lang entries for command backup:database
     'command_backup_database_description'                  => 'Backup the database',
     'command_backup_database_summary'                      => 'Backup the ExpressionEngine database',
-    'command_backup_database_beginning_database_backup'          => 'Beginning database backup.',
+    'command_backup_database_beginning_database_backup'    => 'Beginning database backup.',
     'command_backup_database_backing_up_database'          => 'Backing up the database...',
     'command_backup_database_failed_with_error'            => 'Database backup failed with error message:',
     'command_backup_database_completed_successfully'       => 'Database backup completed successfully.',
     'command_backup_database_backup_path'                  => 'Backup path: %s',
 
     // backup:database options
-    'command_backup_database_option_absolute_path'   => 'Absolute path to database backup',
+    'command_backup_database_option_absolute_path'   => 'Absolute path to the directory the database backup will be stored',
     'command_backup_database_option_relative_path'   => 'Path to database backup, relative to the cache folder',
     'command_backup_database_option_file_name'       => 'Name of sql file to be saved',
-    'command_backup_database_option_speed'       => 'Speed of database backup (between 1-10). Setting a lower speed allows for more time between database commands. Default speed is 5.',
+    'command_backup_database_option_speed'           => 'Speed of database backup (between 1-10). Setting a lower speed allows for more time between database commands. Default speed is 5.',
 
     // Lang entries for command make:action
     'command_make_action_description'                  => 'Creates a new action for an add-on',
