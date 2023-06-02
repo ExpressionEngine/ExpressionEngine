@@ -29,7 +29,8 @@
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.min.js')?>
 		<?=ee()->view->script_tag('vendor/focus-visible.js')?>
-		
+		<?=ee()->javascript->set_global(['lang.password_icon' => lang('password_icon')])?>
+
 		<script type="text/javascript">
 			var EE = {
 				PATH_CP_GBL_IMG: "<?=PATH_CP_GBL_IMG?>",

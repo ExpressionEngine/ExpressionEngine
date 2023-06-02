@@ -31,6 +31,8 @@
 	<?=form_close()?>
 </div>
 
+	<?=ee()->javascript->set_global(['lang.password_icon' => lang('password_icon')])?>
+
 <script type="text/javascript">
 	var EE = {
 		cp: {

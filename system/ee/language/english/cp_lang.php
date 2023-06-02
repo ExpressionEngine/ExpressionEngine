@@ -901,6 +901,8 @@ $lang = array(
     'password_icon' => 'Show or hide password icon',
 
     'hidden_input' => 'Hidden input for file upload',
+
+    'pencil_icon' => 'Pencil icon',
 );
 
 // EOF
